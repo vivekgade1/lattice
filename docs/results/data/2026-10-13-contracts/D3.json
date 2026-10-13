@@ -1,0 +1,691 @@
+{
+ "id": "D3",
+ "prediction": "response field renamed: BROKEN; BROKEN response_field_missing POST /applications/{}/runs/{}/cancel status; CHANGED field_added response state @ POST /applications/{}/runs/{}/cancel; version_changed true; gaps unchanged",
+ "observed": "BROKEN; BROKEN response_field_missing POST /applications/{}/runs/{}/cancel status; CHANGED field_added response state @ POST /applications/{}/runs/{}/cancel relied; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "worst_class": true,
+  "broken_set": true,
+  "changed_set": true,
+  "exit": true,
+  "version_changed": true,
+  "gaps_unchanged": true,
+  "spec_hash_equal_iff_no_diff": true
+ },
+ "extra": {
+  "edits": [
+   {
+    "path": "spec/tickets.py",
+    "old": "expect_body={\"id\": 1, \"status\": \"cancelled\"}),",
+    "new": "expect_body={\"id\": 1, \"state\": \"cancelled\"}),",
+    "count": 1
+   }
+  ],
+  "pass_core": true,
+  "git_ref": "877bbb7090978d582cde831982784927fea116f1"
+ },
+ "runs": [
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "git_ref": "877bbb7090978d582cde831982784927fea116f1",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "response_field_missing",
+        "item": "status",
+        "detail": "the spec now shows response fields ['id', 'state']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "field_added",
+        "item": "state",
+        "relied": true,
+        "detail": "response field state is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "git_ref": "877bbb7090978d582cde831982784927fea116f1",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "response_field_missing",
+        "item": "status",
+        "detail": "the spec now shows response fields ['id', 'state']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "field_added",
+        "item": "state",
+        "relied": true,
+        "detail": "response field state is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "git_ref": "877bbb7090978d582cde831982784927fea116f1",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "response_field_missing",
+        "item": "status",
+        "detail": "the spec now shows response fields ['id', 'state']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "field_added",
+        "item": "state",
+        "relied": true,
+        "detail": "response field state is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "git_ref": "877bbb7090978d582cde831982784927fea116f1",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "response_field_missing",
+        "item": "status",
+        "detail": "the spec now shows response fields ['id', 'state']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "field_added",
+        "item": "state",
+        "relied": true,
+        "detail": "response field state is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "git_ref": "877bbb7090978d582cde831982784927fea116f1",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "response_field_missing",
+        "item": "status",
+        "detail": "the spec now shows response fields ['id', 'state']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "field_added",
+        "item": "state",
+        "relied": true,
+        "detail": "response field state is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "git_ref": "877bbb7090978d582cde831982784927fea116f1",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "response_field_missing",
+        "item": "status",
+        "detail": "the spec now shows response fields ['id', 'state']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "field_added",
+        "item": "state",
+        "relied": true,
+        "detail": "response field state is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "git_ref": "877bbb7090978d582cde831982784927fea116f1",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "response_field_missing",
+        "item": "status",
+        "detail": "the spec now shows response fields ['id', 'state']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "field_added",
+        "item": "state",
+        "relied": true,
+        "detail": "response field state is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "git_ref": "877bbb7090978d582cde831982784927fea116f1",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "response_field_missing",
+        "item": "status",
+        "detail": "the spec now shows response fields ['id', 'state']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "field_added",
+        "item": "state",
+        "relied": true,
+        "detail": "response field state is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "git_ref": "877bbb7090978d582cde831982784927fea116f1",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "response_field_missing",
+        "item": "status",
+        "detail": "the spec now shows response fields ['id', 'state']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "field_added",
+        "item": "state",
+        "relied": true,
+        "detail": "response field state is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "git_ref": "877bbb7090978d582cde831982784927fea116f1",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "response_field_missing",
+        "item": "status",
+        "detail": "the spec now shows response fields ['id', 'state']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /applications/{}/runs/{}/cancel",
+        "kind": "field_added",
+        "item": "state",
+        "relied": true,
+        "detail": "response field state is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  }
+ ]
+}

@@ -1,0 +1,1338 @@
+{
+ "id": "L5",
+ "prediction": "exit 2 not_loopback for 10.0.0.1, example.com, 0.0.0.0; 127.0.0.1:8000 exit 2 live_url_unsupported; no request sent",
+ "observed": "http://10.0.0.1:8000 exit 2 not_loopback; http://example.com exit 2 not_loopback; http://0.0.0.0:8000 exit 2 not_loopback; http://127.0.0.1:8000 exit 2 live_url_unsupported; listener on, connections 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "four_of_four": true,
+  "no_connection_to_127.0.0.1:8000": true
+ },
+ "extra": {
+  "listener_bound": true,
+  "connections": 0
+ },
+ "runs": [
+  {
+   "cases": [
+    {
+     "live_url": "http://10.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://10.0.0.1:8000' is refused (refusing to attack host '10.0.0.1': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://example.com",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://example.com' is refused (refusing to attack host 'example.com': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://0.0.0.0:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://0.0.0.0:8000' is refused (refusing to attack host '0.0.0.0': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://127.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "live_url_unsupported",
+         "message": "ci-bot -> scheduler: live_url 'http://127.0.0.1:8000' is loopback but a live check never targets a URL (a replay mutates data): remove live_url; the check starts the provider app itself on a throwaway database"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    }
+   ]
+  },
+  {
+   "cases": [
+    {
+     "live_url": "http://10.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://10.0.0.1:8000' is refused (refusing to attack host '10.0.0.1': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://example.com",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://example.com' is refused (refusing to attack host 'example.com': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://0.0.0.0:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://0.0.0.0:8000' is refused (refusing to attack host '0.0.0.0': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://127.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "live_url_unsupported",
+         "message": "ci-bot -> scheduler: live_url 'http://127.0.0.1:8000' is loopback but a live check never targets a URL (a replay mutates data): remove live_url; the check starts the provider app itself on a throwaway database"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    }
+   ]
+  },
+  {
+   "cases": [
+    {
+     "live_url": "http://10.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://10.0.0.1:8000' is refused (refusing to attack host '10.0.0.1': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://example.com",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://example.com' is refused (refusing to attack host 'example.com': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://0.0.0.0:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://0.0.0.0:8000' is refused (refusing to attack host '0.0.0.0': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://127.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "live_url_unsupported",
+         "message": "ci-bot -> scheduler: live_url 'http://127.0.0.1:8000' is loopback but a live check never targets a URL (a replay mutates data): remove live_url; the check starts the provider app itself on a throwaway database"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    }
+   ]
+  },
+  {
+   "cases": [
+    {
+     "live_url": "http://10.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://10.0.0.1:8000' is refused (refusing to attack host '10.0.0.1': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://example.com",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://example.com' is refused (refusing to attack host 'example.com': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://0.0.0.0:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://0.0.0.0:8000' is refused (refusing to attack host '0.0.0.0': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://127.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "live_url_unsupported",
+         "message": "ci-bot -> scheduler: live_url 'http://127.0.0.1:8000' is loopback but a live check never targets a URL (a replay mutates data): remove live_url; the check starts the provider app itself on a throwaway database"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    }
+   ]
+  },
+  {
+   "cases": [
+    {
+     "live_url": "http://10.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://10.0.0.1:8000' is refused (refusing to attack host '10.0.0.1': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://example.com",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://example.com' is refused (refusing to attack host 'example.com': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://0.0.0.0:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://0.0.0.0:8000' is refused (refusing to attack host '0.0.0.0': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://127.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "live_url_unsupported",
+         "message": "ci-bot -> scheduler: live_url 'http://127.0.0.1:8000' is loopback but a live check never targets a URL (a replay mutates data): remove live_url; the check starts the provider app itself on a throwaway database"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    }
+   ]
+  },
+  {
+   "cases": [
+    {
+     "live_url": "http://10.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://10.0.0.1:8000' is refused (refusing to attack host '10.0.0.1': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://example.com",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://example.com' is refused (refusing to attack host 'example.com': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://0.0.0.0:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://0.0.0.0:8000' is refused (refusing to attack host '0.0.0.0': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://127.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "live_url_unsupported",
+         "message": "ci-bot -> scheduler: live_url 'http://127.0.0.1:8000' is loopback but a live check never targets a URL (a replay mutates data): remove live_url; the check starts the provider app itself on a throwaway database"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    }
+   ]
+  },
+  {
+   "cases": [
+    {
+     "live_url": "http://10.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://10.0.0.1:8000' is refused (refusing to attack host '10.0.0.1': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://example.com",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://example.com' is refused (refusing to attack host 'example.com': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://0.0.0.0:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://0.0.0.0:8000' is refused (refusing to attack host '0.0.0.0': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://127.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "live_url_unsupported",
+         "message": "ci-bot -> scheduler: live_url 'http://127.0.0.1:8000' is loopback but a live check never targets a URL (a replay mutates data): remove live_url; the check starts the provider app itself on a throwaway database"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    }
+   ]
+  },
+  {
+   "cases": [
+    {
+     "live_url": "http://10.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://10.0.0.1:8000' is refused (refusing to attack host '10.0.0.1': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://example.com",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://example.com' is refused (refusing to attack host 'example.com': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://0.0.0.0:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://0.0.0.0:8000' is refused (refusing to attack host '0.0.0.0': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://127.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "live_url_unsupported",
+         "message": "ci-bot -> scheduler: live_url 'http://127.0.0.1:8000' is loopback but a live check never targets a URL (a replay mutates data): remove live_url; the check starts the provider app itself on a throwaway database"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    }
+   ]
+  },
+  {
+   "cases": [
+    {
+     "live_url": "http://10.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://10.0.0.1:8000' is refused (refusing to attack host '10.0.0.1': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://example.com",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://example.com' is refused (refusing to attack host 'example.com': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://0.0.0.0:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://0.0.0.0:8000' is refused (refusing to attack host '0.0.0.0': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://127.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "live_url_unsupported",
+         "message": "ci-bot -> scheduler: live_url 'http://127.0.0.1:8000' is loopback but a live check never targets a URL (a replay mutates data): remove live_url; the check starts the provider app itself on a throwaway database"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    }
+   ]
+  },
+  {
+   "cases": [
+    {
+     "live_url": "http://10.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://10.0.0.1:8000' is refused (refusing to attack host '10.0.0.1': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://example.com",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://example.com' is refused (refusing to attack host 'example.com': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://0.0.0.0:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "not_loopback",
+         "message": "ci-bot -> scheduler: live_url 'http://0.0.0.0:8000' is refused (refusing to attack host '0.0.0.0': the security module targets only the app it starts itself on a loopback host (127.0.0.1, ::1, [::1], localhost) or in-process. It does not accept a URL or a remote host.)"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    {
+     "live_url": "http://127.0.0.1:8000",
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "error",
+        "error": {
+         "code": "live_url_unsupported",
+         "message": "ci-bot -> scheduler: live_url 'http://127.0.0.1:8000' is loopback but a live check never targets a URL (a replay mutates data): remove live_url; the check starts the provider app itself on a throwaway database"
+        },
+        "imports": 0,
+        "pinned": null,
+        "current": null,
+        "version_changed": null,
+        "spec_hash_changed": null,
+        "spec_ref_changed": null,
+        "findings": [],
+        "gaps": [],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    }
+   ]
+  }
+ ]
+}

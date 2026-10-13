@@ -1,0 +1,30 @@
+{
+ "id": "S1",
+ "prediction": "job-scheduler HEAD ef17cf8 and ' M uv.lock' before and after the whole run; find -newer finds no file; Streak never opened",
+ "observed": "before ef17cf8 ' M uv.lock'; after ef17cf8 ' M uv.lock'; files newer than the start marker: 0 []",
+ "pass": true,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "head_before": true,
+  "head_after": true,
+  "status_before": true,
+  "status_after": true,
+  "no_newer_file": true,
+  "identical": true
+ },
+ "extra": {},
+ "runs": [
+  {
+   "before": {
+    "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+    "status": " M uv.lock"
+   },
+   "after": {
+    "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+    "status": " M uv.lock"
+   },
+   "newer": []
+  }
+ ]
+}

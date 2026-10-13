@@ -1,0 +1,99 @@
+{
+ "id": "T1",
+ "prediction": "static check of one link: median <= 10 s (predicted <= 3 s); live (7 imports): median <= 60 s (predicted <= 15 s)",
+ "observed": "static median 0.20 s wall (0.15 s elapsed_s); live median 0.72 s wall (0.68 s elapsed_s)",
+ "pass": true,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "static_median_le_10s": true,
+  "live_median_le_60s": true,
+  "static_prediction_le_3s": true,
+  "live_prediction_le_15s": true
+ },
+ "extra": {
+  "static_wall_s": [
+   0.207,
+   0.196,
+   0.195,
+   0.195,
+   0.195,
+   0.196,
+   0.194,
+   0.195,
+   0.197,
+   0.196
+  ],
+  "live_wall_s": [
+   0.722,
+   0.722,
+   0.72,
+   0.717,
+   0.721,
+   0.719,
+   0.721,
+   0.721,
+   0.72,
+   0.723
+  ],
+  "static_elapsed_s": [
+   0.163,
+   0.149,
+   0.149,
+   0.149,
+   0.149,
+   0.15,
+   0.149,
+   0.149,
+   0.151,
+   0.15
+  ],
+  "live_elapsed_s": [
+   0.677,
+   0.678,
+   0.675,
+   0.672,
+   0.676,
+   0.674,
+   0.677,
+   0.675,
+   0.675,
+   0.678
+  ],
+  "median_static_wall_s": 0.195,
+  "median_live_wall_s": 0.721,
+  "all_static_check_calls_median_wall_s": 0.196,
+  "all_static_check_calls": 280,
+  "all_live_check_calls_median_wall_s": 0.722,
+  "all_live_check_calls": 50,
+  "note": "timing is not deterministic: 'identical' is not applicable"
+ },
+ "runs": [
+  {
+   "static": [
+    0.20672587491571903,
+    0.19556749984622002,
+    0.1952690000180155,
+    0.19464908307418227,
+    0.19489487493410707,
+    0.19604112510569394,
+    0.19435424986295402,
+    0.1953689579386264,
+    0.19712425000034273,
+    0.19572020787745714
+   ],
+   "live": [
+    0.7219034999143332,
+    0.7221534999553114,
+    0.7199462919961661,
+    0.7174542499706149,
+    0.7207417499739677,
+    0.7187522079329938,
+    0.721296708099544,
+    0.7209071249235421,
+    0.7199424579739571,
+    0.7231505420058966
+   ]
+  }
+ ]
+}

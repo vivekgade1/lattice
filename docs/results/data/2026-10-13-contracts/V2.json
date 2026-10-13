@@ -1,0 +1,663 @@
+{
+ "id": "V2",
+ "prediction": "no lock, or a lock without this provider: exit 2, no_pin, message names the lock path and 'lattice contracts pin'",
+ "observed": "no_lock: exit 2 no_pin; lock_without_provider: exit 2 no_pin",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "no_lock_exit_2": true,
+  "no_lock_no_pin": true,
+  "no_lock_names_lock_path": true,
+  "no_lock_names_pin_command": true,
+  "lock_without_provider_exit_2": true,
+  "lock_without_provider_no_pin": true,
+  "lock_without_provider_names_lock_path": true,
+  "lock_without_provider_names_pin_command": true
+ },
+ "extra": {
+  "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+ },
+ "runs": [
+  {
+   "no_lock": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_without_provider": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no pin for scheduler ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "no_lock": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_without_provider": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no pin for scheduler ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "no_lock": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_without_provider": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no pin for scheduler ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "no_lock": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_without_provider": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no pin for scheduler ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "no_lock": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_without_provider": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no pin for scheduler ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "no_lock": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_without_provider": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no pin for scheduler ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "no_lock": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_without_provider": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no pin for scheduler ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "no_lock": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_without_provider": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no pin for scheduler ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "no_lock": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_without_provider": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no pin for scheduler ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "no_lock": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no lock ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_without_provider": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "no_pin",
+        "message": "ci-bot has no pin for scheduler ($WORK/w/V2/ci-bot/lattice.contracts.lock.json): run `lattice contracts pin ci-bot`"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  }
+ ]
+}

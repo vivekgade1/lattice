@@ -1,0 +1,1790 @@
+{
+ "id": "L2",
+ "prediction": "static 0 findings, exit 0; live exactly 1 BROKEN status_not_observed 201 @ POST /applications/{}/jobs/{}/runs (answered 200)",
+ "observed": "static findings 0 (exit 0); live ok, replayed 7, findings status_not_observed POST /applications/{}/jobs/{}/runs 201; answered 200; verified_live 1; full exit 1",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "static_0_findings": true,
+  "static_exit_0": true,
+  "live_ran": true,
+  "live_exactly_1_broken": true,
+  "full_exit_1": true,
+  "answered": true
+ },
+ "extra": {
+  "edits": [
+   {
+    "path": "src/job_scheduler/routers/runs.py",
+    "old": "    status_code=201,",
+    "new": "    status_code=200,",
+    "count": 1
+   }
+  ],
+  "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+  "dirty": false
+ },
+ "runs": [
+  {
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "full": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "ok",
+        "replayed": 7,
+        "not_replayed": [],
+        "replays": [
+         {
+          "endpoint": "GET /applications",
+          "auth": "as_user:eve",
+          "scenario": "each_user_sees_only_their_applications",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs",
+          "auth": "as_user:eve",
+          "scenario": "members_view_configs_and_versions_never_change",
+          "step": 2,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 4,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/runs/{}",
+          "auth": "as_user:eve",
+          "scenario": "the_worker_runs_a_queued_job_to_success",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "auth": "as_user:eve",
+          "scenario": "one_live_run_per_config",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /auth/login",
+          "auth": "public",
+          "scenario": "login",
+          "step": 1,
+          "answered": 200
+         }
+        ],
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the live answer was 200; the import handles 201"
+         }
+        ],
+        "verified_live": [
+         {
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token"
+         }
+        ],
+        "fields_unobservable": [],
+        "not_checked": [
+         "request_fields"
+        ]
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "full": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "ok",
+        "replayed": 7,
+        "not_replayed": [],
+        "replays": [
+         {
+          "endpoint": "GET /applications",
+          "auth": "as_user:eve",
+          "scenario": "each_user_sees_only_their_applications",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs",
+          "auth": "as_user:eve",
+          "scenario": "members_view_configs_and_versions_never_change",
+          "step": 2,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 4,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/runs/{}",
+          "auth": "as_user:eve",
+          "scenario": "the_worker_runs_a_queued_job_to_success",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "auth": "as_user:eve",
+          "scenario": "one_live_run_per_config",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /auth/login",
+          "auth": "public",
+          "scenario": "login",
+          "step": 1,
+          "answered": 200
+         }
+        ],
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the live answer was 200; the import handles 201"
+         }
+        ],
+        "verified_live": [
+         {
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token"
+         }
+        ],
+        "fields_unobservable": [],
+        "not_checked": [
+         "request_fields"
+        ]
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "full": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "ok",
+        "replayed": 7,
+        "not_replayed": [],
+        "replays": [
+         {
+          "endpoint": "GET /applications",
+          "auth": "as_user:eve",
+          "scenario": "each_user_sees_only_their_applications",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs",
+          "auth": "as_user:eve",
+          "scenario": "members_view_configs_and_versions_never_change",
+          "step": 2,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 4,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/runs/{}",
+          "auth": "as_user:eve",
+          "scenario": "the_worker_runs_a_queued_job_to_success",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "auth": "as_user:eve",
+          "scenario": "one_live_run_per_config",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /auth/login",
+          "auth": "public",
+          "scenario": "login",
+          "step": 1,
+          "answered": 200
+         }
+        ],
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the live answer was 200; the import handles 201"
+         }
+        ],
+        "verified_live": [
+         {
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token"
+         }
+        ],
+        "fields_unobservable": [],
+        "not_checked": [
+         "request_fields"
+        ]
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "full": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "ok",
+        "replayed": 7,
+        "not_replayed": [],
+        "replays": [
+         {
+          "endpoint": "GET /applications",
+          "auth": "as_user:eve",
+          "scenario": "each_user_sees_only_their_applications",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs",
+          "auth": "as_user:eve",
+          "scenario": "members_view_configs_and_versions_never_change",
+          "step": 2,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 4,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/runs/{}",
+          "auth": "as_user:eve",
+          "scenario": "the_worker_runs_a_queued_job_to_success",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "auth": "as_user:eve",
+          "scenario": "one_live_run_per_config",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /auth/login",
+          "auth": "public",
+          "scenario": "login",
+          "step": 1,
+          "answered": 200
+         }
+        ],
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the live answer was 200; the import handles 201"
+         }
+        ],
+        "verified_live": [
+         {
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token"
+         }
+        ],
+        "fields_unobservable": [],
+        "not_checked": [
+         "request_fields"
+        ]
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "full": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "ok",
+        "replayed": 7,
+        "not_replayed": [],
+        "replays": [
+         {
+          "endpoint": "GET /applications",
+          "auth": "as_user:eve",
+          "scenario": "each_user_sees_only_their_applications",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs",
+          "auth": "as_user:eve",
+          "scenario": "members_view_configs_and_versions_never_change",
+          "step": 2,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 4,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/runs/{}",
+          "auth": "as_user:eve",
+          "scenario": "the_worker_runs_a_queued_job_to_success",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "auth": "as_user:eve",
+          "scenario": "one_live_run_per_config",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /auth/login",
+          "auth": "public",
+          "scenario": "login",
+          "step": 1,
+          "answered": 200
+         }
+        ],
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the live answer was 200; the import handles 201"
+         }
+        ],
+        "verified_live": [
+         {
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token"
+         }
+        ],
+        "fields_unobservable": [],
+        "not_checked": [
+         "request_fields"
+        ]
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "full": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "ok",
+        "replayed": 7,
+        "not_replayed": [],
+        "replays": [
+         {
+          "endpoint": "GET /applications",
+          "auth": "as_user:eve",
+          "scenario": "each_user_sees_only_their_applications",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs",
+          "auth": "as_user:eve",
+          "scenario": "members_view_configs_and_versions_never_change",
+          "step": 2,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 4,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/runs/{}",
+          "auth": "as_user:eve",
+          "scenario": "the_worker_runs_a_queued_job_to_success",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "auth": "as_user:eve",
+          "scenario": "one_live_run_per_config",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /auth/login",
+          "auth": "public",
+          "scenario": "login",
+          "step": 1,
+          "answered": 200
+         }
+        ],
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the live answer was 200; the import handles 201"
+         }
+        ],
+        "verified_live": [
+         {
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token"
+         }
+        ],
+        "fields_unobservable": [],
+        "not_checked": [
+         "request_fields"
+        ]
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "full": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "ok",
+        "replayed": 7,
+        "not_replayed": [],
+        "replays": [
+         {
+          "endpoint": "GET /applications",
+          "auth": "as_user:eve",
+          "scenario": "each_user_sees_only_their_applications",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs",
+          "auth": "as_user:eve",
+          "scenario": "members_view_configs_and_versions_never_change",
+          "step": 2,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 4,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/runs/{}",
+          "auth": "as_user:eve",
+          "scenario": "the_worker_runs_a_queued_job_to_success",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "auth": "as_user:eve",
+          "scenario": "one_live_run_per_config",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /auth/login",
+          "auth": "public",
+          "scenario": "login",
+          "step": 1,
+          "answered": 200
+         }
+        ],
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the live answer was 200; the import handles 201"
+         }
+        ],
+        "verified_live": [
+         {
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token"
+         }
+        ],
+        "fields_unobservable": [],
+        "not_checked": [
+         "request_fields"
+        ]
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "full": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "ok",
+        "replayed": 7,
+        "not_replayed": [],
+        "replays": [
+         {
+          "endpoint": "GET /applications",
+          "auth": "as_user:eve",
+          "scenario": "each_user_sees_only_their_applications",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs",
+          "auth": "as_user:eve",
+          "scenario": "members_view_configs_and_versions_never_change",
+          "step": 2,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 4,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/runs/{}",
+          "auth": "as_user:eve",
+          "scenario": "the_worker_runs_a_queued_job_to_success",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "auth": "as_user:eve",
+          "scenario": "one_live_run_per_config",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /auth/login",
+          "auth": "public",
+          "scenario": "login",
+          "step": 1,
+          "answered": 200
+         }
+        ],
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the live answer was 200; the import handles 201"
+         }
+        ],
+        "verified_live": [
+         {
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token"
+         }
+        ],
+        "fields_unobservable": [],
+        "not_checked": [
+         "request_fields"
+        ]
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "full": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "ok",
+        "replayed": 7,
+        "not_replayed": [],
+        "replays": [
+         {
+          "endpoint": "GET /applications",
+          "auth": "as_user:eve",
+          "scenario": "each_user_sees_only_their_applications",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs",
+          "auth": "as_user:eve",
+          "scenario": "members_view_configs_and_versions_never_change",
+          "step": 2,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 4,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/runs/{}",
+          "auth": "as_user:eve",
+          "scenario": "the_worker_runs_a_queued_job_to_success",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "auth": "as_user:eve",
+          "scenario": "one_live_run_per_config",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /auth/login",
+          "auth": "public",
+          "scenario": "login",
+          "step": 1,
+          "answered": 200
+         }
+        ],
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the live answer was 200; the import handles 201"
+         }
+        ],
+        "verified_live": [
+         {
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token"
+         }
+        ],
+        "fields_unobservable": [],
+        "not_checked": [
+         "request_fields"
+        ]
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "full": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "784290a8612cd0d17bccde42a0dd8f7cd0621914",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "ok",
+        "replayed": 7,
+        "not_replayed": [],
+        "replays": [
+         {
+          "endpoint": "GET /applications",
+          "auth": "as_user:eve",
+          "scenario": "each_user_sees_only_their_applications",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs",
+          "auth": "as_user:eve",
+          "scenario": "members_view_configs_and_versions_never_change",
+          "step": 2,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 4,
+          "answered": 200
+         },
+         {
+          "endpoint": "GET /applications/{}/runs/{}",
+          "auth": "as_user:eve",
+          "scenario": "the_worker_runs_a_queued_job_to_success",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "auth": "as_user:eve",
+          "scenario": "members_run_an_active_job",
+          "step": 3,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "auth": "as_user:eve",
+          "scenario": "one_live_run_per_config",
+          "step": 5,
+          "answered": 200
+         },
+         {
+          "endpoint": "POST /auth/login",
+          "auth": "public",
+          "scenario": "login",
+          "step": 1,
+          "answered": 200
+         }
+        ],
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the live answer was 200; the import handles 201"
+         }
+        ],
+        "verified_live": [
+         {
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token"
+         }
+        ],
+        "fields_unobservable": [],
+        "not_checked": [
+         "request_fields"
+        ]
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  }
+ ]
+}

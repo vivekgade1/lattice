@@ -1,0 +1,4780 @@
+{
+ "id": "A1",
+ "prediction": "on B0 and D2, MCP contract_check and GET /api/contracts == `contracts check --static-only --json` (4 of 4); mock has the same keys and types",
+ "observed": "B0: mcp==cli True, api==cli True, mock shape ok; D2: mcp==cli True, api==cli True, mock shape ok; live link reasons {'cli': {'status': 'not_run', 'reason': 'static-only'}, 'mcp': {'status': 'not_run', 'reason': 'static-only'}, 'api': {'status': 'not_run', 'reason': 'read-only'}}",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "B0_mcp_equals_cli": true,
+  "B0_api_equals_cli": true,
+  "B0_mock_same_keys_types": true,
+  "B0_mcp_lists_contract_check": true,
+  "D2_mcp_equals_cli": true,
+  "D2_api_equals_cli": true,
+  "D2_mock_same_keys_types": true,
+  "D2_mcp_lists_contract_check": true
+ },
+ "extra": {
+  "live_link_reasons": {
+   "cli": {
+    "status": "not_run",
+    "reason": "static-only"
+   },
+   "mcp": {
+    "status": "not_run",
+    "reason": "static-only"
+   },
+   "api": {
+    "status": "not_run",
+    "reason": "read-only"
+   }
+  },
+  "live_link_only_reason_differs": {
+   "mcp": true,
+   "api": true
+  }
+ },
+ "runs": [
+  {
+   "B0": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "D2": {
+    "cli": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "broken",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+         "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the spec now shows statuses [200, 401, 404, 409]"
+         },
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_added",
+          "item": "200",
+          "relied": true,
+          "detail": "status 200 is now observed"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "live_link": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": {
+         "status": "not_run",
+         "reason": "static-only"
+        }
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "read-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "B0": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "D2": {
+    "cli": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "broken",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+         "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the spec now shows statuses [200, 401, 404, 409]"
+         },
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_added",
+          "item": "200",
+          "relied": true,
+          "detail": "status 200 is now observed"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "live_link": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": {
+         "status": "not_run",
+         "reason": "static-only"
+        }
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "read-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "B0": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "D2": {
+    "cli": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "broken",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+         "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the spec now shows statuses [200, 401, 404, 409]"
+         },
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_added",
+          "item": "200",
+          "relied": true,
+          "detail": "status 200 is now observed"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "live_link": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": {
+         "status": "not_run",
+         "reason": "static-only"
+        }
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "read-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "B0": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "D2": {
+    "cli": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "broken",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+         "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the spec now shows statuses [200, 401, 404, 409]"
+         },
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_added",
+          "item": "200",
+          "relied": true,
+          "detail": "status 200 is now observed"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "live_link": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": {
+         "status": "not_run",
+         "reason": "static-only"
+        }
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "read-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "B0": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "D2": {
+    "cli": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "broken",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+         "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the spec now shows statuses [200, 401, 404, 409]"
+         },
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_added",
+          "item": "200",
+          "relied": true,
+          "detail": "status 200 is now observed"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "live_link": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": {
+         "status": "not_run",
+         "reason": "static-only"
+        }
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "read-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "B0": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "D2": {
+    "cli": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "broken",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+         "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the spec now shows statuses [200, 401, 404, 409]"
+         },
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_added",
+          "item": "200",
+          "relied": true,
+          "detail": "status 200 is now observed"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "live_link": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": {
+         "status": "not_run",
+         "reason": "static-only"
+        }
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "read-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "B0": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "D2": {
+    "cli": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "broken",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+         "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the spec now shows statuses [200, 401, 404, 409]"
+         },
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_added",
+          "item": "200",
+          "relied": true,
+          "detail": "status 200 is now observed"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "live_link": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": {
+         "status": "not_run",
+         "reason": "static-only"
+        }
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "read-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "B0": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "D2": {
+    "cli": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "broken",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+         "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the spec now shows statuses [200, 401, 404, 409]"
+         },
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_added",
+          "item": "200",
+          "relied": true,
+          "detail": "status 200 is now observed"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "live_link": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": {
+         "status": "not_run",
+         "reason": "static-only"
+        }
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "read-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "B0": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "D2": {
+    "cli": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "broken",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+         "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the spec now shows statuses [200, 401, 404, 409]"
+         },
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_added",
+          "item": "200",
+          "relied": true,
+          "detail": "status 200 is now observed"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "live_link": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": {
+         "status": "not_run",
+         "reason": "static-only"
+        }
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "read-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "B0": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "D2": {
+    "cli": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "status": "broken",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+         "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_not_observed",
+          "item": "201",
+          "detail": "the spec now shows statuses [200, 401, 404, 409]"
+         },
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "kind": "status_added",
+          "item": "200",
+          "relied": true,
+          "detail": "status 200 is now observed"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": null
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+        "git_ref": "8c7222c4cff1d1c2c7e7c9b71904fecf24c52d04",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_not_observed",
+         "item": "201",
+         "detail": "the spec now shows statuses [200, 401, 404, 409]"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "scheduler",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "kind": "status_added",
+         "item": "200",
+         "relied": true,
+         "detail": "status 200 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    },
+    "mcp_lists_tool": true,
+    "mock_shape_diff": []
+   },
+   "live_link": {
+    "cli": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": null,
+      "checked": 1,
+      "links": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "live",
+        "status": "ok",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "current": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": false,
+        "spec_hash_changed": false,
+        "spec_ref_changed": false,
+        "findings": [],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "live": {
+         "status": "not_run",
+         "reason": "static-only"
+        }
+       }
+      ],
+      "problems": []
+     }
+    },
+    "mcp": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    },
+    "api": {
+     "workspace": "probe",
+     "consumer": null,
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "read-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   }
+  }
+ ]
+}
