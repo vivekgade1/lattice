@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.16)
+# Lattice Studio API contract (v1.17)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -881,3 +881,40 @@ When `GET /api/workspace` names a workspace, the project switcher in the top bar
 
 ### The mock
 `GET /api/workspace` answers the real shape for a fixture manifest `owner-dev`: `scheduler` (the default project, `provider`) and `studio` (the second project, `app`) in the hub, `scheduler-web` (`consumer`) not served and missing (a `missing_path` warning), three links. No write route.
+
+## v1.17 additions (contracts between projects, multi-project layer 3)
+
+Projects of a workspace can say, per link, that the consumer's reliance on the provider is checked: `contract = "static"` or `"live"` on a `[[link]]` of `lattice.workspace.toml`. The consumer's `lattice.imports.toml` lists what it relies on (endpoint, statuses, auth, request and response field names), `lattice contracts pin CONSUMER` writes the provider's export into the consumer's `lattice.contracts.lock.json`, and `lattice contracts check` compares the imports with the pinned and the current export. Code: `lattice/contracts/` (`export.py`, `check.py`, `live.py`, `__main__.py`), `lattice/studio/server.py` (`contracts_answer`), `lattice/mcp/projects.py` (`contract_check`). Design and evidence: `docs/results/2026-10-13-contracts-prereg.md`. There is no web UI change in this version.
+
+### GET /api/contracts[?consumer=NAME]
+Not project-scoped (like `GET /api/workspace`; `/p/<name>/api/contracts` answers the same). **Read-only and static only**: it never starts an app, writes no lock, and has no write route (`POST /api/contracts` answers 404). Each request re-reads the manifest (the one `GET /api/workspace` reads) and loads each provider's spec in a subprocess, so an answer can take seconds. `consumer` limits the check to that project's links; absent or empty, every link with a `contract` key is checked.
+```json
+{"workspace": "shop", "consumer": null, "checked": 2,
+ "links": [{"consumer": "web-app", "provider": "billing-api", "contract": "static",
+            "status": "broken", "error": null, "imports": 3,
+            "pinned":  {"spec_ref": "spec:SPEC", "spec_hash": "3c1f...", "git_ref": "5a0c...", "dirty": false},
+            "current": {"spec_ref": "spec:SPEC", "spec_hash": "b7e2...", "git_ref": "5a0c...", "dirty": true},
+            "version_changed": true, "spec_hash_changed": true, "spec_ref_changed": false,
+            "findings": [{"class": "BROKEN", "provider": "billing-api", "endpoint": "POST /invoices/{}/pay",
+                          "kind": "status_not_observed", "item": "201", "detail": "the spec now shows statuses [200]"},
+                         {"class": "CHANGED", "provider": "billing-api", "endpoint": "POST /invoices/{}/pay",
+                          "kind": "status_added", "item": "200", "relied": true, "detail": "status 200 is now observed"}],
+            "gaps": [{"class": "GAP", "provider": "billing-api", "endpoint": "POST /auth/login",
+                      "kind": "response_field_unobserved", "item": "token", "detail": "the provider's spec never shows it"}],
+            "live": null},
+           {"consumer": "web-app", "provider": "shared-auth", "contract": "live", "status": "ok", "error": null,
+            "imports": 1, "pinned": {"...": "..."}, "current": {"...": "..."}, "version_changed": false,
+            "spec_hash_changed": false, "spec_ref_changed": false, "findings": [], "gaps": [],
+            "live": {"status": "not_run", "reason": "read-only"}}],
+ "problems": [{"code": "missing_path", "severity": "warning", "message": "project web-app: /Users/owner/shop/web does not exist"}],
+ "elapsed_s": 1.482}
+```
+The body is `lattice contracts check --static-only --json` for the same workspace, key for key (so `workspace` is the manifest's name, a string, not the object of `GET /api/workspace`), with one difference: a `live` link's `live` is `{"status": "not_run", "reason": "read-only"}` (the CLI's `--static-only` says `"static-only"`). A link's `status` is `ok`, `changed` (a CHANGED finding, no BROKEN), `broken` (a BROKEN finding) or `error` (it could not run: `error` is `{code, message}`, e.g. `no_pin`, `bad_imports`, `export_failed`; `findings` and `gaps` are empty). Findings and gaps are as in the CLI: `class` (`BROKEN`, `CHANGED`, `GAP`), `provider`, `endpoint` (`METHOD /path`, numeric and templated segments `{}`), `kind`, `item`, `detail`, and `relied` on a CHANGED finding that some import's endpoint names.
+
+Answers, all HTTP 200 (the body says why a check could not run, as the CLI's exit 2 does): no manifest, or an unreadable one, answers `{"workspace": null, "links": [], "problems": []}` (the `unreadable` problem for an unreadable one); a manifest with an error (any `problems` entry of severity `error`) answers its problems and no links; `consumer` that is not a project of the workspace answers `unknown_project` and no links; a workspace where no link has a `contract` key answers `checked: 0`.
+
+### The MCP server
+With a workspace, `python -m lattice.mcp serve` also lists `contract_check {consumer?}`: the same static check, returning exactly the JSON of `lattice contracts check --static-only --json` (the manifest re-read on each call; `live` is `{"status": "not_run", "reason": "static-only"}` as in the CLI). It is read-only, so `--readonly` lists it, and without a workspace it is not listed, so a single-project server's `tools/list` and `initialize` are unchanged.
+
+### The mock
+`GET /api/contracts` answers the real shape for the `owner-dev` fixture manifest of `GET /api/workspace`, with its two `uses` links opted in: `scheduler-web -> scheduler` is `static` and `broken` (a BROKEN `status_not_observed`, a CHANGED `status_added`, one gap) and `scheduler-web -> studio` is `live` and `ok` with `live: {"status": "not_run", "reason": "read-only"}`. `consumer` filters it; a consumer that is not in the manifest answers `unknown_project`. No write route.

@@ -1,0 +1,330 @@
+{
+ "id": "V6",
+ "prediction": "one hex digit of spec_hash flipped: exit 2 bad_pin",
+ "observed": "exit 2 bad_pin; /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "exit_2": true,
+  "bad_pin": true
+ },
+ "extra": {
+  "flipped": [
+   "9bcae0e2",
+   "0bcae0e2"
+  ]
+ },
+ "runs": [
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/ci-bot/lattice.contracts.lock.json: the spec_hash of 'scheduler' does not match its embedded export (recorded 0bcae0e24da9, computed 9bcae0e24da9); delete it and run `lattice contracts pin ci-bot`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/ci-bot/lattice.contracts.lock.json: the spec_hash of 'scheduler' does not match its embedded export (recorded 0bcae0e24da9, computed 9bcae0e24da9); delete it and run `lattice contracts pin ci-bot`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/ci-bot/lattice.contracts.lock.json: the spec_hash of 'scheduler' does not match its embedded export (recorded 0bcae0e24da9, computed 9bcae0e24da9); delete it and run `lattice contracts pin ci-bot`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/ci-bot/lattice.contracts.lock.json: the spec_hash of 'scheduler' does not match its embedded export (recorded 0bcae0e24da9, computed 9bcae0e24da9); delete it and run `lattice contracts pin ci-bot`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/ci-bot/lattice.contracts.lock.json: the spec_hash of 'scheduler' does not match its embedded export (recorded 0bcae0e24da9, computed 9bcae0e24da9); delete it and run `lattice contracts pin ci-bot`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/ci-bot/lattice.contracts.lock.json: the spec_hash of 'scheduler' does not match its embedded export (recorded 0bcae0e24da9, computed 9bcae0e24da9); delete it and run `lattice contracts pin ci-bot`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/ci-bot/lattice.contracts.lock.json: the spec_hash of 'scheduler' does not match its embedded export (recorded 0bcae0e24da9, computed 9bcae0e24da9); delete it and run `lattice contracts pin ci-bot`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/ci-bot/lattice.contracts.lock.json: the spec_hash of 'scheduler' does not match its embedded export (recorded 0bcae0e24da9, computed 9bcae0e24da9); delete it and run `lattice contracts pin ci-bot`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/ci-bot/lattice.contracts.lock.json: the spec_hash of 'scheduler' does not match its embedded export (recorded 0bcae0e24da9, computed 9bcae0e24da9); delete it and run `lattice contracts pin ci-bot`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/ci-bot/lattice.contracts.lock.json: the spec_hash of 'scheduler' does not match its embedded export (recorded 0bcae0e24da9, computed 9bcae0e24da9); delete it and run `lattice contracts pin ci-bot`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  }
+ ]
+}

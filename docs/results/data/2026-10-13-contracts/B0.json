@@ -1,0 +1,5739 @@
+{
+ "id": "B0",
+ "prediction": "export 20 endpoints; auth public 1 / token 4 / unknown 15; error_body fastapi; statuses = R1; no 'detail'; pin exit 0; check exit 0, 0 findings, 1 gap (access_token @ login)",
+ "observed": "20 endpoints; auth public 1 token 4 unknown 15; error_body fastapi; statuses==R1 True; detail none; pin exit 0; check exit 0, 0 findings, gaps response_field_unobserved POST /auth/login access_token",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "endpoints_20": true,
+  "auth_public_1_login": true,
+  "auth_token_4": true,
+  "auth_unknown_15": true,
+  "error_body_fastapi": true,
+  "statuses_equal_r1": true,
+  "no_detail_field": true,
+  "pin_exit_0": true,
+  "check_exit_0": true,
+  "check_0_findings": true,
+  "check_1_gap": true,
+  "export_exit_0": true
+ },
+ "extra": {
+  "statuses_mismatch": {},
+  "missing_vs_r1": [],
+  "auth_token": [
+   "GET /applications",
+   "GET /users/me",
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/runs"
+  ],
+  "git_ref": {
+   "dirty": false,
+   "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+   "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+  }
+ },
+ "runs": [
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         404
+        ]
+       },
+       "GET /applications": {
+        "auth": "token",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann",
+         "eve",
+         "root",
+         "zed"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /applications/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "code_path",
+         "command",
+         "id"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}/runs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /applications/{}/members": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "GET /applications/{}/runs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "exit_code",
+         "id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /users/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /applications": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "name"
+        ],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "bob",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "code_path",
+         "command",
+         "cron_expr",
+         "is_cron",
+         "job_name",
+         "name",
+         "version"
+        ],
+        "response_fields": [
+         "application_id",
+         "created_by",
+         "cron_expr",
+         "id",
+         "is_active",
+         "is_cron",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         201,
+         401,
+         403,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs/{}/activate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /applications/{}/jobs/{}/deactivate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "POST /applications/{}/jobs/{}/runs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "application_id",
+         "exit_code",
+         "finished_at",
+         "id",
+         "job_config_id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         201,
+         401,
+         404,
+         409
+        ]
+       },
+       "POST /applications/{}/runs/{}/cancel": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200,
+         404,
+         409
+        ]
+       },
+       "POST /auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401,
+         403
+        ]
+       },
+       "POST /users": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /worker/run-once": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "processed"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /worker/schedule-tick": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "PUT /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "role"
+        ],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403,
+         404,
+         422
+        ]
+       }
+      },
+      "error_body": "fastapi",
+      "format": 1
+     },
+     "spec_ref": "spec.tickets:t5",
+     "version": {
+      "dirty": false,
+      "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+      "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         404
+        ]
+       },
+       "GET /applications": {
+        "auth": "token",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann",
+         "eve",
+         "root",
+         "zed"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /applications/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "code_path",
+         "command",
+         "id"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}/runs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /applications/{}/members": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "GET /applications/{}/runs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "exit_code",
+         "id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /users/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /applications": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "name"
+        ],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "bob",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "code_path",
+         "command",
+         "cron_expr",
+         "is_cron",
+         "job_name",
+         "name",
+         "version"
+        ],
+        "response_fields": [
+         "application_id",
+         "created_by",
+         "cron_expr",
+         "id",
+         "is_active",
+         "is_cron",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         201,
+         401,
+         403,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs/{}/activate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /applications/{}/jobs/{}/deactivate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "POST /applications/{}/jobs/{}/runs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "application_id",
+         "exit_code",
+         "finished_at",
+         "id",
+         "job_config_id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         201,
+         401,
+         404,
+         409
+        ]
+       },
+       "POST /applications/{}/runs/{}/cancel": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200,
+         404,
+         409
+        ]
+       },
+       "POST /auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401,
+         403
+        ]
+       },
+       "POST /users": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /worker/run-once": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "processed"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /worker/schedule-tick": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "PUT /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "role"
+        ],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403,
+         404,
+         422
+        ]
+       }
+      },
+      "error_body": "fastapi",
+      "format": 1
+     },
+     "spec_ref": "spec.tickets:t5",
+     "version": {
+      "dirty": false,
+      "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+      "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         404
+        ]
+       },
+       "GET /applications": {
+        "auth": "token",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann",
+         "eve",
+         "root",
+         "zed"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /applications/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "code_path",
+         "command",
+         "id"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}/runs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /applications/{}/members": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "GET /applications/{}/runs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "exit_code",
+         "id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /users/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /applications": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "name"
+        ],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "bob",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "code_path",
+         "command",
+         "cron_expr",
+         "is_cron",
+         "job_name",
+         "name",
+         "version"
+        ],
+        "response_fields": [
+         "application_id",
+         "created_by",
+         "cron_expr",
+         "id",
+         "is_active",
+         "is_cron",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         201,
+         401,
+         403,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs/{}/activate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /applications/{}/jobs/{}/deactivate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "POST /applications/{}/jobs/{}/runs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "application_id",
+         "exit_code",
+         "finished_at",
+         "id",
+         "job_config_id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         201,
+         401,
+         404,
+         409
+        ]
+       },
+       "POST /applications/{}/runs/{}/cancel": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200,
+         404,
+         409
+        ]
+       },
+       "POST /auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401,
+         403
+        ]
+       },
+       "POST /users": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /worker/run-once": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "processed"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /worker/schedule-tick": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "PUT /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "role"
+        ],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403,
+         404,
+         422
+        ]
+       }
+      },
+      "error_body": "fastapi",
+      "format": 1
+     },
+     "spec_ref": "spec.tickets:t5",
+     "version": {
+      "dirty": false,
+      "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+      "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         404
+        ]
+       },
+       "GET /applications": {
+        "auth": "token",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann",
+         "eve",
+         "root",
+         "zed"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /applications/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "code_path",
+         "command",
+         "id"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}/runs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /applications/{}/members": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "GET /applications/{}/runs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "exit_code",
+         "id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /users/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /applications": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "name"
+        ],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "bob",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "code_path",
+         "command",
+         "cron_expr",
+         "is_cron",
+         "job_name",
+         "name",
+         "version"
+        ],
+        "response_fields": [
+         "application_id",
+         "created_by",
+         "cron_expr",
+         "id",
+         "is_active",
+         "is_cron",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         201,
+         401,
+         403,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs/{}/activate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /applications/{}/jobs/{}/deactivate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "POST /applications/{}/jobs/{}/runs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "application_id",
+         "exit_code",
+         "finished_at",
+         "id",
+         "job_config_id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         201,
+         401,
+         404,
+         409
+        ]
+       },
+       "POST /applications/{}/runs/{}/cancel": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200,
+         404,
+         409
+        ]
+       },
+       "POST /auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401,
+         403
+        ]
+       },
+       "POST /users": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /worker/run-once": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "processed"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /worker/schedule-tick": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "PUT /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "role"
+        ],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403,
+         404,
+         422
+        ]
+       }
+      },
+      "error_body": "fastapi",
+      "format": 1
+     },
+     "spec_ref": "spec.tickets:t5",
+     "version": {
+      "dirty": false,
+      "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+      "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         404
+        ]
+       },
+       "GET /applications": {
+        "auth": "token",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann",
+         "eve",
+         "root",
+         "zed"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /applications/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "code_path",
+         "command",
+         "id"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}/runs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /applications/{}/members": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "GET /applications/{}/runs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "exit_code",
+         "id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /users/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /applications": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "name"
+        ],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "bob",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "code_path",
+         "command",
+         "cron_expr",
+         "is_cron",
+         "job_name",
+         "name",
+         "version"
+        ],
+        "response_fields": [
+         "application_id",
+         "created_by",
+         "cron_expr",
+         "id",
+         "is_active",
+         "is_cron",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         201,
+         401,
+         403,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs/{}/activate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /applications/{}/jobs/{}/deactivate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "POST /applications/{}/jobs/{}/runs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "application_id",
+         "exit_code",
+         "finished_at",
+         "id",
+         "job_config_id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         201,
+         401,
+         404,
+         409
+        ]
+       },
+       "POST /applications/{}/runs/{}/cancel": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200,
+         404,
+         409
+        ]
+       },
+       "POST /auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401,
+         403
+        ]
+       },
+       "POST /users": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /worker/run-once": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "processed"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /worker/schedule-tick": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "PUT /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "role"
+        ],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403,
+         404,
+         422
+        ]
+       }
+      },
+      "error_body": "fastapi",
+      "format": 1
+     },
+     "spec_ref": "spec.tickets:t5",
+     "version": {
+      "dirty": false,
+      "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+      "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         404
+        ]
+       },
+       "GET /applications": {
+        "auth": "token",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann",
+         "eve",
+         "root",
+         "zed"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /applications/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "code_path",
+         "command",
+         "id"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}/runs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /applications/{}/members": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "GET /applications/{}/runs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "exit_code",
+         "id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /users/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /applications": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "name"
+        ],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "bob",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "code_path",
+         "command",
+         "cron_expr",
+         "is_cron",
+         "job_name",
+         "name",
+         "version"
+        ],
+        "response_fields": [
+         "application_id",
+         "created_by",
+         "cron_expr",
+         "id",
+         "is_active",
+         "is_cron",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         201,
+         401,
+         403,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs/{}/activate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /applications/{}/jobs/{}/deactivate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "POST /applications/{}/jobs/{}/runs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "application_id",
+         "exit_code",
+         "finished_at",
+         "id",
+         "job_config_id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         201,
+         401,
+         404,
+         409
+        ]
+       },
+       "POST /applications/{}/runs/{}/cancel": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200,
+         404,
+         409
+        ]
+       },
+       "POST /auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401,
+         403
+        ]
+       },
+       "POST /users": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /worker/run-once": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "processed"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /worker/schedule-tick": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "PUT /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "role"
+        ],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403,
+         404,
+         422
+        ]
+       }
+      },
+      "error_body": "fastapi",
+      "format": 1
+     },
+     "spec_ref": "spec.tickets:t5",
+     "version": {
+      "dirty": false,
+      "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+      "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         404
+        ]
+       },
+       "GET /applications": {
+        "auth": "token",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann",
+         "eve",
+         "root",
+         "zed"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /applications/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "code_path",
+         "command",
+         "id"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}/runs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /applications/{}/members": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "GET /applications/{}/runs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "exit_code",
+         "id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /users/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /applications": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "name"
+        ],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "bob",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "code_path",
+         "command",
+         "cron_expr",
+         "is_cron",
+         "job_name",
+         "name",
+         "version"
+        ],
+        "response_fields": [
+         "application_id",
+         "created_by",
+         "cron_expr",
+         "id",
+         "is_active",
+         "is_cron",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         201,
+         401,
+         403,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs/{}/activate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /applications/{}/jobs/{}/deactivate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "POST /applications/{}/jobs/{}/runs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "application_id",
+         "exit_code",
+         "finished_at",
+         "id",
+         "job_config_id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         201,
+         401,
+         404,
+         409
+        ]
+       },
+       "POST /applications/{}/runs/{}/cancel": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200,
+         404,
+         409
+        ]
+       },
+       "POST /auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401,
+         403
+        ]
+       },
+       "POST /users": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /worker/run-once": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "processed"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /worker/schedule-tick": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "PUT /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "role"
+        ],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403,
+         404,
+         422
+        ]
+       }
+      },
+      "error_body": "fastapi",
+      "format": 1
+     },
+     "spec_ref": "spec.tickets:t5",
+     "version": {
+      "dirty": false,
+      "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+      "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         404
+        ]
+       },
+       "GET /applications": {
+        "auth": "token",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann",
+         "eve",
+         "root",
+         "zed"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /applications/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "code_path",
+         "command",
+         "id"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}/runs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /applications/{}/members": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "GET /applications/{}/runs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "exit_code",
+         "id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /users/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /applications": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "name"
+        ],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "bob",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "code_path",
+         "command",
+         "cron_expr",
+         "is_cron",
+         "job_name",
+         "name",
+         "version"
+        ],
+        "response_fields": [
+         "application_id",
+         "created_by",
+         "cron_expr",
+         "id",
+         "is_active",
+         "is_cron",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         201,
+         401,
+         403,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs/{}/activate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /applications/{}/jobs/{}/deactivate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "POST /applications/{}/jobs/{}/runs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "application_id",
+         "exit_code",
+         "finished_at",
+         "id",
+         "job_config_id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         201,
+         401,
+         404,
+         409
+        ]
+       },
+       "POST /applications/{}/runs/{}/cancel": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200,
+         404,
+         409
+        ]
+       },
+       "POST /auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401,
+         403
+        ]
+       },
+       "POST /users": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /worker/run-once": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "processed"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /worker/schedule-tick": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "PUT /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "role"
+        ],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403,
+         404,
+         422
+        ]
+       }
+      },
+      "error_body": "fastapi",
+      "format": 1
+     },
+     "spec_ref": "spec.tickets:t5",
+     "version": {
+      "dirty": false,
+      "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+      "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         404
+        ]
+       },
+       "GET /applications": {
+        "auth": "token",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann",
+         "eve",
+         "root",
+         "zed"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /applications/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "code_path",
+         "command",
+         "id"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}/runs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /applications/{}/members": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "GET /applications/{}/runs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "exit_code",
+         "id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /users/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /applications": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "name"
+        ],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "bob",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "code_path",
+         "command",
+         "cron_expr",
+         "is_cron",
+         "job_name",
+         "name",
+         "version"
+        ],
+        "response_fields": [
+         "application_id",
+         "created_by",
+         "cron_expr",
+         "id",
+         "is_active",
+         "is_cron",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         201,
+         401,
+         403,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs/{}/activate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /applications/{}/jobs/{}/deactivate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "POST /applications/{}/jobs/{}/runs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "application_id",
+         "exit_code",
+         "finished_at",
+         "id",
+         "job_config_id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         201,
+         401,
+         404,
+         409
+        ]
+       },
+       "POST /applications/{}/runs/{}/cancel": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200,
+         404,
+         409
+        ]
+       },
+       "POST /auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401,
+         403
+        ]
+       },
+       "POST /users": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /worker/run-once": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "processed"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /worker/schedule-tick": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "PUT /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "role"
+        ],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403,
+         404,
+         422
+        ]
+       }
+      },
+      "error_body": "fastapi",
+      "format": 1
+     },
+     "spec_ref": "spec.tickets:t5",
+     "version": {
+      "dirty": false,
+      "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+      "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         404
+        ]
+       },
+       "GET /applications": {
+        "auth": "token",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann",
+         "eve",
+         "root",
+         "zed"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /applications/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "code_path",
+         "command",
+         "id"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /applications/{}/jobs/{}/runs": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /applications/{}/members": {
+        "auth": "unknown",
+        "body": [
+         "list"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "GET /applications/{}/runs/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "exit_code",
+         "id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         200,
+         404
+        ]
+       },
+       "GET /users/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /applications": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "name"
+        ],
+        "response_fields": [
+         "id",
+         "name"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "bob",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "code_path",
+         "command",
+         "cron_expr",
+         "is_cron",
+         "job_name",
+         "name",
+         "version"
+        ],
+        "response_fields": [
+         "application_id",
+         "created_by",
+         "cron_expr",
+         "id",
+         "is_active",
+         "is_cron",
+         "job_name",
+         "version"
+        ],
+        "statuses": [
+         201,
+         401,
+         403,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /applications/{}/jobs/{}/activate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /applications/{}/jobs/{}/deactivate": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "is_active"
+        ],
+        "statuses": [
+         200
+        ]
+       },
+       "POST /applications/{}/jobs/{}/runs": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "application_id",
+         "exit_code",
+         "finished_at",
+         "id",
+         "job_config_id",
+         "started_at",
+         "status",
+         "trigger",
+         "triggered_by"
+        ],
+        "statuses": [
+         201,
+         401,
+         404,
+         409
+        ]
+       },
+       "POST /applications/{}/runs/{}/cancel": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "eve"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "id",
+         "status"
+        ],
+        "statuses": [
+         200,
+         404,
+         409
+        ]
+       },
+       "POST /auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401,
+         403
+        ]
+       },
+       "POST /users": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "email",
+         "password"
+        ],
+        "response_fields": [
+         "email",
+         "id",
+         "is_active",
+         "is_super_admin"
+        ],
+        "statuses": [
+         201,
+         403,
+         409,
+         422
+        ]
+       },
+       "POST /worker/run-once": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [],
+        "response_fields": [
+         "processed"
+        ],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "POST /worker/schedule-tick": {
+        "auth": "unknown",
+        "body": [],
+        "granted": [
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "ann"
+        ],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200,
+         403
+        ]
+       },
+       "PUT /applications/{}/members/{}": {
+        "auth": "unknown",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "root"
+        ],
+        "query_fields": [],
+        "refused": [
+         "eve"
+        ],
+        "request_fields": [
+         "role"
+        ],
+        "response_fields": [
+         "role",
+         "user_id"
+        ],
+        "statuses": [
+         200,
+         403,
+         404,
+         422
+        ]
+       }
+      },
+      "error_body": "fastapi",
+      "format": 1
+     },
+     "spec_ref": "spec.tickets:t5",
+     "version": {
+      "dirty": false,
+      "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+      "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "scheduler",
+         "endpoint": "POST /auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  }
+ ]
+}

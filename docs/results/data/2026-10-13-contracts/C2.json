@@ -1,0 +1,499 @@
+{
+ "id": "C2",
+ "prediction": "tickets.py sha256 changes; spec_hash equal; exit 0, 0 findings; version_changed true",
+ "observed": "file sha256 changed True; spec_hash_changed False; exit 0, 0 findings; version_changed True",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "file_sha_changes": true,
+  "spec_hash_equal": true,
+  "exit_0": true,
+  "0_findings": true,
+  "version_changed_true": true
+ },
+ "extra": {
+  "sha256_before": "aac0b741c57f113993c9b6f86970bf6f538c39fecc14007b2f8cd14cc0bb999c",
+  "sha256_after": "abd65a872a5cc4864097e1debd25820e5567b517a593773aec5305cf50088894",
+  "edits": [
+   {
+    "path": "spec/tickets.py",
+    "old": "RUNS = f\"{JOBS}/1/runs\"",
+    "new": "RUNS = f\"{JOBS}/1/runs\"  # job 1's runs in alpha\n",
+    "count": 1
+   }
+  ]
+ },
+ "runs": [
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "39cc22d6b32d18ebd970f0a5d200e9aad7fd7632",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "39cc22d6b32d18ebd970f0a5d200e9aad7fd7632",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "39cc22d6b32d18ebd970f0a5d200e9aad7fd7632",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "39cc22d6b32d18ebd970f0a5d200e9aad7fd7632",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "39cc22d6b32d18ebd970f0a5d200e9aad7fd7632",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "39cc22d6b32d18ebd970f0a5d200e9aad7fd7632",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "39cc22d6b32d18ebd970f0a5d200e9aad7fd7632",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "39cc22d6b32d18ebd970f0a5d200e9aad7fd7632",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "39cc22d6b32d18ebd970f0a5d200e9aad7fd7632",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "39cc22d6b32d18ebd970f0a5d200e9aad7fd7632",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  }
+ ]
+}

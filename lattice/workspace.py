@@ -15,18 +15,30 @@ Layer 2 of the multi-project phase (docs/design/lattice-multi-project-phase.md).
     to = "billing-api"
     kind = "uses"                 # uses | depends_on
     note = "POST /invoices"       # optional
+    contract = "static"           # optional: static | live (opt-in contract check, layer 3)
 
 A link ``from -> to`` says *from* relies on *to*: when *to* changes, *from* may be affected.
 :meth:`Workspace.impact_of` is that relation, transitively; it is graph traversal over the
 declared links only (no contract is checked: that is layer 3).
 
+Layer 3 (contracts between projects, :mod:`lattice.contracts`) adds optional keys, all emitted by
+``to_dict`` and ``show`` only when set (a manifest without them prints byte-identically):
+
+* ``[[link]] contract``: ``"static"`` or ``"live"`` opts the link in to ``lattice contracts check``
+  (absent: never checked, the provider's spec is never loaded). Any other value or type gives the
+  error ``bad_contract`` and the link stays listed. ``live_url`` (a string) is read by the live
+  check only, which refuses it (``not_loopback`` / ``live_url_unsupported``).
+* ``[[project]] spec`` (``module:attr``, default ``spec:SPEC``), and for live checks ``app``,
+  ``db``, ``login``, ``src`` (strings) and ``env`` (a table of strings; ``$PROJECT`` expands to the
+  project directory). A wrong type gives ``bad_type``.
+
 Problems (:class:`Problem`, ``severity`` error or warning): ``unknown_project`` (a link end that is
 not a declared project), ``duplicate_name``, ``self_link``, ``depends_on_cycle`` (a cycle made of
 ``depends_on`` links; ``uses`` links may form cycles), ``bad_name``, ``bad_role``, ``bad_kind``,
-``missing_field``, ``bad_type``, and the warning ``missing_path`` (a declared directory that does
-not exist). :func:`load` raises :class:`ManifestInvalid` on an error, :class:`ManifestUnreadable`
-when the file cannot be read or is not TOML; :func:`parse` returns the workspace and every problem
-without raising on content.
+``missing_field``, ``bad_type``, ``bad_contract``, and the warning ``missing_path`` (a declared
+directory that does not exist). :func:`load` raises :class:`ManifestInvalid` on an error,
+:class:`ManifestUnreadable` when the file cannot be read or is not TOML; :func:`parse` returns the
+workspace and every problem without raising on content.
 
 Finding the manifest (:func:`find`): an explicit path (the file, or a directory holding it), else
 ``$LATTICE_WORKSPACE``, else the first ``lattice.workspace.toml`` walking up from the start
@@ -55,6 +67,9 @@ ENV = "LATTICE_WORKSPACE"
 NAME_RE = re.compile(r"[a-z0-9._-]+")
 ROLES = ("provider", "consumer", "library", "app")
 KINDS = ("uses", "depends_on")
+CONTRACTS = ("static", "live")
+# [[project]] keys that are plain strings (layer 3: where the provider's spec and app come from)
+PROJECT_STRINGS = ("spec", "app", "db", "login", "src")
 
 ERROR, WARNING = "error", "warning"
 
@@ -75,13 +90,32 @@ class WsProject:
     path: Path  # resolved, absolute
     role: str | None = None
     declared: str = ""  # the path as written in the manifest
+    # layer 3, None when the manifest does not say (see the module docstring)
+    spec: str | None = None
+    app: str | None = None
+    db: str | None = None
+    login: str | None = None
+    src: str | None = None
+    env: dict[str, str] | None = None
 
     @property
     def exists(self) -> bool:
         return self.path.is_dir()
 
+    def settings(self) -> dict[str, Any]:
+        """The layer 3 keys that are set, as written (``env`` unexpanded)."""
+        out: dict[str, Any] = {k: getattr(self, k) for k in PROJECT_STRINGS}
+        out["env"] = self.env
+        return {k: v for k, v in out.items() if v is not None}
+
+    def expanded_env(self) -> dict[str, str]:
+        """``env`` with ``$PROJECT`` replaced by the project directory."""
+        return {k: v.replace("$PROJECT", str(self.path)) for k, v in (self.env or {}).items()}
+
     def to_dict(self) -> dict[str, Any]:
-        return {"name": self.name, "path": str(self.path), "role": self.role}
+        out: dict[str, Any] = {"name": self.name, "path": str(self.path), "role": self.role}
+        out.update(self.settings())
+        return out
 
 
 @dataclasses.dataclass(frozen=True)
@@ -90,9 +124,16 @@ class Link:
     target: str  # "to"
     kind: str
     note: str = ""
+    contract: str | None = None  # layer 3 opt-in: "static" | "live" | None (never checked)
+    live_url: str | None = None  # read by the live check only (refused there)
 
     def to_dict(self) -> dict[str, str]:
-        return {"from": self.source, "to": self.target, "kind": self.kind, "note": self.note}
+        out = {"from": self.source, "to": self.target, "kind": self.kind, "note": self.note}
+        if self.contract is not None:
+            out["contract"] = self.contract
+        if self.live_url is not None:
+            out["live_url"] = self.live_url
+        return out
 
 
 class WorkspaceError(Exception):
@@ -281,7 +322,24 @@ def parse(path: Path | str) -> Workspace:
             continue
         taken.add(pname)
         real = (path.parent / Path(ppath.strip()).expanduser()).resolve()
-        wp = WsProject(pname, real, role, ppath.strip())
+        extra: dict[str, Any] = {}
+        for key in PROJECT_STRINGS:
+            val = item.get(key)
+            if val is None:
+                continue
+            if isinstance(val, str) and val.strip():
+                extra[key] = val.strip()
+            else:
+                probs.append(Problem("bad_type", f"project {pname}: {key} must be a non-empty "
+                                     "string"))  # fmt: skip
+        env = item.get("env")
+        if env is not None:
+            if isinstance(env, dict) and all(isinstance(v, str) for v in env.values()):
+                extra["env"] = {str(k): v for k, v in env.items()}
+            else:
+                probs.append(Problem("bad_type", f"project {pname}: env must be a table of "
+                                     "strings"))  # fmt: skip
+        wp = WsProject(pname, real, role, ppath.strip(), **extra)
         if not wp.exists:
             probs.append(Problem("missing_path", f"project {pname}: {real} does not exist",
                                  WARNING))  # fmt: skip
@@ -310,8 +368,18 @@ def parse(path: Path | str) -> Workspace:
         if src == dst:
             probs.append(Problem("self_link", f"link {src} -> {dst}: a project cannot link to "
                                  "itself"))  # fmt: skip
+        contract = item.get("contract")
+        if contract is not None and contract not in CONTRACTS:  # a non-string never matches
+            probs.append(Problem("bad_contract", f"link {src} -> {dst}: contract {contract!r} is "
+                                 f"not one of {', '.join(CONTRACTS)}"))  # fmt: skip
+            contract = None
+        live_url = item.get("live_url")
+        if live_url is not None and not isinstance(live_url, str):
+            probs.append(Problem("bad_type", f"link {src} -> {dst}: live_url must be a string"))
+            live_url = None
         # kept even when bad (listed with its problem); impact_of and the cycle check skip it
-        links.append(Link(src, dst, kind, note if isinstance(note, str) else ""))
+        links.append(Link(src, dst, kind, note if isinstance(note, str) else "", contract,
+                          live_url))  # fmt: skip
     cyc = _cycle(links, taken)
     if cyc:
         probs.append(Problem("depends_on_cycle", "depends_on links form a cycle: "
@@ -416,11 +484,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     for p in ws.projects:
         state = "" if p.exists else "  (missing)"
         print(f"  {p.name:<{w}}  {p.role or '-':<8}  {p.path}{state}")
+        for key, val in p.settings().items():
+            print(f"  {'':<{w}}    {key} = {json.dumps(val) if key == 'env' else val}")
     if ws.links:
         print("links:")
         for lk in ws.links:
             print(
-                f"  {lk.source} --{lk.kind}--> {lk.target}" + (f"  ({lk.note})" if lk.note else "")
+                f"  {lk.source} --{lk.kind}--> {lk.target}"
+                + (f"  ({lk.note})" if lk.note else "")
+                + (f"  [contract: {lk.contract}]" if lk.contract else "")
+                + (f"  [live_url: {lk.live_url}]" if lk.live_url else "")
             )
     if ws.problems:
         print("problems:")

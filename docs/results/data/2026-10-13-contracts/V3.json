@@ -1,0 +1,381 @@
+{
+ "id": "V3",
+ "prediction": "10 pins: locks byte-identical to each other and to the golden; spec_hash == sha256 of the embedded export",
+ "observed": "1 distinct lock(s); equals golden True; spec_hash 9bcae0e24da9 == recomputed 9bcae0e24da9",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "all_pins_exit_0": true,
+  "locks_identical": true,
+  "equals_golden": true,
+  "spec_hash_recomputed": true
+ },
+ "extra": {
+  "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f",
+  "golden_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f",
+  "recomputed_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+ },
+ "runs": [
+  {
+   "pin_rc": 0,
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V3/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "pin_rc": 0,
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V3/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "pin_rc": 0,
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V3/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "pin_rc": 0,
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V3/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "pin_rc": 0,
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V3/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "pin_rc": 0,
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V3/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "pin_rc": 0,
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V3/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "pin_rc": 0,
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V3/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "pin_rc": 0,
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V3/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  },
+  {
+   "pin_rc": 0,
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "ci-bot",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "ci-bot",
+       "provider": "scheduler",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec.tickets:t5",
+        "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+        "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+        "dirty": false
+       },
+       "endpoints": 20
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V3/ci-bot/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "29983cf89b5dcd9808813178c9e69ffa1b8514a9eb73edcf3c721dfee496f73f"
+  }
+ ]
+}

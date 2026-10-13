@@ -1,0 +1,1339 @@
+{
+ "id": "W4",
+ "prediction": "contract = 'yes' and = true: workspace validate exit 1 with bad_contract (each); contracts check exit 2",
+ "observed": "yes: validate exit 1 ['bad_contract'], check exit 2; true: validate exit 1 ['bad_contract'], check exit 2",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "yes_validate_exit_1": true,
+  "yes_bad_contract": true,
+  "yes_check_exit_2": true,
+  "true_validate_exit_1": true,
+  "true_bad_contract": true,
+  "true_check_exit_2": true
+ },
+ "extra": {},
+ "runs": [
+  {
+   "yes": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-yes/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ]
+     }
+    }
+   },
+   "true": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-true/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "yes": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-yes/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ]
+     }
+    }
+   },
+   "true": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-true/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "yes": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-yes/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ]
+     }
+    }
+   },
+   "true": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-true/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "yes": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-yes/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ]
+     }
+    }
+   },
+   "true": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-true/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "yes": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-yes/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ]
+     }
+    }
+   },
+   "true": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-true/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "yes": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-yes/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ]
+     }
+    }
+   },
+   "true": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-true/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "yes": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-yes/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ]
+     }
+    }
+   },
+   "true": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-true/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "yes": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-yes/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ]
+     }
+    }
+   },
+   "true": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-true/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "yes": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-yes/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ]
+     }
+    }
+   },
+   "true": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-true/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "yes": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-yes/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract 'yes' is not one of static, live"
+       }
+      ]
+     }
+    }
+   },
+   "true": {
+    "validate": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "workspace": {
+       "name": "probe",
+       "path": "$WORK/w/W4/c-true/lattice.workspace.toml"
+      },
+      "projects": [
+       {
+        "name": "scheduler",
+        "path": "$WORK/w/W4/scheduler",
+        "role": "provider",
+        "spec": "spec.tickets:t5",
+        "app": "job_scheduler:make_app",
+        "db": "spec.seed:build_seed_db",
+        "login": "spec.seed:login",
+        "src": "src",
+        "env": {
+         "JOB_SCHEDULER_REPO_ROOT": "$PROJECT"
+        }
+       },
+       {
+        "name": "ci-bot",
+        "path": "$WORK/w/W4/ci-bot",
+        "role": "consumer"
+       }
+      ],
+      "links": [
+       {
+        "from": "ci-bot",
+        "to": "scheduler",
+        "kind": "uses",
+        "note": ""
+       }
+      ],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ],
+      "ok": false
+     }
+    },
+    "check": {
+     "rc": 2,
+     "err": "",
+     "doc": {
+      "workspace": "probe",
+      "consumer": "ci-bot",
+      "checked": 0,
+      "links": [],
+      "problems": [
+       {
+        "code": "bad_contract",
+        "severity": "error",
+        "message": "link ci-bot -> scheduler: contract True is not one of static, live"
+       }
+      ]
+     }
+    }
+   }
+  }
+ ]
+}

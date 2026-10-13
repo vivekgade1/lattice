@@ -1,0 +1,611 @@
+{
+ "id": "D8",
+ "prediction": "required field added (under-classified): CHANGED; BROKEN none; CHANGED field_added request otp @ POST /auth/login relied; version_changed true; gaps unchanged",
+ "observed": "CHANGED; BROKEN none; CHANGED field_added request otp @ POST /auth/login relied; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "worst_class": true,
+  "broken_set": true,
+  "changed_set": true,
+  "exit": true,
+  "version_changed": true,
+  "gaps_unchanged": true,
+  "spec_hash_equal_iff_no_diff": true
+ },
+ "extra": {
+  "edits": [
+   {
+    "path": "spec/spec.py",
+    "old": "json={\"email\": \"ann@example.com\", \"password\": \"pw-ann\"},",
+    "new": "json={\"email\": \"ann@example.com\", \"password\": \"pw-ann\", \"otp\": \"000000\"},",
+    "count": 1
+   }
+  ],
+  "pass_core": true,
+  "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813"
+ },
+ "runs": [
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "8ec87c6b961fefed9f5a6520f6a85fe2a6c6b9bffae00aabf87bb5c347951f4b",
+       "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "field_added",
+        "item": "otp",
+        "relied": true,
+        "detail": "request field otp is now shown",
+        "where": "request"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "8ec87c6b961fefed9f5a6520f6a85fe2a6c6b9bffae00aabf87bb5c347951f4b",
+       "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "field_added",
+        "item": "otp",
+        "relied": true,
+        "detail": "request field otp is now shown",
+        "where": "request"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "8ec87c6b961fefed9f5a6520f6a85fe2a6c6b9bffae00aabf87bb5c347951f4b",
+       "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "field_added",
+        "item": "otp",
+        "relied": true,
+        "detail": "request field otp is now shown",
+        "where": "request"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "8ec87c6b961fefed9f5a6520f6a85fe2a6c6b9bffae00aabf87bb5c347951f4b",
+       "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "field_added",
+        "item": "otp",
+        "relied": true,
+        "detail": "request field otp is now shown",
+        "where": "request"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "8ec87c6b961fefed9f5a6520f6a85fe2a6c6b9bffae00aabf87bb5c347951f4b",
+       "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "field_added",
+        "item": "otp",
+        "relied": true,
+        "detail": "request field otp is now shown",
+        "where": "request"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "8ec87c6b961fefed9f5a6520f6a85fe2a6c6b9bffae00aabf87bb5c347951f4b",
+       "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "field_added",
+        "item": "otp",
+        "relied": true,
+        "detail": "request field otp is now shown",
+        "where": "request"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "8ec87c6b961fefed9f5a6520f6a85fe2a6c6b9bffae00aabf87bb5c347951f4b",
+       "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "field_added",
+        "item": "otp",
+        "relied": true,
+        "detail": "request field otp is now shown",
+        "where": "request"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "8ec87c6b961fefed9f5a6520f6a85fe2a6c6b9bffae00aabf87bb5c347951f4b",
+       "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "field_added",
+        "item": "otp",
+        "relied": true,
+        "detail": "request field otp is now shown",
+        "where": "request"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "8ec87c6b961fefed9f5a6520f6a85fe2a6c6b9bffae00aabf87bb5c347951f4b",
+       "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "field_added",
+        "item": "otp",
+        "relied": true,
+        "detail": "request field otp is now shown",
+        "where": "request"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "8ec87c6b961fefed9f5a6520f6a85fe2a6c6b9bffae00aabf87bb5c347951f4b",
+       "git_ref": "3b84af1c6f4da559c3b3fa0c584062ca41f94813",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "field_added",
+        "item": "otp",
+        "relied": true,
+        "detail": "request field otp is now shown",
+        "where": "request"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  }
+ ]
+}

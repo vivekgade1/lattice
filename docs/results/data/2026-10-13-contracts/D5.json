@@ -1,0 +1,687 @@
+{
+ "id": "D5",
+ "prediction": "role tightened: BROKEN; BROKEN auth_changed GET /applications/{}/runs/{} as_user eve; CHANGED status_added 403 @ GET /applications/{}/runs/{}; version_changed true; gaps unchanged",
+ "observed": "BROKEN; BROKEN auth_changed GET /applications/{}/runs/{} as_user eve; CHANGED status_added 403 @ GET /applications/{}/runs/{} relied; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "worst_class": true,
+  "broken_set": true,
+  "changed_set": true,
+  "exit": true,
+  "version_changed": true,
+  "gaps_unchanged": true,
+  "spec_hash_equal_iff_no_diff": true
+ },
+ "extra": {
+  "edits": [
+   {
+    "path": "spec/tickets.py",
+    "old": "Step(\"GET\", \"/applications/1/runs/1\", \"eve\", expect_status=200,",
+    "new": "Step(\"GET\", \"/applications/1/runs/1\", \"eve\", expect_status=403,",
+    "count": 1
+   },
+   {
+    "path": "spec/tickets.py",
+    "old": "Step(\"GET\", \"/applications/1/runs/2\", \"eve\", expect_status=200,",
+    "new": "Step(\"GET\", \"/applications/1/runs/2\", \"eve\", expect_status=403,",
+    "count": 1
+   }
+  ],
+  "pass_core": true,
+  "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021"
+ },
+ "runs": [
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "auth_changed",
+        "item": "as_user:eve",
+        "detail": "granted handles are now ['ann']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "status_added",
+        "item": "403",
+        "relied": true,
+        "detail": "status 403 is now observed"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "auth_changed",
+        "item": "as_user:eve",
+        "detail": "granted handles are now ['ann']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "status_added",
+        "item": "403",
+        "relied": true,
+        "detail": "status 403 is now observed"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "auth_changed",
+        "item": "as_user:eve",
+        "detail": "granted handles are now ['ann']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "status_added",
+        "item": "403",
+        "relied": true,
+        "detail": "status 403 is now observed"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "auth_changed",
+        "item": "as_user:eve",
+        "detail": "granted handles are now ['ann']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "status_added",
+        "item": "403",
+        "relied": true,
+        "detail": "status 403 is now observed"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "auth_changed",
+        "item": "as_user:eve",
+        "detail": "granted handles are now ['ann']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "status_added",
+        "item": "403",
+        "relied": true,
+        "detail": "status 403 is now observed"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "auth_changed",
+        "item": "as_user:eve",
+        "detail": "granted handles are now ['ann']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "status_added",
+        "item": "403",
+        "relied": true,
+        "detail": "status 403 is now observed"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "auth_changed",
+        "item": "as_user:eve",
+        "detail": "granted handles are now ['ann']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "status_added",
+        "item": "403",
+        "relied": true,
+        "detail": "status 403 is now observed"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "auth_changed",
+        "item": "as_user:eve",
+        "detail": "granted handles are now ['ann']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "status_added",
+        "item": "403",
+        "relied": true,
+        "detail": "status 403 is now observed"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "auth_changed",
+        "item": "as_user:eve",
+        "detail": "granted handles are now ['ann']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "status_added",
+        "item": "403",
+        "relied": true,
+        "detail": "status 403 is now observed"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "ci-bot",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "ci-bot",
+      "provider": "scheduler",
+      "contract": "static",
+      "status": "broken",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "git_ref": "11fa5d71c172a0f9ad3b86c9e5e6716fb6ea6021",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "BROKEN",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "auth_changed",
+        "item": "as_user:eve",
+        "detail": "granted handles are now ['ann']"
+       },
+       {
+        "class": "CHANGED",
+        "provider": "scheduler",
+        "endpoint": "GET /applications/{}/runs/{}",
+        "kind": "status_added",
+        "item": "403",
+        "relied": true,
+        "detail": "status 403 is now observed"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "scheduler",
+        "endpoint": "POST /auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  }
+ ]
+}

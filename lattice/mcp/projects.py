@@ -19,8 +19,8 @@ declares always carries its manifest name and role.
 Each project gets its own Toolbox (and backend), built on first use. Every existing tool takes an
 optional ``project`` (a name or a path as ``project_list`` gives it; default: the active project,
 which only ``project_set_active`` changes, for the life of the process). ``project_list`` and
-``project_set_active`` are always listed (also ``--readonly``); ``workspace_impact`` only when a
-workspace is known.
+``project_set_active`` are always listed (also ``--readonly``); ``workspace_impact`` and
+``contract_check`` (layer 3) only when a workspace is known.
 
 **Single-project compatibility.** With exactly one known project the existing tools' definitions,
 the ``initialize`` instructions and every result are exactly the single-project server's: the
@@ -46,7 +46,8 @@ PROJECT_PROP = {
     "description": "the project to run on: a name or path from project_list (default: the "
     "active project)",
 }
-OWN_TOOLS = ("project_list", "project_set_active", "workspace_impact")
+WORKSPACE_TOOLS = ("workspace_impact", "contract_check")  # listed only with a workspace
+OWN_TOOLS = ("project_list", "project_set_active", *WORKSPACE_TOOLS)
 MULTI_NOTE = (
     " Several projects are known: project_list lists them; every tool takes an optional "
     "`project` (a name or path from project_list; default: the active project, which "
@@ -176,7 +177,7 @@ class ProjectRouter:
         defs = self._template.list_tools()
         if self.multi:
             defs = [_with_project(d) for d in defs]
-        own = [t["def"] for n, t in self._own.items() if n != "workspace_impact" or self.workspace]
+        own = [t["def"] for n, t in self._own.items() if n not in WORKSPACE_TOOLS or self.workspace]
         return [*defs, *own]
 
     def names(self) -> list[str]:
@@ -185,7 +186,7 @@ class ProjectRouter:
     def call(self, name: str, args: Mapping[str, Any] | None) -> dict[str, Any]:
         own = self._own.get(name)
         if own is not None:
-            if name == "workspace_impact" and self.workspace is None:
+            if name in WORKSPACE_TOOLS and self.workspace is None:
                 raise KeyError(name)
             return self._call_own(own, args)
         if name not in self._template.names():
@@ -326,6 +327,35 @@ class ProjectRouter:
             "only; no contract is checked.",
             {"project": dict(PROJECT_PROP)},
             workspace_impact,
+        )
+
+        def contract_check(a: Mapping[str, Any]) -> dict[str, Any]:
+            from lattice import workspace as wsmod
+            from lattice.contracts import check
+
+            consumer = a.get("consumer")
+            if consumer is not None and not isinstance(consumer, str):
+                raise ToolError("argument 'consumer' must be a string")
+            # the manifest is re-read on every call, so the answer is the CLI's at this moment
+            ws, problems = wsmod.try_load(self.workspace.path)
+            if ws is None:
+                return {"workspace": None, "consumer": consumer or None, "checked": 0,
+                        "links": [], "problems": [p.to_dict() for p in problems],
+                        "elapsed_s": 0.0}  # fmt: skip
+            return check.run_check(ws, consumer or None, static_only=True).to_dict()
+
+        self._reg(
+            "contract_check",
+            "Check the contracts between the workspace's projects, statically: each consumer "
+            "link that opted in (`contract` = static or live in lattice.workspace.toml) is "
+            "compared, import by import, with the provider's pinned and current spec export. "
+            "`consumer`: a project name (default: every consumer with an opted-in link). "
+            "Returns what `lattice contracts check --static-only --json` prints: per link the "
+            "status (ok|changed|broken|error), BROKEN and CHANGED findings, gaps, and for a "
+            "live link `live: not_run`. Read-only: nothing is written and no app is started; "
+            "the providers' spec modules are loaded in a subprocess.",
+            {"consumer": {"type": "string", "description": "a project name of the workspace"}},
+            contract_check,
         )
 
 

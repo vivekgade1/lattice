@@ -1,0 +1,58 @@
+# What ci-bot (client.py) relies on from the job scheduler: one table per call I1-I7, each
+# listing exactly the fields its line reads or sends. Checked by `lattice contracts check`.
+
+[[import]]
+provider = "scheduler"
+endpoint = "POST /auth/login"
+status = [200]
+auth = "public"
+request_fields = ["email", "password"]
+response_fields = ["access_token"]
+
+[[import]]
+provider = "scheduler"
+endpoint = "GET /applications"
+status = [200]
+auth = "token"
+as_user = "eve"
+response_fields = ["id", "name"]
+
+[[import]]
+provider = "scheduler"
+endpoint = "GET /applications/{}/jobs"
+status = [200]
+auth = "token"
+as_user = "eve"
+response_fields = ["id", "job_name", "version"]
+
+[[import]]
+provider = "scheduler"
+endpoint = "POST /applications/{}/jobs/{}/runs"
+status = [201]
+auth = "token"
+as_user = "eve"
+response_fields = ["id", "status"]
+
+[[import]]
+provider = "scheduler"
+endpoint = "GET /applications/{}/runs/{}"
+status = [200]
+auth = "token"
+as_user = "eve"
+response_fields = ["status", "exit_code"]
+
+[[import]]
+provider = "scheduler"
+endpoint = "GET /applications/{}/jobs/{}/runs"
+status = [200]
+auth = "token"
+as_user = "eve"
+response_fields = ["id", "status"]
+
+[[import]]
+provider = "scheduler"
+endpoint = "POST /applications/{}/runs/{}/cancel"
+status = [200]
+auth = "token"
+as_user = "eve"
+response_fields = ["status"]

@@ -1,0 +1,60 @@
+{
+ "good": {
+  "cases": {
+   "impact": {
+    "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+    "rc": 0
+   },
+   "impact_json": {
+    "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+    "rc": 0
+   },
+   "show": {
+    "out": "workspace shop  ({root}/lattice.workspace.toml)\n  billing-api  provider  {root}/billing\n  web-app      consumer  {root}/web\n  shared-auth  library   {root}/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+    "rc": 0
+   },
+   "show_json": {
+    "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"{root}/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"{root}/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"{root}/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"{root}/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+    "rc": 0
+   },
+   "validate": {
+    "out": "{root}/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+    "rc": 0
+   },
+   "validate_json": {
+    "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"{root}/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"{root}/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"{root}/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"{root}/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+    "rc": 0
+   }
+  },
+  "manifest": "[workspace]\nname = \"shop\"\n\n[[project]]\nname = \"billing-api\"\npath = \"billing\"\nrole = \"provider\"\n\n[[project]]\nname = \"web-app\"\npath = \"web\"\nrole = \"consumer\"\n\n[[project]]\nname = \"shared-auth\"\npath = \"auth\"\nrole = \"library\"\n\n[[link]]\nfrom = \"web-app\"\nto = \"billing-api\"\nkind = \"uses\"\nnote = \"POST /invoices\"\n\n[[link]]\nfrom = \"web-app\"\nto = \"shared-auth\"\nkind = \"depends_on\"\n\n[[link]]\nfrom = \"billing-api\"\nto = \"shared-auth\"\nkind = \"depends_on\"\n"
+ },
+ "messy": {
+  "cases": {
+   "impact": {
+    "out": "shared-auth changes -> web-app, billing-api (declared links only)\nproblems:\n  warning: [missing_path] project ghost: {root}/nowhere does not exist\n  error: [bad_kind] link ghost -> web-app: kind 'calls' is not one of uses, depends_on\n  error: [unknown_project] link ghost -> nobody: nobody is not a declared project\n",
+    "rc": 1
+   },
+   "impact_json": {
+    "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": [\n  {\n   \"code\": \"missing_path\",\n   \"severity\": \"warning\",\n   \"message\": \"project ghost: {root}/nowhere does not exist\"\n  },\n  {\n   \"code\": \"bad_kind\",\n   \"severity\": \"error\",\n   \"message\": \"link ghost -> web-app: kind 'calls' is not one of uses, depends_on\"\n  },\n  {\n   \"code\": \"unknown_project\",\n   \"severity\": \"error\",\n   \"message\": \"link ghost -> nobody: nobody is not a declared project\"\n  }\n ]\n}\n",
+    "rc": 1
+   },
+   "show": {
+    "out": "workspace shop  ({root}/lattice.workspace.toml)\n  billing-api  provider  {root}/billing\n  web-app      consumer  {root}/web\n  shared-auth  library   {root}/auth\n  ghost        app       {root}/nowhere  (missing)\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n  ghost --uses--> nobody\nproblems:\n  warning: [missing_path] project ghost: {root}/nowhere does not exist\n  error: [bad_kind] link ghost -> web-app: kind 'calls' is not one of uses, depends_on\n  error: [unknown_project] link ghost -> nobody: nobody is not a declared project\n",
+    "rc": 1
+   },
+   "show_json": {
+    "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"{root}/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"{root}/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"{root}/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"{root}/auth\",\n   \"role\": \"library\"\n  },\n  {\n   \"name\": \"ghost\",\n   \"path\": \"{root}/nowhere\",\n   \"role\": \"app\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"ghost\",\n   \"to\": \"nobody\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"missing_path\",\n   \"severity\": \"warning\",\n   \"message\": \"project ghost: {root}/nowhere does not exist\"\n  },\n  {\n   \"code\": \"bad_kind\",\n   \"severity\": \"error\",\n   \"message\": \"link ghost -> web-app: kind 'calls' is not one of uses, depends_on\"\n  },\n  {\n   \"code\": \"unknown_project\",\n   \"severity\": \"error\",\n   \"message\": \"link ghost -> nobody: nobody is not a declared project\"\n  }\n ],\n \"ok\": false\n}\n",
+    "rc": 1
+   },
+   "validate": {
+    "out": "{root}/lattice.workspace.toml: 2 error(s)\n  warning: [missing_path] project ghost: {root}/nowhere does not exist\n  error: [bad_kind] link ghost -> web-app: kind 'calls' is not one of uses, depends_on\n  error: [unknown_project] link ghost -> nobody: nobody is not a declared project\n",
+    "rc": 1
+   },
+   "validate_json": {
+    "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"{root}/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"{root}/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"{root}/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"{root}/auth\",\n   \"role\": \"library\"\n  },\n  {\n   \"name\": \"ghost\",\n   \"path\": \"{root}/nowhere\",\n   \"role\": \"app\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"ghost\",\n   \"to\": \"nobody\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"missing_path\",\n   \"severity\": \"warning\",\n   \"message\": \"project ghost: {root}/nowhere does not exist\"\n  },\n  {\n   \"code\": \"bad_kind\",\n   \"severity\": \"error\",\n   \"message\": \"link ghost -> web-app: kind 'calls' is not one of uses, depends_on\"\n  },\n  {\n   \"code\": \"unknown_project\",\n   \"severity\": \"error\",\n   \"message\": \"link ghost -> nobody: nobody is not a declared project\"\n  }\n ],\n \"ok\": false\n}\n",
+    "rc": 1
+   }
+  },
+  "manifest": "[workspace]\nname = \"shop\"\n\n[[project]]\nname = \"billing-api\"\npath = \"billing\"\nrole = \"provider\"\n\n[[project]]\nname = \"web-app\"\npath = \"web\"\nrole = \"consumer\"\n\n[[project]]\nname = \"shared-auth\"\npath = \"auth\"\nrole = \"library\"\n\n[[link]]\nfrom = \"web-app\"\nto = \"billing-api\"\nkind = \"uses\"\nnote = \"POST /invoices\"\n\n[[link]]\nfrom = \"web-app\"\nto = \"shared-auth\"\nkind = \"depends_on\"\n\n[[link]]\nfrom = \"billing-api\"\nto = \"shared-auth\"\nkind = \"depends_on\"\n\n[[project]]\nname = \"ghost\"\npath = \"nowhere\"\nrole = \"app\"\n\n[[link]]\nfrom = \"ghost\"\nto = \"web-app\"\nkind = \"calls\"\n\n[[link]]\nfrom = \"ghost\"\nto = \"nobody\"\nkind = \"uses\"\n"
+ }
+}
