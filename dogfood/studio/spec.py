@@ -72,7 +72,8 @@ What makes the answers exact:
   scenario's project directory (``WORKSPACE_TOML`` in harness.py): ``notes`` (this project,
   ``app``), ``billing`` (a directory that is not a project, ``provider``) and ``shared`` (a
   missing directory, ``library``: a ``missing_path`` warning), three links. Studio starts in
-  the project directory and finds it walking up.
+  the project directory and finds it walking up. No link of it has a ``contract`` key, so
+  GET /api/contracts (API.md v1.17) checks nothing and answers ``checked`` 0.
 
 Studio has no database and no login: there are no tables, invariants, machines or users,
 and layers B, C and R have nothing to bind to (the harness's marker database is never
@@ -229,6 +230,15 @@ WORKSPACE = {
     ],
     "problems": [{"code": "missing_path", "severity": "warning"}],
 }
+
+# ---- the static contract check (API.md v1.17, multi-project layer 3) -------------------------
+# the same manifest, no link of which opts in (no ``contract`` key): nothing is checked
+CONTRACTS = {"workspace": "dogfood", "consumer": None, "checked": 0, "links": [],
+             "problems": [{"code": "missing_path", "severity": "warning"}]}  # fmt: skip
+CONTRACTS_NOTES = {**CONTRACTS, "consumer": "notes"}
+CONTRACTS_UNKNOWN = {**CONTRACTS, "consumer": "nobody",
+                     "problems": [{"code": "missing_path", "severity": "warning"},
+                                  {"code": "unknown_project", "severity": "error"}]}  # fmt: skip
 
 # ---- database engines and modules (API.md v1.14) ---------------------------------------------
 # the seed has no [app], no [engines] and no modules: the built-ins, SQLite used (the default)
@@ -1245,6 +1255,16 @@ SCENARIOS = (
         Step("GET", "/api/workspace", expect_body=WORKSPACE),
         UNCHANGED,
     )),
+    Scenario("contracts_are_checked_read_only", steps=(
+        Step("GET", "/api/contracts", expect_body=CONTRACTS),
+        Step("GET", "/api/contracts", params={"consumer": "notes"}, expect_body=CONTRACTS_NOTES),
+        Step("GET", "/api/contracts", params={"consumer": "nobody"},
+             expect_body=CONTRACTS_UNKNOWN),
+        Step("GET", "/p/notes/api/contracts", expect_body=CONTRACTS),
+        refused("POST", "/api/contracts", 404, "no such route", json={}),
+        Step("GET", "/api/contracts", expect_body=CONTRACTS),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1409,6 +1429,11 @@ UNCHECKED = (
               "a broken one, and the harness puts every scenario under one valid manifest; "
               "tests/workspace/test_studio_api.py checks both on the real server and the mock, "
               "tests/workspace/test_workspace.py each error class."),
+    Unchecked("R94 (a link's findings: BROKEN, CHANGED and gaps against a pinned export, a live "
+              "link's `read-only` note, no manifest) needs a provider project, a consumer's "
+              "imports and lock, and no manifest or an opted-in link, and the harness's manifest "
+              "has no `contract` key; tests/studio/test_contracts_api.py checks them on the real "
+              "server against `lattice contracts check --static-only --json`, and the mock."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

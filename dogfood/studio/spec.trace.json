@@ -558,6 +558,12 @@
       "text": "With no manifest, GET /api/workspace answers `workspace` null and empty `projects`, `links` and `problems`; a manifest with an unknown link end, a duplicate project name, a self link or a cycle of `depends_on` links answers its projects and links with each of those as an error in `problems`.",
       "section": "Lattice Studio server: requirements > Workspace",
       "line": 149
+    },
+    {
+      "id": "R94",
+      "text": "GET /api/contracts answers the static contract check of the workspace manifest's links that carry a `contract` key, the same JSON as `lattice contracts check --static-only --json`: `workspace` (the manifest's name), `consumer`, `checked`, `links` and `problems`; `?consumer=NAME` limits it to that project, a name the manifest does not declare answers an `unknown_project` error in `problems` and no links, and it answers the same under `/p/<name>/api/contracts`; it is read-only: POST /api/contracts answers 404 and nothing changes.",
+      "section": "Lattice Studio server: requirements > Workspace",
+      "line": 150
     }
   ],
   "links": {
@@ -831,6 +837,9 @@
     ],
     "R92": [
       "scenario:the_workspace_is_listed"
+    ],
+    "R94": [
+      "scenario:contracts_are_checked_read_only"
     ]
   },
   "unchecked": {

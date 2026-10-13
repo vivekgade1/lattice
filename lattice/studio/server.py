@@ -7,6 +7,8 @@ holds many projects (lattice/studio/hub.py, API.md v1.6): ``GET /api/projects``,
 route also under ``/p/<name>/api/...``, the bare ``/api/...`` for the default project.
 ``GET /api/workspace`` (API.md v1.16) answers the ``lattice.workspace.toml`` in force
 (``--workspace``, ``$LATTICE_WORKSPACE``, else walking up from the cwd; lattice/workspace.py).
+``GET /api/contracts[?consumer=NAME]`` (API.md v1.17) is the static contract check of that
+workspace's opted-in links (lattice/contracts/check.py), read-only.
 
 **The project directory** holds ``REQUIREMENTS.md``, ``spec.py`` (defines ``SPEC``),
 ``spec.trace.json`` and, optionally, ``studio.toml``::
@@ -1915,6 +1917,9 @@ class Handler(BaseHTTPRequestHandler):
             return self._dispatch(self.server.hub.list)
         if path == "/api/workspace":  # API v1.16: not project-scoped, read-only
             return self._dispatch(lambda: self.server.hub.workspace(self.server.workspace_path))
+        if path == "/api/contracts":  # API v1.17: not project-scoped, read-only, static only
+            consumer = (parse_qs(urlparse(self.path).query).get("consumer") or [""])[-1] or None
+            return self._dispatch(lambda: contracts_answer(self.server.workspace_path, consumer))
         if not path.startswith("/api/"):
             return self._static(path)
         st = self._project(name)
@@ -2099,6 +2104,27 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(data)
+
+
+def contracts_answer(path: Path | None, consumer: str | None = None) -> dict[str, Any]:
+    """``GET /api/contracts`` (API v1.17): the static contract check
+    (``lattice contracts check --static-only --json``) of the manifest at `path`, read on every
+    call, for `consumer` or for every consumer with an opted-in link. Never starts an app and
+    writes nothing. No manifest, or an unreadable one: ``workspace`` null, no links."""
+    from lattice import workspace as wsmod
+
+    if path is None:
+        return {"workspace": None, "links": [], "problems": []}
+    ws, problems = wsmod.try_load(path)
+    if ws is None:
+        return {"workspace": None, "links": [], "problems": [p.to_dict() for p in problems]}
+    from lattice.contracts import check
+
+    out = check.run_check(ws, consumer, static_only=True).to_dict()
+    for lk in out["links"]:  # the live part is never run here: say it is this endpoint's rule
+        if lk["live"] is not None and lk["live"].get("status") == "not_run":
+            lk["live"] = {"status": "not_run", "reason": "read-only"}
+    return out
 
 
 class StudioServer(ThreadingHTTPServer):

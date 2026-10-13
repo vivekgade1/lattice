@@ -122,6 +122,14 @@ served and its directory is missing (a ``missing_path`` warning, worded by
 ``lattice.workspace.Problem``), and three links. ``MockServer.workspace_enabled = False`` answers
 the no-manifest shape (``workspace: null``). Read only.
 
+API v1.17 (contracts between projects, multi-project layer 3): ``GET /api/contracts
+[?consumer=NAME]`` answers the real server's shape (``lattice contracts check --static-only
+--json``) for the same fixture manifest, with its two ``uses`` links opted in
+(``MOCK_CONTRACT_LINKS``): ``scheduler-web -> scheduler`` is static and ``broken`` (a BROKEN
+``status_not_observed``, a CHANGED, a gap) and ``scheduler-web -> studio`` is live and ``ok``
+with ``live: {status: not_run, reason: read-only}``. ``workspace_enabled = False`` answers the
+no-manifest shape. Read only.
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -175,6 +183,51 @@ MOCK_WORKSPACE_LINKS = (
      "note": "POST /applications/{id}/runs"},
     {"from": "studio", "to": "scheduler", "kind": "depends_on", "note": "the fixtures"},
     {"from": "scheduler-web", "to": "studio", "kind": "uses", "note": ""},
+)  # fmt: skip
+
+# API v1.17: the two ``uses`` links of the fixture manifest, opted in to contract checks, as the
+# static check reports them (GET /api/contracts)
+MOCK_CONTRACT_VERSION_PINNED = {
+    "spec_ref": "spec.tickets:t5",
+    "spec_hash": "3c1f0b6a52d9e0b7f6f1e2a4c8d57b9a0e3f4d6c7b8a91025e4d3c2b1a0f9e8d",
+    "git_ref": "5a0c7e1d9b3f4a6c8e2d1b0a9f8e7d6c5b4a3921",
+    "dirty": False,
+}
+MOCK_CONTRACT_VERSION_CURRENT = {
+    "spec_ref": "spec.tickets:t5",
+    "spec_hash": "b7e2d9c4a1f08365e4d2c1b0a9f8e7d6c5b4a39281706f5e4d3c2b1a09f8e7d6",
+    "git_ref": "5a0c7e1d9b3f4a6c8e2d1b0a9f8e7d6c5b4a3921",
+    "dirty": True,
+}
+MOCK_CONTRACT_LINKS = (
+    {
+        "consumer": "scheduler-web", "provider": "scheduler", "contract": "static",
+        "status": "broken", "error": None, "imports": 3,
+        "pinned": MOCK_CONTRACT_VERSION_PINNED, "current": MOCK_CONTRACT_VERSION_CURRENT,
+        "version_changed": True, "spec_hash_changed": True, "spec_ref_changed": False,
+        "findings": [
+            {"class": "BROKEN", "provider": "scheduler",
+             "endpoint": "POST /applications/{}/jobs/{}/runs", "kind": "status_not_observed",
+             "item": "201", "detail": "the spec now shows statuses [200, 403]"},
+            {"class": "CHANGED", "provider": "scheduler",
+             "endpoint": "POST /applications/{}/jobs/{}/runs", "kind": "status_added",
+             "item": "200", "relied": True, "detail": "status 200 is now observed"},
+        ],
+        "gaps": [
+            {"class": "GAP", "provider": "scheduler", "endpoint": "POST /auth/login",
+             "kind": "response_field_unobserved", "item": "access_token",
+             "detail": "the provider's spec never shows it"},
+        ],
+        "live": None,
+    },
+    {
+        "consumer": "scheduler-web", "provider": "studio", "contract": "live",
+        "status": "ok", "error": None, "imports": 1,
+        "pinned": MOCK_CONTRACT_VERSION_PINNED, "current": MOCK_CONTRACT_VERSION_PINNED,
+        "version_changed": False, "spec_hash_changed": False, "spec_ref_changed": False,
+        "findings": [], "gaps": [],
+        "live": {"status": "not_run", "reason": "read-only"},
+    },
 )  # fmt: skip
 
 # How many polls of GET /api/changes/{id} a change spends in each state.
@@ -2788,6 +2841,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(self.server.projects())
         if path == "/api/workspace":
             return self._json(self.server.workspace())
+        if path == "/api/contracts":
+            return self._json(self.server.contracts(query.get("consumer") or None))
         if path == "/api/model":
             return self._json(state.get_model())
         if path == "/api/areas":
@@ -3093,6 +3148,28 @@ class MockServer(ThreadingHTTPServer):
         return {"workspace": {"name": MOCK_WORKSPACE_NAME, "path": MOCK_WORKSPACE_PATH},
                 "projects": rows, "links": [dict(lk) for lk in MOCK_WORKSPACE_LINKS],
                 "problems": problems}  # fmt: skip
+
+    def contracts(self, consumer: str | None = None) -> dict[str, Any]:
+        """``GET /api/contracts[?consumer=]`` (v1.17): the fixture static check over the fixture
+        manifest, for `consumer` or for every consumer with an opted-in link."""
+        from lattice.workspace import Problem
+
+        if not self.workspace_enabled:
+            return {"workspace": None, "links": [], "problems": []}
+        problems = self.workspace()["problems"]
+        names = [name for name, *_rest in MOCK_WORKSPACE_PROJECTS]
+        if consumer is not None and consumer not in names:
+            msg = f"no project {consumer!r} in the workspace (have {', '.join(names)})"
+            problems.append(Problem("unknown_project", msg).to_dict())
+            links: list[dict[str, Any]] = []
+        else:
+            links = [
+                copy.deepcopy(lk)
+                for lk in MOCK_CONTRACT_LINKS
+                if consumer is None or lk["consumer"] == consumer
+            ]
+        return {"workspace": MOCK_WORKSPACE_NAME, "consumer": consumer, "checked": len(links),
+                "links": links, "problems": problems, "elapsed_s": 0.0}  # fmt: skip
 
     def projects(self) -> list[dict[str, Any]]:
         """``GET /api/projects``."""
