@@ -1,0 +1,507 @@
+{
+ "id": "W1",
+ "prediction": "no contract key, spec.py ending in raise RuntimeError: exit 0, checked 0 (spec never loaded); the same link 'static': exit 2 export_failed",
+ "observed": "absent: exit 0, checked 0; static: exit 2 export_failed",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "absent_exit_0": true,
+  "absent_checked_0": true,
+  "static_exit_2": true,
+  "static_export_failed": true
+ },
+ "extra": {},
+ "runs": [
+  {
+   "absent": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 0,
+     "links": [],
+     "problems": []
+    }
+   },
+   "absent_text": {
+    "rc": 0,
+    "out": "0 link(s) checked: 0 broken, 0 changed, 0 gap(s)\n",
+    "err": ""
+   },
+   "static": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "export_failed",
+        "message": "streak: cannot load spec:SPEC from $WORK/w/W1/streak: RuntimeError: not loaded"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "absent": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 0,
+     "links": [],
+     "problems": []
+    }
+   },
+   "absent_text": {
+    "rc": 0,
+    "out": "0 link(s) checked: 0 broken, 0 changed, 0 gap(s)\n",
+    "err": ""
+   },
+   "static": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "export_failed",
+        "message": "streak: cannot load spec:SPEC from $WORK/w/W1/streak: RuntimeError: not loaded"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "absent": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 0,
+     "links": [],
+     "problems": []
+    }
+   },
+   "absent_text": {
+    "rc": 0,
+    "out": "0 link(s) checked: 0 broken, 0 changed, 0 gap(s)\n",
+    "err": ""
+   },
+   "static": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "export_failed",
+        "message": "streak: cannot load spec:SPEC from $WORK/w/W1/streak: RuntimeError: not loaded"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "absent": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 0,
+     "links": [],
+     "problems": []
+    }
+   },
+   "absent_text": {
+    "rc": 0,
+    "out": "0 link(s) checked: 0 broken, 0 changed, 0 gap(s)\n",
+    "err": ""
+   },
+   "static": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "export_failed",
+        "message": "streak: cannot load spec:SPEC from $WORK/w/W1/streak: RuntimeError: not loaded"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "absent": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 0,
+     "links": [],
+     "problems": []
+    }
+   },
+   "absent_text": {
+    "rc": 0,
+    "out": "0 link(s) checked: 0 broken, 0 changed, 0 gap(s)\n",
+    "err": ""
+   },
+   "static": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "export_failed",
+        "message": "streak: cannot load spec:SPEC from $WORK/w/W1/streak: RuntimeError: not loaded"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "absent": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 0,
+     "links": [],
+     "problems": []
+    }
+   },
+   "absent_text": {
+    "rc": 0,
+    "out": "0 link(s) checked: 0 broken, 0 changed, 0 gap(s)\n",
+    "err": ""
+   },
+   "static": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "export_failed",
+        "message": "streak: cannot load spec:SPEC from $WORK/w/W1/streak: RuntimeError: not loaded"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "absent": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 0,
+     "links": [],
+     "problems": []
+    }
+   },
+   "absent_text": {
+    "rc": 0,
+    "out": "0 link(s) checked: 0 broken, 0 changed, 0 gap(s)\n",
+    "err": ""
+   },
+   "static": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "export_failed",
+        "message": "streak: cannot load spec:SPEC from $WORK/w/W1/streak: RuntimeError: not loaded"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "absent": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 0,
+     "links": [],
+     "problems": []
+    }
+   },
+   "absent_text": {
+    "rc": 0,
+    "out": "0 link(s) checked: 0 broken, 0 changed, 0 gap(s)\n",
+    "err": ""
+   },
+   "static": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "export_failed",
+        "message": "streak: cannot load spec:SPEC from $WORK/w/W1/streak: RuntimeError: not loaded"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "absent": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 0,
+     "links": [],
+     "problems": []
+    }
+   },
+   "absent_text": {
+    "rc": 0,
+    "out": "0 link(s) checked: 0 broken, 0 changed, 0 gap(s)\n",
+    "err": ""
+   },
+   "static": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "export_failed",
+        "message": "streak: cannot load spec:SPEC from $WORK/w/W1/streak: RuntimeError: not loaded"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  },
+  {
+   "absent": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 0,
+     "links": [],
+     "problems": []
+    }
+   },
+   "absent_text": {
+    "rc": 0,
+    "out": "0 link(s) checked: 0 broken, 0 changed, 0 gap(s)\n",
+    "err": ""
+   },
+   "static": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "error",
+       "error": {
+        "code": "export_failed",
+        "message": "streak: cannot load spec:SPEC from $WORK/w/W1/streak: RuntimeError: not loaded"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   }
+  }
+ ]
+}

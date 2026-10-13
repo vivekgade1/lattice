@@ -1,0 +1,1305 @@
+{
+ "id": "W3",
+ "prediction": "contract 'live' on Streak: check exit 2, link status error, error.code unsupported_database, findings and gaps []; nothing started (no Docker, no Go build, no provider process); --static-only exit 0 with live not_run/static-only; pin exit 0",
+ "observed": "check exit 2, link status error, error.code unsupported_database, findings 0, gaps 0; docker/go/mysql calls 0; ps lines seen 7, provider-like 0; bin/ present False; static-only exit 0 live {'status': 'not_run', 'reason': 'static-only'}; pin exit 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "check_exit_2": true,
+  "link_status_error": true,
+  "error_code_unsupported_database": true,
+  "findings_empty": true,
+  "gaps_empty": true,
+  "no_docker_go_mysql_called": true,
+  "no_docker_go_mysql_seen_in_ps": true,
+  "bin_absent_before_and_after": true,
+  "clone_tree_unchanged": true,
+  "static_only_exit_0": true,
+  "static_only_not_run": true,
+  "pin_exit_0": true,
+  "pin_lock_unchanged": true
+ },
+ "extra": {
+  "error": {
+   "code": "unsupported_database",
+   "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+  },
+  "link_live": null,
+  "full_check_doc": {
+   "workspace": "probe",
+   "consumer": "streak-widget",
+   "checked": 1,
+   "links": [
+    {
+     "consumer": "streak-widget",
+     "provider": "streak",
+     "contract": "live",
+     "status": "error",
+     "error": {
+      "code": "unsupported_database",
+      "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+     },
+     "imports": 0,
+     "pinned": null,
+     "current": null,
+     "version_changed": null,
+     "spec_hash_changed": null,
+     "spec_ref_changed": null,
+     "findings": [],
+     "gaps": [],
+     "live": null
+    }
+   ],
+   "problems": []
+  },
+  "shim_calls": [],
+  "ps_command_lines_seen": [
+   "(Python)",
+   "(git)",
+   "/Library/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -P -m lattice.contracts export --project $WORK/w/W3/streak --spec spec:SPEC",
+   "/Library/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -P -m lattice.contracts.live --job $WORK/tmp/lattice-live-XXXX/job.json --out $WORK/tmp/lattice-live-XXXX/out.json",
+   "/Library/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -m lattice.contracts check streak-widget --json --static-only --workspace $WORK/w/W3/m/lattice.workspace.toml",
+   "/Library/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -m lattice.contracts check streak-widget --json --workspace $WORK/w/W3/m/lattice.workspace.toml",
+   "/Library/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -m lattice.contracts pin streak-widget --json --workspace $WORK/w/W3/m/lattice.workspace.toml"
+  ],
+  "tree_before": "",
+  "tree_after": "",
+  "which_tools": {
+   "docker": "/usr/local/bin/docker",
+   "go": "/opt/homebrew/bin/go"
+  }
+ },
+ "runs": [
+  {
+   "check": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "error",
+       "error": {
+        "code": "unsupported_database",
+        "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": true,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/W3/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   }
+  },
+  {
+   "check": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "error",
+       "error": {
+        "code": "unsupported_database",
+        "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": true,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/W3/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   }
+  },
+  {
+   "check": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "error",
+       "error": {
+        "code": "unsupported_database",
+        "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": true,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/W3/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   }
+  },
+  {
+   "check": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "error",
+       "error": {
+        "code": "unsupported_database",
+        "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": true,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/W3/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   }
+  },
+  {
+   "check": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "error",
+       "error": {
+        "code": "unsupported_database",
+        "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": true,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/W3/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   }
+  },
+  {
+   "check": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "error",
+       "error": {
+        "code": "unsupported_database",
+        "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": true,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/W3/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   }
+  },
+  {
+   "check": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "error",
+       "error": {
+        "code": "unsupported_database",
+        "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": true,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/W3/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   }
+  },
+  {
+   "check": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "error",
+       "error": {
+        "code": "unsupported_database",
+        "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": true,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/W3/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   }
+  },
+  {
+   "check": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "error",
+       "error": {
+        "code": "unsupported_database",
+        "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": true,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/W3/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   }
+  },
+  {
+   "check": {
+    "rc": 2,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "error",
+       "error": {
+        "code": "unsupported_database",
+        "message": "streak: the live check runs on a throwaway SQLite database, not mysql"
+       },
+       "imports": 0,
+       "pinned": null,
+       "current": null,
+       "version_changed": null,
+       "spec_hash_changed": null,
+       "spec_ref_changed": null,
+       "findings": [],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "static_only": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": {
+        "status": "not_run",
+        "reason": "static-only"
+       }
+      }
+     ],
+     "problems": []
+    }
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "live",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": true,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/W3/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   }
+  }
+ ]
+}

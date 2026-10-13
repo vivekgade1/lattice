@@ -1,0 +1,835 @@
+{
+ "id": "D5",
+ "prediction": "access removed from ann (GET /v1/home 200 -> 404): BROKEN; BROKEN auth_changed GET /v1/home as_user ann; CHANGED 1: status_added 404 @ GET /v1/home relied; version_changed true; gaps 2",
+ "observed": "BROKEN; BROKEN auth_changed GET /v1/home as_user ann; CHANGED 1: status_added 404 @ GET /v1/home relied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "worst_class": true,
+  "broken_set": true,
+  "changed_set": true,
+  "exit": true,
+  "version_changed": true,
+  "gaps": true,
+  "spec_hash_changed_iff_findings": true
+ },
+ "extra": {
+  "edits": [
+   {
+    "path": "spec.py",
+    "old": "\"home\": (200, {\"today\": TODAY,\n",
+    "new": "\"home\": (404, {\"today\": TODAY,\n",
+    "count": 1
+   },
+   {
+    "path": "spec.py",
+    "old": "Step(\"GET\", \"/v1/home\", \"ann\", expect_status=200,",
+    "new": "Step(\"GET\", \"/v1/home\", \"ann\", expect_status=404,",
+    "count": 2
+   }
+  ],
+  "pass_core": true,
+  "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+  "changed_all": [
+   [
+    "status_added",
+    "",
+    "GET /v1/home",
+    "404",
+    true
+   ]
+  ],
+  "broken_all": [
+   [
+    "auth_changed",
+    "GET /v1/home",
+    "as_user ann"
+   ]
+  ],
+  "gaps": [
+   [
+    "request_field_unobserved",
+    "GET /v1/habits",
+    "cursor"
+   ],
+   [
+    "response_field_unobserved",
+    "POST /v1/auth/login",
+    "access_token"
+   ]
+  ]
+ },
+ "runs": [
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+        "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "auth_changed",
+         "item": "as_user:ann",
+         "detail": "granted handles are now ['ben']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "status_added",
+         "item": "404",
+         "relied": true,
+         "detail": "status 404 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+        "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "auth_changed",
+         "item": "as_user:ann",
+         "detail": "granted handles are now ['ben']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "status_added",
+         "item": "404",
+         "relied": true,
+         "detail": "status 404 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+        "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "auth_changed",
+         "item": "as_user:ann",
+         "detail": "granted handles are now ['ben']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "status_added",
+         "item": "404",
+         "relied": true,
+         "detail": "status 404 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+        "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "auth_changed",
+         "item": "as_user:ann",
+         "detail": "granted handles are now ['ben']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "status_added",
+         "item": "404",
+         "relied": true,
+         "detail": "status 404 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+        "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "auth_changed",
+         "item": "as_user:ann",
+         "detail": "granted handles are now ['ben']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "status_added",
+         "item": "404",
+         "relied": true,
+         "detail": "status 404 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+        "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "auth_changed",
+         "item": "as_user:ann",
+         "detail": "granted handles are now ['ben']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "status_added",
+         "item": "404",
+         "relied": true,
+         "detail": "status 404 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+        "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "auth_changed",
+         "item": "as_user:ann",
+         "detail": "granted handles are now ['ben']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "status_added",
+         "item": "404",
+         "relied": true,
+         "detail": "status 404 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+        "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "auth_changed",
+         "item": "as_user:ann",
+         "detail": "granted handles are now ['ben']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "status_added",
+         "item": "404",
+         "relied": true,
+         "detail": "status 404 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+        "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "auth_changed",
+         "item": "as_user:ann",
+         "detail": "granted handles are now ['ben']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "status_added",
+         "item": "404",
+         "relied": true,
+         "detail": "status 404 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+        "git_ref": "eb8502a9d462d474cfa9614213dfce7641f7bf6f",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "auth_changed",
+         "item": "as_user:ann",
+         "detail": "granted handles are now ['ben']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "status_added",
+         "item": "404",
+         "relied": true,
+         "detail": "status 404 is now observed"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  }
+ ]
+}

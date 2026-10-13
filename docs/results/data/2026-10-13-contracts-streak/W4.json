@@ -1,0 +1,779 @@
+{
+ "id": "W4",
+ "prediction": "a manifest without layer-3 keys: workspace show, show --json, validate, validate --json, impact streak, impact streak --json are byte-identical (6 of 6) to the old code (c0cdefc)",
+ "observed": "6/6 byte-identical to the old code; exits 0,0,0,0,0,0; old HEAD c0cdefc, workspace.py modified False",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "old_reference_usable": true,
+  "old_head_c0cdefc": true,
+  "new_is_new": true,
+  "old_is_old": true,
+  "6_of_6_identical": true,
+  "new_exit_codes_0": true
+ },
+ "extra": {
+  "old_checkout": {
+   "path": "/Users/vivekgade/Documents/lattice-contracts-base",
+   "head": "c0cdefc4c5058aefecb956f0a43383be43168abc",
+   "branch": "(detached)",
+   "workspace_py_status": "",
+   "workspace_py_diff_vs_head": "",
+   "workspace_py_exists": true,
+   "usable": true
+  },
+  "imports": {
+   "new": {
+    "workspace_py": "/Users/vivekgade/Documents/lattice-contracts-streak/lattice/workspace.py",
+    "has_contracts": true
+   },
+   "old": {
+    "workspace_py": "/Users/vivekgade/Documents/lattice-contracts-base/lattice/workspace.py",
+    "has_contracts": false
+   }
+  }
+ },
+ "runs": [
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK/w/W4/m/lattice.workspace.toml)\n  streak         provider  $WORK/w/W4/streak\n  streak-widget  consumer  $WORK/w/W4/streak-widget\nlinks:\n  streak-widget --uses--> streak\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK/w/W4/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK/w/W4/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK/w/W4/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK/w/W4/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  }
+ ]
+}

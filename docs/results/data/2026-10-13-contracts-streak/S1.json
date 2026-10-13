@@ -1,0 +1,33 @@
+{
+ "id": "S1",
+ "prediction": "Streak HEAD a0db033... and ' M studio.toml' before and after the whole run; studio.toml sha256 unchanged; find -newer finds no file",
+ "observed": "before a0db033 ' M studio.toml' studio.toml 540211a64cb5; after a0db033 ' M studio.toml' 540211a64cb5; files newer than the start marker: 0 []",
+ "pass": true,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "head_before": true,
+  "head_after": true,
+  "status_before": true,
+  "status_after": true,
+  "studio_sha_unchanged": true,
+  "no_newer_file": true,
+  "identical": true
+ },
+ "extra": {},
+ "runs": [
+  {
+   "before": {
+    "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+    "status": " M studio.toml",
+    "studio_toml_sha256": "540211a64cb54f1c0c595cf4596e1439783ecb72417cd7a6abe1a8dc1293a7cf"
+   },
+   "after": {
+    "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+    "status": " M studio.toml",
+    "studio_toml_sha256": "540211a64cb54f1c0c595cf4596e1439783ecb72417cd7a6abe1a8dc1293a7cf"
+   },
+   "newer": []
+  }
+ ]
+}

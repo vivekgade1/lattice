@@ -1,0 +1,7371 @@
+{
+ "id": "B0",
+ "prediction": "export 26 endpoints (public 5, token 21, unknown 0); error_body json_key(error), observed; statuses = R1 26/26; GET /v1/habits envelope only; granted ann 21, ben 10, refused none; /health and /test/clock exported; pin exit 0, 26 endpoints; check exit 0, 0 findings, 2 gaps (cursor @ GET /v1/habits, access_token @ POST /v1/auth/login)",
+ "observed": "26 endpoints; auth public 5 token 21 unknown 0; error_body json_key(error); statuses==R1 True; ann 21 ben 10; bodies object 19 empty 7; /health True /test/clock True; pin exit 0 (26 endpoints); check exit 0, 0 findings, gaps request_field_unobserved GET /v1/habits cursor; response_field_unobserved POST /v1/auth/login access_token",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "endpoints_26": true,
+  "auth_public_5": true,
+  "auth_token_21": true,
+  "auth_unknown_0": true,
+  "error_body_json_key_error": true,
+  "basis_observed": true,
+  "statuses_equal_r1_26_of_26": true,
+  "habits_response_fields_envelope": true,
+  "habits_query_fields": true,
+  "habits_body_object": true,
+  "bodies_object_19": true,
+  "bodies_empty_7_named": true,
+  "widget_table_6_of_6": true,
+  "ann_granted_21": true,
+  "ben_granted_exactly_10": true,
+  "public_granted_empty": true,
+  "refused_empty_26": true,
+  "health_exported_public": true,
+  "clock_exported_public_now": true,
+  "export_exit_0": true,
+  "pin_exit_0": true,
+  "lock_26_endpoints": true,
+  "check_exit_0": true,
+  "check_0_findings": true,
+  "version_changed_false": true,
+  "dirty_false": true,
+  "gaps_exactly_2_in_order": true,
+  "as_user_ann_on_6_token_imports": true,
+  "w6_200_and_201_hold": true
+ },
+ "extra": {
+  "statuses_mismatch": {},
+  "missing_vs_r1": [],
+  "widget_table_mismatch": {},
+  "git_ref": {
+   "dirty": false,
+   "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+   "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+  },
+  "bodies_empty": [
+   "DELETE /v1/devices/{}",
+   "DELETE /v1/habits/{}",
+   "DELETE /v1/habits/{}/completions/{}",
+   "DELETE /v1/me",
+   "GET /health",
+   "POST /v1/auth/logout",
+   "PUT /test/clock"
+  ],
+  "ben_granted": [
+   "GET /v1/habits",
+   "GET /v1/habits/{}/progress",
+   "GET /v1/home",
+   "GET /v1/me",
+   "GET /v1/nudges",
+   "GET /v1/sync",
+   "POST /v1/completions/batch",
+   "POST /v1/devices",
+   "POST /v1/habits",
+   "PUT /v1/me"
+  ],
+  "test_harness_endpoints": {
+   "GET /health": {
+    "auth": "public",
+    "body": [],
+    "granted": [],
+    "query_fields": [],
+    "refused": [],
+    "request_fields": [],
+    "response_fields": [],
+    "statuses": [
+     200
+    ]
+   },
+   "PUT /test/clock": {
+    "auth": "public",
+    "body": [],
+    "granted": [],
+    "query_fields": [],
+    "refused": [],
+    "request_fields": [
+     "now"
+    ],
+    "response_fields": [],
+    "statuses": [
+     200
+    ]
+   }
+  },
+  "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+ },
+ "runs": [
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /v1/devices/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}/completions/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404,
+         409
+        ]
+       },
+       "DELETE /v1/me": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "GET /health": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "include_archived",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "archived",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "from",
+         "to"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/history": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "items"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/progress": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "days_elapsed",
+         "days_remaining",
+         "done",
+         "habit_id",
+         "period",
+         "period_end",
+         "period_start",
+         "projected",
+         "rate_per_day",
+         "rate_per_period",
+         "required_per_day",
+         "required_per_period",
+         "status",
+         "target"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/home": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habits",
+         "nudges",
+         "today"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         429
+        ]
+       },
+       "GET /v1/nudges": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/sync": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "cursor",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "changes",
+         "has_more"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "PATCH /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "installation_id",
+         "password"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/logout": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "POST /v1/auth/refresh": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "refresh_token"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/register": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password",
+         "timezone"
+        ],
+        "response_fields": [
+         "email",
+         "timezone"
+        ],
+        "statuses": [
+         201,
+         409,
+         422
+        ]
+       },
+       "POST /v1/completions/batch": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "items"
+        ],
+        "response_fields": [
+         "results"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "POST /v1/devices": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "app_version",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "response_fields": [
+         "app_version",
+         "id",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         422
+        ]
+       },
+       "POST /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         409,
+         422,
+         429
+        ]
+       },
+       "POST /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "date",
+         "id",
+         "note"
+        ],
+        "response_fields": [
+         "date",
+         "habit_id",
+         "id",
+         "note"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/nudges/{}/dismiss": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habit_id",
+         "id",
+         "kind",
+         "message"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409
+        ]
+       },
+       "PUT /test/clock": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "PUT /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "nudge_time",
+         "push_enabled",
+         "quiet_end",
+         "quiet_start",
+         "timezone"
+        ],
+        "response_fields": [
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       }
+      },
+      "error_body": "json_key(error)",
+      "format": 1
+     },
+     "spec_ref": "spec:SPEC",
+     "version": {
+      "dirty": false,
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_endpoints": 26,
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /v1/devices/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}/completions/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404,
+         409
+        ]
+       },
+       "DELETE /v1/me": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "GET /health": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "include_archived",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "archived",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "from",
+         "to"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/history": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "items"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/progress": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "days_elapsed",
+         "days_remaining",
+         "done",
+         "habit_id",
+         "period",
+         "period_end",
+         "period_start",
+         "projected",
+         "rate_per_day",
+         "rate_per_period",
+         "required_per_day",
+         "required_per_period",
+         "status",
+         "target"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/home": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habits",
+         "nudges",
+         "today"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         429
+        ]
+       },
+       "GET /v1/nudges": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/sync": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "cursor",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "changes",
+         "has_more"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "PATCH /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "installation_id",
+         "password"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/logout": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "POST /v1/auth/refresh": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "refresh_token"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/register": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password",
+         "timezone"
+        ],
+        "response_fields": [
+         "email",
+         "timezone"
+        ],
+        "statuses": [
+         201,
+         409,
+         422
+        ]
+       },
+       "POST /v1/completions/batch": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "items"
+        ],
+        "response_fields": [
+         "results"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "POST /v1/devices": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "app_version",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "response_fields": [
+         "app_version",
+         "id",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         422
+        ]
+       },
+       "POST /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         409,
+         422,
+         429
+        ]
+       },
+       "POST /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "date",
+         "id",
+         "note"
+        ],
+        "response_fields": [
+         "date",
+         "habit_id",
+         "id",
+         "note"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/nudges/{}/dismiss": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habit_id",
+         "id",
+         "kind",
+         "message"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409
+        ]
+       },
+       "PUT /test/clock": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "PUT /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "nudge_time",
+         "push_enabled",
+         "quiet_end",
+         "quiet_start",
+         "timezone"
+        ],
+        "response_fields": [
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       }
+      },
+      "error_body": "json_key(error)",
+      "format": 1
+     },
+     "spec_ref": "spec:SPEC",
+     "version": {
+      "dirty": false,
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_endpoints": 26,
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /v1/devices/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}/completions/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404,
+         409
+        ]
+       },
+       "DELETE /v1/me": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "GET /health": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "include_archived",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "archived",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "from",
+         "to"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/history": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "items"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/progress": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "days_elapsed",
+         "days_remaining",
+         "done",
+         "habit_id",
+         "period",
+         "period_end",
+         "period_start",
+         "projected",
+         "rate_per_day",
+         "rate_per_period",
+         "required_per_day",
+         "required_per_period",
+         "status",
+         "target"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/home": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habits",
+         "nudges",
+         "today"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         429
+        ]
+       },
+       "GET /v1/nudges": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/sync": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "cursor",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "changes",
+         "has_more"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "PATCH /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "installation_id",
+         "password"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/logout": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "POST /v1/auth/refresh": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "refresh_token"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/register": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password",
+         "timezone"
+        ],
+        "response_fields": [
+         "email",
+         "timezone"
+        ],
+        "statuses": [
+         201,
+         409,
+         422
+        ]
+       },
+       "POST /v1/completions/batch": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "items"
+        ],
+        "response_fields": [
+         "results"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "POST /v1/devices": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "app_version",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "response_fields": [
+         "app_version",
+         "id",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         422
+        ]
+       },
+       "POST /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         409,
+         422,
+         429
+        ]
+       },
+       "POST /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "date",
+         "id",
+         "note"
+        ],
+        "response_fields": [
+         "date",
+         "habit_id",
+         "id",
+         "note"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/nudges/{}/dismiss": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habit_id",
+         "id",
+         "kind",
+         "message"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409
+        ]
+       },
+       "PUT /test/clock": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "PUT /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "nudge_time",
+         "push_enabled",
+         "quiet_end",
+         "quiet_start",
+         "timezone"
+        ],
+        "response_fields": [
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       }
+      },
+      "error_body": "json_key(error)",
+      "format": 1
+     },
+     "spec_ref": "spec:SPEC",
+     "version": {
+      "dirty": false,
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_endpoints": 26,
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /v1/devices/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}/completions/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404,
+         409
+        ]
+       },
+       "DELETE /v1/me": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "GET /health": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "include_archived",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "archived",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "from",
+         "to"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/history": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "items"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/progress": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "days_elapsed",
+         "days_remaining",
+         "done",
+         "habit_id",
+         "period",
+         "period_end",
+         "period_start",
+         "projected",
+         "rate_per_day",
+         "rate_per_period",
+         "required_per_day",
+         "required_per_period",
+         "status",
+         "target"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/home": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habits",
+         "nudges",
+         "today"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         429
+        ]
+       },
+       "GET /v1/nudges": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/sync": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "cursor",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "changes",
+         "has_more"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "PATCH /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "installation_id",
+         "password"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/logout": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "POST /v1/auth/refresh": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "refresh_token"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/register": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password",
+         "timezone"
+        ],
+        "response_fields": [
+         "email",
+         "timezone"
+        ],
+        "statuses": [
+         201,
+         409,
+         422
+        ]
+       },
+       "POST /v1/completions/batch": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "items"
+        ],
+        "response_fields": [
+         "results"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "POST /v1/devices": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "app_version",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "response_fields": [
+         "app_version",
+         "id",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         422
+        ]
+       },
+       "POST /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         409,
+         422,
+         429
+        ]
+       },
+       "POST /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "date",
+         "id",
+         "note"
+        ],
+        "response_fields": [
+         "date",
+         "habit_id",
+         "id",
+         "note"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/nudges/{}/dismiss": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habit_id",
+         "id",
+         "kind",
+         "message"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409
+        ]
+       },
+       "PUT /test/clock": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "PUT /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "nudge_time",
+         "push_enabled",
+         "quiet_end",
+         "quiet_start",
+         "timezone"
+        ],
+        "response_fields": [
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       }
+      },
+      "error_body": "json_key(error)",
+      "format": 1
+     },
+     "spec_ref": "spec:SPEC",
+     "version": {
+      "dirty": false,
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_endpoints": 26,
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /v1/devices/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}/completions/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404,
+         409
+        ]
+       },
+       "DELETE /v1/me": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "GET /health": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "include_archived",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "archived",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "from",
+         "to"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/history": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "items"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/progress": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "days_elapsed",
+         "days_remaining",
+         "done",
+         "habit_id",
+         "period",
+         "period_end",
+         "period_start",
+         "projected",
+         "rate_per_day",
+         "rate_per_period",
+         "required_per_day",
+         "required_per_period",
+         "status",
+         "target"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/home": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habits",
+         "nudges",
+         "today"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         429
+        ]
+       },
+       "GET /v1/nudges": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/sync": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "cursor",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "changes",
+         "has_more"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "PATCH /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "installation_id",
+         "password"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/logout": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "POST /v1/auth/refresh": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "refresh_token"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/register": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password",
+         "timezone"
+        ],
+        "response_fields": [
+         "email",
+         "timezone"
+        ],
+        "statuses": [
+         201,
+         409,
+         422
+        ]
+       },
+       "POST /v1/completions/batch": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "items"
+        ],
+        "response_fields": [
+         "results"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "POST /v1/devices": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "app_version",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "response_fields": [
+         "app_version",
+         "id",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         422
+        ]
+       },
+       "POST /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         409,
+         422,
+         429
+        ]
+       },
+       "POST /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "date",
+         "id",
+         "note"
+        ],
+        "response_fields": [
+         "date",
+         "habit_id",
+         "id",
+         "note"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/nudges/{}/dismiss": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habit_id",
+         "id",
+         "kind",
+         "message"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409
+        ]
+       },
+       "PUT /test/clock": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "PUT /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "nudge_time",
+         "push_enabled",
+         "quiet_end",
+         "quiet_start",
+         "timezone"
+        ],
+        "response_fields": [
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       }
+      },
+      "error_body": "json_key(error)",
+      "format": 1
+     },
+     "spec_ref": "spec:SPEC",
+     "version": {
+      "dirty": false,
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_endpoints": 26,
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /v1/devices/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}/completions/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404,
+         409
+        ]
+       },
+       "DELETE /v1/me": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "GET /health": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "include_archived",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "archived",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "from",
+         "to"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/history": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "items"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/progress": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "days_elapsed",
+         "days_remaining",
+         "done",
+         "habit_id",
+         "period",
+         "period_end",
+         "period_start",
+         "projected",
+         "rate_per_day",
+         "rate_per_period",
+         "required_per_day",
+         "required_per_period",
+         "status",
+         "target"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/home": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habits",
+         "nudges",
+         "today"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         429
+        ]
+       },
+       "GET /v1/nudges": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/sync": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "cursor",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "changes",
+         "has_more"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "PATCH /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "installation_id",
+         "password"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/logout": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "POST /v1/auth/refresh": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "refresh_token"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/register": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password",
+         "timezone"
+        ],
+        "response_fields": [
+         "email",
+         "timezone"
+        ],
+        "statuses": [
+         201,
+         409,
+         422
+        ]
+       },
+       "POST /v1/completions/batch": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "items"
+        ],
+        "response_fields": [
+         "results"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "POST /v1/devices": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "app_version",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "response_fields": [
+         "app_version",
+         "id",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         422
+        ]
+       },
+       "POST /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         409,
+         422,
+         429
+        ]
+       },
+       "POST /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "date",
+         "id",
+         "note"
+        ],
+        "response_fields": [
+         "date",
+         "habit_id",
+         "id",
+         "note"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/nudges/{}/dismiss": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habit_id",
+         "id",
+         "kind",
+         "message"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409
+        ]
+       },
+       "PUT /test/clock": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "PUT /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "nudge_time",
+         "push_enabled",
+         "quiet_end",
+         "quiet_start",
+         "timezone"
+        ],
+        "response_fields": [
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       }
+      },
+      "error_body": "json_key(error)",
+      "format": 1
+     },
+     "spec_ref": "spec:SPEC",
+     "version": {
+      "dirty": false,
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_endpoints": 26,
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /v1/devices/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}/completions/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404,
+         409
+        ]
+       },
+       "DELETE /v1/me": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "GET /health": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "include_archived",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "archived",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "from",
+         "to"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/history": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "items"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/progress": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "days_elapsed",
+         "days_remaining",
+         "done",
+         "habit_id",
+         "period",
+         "period_end",
+         "period_start",
+         "projected",
+         "rate_per_day",
+         "rate_per_period",
+         "required_per_day",
+         "required_per_period",
+         "status",
+         "target"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/home": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habits",
+         "nudges",
+         "today"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         429
+        ]
+       },
+       "GET /v1/nudges": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/sync": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "cursor",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "changes",
+         "has_more"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "PATCH /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "installation_id",
+         "password"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/logout": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "POST /v1/auth/refresh": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "refresh_token"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/register": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password",
+         "timezone"
+        ],
+        "response_fields": [
+         "email",
+         "timezone"
+        ],
+        "statuses": [
+         201,
+         409,
+         422
+        ]
+       },
+       "POST /v1/completions/batch": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "items"
+        ],
+        "response_fields": [
+         "results"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "POST /v1/devices": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "app_version",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "response_fields": [
+         "app_version",
+         "id",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         422
+        ]
+       },
+       "POST /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         409,
+         422,
+         429
+        ]
+       },
+       "POST /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "date",
+         "id",
+         "note"
+        ],
+        "response_fields": [
+         "date",
+         "habit_id",
+         "id",
+         "note"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/nudges/{}/dismiss": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habit_id",
+         "id",
+         "kind",
+         "message"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409
+        ]
+       },
+       "PUT /test/clock": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "PUT /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "nudge_time",
+         "push_enabled",
+         "quiet_end",
+         "quiet_start",
+         "timezone"
+        ],
+        "response_fields": [
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       }
+      },
+      "error_body": "json_key(error)",
+      "format": 1
+     },
+     "spec_ref": "spec:SPEC",
+     "version": {
+      "dirty": false,
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_endpoints": 26,
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /v1/devices/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}/completions/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404,
+         409
+        ]
+       },
+       "DELETE /v1/me": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "GET /health": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "include_archived",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "archived",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "from",
+         "to"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/history": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "items"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/progress": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "days_elapsed",
+         "days_remaining",
+         "done",
+         "habit_id",
+         "period",
+         "period_end",
+         "period_start",
+         "projected",
+         "rate_per_day",
+         "rate_per_period",
+         "required_per_day",
+         "required_per_period",
+         "status",
+         "target"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/home": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habits",
+         "nudges",
+         "today"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         429
+        ]
+       },
+       "GET /v1/nudges": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/sync": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "cursor",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "changes",
+         "has_more"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "PATCH /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "installation_id",
+         "password"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/logout": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "POST /v1/auth/refresh": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "refresh_token"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/register": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password",
+         "timezone"
+        ],
+        "response_fields": [
+         "email",
+         "timezone"
+        ],
+        "statuses": [
+         201,
+         409,
+         422
+        ]
+       },
+       "POST /v1/completions/batch": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "items"
+        ],
+        "response_fields": [
+         "results"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "POST /v1/devices": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "app_version",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "response_fields": [
+         "app_version",
+         "id",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         422
+        ]
+       },
+       "POST /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         409,
+         422,
+         429
+        ]
+       },
+       "POST /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "date",
+         "id",
+         "note"
+        ],
+        "response_fields": [
+         "date",
+         "habit_id",
+         "id",
+         "note"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/nudges/{}/dismiss": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habit_id",
+         "id",
+         "kind",
+         "message"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409
+        ]
+       },
+       "PUT /test/clock": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "PUT /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "nudge_time",
+         "push_enabled",
+         "quiet_end",
+         "quiet_start",
+         "timezone"
+        ],
+        "response_fields": [
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       }
+      },
+      "error_body": "json_key(error)",
+      "format": 1
+     },
+     "spec_ref": "spec:SPEC",
+     "version": {
+      "dirty": false,
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_endpoints": 26,
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /v1/devices/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}/completions/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404,
+         409
+        ]
+       },
+       "DELETE /v1/me": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "GET /health": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "include_archived",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "archived",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "from",
+         "to"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/history": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "items"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/progress": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "days_elapsed",
+         "days_remaining",
+         "done",
+         "habit_id",
+         "period",
+         "period_end",
+         "period_start",
+         "projected",
+         "rate_per_day",
+         "rate_per_period",
+         "required_per_day",
+         "required_per_period",
+         "status",
+         "target"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/home": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habits",
+         "nudges",
+         "today"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         429
+        ]
+       },
+       "GET /v1/nudges": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/sync": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "cursor",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "changes",
+         "has_more"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "PATCH /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "installation_id",
+         "password"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/logout": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "POST /v1/auth/refresh": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "refresh_token"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/register": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password",
+         "timezone"
+        ],
+        "response_fields": [
+         "email",
+         "timezone"
+        ],
+        "statuses": [
+         201,
+         409,
+         422
+        ]
+       },
+       "POST /v1/completions/batch": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "items"
+        ],
+        "response_fields": [
+         "results"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "POST /v1/devices": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "app_version",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "response_fields": [
+         "app_version",
+         "id",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         422
+        ]
+       },
+       "POST /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         409,
+         422,
+         429
+        ]
+       },
+       "POST /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "date",
+         "id",
+         "note"
+        ],
+        "response_fields": [
+         "date",
+         "habit_id",
+         "id",
+         "note"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/nudges/{}/dismiss": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habit_id",
+         "id",
+         "kind",
+         "message"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409
+        ]
+       },
+       "PUT /test/clock": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "PUT /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "nudge_time",
+         "push_enabled",
+         "quiet_end",
+         "quiet_start",
+         "timezone"
+        ],
+        "response_fields": [
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       }
+      },
+      "error_body": "json_key(error)",
+      "format": 1
+     },
+     "spec_ref": "spec:SPEC",
+     "version": {
+      "dirty": false,
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_endpoints": 26,
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "export": {
+    "rc": 0,
+    "doc": {
+     "export": {
+      "basis": "observed",
+      "endpoints": {
+       "DELETE /v1/devices/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404
+        ]
+       },
+       "DELETE /v1/habits/{}/completions/{}": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401,
+         404,
+         409
+        ]
+       },
+       "DELETE /v1/me": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "GET /health": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "GET /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "include_archived",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "archived",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "from",
+         "to"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/history": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "items"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "GET /v1/habits/{}/progress": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "days_elapsed",
+         "days_remaining",
+         "done",
+         "habit_id",
+         "period",
+         "period_end",
+         "period_start",
+         "projected",
+         "rate_per_day",
+         "rate_per_period",
+         "required_per_day",
+         "required_per_period",
+         "status",
+         "target"
+        ],
+        "statuses": [
+         200,
+         401,
+         404
+        ]
+       },
+       "GET /v1/home": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habits",
+         "nudges",
+         "today"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "GET /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "email",
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         429
+        ]
+       },
+       "GET /v1/nudges": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "has_more",
+         "items",
+         "next_cursor"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "GET /v1/sync": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [
+         "cursor",
+         "limit"
+        ],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "changes",
+         "has_more"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "PATCH /v1/habits/{}": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/auth/login": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "installation_id",
+         "password"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/logout": {
+        "auth": "token",
+        "body": [],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [],
+        "statuses": [
+         204,
+         401
+        ]
+       },
+       "POST /v1/auth/refresh": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "refresh_token"
+        ],
+        "response_fields": [
+         "expires_in",
+         "token_type"
+        ],
+        "statuses": [
+         200,
+         401
+        ]
+       },
+       "POST /v1/auth/register": {
+        "auth": "public",
+        "body": [
+         "object"
+        ],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "email",
+         "password",
+         "timezone"
+        ],
+        "response_fields": [
+         "email",
+         "timezone"
+        ],
+        "statuses": [
+         201,
+         409,
+         422
+        ]
+       },
+       "POST /v1/completions/batch": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "items"
+        ],
+        "response_fields": [
+         "results"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       },
+       "POST /v1/devices": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "app_version",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "response_fields": [
+         "app_version",
+         "id",
+         "installation_id",
+         "platform",
+         "push_token",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         422
+        ]
+       },
+       "POST /v1/habits": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count"
+        ],
+        "response_fields": [
+         "archived",
+         "description",
+         "end_date",
+         "id",
+         "name",
+         "period",
+         "start_date",
+         "target_count",
+         "version"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         409,
+         422,
+         429
+        ]
+       },
+       "POST /v1/habits/{}/completions": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "date",
+         "id",
+         "note"
+        ],
+        "response_fields": [
+         "date",
+         "habit_id",
+         "id",
+         "note"
+        ],
+        "statuses": [
+         200,
+         201,
+         401,
+         404,
+         409,
+         422
+        ]
+       },
+       "POST /v1/nudges/{}/dismiss": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [],
+        "response_fields": [
+         "habit_id",
+         "id",
+         "kind",
+         "message"
+        ],
+        "statuses": [
+         200,
+         401,
+         404,
+         409
+        ]
+       },
+       "PUT /test/clock": {
+        "auth": "public",
+        "body": [],
+        "granted": [],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "now"
+        ],
+        "response_fields": [],
+        "statuses": [
+         200
+        ]
+       },
+       "PUT /v1/me": {
+        "auth": "token",
+        "body": [
+         "object"
+        ],
+        "granted": [
+         "ann",
+         "ben"
+        ],
+        "query_fields": [],
+        "refused": [],
+        "request_fields": [
+         "nudge_time",
+         "push_enabled",
+         "quiet_end",
+         "quiet_start",
+         "timezone"
+        ],
+        "response_fields": [
+         "id",
+         "notification_prefs",
+         "timezone"
+        ],
+        "statuses": [
+         200,
+         401,
+         422
+        ]
+       }
+      },
+      "error_body": "json_key(error)",
+      "format": 1
+     },
+     "spec_ref": "spec:SPEC",
+     "version": {
+      "dirty": false,
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+     }
+    },
+    "err": ""
+   },
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/B0/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_endpoints": 26,
+   "check": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "ok",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "version_changed": false,
+       "spec_hash_changed": false,
+       "spec_ref_changed": false,
+       "findings": [],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  }
+ ]
+}

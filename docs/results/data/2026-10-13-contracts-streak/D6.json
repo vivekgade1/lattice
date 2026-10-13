@@ -1,0 +1,1267 @@
+{
+ "id": "D6",
+ "prediction": "next_cursor renamed to next: BROKEN; BROKEN response_field_missing GET /v1/habits next_cursor; CHANGED 5: field_added response next @ GET /v1/habits relied; field_added response next @ GET /v1/habits/{}/completions unrelied; field_added response next @ GET /v1/nudges unrelied; field_removed response next_cursor @ GET /v1/habits/{}/completions unrelied; field_removed response next_cursor @ GET /v1/nudges unrelied; version_changed true; gaps 2",
+ "observed": "BROKEN; BROKEN response_field_missing GET /v1/habits next_cursor; CHANGED 5: field_added response next @ GET /v1/habits relied; field_added response next @ GET /v1/habits/{}/completions unrelied; field_added response next @ GET /v1/nudges unrelied; field_removed response next_cursor @ GET /v1/habits/{}/completions unrelied; field_removed response next_cursor @ GET /v1/nudges unrelied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "worst_class": true,
+  "broken_set": true,
+  "changed_set": true,
+  "exit": true,
+  "version_changed": true,
+  "gaps": true,
+  "spec_hash_changed_iff_findings": true
+ },
+ "extra": {
+  "edits": [
+   {
+    "path": "spec.py",
+    "old": "\"next_cursor\"",
+    "new": "\"next\"",
+    "count": 11
+   }
+  ],
+  "pass_core": true,
+  "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+  "changed_all": [
+   [
+    "field_added",
+    "response",
+    "GET /v1/habits",
+    "next",
+    true
+   ],
+   [
+    "field_added",
+    "response",
+    "GET /v1/habits/{}/completions",
+    "next",
+    false
+   ],
+   [
+    "field_added",
+    "response",
+    "GET /v1/nudges",
+    "next",
+    false
+   ],
+   [
+    "field_removed",
+    "response",
+    "GET /v1/habits/{}/completions",
+    "next_cursor",
+    false
+   ],
+   [
+    "field_removed",
+    "response",
+    "GET /v1/nudges",
+    "next_cursor",
+    false
+   ]
+  ],
+  "broken_all": [
+   [
+    "response_field_missing",
+    "GET /v1/habits",
+    "next_cursor"
+   ]
+  ],
+  "gaps": [
+   [
+    "request_field_unobserved",
+    "GET /v1/habits",
+    "cursor"
+   ],
+   [
+    "response_field_unobserved",
+    "POST /v1/auth/login",
+    "access_token"
+   ]
+  ]
+ },
+ "runs": [
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+        "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "response_field_missing",
+         "item": "next_cursor",
+         "detail": "the spec now shows response fields ['has_more', 'items', 'next']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "field_added",
+         "item": "next",
+         "relied": true,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+        "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "response_field_missing",
+         "item": "next_cursor",
+         "detail": "the spec now shows response fields ['has_more', 'items', 'next']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "field_added",
+         "item": "next",
+         "relied": true,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+        "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "response_field_missing",
+         "item": "next_cursor",
+         "detail": "the spec now shows response fields ['has_more', 'items', 'next']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "field_added",
+         "item": "next",
+         "relied": true,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+        "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "response_field_missing",
+         "item": "next_cursor",
+         "detail": "the spec now shows response fields ['has_more', 'items', 'next']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "field_added",
+         "item": "next",
+         "relied": true,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+        "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "response_field_missing",
+         "item": "next_cursor",
+         "detail": "the spec now shows response fields ['has_more', 'items', 'next']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "field_added",
+         "item": "next",
+         "relied": true,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+        "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "response_field_missing",
+         "item": "next_cursor",
+         "detail": "the spec now shows response fields ['has_more', 'items', 'next']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "field_added",
+         "item": "next",
+         "relied": true,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+        "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "response_field_missing",
+         "item": "next_cursor",
+         "detail": "the spec now shows response fields ['has_more', 'items', 'next']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "field_added",
+         "item": "next",
+         "relied": true,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+        "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "response_field_missing",
+         "item": "next_cursor",
+         "detail": "the spec now shows response fields ['has_more', 'items', 'next']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "field_added",
+         "item": "next",
+         "relied": true,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+        "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "response_field_missing",
+         "item": "next_cursor",
+         "detail": "the spec now shows response fields ['has_more', 'items', 'next']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "field_added",
+         "item": "next",
+         "relied": true,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+        "git_ref": "d954323a48801a832ad8e9fc24608226b5954f0d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "response_field_missing",
+         "item": "next_cursor",
+         "detail": "the spec now shows response fields ['has_more', 'items', 'next']"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "field_added",
+         "item": "next",
+         "relied": true,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_added",
+         "item": "next",
+         "relied": false,
+         "detail": "response field next is now shown",
+         "where": "response"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "field_removed",
+         "item": "next_cursor",
+         "relied": false,
+         "detail": "response field next_cursor is no longer shown",
+         "where": "response"
+        }
+       ],
+       "gaps": [
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "request_field_unobserved",
+         "item": "cursor",
+         "detail": "the provider's spec never shows it"
+        },
+        {
+         "class": "GAP",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "response_field_unobserved",
+         "item": "access_token",
+         "detail": "the provider's spec never shows it"
+        }
+       ],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  }
+ ]
+}

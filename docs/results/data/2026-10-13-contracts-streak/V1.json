@@ -1,0 +1,383 @@
+{
+ "id": "V1",
+ "prediction": "10 pins on the clean clone: locks byte-identical to each other and to the golden; spec_hash == sha256 of the embedded export; no scratch path, no timestamp",
+ "observed": "1 distinct lock(s) in 10; equals golden True; spec_hash d44b738522ea == recomputed d44b738522ea; scratch path hits 0; timestamps 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "all_pins_exit_0": true,
+  "locks_identical": true,
+  "equals_golden": true,
+  "spec_hash_recomputed": true,
+  "no_scratch_path": true,
+  "no_timestamp": true
+ },
+ "extra": {
+  "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd",
+  "golden_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd",
+  "recomputed_spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+  "lock_keys": [
+   "consumer",
+   "format",
+   "providers"
+  ],
+  "version": {
+   "dirty": false,
+   "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+   "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+  }
+ },
+ "runs": [
+  {
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V1/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V1/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V1/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V1/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V1/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V1/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V1/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V1/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V1/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  },
+  {
+   "pin": {
+    "rc": 0,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "pinned",
+       "error": null,
+       "imports": 7,
+       "replaced": false,
+       "forced": false,
+       "broken": [],
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "endpoints": 26
+      }
+     ],
+     "problems": [],
+     "lock": "$WORK/w/V1/streak-widget/lattice.contracts.lock.json",
+     "written": true
+    }
+   },
+   "lock_sha256": "36f89f671c58a42d99bf00422e6337d3a2fe5bf9eb60967f46b2a82b03d68abd"
+  }
+ ]
+}
