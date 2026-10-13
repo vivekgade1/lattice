@@ -1,0 +1,581 @@
+{
+ "id": "C5",
+ "prediction": "one scenario's UUIDs (101 -> 777 in progress_timezone_example): spec_hash equal; exit 0",
+ "observed": "spec_hash_changed False; exit 0, 0 findings",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "spec_hash_equal": true,
+  "exit_0": true,
+  "0_findings": true
+ },
+ "extra": {
+  "edits": [
+   {
+    "path": "spec.py",
+    "old": "habit(101, \"b\", user=2, start=\"2026-02-02\")",
+    "new": "habit(777, \"b\", user=2, start=\"2026-02-02\")",
+    "count": 1
+   },
+   {
+    "path": "spec.py",
+    "old": "Step(\"GET\", hp(101, \"/progress\"), \"ben\", expect_status=200,",
+    "new": "Step(\"GET\", hp(777, \"/progress\"), \"ben\", expect_status=200,",
+    "count": 1
+   }
+  ]
+ },
+ "runs": [
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "2b9a13a0c858083a74bcaafb99bf28057e05ad58",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "2b9a13a0c858083a74bcaafb99bf28057e05ad58",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "2b9a13a0c858083a74bcaafb99bf28057e05ad58",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "2b9a13a0c858083a74bcaafb99bf28057e05ad58",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "2b9a13a0c858083a74bcaafb99bf28057e05ad58",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "2b9a13a0c858083a74bcaafb99bf28057e05ad58",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "2b9a13a0c858083a74bcaafb99bf28057e05ad58",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "2b9a13a0c858083a74bcaafb99bf28057e05ad58",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "2b9a13a0c858083a74bcaafb99bf28057e05ad58",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 0,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "ok",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "2b9a13a0c858083a74bcaafb99bf28057e05ad58",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": false,
+      "spec_ref_changed": false,
+      "findings": [],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  }
+ ]
+}

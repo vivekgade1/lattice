@@ -1,0 +1,329 @@
+{
+ "id": "V2",
+ "prediction": "no lock: exit 2, no_pin, the message names the lock path and 'lattice contracts pin'",
+ "observed": "exit 2 no_pin; streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "exit_2": true,
+  "no_pin": true,
+  "names_lock_path": true,
+  "names_pin_command": true
+ },
+ "extra": {
+  "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+ },
+ "runs": [
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "no_pin",
+       "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "no_pin",
+       "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "no_pin",
+       "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "no_pin",
+       "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "no_pin",
+       "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "no_pin",
+       "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "no_pin",
+       "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "no_pin",
+       "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "no_pin",
+       "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "no_pin",
+       "message": "streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  }
+ ]
+}

@@ -1,0 +1,60 @@
+# streak-widget (client.py) relies on Streak: one table per call W1-W7, top-level keys only.
+# Not expressible (nested): W3 nudges[].id; W4 items[].id, items[].name.
+
+[[import]]
+provider = "streak"
+endpoint = "POST /v1/auth/login"
+status = [200]
+auth = "public"
+request_fields = ["email", "password", "installation_id"]
+response_fields = ["access_token", "expires_in"]
+
+[[import]]
+provider = "streak"
+endpoint = "GET /v1/me"
+status = [200]
+auth = "token"
+as_user = "ann"
+response_fields = ["id", "timezone"]
+
+[[import]]
+provider = "streak"
+endpoint = "GET /v1/home"
+status = [200]
+auth = "token"
+as_user = "ann"
+response_fields = ["today", "nudges"]
+
+[[import]]
+provider = "streak"
+endpoint = "GET /v1/habits"
+status = [200]
+auth = "token"
+as_user = "ann"
+request_fields = ["limit", "cursor"]
+response_fields = ["items", "has_more", "next_cursor"]
+
+[[import]]
+provider = "streak"
+endpoint = "GET /v1/habits/{id}/progress"
+status = [200]
+auth = "token"
+as_user = "ann"
+response_fields = ["done", "target", "status"]
+
+[[import]]
+provider = "streak"
+endpoint = "POST /v1/habits/{habit_id}/completions"
+status = [200, 201]
+auth = "token"
+as_user = "ann"
+request_fields = ["id", "date"]
+response_fields = ["id", "date"]
+
+[[import]]
+provider = "streak"
+endpoint = "POST /v1/nudges/{id}/dismiss"
+status = [200]
+auth = "token"
+as_user = "ann"
+response_fields = ["id"]

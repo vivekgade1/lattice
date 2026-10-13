@@ -1,0 +1,330 @@
+{
+ "id": "V6",
+ "prediction": "the lock with one hex digit of spec_hash flipped: exit 2, bad_pin",
+ "observed": "exit 2 bad_pin; $WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "exit_2": true,
+  "bad_pin": true
+ },
+ "extra": {
+  "flipped": [
+   "d44b7385",
+   "044b7385"
+  ]
+ },
+ "runs": [
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 2,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "error",
+      "error": {
+       "code": "bad_pin",
+       "message": "$WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`"
+      },
+      "imports": 0,
+      "pinned": null,
+      "current": null,
+      "version_changed": null,
+      "spec_hash_changed": null,
+      "spec_ref_changed": null,
+      "findings": [],
+      "gaps": [],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  }
+ ]
+}

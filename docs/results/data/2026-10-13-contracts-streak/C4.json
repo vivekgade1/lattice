@@ -1,0 +1,686 @@
+{
+ "id": "C4",
+ "prediction": "exit 1; exactly 1 CHANGED field_added response id @ POST /v1/auth/register, unrelied; 0 BROKEN",
+ "observed": "exit 1; CHANGED field_added response id @ POST /v1/auth/register unrelied; BROKEN none",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "exit_1": true,
+  "changed_exactly": true,
+  "0_broken": true,
+  "findings_total_1": true
+ },
+ "extra": {
+  "edits": [
+   {
+    "path": "spec.py",
+    "old": "expect_status=201, expect_body={\"email\": \"cara@example.com\", \"timezone\": \"UTC\"},",
+    "new": "expect_status=201, expect_body={\"email\": \"cara@example.com\", \"timezone\": \"UTC\", \"id\": 3},",
+    "count": 1
+   }
+  ]
+ },
+ "runs": [
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "5ce2c5a7df5cb8b8070d4a1384f2b4bd62baad21352f49e9b03d54de5f132909",
+       "git_ref": "ae5efd9ca598a66fa5b15ce22d23b54979972cfb",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/register",
+        "kind": "field_added",
+        "item": "id",
+        "relied": false,
+        "detail": "response field id is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "5ce2c5a7df5cb8b8070d4a1384f2b4bd62baad21352f49e9b03d54de5f132909",
+       "git_ref": "ae5efd9ca598a66fa5b15ce22d23b54979972cfb",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/register",
+        "kind": "field_added",
+        "item": "id",
+        "relied": false,
+        "detail": "response field id is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "5ce2c5a7df5cb8b8070d4a1384f2b4bd62baad21352f49e9b03d54de5f132909",
+       "git_ref": "ae5efd9ca598a66fa5b15ce22d23b54979972cfb",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/register",
+        "kind": "field_added",
+        "item": "id",
+        "relied": false,
+        "detail": "response field id is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "5ce2c5a7df5cb8b8070d4a1384f2b4bd62baad21352f49e9b03d54de5f132909",
+       "git_ref": "ae5efd9ca598a66fa5b15ce22d23b54979972cfb",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/register",
+        "kind": "field_added",
+        "item": "id",
+        "relied": false,
+        "detail": "response field id is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "5ce2c5a7df5cb8b8070d4a1384f2b4bd62baad21352f49e9b03d54de5f132909",
+       "git_ref": "ae5efd9ca598a66fa5b15ce22d23b54979972cfb",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/register",
+        "kind": "field_added",
+        "item": "id",
+        "relied": false,
+        "detail": "response field id is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "5ce2c5a7df5cb8b8070d4a1384f2b4bd62baad21352f49e9b03d54de5f132909",
+       "git_ref": "ae5efd9ca598a66fa5b15ce22d23b54979972cfb",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/register",
+        "kind": "field_added",
+        "item": "id",
+        "relied": false,
+        "detail": "response field id is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "5ce2c5a7df5cb8b8070d4a1384f2b4bd62baad21352f49e9b03d54de5f132909",
+       "git_ref": "ae5efd9ca598a66fa5b15ce22d23b54979972cfb",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/register",
+        "kind": "field_added",
+        "item": "id",
+        "relied": false,
+        "detail": "response field id is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "5ce2c5a7df5cb8b8070d4a1384f2b4bd62baad21352f49e9b03d54de5f132909",
+       "git_ref": "ae5efd9ca598a66fa5b15ce22d23b54979972cfb",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/register",
+        "kind": "field_added",
+        "item": "id",
+        "relied": false,
+        "detail": "response field id is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "5ce2c5a7df5cb8b8070d4a1384f2b4bd62baad21352f49e9b03d54de5f132909",
+       "git_ref": "ae5efd9ca598a66fa5b15ce22d23b54979972cfb",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/register",
+        "kind": "field_added",
+        "item": "id",
+        "relied": false,
+        "detail": "response field id is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  },
+  {
+   "rc": 1,
+   "err": "",
+   "doc": {
+    "workspace": "probe",
+    "consumer": "streak-widget",
+    "checked": 1,
+    "links": [
+     {
+      "consumer": "streak-widget",
+      "provider": "streak",
+      "contract": "static",
+      "status": "changed",
+      "error": null,
+      "imports": 7,
+      "pinned": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+       "dirty": false
+      },
+      "current": {
+       "spec_ref": "spec:SPEC",
+       "spec_hash": "5ce2c5a7df5cb8b8070d4a1384f2b4bd62baad21352f49e9b03d54de5f132909",
+       "git_ref": "ae5efd9ca598a66fa5b15ce22d23b54979972cfb",
+       "dirty": false
+      },
+      "version_changed": true,
+      "spec_hash_changed": true,
+      "spec_ref_changed": false,
+      "findings": [
+       {
+        "class": "CHANGED",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/register",
+        "kind": "field_added",
+        "item": "id",
+        "relied": false,
+        "detail": "response field id is now shown",
+        "where": "response"
+       }
+      ],
+      "gaps": [
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "GET /v1/habits",
+        "kind": "request_field_unobserved",
+        "item": "cursor",
+        "detail": "the provider's spec never shows it"
+       },
+       {
+        "class": "GAP",
+        "provider": "streak",
+        "endpoint": "POST /v1/auth/login",
+        "kind": "response_field_unobserved",
+        "item": "access_token",
+        "detail": "the provider's spec never shows it"
+       }
+      ],
+      "live": null
+     }
+    ],
+    "problems": []
+   }
+  }
+ ]
+}

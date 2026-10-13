@@ -1,0 +1,70 @@
+{
+ "id": "T1",
+ "prediction": "median wall time of the static check of one link over 10 runs <= 10 s (predicted <= 1 s); `contracts export streak` time reported",
+ "observed": "static check median 0.33 s wall (0.29 s elapsed_s); export median 0.33 s wall",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "static_median_le_10s": true,
+  "static_prediction_le_1s": true
+ },
+ "extra": {
+  "median_check_wall_s": 0.329,
+  "median_check_elapsed_s": 0.288,
+  "median_export_wall_s": 0.327,
+  "note": "timing is not deterministic: 'identical' is not applicable"
+ },
+ "runs": [
+  {
+   "check_wall_s": 0.331,
+   "check_elapsed_s": 0.291,
+   "export_wall_s": 0.328
+  },
+  {
+   "check_wall_s": 0.328,
+   "check_elapsed_s": 0.287,
+   "export_wall_s": 0.327
+  },
+  {
+   "check_wall_s": 0.328,
+   "check_elapsed_s": 0.288,
+   "export_wall_s": 0.325
+  },
+  {
+   "check_wall_s": 0.328,
+   "check_elapsed_s": 0.288,
+   "export_wall_s": 0.328
+  },
+  {
+   "check_wall_s": 0.328,
+   "check_elapsed_s": 0.287,
+   "export_wall_s": 0.327
+  },
+  {
+   "check_wall_s": 0.33,
+   "check_elapsed_s": 0.289,
+   "export_wall_s": 0.327
+  },
+  {
+   "check_wall_s": 0.329,
+   "check_elapsed_s": 0.288,
+   "export_wall_s": 0.327
+  },
+  {
+   "check_wall_s": 0.326,
+   "check_elapsed_s": 0.286,
+   "export_wall_s": 0.328
+  },
+  {
+   "check_wall_s": 0.33,
+   "check_elapsed_s": 0.289,
+   "export_wall_s": 0.327
+  },
+  {
+   "check_wall_s": 0.329,
+   "check_elapsed_s": 0.288,
+   "export_wall_s": 0.327
+  }
+ ]
+}

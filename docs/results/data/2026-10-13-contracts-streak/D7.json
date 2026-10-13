@@ -1,0 +1,5040 @@
+{
+ "id": "D7",
+ "prediction": "version bump /v1/ -> /v2/: BROKEN; BROKEN endpoint_missing GET /v1/habits; endpoint_missing GET /v1/habits/{}/progress; endpoint_missing GET /v1/home; endpoint_missing GET /v1/me; endpoint_missing POST /v1/auth/login; endpoint_missing POST /v1/habits/{}/completions; endpoint_missing POST /v1/nudges/{}/dismiss; CHANGED 41 (17 removed + 24 added); version_changed true; gaps 0",
+ "observed": "BROKEN; BROKEN endpoint_missing GET /v1/habits; endpoint_missing GET /v1/habits/{}/progress; endpoint_missing GET /v1/home; endpoint_missing GET /v1/me; endpoint_missing POST /v1/auth/login; endpoint_missing POST /v1/habits/{}/completions; endpoint_missing POST /v1/nudges/{}/dismiss; CHANGED 41; exit 1; version_changed True; spec_hash_changed True; gaps 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "worst_class": true,
+  "broken_set": true,
+  "changed_set": true,
+  "exit": true,
+  "version_changed": true,
+  "gaps": true,
+  "spec_hash_changed_iff_findings": true,
+  "endpoints_still_26": true,
+  "changed_41": true
+ },
+ "extra": {
+  "edits": [
+   {
+    "path": "spec.py",
+    "old": "/v1/",
+    "new": "/v2/",
+    "count": 144
+   }
+  ],
+  "pass_core": true,
+  "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+  "changed_all": [
+   [
+    "endpoint_added",
+    "",
+    "DELETE /v2/devices/{}",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "DELETE /v2/habits/{}",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "DELETE /v2/habits/{}/completions/{}",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "DELETE /v2/me",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "GET /v2/habits",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "GET /v2/habits/{}",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "GET /v2/habits/{}/completions",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "GET /v2/habits/{}/history",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "GET /v2/habits/{}/progress",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "GET /v2/home",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "GET /v2/me",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "GET /v2/nudges",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "GET /v2/sync",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "PATCH /v2/habits/{}",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "POST /v2/auth/login",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "POST /v2/auth/logout",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "POST /v2/auth/refresh",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "POST /v2/auth/register",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "POST /v2/completions/batch",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "POST /v2/devices",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "POST /v2/habits",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "POST /v2/habits/{}/completions",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "POST /v2/nudges/{}/dismiss",
+    "",
+    false
+   ],
+   [
+    "endpoint_added",
+    "",
+    "PUT /v2/me",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "DELETE /v1/devices/{}",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "DELETE /v1/habits/{}",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "DELETE /v1/habits/{}/completions/{}",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "DELETE /v1/me",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "GET /v1/habits/{}",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "GET /v1/habits/{}/completions",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "GET /v1/habits/{}/history",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "GET /v1/nudges",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "GET /v1/sync",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "PATCH /v1/habits/{}",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "POST /v1/auth/logout",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "POST /v1/auth/refresh",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "POST /v1/auth/register",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "POST /v1/completions/batch",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "POST /v1/devices",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "POST /v1/habits",
+    "",
+    false
+   ],
+   [
+    "endpoint_removed",
+    "",
+    "PUT /v1/me",
+    "",
+    false
+   ]
+  ],
+  "broken_all": [
+   [
+    "endpoint_missing",
+    "GET /v1/habits",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "GET /v1/habits/{}/progress",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "GET /v1/home",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "GET /v1/me",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "POST /v1/auth/login",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "POST /v1/habits/{}/completions",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "POST /v1/nudges/{}/dismiss",
+    ""
+   ]
+  ],
+  "gaps": []
+ },
+ "runs": [
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+        "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/me",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/devices/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}/completions/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/devices/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}/completions/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/history",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/sync",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/history",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/progress",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/home",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/nudges",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/sync",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/logout",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/refresh",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/register",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/completions/batch",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/devices",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/login",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/logout",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/refresh",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/register",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/completions/batch",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/devices",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/nudges/{}/dismiss",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        }
+       ],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+        "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/me",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/devices/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}/completions/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/devices/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}/completions/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/history",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/sync",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/history",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/progress",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/home",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/nudges",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/sync",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/logout",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/refresh",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/register",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/completions/batch",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/devices",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/login",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/logout",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/refresh",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/register",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/completions/batch",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/devices",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/nudges/{}/dismiss",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        }
+       ],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+        "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/me",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/devices/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}/completions/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/devices/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}/completions/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/history",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/sync",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/history",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/progress",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/home",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/nudges",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/sync",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/logout",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/refresh",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/register",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/completions/batch",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/devices",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/login",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/logout",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/refresh",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/register",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/completions/batch",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/devices",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/nudges/{}/dismiss",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        }
+       ],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+        "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/me",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/devices/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}/completions/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/devices/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}/completions/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/history",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/sync",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/history",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/progress",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/home",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/nudges",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/sync",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/logout",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/refresh",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/register",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/completions/batch",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/devices",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/login",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/logout",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/refresh",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/register",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/completions/batch",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/devices",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/nudges/{}/dismiss",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        }
+       ],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+        "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/me",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/devices/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}/completions/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/devices/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}/completions/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/history",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/sync",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/history",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/progress",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/home",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/nudges",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/sync",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/logout",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/refresh",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/register",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/completions/batch",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/devices",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/login",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/logout",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/refresh",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/register",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/completions/batch",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/devices",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/nudges/{}/dismiss",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        }
+       ],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+        "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/me",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/devices/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}/completions/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/devices/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}/completions/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/history",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/sync",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/history",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/progress",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/home",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/nudges",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/sync",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/logout",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/refresh",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/register",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/completions/batch",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/devices",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/login",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/logout",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/refresh",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/register",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/completions/batch",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/devices",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/nudges/{}/dismiss",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        }
+       ],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+        "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/me",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/devices/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}/completions/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/devices/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}/completions/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/history",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/sync",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/history",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/progress",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/home",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/nudges",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/sync",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/logout",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/refresh",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/register",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/completions/batch",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/devices",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/login",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/logout",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/refresh",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/register",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/completions/batch",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/devices",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/nudges/{}/dismiss",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        }
+       ],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+        "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/me",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/devices/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}/completions/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/devices/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}/completions/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/history",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/sync",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/history",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/progress",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/home",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/nudges",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/sync",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/logout",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/refresh",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/register",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/completions/batch",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/devices",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/login",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/logout",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/refresh",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/register",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/completions/batch",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/devices",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/nudges/{}/dismiss",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        }
+       ],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+        "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/me",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/devices/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}/completions/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/devices/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}/completions/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/history",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/sync",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/history",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/progress",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/home",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/nudges",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/sync",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/logout",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/refresh",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/register",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/completions/batch",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/devices",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/login",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/logout",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/refresh",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/register",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/completions/batch",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/devices",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/nudges/{}/dismiss",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        }
+       ],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  },
+  {
+   "check": {
+    "rc": 1,
+    "err": "",
+    "doc": {
+     "workspace": "probe",
+     "consumer": "streak-widget",
+     "checked": 1,
+     "links": [
+      {
+       "consumer": "streak-widget",
+       "provider": "streak",
+       "contract": "static",
+       "status": "broken",
+       "error": null,
+       "imports": 7,
+       "pinned": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+        "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "dirty": false
+       },
+       "current": {
+        "spec_ref": "spec:SPEC",
+        "spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+        "git_ref": "cc5128dad63aa8342132e1f557841d30a9a4cb7d",
+        "dirty": false
+       },
+       "version_changed": true,
+       "spec_hash_changed": true,
+       "spec_ref_changed": false,
+       "findings": [
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/home",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "GET /v1/me",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/login",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "BROKEN",
+         "provider": "streak",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "kind": "endpoint_missing",
+         "item": "",
+         "detail": "the endpoint is not in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/devices/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/habits/{}/completions/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/devices/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/habits/{}/completions/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "DELETE /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/completions",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/habits/{}/history",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/nudges",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v1/sync",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/history",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/habits/{}/progress",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/home",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/nudges",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "GET /v2/sync",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v1/habits/{}",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PATCH /v2/habits/{}",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/logout",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/refresh",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/auth/register",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/completions/batch",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/devices",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v1/habits",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/login",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/logout",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/refresh",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/auth/register",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/completions/batch",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/devices",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/habits/{}/completions",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "POST /v2/nudges/{}/dismiss",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v1/me",
+         "kind": "endpoint_removed",
+         "item": "",
+         "relied": false,
+         "detail": "no longer in the provider's spec"
+        },
+        {
+         "class": "CHANGED",
+         "provider": "streak",
+         "endpoint": "PUT /v2/me",
+         "kind": "endpoint_added",
+         "item": "",
+         "relied": false,
+         "detail": "a new endpoint in the provider's spec"
+        }
+       ],
+       "gaps": [],
+       "live": null
+      }
+     ],
+     "problems": []
+    }
+   },
+   "export_rc": 0,
+   "export_endpoints": 26
+  }
+ ]
+}
