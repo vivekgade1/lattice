@@ -12,7 +12,7 @@ import os
 import sys
 import threading
 import traceback
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import IO, Any
 
@@ -89,7 +89,11 @@ class McpServer:
                 "protocolVersion": version,
                 "capabilities": {"tools": {"listChanged": False}},
                 "serverInfo": SERVER_INFO,
-                "instructions": INSTRUCTIONS,
+                "instructions": (
+                    self.tools.instructions(INSTRUCTIONS)
+                    if hasattr(self.tools, "instructions")
+                    else INSTRUCTIONS
+                ),
             }
         if method == "notifications/initialized":
             self.initialized = True
@@ -170,29 +174,58 @@ class _RpcError(Exception):
 
 
 def serve(
-    project: Path,
+    project: Path | Sequence[Path] | None = None,
     *,
     readonly: bool = False,
     model: str | None = None,
     studio_url: str | None = None,
+    workspace: Path | str | None = None,
+    launch: Path | None = None,
 ) -> int:
-    root = project.resolve()
-    if not root.is_dir():
-        print(f"lattice mcp: {root} is not a directory", file=sys.stderr)
-        return 2
+    """Serve the tools over stdio. `project`: one directory, several, or none (the launch
+    directory, `launch` or the cwd, plus discovery: lattice/mcp/projects.py). `workspace`: a
+    ``lattice.workspace.toml`` (default: ``$LATTICE_WORKSPACE``, else found walking up from the
+    launch directory). ``--studio-url`` proxies the first project only."""
+    from lattice import workspace as wsmod
+    from lattice.mcp.projects import ProjectRouter, known_projects
+
+    explicit = [project] if isinstance(project, Path | str) else list(project or [])
+    explicit = [Path(p).resolve() for p in explicit]
+    for root in explicit:
+        if not root.is_dir():
+            print(f"lattice mcp: {root} is not a directory", file=sys.stderr)
+            return 2
+    here = (launch or Path.cwd()).resolve()
+    ws_path = wsmod.find(start=here, explicit=workspace)
+    ws, problems = wsmod.try_load(ws_path)
+    for prob in problems:
+        print(f"lattice mcp: workspace {ws_path}: {prob.severity}: {prob.message}", file=sys.stderr)
+    known = known_projects(explicit, launch=here, workspace=ws)
+    first = known[0].name
     # Protocol on the real stdout; every other write to fd 1 (the app under check, child
     # processes) goes to stderr.
     proto_fd = os.dup(1)
     os.dup2(2, 1)
     sys.stdout = sys.stderr
     stdout = os.fdopen(proto_fd, "w", encoding="utf-8", buffering=1)
-    if studio_url:
-        backend: Any = HttpBackend(studio_url, root)
-    else:
+
+    def make_backend(p: Any) -> Any:
+        if studio_url and p.name == first:
+            return HttpBackend(studio_url, p.root)
         # A directory without a spec still starts (tools say what is missing and upgrade
         # themselves once the spec exists), so a user-level plugin never shows a failed server.
-        backend = PendingBackend(root, model=model)
-    server = McpServer(Toolbox(backend, readonly=readonly))
+        return PendingBackend(p.root, model=model)
+
+    router = ProjectRouter(
+        known,
+        make_backend,
+        readonly=readonly,
+        workspace=ws,
+        workspace_path=ws_path,
+        workspace_problems=problems,
+        launch=here,
+    )
+    server = McpServer(router)
     try:
         server.run(sys.stdin, stdout)
     except (BrokenPipeError, KeyboardInterrupt):

@@ -17,9 +17,16 @@ Studio.
    ``~/.config/lattice/projects.toml``; ``[[project]] path = "..."``, relative paths
    resolve against the file; a missing or broken file is ignored).
 
+3. with no directories and a workspace manifest (``lattice/workspace.py``, layer 2 of the
+   multi-project phase): the workspace's projects too, after the cwd's and before the
+   registry's.
+
 A project is a directory with ``studio.toml``, or ``spec.py`` and ``spec.trace.json``.
 Duplicates (by resolved path) are dropped; a project's name is ``[project] name`` of its
-studio.toml, else the directory's name, made unique with ``-2``, ``-3``, ...
+studio.toml, else the directory's name, made unique with ``-2``, ``-3``, ...; a project the
+workspace declares always has its manifest name. :func:`discover_sourced` is the same with each
+project's source (``explicit``, ``discovered``, ``workspace``, ``registry``, or the caller's own
+for ``first``); the MCP server (``lattice/mcp/projects.py``) uses it too.
 """
 
 from __future__ import annotations
@@ -93,27 +100,68 @@ def discover(
     *,
     cwd: Path | None = None,
     registry: Path | None = None,
+    workspace: Any = None,
 ) -> list[tuple[str, Path]]:
     """``(name, root)`` of every project, in discovery order (see the module docstring)."""
-    roots: list[Path] = []
+    found = discover_sourced(dirs, cwd=cwd, registry=registry, workspace=workspace)
+    return [(name, root) for name, root, _src in found]
+
+
+def discover_sourced(
+    dirs: Sequence[Path | str] = (),
+    *,
+    cwd: Path | None = None,
+    registry: Path | None = None,
+    workspace: Any = None,
+    scan: bool = True,
+    first: Sequence[tuple[Path, str]] = (),
+    projects_only: bool = True,
+) -> list[tuple[str, Path, str]]:
+    """``(name, root, source)`` of every project (see the module docstring).
+
+    `first`: ``(directory, source)`` entries taken as they are, before everything else (the MCP
+    server's launch directory or explicit ``--project``s, which need not be projects yet).
+    `scan`: with no `dirs`, discover over the cwd and read the registry (False: only `first` and
+    the workspace). `workspace` (a :class:`lattice.workspace.Workspace`): its projects join when
+    no `dirs` are given; `projects_only` keeps only those that are projects (Studio), False keeps
+    every declared directory (the MCP server lists them, missing or not)."""
+    roots: list[tuple[Path, str]] = [(Path(d), src) for d, src in first]
+    ws_names: dict[Path, str] = {}
+    if workspace is not None:
+        ws_names = {wp.path: wp.name for wp in workspace.projects}
     if dirs:
         for d in dirs:
-            roots.extend(_expand(Path(d)))
+            roots.extend((r, "explicit") for r in _expand(Path(d)))
     else:
-        roots.extend(p.path for p in discover_projects(cwd=cwd))
-        for d in registry_dirs(registry):
-            roots.extend(_expand(d))
-    seen: set[Path] = set()
-    taken: set[str] = set()
-    out: list[tuple[str, Path]] = []
-    for r in roots:
-        r = r.resolve()
-        if r in seen:
+        if scan:
+            roots.extend((p.path, "discovered") for p in discover_projects(cwd=cwd))
+        if workspace is not None:
+            for wp in workspace.projects:
+                if not projects_only or (wp.path.is_dir() and _project_at(wp.path) is not None):
+                    roots.append((wp.path, "workspace"))
+        if scan:
+            for d in registry_dirs(registry):
+                roots.extend((r, "registry") for r in _expand(d))
+    index: dict[Path, int] = {}
+    taken: set[str] = set(ws_names.values())
+    out: list[tuple[str, Path, str]] = []
+    for r, src in roots:
+        try:
+            r = r.resolve()
+        except OSError:
             continue
-        seen.add(r)
-        name = _unique(project_name(r), taken)
-        taken.add(name)
-        out.append((name, r))
+        if r in index:
+            i = index[r]
+            if src == "workspace" and out[i][2] in ("discovered", "registry"):
+                out[i] = (out[i][0], r, "workspace")  # the workspace declares it: say so
+            continue
+        index[r] = len(out)
+        if r in ws_names:
+            name = ws_names[r]
+        else:
+            name = _unique(project_name(r), taken)
+            taken.add(name)
+        out.append((name, r, src))
     return out
 
 
@@ -258,6 +306,38 @@ class StudioHub:
 
     def list(self) -> list[dict[str, Any]]:
         return [self.summary(n) for n in self.projects]
+
+    def workspace(self, path: Path | None) -> dict[str, Any]:
+        """``GET /api/workspace`` (API v1.16): the manifest at `path` (None: no workspace), its
+        projects with whether this hub serves each (``in_hub``, ``hub_name``), its links and
+        problems. Read on every call; never builds a Studio."""
+        from lattice import workspace as wsmod
+        from lattice.studio.server import SPEC_FILE, TRACE_FILE
+
+        if path is None:
+            return {"workspace": None, "projects": [], "links": [], "problems": []}
+        ws, problems = wsmod.try_load(path)
+        probs = [p.to_dict() for p in problems]
+        if ws is None:  # unreadable: say where, list why
+            return {"workspace": {"name": None, "path": str(path)}, "projects": [], "links": [],
+                    "problems": probs}  # fmt: skip
+        by_root = {p.root: name for name, p in self.projects.items()}
+        rows = []
+        for wp in ws.projects:
+            rows.append({
+                "name": wp.name,
+                "path": str(wp.path),
+                "role": wp.role,
+                "in_hub": wp.path in by_root,
+                "hub_name": by_root.get(wp.path),
+                "spec": (wp.path / SPEC_FILE).is_file() and (wp.path / TRACE_FILE).is_file(),
+            })  # fmt: skip
+        return {
+            "workspace": {"name": ws.name, "path": str(ws.path)},
+            "projects": rows,
+            "links": [lk.to_dict() for lk in ws.links],
+            "problems": probs,
+        }
 
     def close(self) -> None:
         for p in self.projects.values():

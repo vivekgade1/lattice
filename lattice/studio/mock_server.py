@@ -115,6 +115,13 @@ baseline that re-ran an already-gated tip, a node that gave up on an unsatisfiab
 owner's resume) and a fixture ledger that closes the unsatisfiable-check cause. Read only (no
 POST); no web UI in this version.
 
+API v1.16 (workspace manifest, multi-project layer 2): ``GET /api/workspace`` answers the real
+server's shape for a fixture manifest (``MOCK_WORKSPACE_*``): its two projects are the mock's two
+(``in_hub``, ``hub_name`` computed from them), a third (``scheduler-web``, a consumer) is not
+served and its directory is missing (a ``missing_path`` warning, worded by
+``lattice.workspace.Problem``), and three links. ``MockServer.workspace_enabled = False`` answers
+the no-manifest shape (``workspace: null``). Read only.
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -153,6 +160,22 @@ FIXTURE_DIR = HERE / "mock"
 DEFAULT_PROJECT = "job-scheduler-studio"
 SECOND_PROJECT = "lattice-studio"
 SECOND_PROJECT_RULES = 12
+
+# API v1.16: the fixture workspace manifest GET /api/workspace answers
+MOCK_WORKSPACE_NAME = "owner-dev"
+MOCK_WORKSPACE_PATH = "/Users/owner/lattice.workspace.toml"
+# (manifest name, hub project or None, path when not a hub project, role, spec)
+MOCK_WORKSPACE_PROJECTS = (
+    ("scheduler", DEFAULT_PROJECT, None, "provider", True),
+    ("studio", SECOND_PROJECT, None, "app", True),
+    ("scheduler-web", None, "/Users/owner/scheduler-web", "consumer", False),
+)
+MOCK_WORKSPACE_LINKS = (
+    {"from": "scheduler-web", "to": "scheduler", "kind": "uses",
+     "note": "POST /applications/{id}/runs"},
+    {"from": "studio", "to": "scheduler", "kind": "depends_on", "note": "the fixtures"},
+    {"from": "scheduler-web", "to": "studio", "kind": "uses", "note": ""},
+)  # fmt: skip
 
 # How many polls of GET /api/changes/{id} a change spends in each state.
 POLLS_DRAFTING = 2
@@ -2763,6 +2786,8 @@ class Handler(BaseHTTPRequestHandler):
         path, state = split
         if path == "/api/projects":
             return self._json(self.server.projects())
+        if path == "/api/workspace":
+            return self._json(self.server.workspace())
         if path == "/api/model":
             return self._json(state.get_model())
         if path == "/api/areas":
@@ -3047,6 +3072,27 @@ class MockServer(ThreadingHTTPServer):
         self.state = self.states[DEFAULT_PROJECT]
         self.states[SECOND_PROJECT].plans.seed_fixtures()  # API v1.10: resume fixtures
         self.verbose = verbose
+        self.workspace_enabled = True  # API v1.16: False answers the no-manifest shape
+
+    def workspace(self) -> dict[str, Any]:
+        """``GET /api/workspace`` (v1.16): the fixture manifest over the mock's projects."""
+        from lattice.workspace import WARNING, Problem
+
+        if not self.workspace_enabled:
+            return {"workspace": None, "projects": [], "links": [], "problems": []}
+        rows, problems = [], []
+        for name, hub, path, role, spec in MOCK_WORKSPACE_PROJECTS:
+            if hub is not None:
+                with self.states[hub].lock:
+                    path = self.states[hub].model["project"]["root"]
+            else:
+                problems.append(Problem("missing_path", f"project {name}: {path} does not exist",
+                                        WARNING).to_dict())  # fmt: skip
+            rows.append({"name": name, "path": path, "role": role, "in_hub": hub is not None,
+                         "hub_name": hub, "spec": spec})  # fmt: skip
+        return {"workspace": {"name": MOCK_WORKSPACE_NAME, "path": MOCK_WORKSPACE_PATH},
+                "projects": rows, "links": [dict(lk) for lk in MOCK_WORKSPACE_LINKS],
+                "problems": problems}  # fmt: skip
 
     def projects(self) -> list[dict[str, Any]]:
         """``GET /api/projects``."""

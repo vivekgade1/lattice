@@ -31,6 +31,7 @@ export const state = {
   // v1.6 projects
   projects: null, // GET /api/projects (array) or null before it loaded / when it failed
   project: null, // the project the owner picked (name), or null for the server's default
+  workspace: null, // v1.16: GET /api/workspace when it names a workspace, else null
   switching: false, // a project switch is loading its model
 };
 

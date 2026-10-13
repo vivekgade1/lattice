@@ -21,6 +21,10 @@ scenario and stops it.
 * **Deterministic commits.** The project's git runs with fixed author, committer and
   dates, and no global or system git config (no signing, no hooks), so the seed commit
   and every commit Studio makes are reproducible: the spec can state commit ids.
+* **A workspace.** ``make_project`` writes ``lattice.workspace.toml`` (``WORKSPACE_TOML``)
+  next to the project directory, outside its git repository: Studio, started in the project,
+  finds it walking up and ``GET /api/workspace`` answers it (API v1.16). ``billing/`` exists
+  (not a project), ``shared/`` does not (a ``missing_path`` warning).
 * **Mutants.** ``LATTICE_STUDIO_PYTHONPATH``, when set, becomes the server's
   ``PYTHONPATH`` (the checker itself keeps the working tree's ``lattice``): the
   mutation run of docs/results/2026-10-10-dogfood-results.md points it at a patched
@@ -57,6 +61,41 @@ SERVE = 'exec "$0" -m lattice.studio "$1" --port "$PORT" --quiet --stub-llm'
 
 RUNTIME = process_runtime(framework="studio")  # not a Python web framework: no layer A
 
+WORKSPACE_TOML = """[workspace]
+name = "dogfood"
+
+[[project]]
+name = "notes"
+path = "notes"
+role = "app"
+
+[[project]]
+name = "billing"
+path = "billing"
+role = "provider"
+
+[[project]]
+name = "shared"
+path = "shared"
+role = "library"
+
+[[link]]
+from = "notes"
+to = "billing"
+kind = "uses"
+note = "POST /invoices"
+
+[[link]]
+from = "notes"
+to = "shared"
+kind = "depends_on"
+
+[[link]]
+from = "billing"
+to = "shared"
+kind = "depends_on"
+"""
+
 
 def _git(root: Path, *args: str) -> None:
     subprocess.run(["git", "-C", str(root), *args], env={**os.environ, **GIT_ENV},
@@ -72,6 +111,8 @@ def make_project(parent: Path) -> Path:
     _git(root, "add", "-A")
     _git(root, "commit", "-q", "-m", "seed")
     (root / "SCRATCH.txt").write_text("an untracked file: no accept commits it\n")
+    (root.parent / "lattice.workspace.toml").write_text(WORKSPACE_TOML)  # outside the repo
+    (root.parent / "billing").mkdir()
     return root
 
 

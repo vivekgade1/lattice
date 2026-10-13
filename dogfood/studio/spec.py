@@ -68,6 +68,12 @@ What makes the answers exact:
   spec.trace.json only, message ``spec: sync from main <sha7>`` with the
   ``Lattice-Spec-Sync`` trailer) is recorded the same way.
 
+- the workspace (API.md v1.16): the harness writes ``lattice.workspace.toml`` next to each
+  scenario's project directory (``WORKSPACE_TOML`` in harness.py): ``notes`` (this project,
+  ``app``), ``billing`` (a directory that is not a project, ``provider``) and ``shared`` (a
+  missing directory, ``library``: a ``missing_path`` warning), three links. Studio starts in
+  the project directory and finds it walking up.
+
 Studio has no database and no login: there are no tables, invariants, machines or users,
 and layers B, C and R have nothing to bind to (the harness's marker database is never
 read). Self-contained on purpose: Studio loads this module in isolation.
@@ -206,6 +212,23 @@ REJECTED_PROPOSAL = {"signal_key": "change:rejected", "kind": "experiment", "sta
                      "score": None, "unit": None, "score_class": "C", "frequency": 1,
                      "cost_per": None, "target_paths": ["lattice/spec/draft.py"],
                      "title": "1 change set(s) rejected"}  # fmt: skip
+
+# ---- the workspace manifest (API.md v1.16, multi-project layer 2) ------------------------------
+# harness.WORKSPACE_TOML, written next to each scenario's project; paths are per-run temp dirs
+WORKSPACE = {
+    "workspace": {"name": "dogfood"},
+    "projects": [
+        {"name": "notes", "role": "app", "in_hub": True, "hub_name": "notes", "spec": True},
+        {"name": "billing", "role": "provider", "in_hub": False, "hub_name": None, "spec": False},
+        {"name": "shared", "role": "library", "in_hub": False, "hub_name": None, "spec": False},
+    ],
+    "links": [
+        {"from": "notes", "to": "billing", "kind": "uses", "note": "POST /invoices"},
+        {"from": "notes", "to": "shared", "kind": "depends_on", "note": ""},
+        {"from": "billing", "to": "shared", "kind": "depends_on", "note": ""},
+    ],
+    "problems": [{"code": "missing_path", "severity": "warning"}],
+}
 
 # ---- database engines and modules (API.md v1.14) ---------------------------------------------
 # the seed has no [app], no [engines] and no modules: the built-ins, SQLite used (the default)
@@ -1215,6 +1238,13 @@ SCENARIOS = (
         # an accept is logged (two more events) and proposes nothing
         Step("GET", "/api/improve", expect_body={"events": 4, "proposals": [REJECTED_PROPOSAL]}),
     )),
+    Scenario("the_workspace_is_listed", steps=(
+        Step("GET", "/api/workspace", expect_body=WORKSPACE),
+        Step("GET", "/p/notes/api/workspace", expect_body=WORKSPACE),
+        refused("POST", "/api/workspace", 404, "no such route", json={}),
+        Step("GET", "/api/workspace", expect_body=WORKSPACE),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1375,6 +1405,10 @@ UNCHECKED = (
               "never produces; tests/improve/test_analyze.py and test_cli.py check them on "
               "hand-made logs (the I-4 refusal), tests/improve/test_import.py on Streak's real "
               "plan records."),
+    Unchecked("R93 (no manifest; a manifest with errors) needs a scenario run with no manifest or "
+              "a broken one, and the harness puts every scenario under one valid manifest; "
+              "tests/workspace/test_studio_api.py checks both on the real server and the mock, "
+              "tests/workspace/test_workspace.py each error class."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

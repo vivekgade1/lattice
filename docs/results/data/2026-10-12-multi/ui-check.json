@@ -1,0 +1,37 @@
+{
+ "switcher": [
+  [
+   "scheduler · provider",
+   "job-scheduler-studio",
+   false
+  ],
+  [
+   "studio · app",
+   "lattice-studio",
+   false
+  ],
+  [
+   "scheduler-web · consumer (not in this Studio)",
+   "",
+   true
+  ]
+ ],
+ "optgroup": "Workspace owner-dev",
+ "mapModes": [
+  "Graph",
+  "List",
+  "Workspace"
+ ],
+ "workspaceCanvas": true,
+ "workspaceStatus": "Workspace owner-dev: 3 projects, 3 links. A line runs from a project to the one it relies on (solid: depends on; dashed: uses). Double-click a project this Studio serves to open it.",
+ "workspaceNodes": [
+  "schedulerprovider",
+  "studioapp",
+  "scheduler-webconsumer · not in this Studio · no spec"
+ ],
+ "workspaceEdges": 3,
+ "problems": [
+  "warning: project scheduler-web: /Users/owner/scheduler-web does not exist"
+ ],
+ "console": []
+}
