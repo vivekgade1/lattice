@@ -1,0 +1,49 @@
+{
+ "id": "J5b",
+ "identical": true,
+ "observed": {
+  "checks": {
+   "N=15 over": true,
+   "new notes = old notes + no trade": true,
+   "no trade accepted note": true,
+   "no trade note": true,
+   "not exact": true
+  },
+  "new": "fail",
+  "notes": [
+   "over budget: constant 7 > budget 6",
+   "over budget: N=15: 30 statements > allowed 21",
+   "fit not exact: the counts are not one line in N (the fit uses the largest count per size)",
+   "no trade: per_item 0 < budget 1, but a measured size is over its allowed count, so constant 7 > budget 6 stays over budget",
+   "better than the budget: per_item 0 < 1"
+  ],
+  "old": "fail",
+  "summary": "fail -> fail"
+ },
+ "pass": true,
+ "prediction": {
+  "checks": {
+   "N=15 over": true,
+   "new notes = old notes + no trade": true,
+   "no trade accepted note": true,
+   "no trade note": true,
+   "not exact": true
+  },
+  "new": "fail",
+  "old": "fail",
+  "text": "fail -> fail; N=15 over, not exact, no trade note, new notes = old notes + no trade, no trade accepted note"
+ },
+ "runs": 10,
+ "sha256": [
+  "df1e05afde7235fea312ec78e7c1623edee440b35f2e8307b774966d61892abb",
+  "df1e05afde7235fea312ec78e7c1623edee440b35f2e8307b774966d61892abb",
+  "df1e05afde7235fea312ec78e7c1623edee440b35f2e8307b774966d61892abb",
+  "df1e05afde7235fea312ec78e7c1623edee440b35f2e8307b774966d61892abb",
+  "df1e05afde7235fea312ec78e7c1623edee440b35f2e8307b774966d61892abb",
+  "df1e05afde7235fea312ec78e7c1623edee440b35f2e8307b774966d61892abb",
+  "df1e05afde7235fea312ec78e7c1623edee440b35f2e8307b774966d61892abb",
+  "df1e05afde7235fea312ec78e7c1623edee440b35f2e8307b774966d61892abb",
+  "df1e05afde7235fea312ec78e7c1623edee440b35f2e8307b774966d61892abb",
+  "df1e05afde7235fea312ec78e7c1623edee440b35f2e8307b774966d61892abb"
+ ]
+}

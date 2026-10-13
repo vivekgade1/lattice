@@ -1,0 +1,252 @@
+{
+ "hashes": {
+  "lattice/perf/budget.py": "9aff69d8c9c5fdf4",
+  "lattice/perf/measure.py": "51976f333940ff4c",
+  "lattice/perf/__main__.py": "1426b9b7f239fa59",
+  "tests/perf/test_budget.py": "c84c27017518a7cf",
+  "tests/perf/test_measure.py": "365fba5fffc06c12",
+  "dogfood/perf_mutants.py": "dae05be26c1b67d6"
+ },
+ "streak": "None",
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "68 passed in 0.55s",
+    "seconds": 0.7,
+    "tail": "....................................................................     [100%]\n68 passed in 0.55s\n"
+   },
+   "caught_by": [],
+   "verdict": "PASS (control)"
+  },
+  "PM2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_exactly_at_budget_passes",
+     "tests/perf/test_budget.py::test_latency_compared_only_when_set",
+     "tests/perf/test_budget.py::test_zero_per_item_budget_met_exactly_passes",
+     "tests/perf/test_measure.py::test_cli_check_pass_is_exit_0",
+     "tests/perf/test_measure.py::test_cli_json_report",
+     "tests/perf/test_measure.py::test_constant_endpoint_counts_exactly",
+     "tests/perf/test_measure.py::test_in_repo_racy_notes_app"
+    ],
+    "summary": "7 failed, 61 passed in 0.62s",
+    "seconds": 0.8,
+    "tail": "_path, capsys):\n        d = _project(tmp_path, [_budget(\"GET /items_n1\", 2, 1, id=\"n1\")])\n>       assert perf_main([\"check\", \"--project\", str(d), \"--runs\", \"2\", \"--json\", \"--sizes\", \"1,4\"]) == 0\nE       AssertionError: assert 1 == 0\nE        +  where 1 = perf_main(['check', '--project', '/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2667/test_cli_json_report0/proj', '--runs', '2', '--json', ...])\n\ntests/perf/test_measure.py:214: AssertionError\n----------------------------- Captured stdout call -----------------------------\n{\n \"version\": 1,\n \"command\": \"check\",\n \"project\": \"/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2667/test_cli_json_report0/proj\",\n \"budget_file\": \"/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2667/test_cli_json_report0/proj/perf.budget.json\",\n \"verdict\": \"fail\",\n \"reports\": [\n  {\n   \"budget_id\": \"n1\",\n   \"endpoint\": \"GET /items_n1\",\n   \"sizes\": [\n    {\n     \"n\": 1,\n     \"statements\": [\n      3,\n      3\n     ],\n     \"latency_ms\": {\n      \"min\": 0.466,\n      \"median\": 0.523,\n      \"max\": 0.58\n     }\n    },\n    {\n     \"n\": 4,\n     \"statements\": [\n      6,\n      6\n     ],\n     \"latency_ms\": {\n      \"min\": 0.561,\n      \"median\": 0.571,\n      \"max\": 0.581\n     }\n    }\n   ],\n   \"fit\": {\n    \"constant\": 2,\n    \"per_item\": 1,\n    \"exact\": true\n   },\n   \"budget\": {\n    \"queries\": {\n     \"constant\": 2,\n     \"per_item\": 1\n    },\n    \"latency_ms\": null\n   },\n   \"verdict\": \"fail\",\n   \"delta\": {\n    \"constant\": 0,\n    \"per_item\": 0\n   },\n   \"notes\": [\n    \"over budget: per_item 1 > budget 1\",\n    \"database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\",\n    \"2 run(s) per size, one fresh app and database per size\"\n   ]\n  }\n ]\n}\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_exactly_at_budget_passes - AssertionEr...\nFAILED tests/perf/test_budget.py::test_zero_per_item_budget_met_exactly_passes\nFAILED tests/perf/test_budget.py::test_latency_compared_only_when_set - Asser...\nFAILED tests/perf/test_measure.py::test_constant_endpoint_counts_exactly - As...\nFAILED tests/perf/test_measure.py::test_in_repo_racy_notes_app - AssertionErr...\nFAILED tests/perf/test_measure.py::test_cli_check_pass_is_exit_0 - AssertionE...\nFAILED tests/perf/test_measure.py::test_cli_json_report - AssertionError: ass...\n7 failed, 61 passed in 0.62s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PM1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails",
+     "tests/perf/test_budget.py::test_exactly_at_budget_passes",
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_fit_constant_is_the_intercept_not_a_count",
+     "tests/perf/test_budget.py::test_fit_is_rational_and_exact",
+     "tests/perf/test_budget.py::test_fit_of_the_p0_numbers_is_n_plus_6",
+     "tests/perf/test_budget.py::test_latency_compared_only_when_set",
+     "tests/perf/test_budget.py::test_render_table",
+     "tests/perf/test_budget.py::test_report_schema",
+     "tests/perf/test_budget.py::test_reverse_trade_is_refused",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover",
+     "tests/perf/test_measure.py::test_cli_json_report",
+     "tests/perf/test_measure.py::test_n_plus_one_is_fitted_and_fails_a_constant_budget"
+    ],
+    "summary": "13 failed, 55 passed in 0.63s",
+    "seconds": 0.9,
+    "tail": "oject\": \"/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2668/test_cli_json_report0/proj\",\n \"budget_file\": \"/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2668/test_cli_json_report0/proj/perf.budget.json\",\n \"verdict\": \"fail\",\n \"reports\": [\n  {\n   \"budget_id\": \"n1\",\n   \"endpoint\": \"GET /items_n1\",\n   \"sizes\": [\n    {\n     \"n\": 1,\n     \"statements\": [\n      3,\n      3\n     ],\n     \"latency_ms\": {\n      \"min\": 0.464,\n      \"median\": 0.497,\n      \"max\": 0.529\n     }\n    },\n    {\n     \"n\": 4,\n     \"statements\": [\n      6,\n      6\n     ],\n     \"latency_ms\": {\n      \"min\": 0.49,\n      \"median\": 0.529,\n      \"max\": 0.569\n     }\n    }\n   ],\n   \"fit\": {\n    \"constant\": 6,\n    \"per_item\": 1,\n    \"exact\": false\n   },\n   \"budget\": {\n    \"queries\": {\n     \"constant\": 2,\n     \"per_item\": 1\n    },\n    \"latency_ms\": null\n   },\n   \"verdict\": \"fail\",\n   \"delta\": {\n    \"constant\": 4,\n    \"per_item\": 0\n   },\n   \"notes\": [\n    \"over budget: constant 6 > budget 2\",\n    \"database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\",\n    \"2 run(s) per size, one fresh app and database per size\",\n    \"fit not exact: the counts are not one line in N (the fit uses the largest count per size)\"\n   ]\n  }\n ]\n}\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_fit_of_the_p0_numbers_is_n_plus_6 - as...\nFAILED tests/perf/test_budget.py::test_fit_constant_is_the_intercept_not_a_count\nFAILED tests/perf/test_budget.py::test_fit_is_rational_and_exact - assert (Fr...\nFAILED tests/perf/test_budget.py::test_exactly_at_budget_passes - AssertionEr...\nFAILED tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails\nFAILED tests/perf/test_budget.py::test_reverse_trade_is_refused - AssertionEr...\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - a...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nFAILED tests/perf/test_budget.py::test_latency_compared_only_when_set - Asser...\nFAILED tests/perf/test_budget.py::test_report_schema - AssertionError: assert...\nFAILED tests/perf/test_budget.py::test_render_table - AssertionError: assert ...\nFAILED tests/perf/test_measure.py::test_n_plus_one_is_fitted_and_fails_a_constant_budget\nFAILED tests/perf/test_measure.py::test_cli_json_report - AssertionError: ass...\n13 failed, 55 passed in 0.63s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PM3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_app_statements_excludes_the_tools_connections_and_other_commands",
+     "tests/perf/test_measure.py::test_mysql_counter_truncates_counts_app_rows_and_restores"
+    ],
+    "summary": "2 failed, 66 passed in 0.59s",
+    "seconds": 0.8,
+    "tail": "        (12, \"Connect\", \"root@localhost on db\"),\n        ]\n>       assert app_statements(rows, {7}) == [\"SELECT * FROM users WHERE id = 1\", \"SELECT 1\",\n                                             \"SELECT 2\"]  # fmt: skip\nE       AssertionError: assert ['TRUNCATE TA...', 'SELECT 2'] == ['SELECT * FR...', 'SELECT 2']\nE         \nE         At index 0 diff: 'TRUNCATE TABLE mysql.general_log' != 'SELECT * FROM users WHERE id = 1'\nE         Left contains 2 more items, first extra item: 'SELECT thread_id, command_type, argument FROM mysql.general_log'\nE         Use -v to get more diff\n\ntests/perf/test_budget.py:328: AssertionError\n__________ test_mysql_counter_truncates_counts_app_rows_and_restores ___________\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10b1ed6e0>\n\n    def test_mysql_counter_truncates_counts_app_rows_and_restores(monkeypatch):\n        log = [(41, \"Query\", \"SELECT thread_id, command_type, argument FROM mysql.general_log\"),\n               (50, \"Prepare\", \"SELECT * FROM t WHERE id = ?\"),\n               (50, \"Execute\", \"SELECT * FROM t WHERE id = 1\"),\n               (50, \"Close stmt\", \"\"), (42, \"Query\", \"CREATE DATABASE x\")]  # fmt: skip\n        tool, admin = _FakeConn(41, log), _FakeConn(42, [])\n    \n        class Server:\n            url, container = \"mysql://root:x@127.0.0.1:1/mysql\", \"lattice-perf-mysql-0\"\n    \n            def admin(self):\n                return admin\n    \n        monkeypatch.setattr(\"lattice.spec.db.open_db\", lambda url: tool)\n        c = MysqlCounter(Server())\n        c.start()\n        assert c.tool_threads == {41, 42}\n        assert \"SET GLOBAL general_log = 1\" in tool.sent\n        c.begin()\n        assert tool.sent[-1] == \"TRUNCATE TABLE mysql.general_log\"\n>       assert c.end() == [\"SELECT * FROM t WHERE id = 1\"]\nE       AssertionError: assert ['SELECT thre...E DATABASE x'] == ['SELECT * FR...WHERE id = 1']\nE         \nE         At index 0 diff: 'SELECT thread_id, command_type, argument FROM mysql.general_log' != 'SELECT * FROM t WHERE id = 1'\nE         Left contains 2 more items, first extra item: 'SELECT * FROM t WHERE id = 1'\nE         Use -v to get more diff\n\ntests/perf/test_measure.py:169: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_app_statements_excludes_the_tools_connections_and_other_commands\nFAILED tests/perf/test_measure.py::test_mysql_counter_truncates_counts_app_rows_and_restores\n2 failed, 66 passed in 0.59s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PM4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_measure.py::test_cli_check_over_budget_is_exit_1_and_measure_is_0",
+     "tests/perf/test_measure.py::test_lattice_perf_dispatch"
+    ],
+    "summary": "2 failed, 66 passed in 0.59s",
+    "seconds": 0.8,
+    "tail": "get 2 + 0*N statements  ->  FAIL\n      N  statements per run            allowed    latency ms min/median/max\n      2  4 x2                                2           0.51 / 0.54 / 0.57\n      6  8 x2                                2           0.51 / 0.57 / 0.63\n  fit: 2 + 1*N (exact)\n  - over budget: per_item 1 > budget 0\n  - over budget: N=2: 4 statements > allowed 2\n  - over budget: N=6: 8 statements > allowed 2\n  - database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\n  - 2 run(s) per size, one fresh app and database per size\nperf: fail (0 pass, 1 fail, 0 unmeasured)\n__________________________ test_lattice_perf_dispatch __________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2670/test_lattice_perf_dispatch0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10b107530>\n\n    def test_lattice_perf_dispatch(tmp_path, capsys):\n        d = _project(tmp_path, [_budget(\"GET /items_n1\", 2, 0)])\n>       assert cli.main([\"perf\", \"check\", \"--project\", str(d), \"--runs\", \"1\"]) == 1\nE       AssertionError: assert 0 == 1\nE        +  where 0 = <function main at 0x109632da0>(['perf', 'check', '--project', '/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2670/test_lattice_perf_dispatch0/proj', '--runs', '1'])\nE        +    where <function main at 0x109632da0> = cli.main\n\ntests/perf/test_measure.py:248: AssertionError\n----------------------------- Captured stdout call -----------------------------\nb: GET /items_n1  budget 2 + 0*N statements  ->  FAIL\n      N  statements per run            allowed    latency ms min/median/max\n      2  4 x1                                2           0.61 / 0.61 / 0.61\n      6  8 x1                                2           0.52 / 0.52 / 0.52\n  fit: 2 + 1*N (exact)\n  - over budget: per_item 1 > budget 0\n  - over budget: N=2: 4 statements > allowed 2\n  - over budget: N=6: 8 statements > allowed 2\n  - database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\n  - 1 run(s) per size, one fresh app and database per size\nperf: fail (0 pass, 1 fail, 0 unmeasured)\n=========================== short test summary info ============================\nFAILED tests/perf/test_measure.py::test_cli_check_over_budget_is_exit_1_and_measure_is_0\nFAILED tests/perf/test_measure.py::test_lattice_perf_dispatch - AssertionErro...\n2 failed, 66 passed in 0.59s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_constant_over_budget_fails",
+     "tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails",
+     "tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count"
+    ],
+    "summary": "3 failed, 65 passed in 0.61s",
+    "seconds": 0.8,
+    "tail": "et_fails():\n        r = judge(_budget(3, 0), _sizes({5: [4] * 3, 25: [4] * 3}))\n>       assert r.verdict == \"fail\" and any(\"constant 4 > budget 3\" in n for n in r.notes)\nE       AssertionError: assert ('fail' == 'fail'\nE         \nE           fail and False)\nE        +  where False = any(<generator object test_constant_over_budget_fails.<locals>.<genexpr> at 0x109379970>)\n\ntests/perf/test_budget.py:177: AssertionError\n_____________ test_no_trade_when_a_size_is_over_its_allowed_count ______________\n\n    def test_no_trade_when_a_size_is_over_its_allowed_count():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [12] * 10}))\n        assert r.verdict == \"fail\"\n>       assert \"over budget: constant 12 > budget 6\" in r.notes\nE       AssertionError: assert 'over budget: constant 12 > budget 6' in ['over budget: N=5: 12 statements > allowed 11', 'no trade: per_item 0 < budget 1, but a measured size is over its allowed count, so constant 12 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1']\nE        +  where ['over budget: N=5: 12 statements > allowed 11', 'no trade: per_item 0 < budget 1, but a measured size is over its allowed count, so constant 12 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1'] = Report(budget=Budget(id='home', method='GET', path='/v1/home', user='ann', steps=(SeedStep(method='POST', path='/v1/ha...ize is over its allowed count, so constant 12 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1']).notes\n\ntests/perf/test_budget.py:207: AssertionError\n______________ test_constant_over_with_equal_per_item_still_fails ______________\n\n    def test_constant_over_with_equal_per_item_still_fails():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [32] * 10}))\n        assert r.verdict == \"fail\"\n        assert r.delta() == {\"constant\": 1, \"per_item\": 0}\n>       assert any(\"constant 7 > budget 6\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_constant_over_with_equal_per_item_still_fails.<locals>.<genexpr> at 0x108f865a0>)\n\ntests/perf/test_budget.py:217: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_constant_over_budget_fails - Assertion...\nFAILED tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count\nFAILED tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails\n3 failed, 65 passed in 0.61s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count"
+    ],
+    "summary": "1 failed, 67 passed in 0.61s",
+    "seconds": 0.8,
+    "tail": "....................................F...............................     [100%]\n=================================== FAILURES ===================================\n_____________ test_no_trade_when_a_size_is_over_its_allowed_count ______________\n\n    def test_no_trade_when_a_size_is_over_its_allowed_count():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [12] * 10}))\n        assert r.verdict == \"fail\"\n>       assert \"over budget: constant 12 > budget 6\" in r.notes\nE       AssertionError: assert 'over budget: constant 12 > budget 6' in ['over budget: N=5: 12 statements > allowed 11', 'constant traded for per-item: constant 12 > budget 6 accepted (per_i...s allowed count); at or under the budget for N >= N* = 6, over it for N < 6', 'better than the budget: per_item 0 < 1']\nE        +  where ['over budget: N=5: 12 statements > allowed 11', 'constant traded for per-item: constant 12 > budget 6 accepted (per_i...s allowed count); at or under the budget for N >= N* = 6, over it for N < 6', 'better than the budget: per_item 0 < 1'] = Report(budget=Budget(id='home', method='GET', path='/v1/home', user='ann', steps=(SeedStep(method='POST', path='/v1/ha... allowed count); at or under the budget for N >= N* = 6, over it for N < 6', 'better than the budget: per_item 0 < 1']).notes\n\ntests/perf/test_budget.py:207: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count\n1 failed, 67 passed in 0.61s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_per_item_over_budget_fails",
+     "tests/perf/test_budget.py::test_reverse_trade_is_refused"
+    ],
+    "summary": "2 failed, 66 passed in 0.62s",
+    "seconds": 0.8,
+    "tail": "................................F.....F.............................     [100%]\n=================================== FAILURES ===================================\n_______________________ test_per_item_over_budget_fails ________________________\n\n    def test_per_item_over_budget_fails():\n        r = judge(_budget(4, 0), _sizes({5: [9] * 10, 25: [29] * 10}))\n        assert r.verdict == \"fail\"\n>       assert any(\"per_item 1 > budget 0\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_per_item_over_budget_fails.<locals>.<genexpr> at 0x10aa09970>)\n\ntests/perf/test_budget.py:172: AssertionError\n________________________ test_reverse_trade_is_refused _________________________\n\n    def test_reverse_trade_is_refused():\n        # a cheaper constant bought with a per-item cost the budget does not allow\n        r = judge(_budget(30, 0), _sizes({5: [5] * 10, 25: [25] * 10}))\n>       assert r.verdict == \"fail\"\nE       AssertionError: assert 'pass' == 'fail'\nE         \nE         - fail\nE         + pass\n\ntests/perf/test_budget.py:224: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_per_item_over_budget_fails - assert False\nFAILED tests/perf/test_budget.py::test_reverse_trade_is_refused - AssertionEr...\n2 failed, 66 passed in 0.62s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes",
+     "tests/perf/test_budget.py::test_trade_does_not_excuse_latency",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover",
+     "tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover"
+    ],
+    "summary": "5 failed, 63 passed in 0.62s",
+    "seconds": 0.8,
+    "tail": "t.py:234: AssertionError\n____________________ test_trade_at_the_boundary_size_passes ____________________\n\n    def test_trade_at_the_boundary_size_passes():\n        # 11 statements at N=5 is exactly the allowed 6 + 1*5; the crossover is the size itself\n        r = judge(_budget(6, 1), _sizes({5: [11] * 10, 25: [11] * 10}))\n        assert r.verdict == \"pass\", r.notes\n>       assert any(\"constant 11 > budget 6\" in n and \"N* = 5\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_trade_at_the_boundary_size_passes.<locals>.<genexpr> at 0x106b53030>)\n\ntests/perf/test_budget.py:241: AssertionError\n______________________ test_trade_does_not_excuse_latency ______________________\n\n    def test_trade_does_not_excuse_latency():\n        slow = _sizes({5: [7] * 3, 25: [7] * 3}, lat=[100.0, 120.0, 110.0])\n        r = judge(_budget(6, 1, {\"median\": 50, \"size\": 25, \"margin\": 0.5}), slow)\n        assert r.verdict == \"fail\"\n        assert any(n.startswith(\"over budget: latency: median 110.00 ms\") for n in r.notes)\n>       assert any(n.startswith(\"constant traded for per-item\") for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_trade_does_not_excuse_latency.<locals>.<genexpr> at 0x1087049e0>)\n\ntests/perf/test_budget.py:249: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n        r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (9, Fraction(-1, 5))\n        assert r.verdict == \"pass\", r.notes\n>       assert any(\"constant 9 > budget 8\" in n and \"N* = 5\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_falling_count_trades_against_a_zero_per_item_budget.<locals>.<genexpr> at 0x10843e4d0>)\n\ntests/perf/test_budget.py:257: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - a...\nFAILED tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes - as...\nFAILED tests/perf/test_budget.py::test_trade_does_not_excuse_latency - assert...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\n5 failed, 63 passed in 0.62s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes",
+     "tests/perf/test_budget.py::test_trade_does_not_excuse_latency",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover",
+     "tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover"
+    ],
+    "summary": "5 failed, 63 passed in 0.63s",
+    "seconds": 0.8,
+    "tail": "es({5: [11] * 10, 25: [11] * 10}))\n>       assert r.verdict == \"pass\", r.notes\nE       AssertionError: ['over budget: constant 11 > budget 6', 'constant traded for per-item: constant 11 > budget 6 accepted (per_item 0 < b...s allowed count); at or under the budget for N >= N* = 5, over it for N < 5', 'better than the budget: per_item 0 < 1']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:240: AssertionError\n______________________ test_trade_does_not_excuse_latency ______________________\n\n    def test_trade_does_not_excuse_latency():\n        slow = _sizes({5: [7] * 3, 25: [7] * 3}, lat=[100.0, 120.0, 110.0])\n        r = judge(_budget(6, 1, {\"median\": 50, \"size\": 25, \"margin\": 0.5}), slow)\n        assert r.verdict == \"fail\"\n        assert any(n.startswith(\"over budget: latency: median 110.00 ms\") for n in r.notes)\n        assert any(n.startswith(\"constant traded for per-item\") for n in r.notes)\n>       assert not any(n.startswith(\"over budget: constant\") for n in r.notes)\nE       assert not True\nE        +  where True = any(<generator object test_trade_does_not_excuse_latency.<locals>.<genexpr> at 0x10d0309e0>)\n\ntests/perf/test_budget.py:250: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n        r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (9, Fraction(-1, 5))\n>       assert r.verdict == \"pass\", r.notes\nE       AssertionError: ['over budget: constant 9 > budget 8', 'constant traded for per-item: constant 9 > budget 8 accepted (per_item -0.2 < ...llowed count); at or under the budget for N >= N* = 5, over it for N < 5', 'better than the budget: per_item -0.2 < 0']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:256: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - A...\nFAILED tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes - As...\nFAILED tests/perf/test_budget.py::test_trade_does_not_excuse_latency - assert...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\n5 failed, 63 passed in 0.63s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover"
+    ],
+    "summary": "2 failed, 66 passed in 0.63s",
+    "seconds": 0.8,
+    "tail": ".......................................F..F.........................     [100%]\n=================================== FAILURES ===================================\n___________________ test_trade_shows_a_fractional_crossover ____________________\n\n    def test_trade_shows_a_fractional_crossover():\n        r = judge(_budget(4, 3), _sizes({5: [12] * 10, 25: [32] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (7, 1)\n        assert r.verdict == \"pass\", r.notes\n>       assert any(\"constant 7 > budget 4\" in n and \"N* = 1.5\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_trade_shows_a_fractional_crossover.<locals>.<genexpr> at 0x10ac7d970>)\n\ntests/perf/test_budget.py:234: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n>       r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/perf/test_budget.py:254: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-perf1a-mutant-PR6-d3wmwdkm/lattice/perf/budget.py:451: in judge\n    n_star = _show((f.constant - budget.constant) / budget.per_item)  # MUTANT PR6\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/fractions.py:699: in forward\n    return monomorphic_operator(a, b)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\na = Fraction(1, 1), b = Fraction(0, 1)\n\n    def _div(a, b):\n        \"\"\"a / b\"\"\"\n        # Same as _mul(), with inversed b.\n        nb, db = b._numerator, b._denominator\n        if nb == 0:\n>           raise ZeroDivisionError('Fraction(%s, 0)' % db)\nE           ZeroDivisionError: Fraction(1, 0)\n\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/fractions.py:847: ZeroDivisionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - a...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\n2 failed, 66 passed in 0.63s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_trade_does_not_excuse_latency"
+    ],
+    "summary": "1 failed, 67 passed in 0.61s",
+    "seconds": 0.8,
+    "tail": ".........................................F..........................     [100%]\n=================================== FAILURES ===================================\n______________________ test_trade_does_not_excuse_latency ______________________\n\n    def test_trade_does_not_excuse_latency():\n        slow = _sizes({5: [7] * 3, 25: [7] * 3}, lat=[100.0, 120.0, 110.0])\n        r = judge(_budget(6, 1, {\"median\": 50, \"size\": 25, \"margin\": 0.5}), slow)\n>       assert r.verdict == \"fail\"\nE       AssertionError: assert 'pass' == 'fail'\nE         \nE         - fail\nE         + pass\n\ntests/perf/test_budget.py:247: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trade_does_not_excuse_latency - Assert...\n1 failed, 67 passed in 0.61s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes"
+    ],
+    "summary": "2 failed, 66 passed in 0.61s",
+    "seconds": 0.8,
+    "tail": "........................................F.F.........................     [100%]\n=================================== FAILURES ===================================\n____________________ test_trade_at_the_boundary_size_passes ____________________\n\n    def test_trade_at_the_boundary_size_passes():\n        # 11 statements at N=5 is exactly the allowed 6 + 1*5; the crossover is the size itself\n        r = judge(_budget(6, 1), _sizes({5: [11] * 10, 25: [11] * 10}))\n>       assert r.verdict == \"pass\", r.notes\nE       AssertionError: ['over budget: constant 11 > budget 6', 'no trade: per_item 0 < budget 1, but a measured size is over its allowed count, so constant 11 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:240: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n        r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (9, Fraction(-1, 5))\n>       assert r.verdict == \"pass\", r.notes\nE       AssertionError: ['over budget: constant 9 > budget 8', 'no trade: per_item -0.2 < budget 0, but a measured size is over its allowed count, so constant 9 > budget 8 stays over budget', 'better than the budget: per_item -0.2 < 0']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:256: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes - As...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\n2 failed, 66 passed in 0.61s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count"
+    ],
+    "summary": "1 failed, 67 passed in 0.56s",
+    "seconds": 0.7,
+    "tail": "....................................F...............................     [100%]\n=================================== FAILURES ===================================\n_____________ test_no_trade_when_a_size_is_over_its_allowed_count ______________\n\n    def test_no_trade_when_a_size_is_over_its_allowed_count():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [12] * 10}))\n        assert r.verdict == \"fail\"\n        assert \"over budget: constant 12 > budget 6\" in r.notes\n        assert \"over budget: N=5: 12 statements > allowed 11\" in r.notes\n>       assert any(n.startswith(\"no trade:\") for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_no_trade_when_a_size_is_over_its_allowed_count.<locals>.<genexpr> at 0x10a7d0580>)\n\ntests/perf/test_budget.py:209: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count\n1 failed, 67 passed in 0.56s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  }
+ }
+}

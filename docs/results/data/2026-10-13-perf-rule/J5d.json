@@ -1,0 +1,45 @@
+{
+ "id": "J5d",
+ "identical": true,
+ "observed": {
+  "checks": {
+   "latency fails alone": true,
+   "no constant line": true,
+   "old had the constant line": true,
+   "trade note": true
+  },
+  "new": "fail",
+  "notes": [
+   "over budget: latency: median 110.00 ms at N=25 > 50 ms x (1 + 0.5) = 75.00 ms",
+   "constant traded for per-item: constant 7 > budget 6 accepted (per_item 0 < budget 1, every measured size within its allowed count); at or under the budget for N >= N* = 1, over it for N < 1",
+   "better than the budget: per_item 0 < 1"
+  ],
+  "old": "fail",
+  "summary": "fail -> fail"
+ },
+ "pass": true,
+ "prediction": {
+  "checks": {
+   "latency fails alone": true,
+   "no constant line": true,
+   "old had the constant line": true,
+   "trade note": true
+  },
+  "new": "fail",
+  "old": "fail",
+  "text": "fail -> fail; latency fails alone, no constant line, trade note, old had the constant line"
+ },
+ "runs": 10,
+ "sha256": [
+  "c748ef19eeba247c7da6d149ff7033392b4884cac563439b2f2e86210bc5680d",
+  "c748ef19eeba247c7da6d149ff7033392b4884cac563439b2f2e86210bc5680d",
+  "c748ef19eeba247c7da6d149ff7033392b4884cac563439b2f2e86210bc5680d",
+  "c748ef19eeba247c7da6d149ff7033392b4884cac563439b2f2e86210bc5680d",
+  "c748ef19eeba247c7da6d149ff7033392b4884cac563439b2f2e86210bc5680d",
+  "c748ef19eeba247c7da6d149ff7033392b4884cac563439b2f2e86210bc5680d",
+  "c748ef19eeba247c7da6d149ff7033392b4884cac563439b2f2e86210bc5680d",
+  "c748ef19eeba247c7da6d149ff7033392b4884cac563439b2f2e86210bc5680d",
+  "c748ef19eeba247c7da6d149ff7033392b4884cac563439b2f2e86210bc5680d",
+  "c748ef19eeba247c7da6d149ff7033392b4884cac563439b2f2e86210bc5680d"
+ ]
+}

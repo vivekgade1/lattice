@@ -1,0 +1,41 @@
+{
+ "id": "J5g",
+ "identical": true,
+ "observed": {
+  "checks": {
+   "constant over": true,
+   "to_dict identical": true
+  },
+  "new": "fail",
+  "notes": [
+   "over budget: constant 7 > budget 6",
+   "over budget: N=5: 12 statements > allowed 11",
+   "over budget: N=25: 32 statements > allowed 31"
+  ],
+  "old": "fail",
+  "summary": "fail -> fail"
+ },
+ "pass": true,
+ "prediction": {
+  "checks": {
+   "constant over": true,
+   "to_dict identical": true
+  },
+  "new": "fail",
+  "old": "fail",
+  "text": "fail -> fail; constant over, to_dict identical"
+ },
+ "runs": 10,
+ "sha256": [
+  "4e8ae131fc844c3a5e7676fb6e3699e2ca512d3c569eb5ec56baa6b045b90bb7",
+  "4e8ae131fc844c3a5e7676fb6e3699e2ca512d3c569eb5ec56baa6b045b90bb7",
+  "4e8ae131fc844c3a5e7676fb6e3699e2ca512d3c569eb5ec56baa6b045b90bb7",
+  "4e8ae131fc844c3a5e7676fb6e3699e2ca512d3c569eb5ec56baa6b045b90bb7",
+  "4e8ae131fc844c3a5e7676fb6e3699e2ca512d3c569eb5ec56baa6b045b90bb7",
+  "4e8ae131fc844c3a5e7676fb6e3699e2ca512d3c569eb5ec56baa6b045b90bb7",
+  "4e8ae131fc844c3a5e7676fb6e3699e2ca512d3c569eb5ec56baa6b045b90bb7",
+  "4e8ae131fc844c3a5e7676fb6e3699e2ca512d3c569eb5ec56baa6b045b90bb7",
+  "4e8ae131fc844c3a5e7676fb6e3699e2ca512d3c569eb5ec56baa6b045b90bb7",
+  "4e8ae131fc844c3a5e7676fb6e3699e2ca512d3c569eb5ec56baa6b045b90bb7"
+ ]
+}

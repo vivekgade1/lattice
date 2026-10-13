@@ -1,0 +1,168 @@
+{
+ "old_rev": "7358be2",
+ "passed": 24,
+ "post_hoc_observations": {
+  "c_le_c_p_lt_p_within_latency_fail": {
+   "identical": false,
+   "new_notes": [
+    "over budget: latency: median 110.00 ms at N=25 > 50 ms x (1 + 0.5) = 75.00 ms",
+    "better than the budget: per_item 0 < 1"
+   ],
+   "new_verdict": "fail",
+   "old_notes": [
+    "over budget: latency: median 110.00 ms at N=25 > 50 ms x (1 + 0.5) = 75.00 ms",
+    "every measured size is within its allowed count: the constant grew while the per-item cost fell (a trade the budget's rule counts as over budget)",
+    "better than the budget: per_item 0 < 1"
+   ],
+   "old_verdict": "fail"
+  }
+ },
+ "probes": {
+  "J1": {
+   "identical": true,
+   "observed": "old as recorded 6/6, differing ['J1a']",
+   "pass": true,
+   "predicted": "old 6/6 as recorded, new 6/6 as table, only J1a differs, b-f byte-identical 5/5"
+  },
+  "J1a": {
+   "identical": true,
+   "observed": "J1a: old fail -> new pass; 2 notes; delta {'constant': 1, 'per_item': -1}",
+   "pass": true,
+   "predicted": "old fail -> new pass; 2 notes; delta {'constant': 1, 'per_item': -1}; old notes = recorded three"
+  },
+  "J1b": {
+   "identical": true,
+   "observed": "J1b: old pass -> new pass; 0 notes; delta {'constant': 0, 'per_item': 0}",
+   "pass": true,
+   "predicted": "old pass -> new pass; 0 notes; delta {'constant': 0, 'per_item': 0}; to_dict old==new"
+  },
+  "J1c": {
+   "identical": true,
+   "observed": "J1c: old pass -> new pass; 1 notes; delta {'constant': -1, 'per_item': 0}",
+   "pass": true,
+   "predicted": "old pass -> new pass; 1 notes; delta {'constant': -1, 'per_item': 0}; to_dict old==new"
+  },
+  "J1d": {
+   "identical": true,
+   "observed": "J1d: old fail -> new fail; 4 notes; delta {'constant': -2, 'per_item': 1}",
+   "pass": true,
+   "predicted": "old fail -> new fail; 4 notes; delta {'constant': -2, 'per_item': 1}; to_dict old==new"
+  },
+  "J1e": {
+   "identical": true,
+   "observed": "J1e: old fail -> new fail; 3 notes; delta {'constant': 0, 'per_item': 1}",
+   "pass": true,
+   "predicted": "old fail -> new fail; 3 notes; delta {'constant': 0, 'per_item': 1}; to_dict old==new"
+  },
+  "J1f": {
+   "identical": true,
+   "observed": "J1f: old pass -> new pass; 0 notes; delta {'constant': 0, 'per_item': 0}",
+   "pass": true,
+   "predicted": "old pass -> new pass; 0 notes; delta {'constant': 0, 'per_item': 0}; to_dict old==new"
+  },
+  "J2a": {
+   "identical": true,
+   "observed": "0 cells of 3510",
+   "pass": true,
+   "predicted": "0 cells of 3510"
+  },
+  "J2b": {
+   "identical": true,
+   "observed": "set_equal True, 599 cells",
+   "pass": true,
+   "predicted": "set_equal True, 599 cells"
+  },
+  "J2c": {
+   "identical": true,
+   "observed": "old 675, new-only 599, new 1274, no-trade 121",
+   "pass": true,
+   "predicted": "old 675, new-only 599, new 1274, no-trade 121 (over at N=5 only)"
+  },
+  "J2d": {
+   "identical": true,
+   "observed": "identical 2790, verdict+notes 599, notes-only 121, other 0, old note old/new 599/0, N* ok 599 max 5",
+   "pass": true,
+   "predicted": "identical 2790, verdict+notes 599, notes-only 121, old note 599/0, 599 N* in (0,5] max 5"
+  },
+  "J2e": {
+   "identical": true,
+   "observed": "PE1 3510/3510, PE2 3510/3510",
+   "pass": true,
+   "predicted": "PE1 3510/3510, PE2 3510/3510"
+  },
+  "J3ast": {
+   "identical": true,
+   "observed": "changed [], removed ['test_trading_constant_for_per_item_fails_on_the_constant_and_says_so'], added 8, unchanged functions 26",
+   "pass": true,
+   "predicted": "0 changed, 1 removed (the rewritten), 8 added"
+  },
+  "J4i": {
+   "identical": true,
+   "observed": "4/4 same keys and key paths old vs new",
+   "pass": true,
+   "predicted": "4/4 same keys and key paths old vs new"
+  },
+  "J4ii": {
+   "identical": true,
+   "observed": "new exit 0 pass, old exit 1 fail, keys equal True",
+   "pass": true,
+   "predicted": "new exit 0 pass with trade note N* = 1, old exit 1, same top-level keys"
+  },
+  "J5a": {
+   "identical": true,
+   "observed": "fail -> fail",
+   "pass": true,
+   "predicted": "fail -> fail; N=10 over, not exact, to_dict identical"
+  },
+  "J5b": {
+   "identical": true,
+   "observed": "fail -> fail",
+   "pass": true,
+   "predicted": "fail -> fail; N=15 over, not exact, no trade note, new notes = old notes + no trade, no trade accepted note"
+  },
+  "J5c": {
+   "identical": true,
+   "observed": "old ['pass', 'fail', 'pass'] new ['pass', 'fail', 'pass']",
+   "pass": true,
+   "predicted": "pass, fail, pass (same); to_dict identical"
+  },
+  "J5d": {
+   "identical": true,
+   "observed": "fail -> fail",
+   "pass": true,
+   "predicted": "fail -> fail; latency fails alone, no constant line, trade note, old had the constant line"
+  },
+  "J5e": {
+   "identical": true,
+   "observed": "fail -> fail",
+   "pass": true,
+   "predicted": "fail -> fail; per_item over, to_dict identical"
+  },
+  "J5f": {
+   "identical": true,
+   "observed": "fail -> fail",
+   "pass": true,
+   "predicted": "fail -> fail; per_item over, reverse trade refused, to_dict identical"
+  },
+  "J5g": {
+   "identical": true,
+   "observed": "fail -> fail",
+   "pass": true,
+   "predicted": "fail -> fail; constant over, to_dict identical"
+  },
+  "J5h": {
+   "identical": true,
+   "observed": "fail -> pass",
+   "pass": true,
+   "predicted": "fail -> pass; per_item -0.2, trade note N* = 5"
+  },
+  "J5i": {
+   "identical": true,
+   "observed": "fail -> pass",
+   "pass": true,
+   "predicted": "fail -> pass; fit 8 + 0N, fit not exact first, trade note N* = 2"
+  }
+ },
+ "runs": 10,
+ "total": 24
+}

@@ -1,0 +1,42 @@
+{
+ "id": "J5f",
+ "identical": true,
+ "observed": {
+  "checks": {
+   "per_item over": true,
+   "reverse trade refused": true,
+   "to_dict identical": true
+  },
+  "new": "fail",
+  "notes": [
+   "over budget: per_item 1 > budget 0",
+   "better than the budget: constant 0 < 30"
+  ],
+  "old": "fail",
+  "summary": "fail -> fail"
+ },
+ "pass": true,
+ "prediction": {
+  "checks": {
+   "per_item over": true,
+   "reverse trade refused": true,
+   "to_dict identical": true
+  },
+  "new": "fail",
+  "old": "fail",
+  "text": "fail -> fail; per_item over, reverse trade refused, to_dict identical"
+ },
+ "runs": 10,
+ "sha256": [
+  "87c65a75dec76a075b5db94cbac249e934170124a99b5df9f6981a08ec074683",
+  "87c65a75dec76a075b5db94cbac249e934170124a99b5df9f6981a08ec074683",
+  "87c65a75dec76a075b5db94cbac249e934170124a99b5df9f6981a08ec074683",
+  "87c65a75dec76a075b5db94cbac249e934170124a99b5df9f6981a08ec074683",
+  "87c65a75dec76a075b5db94cbac249e934170124a99b5df9f6981a08ec074683",
+  "87c65a75dec76a075b5db94cbac249e934170124a99b5df9f6981a08ec074683",
+  "87c65a75dec76a075b5db94cbac249e934170124a99b5df9f6981a08ec074683",
+  "87c65a75dec76a075b5db94cbac249e934170124a99b5df9f6981a08ec074683",
+  "87c65a75dec76a075b5db94cbac249e934170124a99b5df9f6981a08ec074683",
+  "87c65a75dec76a075b5db94cbac249e934170124a99b5df9f6981a08ec074683"
+ ]
+}

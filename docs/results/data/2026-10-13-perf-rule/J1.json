@@ -1,0 +1,36 @@
+{
+ "id": "J1",
+ "identical": true,
+ "observed": {
+  "new_verdicts_and_notes_as_table": 6,
+  "old_verdicts_as_recorded": 6,
+  "summary": "old as recorded 6/6, differing ['J1a']",
+  "to_dict_identical_b_to_f": 5,
+  "verdicts_differing": [
+   "J1a"
+  ]
+ },
+ "pass": true,
+ "prediction": {
+  "new_verdicts_and_notes_as_table": 6,
+  "old_verdicts_as_recorded": 6,
+  "text": "old 6/6 as recorded, new 6/6 as table, only J1a differs, b-f byte-identical 5/5",
+  "to_dict_identical_b_to_f": 5,
+  "verdicts_differing": [
+   "J1a"
+  ]
+ },
+ "runs": 10,
+ "sha256": [
+  "e0e346d2adbe6887f0adfe3147221b7806c9813ef6940c42a905ea8baf0f6c38",
+  "e0e346d2adbe6887f0adfe3147221b7806c9813ef6940c42a905ea8baf0f6c38",
+  "e0e346d2adbe6887f0adfe3147221b7806c9813ef6940c42a905ea8baf0f6c38",
+  "e0e346d2adbe6887f0adfe3147221b7806c9813ef6940c42a905ea8baf0f6c38",
+  "e0e346d2adbe6887f0adfe3147221b7806c9813ef6940c42a905ea8baf0f6c38",
+  "e0e346d2adbe6887f0adfe3147221b7806c9813ef6940c42a905ea8baf0f6c38",
+  "e0e346d2adbe6887f0adfe3147221b7806c9813ef6940c42a905ea8baf0f6c38",
+  "e0e346d2adbe6887f0adfe3147221b7806c9813ef6940c42a905ea8baf0f6c38",
+  "e0e346d2adbe6887f0adfe3147221b7806c9813ef6940c42a905ea8baf0f6c38",
+  "e0e346d2adbe6887f0adfe3147221b7806c9813ef6940c42a905ea8baf0f6c38"
+ ]
+}

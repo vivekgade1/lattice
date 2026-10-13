@@ -185,13 +185,76 @@ def test_better_than_budget_is_reported():
                for n in r.notes)  # fmt: skip
 
 
-def test_trading_constant_for_per_item_fails_on_the_constant_and_says_so():
+def test_trading_constant_for_per_item_passes_and_shows_the_crossover():
     r = judge(_budget(6, 1), _sizes({5: [7] * 10, 25: [7] * 10}))
-    assert r.verdict == "fail"
+    assert r.verdict == "pass", r.notes
     assert r.delta() == {"constant": 1, "per_item": -1}
+    assert len(r.notes) == 2
+    assert "constant traded for per-item" in r.notes[0]
+    assert "constant 7 > budget 6" in r.notes[0] and "N* = 1" in r.notes[0]
+    assert r.notes == [
+        "constant traded for per-item: constant 7 > budget 6 accepted (per_item 0 < budget 1, "
+        "every measured size within its allowed count); at or under the budget for N >= N* = 1, "
+        "over it for N < 1",
+        "better than the budget: per_item 0 < 1",
+    ]
+    assert not any(n.startswith("over budget") for n in r.notes)
+
+
+def test_no_trade_when_a_size_is_over_its_allowed_count():
+    r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [12] * 10}))
+    assert r.verdict == "fail"
+    assert "over budget: constant 12 > budget 6" in r.notes
+    assert "over budget: N=5: 12 statements > allowed 11" in r.notes
+    assert any(n.startswith("no trade:") for n in r.notes)
+    assert not any(n.startswith("constant traded") for n in r.notes)
+
+
+def test_constant_over_with_equal_per_item_still_fails():
+    r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [32] * 10}))
+    assert r.verdict == "fail"
+    assert r.delta() == {"constant": 1, "per_item": 0}
     assert any("constant 7 > budget 6" in n for n in r.notes)
-    assert any("per_item 0 < 1" in n for n in r.notes)
-    assert any("every measured size is within its allowed count" in n for n in r.notes)
+    assert not any(n.startswith(("no trade", "constant traded")) for n in r.notes)
+
+
+def test_reverse_trade_is_refused():
+    # a cheaper constant bought with a per-item cost the budget does not allow
+    r = judge(_budget(30, 0), _sizes({5: [5] * 10, 25: [25] * 10}))
+    assert r.verdict == "fail"
+    assert r.delta() == {"constant": -30, "per_item": 1}
+    assert any("per_item 1 > budget 0" in n for n in r.notes)
+    assert not any(n.startswith(("no trade", "constant traded")) for n in r.notes)
+
+
+def test_trade_shows_a_fractional_crossover():
+    r = judge(_budget(4, 3), _sizes({5: [12] * 10, 25: [32] * 10}))
+    assert (r.fit.constant, r.fit.per_item) == (7, 1)
+    assert r.verdict == "pass", r.notes
+    assert any("constant 7 > budget 4" in n and "N* = 1.5" in n for n in r.notes)
+
+
+def test_trade_at_the_boundary_size_passes():
+    # 11 statements at N=5 is exactly the allowed 6 + 1*5; the crossover is the size itself
+    r = judge(_budget(6, 1), _sizes({5: [11] * 10, 25: [11] * 10}))
+    assert r.verdict == "pass", r.notes
+    assert any("constant 11 > budget 6" in n and "N* = 5" in n for n in r.notes)
+
+
+def test_trade_does_not_excuse_latency():
+    slow = _sizes({5: [7] * 3, 25: [7] * 3}, lat=[100.0, 120.0, 110.0])
+    r = judge(_budget(6, 1, {"median": 50, "size": 25, "margin": 0.5}), slow)
+    assert r.verdict == "fail"
+    assert any(n.startswith("over budget: latency: median 110.00 ms") for n in r.notes)
+    assert any(n.startswith("constant traded for per-item") for n in r.notes)
+    assert not any(n.startswith("over budget: constant") for n in r.notes)
+
+
+def test_falling_count_trades_against_a_zero_per_item_budget():
+    r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))
+    assert (r.fit.constant, r.fit.per_item) == (9, Fraction(-1, 5))
+    assert r.verdict == "pass", r.notes
+    assert any("constant 9 > budget 8" in n and "N* = 5" in n for n in r.notes)
 
 
 def test_a_count_off_the_line_fails_per_size():

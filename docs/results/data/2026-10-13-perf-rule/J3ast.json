@@ -1,0 +1,52 @@
+{
+ "id": "J3ast",
+ "identical": true,
+ "observed": {
+  "added": [
+   "test_constant_over_with_equal_per_item_still_fails",
+   "test_falling_count_trades_against_a_zero_per_item_budget",
+   "test_no_trade_when_a_size_is_over_its_allowed_count",
+   "test_reverse_trade_is_refused",
+   "test_trade_at_the_boundary_size_passes",
+   "test_trade_does_not_excuse_latency",
+   "test_trade_shows_a_fractional_crossover",
+   "test_trading_constant_for_per_item_passes_and_shows_the_crossover"
+  ],
+  "changed": [],
+  "removed": [
+   "test_trading_constant_for_per_item_fails_on_the_constant_and_says_so"
+  ],
+  "summary": "changed [], removed ['test_trading_constant_for_per_item_fails_on_the_constant_and_says_so'], added 8, unchanged functions 26"
+ },
+ "pass": true,
+ "prediction": {
+  "added": [
+   "test_constant_over_with_equal_per_item_still_fails",
+   "test_falling_count_trades_against_a_zero_per_item_budget",
+   "test_no_trade_when_a_size_is_over_its_allowed_count",
+   "test_reverse_trade_is_refused",
+   "test_trade_at_the_boundary_size_passes",
+   "test_trade_does_not_excuse_latency",
+   "test_trade_shows_a_fractional_crossover",
+   "test_trading_constant_for_per_item_passes_and_shows_the_crossover"
+  ],
+  "changed": [],
+  "removed": [
+   "test_trading_constant_for_per_item_fails_on_the_constant_and_says_so"
+  ],
+  "text": "0 changed, 1 removed (the rewritten), 8 added"
+ },
+ "runs": 10,
+ "sha256": [
+  "cee4bd2f3a490f38deed330166b5bbf4bb65d0f2579c6870b4116fa7b307b1af",
+  "cee4bd2f3a490f38deed330166b5bbf4bb65d0f2579c6870b4116fa7b307b1af",
+  "cee4bd2f3a490f38deed330166b5bbf4bb65d0f2579c6870b4116fa7b307b1af",
+  "cee4bd2f3a490f38deed330166b5bbf4bb65d0f2579c6870b4116fa7b307b1af",
+  "cee4bd2f3a490f38deed330166b5bbf4bb65d0f2579c6870b4116fa7b307b1af",
+  "cee4bd2f3a490f38deed330166b5bbf4bb65d0f2579c6870b4116fa7b307b1af",
+  "cee4bd2f3a490f38deed330166b5bbf4bb65d0f2579c6870b4116fa7b307b1af",
+  "cee4bd2f3a490f38deed330166b5bbf4bb65d0f2579c6870b4116fa7b307b1af",
+  "cee4bd2f3a490f38deed330166b5bbf4bb65d0f2579c6870b4116fa7b307b1af",
+  "cee4bd2f3a490f38deed330166b5bbf4bb65d0f2579c6870b4116fa7b307b1af"
+ ]
+}
