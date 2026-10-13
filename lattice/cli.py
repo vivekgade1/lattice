@@ -10,6 +10,7 @@
     lattice attack plan|run|report --project DIR ...                       # lattice.security
     lattice improve report|import-plan|ledger --project DIR ...           # lattice.improve
     lattice workspace show|validate|impact NAME [--json]                  # lattice.workspace
+    lattice contracts export|pin|check ...                                # lattice.contracts
     lattice projects [DIR ...]                                            # discover projects
 
 Every ``lattice X ...`` is the same as ``python -m lattice.X ...`` (argv forwarded
@@ -55,6 +56,10 @@ commands:
   workspace show|validate|impact NAME [--json]     the workspace manifest (lattice.workspace.toml):
             [--workspace PATH]                     projects, links, problems; impact = who
                                                    relies on NAME (declared links only)
+  contracts export|pin|check ...                   contracts between projects: a provider's
+            [--workspace PATH]                     export from its spec, a consumer's lock
+            [--json] [--static-only] [--force]     (pin) and its imports checked against it
+                                                   (opt-in per link: contract = "static"|"live")
   projects  [DIR ...]                              list Studio projects found
 
 `lattice <command> --help` shows a command's options. `lattice X ...` is the same as
@@ -64,7 +69,7 @@ commands:
 SPEC_COMMANDS = ("check", "fidelity", "draft", "lint", "probe", "review", "ask")
 
 COMMANDS = ("studio", "check", "spec", "import", "mcp", "perf", "module", "attack", "improve",
-            "workspace", "projects")  # fmt: skip
+            "workspace", "contracts", "projects")  # fmt: skip
 
 STUDIO_TOML = "studio.toml"
 SPEC_FILE = "spec.py"
@@ -363,6 +368,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         from lattice.improve.__main__ import main as target
     elif cmd == "workspace":
         from lattice.workspace import main as target
+    elif cmd == "contracts":
+        from lattice.contracts.__main__ import main as target
     else:
         from lattice.mcp.__main__ import main as target
     return _run(target, rest)
