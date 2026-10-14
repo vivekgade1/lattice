@@ -1,0 +1,1523 @@
+{
+ "id": "X5",
+ "prediction": "each of 8 bad values: exactly 1 bad_exclude error naming the reason; workspace validate exit 1 (ok false); contracts check exit 2 with links []; the project stays listed without exclude. export streak --exclude and export --project --exclude GET: exit 2",
+ "observed": "1: validate 1, check 2, project streak: exclude must be a list of 'METHOD /path' strings; 2: validate 1, check 2, project streak: exclude must be a list of 'METHOD /path' strings; 3: validate 1, check 2, project streak: exclude entry #1: endpoint must be a string, not int; 4: validate 1, check 2, project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path; 5: validate 1, check 2, project streak: exclude names GET /health twice; 6: validate 1, check 2, project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a; 7: validate 1, check 2, project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is; 8: validate 1, check 2, project streak: exclude entry #1: endpoint 'GET health': the path must; export streak --exclude: exit 2; --project --exclude GET: exit 2",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "row1": true,
+  "row2": true,
+  "row3": true,
+  "row4": true,
+  "row5": true,
+  "row6": true,
+  "row7": true,
+  "row8": true,
+  "cli_name_flag_exit_2": true,
+  "cli_bad_flag_exit_2": true
+ },
+ "extra": {},
+ "runs": [
+  {
+   "rows": [
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    }
+   ],
+   "cli_name_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: the exclusion of a workspace project comes from its manifest (exclude), not from --exclude\n"
+   },
+   "cli_bad_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\n"
+   }
+  },
+  {
+   "rows": [
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    }
+   ],
+   "cli_name_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: the exclusion of a workspace project comes from its manifest (exclude), not from --exclude\n"
+   },
+   "cli_bad_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\n"
+   }
+  },
+  {
+   "rows": [
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    }
+   ],
+   "cli_name_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: the exclusion of a workspace project comes from its manifest (exclude), not from --exclude\n"
+   },
+   "cli_bad_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\n"
+   }
+  },
+  {
+   "rows": [
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    }
+   ],
+   "cli_name_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: the exclusion of a workspace project comes from its manifest (exclude), not from --exclude\n"
+   },
+   "cli_bad_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\n"
+   }
+  },
+  {
+   "rows": [
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    }
+   ],
+   "cli_name_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: the exclusion of a workspace project comes from its manifest (exclude), not from --exclude\n"
+   },
+   "cli_bad_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\n"
+   }
+  },
+  {
+   "rows": [
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    }
+   ],
+   "cli_name_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: the exclusion of a workspace project comes from its manifest (exclude), not from --exclude\n"
+   },
+   "cli_bad_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\n"
+   }
+  },
+  {
+   "rows": [
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    }
+   ],
+   "cli_name_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: the exclusion of a workspace project comes from its manifest (exclude), not from --exclude\n"
+   },
+   "cli_bad_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\n"
+   }
+  },
+  {
+   "rows": [
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    }
+   ],
+   "cli_name_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: the exclusion of a workspace project comes from its manifest (exclude), not from --exclude\n"
+   },
+   "cli_bad_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\n"
+   }
+  },
+  {
+   "rows": [
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    }
+   ],
+   "cli_name_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: the exclusion of a workspace project comes from its manifest (exclude), not from --exclude\n"
+   },
+   "cli_bad_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\n"
+   }
+  },
+  {
+   "rows": [
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v1/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v2/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude must be a list of 'METHOD /path' strings\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v3/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint must be a string, not int\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v4/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude names GET /health twice\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v6/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a query string is not part of an endpoint\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v7/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is not one of GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    },
+    {
+     "validate": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "show": {
+      "rc": 1,
+      "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X5/v8/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X5/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"ok\": false\n}\n",
+      "err": ""
+     },
+     "check": {
+      "rc": 2,
+      "out": "{\n \"workspace\": \"probe\",\n \"consumer\": \"streak-widget\",\n \"checked\": 0,\n \"links\": [],\n \"problems\": [\n  {\n   \"code\": \"bad_exclude\",\n   \"severity\": \"error\",\n   \"message\": \"project streak: exclude entry #1: endpoint 'GET health': the path must start with '/'\"\n  }\n ],\n \"elapsed_s\": 0.0\n}\n",
+      "err": ""
+     }
+    }
+   ],
+   "cli_name_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: the exclusion of a workspace project comes from its manifest (exclude), not from --exclude\n"
+   },
+   "cli_bad_flag": {
+    "rc": 2,
+    "out": "",
+    "err": "lattice contracts export: exclude entry #1: endpoint 'GET' must be 'METHOD /path'\n"
+   }
+  }
+ ]
+}

@@ -1,0 +1,2321 @@
+{
+ "id": "X8",
+ "prediction": "3 manifests without the key x 6 commands (show, show --json, validate, validate --json, impact NAME, impact NAME --json): stdout, stderr and exit byte-identical to the code at 7358be2 (18 of 18); reported: 7358be2 validates the X2 manifest with exclude at exit 0 with no problem",
+ "observed": "18/18 byte-identical; reported: 7358be2 on the X2 manifest with exclude: validate exit 0, no problem yes; new code exit 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "18_of_18_identical": true,
+  "old_code_is_old": true,
+  "new_code_is_new": true
+ },
+ "extra": {
+  "old_validates_with_key": {
+   "rc": 0,
+   "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n"
+  }
+ },
+ "runs": [
+  {
+   "X1_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler": {
+    "new": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "with_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "X1_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler": {
+    "new": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "with_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "X1_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler": {
+    "new": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "with_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "X1_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler": {
+    "new": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "with_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "X1_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler": {
+    "new": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "with_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "X1_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler": {
+    "new": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "with_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "X1_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler": {
+    "new": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "with_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "X1_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler": {
+    "new": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "with_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "X1_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler": {
+    "new": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "with_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "X1_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_J/w/X8j/m/lattice.workspace.toml)\n  scheduler  provider  $WORK_J/w/shared/scheduler\n               spec = spec.tickets:t5\n               app = job_scheduler:make_app\n               db = spec.seed:build_seed_db\n               login = spec.seed:login\n               src = src\n               env = {\"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"}\n  ci-bot     consumer  $WORK_J/w/X8j/ci-bot\nlinks:\n  ci-bot --uses--> scheduler  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8j/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_J/w/X8j/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"scheduler\",\n   \"path\": \"$WORK_J/w/shared/scheduler\",\n   \"role\": \"provider\",\n   \"spec\": \"spec.tickets:t5\",\n   \"app\": \"job_scheduler:make_app\",\n   \"db\": \"spec.seed:build_seed_db\",\n   \"login\": \"spec.seed:login\",\n   \"src\": \"src\",\n   \"env\": {\n    \"JOB_SCHEDULER_REPO_ROOT\": \"$PROJECT\"\n   }\n  },\n  {\n   \"name\": \"ci-bot\",\n   \"path\": \"$WORK_J/w/X8j/ci-bot\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"ci-bot\",\n   \"to\": \"scheduler\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler": {
+    "new": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "scheduler changes -> ci-bot (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X1_no_key: impact scheduler --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"scheduler\",\n \"impacted\": [\n  \"ci-bot\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace probe  ($WORK_S/w/X8s/m/lattice.workspace.toml)\n  streak         provider  $WORK_S/w/shared/streak\n  streak-widget  consumer  $WORK_S/w/X8s/streak-widget\nlinks:\n  streak-widget --uses--> streak  [contract: static]\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/m/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"probe\",\n  \"path\": \"$WORK_S/w/X8s/m/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"streak\",\n   \"path\": \"$WORK_S/w/shared/streak\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"streak-widget\",\n   \"path\": \"$WORK_S/w/X8s/streak-widget\",\n   \"role\": \"consumer\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"streak-widget\",\n   \"to\": \"streak\",\n   \"kind\": \"uses\",\n   \"note\": \"\",\n   \"contract\": \"static\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak": {
+    "new": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "streak changes -> streak-widget (declared links only)\n",
+     "err": ""
+    }
+   },
+   "X2_no_key: impact streak --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"probe\",\n \"project\": \"streak\",\n \"impacted\": [\n  \"streak-widget\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK_J/w/X8g/lattice.workspace.toml)\n  billing-api  provider  $WORK_J/w/X8g/billing\n  web-app      consumer  $WORK_J/w/X8g/web\n  shared-auth  library   $WORK_J/w/X8g/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_J/w/X8g/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK_J/w/X8g/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK_J/w/X8g/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK_J/w/X8g/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK_J/w/X8g/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "GOOD_MANIFEST: impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   },
+   "with_key: validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    },
+    "old": {
+     "rc": 0,
+     "out": "$WORK_S/w/X8s/withkey/lattice.workspace.toml: ok (2 project(s), 1 link(s))\n",
+     "err": ""
+    }
+   }
+  }
+ ]
+}

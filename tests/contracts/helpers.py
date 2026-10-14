@@ -158,11 +158,13 @@ class World:
         self.contract = contract
         self.write_manifest()
 
-    def write_manifest(self, extra_link: str = "") -> None:
+    def write_manifest(self, extra_link: str = "", extra_project: str = "") -> None:
+        """The manifest; `extra_project` is raw TOML lines for the provider (``exclude = ...``)."""
         link = f'contract = "{self.contract}"\n' if self.contract else ""
         (self.root / MANIFEST).write_text(
             '[workspace]\nname = "w"\n\n'
-            '[[project]]\nname = "prov"\npath = "prov"\nrole = "provider"\nspec = "spec:SPEC"\n\n'
+            '[[project]]\nname = "prov"\npath = "prov"\nrole = "provider"\nspec = "spec:SPEC"\n'
+            f"{extra_project}\n"
             '[[project]]\nname = "cons"\npath = "cons"\nrole = "consumer"\n\n'
             f'[[link]]\nfrom = "cons"\nto = "prov"\nkind = "uses"\n{link}{extra_link}'
         )

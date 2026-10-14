@@ -1,0 +1,53 @@
+hashes: {"lattice/contracts/check.py": "cb6833beb59f093d", "lattice/contracts/export.py": "0f29e52b312d771a", "lattice/contracts/live.py": "8d345a4cc13f7413", "lattice/workspace.py": "704e677e2ebbcbf4"}
+control: PASS (control) (258 passed in 102.43s (0:01:42)) 102.7s
+CM3: killed (3.3s, pytest failed 1: test_each_broken_kind[endpoint_missing])
+CM1: killed (3.4s, pytest failed 1: test_each_broken_kind[status_not_observed])
+CM2: killed (5.8s, pytest failed 1: test_each_broken_kind[auth_changed_public])
+CM4: killed (2.7s, pytest failed 1: test_each_broken_kind[endpoint_missing])
+CM7: killed (1.5s, pytest failed 1: test_clean_pin_and_check)
+CM8: killed (1.5s, pytest failed 1: test_clean_pin_and_check)
+CM6: killed (3.9s, pytest failed 1: test_each_broken_kind[request_field_missing])
+CM5: killed (20.7s, pytest failed 1: test_pin_with_nothing_opted_in_is_an_error)
+CM9: killed (18.6s, pytest failed 1: test_pin_refuses_on_broken_unless_forced)
+XM1: killed (1.9s, pytest failed 1: test_the_filter_runs_before_the_hash)
+XM2: killed (1.9s, pytest failed 1: test_the_filter_runs_before_the_hash)
+XM3: killed (2.5s, pytest failed 1: test_keys_are_normalised_like_an_import)
+CM10: killed (25.2s, pytest failed 1: test_a_non_loopback_live_url_is_refused_before_start[http://10.0.0.1:8000])
+XM4: killed (3.7s, pytest failed 1: test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET)
+XM5: killed (3.6s, pytest failed 1: test_invalid_lists_are_refused_by_the_export)
+XM7: killed (1.8s, pytest failed 1: test_the_filter_runs_before_the_hash)
+XM8: killed (3.7s, pytest failed 1: test_hash_differs_exactly_when_the_diff_is_non_empty)
+XM6: killed (9.8s, pytest failed 1: test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken)
+XM10: killed (6.1s, pytest failed 1: test_a_list_change_is_a_visible_change)
+XM11: killed (3.7s, pytest failed 1: test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET)
+XM9: killed (15.2s, pytest failed 1: test_live_does_not_replay_an_excluded_import)
+XM12: killed (10.5s, pytest failed 1: test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken)
+CM11: killed (99.0s, pytest failed 1: test_manifests_without_layer3_keys_print_as_before[show_json-good])
+
+id       verdict           sec  change                                                         killed by (first failing test)
+control  PASS (control)  102.7  unmutated copy                                                 258 passed in 102.43s (0:01:42)
+CM1      killed            3.4  status ignored: status_not_observed is never emitted           tests/contracts/test_check.py::test_each_broken_kind[status_not_observed]
+CM2      killed            5.8  auth ignored: auth / as_user never compared                    tests/contracts/test_check.py::test_each_broken_kind[auth_changed_public]
+CM3      killed            3.3  endpoint_missing treated as satisfied                          tests/contracts/test_check.py::test_each_broken_kind[endpoint_missing]
+CM4      killed            2.7  pin ignored: P := E (every unsatisfied reliance is a gap, no C tests/contracts/test_check.py::test_each_broken_kind[endpoint_missing]
+CM5      killed           20.7  opt-in ignored: every link is checked whatever contract says   tests/contracts/test_check.py::test_pin_with_nothing_opted_in_is_an_error
+CM6      killed            3.9  field reliance ignored (request and response)                  tests/contracts/test_check.py::test_each_broken_kind[request_field_missing]
+CM7      killed            1.5  ids not templated (concrete paths kept)                        tests/contracts/test_check.py::test_clean_pin_and_check
+CM8      killed            1.5  spec_hash over the spec file bytes, not the canonical export   tests/contracts/test_check.py::test_clean_pin_and_check
+CM9      killed           18.6  pin writes despite BROKEN                                      tests/contracts/test_check.py::test_pin_refuses_on_broken_unless_forced
+CM10     killed           25.2  live: the ensure_safe_target call removed                      tests/contracts/test_live.py::test_a_non_loopback_live_url_is_refused_before_start[http://10.0.0.1:8000]
+CM11     killed           99.0  Link.to_dict always emits contract                             tests/contracts/test_workspace_contract.py::test_manifests_without_layer3_keys_print_as_before[show_json-good]
+XM1      killed            1.9  exclude: the filter is not applied (every endpoint kept, exclu tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash
+XM2      killed            1.9  exclude: spec_hash over the unfiltered export (filter after ha tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash
+XM3      killed            2.5  exclude: normalisation skipped (raw strings stored and compare tests/contracts/test_exclude.py::test_keys_are_normalised_like_an_import
+XM4      killed            3.7  exclude: validation off (bad entries dropped, no problem)      tests/contracts/test_exclude.py::test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET
+XM5      killed            3.6  exclude: the duplicate check removed                           tests/contracts/test_exclude.py::test_invalid_lists_are_refused_by_the_export
+XM6      killed            9.8  exclude: an import of an excluded endpoint is treated as satis tests/contracts/test_exclude.py::test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken
+XM7      killed            1.8  exclude: excluded is not recorded in the export                tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash
+XM8      killed            3.7  exclude: the diff ignores excluded (endpoint_removed, no exclu tests/contracts/test_exclude.py::test_hash_differs_exactly_when_the_diff_is_non_empty
+XM9      killed           15.2  exclude: live replays an excluded import                       tests/contracts/test_exclude.py::test_live_does_not_replay_an_excluded_import
+XM10     killed            6.1  exclude: exclude_unmatched is never emitted                    tests/contracts/test_exclude.py::test_a_list_change_is_a_visible_change
+XM11     killed            3.7  exclude: WsProject.to_dict always emits exclude ([] when None) tests/contracts/test_exclude.py::test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET
+XM12     killed           10.5  exclude: an excluded import is BROKEN only when the pin held i tests/contracts/test_exclude.py::test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken
+total wall time: 225.7s
+mutants: 23/23 killed

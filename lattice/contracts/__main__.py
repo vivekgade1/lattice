@@ -1,13 +1,18 @@
 """``lattice contracts export|pin|check``: contracts between projects (multi-project layer 3).
 
     lattice contracts export NAME [--spec REF] [--workspace PATH]    # the provider's export
-    lattice contracts export --project DIR [--spec REF]              # ... without a workspace
+    lattice contracts export --project DIR [--spec REF] [--exclude "METHOD /path" ...]
+                                                                     # ... without a workspace
     lattice contracts pin CONSUMER [--force] [--json] [--workspace PATH]
     lattice contracts check [CONSUMER] [--json] [--static-only] [--workspace PATH]
 
 ``export`` prints the canonical JSON ``{"export", "spec_ref", "version"}`` (exit 0, or 2 when the
-spec cannot be loaded). ``pin`` writes the consumer's ``lattice.contracts.lock.json`` (exit 0),
-refuses while a link has a BROKEN finding unless ``--force`` (exit 1), exit 2 when it cannot run.
+spec cannot be loaded), plus ``exclude_unmatched`` when the provider excludes routes. The
+exclusion of a workspace project is its manifest's ``exclude`` list; ``--exclude`` (repeatable,
+validated like the key, exit 2 with the reason) is for ``--project`` only, and is refused with a
+NAME so that ``export NAME`` is always what ``check`` uses. ``pin`` writes the consumer's
+``lattice.contracts.lock.json`` (exit 0), refuses while a link has a BROKEN finding unless
+``--force`` (exit 1), exit 2 when it cannot run.
 ``check`` exits 0 when clean, 1 on any BROKEN or CHANGED, 2 when it cannot run (several links: 2
 over 1 over 0). Only links with ``contract = "static"`` or ``"live"`` in the workspace manifest
 are looked at; ``--static-only`` skips the live part. See :mod:`lattice.contracts.check`.
@@ -41,6 +46,9 @@ def _parser() -> argparse.ArgumentParser:
     e = sub.add_parser("export", help="the canonical export and version of a provider project")
     e.add_argument("name", nargs="?", help="a project of the workspace")
     e.add_argument("--project", help="a project directory (no workspace needed)")
+    e.add_argument("--exclude", action="append", metavar="'METHOD /path'",
+                   help="a route that is not part of the contract (repeatable; with "
+                   "--project only)")  # fmt: skip
     e.add_argument(
         "--spec", help="module:attr of the Spec (default: the manifest's, else spec:SPEC)"
     )
@@ -105,6 +113,8 @@ def _print_check(report: Any) -> None:
 
 
 def _print_pin(report: Any) -> None:
+    from lattice.contracts import check
+
     for lk in report.links:
         if lk["status"] == "error":
             print(f"{lk['consumer']} -> {lk['provider']}  ERROR [{lk['error']['code']}] "
@@ -118,8 +128,12 @@ def _print_pin(report: Any) -> None:
         if lk["status"] == "refused":
             print("  not written: re-pinning would turn each BROKEN into a gap "
                   "(use --force to accept)")  # fmt: skip
+            if any(f["detail"] == check.EXCLUDED_DETAIL for f in lk["broken"]):
+                print("  note: an import of an excluded endpoint stays BROKEN even when forced")
         elif lk["forced"]:
             print("  forced: the BROKEN items above are now gaps")
+            if any(f["detail"] == check.EXCLUDED_DETAIL for f in lk["broken"]):
+                print("  note: an import of an excluded endpoint stays BROKEN")
     for p in report.problems:
         print(f"  {p.severity}: [{p.code}] {p.message}")
     if report.extra.get("written"):
@@ -141,7 +155,16 @@ def _workspace(ns: argparse.Namespace) -> wsmod.Workspace | int:
 
 def _export(ns: argparse.Namespace) -> int:
     project, ref = ns.project, ns.spec
+    exclude: list[str] = ns.exclude or []
+    keys, reasons = ex.check_exclude(exclude)
+    if reasons:
+        print(f"lattice contracts export: {'; '.join(reasons)}", file=sys.stderr)
+        return 2
     if project is None:
+        if exclude and ns.name:
+            print("lattice contracts export: the exclusion of a workspace project comes from "
+                  "its manifest (exclude), not from --exclude", file=sys.stderr)  # fmt: skip
+            return 2
         if not ns.name:
             print("lattice contracts export: give a project NAME (or --project DIR)",
                   file=sys.stderr)  # fmt: skip
@@ -156,13 +179,13 @@ def _export(ns: argparse.Namespace) -> int:
             return 2
         project, ref = str(wp.path), ref or wp.spec
         try:
-            out = ex.compute_export(project, ref)
+            out = ex.compute_export(project, ref, wp.exclude or ())
         except ex.ExportFailed as e:
             print(f"lattice contracts: {e}", file=sys.stderr)
             return 2
     else:  # the subprocess entry of compute_export, or a direct call
         try:
-            out = ex.build_export(Path(project).resolve(), ref or ex.DEFAULT_SPEC)
+            out = ex.build_export(Path(project).resolve(), ref or ex.DEFAULT_SPEC, keys)
         except Exception as e:  # noqa: BLE001 - any failure of the provider's own code
             print(f"lattice contracts: {type(e).__name__}: {e}", file=sys.stderr)
             return 2

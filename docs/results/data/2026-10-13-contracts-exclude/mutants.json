@@ -1,0 +1,344 @@
+{
+ "hashes": {
+  "lattice/contracts/check.py": "cb6833beb59f093d",
+  "lattice/contracts/export.py": "0f29e52b312d771a",
+  "lattice/contracts/live.py": "8d345a4cc13f7413",
+  "lattice/workspace.py": "704e677e2ebbcbf4"
+ },
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "258 passed in 102.43s (0:01:42)",
+    "seconds": 102.6,
+    "tail": "........................................................................ [ 27%]\n........................................................................ [ 55%]\n........................................................................ [ 83%]\n..........................................                               [100%]\n258 passed in 102.43s (0:01:42)\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "PASS (control)",
+   "seconds": 102.7
+  },
+  "CM3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_check.py::test_each_broken_kind[endpoint_missing]"
+    ],
+    "summary": "1 failed, 2 passed in 3.05s",
+    "seconds": 3.2,
+    "tail": "..F\n=================================== FAILURES ===================================\n___________________ test_each_broken_kind[endpoint_missing] ____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2703/test_each_broken_kind_endpoint0')\nname = 'endpoint_missing'\n\n    @pytest.mark.parametrize(\"name\", list(BROKEN_CASES))\n    def test_each_broken_kind(tmp_path: Path, name: str) -> None:\n        fn, want = BROKEN_CASES[name]\n        imports = list(IMPORTS)\n        if name == \"request_field_missing_query\":\n            imports.append({\"endpoint\": \"GET /jobs\", \"status\": [200], \"auth\": \"token\",\n                            \"request_fields\": [\"limit\"]})  # fmt: skip\n        w = pinned_world(tmp_path, imports=imports)\n        w.edit(data(fn))\n        rc, out = w.check()\n        link = link_of(out)\n>       assert rc == 1 and link[\"status\"] == \"broken\"\nE       AssertionError: assert (1 == 1 and 'changed' == 'broken'\nE         \nE         - broken\nE         + changed)\n\ntests/contracts/test_check.py:131: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_check.py::test_each_broken_kind[endpoint_missing]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 2 passed in 3.05s\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "killed",
+   "seconds": 3.3
+  },
+  "CM1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_check.py::test_each_broken_kind[status_not_observed]"
+    ],
+    "summary": "1 failed, 3 passed in 3.10s",
+    "seconds": 3.3,
+    "tail": "...F\n=================================== FAILURES ===================================\n__________________ test_each_broken_kind[status_not_observed] __________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2701/test_each_broken_kind_status_n0')\nname = 'status_not_observed'\n\n    @pytest.mark.parametrize(\"name\", list(BROKEN_CASES))\n    def test_each_broken_kind(tmp_path: Path, name: str) -> None:\n        fn, want = BROKEN_CASES[name]\n        imports = list(IMPORTS)\n        if name == \"request_field_missing_query\":\n            imports.append({\"endpoint\": \"GET /jobs\", \"status\": [200], \"auth\": \"token\",\n                            \"request_fields\": [\"limit\"]})  # fmt: skip\n        w = pinned_world(tmp_path, imports=imports)\n        w.edit(data(fn))\n        rc, out = w.check()\n        link = link_of(out)\n>       assert rc == 1 and link[\"status\"] == \"broken\"\nE       AssertionError: assert (1 == 1 and 'changed' == 'broken'\nE         \nE         - broken\nE         + changed)\n\ntests/contracts/test_check.py:131: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_check.py::test_each_broken_kind[status_not_observed]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 3 passed in 3.10s\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "killed",
+   "seconds": 3.4
+  },
+  "CM2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_check.py::test_each_broken_kind[auth_changed_public]"
+    ],
+    "summary": "1 failed, 7 passed in 5.51s",
+    "seconds": 5.7,
+    "tail": ".......F\n=================================== FAILURES ===================================\n__________________ test_each_broken_kind[auth_changed_public] __________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2702/test_each_broken_kind_auth_cha0')\nname = 'auth_changed_public'\n\n    @pytest.mark.parametrize(\"name\", list(BROKEN_CASES))\n    def test_each_broken_kind(tmp_path: Path, name: str) -> None:\n        fn, want = BROKEN_CASES[name]\n        imports = list(IMPORTS)\n        if name == \"request_field_missing_query\":\n            imports.append({\"endpoint\": \"GET /jobs\", \"status\": [200], \"auth\": \"token\",\n                            \"request_fields\": [\"limit\"]})  # fmt: skip\n        w = pinned_world(tmp_path, imports=imports)\n        w.edit(data(fn))\n        rc, out = w.check()\n        link = link_of(out)\n>       assert rc == 1 and link[\"status\"] == \"broken\"\nE       AssertionError: assert (1 == 1 and 'changed' == 'broken'\nE         \nE         - broken\nE         + changed)\n\ntests/contracts/test_check.py:131: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_check.py::test_each_broken_kind[auth_changed_public]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 7 passed in 5.51s\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "killed",
+   "seconds": 5.8
+  },
+  "CM4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_check.py::test_each_broken_kind[endpoint_missing]"
+    ],
+    "summary": "1 failed, 2 passed in 2.47s",
+    "seconds": 2.6,
+    "tail": "..F\n=================================== FAILURES ===================================\n___________________ test_each_broken_kind[endpoint_missing] ____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2704/test_each_broken_kind_endpoint0')\nname = 'endpoint_missing'\n\n    @pytest.mark.parametrize(\"name\", list(BROKEN_CASES))\n    def test_each_broken_kind(tmp_path: Path, name: str) -> None:\n        fn, want = BROKEN_CASES[name]\n        imports = list(IMPORTS)\n        if name == \"request_field_missing_query\":\n            imports.append({\"endpoint\": \"GET /jobs\", \"status\": [200], \"auth\": \"token\",\n                            \"request_fields\": [\"limit\"]})  # fmt: skip\n        w = pinned_world(tmp_path, imports=imports)\n        w.edit(data(fn))\n        rc, out = w.check()\n        link = link_of(out)\n>       assert rc == 1 and link[\"status\"] == \"broken\"\nE       assert (0 == 1)\n\ntests/contracts/test_check.py:131: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_check.py::test_each_broken_kind[endpoint_missing]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 2 passed in 2.47s\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "killed",
+   "seconds": 2.7
+  },
+  "CM7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_check.py::test_clean_pin_and_check"
+    ],
+    "summary": "1 failed in 1.26s",
+    "seconds": 1.4,
+    "tail": "F\n=================================== FAILURES ===================================\n___________________________ test_clean_pin_and_check ___________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2707/test_clean_pin_and_check0')\n\n    def test_clean_pin_and_check(tmp_path: Path) -> None:\n        w = pinned_world(tmp_path)\n        rc, out = w.check()\n        link = link_of(out)\n        assert rc == 0 and link[\"status\"] == \"ok\" and out[\"checked\"] == 1\n>       assert link[\"findings\"] == [] and link[\"gaps\"] == []\nE       AssertionError: assert ([] == []\nE         \nE         Use -v to get more diff and [{'class': 'G...served', ...}] == []\nE         \nE         Left contains one more item: {'class': 'GAP', 'provider': 'prov', 'endpoint': 'GET /jobs/{}', 'kind': 'endpoint_unobserved', ...}\nE         Use -v to get more diff)\n\ntests/contracts/test_check.py:44: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_check.py::test_clean_pin_and_check - AssertionErr...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 1.26s\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "killed",
+   "seconds": 1.5
+  },
+  "CM8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_check.py::test_clean_pin_and_check"
+    ],
+    "summary": "1 failed in 1.25s",
+    "seconds": 1.4,
+    "tail": "F\n=================================== FAILURES ===================================\n___________________________ test_clean_pin_and_check ___________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2708/test_clean_pin_and_check0')\n\n    def test_clean_pin_and_check(tmp_path: Path) -> None:\n        w = pinned_world(tmp_path)\n        rc, out = w.check()\n        link = link_of(out)\n>       assert rc == 0 and link[\"status\"] == \"ok\" and out[\"checked\"] == 1\nE       assert (2 == 0)\n\ntests/contracts/test_check.py:43: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_check.py::test_clean_pin_and_check - assert (2 == 0)\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 1.25s\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "killed",
+   "seconds": 1.5
+  },
+  "CM6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_check.py::test_each_broken_kind[request_field_missing]"
+    ],
+    "summary": "1 failed, 4 passed in 3.69s",
+    "seconds": 3.9,
+    "tail": "....F\n=================================== FAILURES ===================================\n_________________ test_each_broken_kind[request_field_missing] _________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2706/test_each_broken_kind_request_0')\nname = 'request_field_missing'\n\n    @pytest.mark.parametrize(\"name\", list(BROKEN_CASES))\n    def test_each_broken_kind(tmp_path: Path, name: str) -> None:\n        fn, want = BROKEN_CASES[name]\n        imports = list(IMPORTS)\n        if name == \"request_field_missing_query\":\n            imports.append({\"endpoint\": \"GET /jobs\", \"status\": [200], \"auth\": \"token\",\n                            \"request_fields\": [\"limit\"]})  # fmt: skip\n        w = pinned_world(tmp_path, imports=imports)\n        w.edit(data(fn))\n        rc, out = w.check()\n        link = link_of(out)\n>       assert rc == 1 and link[\"status\"] == \"broken\"\nE       AssertionError: assert (1 == 1 and 'changed' == 'broken'\nE         \nE         - broken\nE         + changed)\n\ntests/contracts/test_check.py:131: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_check.py::test_each_broken_kind[request_field_missing]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 4 passed in 3.69s\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "killed",
+   "seconds": 3.9
+  },
+  "CM5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_check.py::test_pin_with_nothing_opted_in_is_an_error"
+    ],
+    "summary": "1 failed, 23 passed in 20.41s",
+    "seconds": 20.6,
+    "tail": ".......................F\n=================================== FAILURES ===================================\n__________________ test_pin_with_nothing_opted_in_is_an_error __________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2705/test_pin_with_nothing_opted_in0')\n\n    def test_pin_with_nothing_opted_in_is_an_error(tmp_path: Path) -> None:\n        w = World(tmp_path, contract=None)\n        rc, out = w.pin()\n>       assert rc == 2 and [p[\"code\"] for p in out[\"problems\"]] == [\"no_links\"]\nE       assert (0 == 2)\n\ntests/contracts/test_check.py:329: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_check.py::test_pin_with_nothing_opted_in_is_an_error\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 23 passed in 20.41s\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "killed",
+   "seconds": 20.7
+  },
+  "CM9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_check.py::test_pin_refuses_on_broken_unless_forced"
+    ],
+    "summary": "1 failed, 21 passed in 18.31s",
+    "seconds": 18.5,
+    "tail": ".....................F\n=================================== FAILURES ===================================\n___________________ test_pin_refuses_on_broken_unless_forced ___________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2709/test_pin_refuses_on_broken_unl0')\n\n    def test_pin_refuses_on_broken_unless_forced(tmp_path: Path) -> None:\n        w = pinned_world(tmp_path)\n        before = w.lock.read_bytes()\n        w.edit(data(_no_404))\n        rc, out = w.pin()\n>       assert rc == 1 and out[\"written\"] is False\nE       assert (0 == 1)\n\ntests/contracts/test_check.py:303: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_check.py::test_pin_refuses_on_broken_unless_forced\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 21 passed in 18.31s\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "killed",
+   "seconds": 18.6
+  },
+  "XM1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash"
+    ],
+    "summary": "1 failed, 1 passed in 1.67s",
+    "seconds": 1.8,
+    "tail": ".F\n=================================== FAILURES ===================================\n_____________________ test_the_filter_runs_before_the_hash _____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2712/test_the_filter_runs_before_th0')\n\n    def test_the_filter_runs_before_the_hash(tmp_path: Path) -> None:\n        w = World(tmp_path)\n        base = ex.compute_export(w.provider)\n        out = ex.compute_export(w.provider, exclude=[\"POST /auth/login\", \"GET /users/me\"])\n        gone = {\"POST /auth/login\", \"GET /users/me\"}\n        assert out[\"export\"][\"excluded\"] == [\"GET /users/me\", \"POST /auth/login\"]  # sorted\n>       assert out[\"export\"][\"endpoints\"] == {\n            k: v for k, v in base[\"export\"][\"endpoints\"].items() if k not in gone\n        }\nE       AssertionError: assert {'GET /jobs':...[], ...}, ...} == {'GET /jobs':...ds': [], ...}}\nE         \nE         Omitting 3 identical items, use -vv to show\nE         Left contains 2 more items:\nE         {'GET /users/me': {'auth': 'unknown',\nE                            'body': ['object'],\nE                            'granted': ['ann'],\nE                            'query_fields': [],...\nE         \nE         ...Full output truncated (13 lines hidden), use '-vv' to show\n\ntests/contracts/test_exclude.py:63: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 1 passed in 1.67s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.9
+  },
+  "XM2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash"
+    ],
+    "summary": "1 failed, 1 passed in 1.68s",
+    "seconds": 1.8,
+    "tail": ".F\n=================================== FAILURES ===================================\n_____________________ test_the_filter_runs_before_the_hash _____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2713/test_the_filter_runs_before_th0')\n\n    def test_the_filter_runs_before_the_hash(tmp_path: Path) -> None:\n        w = World(tmp_path)\n        base = ex.compute_export(w.provider)\n        out = ex.compute_export(w.provider, exclude=[\"POST /auth/login\", \"GET /users/me\"])\n        gone = {\"POST /auth/login\", \"GET /users/me\"}\n        assert out[\"export\"][\"excluded\"] == [\"GET /users/me\", \"POST /auth/login\"]  # sorted\n        assert out[\"export\"][\"endpoints\"] == {\n            k: v for k, v in base[\"export\"][\"endpoints\"].items() if k not in gone\n        }\n        assert out[\"exclude_unmatched\"] == []\n>       assert out[\"version\"][\"spec_hash\"] == ex.spec_hash(out[\"export\"])\nE       AssertionError: assert 'bdbf4128b642...c1c5b74d091d5' == '78e925036717...ad0484d6ce8fe'\nE         \nE         - 78e925036717af1cbafbbcecbbff088082f5e85117b1b39ee10ad0484d6ce8fe\nE         + bdbf4128b642fafbc29779bfaf025f634bc945072f0c72e5f1bc1c5b74d091d5\n\ntests/contracts/test_exclude.py:67: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 1 passed in 1.68s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.9
+  },
+  "XM3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_keys_are_normalised_like_an_import"
+    ],
+    "summary": "1 failed, 2 passed in 2.27s",
+    "seconds": 2.4,
+    "tail": "..F\n=================================== FAILURES ===================================\n___________________ test_keys_are_normalised_like_an_import ____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2714/test_keys_are_normalised_like_0')\n\n    def test_keys_are_normalised_like_an_import(tmp_path: Path) -> None:\n        w = World(tmp_path)\n        a = ex.compute_export(w.provider, exclude=[\" get  /jobs/7/ \"])\n        b = ex.compute_export(w.provider, exclude=[\"GET /jobs/{id}\"])\n>       assert a == b and a[\"export\"][\"excluded\"] == [\"GET /jobs/{}\"]\nE       AssertionError: assert ({'exclude_unm...287a8633f3b'}} == {'exclude_unm...45dbf821ab5'}}\nE         \nE         Omitting 1 identical items, use -vv to show\nE         Differing items:\nE         {'exclude_unmatched': [' get  /jobs/7/ ']} != {'exclude_unmatched': ['GET /jobs/{id}']}\nE         {'version': {'dirty': False, 'git_ref': None, 'spec_hash': '5c7b4c7a42ca3f58fd7a1ac50a91e22fe78d0452ba5a24dc83fbb287a8633f3b'}} != {'version': {'dirty': False, 'git_ref': None, 'spec_hash': '669b8c86eb9aa3e196873096dc795bd339a7f3a48651ac42383f545dbf821ab5'}}\nE         {'export': {'basis': 'observed', 'endpoints': {'GET /jobs': {'auth': 'token', 'body': ['list'], 'granted': ['ann'], 'q...bject'], 'granted': [], 'query_fields': [], ...}, ....\nE         \nE         ...Full output truncated (2 lines hidden), use '-vv' to show)\n\ntests/contracts/test_exclude.py:75: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_keys_are_normalised_like_an_import\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 2 passed in 2.27s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 2.5
+  },
+  "CM10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live.py::test_a_non_loopback_live_url_is_refused_before_start[http://10.0.0.1:8000]"
+    ],
+    "summary": "1 failed, 30 passed in 25.00s",
+    "seconds": 25.1,
+    "tail": "..............................F\n=================================== FAILURES ===================================\n__ test_a_non_loopback_live_url_is_refused_before_start[http://10.0.0.1:8000] __\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2710/test_a_non_loopback_live_url_i0')\nurl = 'http://10.0.0.1:8000'\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10715d6e0>\n\n    @pytest.mark.parametrize(\n        \"url\", [\"http://10.0.0.1:8000\", \"http://example.com\", \"http://0.0.0.0:8000\", \"not a url\"]\n    )\n    def test_a_non_loopback_live_url_is_refused_before_start(\n        tmp_path: Path, url: str, monkeypatch: pytest.MonkeyPatch\n    ) -> None:\n        w = Live(tmp_path, live_url=url)\n        monkeypatch.setattr(live, \"_spawn\", lambda *a, **k: pytest.fail(\"nothing may be started\"))\n        with pytest.raises(LiveError) as e:\n            w.run()\n>       assert e.value.code == \"not_loopback\"\nE       AssertionError: assert 'live_url_unsupported' == 'not_loopback'\nE         \nE         - not_loopback\nE         + live_url_unsupported\n\ntests/contracts/test_live.py:619: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live.py::test_a_non_loopback_live_url_is_refused_before_start[http://10.0.0.1:8000]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 30 passed in 25.00s\n",
+    "tests": "tests/contracts/test_live.py"
+   },
+   "verdict": "killed",
+   "seconds": 25.2
+  },
+  "XM4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET"
+    ],
+    "summary": "1 failed, 16 passed in 3.49s",
+    "seconds": 3.7,
+    "tail": "................F\n=================================== FAILURES ===================================\n__ test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET /health] ___\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2715/test_a_bad_exclude_is_one_erro0')\nraw = 'GET /health'\n\n    @pytest.mark.parametrize(\n        \"raw\",\n        [\"GET /health\", 42, [42], [\"GET\"], [\"GET /health\", \"get /health/\"],\n         [\"GET /v1/habits?limit=1\"], [\"FETCH /health\"], [\"GET health\"]],\n    )  # fmt: skip\n    def test_a_bad_exclude_is_one_error_and_the_project_stays_listed(tmp_path: Path, raw: Any) -> None:\n        w = World(tmp_path)\n        ws = _parse(w, raw)\n>       assert [p.code for p in ws.problems] == [\"bad_exclude\"]\nE       AssertionError: assert [] == ['bad_exclude']\nE         \nE         Right contains one more item: 'bad_exclude'\nE         Use -v to get more diff\n\ntests/contracts/test_exclude.py:163: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET /health]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 16 passed in 3.49s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 3.7
+  },
+  "XM5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_invalid_lists_are_refused_by_the_export"
+    ],
+    "summary": "1 failed, 4 passed in 3.38s",
+    "seconds": 3.6,
+    "tail": "....F\n=================================== FAILURES ===================================\n_________________ test_invalid_lists_are_refused_by_the_export _________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2716/test_invalid_lists_are_refused0')\n\n    def test_invalid_lists_are_refused_by_the_export(tmp_path: Path) -> None:\n        w = World(tmp_path)\n>       with pytest.raises(ValueError, match=\"names GET /users/me twice\"):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE ValueError\n\ntests/contracts/test_exclude.py:98: Failed\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_invalid_lists_are_refused_by_the_export\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 4 passed in 3.38s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 3.6
+  },
+  "XM7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash"
+    ],
+    "summary": "1 failed, 1 passed in 1.63s",
+    "seconds": 1.8,
+    "tail": ".F\n=================================== FAILURES ===================================\n_____________________ test_the_filter_runs_before_the_hash _____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2718/test_the_filter_runs_before_th0')\n\n    def test_the_filter_runs_before_the_hash(tmp_path: Path) -> None:\n        w = World(tmp_path)\n        base = ex.compute_export(w.provider)\n        out = ex.compute_export(w.provider, exclude=[\"POST /auth/login\", \"GET /users/me\"])\n        gone = {\"POST /auth/login\", \"GET /users/me\"}\n>       assert out[\"export\"][\"excluded\"] == [\"GET /users/me\", \"POST /auth/login\"]  # sorted\n               ^^^^^^^^^^^^^^^^^^^^^^^^^\nE       KeyError: 'excluded'\n\ntests/contracts/test_exclude.py:62: KeyError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 1 passed in 1.63s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.8
+  },
+  "XM8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_hash_differs_exactly_when_the_diff_is_non_empty"
+    ],
+    "summary": "1 failed, 15 passed in 3.46s",
+    "seconds": 3.6,
+    "tail": "529ba5b2aa84227575e8f2085f8e69e4adfec6a3382ea58feef0cc7be5f50') == False\nE                +  where 'bdbf4128b642fafbc29779bfaf025f634bc945072f0c72e5f1bc1c5b74d091d5' = <function spec_hash at 0x10744ecf0>({'basis': 'observed', 'endpoints': {'GET /jobs': {'auth': 'token', 'body': ['list'], 'granted': ['ann'], 'query_fields...th': 'public', 'body': ['object'], 'granted': [], 'query_fields': [], ...}, ...}, 'error_body': 'fastapi', 'format': 1})\nE                +    where <function spec_hash at 0x10744ecf0> = ex.spec_hash\nE                +  and   '020529ba5b2aa84227575e8f2085f8e69e4adfec6a3382ea58feef0cc7be5f50' = <function spec_hash at 0x10744ecf0>({'basis': 'observed', 'endpoints': {'GET /jobs': {'auth': 'token', 'body': ['list'], 'granted': ['ann'], 'query_fields...'public', 'body': ['object'], 'granted': [], 'query_fields': [], ...}, ...}, 'error_body': 'fastapi', 'format': 1, ...})\nE                +    where <function spec_hash at 0x10744ecf0> = ex.spec_hash\nE                +  and   False = bool([])\nE                +    where [] = <function diff_exports at 0x107df0930>({'basis': 'observed', 'endpoints': {'GET /jobs': {'auth': 'token', 'body': ['list'], 'granted': ['ann'], 'query_fields...th': 'public', 'body': ['object'], 'granted': [], 'query_fields': [], ...}, ...}, 'error_body': 'fastapi', 'format': 1}, {'basis': 'observed', 'endpoints': {'GET /jobs': {'auth': 'token', 'body': ['list'], 'granted': ['ann'], 'query_fields...'public', 'body': ['object'], 'granted': [], 'query_fields': [], ...}, ...}, 'error_body': 'fastapi', 'format': 1, ...})\nE                +      where <function diff_exports at 0x107df0930> = ck.diff_exports\n\ntests/contracts/test_exclude.py:144: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_hash_differs_exactly_when_the_diff_is_non_empty\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 15 passed in 3.46s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 3.7
+  },
+  "XM6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken"
+    ],
+    "summary": "1 failed, 34 passed in 9.53s",
+    "seconds": 9.7,
+    "tail": "..................................F\n=================================== FAILURES ===================================\n________ test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken ________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2717/test_an_import_of_an_endpoint_0')\n\n    def test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken(tmp_path: Path) -> None:\n        w = World(tmp_path, imports=[LOGIN, ME])\n        assert w.pin()[0] == 0\n        before = w.lock.read_bytes()\n        w.write_manifest(extra_project=excl(\"GET /users/me\", \"GET /jobs\"))\n        rc, out = w.check()\n        lk = link_of(out)\n>       assert rc == 1 and lk[\"status\"] == \"broken\"\nE       AssertionError: assert (1 == 1 and 'changed' == 'broken'\nE         \nE         - broken\nE         + changed)\n\ntests/contracts/test_exclude.py:335: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 34 passed in 9.53s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 9.8
+  },
+  "XM10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_a_list_change_is_a_visible_change"
+    ],
+    "summary": "1 failed, 29 passed in 5.91s",
+    "seconds": 6.1,
+    "tail": "a_list_change_is_a_visibl0')\n\n    def test_a_list_change_is_a_visible_change(tmp_path: Path) -> None:\n        w = World(tmp_path, imports=[LOGIN])\n        w.write_manifest(extra_project=excl(\"GET /users/me\"))\n        assert w.pin()[0] == 0\n        rc, out = w.check()\n        assert rc == 0 and link_of(out)[\"findings\"] == [] and link_of(out)[\"status\"] == \"ok\"\n    \n        w.write_manifest(extra_project=excl(\"GET /users/me\", \"GET /jobs\"))  # a: add\n        rc, out = w.check()\n        lk = link_of(out)\n        assert rc == 1 and kinds(lk) == [(\"exclusion_added\", \"GET /jobs\", \"\")]\n        assert lk[\"findings\"][0][\"relied\"] is False and lk[\"findings\"][0][\"class\"] == \"CHANGED\"\n        assert lk[\"spec_hash_changed\"] is True and lk[\"version_changed\"] is False\n    \n        w.write_manifest()  # b: removed\n        rc, out = w.check()\n        assert rc == 1\n        assert kinds(link_of(out)) == [(\"exclusion_removed\", \"GET /users/me\", \"\")]\n    \n        w.write_manifest(extra_project=excl(\"get /users/me/\"))  # c: the same list, spelt otherwise\n        rc, out = w.check()\n        assert rc == 0 and link_of(out)[\"spec_hash_changed\"] is False\n    \n        w.write_manifest(extra_project=excl(\"GET /users/me\", \"GET /nope\"))  # d: names nothing\n        rc, out = w.check()\n        assert rc == 1 and kinds(link_of(out)) == [(\"exclusion_added\", \"GET /nope\", \"\")]\n>       assert [(p[\"code\"], p[\"severity\"]) for p in out[\"problems\"]] == [\n            (\"exclude_unmatched\", \"warning\")\n        ]\nE       AssertionError: assert [] == [('exclude_un...', 'warning')]\nE         \nE         Right contains one more item: ('exclude_unmatched', 'warning')\nE         Use -v to get more diff\n\ntests/contracts/test_exclude.py:265: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_a_list_change_is_a_visible_change\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 29 passed in 5.91s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 6.1
+  },
+  "XM11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET"
+    ],
+    "summary": "1 failed, 16 passed in 3.47s",
+    "seconds": 3.6,
+    "tail": "_parse(w, raw)\n        assert [p.code for p in ws.problems] == [\"bad_exclude\"]\n        assert ws.problems[0].severity == wsmod.ERROR\n        assert ws.problems[0].message.startswith(\"project prov: exclude \")\n        prov = ws.project(\"prov\")\n>       assert prov is not None and prov.exclude is None and \"exclude\" not in prov.to_dict()\nE       AssertionError: assert (WsProject(name='prov', path=PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/py...), role='provider', declared='prov', spec='spec:SPEC', app=None, db=None, login=None, src=None, env=None, exclude=None) is not None and None is None and 'exclude' not in {'name': 'prov', 'path': '/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2722/test_a_bad_exclude_is_one_erro0/prov', 'role': 'provider', 'spec': 'spec:SPEC', ...})\nE        +  where None = WsProject(name='prov', path=PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/py...), role='provider', declared='prov', spec='spec:SPEC', app=None, db=None, login=None, src=None, env=None, exclude=None).exclude\nE        +  and   {'name': 'prov', 'path': '/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2722/test_a_bad_exclude_is_one_erro0/prov', 'role': 'provider', 'spec': 'spec:SPEC', ...} = to_dict()\nE        +    where to_dict = WsProject(name='prov', path=PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/py...), role='provider', declared='prov', spec='spec:SPEC', app=None, db=None, login=None, src=None, env=None, exclude=None).to_dict\n\ntests/contracts/test_exclude.py:167: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET /health]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 16 passed in 3.47s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 3.7
+  },
+  "XM9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_live_does_not_replay_an_excluded_import"
+    ],
+    "summary": "1 failed, 42 passed in 14.97s",
+    "seconds": 15.1,
+    "tail": "..........................................F\n=================================== FAILURES ===================================\n_________________ test_live_does_not_replay_an_excluded_import _________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2720/test_live_does_not_replay_an_e0')\n\n    def test_live_does_not_replay_an_excluded_import(tmp_path: Path) -> None:\n        w = Live(tmp_path)\n        full = w.run()\n        assert full[\"replayed\"] == 6 and full[\"not_replayed\"] == []\n        narrowed, unmatched = ex.apply_exclude(w.export(), [\"GET /admin\"])\n        assert unmatched == [] and \"GET /admin\" not in narrowed[\"endpoints\"]\n        (tmp_path / \"prov\" / \"requests.log\").unlink(missing_ok=True)\n        res = w.run(export=narrowed)\n>       assert res[\"replayed\"] == 5\nE       assert 6 == 5\n\ntests/contracts/test_exclude.py:456: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_live_does_not_replay_an_excluded_import\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 42 passed in 14.97s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 15.2
+  },
+  "XM12": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_exclude.py::test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken"
+    ],
+    "summary": "1 failed, 34 passed in 10.26s",
+    "seconds": 10.4,
+    "tail": " PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2723/test_an_import_of_an_endpoint_0')\n\n    def test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken(tmp_path: Path) -> None:\n        w = World(tmp_path, imports=[LOGIN, ME])\n        assert w.pin()[0] == 0\n        before = w.lock.read_bytes()\n        w.write_manifest(extra_project=excl(\"GET /users/me\", \"GET /jobs\"))\n        rc, out = w.check()\n        lk = link_of(out)\n        assert rc == 1 and lk[\"status\"] == \"broken\"\n        broken = [f for f in lk[\"findings\"] if f[\"class\"] == \"BROKEN\"]\n        assert broken == [{\"class\": \"BROKEN\", \"provider\": \"prov\", \"endpoint\": \"GET /users/me\",\n                           \"kind\": \"endpoint_missing\", \"item\": \"\", \"detail\": EX}]  # fmt: skip\n        # the clock's exclusion is folded; the other one is a CHANGED nobody relies on\n        assert [\n            (f[\"class\"], f[\"kind\"], f[\"endpoint\"], f[\"relied\"])\n            for f in lk[\"findings\"]\n            if f[\"class\"] == \"CHANGED\"\n        ] == [(\"CHANGED\", \"exclusion_added\", \"GET /jobs\", False)]\n        assert lk[\"spec_hash_changed\"] is True\n    \n        rc, out = w.pin()  # refused\n        assert rc == 1 and link_of(out)[\"status\"] == \"refused\" and w.lock.read_bytes() == before\n        assert link_of(out)[\"broken\"][0][\"detail\"] == EX\n    \n        rc, out = w.pin(\"--force\")  # written, but it does not launder the import\n        assert rc == 0 and link_of(out)[\"forced\"] is True and w.lock.read_bytes() != before\n        rc, out = w.check()\n        lk = link_of(out)\n>       assert rc == 1 and lk[\"status\"] == \"broken\"\nE       assert (0 == 1)\n\ntests/contracts/test_exclude.py:355: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_exclude.py::test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 34 passed in 10.26s\n",
+    "tests": "tests/contracts/test_exclude.py"
+   },
+   "verdict": "killed",
+   "seconds": 10.5
+  },
+  "CM11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_workspace_contract.py::test_manifests_without_layer3_keys_print_as_before[show_json-good]"
+    ],
+    "summary": "1 failed, 198 passed in 98.77s (0:01:38)",
+    "seconds": 98.9,
+    "tail": "67clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-2711/test_manifests_without_layer3_2')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10acee150>, label = 'good'\ncase = 'show_json'\n\n    @pytest.mark.parametrize(\"label\", [\"good\", \"messy\"])\n    @pytest.mark.parametrize(\"case\", list(CASES))\n    def test_manifests_without_layer3_keys_print_as_before(\n        tmp_path: Path, capsys: pytest.CaptureFixture[str], label: str, case: str\n    ) -> None:\n        root = tmp_path.resolve()\n        for d in (\"billing\", \"web\", \"auth\"):\n            (root / d).mkdir()\n        (root / ws.MANIFEST).write_text(OLD[label][\"manifest\"])\n        want = OLD[label][\"cases\"][case]\n        rc = ws.main([*CASES[case], \"--workspace\", str(root)])\n        got = capsys.readouterr().out.replace(str(root), \"{root}\")\n>       assert (rc, got) == (want[\"rc\"], want[\"out\"])\nE       assert (0, '{\\n \"wor...\": true\\n}\\n') == (0, '{\\n \"wor...\": true\\n}\\n')\nE         \nE         At index 1 diff: '{\\n \"workspace\": {\\n  \"name\": \"shop\",\\n  \"path\": \"{root}/lattice.workspace.toml\"\\n },\\n \"projects\": [\\n  {\\n   \"name\": \"billing-api\",\\n   \"path\": \"{root}/billing\",\\n   \"role\": \"provider\"\\n  },\\n  {\\n   \"name\": \"web-app\",\\n   \"path\": \"{root}/web\",\\n   \"role\": \"consumer\"\\n  },\\n  {\\n   \"name\": \"shared-auth\",\\n   \"path\": \"{root}/auth\",\\n   \"role\": \"library\"\\n  }\\n ],\\n \"links\": [\\n  {\\n   \"from\": \"web-app\",\\n   \"to\": \"billing-api\",\\n   \"kind\": \"uses\",\\n   \"note\": \"POST /invoices\",\\n   \"contract\": null\\n  },\\n  {\\n   \"from\": \"web-app\",\\n   \"to\": \"shared-au...\nE         \nE         ...Full output truncated (2 lines hidden), use '-vv' to show\n\ntests/contracts/test_workspace_contract.py:41: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_workspace_contract.py::test_manifests_without_layer3_keys_print_as_before[show_json-good]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 198 passed in 98.77s (0:01:38)\n",
+    "tests": "tests/contracts tests/workspace"
+   },
+   "verdict": "killed",
+   "seconds": 99.0
+  }
+ }
+}

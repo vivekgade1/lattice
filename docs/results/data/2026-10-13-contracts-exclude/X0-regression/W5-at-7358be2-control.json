@@ -1,0 +1,195 @@
+{
+ "id": "W5",
+ "prediction": "show, show --json, validate, validate --json, impact shared-auth (+ --json): byte-identical (6 of 6) to the old code (c0cdefc)",
+ "observed": "old_base: 6/6 byte-identical; exits 0,0,0,0,0,0",
+ "pass": false,
+ "identical": true,
+ "n_runs": 2,
+ "checks": {
+  "old_reference_usable": true,
+  "primary_old_usable": false,
+  "new_is_new": true,
+  "old_is_old": true,
+  "old_base_6_of_6_identical": true
+ },
+ "extra": {
+  "old_checkouts": {
+   "primary": {
+    "path": "/Users/vivekgade/Documents/lattice",
+    "head": "7358be258a8a8dd071ea67d61f7a18fd12459c55",
+    "branch": "next-phases",
+    "workspace_py_status": "",
+    "workspace_py_exists": true,
+    "usable": false
+   },
+   "base": {
+    "path": "/Users/vivekgade/Documents/lattice-contracts-base",
+    "head": "c0cdefc4c5058aefecb956f0a43383be43168abc",
+    "branch": "(detached)",
+    "workspace_py_status": "",
+    "workspace_py_exists": true,
+    "usable": true
+   }
+  },
+  "imports": {
+   "new": {
+    "workspace_py": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/exclude/ref/lattice/workspace.py",
+    "has_contracts": true
+   },
+   "base": {
+    "workspace_py": "/Users/vivekgade/Documents/lattice-contracts-base/lattice/workspace.py",
+    "has_contracts": false
+   }
+  }
+ },
+ "runs": [
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK/w/W5/lattice.workspace.toml)\n  billing-api  provider  $WORK/w/W5/billing\n  web-app      consumer  $WORK/w/W5/web\n  shared-auth  library   $WORK/w/W5/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK/w/W5/lattice.workspace.toml)\n  billing-api  provider  $WORK/w/W5/billing\n  web-app      consumer  $WORK/w/W5/web\n  shared-auth  library   $WORK/w/W5/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK/w/W5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK/w/W5/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK/w/W5/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK/w/W5/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK/w/W5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK/w/W5/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK/w/W5/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK/w/W5/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W5/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "$WORK/w/W5/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK/w/W5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK/w/W5/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK/w/W5/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK/w/W5/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK/w/W5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK/w/W5/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK/w/W5/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK/w/W5/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "show": {
+    "new": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK/w/W5/lattice.workspace.toml)\n  billing-api  provider  $WORK/w/W5/billing\n  web-app      consumer  $WORK/w/W5/web\n  shared-auth  library   $WORK/w/W5/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "workspace shop  ($WORK/w/W5/lattice.workspace.toml)\n  billing-api  provider  $WORK/w/W5/billing\n  web-app      consumer  $WORK/w/W5/web\n  shared-auth  library   $WORK/w/W5/auth\nlinks:\n  web-app --uses--> billing-api  (POST /invoices)\n  web-app --depends_on--> shared-auth\n  billing-api --depends_on--> shared-auth\n",
+     "err": ""
+    }
+   },
+   "show --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK/w/W5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK/w/W5/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK/w/W5/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK/w/W5/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK/w/W5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK/w/W5/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK/w/W5/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK/w/W5/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "validate": {
+    "new": {
+     "rc": 0,
+     "out": "$WORK/w/W5/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "$WORK/w/W5/lattice.workspace.toml: ok (3 project(s), 3 link(s))\n",
+     "err": ""
+    }
+   },
+   "validate --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK/w/W5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK/w/W5/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK/w/W5/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK/w/W5/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "{\n \"workspace\": {\n  \"name\": \"shop\",\n  \"path\": \"$WORK/w/W5/lattice.workspace.toml\"\n },\n \"projects\": [\n  {\n   \"name\": \"billing-api\",\n   \"path\": \"$WORK/w/W5/billing\",\n   \"role\": \"provider\"\n  },\n  {\n   \"name\": \"web-app\",\n   \"path\": \"$WORK/w/W5/web\",\n   \"role\": \"consumer\"\n  },\n  {\n   \"name\": \"shared-auth\",\n   \"path\": \"$WORK/w/W5/auth\",\n   \"role\": \"library\"\n  }\n ],\n \"links\": [\n  {\n   \"from\": \"web-app\",\n   \"to\": \"billing-api\",\n   \"kind\": \"uses\",\n   \"note\": \"POST /invoices\"\n  },\n  {\n   \"from\": \"web-app\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  },\n  {\n   \"from\": \"billing-api\",\n   \"to\": \"shared-auth\",\n   \"kind\": \"depends_on\",\n   \"note\": \"\"\n  }\n ],\n \"problems\": [],\n \"ok\": true\n}\n",
+     "err": ""
+    }
+   },
+   "impact shared-auth": {
+    "new": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "shared-auth changes -> web-app, billing-api (declared links only)\n",
+     "err": ""
+    }
+   },
+   "impact shared-auth --json": {
+    "new": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    },
+    "old_base": {
+     "rc": 0,
+     "out": "{\n \"workspace\": \"shop\",\n \"project\": \"shared-auth\",\n \"impacted\": [\n  \"web-app\",\n  \"billing-api\"\n ],\n \"problems\": []\n}\n",
+     "err": ""
+    }
+   }
+  }
+ ]
+}

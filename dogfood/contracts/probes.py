@@ -1467,8 +1467,11 @@ def w5(ctx: Ctx) -> Result:
                 equal.setdefault(name, []).append(row["new"] == row[name])
     which = {"new": which_code(ctx, REPO), **{k: which_code(ctx, v) for k, v in usable.items()}}
     checks = {
+        # at least one old-code reference at c0cdefc must be usable; the primary checkout is one
+        # when it happens to sit there (it no longer does once next-phases moves on): it is
+        # recorded in the data (`old_checkouts`) but is not required, because requiring it made
+        # this probe depend on a mutable checkout (found by the route-exclusion experiment, X0 d)
         "old_reference_usable": bool(usable),
-        "primary_old_usable": "primary" in usable,
         "new_is_new": which["new"]["has_contracts"]
         and which["new"]["workspace_py"].startswith(str(REPO)),
         "old_is_old": all(

@@ -17,6 +17,16 @@ scenarios exercise, not what the app can do. Per endpoint (``METHOD /templated/p
 An endpoint with no 2xx step is left out (a 405 probe, for instance). Top level: ``format``,
 ``basis`` (``observed``) and ``error_body`` (``profile.api.error_body``, or null).
 
+A provider can declare routes that are not part of its contract (test harness and internal
+triggers) with ``exclude`` in the workspace manifest. The filter is applied here, once, before
+the hash: :func:`apply_exclude` drops the listed endpoints from ``endpoints`` and adds
+``excluded`` (the sorted, de-duplicated normalised keys, matched or not), only when the list is
+not empty, so an export without exclusion has exactly the keys above. ``excluded`` is part of
+the hashed export. The spec itself is not filtered (a live replay still sends an excluded
+endpoint as an earlier step of a scenario). The result of :func:`build_export` carries
+``exclude_unmatched`` beside ``export`` (not hashed): the declared keys that the export does not
+hold, only when the list is not empty.
+
 ``spec_hash`` is the sha256 of the canonical JSON of the export (sorted keys, ``(",", ":")``
 separators, ASCII); the version is ``{spec_hash, git_ref, dirty}`` (``git_ref``: the provider's
 ``git rev-parse HEAD``, or null; ``dirty``: tracked files differ from HEAD). The export is
@@ -33,7 +43,7 @@ import os
 import re
 import subprocess
 import sys
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -94,6 +104,25 @@ def parse_endpoint(text: object) -> str:
     if body != "/" and any(seg == "" for seg in body.split("/")[1:]):
         raise ValueError(f"endpoint {text!r}: empty path segment")
     return endpoint_key(method, path)
+
+
+def check_exclude(raw: object) -> tuple[tuple[str, ...], list[str]]:
+    """``(keys, reasons)`` of an ``exclude`` value: the normalised endpoint keys in declared order
+    (:func:`parse_endpoint`, the import rule) and every reason it is not valid (a value that is
+    not a list of ``METHOD /path`` strings, a bad entry, a key named twice). Valid when `reasons`
+    is empty; ``[]`` is valid and excludes nothing."""
+    if not isinstance(raw, (list, tuple)):
+        return (), ["exclude must be a list of 'METHOD /path' strings"]
+    keys: list[str] = []
+    reasons: list[str] = []
+    for i, entry in enumerate(raw, 1):
+        try:
+            keys.append(parse_endpoint(entry))
+        except ValueError as e:
+            reasons.append(f"exclude entry #{i}: {e}")
+    for key in dict.fromkeys(k for k in keys if keys.count(k) > 1):
+        reasons.append(f"exclude names {key} twice")
+    return tuple(keys), reasons
 
 
 # ---- the export ------------------------------------------------------------------------------
@@ -189,6 +218,21 @@ def export_spec(spec: Any) -> dict[str, Any]:
     }
 
 
+def apply_exclude(export: dict[str, Any], exclude: Sequence[str] = ()
+                  ) -> tuple[dict[str, Any], list[str]]:  # fmt: skip
+    """``(export, unmatched)``: `export` without the endpoints named by `exclude` (normalised
+    keys) and with ``excluded``, or `export` itself for an empty `exclude`. `unmatched` lists the
+    keys the export does not hold (sorted)."""
+    keys = sorted(set(exclude))
+    if not keys:
+        return export, []
+    held = export["endpoints"]
+    out = dict(export)
+    out["endpoints"] = {k: v for k, v in held.items() if k not in keys}
+    out["excluded"] = keys
+    return out, [k for k in keys if k not in held]
+
+
 def canonical(obj: Any) -> str:
     """Canonical JSON: sorted keys, ``(",", ":")`` separators, ASCII."""
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
@@ -233,21 +277,31 @@ def git_version(project: Path) -> tuple[str | None, bool]:
     return head.strip(), bool(status and status.strip())
 
 
-def build_export(project: Path, ref: str) -> dict[str, Any]:
+def build_export(project: Path, ref: str, exclude: Sequence[str] = ()) -> dict[str, Any]:
     """``{"spec_ref", "version", "export"}`` for the project, computed in this process (the
-    subprocess entry of :func:`compute_export`; call that one instead)."""
-    export = export_spec(load_spec(project, ref))
+    subprocess entry of :func:`compute_export`; call that one instead). `exclude` (endpoint
+    keys, see :func:`apply_exclude`) is applied before the hash; with a non-empty `exclude` the
+    result also has ``exclude_unmatched``. Raises ``ValueError`` for an invalid `exclude`."""
+    keys, reasons = check_exclude(list(exclude))
+    if reasons:
+        raise ValueError("; ".join(reasons))
+    export, unmatched = apply_exclude(export_spec(load_spec(project, ref)), keys)
     git_ref, dirty = git_version(project)
-    return {
+    out: dict[str, Any] = {
         "export": export,
         "spec_ref": ref,
         "version": {"dirty": dirty, "git_ref": git_ref, "spec_hash": spec_hash(export)},
     }
+    if export.get("excluded"):
+        out["exclude_unmatched"] = unmatched
+    return out
 
 
-def compute_export(project: Path | str, ref: str | None = None) -> dict[str, Any]:
+def compute_export(project: Path | str, ref: str | None = None,
+                   exclude: Sequence[str] = ()) -> dict[str, Any]:  # fmt: skip
     """:func:`build_export` in a subprocess (``python -m lattice.contracts export``), so the
-    provider's modules never meet the caller's. Raises :class:`ExportFailed`."""
+    provider's modules never meet the caller's. `exclude` is passed as ``--exclude`` flags.
+    Raises :class:`ExportFailed`."""
     project = Path(project).resolve()
     ref = ref or DEFAULT_SPEC
     if not project.is_dir():
@@ -261,6 +315,8 @@ def compute_export(project: Path | str, ref: str | None = None) -> dict[str, Any
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     cmd = [sys.executable, "-P", "-m", "lattice.contracts", "export", "--project", str(project),
            "--spec", ref]  # fmt: skip
+    for key in exclude:
+        cmd += ["--exclude", key]
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, cwd=project, env=env,
                            timeout=600, check=False)  # fmt: skip
