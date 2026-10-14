@@ -9,6 +9,9 @@ route also under ``/p/<name>/api/...``, the bare ``/api/...`` for the default pr
 (``--workspace``, ``$LATTICE_WORKSPACE``, else walking up from the cwd; lattice/workspace.py).
 ``GET /api/contracts[?consumer=NAME]`` (API.md v1.17) is the static contract check of that
 workspace's opted-in links (lattice/contracts/check.py), read-only.
+``GET /api/contracts/impact?provider=NAME&candidate=REF`` (API.md v1.18) is the advisory,
+read-only preview of a candidate provider version against the consumers' pins
+(lattice/contracts/impact.py).
 
 **The project directory** holds ``REQUIREMENTS.md``, ``spec.py`` (defines ``SPEC``),
 ``spec.trace.json`` and, optionally, ``studio.toml``::
@@ -1920,6 +1923,13 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/contracts":  # API v1.17: not project-scoped, read-only, static only
             consumer = (parse_qs(urlparse(self.path).query).get("consumer") or [""])[-1] or None
             return self._dispatch(lambda: contracts_answer(self.server.workspace_path, consumer))
+        if path == "/api/contracts/impact":  # API v1.18: not project-scoped, advisory, read-only
+            query = parse_qs(urlparse(self.path).query)
+            provider = (query.get("provider") or [""])[-1]
+            candidate = (query.get("candidate") or [""])[-1]
+            return self._dispatch(
+                lambda: impact_answer(self.server.workspace_path, provider, candidate)
+            )
         if not path.startswith("/api/"):
             return self._static(path)
         st = self._project(name)
@@ -2125,6 +2135,30 @@ def contracts_answer(path: Path | None, consumer: str | None = None) -> dict[str
         if lk["live"] is not None and lk["live"].get("status") == "not_run":
             lk["live"] = {"status": "not_run", "reason": "read-only"}
     return out
+
+
+def impact_answer(path: Path | None, provider: str, candidate: str) -> dict[str, Any]:
+    """``GET /api/contracts/impact`` (API v1.18): ``lattice contracts impact PROVIDER --candidate
+    CANDIDATE --json`` for the manifest at `path`, read on every call. A relative candidate
+    directory is relative to the manifest's directory. Advisory and read-only: it writes nothing
+    and never starts an app. Always an answer with every key: no manifest, or an unreadable one,
+    answers ``workspace`` null, no rows and ``exit_code`` 2 (the ``unreadable`` problem for an
+    unreadable one); an empty argument answers ``missing_argument``."""
+    from lattice import workspace as wsmod
+    from lattice.contracts import impact
+
+    if path is None:
+        return impact.unavailable(provider, candidate).to_dict()
+    ws, problems = wsmod.try_load(path)
+    if ws is None:
+        return impact.unavailable(provider, candidate, problems).to_dict()
+    missing = [k for k, v in (("provider", provider), ("candidate", candidate)) if not v]
+    if missing:
+        msg = f"pass {' and '.join(missing)}: ?provider=NAME&candidate=REF"
+        return impact.unavailable(
+            provider, candidate, [*ws.problems, wsmod.Problem("missing_argument", msg)], ws.name
+        ).to_dict()
+    return impact.run_impact(ws, provider, candidate, base=ws.root).to_dict()
 
 
 class StudioServer(ThreadingHTTPServer):

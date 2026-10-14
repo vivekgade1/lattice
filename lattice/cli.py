@@ -10,7 +10,7 @@
     lattice attack plan|run|report --project DIR ...                       # lattice.security
     lattice improve report|import-plan|ledger|verify|draft --project DIR ... # lattice.improve
     lattice workspace show|validate|impact NAME [--json]                  # lattice.workspace
-    lattice contracts export|pin|check ...                                # lattice.contracts
+    lattice contracts export|pin|check|impact ...                          # lattice.contracts
     lattice projects [DIR ...]                                            # discover projects
 
 Every ``lattice X ...`` is the same as ``python -m lattice.X ...`` (argv forwarded
@@ -56,7 +56,7 @@ commands:
   workspace show|validate|impact NAME [--json]     the workspace manifest (lattice.workspace.toml):
             [--workspace PATH]                     projects, links, problems; impact = who
                                                    relies on NAME (declared links only)
-  contracts export|pin|check ...                   contracts between projects: a provider's
+  contracts export|pin|check|impact ...            contracts between projects: a provider's
             [--workspace PATH]                     export from its spec, a consumer's lock
             [--json] [--static-only] [--force]     (pin) and its imports checked against it
                                                    (opt-in per link: contract = "static"|"live")

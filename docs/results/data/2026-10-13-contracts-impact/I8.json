@@ -1,0 +1,179 @@
+{
+ "id": "I8",
+ "prediction": "probes.py --runs 10 35/35, streak_probes.py --allow-code-diff 32/32, exclude_probes.py 12/12; pytest tests/contracts tests/workspace tests/mcp tests/studio 0 failures; dogfood/studio/check.sh PASS (415 + R95's 7 steps = 422 cases); workspace show|validate|impact, contracts export, check --json and the pin lock byte-identical to the main checkout at 67189af",
+ "observed": "byte-identical 10/10; probes 35/35; streak_probes 32/32; exclude_probes 12/12; pytest 900 passed, 1 skipped in 466.69s (0:07:46); check.sh PASS: 0 findings (D 0, X 0); 422 cases run",
+ "pass": true,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "old_checkout_head_is_67189af": true,
+  "old_checkout_lattice_equals_67189af": true,
+  "bytes_identical_to_67189af": true,
+  "pin_lock_equals_golden": true,
+  "probes_35_of_35": true,
+  "streak_probes_32_of_32": true,
+  "exclude_probes_12_of_12": true,
+  "pytest_0_failures": true,
+  "studio_check_pass_422_cases": true
+ },
+ "extra": {
+  "old_checkout": {
+   "head": "67189afd644588a855679a6d1f2d254b8424ec94",
+   "lattice_diff_stat": ""
+  },
+  "byte_comparison": [
+   {
+    "argv": "lattice.workspace show",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace show --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts export scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "contracts pin ci-bot (lock bytes)",
+    "equal": true,
+    "rc": 0
+   }
+  ],
+  "probes": {
+   "rc": 0,
+   "passed": 35,
+   "total": 35,
+   "last_line": "probes: 35/35 pass",
+   "wall_s": 245.2,
+   "stderr_tail": [
+    "... W6",
+    "... A1",
+    "... T1"
+   ]
+  },
+  "streak_probes": {
+   "rc": 0,
+   "passed": 32,
+   "total": 32,
+   "last_line": "probes: 32/32 pass",
+   "wall_s": 180.9,
+   "stderr_tail": [
+    "... V5",
+    "... V6",
+    "... T1"
+   ]
+  },
+  "exclude_probes": {
+   "rc": 0,
+   "passed": 12,
+   "total": 12,
+   "last_line": "probes: 12/12 pass",
+   "wall_s": 684.1,
+   "stderr_tail": [
+    "... X7",
+    "... X8",
+    "... X9"
+   ]
+  },
+  "pytest": {
+   "rc": 0,
+   "last_line": [
+    "900 passed, 1 skipped in 466.69s (0:07:46)"
+   ],
+   "wall_s": 467.0
+  },
+  "studio_check": {
+   "rc": 0,
+   "first_line": "PASS: 0 findings (D 0, X 0); 422 cases run",
+   "wall_s": 61.7
+  }
+ },
+ "runs": [
+  [
+   {
+    "argv": "lattice.workspace show",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace show --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts export scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "contracts pin ci-bot (lock bytes)",
+    "equal": true,
+    "rc": 0
+   }
+  ]
+ ]
+}

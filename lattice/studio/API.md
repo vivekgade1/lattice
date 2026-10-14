@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.17)
+# Lattice Studio API contract (v1.18)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -921,3 +921,50 @@ With a workspace, `python -m lattice.mcp serve` also lists `contract_check {cons
 
 ### The mock
 `GET /api/contracts` answers the real shape for the `owner-dev` fixture manifest of `GET /api/workspace`, with its two `uses` links opted in: `scheduler-web -> scheduler` is `static` and `broken` (a BROKEN `status_not_observed`, a CHANGED `status_added`, one gap) and `scheduler-web -> studio` is `live` and `ok` with `live: {"status": "not_run", "reason": "read-only"}`. `consumer` filters it; a consumer that is not in the manifest answers `unknown_project`. No write route.
+
+## v1.18 additions (cross-project impact preview, multi-project slice 4a)
+
+A route that previews what a *candidate* version of a provider would do to the consumers that rely on it, before it ships. Advisory: nothing in Studio or Lattice reads the answer (no gate, pin, check, accept or build waits on it). Code: `lattice/contracts/impact.py`, `lattice/studio/server.py` (`impact_answer`), `lattice/mcp/projects.py` (`contract_impact`); the CLI is `lattice contracts impact PROVIDER --candidate REF|PATH [--json]`. Design and evidence: `docs/results/2026-10-13-contracts-impact-prereg.md`. There is no web UI change in this version. (A new route, so a new version: v1.17's exclusion paragraph only added values.)
+
+### GET /api/contracts/impact?provider=NAME&candidate=REF
+Not project-scoped (like `GET /api/contracts`; `/p/<name>/api/contracts/impact` answers the same; a repeated query value: the last wins). **Read-only and static only**: it writes nothing to any project, lock or state directory, starts no app, uses no network and no LLM, and has no write route (`POST` answers 404). Each request re-reads the manifest and runs at most two export subprocesses (the candidate's, then the provider's current one), so an answer can take seconds. `provider` is a project of the manifest; `candidate` is a **directory** (relative to the manifest's directory; it holds the provider's project) or else a **git ref** of the provider's repository (a ref is read out of the object store into a temporary directory: no checkout, the working tree, index and refs are never touched). A directory shadows a same-named ref; `candidate.kind` says which was taken.
+
+The baseline is **each consumer's pin**, not the provider's current export: a row is what `GET /api/contracts` would say if the candidate shipped and nobody re-pinned.
+```json
+{"format": 1, "workspace": "shop", "provider": "billing-api",
+ "candidate": {"input": "release-2", "kind": "ref", "resolved": "9d3e...", "spec_ref": "spec:SPEC",
+               "version": {"spec_hash": "e1d2...", "git_ref": "9d3e...", "dirty": false}, "endpoints": 18},
+ "current": {"spec_ref": "spec:SPEC", "spec_hash": "b7e2...", "git_ref": "5a0c...", "dirty": false},
+ "advisory": true, "static_only": true, "baseline": "pin", "checked": 1,
+ "consumers": [{"consumer": "web-app", "provider": "billing-api", "contract": "static",
+                "label": "contradiction", "error": null, "imports": 3,
+                "pinned": {"spec_ref": "spec:SPEC", "spec_hash": "3c1f...", "git_ref": "5a0c...", "dirty": false},
+                "version_changed": true, "spec_hash_changed": true, "spec_ref_changed": false,
+                "current_label": "unaffected",
+                "findings": [{"class": "BROKEN", "provider": "billing-api", "endpoint": "POST /invoices/{}/pay",
+                              "kind": "status_not_observed", "item": "201", "detail": "the spec now shows statuses [200]"},
+                             {"class": "CHANGED", "provider": "billing-api", "endpoint": "POST /invoices/{}/pay",
+                              "kind": "status_added", "item": "200", "relied": true, "detail": "status 200 is now observed"}],
+                "gaps": [{"class": "GAP", "provider": "billing-api", "endpoint": "POST /auth/login",
+                          "kind": "response_field_unobserved", "item": "token", "detail": "the provider's spec never shows it"}],
+                "counts": {"broken": 1, "changed_relied": 1, "changed_unrelied": 0, "gaps": 1},
+                "live": null}],
+ "counts": {"contradiction": 1, "regression": 0, "unaffected": 0, "error": 0},
+ "problems": [], "exit_code": 1, "elapsed_s": 0.9}
+```
+The body is `lattice contracts impact PROVIDER --candidate X --json`, key for key; every key is always present.
+
+- **Rows.** One per link of the manifest with `to = provider` and a `contract` key (either kind), sorted by consumer then contract. A link without a `contract` key, and a consumer that reaches the provider only transitively, is not listed. Only the consumer's imports of this provider are evaluated.
+- **Labels.** `contradiction`: some import is BROKEN against the candidate (an import of an endpoint the provider excludes included). `regression`: no BROKEN, but a CHANGED finding with `relied: true` (an endpoint some import names; the endpoint level, so an unrelated edit of a relied endpoint counts). `unaffected`: anything else (unrelied CHANGED findings, gaps, nothing). Gaps are listed and never move a label. A row in error has `label: null` and `error: {code, message}` (`no_pin`, `bad_pin`, `no_imports`, `bad_imports`); the other rows still run.
+- **`current_label`** is the same label for the provider's *current* export against the same pin (null when the current export could not be computed): `contradiction` there says the pin is already stale, and the row then shows the whole pin -> candidate difference. `version_changed`, `spec_hash_changed` and `spec_ref_changed` compare the candidate with the pin.
+- **`exit_code`**: 0 no contradiction (a `regression` alone is 0: it flags relied-on edits, not necessarily breaks; `counts` lets a caller gate on it), 1 at least one `contradiction`, 2 it cannot run (a manifest error, an unknown provider or candidate, a candidate whose spec does not load, any row in error); 2 over 1 over 0.
+- **`live`**: `{"status": "not_run", "reason": "static-only"}` for a `live` link, null for a static one. A live link is never replayed here.
+- **`candidate.kind`** is `ref` or `path`; `resolved` is the commit SHA or the absolute directory (null before it resolves); `version` the candidate's `{spec_hash, git_ref, dirty}` (for a ref `git_ref` is the commit and `dirty` false); `endpoints` the number of exported endpoints.
+
+Answers, all HTTP 200 (the body says why a preview could not run): no manifest answers `workspace` null, no rows and `exit_code` 2 with `problems` empty, an unreadable one the `unreadable` problem; a manifest with an error answers its problems and no rows; an empty or absent `provider` or `candidate` answers `missing_argument`; `provider` that is not a project answers `unknown_project`; a workspace where no link to the provider has a `contract` key answers `checked` 0, the warning `no_consumers`, `exit_code` 0 and `candidate.resolved` null (the candidate is not even read); a candidate that is neither a directory nor a commit of the provider's repository (also a name starting with `-`, never passed to git) answers `unknown_candidate`; one whose spec cannot be loaded answers `candidate_failed` with the child's last error line; a current export that fails only warns (`current_export_failed`, `current_label` null).
+
+### The MCP server
+With a workspace, `python -m lattice.mcp serve` also lists `contract_impact {provider, candidate}` (both required strings, else a tool error): the same preview, returning exactly the CLI's JSON (the manifest re-read on each call; a relative candidate directory is relative to the manifest's directory). It is read-only, so `--readonly` lists it; without a workspace it is not listed.
+
+### The mock
+`GET /api/contracts/impact` answers the real shape for the `owner-dev` fixture manifest: provider `scheduler` has one opted-in consumer, `scheduler-web` (static), `contradiction` (the findings of v1.17's link) with `exit_code` 1; `studio` one live link, `unaffected`; any other project `no_consumers`; an unknown provider `unknown_project`; an empty argument `missing_argument`. The candidate is echoed as a `ref` resolving to a fixed fixture SHA. No write route.

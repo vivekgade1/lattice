@@ -45,10 +45,31 @@ section 4; the tests are ``tests/contracts/test_exclude.py``, the probes named a
 (XM12 is the prereg's draft rule, amended before the build; it is listed after XM11.) The
 prereg's table says "11 of 11" and lists twelve rows: all twelve are run, 11 + 12 = 23.
 
+The fourteen mutants of the cross-project impact preview
+(``docs/results/2026-10-13-contracts-impact-prereg.md`` section 4; every patch is a change of
+``lattice/contracts/impact.py``, the tests are ``tests/contracts/test_impact.py``, the probes
+named are ``dogfood/contracts/impact_probes.py``):
+
+* IMP1  candidate ignored: the current export used as the candidate        (I1 D1-D5)
+* IMP2  BROKEN mapped to ``regression``                                    (I1 D1-D5)
+* IMP3  a relied CHANGED mapped to ``contradiction``                       (I1 D8, D9)
+* IMP4  ``relied`` ignored: any CHANGED is a ``regression``                (I1 D6, I3)
+* IMP5  baseline = the current export, not the pin                         (I0c)
+* IMP6  ``exclude`` not passed for the candidate                           (I3x)
+* IMP7  the manifest's ``spec`` ignored for the candidate                  (I0a)
+* IMP8  links without ``contract`` listed                                  (I4-f)
+* IMP9  rows shuffled                                                      (I4, 10-run identity)
+* IMP10 the candidate's entry written into the consumer's lock             (I6, I1 run 2)
+* IMP11 exit 1 on any ``regression``                                       (I1 D8, D9 exit)
+* IMP12 the ref materialised by ``git checkout`` in the provider and back  (I5-h, I6)
+* IMP13 a ``no_pin`` row reported ``unaffected``                           (I4-g)
+* IMP14 the temporary directory not removed                                (I6 (2))
+
 Test selection: ``tests/contracts tests/workspace -q -x`` (about a minute); a mutant that
 touches only ``live.py`` runs ``tests/contracts/test_live.py`` first and the rest only when it
 survives that; an XM mutant runs ``tests/contracts/test_exclude.py`` first and the rest only when
-it survives that. ``--all-failures`` drops ``-x`` to list every killing test.
+it survives that; an IMP mutant runs ``tests/contracts/test_impact.py`` first and the rest only
+when it survives that. ``--all-failures`` drops ``-x`` to list every killing test.
 
 Usage: ``python dogfood/contracts_mutants.py [--out FILE] [--jobs N] [--all-failures] [ID ...]``.
 Exit 0 when the control passes and every mutant is killed; the last line is
@@ -76,11 +97,13 @@ ROOT = Path(__file__).resolve().parents[1]
 SUITE = ["tests/contracts", "tests/workspace"]
 LIVE_ONLY = ["tests/contracts/test_live.py"]
 EXCLUDE_ONLY = ["tests/contracts/test_exclude.py"]
-CK, EX, LV, WS = (
+IMPACT_ONLY = ["tests/contracts/test_impact.py"]
+CK, EX, LV, WS, IM = (
     "lattice/contracts/check.py",
     "lattice/contracts/export.py",
     "lattice/contracts/live.py",
     "lattice/workspace.py",
+    "lattice/contracts/impact.py",
 )
 # copied into the scratch tree (dogfood/contracts only: the fixtures, not another node's probes)
 COPY = [
@@ -276,6 +299,118 @@ MUTANTS: dict[str, tuple[str, str, str, str, list[str] | None]] = {
         "  # MUTANT XM12\n",
         EXCLUDE_ONLY,
     ),
+    "IMP1": (
+        "impact: the candidate is ignored (the current export is the candidate)",
+        IM,
+        '    c_exp, c_ver = cand["export"], cand["version"]\n',
+        '    c_exp, c_ver = (cur or cand)["export"], cand["version"]  # MUTANT IMP1\n',
+        IMPACT_ONLY,
+    ),
+    "IMP2": (
+        "impact: a BROKEN reliance is labelled regression",
+        IM,
+        "    if broken:\n        return CONTRADICTION\n",
+        "    if broken:\n        return REGRESSION  # MUTANT IMP2\n",
+        IMPACT_ONLY,
+    ),
+    "IMP3": (
+        "impact: a relied CHANGED is labelled contradiction",
+        IM,
+        '    if any(f.get("relied") for f in changed):\n        return REGRESSION\n',
+        '    if any(f.get("relied") for f in changed):\n'
+        "        return CONTRADICTION  # MUTANT IMP3\n",
+        IMPACT_ONLY,
+    ),
+    "IMP4": (
+        "impact: relied is ignored (any CHANGED is a regression)",
+        IM,
+        '    if any(f.get("relied") for f in changed):\n',
+        "    if changed:  # MUTANT IMP4\n",
+        IMPACT_ONLY,
+    ),
+    "IMP5": (
+        "impact: the baseline is the current export, not the pin",
+        IM,
+        "    pinned_v = ck.version_of(entry)\n",
+        "    pinned_v = ck.version_of(entry)\n"
+        '    entry = {**entry, "export": (cur or cand)["export"]}  # MUTANT IMP5\n',
+        IMPACT_ONLY,
+    ),
+    "IMP6": (
+        "impact: exclude is not passed for the candidate",
+        IM,
+        "                got = compute_export(temp, spec_ref, exclude)\n",
+        "                got = compute_export(temp, spec_ref, ())  # MUTANT IMP6\n",
+        IMPACT_ONLY,
+    ),
+    "IMP7": (
+        "impact: the manifest's spec is ignored for the candidate",
+        IM,
+        "                got = compute_export(temp, spec_ref, exclude)\n",
+        "                got = compute_export(temp, DEFAULT_SPEC, exclude)  # MUTANT IMP7\n",
+        IMPACT_ONLY,
+    ),
+    "IMP8": (
+        "impact: links without a contract key are listed",
+        IM,
+        "if lk.target == provider and lk.contract),",
+        "if lk.target == provider),  # MUTANT IMP8",
+        IMPACT_ONLY,
+    ),
+    "IMP9": (
+        "impact: the rows are shuffled",
+        IM,
+        "        session = ck._Session(ws)\n",
+        "        session = ck._Session(ws)\n"
+        "        __import__('random').shuffle(links)  # MUTANT IMP9\n",
+        IMPACT_ONLY,
+    ),
+    "IMP10": (
+        "impact: the candidate's entry is written into the consumer's lock",
+        IM,
+        "    pinned_v = ck.version_of(entry)\n",
+        "    pinned_v = ck.version_of(entry)\n"
+        '    new = {"spec_ref": cand["spec_ref"], "version": cand["version"],\n'
+        '           "export": cand["export"]}  # MUTANT IMP10\n'
+        '    ck.write_lock(lock_path, {**lock, "providers": {**lock["providers"],\n'
+        "                                                   link.target: new}})\n",
+        IMPACT_ONLY,
+    ),
+    "IMP11": (
+        "impact: exit 1 on any regression",
+        IM,
+        '        if any(row["label"] == CONTRADICTION for row in self.consumers):\n',
+        '        if any(row["label"] in (CONTRADICTION, REGRESSION) for row in self.consumers):'
+        "  # MUTANT IMP11\n",
+        IMPACT_ONLY,
+    ),
+    "IMP12": (
+        "impact: the ref is checked out in the provider's tree and back",
+        IM,
+        "            materialise(project, sha, temp)\n",
+        '            for to in (sha, "-"):  # MUTANT IMP12\n'
+        '                subprocess.run(["git", "-C", str(project), "checkout", "-q", to],\n'
+        "                               capture_output=True, check=False)\n"
+        "            materialise(project, sha, temp)\n",
+        IMPACT_ONLY,
+    ),
+    "IMP13": (
+        "impact: a no_pin row is reported unaffected",
+        IM,
+        "                out.consumers.append(_error_row(link, e))\n",
+        "                row = _error_row(link, e)  # MUTANT IMP13\n"
+        '                if e.code == "no_pin":\n'
+        "                    row.update(label=UNAFFECTED, error=None)\n"
+        "                out.consumers.append(row)\n",
+        IMPACT_ONLY,
+    ),
+    "IMP14": (
+        "impact: the temporary directory is not removed",
+        IM,
+        "            shutil.rmtree(temp, ignore_errors=True)\n",
+        "            pass  # MUTANT IMP14: left behind\n",
+        IMPACT_ONLY,
+    ),
 }
 
 
@@ -385,8 +520,9 @@ def one(mid: str, all_failures: bool) -> dict[str, Any]:
     return {"pytest": res, "verdict": verdict, "seconds": round(time.monotonic() - t0, 1)}
 
 
-def _order(mid: str) -> tuple[bool, int]:
-    return (not mid.startswith("CM"), int(mid[2:]))
+def _order(mid: str) -> tuple[int, int]:
+    prefix = mid.rstrip("0123456789")
+    return (("CM", "XM", "IMP").index(prefix), int(mid[len(prefix) :]))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -434,7 +570,7 @@ def main(argv: list[str] | None = None) -> int:
         print(control["pytest"]["tail"], flush=True)
     changed = [f for f in files if sha(ROOT / f) != hashes[f]]
     print(f"\n{'id':<8} {'verdict':<14} {'sec':>6}  {'change':<62} killed by (first failing test)")
-    for mid in sorted(runs, key=lambda m: (False, -1) if m == "control" else _order(m)):
+    for mid in sorted(runs, key=lambda m: (-1, -1) if m == "control" else _order(m)):
         res = runs[mid]
         if mid == "control":
             what, by = "unmutated copy", res["pytest"]["summary"]

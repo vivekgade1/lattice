@@ -264,8 +264,11 @@ def git_version(project: Path) -> tuple[str | None, bool]:
 
     def git(*args: str) -> str | None:
         try:
-            r = subprocess.run(["git", "-C", str(project), *args], capture_output=True, text=True,
-                               timeout=30, check=False)  # fmt: skip
+            # --no-optional-locks: `status` must not refresh the repository's index (a read
+            # that writes would make `check` and `impact` write into the provider's .git)
+            r = subprocess.run(["git", "-C", str(project), "--no-optional-locks", *args],
+                               capture_output=True, text=True, timeout=30,
+                               check=False)  # fmt: skip
         except (OSError, subprocess.SubprocessError):
             return None
         return r.stdout if r.returncode == 0 else None
