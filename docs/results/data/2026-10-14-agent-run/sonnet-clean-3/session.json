@@ -1,0 +1,41 @@
+{
+ "sid": "sonnet-clean-3",
+ "condition": "clean",
+ "model": "sonnet",
+ "attempt": 1,
+ "world": "A-sonnet-clean-3",
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 9.5
+ },
+ "cost_usd": 0.045049599999999995,
+ "infra_failure": null,
+ "usage_limit": false,
+ "argv_max_turns_present": true,
+ "scratch_outside_changed": [],
+ "info_claude_projects_cwd_exists": true,
+ "started_utc": "2026-10-14T16:14:59+00:00",
+ "attempts": 1,
+ "attempt_history": [
+  {
+   "sid": "sonnet-clean-3",
+   "condition": "clean",
+   "model": "sonnet",
+   "attempt": 1,
+   "world": "A-sonnet-clean-3",
+   "run": {
+    "rc": 0,
+    "timed_out": false,
+    "wall_s": 9.5
+   },
+   "cost_usd": 0.045049599999999995,
+   "infra_failure": null,
+   "usage_limit": false,
+   "argv_max_turns_present": true,
+   "scratch_outside_changed": [],
+   "info_claude_projects_cwd_exists": true,
+   "started_utc": "2026-10-14T16:14:59+00:00"
+  }
+ ]
+}

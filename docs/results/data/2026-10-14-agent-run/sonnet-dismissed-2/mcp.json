@@ -1,0 +1,21 @@
+{
+ "mcpServers": {
+  "lattice": {
+   "command": "/Users/vivekgade/Documents/lattice/.venv/bin/python",
+   "args": [
+    "-m",
+    "lattice.mcp",
+    "serve",
+    "--workspace",
+    "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/b/s/contracts-probes-62560/w/A-sonnet-dismissed-2/m/lattice.workspace.toml",
+    "--project",
+    "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/b/s/contracts-probes-62560/w/A-sonnet-dismissed-2/streak-widget",
+    "--readonly"
+   ],
+   "env": {
+    "PYTHONPATH": "/Users/vivekgade/Documents/lattice-agentrun",
+    "PYTHONDONTWRITEBYTECODE": "1"
+   }
+  }
+ }
+}

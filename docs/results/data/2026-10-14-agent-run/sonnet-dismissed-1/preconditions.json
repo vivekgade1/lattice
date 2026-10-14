@@ -1,0 +1,258 @@
+{
+ "world": "A-sonnet-dismissed-1",
+ "condition": "dismissed",
+ "drift": "D2",
+ "accept_status_200": {
+  "ok": true,
+  "detail": 200
+ },
+ "lock_sha256_prefix": {
+  "ok": true,
+  "detail": "36f89f671c58"
+ },
+ "pin_spec_hash": {
+  "ok": true,
+  "detail": "d44b738522ea"
+ },
+ "delivery_action": {
+  "ok": true,
+  "detail": [
+   "created"
+  ]
+ },
+ "dismiss_rc0": {
+  "ok": true,
+  "detail": {
+   "rc": 0,
+   "out": "{\n \"format\": 1,\n \"id\": \"lq1\",\n \"key\": \"sha256:5def200742abcf1511dd328eec0eb2e380b5e3a1266009fa0e76c53381d5372f\",\n \"kind\": \"linked_question\",\n \"workspace\": \"probe\",\n \"provider\": \"streak\",\n \"consumer\": \"streak-widget\",\n \"contract\": \"static\",\n \"status\": \"dismissed\",\n \"label\": \"contradiction\",\n \"pinned\": {\n  \"spec_ref\": \"spec:SPEC\",\n  \"spec_hash\": \"d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c\",\n  \"git_ref\": \"a0db033af7c51d90fda4ff1d35e10d2f3aa90662\",\n  \"dirty\": false\n },\n \"provider_after\": {\n  \"spec_ref\": \"spec:SPEC\",\n  \"spec_hash\": \"642bacb1999e4ef7b093a6d946039225bc5753776719aa19aa2747762a319484\",\n  \"git_ref\": \"8abd99bc9c6b1ee61b436095ba743c6ba569112f\",\n  \"dirty\": false\n },\n \"candidate\": {\n  \"input\": \"8abd99bc9c6b1ee61b436095ba743c6ba569112f\",\n  \"kind\": \"ref\",\n  \"resolved\": \"8abd99bc9c6b1ee61b436095ba743c6ba569112f\"\n },\n \"imports_affected\": [\n  \"POST /v1/nudges/{}/dismiss\"\n ],\n \"findings\": [\n  {\n   \"class\": \"BROKEN\",\n   \"provider\": \"streak\",\n   \"endpoint\": \"POST /v1/nudges/{}/dismiss\",\n   \"kind\": \"status_not_observed\",\n   \"item\": \"200\",\n   \"detail\": \"the spec now shows statuses [204, 401, 404, 409]\"\n  },\n  {\n   \"class\": \"CHANGED\",\n   \"provider\": \"streak\",\n   \"endpoint\": \"POST /v1/nudges/{}/dismiss\",\n   \"kind\": \"status_added\",\n   \"item\": \"204\",\n   \"relied\": true,\n   \"detail\": \"status 204 is now observed\"\n  }\n ],\n \"counts\": {\n  \"broken\": 1,\n  \"changed_relied\": 1,\n  \"changed_unrelied\": 0,\n  \"gaps\": 2\n },\n \"text\": \"streak's accepted contract (spec_hash 642bacb1999e, commit 8abd99bc) contradicts streak-widget's pin (spec_hash d44b738522ea): 1 import(s) BROKEN on 1 endpoint(s)\\n  BROKEN   status_not_observed  200  @ POST /v1/nudges/{}/dismiss\\n  CHANGED* status_added  204  @ POST /v1/nudges/{}/dismiss\",\n \"suggestion\": \"advisory, nothing was changed in streak-widget: adapt streak-widget to the findings, then \\\"lattice contracts pin streak-widget\\\" and \\\"lattice contracts check streak-widget\\\"; or ask streak's owner to revert. Clear it with \\\"lattice contracts questions resolve|dismiss streak-widget lq1\\\"\",\n \"source\": {\n  \"via\": \"accept\",\n  \"change\": \"c1\",\n  \"commit\": \"8abd99bc9c6b1ee61b436095ba743c6ba569112f\"\n },\n \"created_at\": \"2026-10-14T16:13:19Z\",\n \"resolution\": {\n  \"status\": \"dismissed\",\n  \"note\": \"\",\n  \"at\": \"2026-10-14T16:13:20Z\",\n  \"via\": \"cli\"\n },\n \"superseded\": null\n}\n",
+   "err": ""
+  }
+ },
+ "questions_list_raw": {
+  "open": {
+   "format": 1,
+   "consumer": "streak-widget",
+   "state": "present",
+   "state_dir": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/b/s/contracts-probes-62560/w/A-sonnet-dismissed-1/streak-widget/.lattice/state/streak-widget",
+   "questions": [],
+   "counts": {
+    "open": 0,
+    "resolved": 0,
+    "dismissed": 1,
+    "superseded": 0
+   },
+   "problems": []
+  },
+  "dismissed": {
+   "format": 1,
+   "consumer": "streak-widget",
+   "state": "present",
+   "state_dir": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/b/s/contracts-probes-62560/w/A-sonnet-dismissed-1/streak-widget/.lattice/state/streak-widget",
+   "questions": [
+    {
+     "format": 1,
+     "id": "lq1",
+     "key": "sha256:5def200742abcf1511dd328eec0eb2e380b5e3a1266009fa0e76c53381d5372f",
+     "kind": "linked_question",
+     "workspace": "probe",
+     "provider": "streak",
+     "consumer": "streak-widget",
+     "contract": "static",
+     "status": "dismissed",
+     "label": "contradiction",
+     "pinned": {
+      "spec_ref": "spec:SPEC",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "dirty": false
+     },
+     "provider_after": {
+      "spec_ref": "spec:SPEC",
+      "spec_hash": "642bacb1999e4ef7b093a6d946039225bc5753776719aa19aa2747762a319484",
+      "git_ref": "8abd99bc9c6b1ee61b436095ba743c6ba569112f",
+      "dirty": false
+     },
+     "candidate": {
+      "input": "8abd99bc9c6b1ee61b436095ba743c6ba569112f",
+      "kind": "ref",
+      "resolved": "8abd99bc9c6b1ee61b436095ba743c6ba569112f"
+     },
+     "imports_affected": [
+      "POST /v1/nudges/{}/dismiss"
+     ],
+     "findings": [
+      {
+       "class": "BROKEN",
+       "provider": "streak",
+       "endpoint": "POST /v1/nudges/{}/dismiss",
+       "kind": "status_not_observed",
+       "item": "200",
+       "detail": "the spec now shows statuses [204, 401, 404, 409]"
+      },
+      {
+       "class": "CHANGED",
+       "provider": "streak",
+       "endpoint": "POST /v1/nudges/{}/dismiss",
+       "kind": "status_added",
+       "item": "204",
+       "relied": true,
+       "detail": "status 204 is now observed"
+      }
+     ],
+     "counts": {
+      "broken": 1,
+      "changed_relied": 1,
+      "changed_unrelied": 0,
+      "gaps": 2
+     },
+     "text": "streak's accepted contract (spec_hash 642bacb1999e, commit 8abd99bc) contradicts streak-widget's pin (spec_hash d44b738522ea): 1 import(s) BROKEN on 1 endpoint(s)\n  BROKEN   status_not_observed  200  @ POST /v1/nudges/{}/dismiss\n  CHANGED* status_added  204  @ POST /v1/nudges/{}/dismiss",
+     "suggestion": "advisory, nothing was changed in streak-widget: adapt streak-widget to the findings, then \"lattice contracts pin streak-widget\" and \"lattice contracts check streak-widget\"; or ask streak's owner to revert. Clear it with \"lattice contracts questions resolve|dismiss streak-widget lq1\"",
+     "source": {
+      "via": "accept",
+      "change": "c1",
+      "commit": "8abd99bc9c6b1ee61b436095ba743c6ba569112f"
+     },
+     "created_at": "2026-10-14T16:13:19Z",
+     "resolution": {
+      "status": "dismissed",
+      "note": "",
+      "at": "2026-10-14T16:13:20Z",
+      "via": "cli"
+     },
+     "superseded": null
+    }
+   ],
+   "counts": {
+    "open": 0,
+    "resolved": 0,
+    "dismissed": 1,
+    "superseded": 0
+   },
+   "problems": []
+  },
+  "all": {
+   "format": 1,
+   "consumer": "streak-widget",
+   "state": "present",
+   "state_dir": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/b/s/contracts-probes-62560/w/A-sonnet-dismissed-1/streak-widget/.lattice/state/streak-widget",
+   "questions": [
+    {
+     "format": 1,
+     "id": "lq1",
+     "key": "sha256:5def200742abcf1511dd328eec0eb2e380b5e3a1266009fa0e76c53381d5372f",
+     "kind": "linked_question",
+     "workspace": "probe",
+     "provider": "streak",
+     "consumer": "streak-widget",
+     "contract": "static",
+     "status": "dismissed",
+     "label": "contradiction",
+     "pinned": {
+      "spec_ref": "spec:SPEC",
+      "spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+      "git_ref": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+      "dirty": false
+     },
+     "provider_after": {
+      "spec_ref": "spec:SPEC",
+      "spec_hash": "642bacb1999e4ef7b093a6d946039225bc5753776719aa19aa2747762a319484",
+      "git_ref": "8abd99bc9c6b1ee61b436095ba743c6ba569112f",
+      "dirty": false
+     },
+     "candidate": {
+      "input": "8abd99bc9c6b1ee61b436095ba743c6ba569112f",
+      "kind": "ref",
+      "resolved": "8abd99bc9c6b1ee61b436095ba743c6ba569112f"
+     },
+     "imports_affected": [
+      "POST /v1/nudges/{}/dismiss"
+     ],
+     "findings": [
+      {
+       "class": "BROKEN",
+       "provider": "streak",
+       "endpoint": "POST /v1/nudges/{}/dismiss",
+       "kind": "status_not_observed",
+       "item": "200",
+       "detail": "the spec now shows statuses [204, 401, 404, 409]"
+      },
+      {
+       "class": "CHANGED",
+       "provider": "streak",
+       "endpoint": "POST /v1/nudges/{}/dismiss",
+       "kind": "status_added",
+       "item": "204",
+       "relied": true,
+       "detail": "status 204 is now observed"
+      }
+     ],
+     "counts": {
+      "broken": 1,
+      "changed_relied": 1,
+      "changed_unrelied": 0,
+      "gaps": 2
+     },
+     "text": "streak's accepted contract (spec_hash 642bacb1999e, commit 8abd99bc) contradicts streak-widget's pin (spec_hash d44b738522ea): 1 import(s) BROKEN on 1 endpoint(s)\n  BROKEN   status_not_observed  200  @ POST /v1/nudges/{}/dismiss\n  CHANGED* status_added  204  @ POST /v1/nudges/{}/dismiss",
+     "suggestion": "advisory, nothing was changed in streak-widget: adapt streak-widget to the findings, then \"lattice contracts pin streak-widget\" and \"lattice contracts check streak-widget\"; or ask streak's owner to revert. Clear it with \"lattice contracts questions resolve|dismiss streak-widget lq1\"",
+     "source": {
+      "via": "accept",
+      "change": "c1",
+      "commit": "8abd99bc9c6b1ee61b436095ba743c6ba569112f"
+     },
+     "created_at": "2026-10-14T16:13:19Z",
+     "resolution": {
+      "status": "dismissed",
+      "note": "",
+      "at": "2026-10-14T16:13:20Z",
+      "via": "cli"
+     },
+     "superseded": null
+    }
+   ],
+   "counts": {
+    "open": 0,
+    "resolved": 0,
+    "dismissed": 1,
+    "superseded": 0
+   },
+   "problems": []
+  }
+ },
+ "counts": {
+  "list_open": 0,
+  "list_dismissed": 1,
+  "list_all": 1
+ },
+ "questions_0_open_1_dismissed": {
+  "ok": true,
+  "detail": {
+   "list_open": 0,
+   "list_dismissed": 1,
+   "list_all": 1
+  }
+ },
+ "question_text_is_Q1": {
+  "ok": true,
+  "detail": [
+   "streak's accepted contract (spec_hash 642bacb1999e, commit 8abd99bc) contradicts streak-widget's pin (spec_hash d44b738522ea): 1 import(s) BROKEN on 1 endpoint(s) BROKEN status_not_observed 200 @ POST /v1/nudges/{}/dismiss CHANGED* status_added 204 @ POST /v1/nudges/{}/dismiss"
+  ]
+ },
+ "impact_label": {
+  "ok": true,
+  "detail": {
+   "label": "contradiction",
+   "want": "contradiction",
+   "rc": 1
+  }
+ },
+ "git_status_porcelain": "",
+ "build_s": 2.3,
+ "accept_latency_s": 0.045138084096834064,
+ "accept_head": "8abd99bc9c6b1ee61b436095ba743c6ba569112f",
+ "dismiss": {
+  "rc": 0,
+  "out": "{\n \"format\": 1,\n \"id\": \"lq1\",\n \"key\": \"sha256:5def200742abcf1511dd328eec0eb2e380b5e3a1266009fa0e76c53381d5372f\",\n \"kind\": \"linked_question\",\n \"workspace\": \"probe\",\n \"provider\": \"streak\",\n \"consumer\": \"streak-widget\",\n \"contract\": \"static\",\n \"status\": \"dismissed\",\n \"label\": \"contradiction\",\n \"pinned\": {\n  \"spec_ref\": \"spec:SPEC\",\n  \"spec_hash\": \"d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c\",\n  \"git_ref\": \"a0db033af7c51d90fda4ff1d35e10d2f3aa90662\",\n  \"dirty\": false\n },\n \"provider_after\": {\n  \"spec_ref\": \"spec:SPEC\",\n  \"spec_hash\": \"642bacb1999e4ef7b093a6d946039225bc5753776719aa19aa2747762a319484\",\n  \"git_ref\": \"8abd99bc9c6b1ee61b436095ba743c6ba569112f\",\n  \"dirty\": false\n },\n \"candidate\": {\n  \"input\": \"8abd99bc9c6b1ee61b436095ba743c6ba569112f\",\n  \"kind\": \"ref\",\n  \"resolved\": \"8abd99bc9c6b1ee61b436095ba743c6ba569112f\"\n },\n \"imports_affected\": [\n  \"POST /v1/nudges/{}/dismiss\"\n ],\n \"findings\": [\n  {\n   \"class\": \"BROKEN\",\n   \"provider\": \"streak\",\n   \"endpoint\": \"POST /v1/nudges/{}/dismiss\",\n   \"kind\": \"status_not_observed\",\n   \"item\": \"200\",\n   \"detail\": \"the spec now shows statuses [204, 401, 404, 409]\"\n  },\n  {\n   \"class\": \"CHANGED\",\n   \"provider\": \"streak\",\n   \"endpoint\": \"POST /v1/nudges/{}/dismiss\",\n   \"kind\": \"status_added\",\n   \"item\": \"204\",\n   \"relied\": true,\n   \"detail\": \"status 204 is now observed\"\n  }\n ],\n \"counts\": {\n  \"broken\": 1,\n  \"changed_relied\": 1,\n  \"changed_unrelied\": 0,\n  \"gaps\": 2\n },\n \"text\": \"streak's accepted contract (spec_hash 642bacb1999e, commit 8abd99bc) contradicts streak-widget's pin (spec_hash d44b738522ea): 1 import(s) BROKEN on 1 endpoint(s)\\n  BROKEN   status_not_observed  200  @ POST /v1/nudges/{}/dismiss\\n  CHANGED* status_added  204  @ POST /v1/nudges/{}/dismiss\",\n \"suggestion\": \"advisory, nothing was changed in streak-widget: adapt streak-widget to the findings, then \\\"lattice contracts pin streak-widget\\\" and \\\"lattice contracts check streak-widget\\\"; or ask streak's owner to revert. Clear it with \\\"lattice contracts questions resolve|dismiss streak-widget lq1\\\"\",\n \"source\": {\n  \"via\": \"accept\",\n  \"change\": \"c1\",\n  \"commit\": \"8abd99bc9c6b1ee61b436095ba743c6ba569112f\"\n },\n \"created_at\": \"2026-10-14T16:13:19Z\",\n \"resolution\": {\n  \"status\": \"dismissed\",\n  \"note\": \"\",\n  \"at\": \"2026-10-14T16:13:20Z\",\n  \"via\": \"cli\"\n },\n \"superseded\": null\n}\n",
+  "err": ""
+ },
+ "failed": []
+}

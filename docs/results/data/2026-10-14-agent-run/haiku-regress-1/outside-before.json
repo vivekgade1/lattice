@@ -1,0 +1,31 @@
+{
+ "streak": {
+  "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+  "status": [
+   " M studio.toml"
+  ]
+ },
+ "lattice_main": {
+  "head": "8d207566a155958fad5c243442097c6ce912a88c",
+  "status": [
+   "?? .DS_Store",
+   "?? app.db",
+   "?? db.sqlite",
+   "?? docs/.DS_Store",
+   "?? docs/HANDOFF-2026-10-12.md",
+   "?? \"docs/LLM-Native Coding Language Feasibility v1.md\"",
+   "?? \"reports/Spec driven LLM code checkers.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/executable_spec_oracles.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/llm_verification_loops.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/rule_checkers_on_code.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/spec_driven_tools.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/verification_startups.md\""
+  ]
+ },
+ "worktree": {
+  "head": "7519a34309bcd03d55c49cccf64381f86805a1ab",
+  "status": [
+   "?? dogfood/contracts/agent_probes.py"
+  ]
+ }
+}

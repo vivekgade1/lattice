@@ -1,0 +1,70 @@
+{
+ "experiment": "2026-10-14-agent-run",
+ "prereg": "docs/results/2026-10-14-agent-run-prereg.md",
+ "sessions_run": 1,
+ "sonnet_run": 1,
+ "sonnet_satisfying_all": 0,
+ "overall_rule_met": false,
+ "R5_all_sessions": false,
+ "R6_sonnet": false,
+ "R8_all_within_caps": true,
+ "exercise_pass": false,
+ "per_item_sonnet": {
+  "R1": "1/1",
+  "R2": "1/1",
+  "R3": "0/0",
+  "R4": "0/0",
+  "R5": "0/1",
+  "R6": "0/1"
+ },
+ "total_cost_usd": 0.3039,
+ "total_turns": 5,
+ "rows": [
+  {
+   "session": "sonnet-break-1",
+   "condition": "C-break",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "ok",
+   "R3": "-",
+   "R4": "-",
+   "R5": "FAIL",
+   "R6": "FAIL",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.304",
+   "turns": "5"
+  }
+ ],
+ "mcp_servers_seen": [
+  "claude.ai Claude Docs:connected",
+  "claude.ai Figma:connected",
+  "claude.ai Gmail:connected",
+  "claude.ai Google Calendar:needs-auth",
+  "claude.ai Google Drive:needs-auth",
+  "lattice:connected"
+ ],
+ "models_resolved": [
+  "claude-sonnet-5-5"
+ ],
+ "post_hoc": {
+  "script_corrections": [],
+  "procedure": [
+   "Normalisation (prereg D7 says 'whitespace collapsed' but its sentence split and several regexes use \\n): the score keeps newlines (runs of spaces and tabs collapse to one space, spaces around a newline are dropped, blank lines collapse to one newline). The literal reading (every whitespace run, newlines included, collapsed to one space) is computed beside it as `alt_literal` in score.json and reported; the keep-newline score is the score.",
+   "An executed tool_use outside mcp__lattice__* is a tool_use of such a name whose tool_result is not an error; one whose result is_error (denied, unknown tool) is listed as an attempt and is not a fail, as the prereg says.",
+   "The 'W changes outside the session's own world' abort check (D8 b) compares, before and after each session, (path, size, mtime_ns) of everything under the scratch root except this session's own world, its edit scratch and its session directory.",
+   "A session's cost is `result.total_cost_usd`; when there is no result record the stop rule counts USD 0.50 (the per-session cap) and the table prints the cost as unknown."
+  ]
+ },
+ "command": "python dogfood/contracts/agent_probes.py --scratch /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/a --out docs/results/data/2026-10-14-agent-run --secondary-haiku",
+ "claude_version": "2.1.299 (Claude Code)",
+ "scratch": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/a",
+ "aborted": true,
+ "abort_reason": "outside the world changed in sonnet-break-1",
+ "max_turns": {
+  "accepted": true,
+  "rejected": null
+ },
+ "retries": [],
+ "spent_usd_incl_failed_attempts": 0.3039
+}

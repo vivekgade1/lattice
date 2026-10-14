@@ -1,0 +1,34 @@
+{
+ "streak": {
+  "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+  "status": [
+   " M studio.toml"
+  ]
+ },
+ "lattice_main": {
+  "head": "8d207566a155958fad5c243442097c6ce912a88c",
+  "status": [
+   "?? .DS_Store",
+   "?? app.db",
+   "?? db.sqlite",
+   "?? docs/.DS_Store",
+   "?? docs/HANDOFF-2026-10-12.md",
+   "?? \"docs/LLM-Native Coding Language Feasibility v1.md\"",
+   "?? \"reports/Spec driven LLM code checkers.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/executable_spec_oracles.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/llm_verification_loops.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/rule_checkers_on_code.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/spec_driven_tools.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/verification_startups.md\""
+  ]
+ },
+ "worktree": {
+  "head": "20140d3284a55341b239c8108891ab1c5323ae56",
+  "status": [
+   "?? dogfood/contracts/agent_probes.py"
+  ]
+ },
+ "claude_projects_cwd_slug": "-private-tmp-claude-501--Users-vivekgade-Documents-lattice-ee5b7f26-0758-4aaf-845d-fa75c50a8e80-scratchpad-agentrun-a-sessions-sonnet-break-1-cwd",
+ "claude_projects_cwd_exists": false,
+ "claude_projects_matching": []
+}
