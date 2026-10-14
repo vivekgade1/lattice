@@ -136,7 +136,13 @@ SELFACT_VOID = re.compile(
 )
 VOID_WINDOW = 40
 # Amendment 1: the child environment never carries the launching agent session's variables.
-SCRUB_EXACT = ("CLAUDECODE", "AI_AGENT", "ENABLE_IDE_INTEGRATION", "LATTICE_WORKSPACE", "PYTHONPATH")
+SCRUB_EXACT = (
+    "CLAUDECODE",
+    "AI_AGENT",
+    "ENABLE_IDE_INTEGRATION",
+    "LATTICE_WORKSPACE",
+    "PYTHONPATH",
+)
 SCRUB_PREFIX = ("ANTHROPIC", "CLAUDE_CODE_")
 PERM_RX = re.compile(
     r"permission|denied|not allowed|blocked|was not approved|haven't granted|requires approval",
@@ -169,11 +175,7 @@ def child_env(s_dir: Path) -> dict[str, str]:
     from lattice.llm.cli_client import cli_env
 
     env = cli_env(os.environ, None)
-    env = {
-        k: v
-        for k, v in env.items()
-        if not k.startswith(SCRUB_PREFIX) and k not in SCRUB_EXACT
-    }
+    env = {k: v for k, v in env.items() if not k.startswith(SCRUB_PREFIX) and k not in SCRUB_EXACT}
     env.update(
         MCP_CONNECTION_NONBLOCKING="false",
         TMPDIR=str(s_dir / "tmp"),
@@ -779,10 +781,10 @@ def score_session(sdir: Path) -> dict[str, Any]:
         "R1a_linked_question_list_called": "mcp__lattice__linked_question_list" in names,
         "R6_corrected": verdict["R6_corrected"]["pass"],
         "R5_under_original_rule": r5_original,
-        "satisfies_all_under_original_rule": all(
-            {**items, "R5": r5_original}.values()
+        "satisfies_all_under_original_rule": all({**items, "R5": r5_original}.values()),
+        "satisfies_all_with_R6_corrected": all(
+            {**items, "R6": verdict["R6_corrected"]["pass"]}.values()
         ),
-        "satisfies_all_with_R6_corrected": all({**items, "R6": verdict["R6_corrected"]["pass"]}.values()),
         "R5_detail": {
             "executed_outside_lattice": executed_outside,
             "denied_or_failed_outside_attempts": denied,
