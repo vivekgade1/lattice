@@ -130,6 +130,18 @@ API v1.17 (contracts between projects, multi-project layer 3): ``GET /api/contra
 with ``live: {status: not_run, reason: read-only}``. ``workspace_enabled = False`` answers the
 no-manifest shape. Read only.
 
+API v1.18 (cross-project impact preview, multi-project slice 4a): ``GET /api/contracts/impact
+?provider=NAME&candidate=REF`` answers the real server's shape (``lattice contracts impact
+PROVIDER --candidate REF --json``) for the same fixture manifest: provider ``scheduler`` has one
+opted-in consumer, ``scheduler-web`` (static), whose row is a ``contradiction`` (the BROKEN and
+CHANGED findings of v1.17's link); ``studio`` has one live link, ``unaffected`` with
+``live: {status: not_run, reason: static-only}``; any other project of the manifest has no opted-in
+link (``no_consumers``); a name the manifest does not declare answers ``unknown_project`` and an
+empty argument ``missing_argument``, both with ``exit_code`` 2. The candidate is echoed as a
+``ref`` that resolves to a fixed fixture SHA. ``workspace_enabled = False`` answers the
+no-manifest shape. Read only.
+
+Run it with
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -229,6 +241,38 @@ MOCK_CONTRACT_LINKS = (
         "live": {"status": "not_run", "reason": "read-only"},
     },
 )  # fmt: skip
+
+# API v1.18: the impact preview of the fixture manifest (GET /api/contracts/impact)
+MOCK_IMPACT_SHA = "9d3e5f7a1b2c4d6e8f0a1b3c5d7e9f1a2b4c6d8e"
+MOCK_IMPACT_VERSION = {
+    "spec_hash": "e1d2c3b4a5968778695a4b3c2d1e0f9a8b7c6d5e4f30291807f6e5d4c3b2a190",
+    "git_ref": MOCK_IMPACT_SHA,
+    "dirty": False,
+}
+MOCK_IMPACT_ROWS = {
+    "scheduler": (
+        {
+            "consumer": "scheduler-web", "provider": "scheduler", "contract": "static",
+            "label": "contradiction", "error": None, "imports": 3,
+            "pinned": MOCK_CONTRACT_VERSION_PINNED, "version_changed": True,
+            "spec_hash_changed": True, "spec_ref_changed": False, "current_label": "unaffected",
+            "findings": MOCK_CONTRACT_LINKS[0]["findings"], "gaps": MOCK_CONTRACT_LINKS[0]["gaps"],
+            "counts": {"broken": 1, "changed_relied": 1, "changed_unrelied": 0, "gaps": 1},
+            "live": None,
+        },
+    ),
+    "studio": (
+        {
+            "consumer": "scheduler-web", "provider": "studio", "contract": "live",
+            "label": "unaffected", "error": None, "imports": 1,
+            "pinned": MOCK_CONTRACT_VERSION_PINNED, "version_changed": True,
+            "spec_hash_changed": False, "spec_ref_changed": False, "current_label": "unaffected",
+            "findings": [], "gaps": [],
+            "counts": {"broken": 0, "changed_relied": 0, "changed_unrelied": 0, "gaps": 0},
+            "live": {"status": "not_run", "reason": "static-only"},
+        },
+    ),
+}  # fmt: skip
 
 # How many polls of GET /api/changes/{id} a change spends in each state.
 POLLS_DRAFTING = 2
@@ -2843,6 +2887,10 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(self.server.workspace())
         if path == "/api/contracts":
             return self._json(self.server.contracts(query.get("consumer") or None))
+        if path == "/api/contracts/impact":
+            return self._json(
+                self.server.contracts_impact(query.get("provider", ""), query.get("candidate", ""))
+            )
         if path == "/api/model":
             return self._json(state.get_model())
         if path == "/api/areas":
@@ -3170,6 +3218,49 @@ class MockServer(ThreadingHTTPServer):
             ]
         return {"workspace": MOCK_WORKSPACE_NAME, "consumer": consumer, "checked": len(links),
                 "links": links, "problems": problems, "elapsed_s": 0.0}  # fmt: skip
+
+    def contracts_impact(self, provider: str, candidate: str) -> dict[str, Any]:
+        """``GET /api/contracts/impact?provider=&candidate=`` (v1.18): the fixture preview over
+        the fixture manifest; every key always present, exit_code 2 when it cannot run."""
+        from lattice.workspace import WARNING, Problem
+
+        ref = {"input": candidate, "kind": "ref", "resolved": None, "spec_ref": None,
+               "version": None, "endpoints": None}  # fmt: skip
+        out: dict[str, Any] = {
+            "format": 1, "workspace": None, "provider": provider, "candidate": ref,
+            "current": None, "advisory": True, "static_only": True, "baseline": "pin",
+            "checked": 0, "consumers": [],
+            "counts": {"contradiction": 0, "regression": 0, "unaffected": 0, "error": 0},
+            "problems": [], "exit_code": 2, "elapsed_s": 0.0,
+        }  # fmt: skip
+        if not self.workspace_enabled:
+            return out
+        out["workspace"] = MOCK_WORKSPACE_NAME
+        out["problems"] = self.workspace()["problems"]
+        names = [name for name, *_rest in MOCK_WORKSPACE_PROJECTS]
+        if not provider or not candidate:
+            missing = " and ".join(k for k, v in (("provider", provider),
+                                                  ("candidate", candidate)) if not v)  # fmt: skip
+            msg = f"pass {missing}: ?provider=NAME&candidate=REF"
+            out["problems"].append(Problem("missing_argument", msg).to_dict())
+            return out
+        if provider not in names:
+            msg = f"no project {provider!r} in the workspace (have {', '.join(names)})"
+            out["problems"].append(Problem("unknown_project", msg).to_dict())
+            return out
+        ref["spec_ref"] = MOCK_CONTRACT_VERSION_PINNED["spec_ref"]
+        rows = [copy.deepcopy(r) for r in MOCK_IMPACT_ROWS.get(provider, ())]
+        if not rows:
+            msg = f"no link with a contract key points to {provider}"
+            out["problems"].append(Problem("no_consumers", msg, WARNING).to_dict())
+            out["exit_code"] = 0
+            return out
+        ref.update(resolved=MOCK_IMPACT_SHA, version=dict(MOCK_IMPACT_VERSION), endpoints=18)
+        out.update(current=dict(MOCK_CONTRACT_VERSION_CURRENT), checked=len(rows), consumers=rows)
+        for row in rows:
+            out["counts"][row["label"]] += 1
+        out["exit_code"] = 1 if out["counts"]["contradiction"] else 0
+        return out
 
     def projects(self) -> list[dict[str, Any]]:
         """``GET /api/projects``."""

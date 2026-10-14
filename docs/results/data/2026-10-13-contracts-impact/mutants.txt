@@ -1,0 +1,81 @@
+hashes: {"lattice/contracts/check.py": "cb6833beb59f093d", "lattice/contracts/export.py": "7e644a855ae78a39", "lattice/contracts/impact.py": "7ae723886e30663a", "lattice/contracts/live.py": "8d345a4cc13f7413", "lattice/workspace.py": "704e677e2ebbcbf4"}
+control: PASS (control) (298 passed in 131.63s (0:02:11)) 131.8s
+CM3: killed (5.1s, pytest failed 1: test_each_broken_kind[endpoint_missing])
+CM1: killed (5.1s, pytest failed 1: test_each_broken_kind[status_not_observed])
+CM4: killed (5.1s, pytest failed 1: test_each_broken_kind[endpoint_missing])
+CM2: killed (5.9s, pytest failed 1: test_each_broken_kind[auth_changed_public])
+CM7: killed (1.6s, pytest failed 1: test_clean_pin_and_check)
+CM8: killed (1.6s, pytest failed 1: test_clean_pin_and_check)
+CM6: killed (4.1s, pytest failed 1: test_each_broken_kind[request_field_missing])
+CM9: killed (18.9s, pytest failed 1: test_pin_refuses_on_broken_unless_forced)
+CM5: killed (21.1s, pytest failed 1: test_pin_with_nothing_opted_in_is_an_error)
+XM1: killed (1.9s, pytest failed 1: test_the_filter_runs_before_the_hash)
+XM2: killed (1.9s, pytest failed 1: test_the_filter_runs_before_the_hash)
+XM3: killed (2.5s, pytest failed 1: test_keys_are_normalised_like_an_import)
+XM4: killed (3.7s, pytest failed 1: test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET)
+CM10: killed (25.3s, pytest failed 1: test_a_non_loopback_live_url_is_refused_before_start[http://10.0.0.1:8000])
+XM5: killed (3.7s, pytest failed 1: test_invalid_lists_are_refused_by_the_export)
+XM7: killed (1.9s, pytest failed 1: test_the_filter_runs_before_the_hash)
+XM8: killed (3.7s, pytest failed 1: test_hash_differs_exactly_when_the_diff_is_non_empty)
+XM6: killed (9.8s, pytest failed 1: test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken)
+XM10: killed (6.2s, pytest failed 1: test_a_list_change_is_a_visible_change)
+XM11: killed (3.7s, pytest failed 1: test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET)
+IMP1: killed (2.5s, pytest failed 1: test_a_broken_reliance_is_a_contradiction_exit_1)
+XM9: killed (15.3s, pytest failed 1: test_live_does_not_replay_an_excluded_import)
+IMP2: killed (2.5s, pytest failed 1: test_a_broken_reliance_is_a_contradiction_exit_1)
+IMP3: killed (3.1s, pytest failed 1: test_a_relied_change_alone_is_a_regression_and_exits_0)
+IMP4: killed (3.8s, pytest failed 1: test_an_unrelied_change_is_unaffected)
+XM12: killed (10.8s, pytest failed 1: test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken)
+IMP5: killed (6.8s, pytest failed 1: test_a_stale_pin_reads_contradiction_even_for_head)
+IMP6: killed (16.5s, pytest failed 1: test_the_manifests_exclusion_applies_to_the_candidate)
+IMP7: killed (18.9s, pytest failed 1: test_the_manifests_spec_ref_is_used_for_the_candidate)
+IMP10: killed (3.1s, pytest failed 1: test_a_relied_change_alone_is_a_regression_and_exits_0)
+IMP11: killed (3.1s, pytest failed 1: test_a_relied_change_alone_is_a_regression_and_exits_0)
+IMP8: killed (20.9s, pytest failed 1: test_a_link_without_a_contract_key_is_not_listed)
+IMP9: killed (20.0s, pytest failed 1: test_rows_are_sorted_by_consumer_and_one_per_link)
+IMP12: killed (14.4s, pytest failed 1: test_the_ref_is_not_checked_out_and_nothing_is_written)
+IMP14: killed (14.5s, pytest failed 1: test_the_temp_directory_is_removed)
+IMP13: killed (25.1s, pytest failed 1: test_a_consumer_without_a_pin_is_an_error_row_not_unaffected)
+CM11: killed (135.7s, pytest failed 1: test_manifests_without_layer3_keys_print_as_before[show_json-good])
+
+id       verdict           sec  change                                                         killed by (first failing test)
+control  PASS (control)  131.8  unmutated copy                                                 298 passed in 131.63s (0:02:11)
+CM1      killed            5.1  status ignored: status_not_observed is never emitted           tests/contracts/test_check.py::test_each_broken_kind[status_not_observed]
+CM2      killed            5.9  auth ignored: auth / as_user never compared                    tests/contracts/test_check.py::test_each_broken_kind[auth_changed_public]
+CM3      killed            5.1  endpoint_missing treated as satisfied                          tests/contracts/test_check.py::test_each_broken_kind[endpoint_missing]
+CM4      killed            5.1  pin ignored: P := E (every unsatisfied reliance is a gap, no C tests/contracts/test_check.py::test_each_broken_kind[endpoint_missing]
+CM5      killed           21.1  opt-in ignored: every link is checked whatever contract says   tests/contracts/test_check.py::test_pin_with_nothing_opted_in_is_an_error
+CM6      killed            4.1  field reliance ignored (request and response)                  tests/contracts/test_check.py::test_each_broken_kind[request_field_missing]
+CM7      killed            1.6  ids not templated (concrete paths kept)                        tests/contracts/test_check.py::test_clean_pin_and_check
+CM8      killed            1.6  spec_hash over the spec file bytes, not the canonical export   tests/contracts/test_check.py::test_clean_pin_and_check
+CM9      killed           18.9  pin writes despite BROKEN                                      tests/contracts/test_check.py::test_pin_refuses_on_broken_unless_forced
+CM10     killed           25.3  live: the ensure_safe_target call removed                      tests/contracts/test_live.py::test_a_non_loopback_live_url_is_refused_before_start[http://10.0.0.1:8000]
+CM11     killed          135.7  Link.to_dict always emits contract                             tests/contracts/test_workspace_contract.py::test_manifests_without_layer3_keys_print_as_before[show_json-good]
+XM1      killed            1.9  exclude: the filter is not applied (every endpoint kept, exclu tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash
+XM2      killed            1.9  exclude: spec_hash over the unfiltered export (filter after ha tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash
+XM3      killed            2.5  exclude: normalisation skipped (raw strings stored and compare tests/contracts/test_exclude.py::test_keys_are_normalised_like_an_import
+XM4      killed            3.7  exclude: validation off (bad entries dropped, no problem)      tests/contracts/test_exclude.py::test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET
+XM5      killed            3.7  exclude: the duplicate check removed                           tests/contracts/test_exclude.py::test_invalid_lists_are_refused_by_the_export
+XM6      killed            9.8  exclude: an import of an excluded endpoint is treated as satis tests/contracts/test_exclude.py::test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken
+XM7      killed            1.9  exclude: excluded is not recorded in the export                tests/contracts/test_exclude.py::test_the_filter_runs_before_the_hash
+XM8      killed            3.7  exclude: the diff ignores excluded (endpoint_removed, no exclu tests/contracts/test_exclude.py::test_hash_differs_exactly_when_the_diff_is_non_empty
+XM9      killed           15.3  exclude: live replays an excluded import                       tests/contracts/test_exclude.py::test_live_does_not_replay_an_excluded_import
+XM10     killed            6.2  exclude: exclude_unmatched is never emitted                    tests/contracts/test_exclude.py::test_a_list_change_is_a_visible_change
+XM11     killed            3.7  exclude: WsProject.to_dict always emits exclude ([] when None) tests/contracts/test_exclude.py::test_a_bad_exclude_is_one_error_and_the_project_stays_listed[GET
+XM12     killed           10.8  exclude: an excluded import is BROKEN only when the pin held i tests/contracts/test_exclude.py::test_an_import_of_an_endpoint_excluded_after_the_pin_is_broken
+IMP1     killed            2.5  impact: the candidate is ignored (the current export is the ca tests/contracts/test_impact.py::test_a_broken_reliance_is_a_contradiction_exit_1
+IMP2     killed            2.5  impact: a BROKEN reliance is labelled regression               tests/contracts/test_impact.py::test_a_broken_reliance_is_a_contradiction_exit_1
+IMP3     killed            3.1  impact: a relied CHANGED is labelled contradiction             tests/contracts/test_impact.py::test_a_relied_change_alone_is_a_regression_and_exits_0
+IMP4     killed            3.8  impact: relied is ignored (any CHANGED is a regression)        tests/contracts/test_impact.py::test_an_unrelied_change_is_unaffected
+IMP5     killed            6.8  impact: the baseline is the current export, not the pin        tests/contracts/test_impact.py::test_a_stale_pin_reads_contradiction_even_for_head
+IMP6     killed           16.5  impact: exclude is not passed for the candidate                tests/contracts/test_impact.py::test_the_manifests_exclusion_applies_to_the_candidate
+IMP7     killed           18.9  impact: the manifest's spec is ignored for the candidate       tests/contracts/test_impact.py::test_the_manifests_spec_ref_is_used_for_the_candidate
+IMP8     killed           20.9  impact: links without a contract key are listed                tests/contracts/test_impact.py::test_a_link_without_a_contract_key_is_not_listed
+IMP9     killed           20.0  impact: the rows are shuffled                                  tests/contracts/test_impact.py::test_rows_are_sorted_by_consumer_and_one_per_link
+IMP10    killed            3.1  impact: the candidate's entry is written into the consumer's l tests/contracts/test_impact.py::test_a_relied_change_alone_is_a_regression_and_exits_0
+IMP11    killed            3.1  impact: exit 1 on any regression                               tests/contracts/test_impact.py::test_a_relied_change_alone_is_a_regression_and_exits_0
+IMP12    killed           14.4  impact: the ref is checked out in the provider's tree and back tests/contracts/test_impact.py::test_the_ref_is_not_checked_out_and_nothing_is_written
+IMP13    killed           25.1  impact: a no_pin row is reported unaffected                    tests/contracts/test_impact.py::test_a_consumer_without_a_pin_is_an_error_row_not_unaffected
+IMP14    killed           14.5  impact: the temporary directory is not removed                 tests/contracts/test_impact.py::test_the_temp_directory_is_removed
+total wall time: 276.7s
+mutants: 37/37 killed

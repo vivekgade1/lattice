@@ -19,8 +19,8 @@ declares always carries its manifest name and role.
 Each project gets its own Toolbox (and backend), built on first use. Every existing tool takes an
 optional ``project`` (a name or a path as ``project_list`` gives it; default: the active project,
 which only ``project_set_active`` changes, for the life of the process). ``project_list`` and
-``project_set_active`` are always listed (also ``--readonly``); ``workspace_impact`` and
-``contract_check`` (layer 3) only when a workspace is known.
+``project_set_active`` are always listed (also ``--readonly``); ``workspace_impact``,
+``contract_check`` (layer 3) and ``contract_impact`` (layer 4a) only when a workspace is known.
 
 **Single-project compatibility.** With exactly one known project the existing tools' definitions,
 the ``initialize`` instructions and every result are exactly the single-project server's: the
@@ -46,7 +46,11 @@ PROJECT_PROP = {
     "description": "the project to run on: a name or path from project_list (default: the "
     "active project)",
 }
-WORKSPACE_TOOLS = ("workspace_impact", "contract_check")  # listed only with a workspace
+WORKSPACE_TOOLS = (  # listed only with a workspace
+    "workspace_impact",
+    "contract_check",
+    "contract_impact",
+)
 OWN_TOOLS = ("project_list", "project_set_active", *WORKSPACE_TOOLS)
 MULTI_NOTE = (
     " Several projects are known: project_list lists them; every tool takes an optional "
@@ -216,7 +220,14 @@ class ProjectRouter:
             raise ToolError(f"unknown argument(s): {', '.join(unknown)}")
         return tool["fn"](args)
 
-    def _reg(self, name: str, description: str, props: dict[str, Any], fn: Callable) -> None:
+    def _reg(
+        self,
+        name: str,
+        description: str,
+        props: dict[str, Any],
+        fn: Callable,
+        required: Sequence[str] = (),
+    ) -> None:
         self._own[name] = {
             "def": {
                 "name": name,
@@ -224,7 +235,7 @@ class ProjectRouter:
                 "inputSchema": {
                     "type": "object",
                     "properties": props,
-                    "required": [],
+                    "required": list(required),
                     "additionalProperties": False,
                 },
                 "annotations": {"readOnlyHint": True, "openWorldHint": False},
@@ -356,6 +367,43 @@ class ProjectRouter:
             "the providers' spec modules are loaded in a subprocess.",
             {"consumer": {"type": "string", "description": "a project name of the workspace"}},
             contract_check,
+        )
+
+        def contract_impact(a: Mapping[str, Any]) -> dict[str, Any]:
+            from lattice import workspace as wsmod
+            from lattice.contracts import impact
+
+            for key in ("provider", "candidate"):
+                if not isinstance(a.get(key), str) or not a[key]:
+                    raise ToolError(f"argument '{key}' is required (a non-empty string)")
+            provider, candidate = a["provider"], a["candidate"]
+            # the manifest is re-read on every call, so the answer is the CLI's at this moment
+            ws, problems = wsmod.try_load(self.workspace.path)
+            if ws is None:
+                return impact.unavailable(provider, candidate, problems).to_dict()
+            # a relative candidate directory is relative to the manifest's directory
+            return impact.run_impact(ws, provider, candidate, base=ws.root).to_dict()
+
+        self._reg(
+            "contract_impact",
+            "Preview what a candidate version of a provider would do to the consumers that rely "
+            "on it, against each consumer's pin (advisory, read-only, static only). `provider`: a "
+            "workspace project; `candidate`: a git ref of the provider's repository, or a "
+            "directory (relative to the manifest's directory) holding its project. One row per "
+            "consumer link that opted in (`contract` key): `contradiction` (a BROKEN reliance), "
+            "`regression` (a relied CHANGED one) or `unaffected`, with the findings and gaps. "
+            "Returns what `lattice contracts impact PROVIDER --candidate X --json` prints. "
+            "Nothing is written or checked out and no app is started; the candidate's spec "
+            "module is loaded in a subprocess.",
+            {
+                "provider": {"type": "string", "description": "a project name of the workspace"},
+                "candidate": {
+                    "type": "string",
+                    "description": "a git ref of the provider's repository, or a directory",
+                },
+            },
+            contract_impact,
+            required=("provider", "candidate"),
         )
 
 

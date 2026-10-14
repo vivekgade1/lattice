@@ -240,6 +240,26 @@ CONTRACTS_UNKNOWN = {**CONTRACTS, "consumer": "nobody",
                      "problems": [{"code": "missing_path", "severity": "warning"},
                                   {"code": "unknown_project", "severity": "error"}]}  # fmt: skip
 
+# ---- the cross-project impact preview (API.md v1.18, slice 4a) --------------------------------
+# the same manifest: no link opts in, so provider `billing` has no consumer to preview; the
+# candidate is never read (a ref is only resolved once there is a consumer), `resolved` is null
+IMPACT_NONE = {"format": 1, "workspace": "dogfood", "provider": "billing", "advisory": True,
+               "static_only": True, "baseline": "pin", "checked": 0, "consumers": [],
+               "candidate": {"input": "HEAD", "kind": "ref", "resolved": None},
+               "counts": {"contradiction": 0, "regression": 0, "unaffected": 0, "error": 0},
+               "problems": [{"code": "missing_path", "severity": "warning"},
+                            {"code": "no_consumers", "severity": "warning"}],
+               "exit_code": 0}  # fmt: skip
+IMPACT_MISSING = {**IMPACT_NONE, "candidate": {"input": "", "kind": "ref", "resolved": None},
+                  "problems": [{"code": "missing_path", "severity": "warning"},
+                               {"code": "missing_argument", "severity": "error"}],
+                  "exit_code": 2}  # fmt: skip
+IMPACT_UNKNOWN = {**IMPACT_NONE, "provider": "nobody",
+                  "problems": [{"code": "missing_path", "severity": "warning"},
+                               {"code": "unknown_project", "severity": "error"}],
+                  "exit_code": 2}  # fmt: skip
+IMPACT_PARAMS = {"provider": "billing", "candidate": "HEAD"}
+
 # ---- database engines and modules (API.md v1.14) ---------------------------------------------
 # the seed has no [app], no [engines] and no modules: the built-ins, SQLite used (the default)
 ENGINES_SEED = {"engines": [
@@ -1265,6 +1285,18 @@ SCENARIOS = (
         Step("GET", "/api/contracts", expect_body=CONTRACTS),
         UNCHANGED,
     )),
+    Scenario("contract_impact_is_previewed_read_only", steps=(
+        Step("GET", "/api/contracts/impact", params=IMPACT_PARAMS, expect_body=IMPACT_NONE),
+        Step("GET", "/api/contracts/impact", params={"provider": "billing"},
+             expect_body=IMPACT_MISSING),
+        Step("GET", "/api/contracts/impact", params={"provider": "nobody", "candidate": "HEAD"},
+             expect_body=IMPACT_UNKNOWN),
+        Step("GET", "/p/notes/api/contracts/impact", params=IMPACT_PARAMS,
+             expect_body=IMPACT_NONE),
+        refused("POST", "/api/contracts/impact", 404, "no such route", json={}),
+        Step("GET", "/api/contracts/impact", params=IMPACT_PARAMS, expect_body=IMPACT_NONE),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1434,6 +1466,13 @@ UNCHECKED = (
               "imports and lock, and no manifest or an opted-in link, and the harness's manifest "
               "has no `contract` key; tests/studio/test_contracts_api.py checks them on the real "
               "server against `lattice contracts check --static-only --json`, and the mock."),
+    Unchecked("R95 (a row's label and findings against a consumer's pin: contradiction, "
+              "regression, "
+              "unaffected; the candidate as a directory or a git ref; the baseline; a failing "
+              "candidate) needs a provider with a git history, an opted-in consumer with a lock "
+              "and the harness's manifest has no `contract` key; tests/contracts/test_impact.py "
+              "checks them against `lattice contracts check`, tests/studio/test_impact_api.py on "
+              "the real server and the mock."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),
