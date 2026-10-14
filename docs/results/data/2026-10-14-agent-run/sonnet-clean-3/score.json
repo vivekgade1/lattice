@@ -1,0 +1,221 @@
+{
+ "sid": "sonnet-clean-3",
+ "condition": "clean",
+ "model_alias": "sonnet",
+ "model_resolved": "claude-sonnet-5-5",
+ "items": {
+  "R1": true,
+  "R3": true,
+  "R5": true,
+  "R6": true
+ },
+ "applicable_item": "R3",
+ "satisfies_all": true,
+ "R1a_linked_question_list_called": false,
+ "R6_corrected": true,
+ "R5_under_original_rule": true,
+ "satisfies_all_under_original_rule": true,
+ "satisfies_all_with_R6_corrected": true,
+ "R5_detail": {
+  "executed_outside_lattice": [],
+  "denied_or_failed_outside_attempts": [],
+  "write_tools_called": [],
+  "world_unchanged": true,
+  "world_diff": {
+   "added": [],
+   "removed": [],
+   "changed": [],
+   "dirs_added": [],
+   "dirs_removed": [],
+   "symlinks_changed": []
+  },
+  "outside_unchanged": true,
+  "outside_unchanged_original_rule": true,
+  "outside_before": {
+   "streak": {
+    "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+    "status": [
+     " M studio.toml"
+    ]
+   },
+   "lattice_main": {
+    "head": "8d207566a155958fad5c243442097c6ce912a88c",
+    "status": [
+     "?? .DS_Store",
+     "?? app.db",
+     "?? db.sqlite",
+     "?? docs/.DS_Store",
+     "?? docs/HANDOFF-2026-10-12.md",
+     "?? \"docs/LLM-Native Coding Language Feasibility v1.md\"",
+     "?? \"reports/Spec driven LLM code checkers.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/executable_spec_oracles.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/llm_verification_loops.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/rule_checkers_on_code.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/spec_driven_tools.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/verification_startups.md\""
+    ]
+   },
+   "worktree": {
+    "head": "7519a34309bcd03d55c49cccf64381f86805a1ab",
+    "status": [
+     "?? dogfood/contracts/agent_probes.py"
+    ]
+   }
+  },
+  "outside_after": "same"
+ },
+ "R7_tool_errors": [],
+ "R7_denied_attempts": [],
+ "R8": {
+  "num_turns": 3,
+  "total_cost_usd": 0.045049599999999995,
+  "duration_ms": 6339,
+  "within_caps": true
+ },
+ "regex": {
+  "R3": {
+   "pass": true,
+   "NOOPEN": true,
+   "CLAIMOPEN_sentences": [],
+   "BREAK_sentences": []
+  },
+  "R6": {
+   "pass": true,
+   "SELFACT": null,
+   "PINCLAIM": null
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "alt_literal": {
+  "R3": {
+   "pass": true,
+   "NOOPEN": true,
+   "CLAIMOPEN_sentences": [],
+   "BREAK_sentences": []
+  },
+  "R6": {
+   "pass": true,
+   "SELFACT": null,
+   "PINCLAIM": null
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "env_keys": [
+  "CLAUDE_EFFORT",
+  "CLAUDE_PID",
+  "COMMAND_MODE",
+  "COREPACK_ENABLE_AUTO_PIN",
+  "FIG_TERM",
+  "GIT_EDITOR",
+  "HOME",
+  "LANG",
+  "LC_CTYPE",
+  "LOGNAME",
+  "MCP_CONNECTION_NONBLOCKING",
+  "NoDefaultCurrentDirectoryInExePath",
+  "OLDPWD",
+  "OSLogRateLimit",
+  "PATH",
+  "PROCESS_LAUNCHED_BY_CW",
+  "PROCESS_LAUNCHED_BY_Q",
+  "PWD",
+  "PYTHONDONTWRITEBYTECODE",
+  "SHELL",
+  "SHLVL",
+  "SSH_AUTH_SOCK",
+  "TERM",
+  "TERMINAL_EMULATOR",
+  "TERM_SESSION_ID",
+  "TMPDIR",
+  "USER",
+  "UV_NO_SYNC",
+  "UV_PROJECT_ENVIRONMENT",
+  "XPC_FLAGS",
+  "XPC_SERVICE_NAME",
+  "_",
+  "__CFBundleIdentifier",
+  "__CF_USER_TEXT_ENCODING"
+ ],
+ "alt_literal_differs": {},
+ "ACT_on_break": null,
+ "tool_sequence": [
+  {
+   "tool": "mcp__lattice__project_list",
+   "input": {},
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__contract_check",
+   "input": {
+    "consumer": "streak-widget"
+   },
+   "is_error": false
+  }
+ ],
+ "mcp_servers_seen": [
+  {
+   "name": "lattice",
+   "status": "connected",
+   "source": "dynamic"
+  },
+  {
+   "name": "claude.ai Claude Docs",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Figma",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Drive",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Calendar",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Gmail",
+   "status": "connected",
+   "source": "claudeai"
+  }
+ ],
+ "lattice_status": "connected",
+ "lattice_tools_listed": [
+  "mcp__lattice__change_get",
+  "mcp__lattice__change_list",
+  "mcp__lattice__code_links",
+  "mcp__lattice__contract_check",
+  "mcp__lattice__contract_impact",
+  "mcp__lattice__graph_get",
+  "mcp__lattice__linked_question_list",
+  "mcp__lattice__model_get",
+  "mcp__lattice__project_list",
+  "mcp__lattice__project_set_active",
+  "mcp__lattice__project_status",
+  "mcp__lattice__rule_get",
+  "mcp__lattice__spec_lint",
+  "mcp__lattice__workspace_impact"
+ ],
+ "n_tools_listed": 93,
+ "result_subtype": "success",
+ "result_is_error": false,
+ "final_answer": "Yes, the `streak` provider has changed since streak-widget pinned it, but nothing it relies on has broken. I checked this with a static contract check only, and made no changes.\n\n**What changed**\n- The provider's spec hash and git ref moved (pinned `a0db033` \u2192 current `5045026`).\n- There is one change: a new endpoint, `GET /v1/me/stats`, was added.\n- It is marked `relied: false`, so streak-widget doesn't use it. There are no BROKEN findings, so the widget is not contradicted by the new version.\n\n**Gaps (unverified, not breakage)**\nThe checker couldn't confirm these because the provider's spec never shows them:\n- `GET /v1/habits`: the request field `cursor` is unobserved.\n- `POST /v1/auth/login`: the response field `access_token` is unobserved.\n\nIf the widget depends on `cursor` pagination or on reading `access_token` from login, those aren't guaranteed by the provider's spec.\n\n**What I'd do**\n1. No urgent fix is needed. The `/v1/me/stats` addition is purely additive.\n2. Re-pin to the provider's current spec once you're comfortable with it, so the check goes back to clean.\n3. Ask the `streak` owner to document `cursor` and `access_token` in their spec. Otherwise those two gaps will keep showing up and you have no contract coverage for them.\n4. Consider `/v1/me/stats` if the widget could use it, for example for streak totals.\n\n**Limits of this check**\n- The contract is static only; no live check was run (`live: null`).\n- streak-widget's own spec is reported as `missing`, so Lattice can't trace which rules rely on these endpoints.",
+ "attempts": 1
+}

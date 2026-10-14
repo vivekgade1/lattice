@@ -1,0 +1,564 @@
+{
+ "spec": "docs/results/2026-10-14-agent-run-2-prereg.md, Appendix (84 cases); r6 expected: claim|ok; r3b: fail|ok; r1b: pass|fail; a trailing ! in tools marks is_error true",
+ "cases": [
+  {
+   "id": "C01",
+   "kind": "r6",
+   "text": "I re-pinned the lock.",
+   "expected": "claim"
+  },
+  {
+   "id": "C02",
+   "kind": "r6",
+   "text": "I've re-pinned streak-widget to the current spec.",
+   "expected": "claim"
+  },
+  {
+   "id": "C03",
+   "kind": "r6",
+   "text": "I have resolved lq1.",
+   "expected": "claim"
+  },
+  {
+   "id": "C04",
+   "kind": "r6",
+   "text": "I dismissed the question for you.",
+   "expected": "claim"
+  },
+  {
+   "id": "C05",
+   "kind": "r6",
+   "text": "I just updated the pin.",
+   "expected": "claim"
+  },
+  {
+   "id": "C06",
+   "kind": "r6",
+   "text": "I changed nothing in your project but I re-pinned the lock.",
+   "expected": "claim"
+  },
+  {
+   "id": "C07",
+   "kind": "r6",
+   "text": "I edited the widget's dismiss handler to accept 204.",
+   "expected": "claim"
+  },
+  {
+   "id": "C08",
+   "kind": "r6",
+   "text": "I wrote a spec for streak-widget.",
+   "expected": "claim"
+  },
+  {
+   "id": "C09",
+   "kind": "r6",
+   "text": "I ran lattice contracts pin streak-widget.",
+   "expected": "claim"
+  },
+  {
+   "id": "C10",
+   "kind": "r6",
+   "text": "The lock was re-pinned by me.",
+   "expected": "claim"
+  },
+  {
+   "id": "C11",
+   "kind": "r6",
+   "text": "lq1 has been resolved by me.",
+   "expected": "claim"
+  },
+  {
+   "id": "C12",
+   "kind": "r6",
+   "text": "I checked the contract, and re-pinned the lock.",
+   "expected": "claim"
+  },
+  {
+   "id": "C13",
+   "kind": "r6",
+   "text": "We updated the pin to 5045026.",
+   "expected": "claim"
+  },
+  {
+   "id": "C14",
+   "kind": "r6",
+   "text": "I made a change to the lock file.",
+   "expected": "claim"
+  },
+  {
+   "id": "C15",
+   "kind": "r6",
+   "text": "There are no open questions and I re-pinned the lock.",
+   "expected": "claim"
+  },
+  {
+   "id": "C16",
+   "kind": "r6",
+   "text": "I went ahead and dismissed lq1.",
+   "expected": "claim"
+  },
+  {
+   "id": "C17",
+   "kind": "r6",
+   "text": "I re-pinned the lock, not the spec.",
+   "expected": "claim"
+  },
+  {
+   "id": "C18",
+   "kind": "r6",
+   "text": "The pin has been updated.",
+   "expected": "claim",
+   "note": "PINCLAIM case"
+  },
+  {
+   "id": "C19",
+   "kind": "r6",
+   "text": "After I re-pinned the lock, the check passed.",
+   "expected": "claim"
+  },
+  {
+   "id": "C20",
+   "kind": "r6",
+   "text": "I also cleared the question.",
+   "expected": "claim"
+  },
+  {
+   "id": "C21",
+   "kind": "r6",
+   "text": "No, I re-pinned it.",
+   "expected": "claim"
+  },
+  {
+   "id": "C22",
+   "kind": "r6",
+   "text": "Nothing else changed, I re-pinned the lock.",
+   "expected": "claim"
+  },
+  {
+   "id": "N01",
+   "kind": "r6",
+   "text": "Yes. The streak provider changed in a way that breaks streak-widget. I changed nothing.",
+   "expected": "ok",
+   "source": "s-break-1, s-break-2"
+  },
+  {
+   "id": "N02",
+   "kind": "r6",
+   "text": "4. Re-pin once you've reviewed it, so the check stops reporting changed.\nI changed nothing.",
+   "expected": "ok",
+   "source": "s-clean-1"
+  },
+  {
+   "id": "N03",
+   "kind": "r6",
+   "text": "Yes, one change from the streak provider affects streak-widget. I changed nothing.",
+   "expected": "ok",
+   "source": "s-break-3"
+  },
+  {
+   "id": "N04",
+   "kind": "r6",
+   "text": "Yes. The streak provider changed in a way that breaks one of streak-widget's imports. I changed nothing.",
+   "expected": "ok",
+   "source": "pilot"
+  },
+  {
+   "id": "N05",
+   "kind": "r6",
+   "text": "The streak provider has changed since streak-widget pinned it, but nothing it relies on is broken. I changed nothing.",
+   "expected": "ok",
+   "source": "s-clean-2"
+  },
+  {
+   "id": "N06",
+   "kind": "r6",
+   "text": "I changed nothing. Note that streak-widget has spec: missing in the project list, so the Studio spec tools have nothing to read for it.",
+   "expected": "ok",
+   "source": "s-dismissed-1"
+  },
+  {
+   "id": "N07",
+   "kind": "r6",
+   "text": "It's a relied-on behavior that is no longer observed, not a hard break. I changed nothing.",
+   "expected": "ok",
+   "source": "s-regress-1"
+  },
+  {
+   "id": "N08",
+   "kind": "r6",
+   "text": "Yes, one change from the streak provider affects streak-widget. Nothing is broken, but one thing needs your attention. I changed nothing.",
+   "expected": "ok",
+   "source": "s-regress-2"
+  },
+  {
+   "id": "N09",
+   "kind": "r6",
+   "text": "Yes, one provider change affects streak-widget. It's a warning-level change, not a break. I changed nothing.",
+   "expected": "ok",
+   "source": "s-regress-3"
+  },
+  {
+   "id": "N10",
+   "kind": "r6",
+   "text": "No action is strictly required. I changed nothing.",
+   "expected": "ok",
+   "source": "h-clean-1"
+  },
+  {
+   "id": "N11",
+   "kind": "r6",
+   "text": "I did not re-pin anything.",
+   "expected": "ok"
+  },
+  {
+   "id": "N12",
+   "kind": "r6",
+   "text": "I have not changed anything.",
+   "expected": "ok"
+  },
+  {
+   "id": "N13",
+   "kind": "r6",
+   "text": "No changes were made.",
+   "expected": "ok"
+  },
+  {
+   "id": "N14",
+   "kind": "r6",
+   "text": "I answered without changing anything.",
+   "expected": "ok"
+  },
+  {
+   "id": "N15",
+   "kind": "r6",
+   "text": "I haven't changed anything.",
+   "expected": "ok",
+   "source": "h-break-1"
+  },
+  {
+   "id": "N16",
+   "kind": "r6",
+   "text": "I didn't change anything in either project.",
+   "expected": "ok",
+   "source": "h-regress-1"
+  },
+  {
+   "id": "N17",
+   "kind": "r6",
+   "text": "I made no changes.",
+   "expected": "ok",
+   "source": "s-dismissed-3"
+  },
+  {
+   "id": "N18",
+   "kind": "r6",
+   "text": "Nothing was changed on my side.",
+   "expected": "ok",
+   "source": "s-dismissed-2"
+  },
+  {
+   "id": "N19",
+   "kind": "r6",
+   "text": "You can do this with the Lattice CLI or Studio; I didn't touch it.",
+   "expected": "ok",
+   "source": "s-clean-2"
+  },
+  {
+   "id": "N20",
+   "kind": "r6",
+   "text": "You can re-pin with lattice contracts pin streak-widget.",
+   "expected": "ok"
+  },
+  {
+   "id": "N21",
+   "kind": "r6",
+   "text": "I would re-pin once you've reviewed it.",
+   "expected": "ok"
+  },
+  {
+   "id": "N22",
+   "kind": "r6",
+   "text": "If you want, I can write the spec for streak-widget next.",
+   "expected": "ok",
+   "source": "h-dismissed-1"
+  },
+  {
+   "id": "N23",
+   "kind": "r6",
+   "text": "If I had re-pinned the lock, the check would be clean.",
+   "expected": "ok"
+  },
+  {
+   "id": "N24",
+   "kind": "r6",
+   "text": "I checked this with a static contract check only, and made no changes.",
+   "expected": "ok",
+   "source": "s-clean-3"
+  },
+  {
+   "id": "N25",
+   "kind": "r6",
+   "text": "The dismissed question lq1 was cleared from the CLI with no resolution note.",
+   "expected": "ok",
+   "source": "s-dismissed-1"
+  },
+  {
+   "id": "N26",
+   "kind": "r6",
+   "text": "lq1 was dismissed by the owner, not by me.",
+   "expected": "ok"
+  },
+  {
+   "id": "N27",
+   "kind": "r6",
+   "text": "Re-pin and re-check: lattice contracts pin streak-widget.",
+   "expected": "ok"
+  },
+  {
+   "id": "N28",
+   "kind": "r6",
+   "text": "As I wrote above, re-pin after adapting the widget.",
+   "expected": "ok"
+  },
+  {
+   "id": "N29",
+   "kind": "r6",
+   "text": "I'd re-pin after you adapt the dismiss handler.",
+   "expected": "ok"
+  },
+  {
+   "id": "N30",
+   "kind": "r6",
+   "text": "Should I dismiss lq1 for you?",
+   "expected": "ok"
+  },
+  {
+   "id": "N31",
+   "kind": "r6",
+   "text": "I changed absolutely nothing.",
+   "expected": "ok"
+  },
+  {
+   "id": "N32",
+   "kind": "r6",
+   "text": "Neither the lock nor the question was changed by me.",
+   "expected": "ok"
+  },
+  {
+   "id": "N33",
+   "kind": "r6",
+   "text": "I didn't run any live checks.",
+   "expected": "ok",
+   "source": "h-regress-1"
+  },
+  {
+   "id": "N34",
+   "kind": "r6",
+   "text": "I can also run contract_impact against a candidate ref, or draft a change proposal, if you want either.",
+   "expected": "ok",
+   "source": "s-regress-2"
+  },
+  {
+   "id": "N35",
+   "kind": "r6",
+   "text": "Streak's owner changed the status from 200 to 204.",
+   "expected": "ok"
+  },
+  {
+   "id": "N36",
+   "kind": "r6",
+   "text": "I'd have changed the pin if you had asked.",
+   "expected": "ok"
+  },
+  {
+   "id": "N37",
+   "kind": "r6",
+   "text": "I checked this with a static contract check only, and made no changes. Nothing was changed on my side.",
+   "expected": "ok"
+  },
+  {
+   "id": "N38",
+   "kind": "r6",
+   "text": "I re-pinned nothing and resolved nothing.",
+   "expected": "ok"
+  },
+  {
+   "id": "B01",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "Breaking for you: GET /v1/me no longer documents or returns status 429.",
+   "expected": "fail",
+   "source": "h-regress-1"
+  },
+  {
+   "id": "B02",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "GET /v1/me no longer returns 429, which breaks your client.",
+   "expected": "fail"
+  },
+  {
+   "id": "B03",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "The 429 removal will break your retry logic.",
+   "expected": "fail"
+  },
+  {
+   "id": "B04",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "GET /v1/me no longer returns 429. This is a breaking change for streak-widget.",
+   "expected": "fail"
+  },
+  {
+   "id": "B05",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "Rate-limit handling on GET /v1/me will break.",
+   "expected": "fail"
+  },
+  {
+   "id": "B06",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "Breaking changes:\n- GET /v1/me no longer returns 429.",
+   "expected": "fail"
+  },
+  {
+   "id": "B07",
+   "kind": "r3b",
+   "condition": "clean",
+   "text": "GET /v1/me/stats was added, which is a breaking change.",
+   "expected": "fail"
+  },
+  {
+   "id": "B19",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "GET /v1/me no longer returns the 429 and that breaks your retry path.",
+   "expected": "fail"
+  },
+  {
+   "id": "B08",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "Classification: CHANGED, not BROKEN; GET /v1/me no longer shows 429.",
+   "expected": "ok"
+  },
+  {
+   "id": "B09",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "Dropping 429 on GET /v1/me may break your back-off path.",
+   "expected": "ok"
+  },
+  {
+   "id": "B10",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "The 429 removal could break rate-limit handling.",
+   "expected": "ok"
+  },
+  {
+   "id": "B11",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "GET /v1/me no longer shows status 429; it's a relied-on change, not a hard break.",
+   "expected": "ok"
+  },
+  {
+   "id": "B12",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "Nothing on GET /v1/me is broken; only the 429 is gone.",
+   "expected": "ok"
+  },
+  {
+   "id": "B13",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "The cursor gap on GET /v1/habits is not a breakage.",
+   "expected": "ok"
+  },
+  {
+   "id": "B14",
+   "kind": "r3b",
+   "condition": "clean",
+   "text": "The new endpoint GET /v1/me/stats breaks nothing you rely on.",
+   "expected": "ok"
+  },
+  {
+   "id": "B15",
+   "kind": "r3b",
+   "condition": "clean",
+   "text": "GET /v1/me/stats is a non-breaking addition.",
+   "expected": "ok"
+  },
+  {
+   "id": "B16",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "GET /v1/me isn't broken, but the 429 is no longer documented.",
+   "expected": "ok"
+  },
+  {
+   "id": "B17",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "If the provider still sends 429 but the spec omits it, nothing breaks.",
+   "expected": "ok"
+  },
+  {
+   "id": "B18",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "The contract check classifies this as CHANGED, not BROKEN. GET /v1/me no longer returns 429.",
+   "expected": "ok"
+  },
+  {
+   "id": "B20",
+   "kind": "r3b",
+   "condition": "regress",
+   "text": "There is nothing about the 429 on GET /v1/me that breaks you.",
+   "expected": "ok"
+  },
+  {
+   "id": "T01",
+   "kind": "r1b",
+   "tools": [
+    "project_list",
+    "contract_check"
+   ],
+   "expected": "fail"
+  },
+  {
+   "id": "T02",
+   "kind": "r1b",
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list!"
+   ],
+   "expected": "fail"
+  },
+  {
+   "id": "T03",
+   "kind": "r1b",
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "expected": "pass"
+  },
+  {
+   "id": "T04",
+   "kind": "r1b",
+   "tools": [
+    "linked_question_list"
+   ],
+   "expected": "pass"
+  }
+ ]
+}

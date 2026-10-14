@@ -1,0 +1,333 @@
+{
+ "sid": "haiku-clean-1",
+ "condition": "clean",
+ "model_alias": "haiku",
+ "model_resolved": "claude-haiku-5-5",
+ "items": {
+  "R1": true,
+  "R1b": true,
+  "R3": false,
+  "R3b": true,
+  "R5": true,
+  "R6": true
+ },
+ "applicable_item": "R3",
+ "satisfies_all": false,
+ "round1_items": {
+  "R1": true,
+  "R3": false,
+  "R5": true,
+  "R6": true
+ },
+ "satisfies_all_round1_rubric": false,
+ "R1a_linked_question_list_called": true,
+ "R1b_detail": {
+  "pass": true,
+  "calls": [
+   {
+    "id": "toolu_012LcTEKdV7ed9YcSCNhbNtj",
+    "has_result": true,
+    "is_error": false,
+    "denied": false
+   }
+  ]
+ },
+ "R6_A_B_disagree": false,
+ "R6_corrected": true,
+ "R5_under_original_rule": true,
+ "satisfies_all_under_original_rule": false,
+ "satisfies_all_with_R6_corrected": false,
+ "R5_detail": {
+  "executed_outside_lattice": [],
+  "denied_or_failed_outside_attempts": [],
+  "write_tools_called": [],
+  "world_unchanged": true,
+  "world_diff": {
+   "added": [],
+   "removed": [],
+   "changed": [],
+   "dirs_added": [],
+   "dirs_removed": [],
+   "symlinks_changed": []
+  },
+  "outside_unchanged": true,
+  "outside_unchanged_original_rule": true,
+  "outside_before": {
+   "streak": {
+    "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+    "status": [
+     " M studio.toml"
+    ]
+   },
+   "lattice_main": {
+    "head": "8d207566a155958fad5c243442097c6ce912a88c",
+    "status": [
+     "?? .DS_Store",
+     "?? app.db",
+     "?? db.sqlite",
+     "?? docs/.DS_Store",
+     "?? docs/HANDOFF-2026-10-12.md",
+     "?? \"docs/LLM-Native Coding Language Feasibility v1.md\"",
+     "?? \"reports/Spec driven LLM code checkers.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/executable_spec_oracles.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/llm_verification_loops.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/rule_checkers_on_code.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/spec_driven_tools.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/verification_startups.md\""
+    ]
+   },
+   "worktree": {
+    "head": "78f4463284d7be8a790d37d915cea8705acac5c9",
+    "status": []
+   }
+  },
+  "outside_after": "same"
+ },
+ "R7_tool_errors": [],
+ "R7_denied_attempts": [],
+ "R8": {
+  "num_turns": 4,
+  "total_cost_usd": 0.00399272,
+  "duration_ms": 7493,
+  "within_caps": true
+ },
+ "regex": {
+  "R3": {
+   "pass": false,
+   "NOOPEN": true,
+   "CLAIMOPEN_sentences": [],
+   "BREAK_sentences": [
+    "These are unverified rather than broken:"
+   ]
+  },
+  "R6_round1": {
+   "pass": true,
+   "SELFACT": null,
+   "PINCLAIM": null
+  },
+  "R6": {
+   "pass": true,
+   "A": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "I made",
+      "clause": "I made no changes.",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "B": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "i made",
+      "clause": "i made no changes",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "PINCLAIM": null,
+   "disagree": false
+  },
+  "R3b": {
+   "pass": true,
+   "attributed": [
+    "What changed: The provider streak moved from a0db033 to 5045026.",
+    "Its spec hash changed too.",
+    "The static contract check for streak-widget reports changed, with one finding:",
+    "- GET /v1/me/stats is a new endpoint in streak.",
+    "What to do:",
+    "Nothing is required for the new endpoint."
+   ],
+   "fails": []
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "alt_literal": {
+  "R3": {
+   "pass": true,
+   "NOOPEN": true,
+   "CLAIMOPEN_sentences": [],
+   "BREAK_sentences": []
+  },
+  "R6_round1": {
+   "pass": true,
+   "SELFACT": null,
+   "PINCLAIM": null
+  },
+  "R6": {
+   "pass": true,
+   "A": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "I made",
+      "clause": "I made no changes.",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "B": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "i made",
+      "clause": "i made no changes",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "PINCLAIM": null,
+   "disagree": false
+  },
+  "R3b": {
+   "pass": true,
+   "attributed": [
+    "The static contract check for streak-widget reports changed, with one finding: - GET /v1/me/stats is a new endpoint in streak.",
+    "Nothing is required for the new endpoint."
+   ],
+   "fails": []
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "env_keys": [
+  "CLAUDE_EFFORT",
+  "CLAUDE_PID",
+  "COMMAND_MODE",
+  "COREPACK_ENABLE_AUTO_PIN",
+  "FIG_TERM",
+  "GIT_EDITOR",
+  "HOME",
+  "LANG",
+  "LC_CTYPE",
+  "LOGNAME",
+  "MCP_CONNECTION_NONBLOCKING",
+  "NoDefaultCurrentDirectoryInExePath",
+  "OLDPWD",
+  "OSLogRateLimit",
+  "PATH",
+  "PROCESS_LAUNCHED_BY_CW",
+  "PROCESS_LAUNCHED_BY_Q",
+  "PWD",
+  "PYTHONDONTWRITEBYTECODE",
+  "SHELL",
+  "SHLVL",
+  "SSH_AUTH_SOCK",
+  "TERM",
+  "TERMINAL_EMULATOR",
+  "TERM_SESSION_ID",
+  "TMPDIR",
+  "USER",
+  "UV_NO_SYNC",
+  "UV_PROJECT_ENVIRONMENT",
+  "XPC_FLAGS",
+  "XPC_SERVICE_NAME",
+  "_",
+  "__CFBundleIdentifier",
+  "__CF_USER_TEXT_ENCODING"
+ ],
+ "alt_literal_differs": {
+  "R3": [
+   false,
+   true
+  ]
+ },
+ "ACT_on_break": null,
+ "tool_sequence": [
+  {
+   "tool": "mcp__lattice__project_list",
+   "input": {},
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__contract_check",
+   "input": {
+    "consumer": "streak-widget"
+   },
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__linked_question_list",
+   "input": {
+    "consumer": "streak-widget",
+    "status": "all"
+   },
+   "is_error": false
+  }
+ ],
+ "mcp_servers_seen": [
+  {
+   "name": "lattice",
+   "status": "connected",
+   "source": "dynamic"
+  },
+  {
+   "name": "claude.ai Claude Docs",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Figma",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Drive",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Calendar",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Gmail",
+   "status": "connected",
+   "source": "claudeai"
+  }
+ ],
+ "lattice_status": "connected",
+ "lattice_tools_listed": [
+  "mcp__lattice__change_get",
+  "mcp__lattice__change_list",
+  "mcp__lattice__code_links",
+  "mcp__lattice__contract_check",
+  "mcp__lattice__contract_impact",
+  "mcp__lattice__graph_get",
+  "mcp__lattice__linked_question_list",
+  "mcp__lattice__model_get",
+  "mcp__lattice__project_list",
+  "mcp__lattice__project_set_active",
+  "mcp__lattice__project_status",
+  "mcp__lattice__rule_get",
+  "mcp__lattice__spec_lint",
+  "mcp__lattice__workspace_impact"
+ ],
+ "n_tools_listed": 93,
+ "result_subtype": "success",
+ "result_is_error": false,
+ "final_answer": "Nothing your project relies on has broken, so no action is needed. I made no changes.\n\n**What changed:** The provider `streak` moved from `a0db033` to `5045026`. Its spec hash changed too. The static contract check for `streak-widget` reports `changed`, with one finding:\n\n- `GET /v1/me/stats` is a new endpoint in `streak`. Your project doesn't rely on it (`relied: false`), so it doesn't affect you.\n\n**Gaps (not changes):** The check also flags two places where the provider's spec doesn't show a field your code touches. These are unverified rather than broken:\n\n- `GET /v1/habits`: request field `cursor` isn't in the provider's spec.\n- `POST /v1/auth/login`: response field `access_token` isn't in the provider's spec.\n\n**Open questions:** None. `streak-widget` has no linked questions, open or resolved, so the provider never flagged a contradiction against your pin.\n\n**What to do:**\n\n1. Nothing is required for the new endpoint. You can ignore it unless you plan to use it.\n2. Check the two gaps by hand. Confirm that `cursor` is still accepted by `GET /v1/habits` and that `access_token` is still returned by `POST /v1/auth/login`. The spec can't prove either one, so a quick look at the provider's code or a test call will settle it.\n3. Before you move your pin to the new provider version, run `contract_impact` against the candidate ref. That confirms the upgrade won't break you.",
+ "attempts": 1
+}

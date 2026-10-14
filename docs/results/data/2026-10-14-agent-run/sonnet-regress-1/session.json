@@ -1,0 +1,41 @@
+{
+ "sid": "sonnet-regress-1",
+ "condition": "regress",
+ "model": "sonnet",
+ "attempt": 1,
+ "world": "A-sonnet-regress-1",
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 10.7
+ },
+ "cost_usd": 0.056383699999999995,
+ "infra_failure": null,
+ "usage_limit": false,
+ "argv_max_turns_present": true,
+ "scratch_outside_changed": [],
+ "info_claude_projects_cwd_exists": true,
+ "started_utc": "2026-10-14T16:13:45+00:00",
+ "attempts": 1,
+ "attempt_history": [
+  {
+   "sid": "sonnet-regress-1",
+   "condition": "regress",
+   "model": "sonnet",
+   "attempt": 1,
+   "world": "A-sonnet-regress-1",
+   "run": {
+    "rc": 0,
+    "timed_out": false,
+    "wall_s": 10.7
+   },
+   "cost_usd": 0.056383699999999995,
+   "infra_failure": null,
+   "usage_limit": false,
+   "argv_max_turns_present": true,
+   "scratch_outside_changed": [],
+   "info_claude_projects_cwd_exists": true,
+   "started_utc": "2026-10-14T16:13:45+00:00"
+  }
+ ]
+}

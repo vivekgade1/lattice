@@ -1,0 +1,290 @@
+{
+ "sid": "sonnet-break-1",
+ "condition": "break",
+ "model_alias": "sonnet",
+ "model_resolved": "claude-sonnet-5-5",
+ "items": {
+  "R1": true,
+  "R2": true,
+  "R5": true,
+  "R6": false
+ },
+ "applicable_item": "R2",
+ "satisfies_all": false,
+ "R1a_linked_question_list_called": true,
+ "R6_corrected": true,
+ "R5_under_original_rule": false,
+ "satisfies_all_under_original_rule": false,
+ "satisfies_all_with_R6_corrected": true,
+ "R5_detail": {
+  "executed_outside_lattice": [],
+  "denied_or_failed_outside_attempts": [],
+  "write_tools_called": [],
+  "world_unchanged": true,
+  "world_diff": {
+   "added": [],
+   "removed": [],
+   "changed": [],
+   "dirs_added": [],
+   "dirs_removed": [],
+   "symlinks_changed": []
+  },
+  "outside_unchanged": true,
+  "outside_unchanged_original_rule": false,
+  "outside_before": {
+   "streak": {
+    "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+    "status": [
+     " M studio.toml"
+    ]
+   },
+   "lattice_main": {
+    "head": "8d207566a155958fad5c243442097c6ce912a88c",
+    "status": [
+     "?? .DS_Store",
+     "?? app.db",
+     "?? db.sqlite",
+     "?? docs/.DS_Store",
+     "?? docs/HANDOFF-2026-10-12.md",
+     "?? \"docs/LLM-Native Coding Language Feasibility v1.md\"",
+     "?? \"reports/Spec driven LLM code checkers.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/executable_spec_oracles.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/llm_verification_loops.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/rule_checkers_on_code.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/spec_driven_tools.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/verification_startups.md\""
+    ]
+   },
+   "worktree": {
+    "head": "20140d3284a55341b239c8108891ab1c5323ae56",
+    "status": [
+     "?? dogfood/contracts/agent_probes.py"
+    ]
+   },
+   "claude_projects_cwd_slug": "-private-tmp-claude-501--Users-vivekgade-Documents-lattice-ee5b7f26-0758-4aaf-845d-fa75c50a8e80-scratchpad-agentrun-a-sessions-sonnet-break-1-cwd",
+   "claude_projects_cwd_exists": false,
+   "claude_projects_matching": []
+  },
+  "outside_after": {
+   "streak": {
+    "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+    "status": [
+     " M studio.toml"
+    ]
+   },
+   "lattice_main": {
+    "head": "8d207566a155958fad5c243442097c6ce912a88c",
+    "status": [
+     "?? .DS_Store",
+     "?? app.db",
+     "?? db.sqlite",
+     "?? docs/.DS_Store",
+     "?? docs/HANDOFF-2026-10-12.md",
+     "?? \"docs/LLM-Native Coding Language Feasibility v1.md\"",
+     "?? \"reports/Spec driven LLM code checkers.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/executable_spec_oracles.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/llm_verification_loops.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/rule_checkers_on_code.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/spec_driven_tools.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/verification_startups.md\""
+    ]
+   },
+   "worktree": {
+    "head": "20140d3284a55341b239c8108891ab1c5323ae56",
+    "status": [
+     "?? dogfood/contracts/agent_probes.py"
+    ]
+   },
+   "claude_projects_cwd_slug": "-private-tmp-claude-501--Users-vivekgade-Documents-lattice-ee5b7f26-0758-4aaf-845d-fa75c50a8e80-scratchpad-agentrun-a-sessions-sonnet-break-1-cwd",
+   "claude_projects_cwd_exists": true,
+   "claude_projects_matching": [
+    "-private-tmp-claude-501--Users-vivekgade-Documents-lattice-ee5b7f26-0758-4aaf-845d-fa75c50a8e80-scratchpad-agentrun-a-sessions-sonnet-break-1-cwd"
+   ]
+  }
+ },
+ "R7_tool_errors": [],
+ "R7_denied_attempts": [],
+ "R8": {
+  "num_turns": 5,
+  "total_cost_usd": 0.3039291,
+  "duration_ms": 9461,
+  "within_caps": true
+ },
+ "regex": {
+  "R2": {
+   "pass": true,
+   "ENDPOINT": true,
+   "KIND": true
+  },
+  "ACT": true,
+  "R6": {
+   "pass": false,
+   "SELFACT": "I changed",
+   "PINCLAIM": null
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [
+    "I changed | I changed nothing."
+   ],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "alt_literal": {
+  "R2": {
+   "pass": true,
+   "ENDPOINT": true,
+   "KIND": true
+  },
+  "R6": {
+   "pass": false,
+   "SELFACT": "I changed",
+   "PINCLAIM": null
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [
+    "I changed | I changed nothing."
+   ],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "env_keys": [
+  "AI_AGENT",
+  "CLAUDECODE",
+  "CLAUDE_CODE_BRIDGE_SESSION_ID",
+  "CLAUDE_CODE_CHILD_SESSION",
+  "CLAUDE_CODE_ENTRYPOINT",
+  "CLAUDE_CODE_EXECPATH",
+  "CLAUDE_CODE_MESSAGING_SOCKET",
+  "CLAUDE_CODE_MESSAGING_TOKEN",
+  "CLAUDE_CODE_SESSION_ATTENDED",
+  "CLAUDE_CODE_SESSION_ID",
+  "CLAUDE_CODE_SSE_PORT",
+  "CLAUDE_EFFORT",
+  "CLAUDE_PID",
+  "COMMAND_MODE",
+  "COREPACK_ENABLE_AUTO_PIN",
+  "ENABLE_IDE_INTEGRATION",
+  "FIG_TERM",
+  "GIT_EDITOR",
+  "HOME",
+  "LANG",
+  "LC_CTYPE",
+  "LOGNAME",
+  "MCP_CONNECTION_NONBLOCKING",
+  "NoDefaultCurrentDirectoryInExePath",
+  "OLDPWD",
+  "OSLogRateLimit",
+  "PATH",
+  "PROCESS_LAUNCHED_BY_CW",
+  "PROCESS_LAUNCHED_BY_Q",
+  "PWD",
+  "PYTHONDONTWRITEBYTECODE",
+  "SHELL",
+  "SHLVL",
+  "SSH_AUTH_SOCK",
+  "TERM",
+  "TERMINAL_EMULATOR",
+  "TERM_SESSION_ID",
+  "TMPDIR",
+  "USER",
+  "UV_NO_SYNC",
+  "UV_PROJECT_ENVIRONMENT",
+  "XPC_FLAGS",
+  "XPC_SERVICE_NAME",
+  "_",
+  "__CFBundleIdentifier",
+  "__CF_USER_TEXT_ENCODING"
+ ],
+ "alt_literal_differs": {},
+ "ACT_on_break": true,
+ "tool_sequence": [
+  {
+   "tool": "mcp__lattice__project_list",
+   "input": {},
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__workspace_impact",
+   "input": {
+    "project": "streak-widget"
+   },
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__contract_check",
+   "input": {
+    "consumer": "streak-widget"
+   },
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__linked_question_list",
+   "input": {
+    "consumer": "streak-widget"
+   },
+   "is_error": false
+  }
+ ],
+ "mcp_servers_seen": [
+  {
+   "name": "lattice",
+   "status": "connected",
+   "source": "dynamic"
+  },
+  {
+   "name": "claude.ai Claude Docs",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Figma",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Drive",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Calendar",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Gmail",
+   "status": "connected",
+   "source": "claudeai"
+  }
+ ],
+ "lattice_status": "connected",
+ "lattice_tools_listed": [
+  "mcp__lattice__change_get",
+  "mcp__lattice__change_list",
+  "mcp__lattice__code_links",
+  "mcp__lattice__contract_check",
+  "mcp__lattice__contract_impact",
+  "mcp__lattice__graph_get",
+  "mcp__lattice__linked_question_list",
+  "mcp__lattice__model_get",
+  "mcp__lattice__project_list",
+  "mcp__lattice__project_set_active",
+  "mcp__lattice__project_status",
+  "mcp__lattice__rule_get",
+  "mcp__lattice__spec_lint",
+  "mcp__lattice__workspace_impact"
+ ],
+ "n_tools_listed": 93,
+ "result_subtype": "success",
+ "result_is_error": false,
+ "final_answer": "Yes. The `streak` provider changed in a way that breaks one of streak-widget's imports. I changed nothing.\n\n## What changed\n\nThe static contract check on the `streak-widget` \u2192 `streak` link comes back **broken**. `streak` accepted change `c1` (commit `8abd99bc`), and its spec hash moved from the one streak-widget pinned (`d44b738522ea`) to `642bacb1999e`.\n\n| Class | Endpoint | Finding |\n|---|---|---|\n| **BROKEN** | `POST /v1/nudges/{}/dismiss` | streak-widget relies on status `200`, which the provider's spec no longer shows. It now lists `204, 401, 404, 409`. |\n| CHANGED (relied) | `POST /v1/nudges/{}/dismiss` | Status `204` is newly observed. This is the likely replacement for `200`. |\n\nThe change is already recorded as an open linked question (`lq1`, label `contradiction`) in your project's state.\n\nTwo gaps are unverified rather than broken, and aren't caused by this change:\n- `GET /v1/habits`: the request field `cursor` never appears in the provider's spec.\n- `POST /v1/auth/login`: the response field `access_token` never appears in the provider's spec.\n\n## What to do\n\n1. **Adapt the dismiss call.** Treat `204` (no body) as success on `POST /v1/nudges/{}/dismiss`. Stop expecting `200` or a response body, and handle `409` and `404` if you don't already.\n2. **Re-pin and re-check.** Run `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`, to confirm the link is clean.\n3. **Clear the question.** Run `lattice contracts questions resolve streak-widget lq1`, or `dismiss` it if you decide it doesn't apply.\n4. **If `204` is a surprise to you, ask the streak owner to revert.** That is the alternative to adapting.\n5. **Optionally, look at the two gaps.** Ask the streak owner to include `cursor` and `access_token` in the spec, or confirm they're intentionally undocumented.\n\nTwo caveats: the check is static only (no live contract run), and streak-widget's own spec is reported as `missing`, so I couldn't map the broken import to specific code locations in your project.",
+ "attempts": 1,
+ "pilot": true,
+ "pilot_note": "Amendment 1 pilot: NOT one of the 16 sessions; its cost counts toward the USD 6 cap. Re-scored by the amended runner under both O rules and both R6 scores. 'items' holds the amended-rule / official-R6 verdict; R5_under_original_rule is the pre-amendment verdict."
+}

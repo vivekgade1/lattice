@@ -1,0 +1,41 @@
+{
+ "sid": "haiku-dismissed-1",
+ "condition": "dismissed",
+ "model": "haiku",
+ "attempt": 1,
+ "world": "A-haiku-dismissed-1",
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 11.0
+ },
+ "cost_usd": 0.0037862800000000004,
+ "infra_failure": null,
+ "usage_limit": false,
+ "argv_max_turns_present": true,
+ "scratch_outside_changed": [],
+ "info_claude_projects_cwd_exists": true,
+ "started_utc": "2026-10-14T16:54:04+00:00",
+ "attempts": 1,
+ "attempt_history": [
+  {
+   "sid": "haiku-dismissed-1",
+   "condition": "dismissed",
+   "model": "haiku",
+   "attempt": 1,
+   "world": "A-haiku-dismissed-1",
+   "run": {
+    "rc": 0,
+    "timed_out": false,
+    "wall_s": 11.0
+   },
+   "cost_usd": 0.0037862800000000004,
+   "infra_failure": null,
+   "usage_limit": false,
+   "argv_max_turns_present": true,
+   "scratch_outside_changed": [],
+   "info_claude_projects_cwd_exists": true,
+   "started_utc": "2026-10-14T16:54:04+00:00"
+  }
+ ]
+}

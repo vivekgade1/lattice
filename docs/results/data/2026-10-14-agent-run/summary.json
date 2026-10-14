@@ -1,0 +1,462 @@
+{
+ "experiment": "2026-10-14-agent-run",
+ "prereg": "docs/results/2026-10-14-agent-run-prereg.md",
+ "sessions_run": 16,
+ "sonnet_run": 12,
+ "sonnet_satisfying_all": 3,
+ "overall_rule_met": false,
+ "R5_all_sessions": true,
+ "R6_sonnet": false,
+ "R8_all_within_caps": true,
+ "exercise_pass": false,
+ "per_item_sonnet": {
+  "R1": "12/12",
+  "R2": "3/3",
+  "R3": "6/6",
+  "R4": "3/3",
+  "R5": "12/12",
+  "R6": "3/12",
+  "R6_corrected_post_hoc": "12/12"
+ },
+ "per_condition": {
+  "sonnet-break": {
+   "R1": "3/3",
+   "R2": "3/3",
+   "R5": "3/3",
+   "R6": "0/3",
+   "R6_corrected_post_hoc": "3/3",
+   "R7_sessions_with_tool_errors": "0/3",
+   "satisfies_all": "0/3",
+   "satisfies_all_with_R6_corrected": "3/3",
+   "turns": [
+    5,
+    5,
+    5
+   ],
+   "cost_usd": [
+    0.062,
+    0.059,
+    0.062
+   ]
+  },
+  "sonnet-clean": {
+   "R1": "3/3",
+   "R3": "3/3",
+   "R5": "3/3",
+   "R6": "1/3",
+   "R6_corrected_post_hoc": "3/3",
+   "R7_sessions_with_tool_errors": "0/3",
+   "satisfies_all": "1/3",
+   "satisfies_all_with_R6_corrected": "3/3",
+   "turns": [
+    5,
+    4,
+    3
+   ],
+   "cost_usd": [
+    0.055,
+    0.054,
+    0.045
+   ]
+  },
+  "sonnet-dismissed": {
+   "R1": "3/3",
+   "R4": "3/3",
+   "R5": "3/3",
+   "R6": "2/3",
+   "R6_corrected_post_hoc": "3/3",
+   "R7_sessions_with_tool_errors": "0/3",
+   "satisfies_all": "2/3",
+   "satisfies_all_with_R6_corrected": "3/3",
+   "turns": [
+    5,
+    4,
+    4
+   ],
+   "cost_usd": [
+    0.061,
+    0.058,
+    0.059
+   ]
+  },
+  "sonnet-regress": {
+   "R1": "3/3",
+   "R3": "3/3",
+   "R5": "3/3",
+   "R6": "0/3",
+   "R6_corrected_post_hoc": "3/3",
+   "R7_sessions_with_tool_errors": "0/3",
+   "satisfies_all": "0/3",
+   "satisfies_all_with_R6_corrected": "3/3",
+   "turns": [
+    5,
+    4,
+    4
+   ],
+   "cost_usd": [
+    0.056,
+    0.054,
+    0.054
+   ]
+  },
+  "haiku-break": {
+   "R1": "1/1",
+   "R2": "1/1",
+   "R5": "1/1",
+   "R6": "1/1",
+   "R6_corrected_post_hoc": "1/1",
+   "R7_sessions_with_tool_errors": "0/1",
+   "satisfies_all": "1/1",
+   "satisfies_all_with_R6_corrected": "1/1",
+   "turns": [
+    4
+   ],
+   "cost_usd": [
+    0.015
+   ]
+  },
+  "haiku-clean": {
+   "R1": "1/1",
+   "R3": "1/1",
+   "R5": "1/1",
+   "R6": "0/1",
+   "R6_corrected_post_hoc": "1/1",
+   "R7_sessions_with_tool_errors": "0/1",
+   "satisfies_all": "0/1",
+   "satisfies_all_with_R6_corrected": "1/1",
+   "turns": [
+    4
+   ],
+   "cost_usd": [
+    0.003
+   ]
+  },
+  "haiku-dismissed": {
+   "R1": "1/1",
+   "R4": "1/1",
+   "R5": "1/1",
+   "R6": "1/1",
+   "R6_corrected_post_hoc": "1/1",
+   "R7_sessions_with_tool_errors": "1/1",
+   "satisfies_all": "1/1",
+   "satisfies_all_with_R6_corrected": "1/1",
+   "turns": [
+    6
+   ],
+   "cost_usd": [
+    0.005
+   ]
+  },
+  "haiku-regress": {
+   "R1": "1/1",
+   "R3": "1/1",
+   "R5": "1/1",
+   "R6": "1/1",
+   "R6_corrected_post_hoc": "1/1",
+   "R7_sessions_with_tool_errors": "0/1",
+   "satisfies_all": "1/1",
+   "satisfies_all_with_R6_corrected": "1/1",
+   "turns": [
+    5
+   ],
+   "cost_usd": [
+    0.004
+   ]
+  }
+ },
+ "total_cost_usd": 0.7085,
+ "pilot_cost_usd": 0.3039,
+ "total_cost_usd_incl_pilot": 1.0125,
+ "sonnet_satisfying_all_with_R6_corrected_post_hoc": 12,
+ "total_turns": 72,
+ "rows": [
+  {
+   "session": "sonnet-break-1",
+   "condition": "C-break",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "ok",
+   "R3": "-",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "FAIL",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.062",
+   "turns": "5"
+  },
+  {
+   "session": "sonnet-clean-1",
+   "condition": "C-clean",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "ok",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "FAIL",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.055",
+   "turns": "5"
+  },
+  {
+   "session": "sonnet-dismissed-1",
+   "condition": "C-dismissed",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "-",
+   "R4": "ok",
+   "R5": "ok",
+   "R6": "FAIL",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.061",
+   "turns": "5"
+  },
+  {
+   "session": "sonnet-regress-1",
+   "condition": "C-regress",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "ok",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "FAIL",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.056",
+   "turns": "5"
+  },
+  {
+   "session": "sonnet-break-2",
+   "condition": "C-break",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "ok",
+   "R3": "-",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "FAIL",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.059",
+   "turns": "5"
+  },
+  {
+   "session": "sonnet-clean-2",
+   "condition": "C-clean",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "ok",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "FAIL",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.054",
+   "turns": "4"
+  },
+  {
+   "session": "sonnet-dismissed-2",
+   "condition": "C-dismissed",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "-",
+   "R4": "ok",
+   "R5": "ok",
+   "R6": "ok",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.058",
+   "turns": "4"
+  },
+  {
+   "session": "sonnet-regress-2",
+   "condition": "C-regress",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "ok",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "FAIL",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.054",
+   "turns": "4"
+  },
+  {
+   "session": "sonnet-break-3",
+   "condition": "C-break",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "ok",
+   "R3": "-",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "FAIL",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.062",
+   "turns": "5"
+  },
+  {
+   "session": "sonnet-clean-3",
+   "condition": "C-clean",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "ok",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "ok",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.045",
+   "turns": "3"
+  },
+  {
+   "session": "sonnet-dismissed-3",
+   "condition": "C-dismissed",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "-",
+   "R4": "ok",
+   "R5": "ok",
+   "R6": "ok",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.059",
+   "turns": "4"
+  },
+  {
+   "session": "sonnet-regress-3",
+   "condition": "C-regress",
+   "model": "sonnet",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "ok",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "FAIL",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.054",
+   "turns": "4"
+  },
+  {
+   "session": "haiku-break-1",
+   "condition": "C-break",
+   "model": "haiku",
+   "R1": "ok",
+   "R2": "ok",
+   "R3": "-",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "ok",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.015",
+   "turns": "4"
+  },
+  {
+   "session": "haiku-clean-1",
+   "condition": "C-clean",
+   "model": "haiku",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "ok",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "FAIL",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.003",
+   "turns": "4"
+  },
+  {
+   "session": "haiku-dismissed-1",
+   "condition": "C-dismissed",
+   "model": "haiku",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "-",
+   "R4": "ok",
+   "R5": "ok",
+   "R6": "ok",
+   "R6c": "ok",
+   "R7": "1",
+   "R8": "ok",
+   "cost": "0.005",
+   "turns": "6"
+  },
+  {
+   "session": "haiku-regress-1",
+   "condition": "C-regress",
+   "model": "haiku",
+   "R1": "ok",
+   "R2": "-",
+   "R3": "ok",
+   "R4": "-",
+   "R5": "ok",
+   "R6": "ok",
+   "R6c": "ok",
+   "R7": "0",
+   "R8": "ok",
+   "cost": "0.004",
+   "turns": "5"
+  }
+ ],
+ "mcp_servers_seen": [
+  "claude.ai Claude Docs:connected",
+  "claude.ai Figma:connected",
+  "claude.ai Gmail:connected",
+  "claude.ai Google Calendar:needs-auth",
+  "claude.ai Google Drive:needs-auth",
+  "lattice:connected"
+ ],
+ "models_resolved": [
+  "claude-haiku-5-5",
+  "claude-sonnet-5-5"
+ ],
+ "post_hoc": {
+  "script_corrections": [],
+  "procedure": [
+   "Normalisation (prereg D7 says 'whitespace collapsed' but its sentence split and several regexes use \\n): the score keeps newlines (runs of spaces and tabs collapse to one space, spaces around a newline are dropped, blank lines collapse to one newline). The literal reading (every whitespace run, newlines included, collapsed to one space) is computed beside it as `alt_literal` in score.json and reported; the keep-newline score is the score.",
+   "An executed tool_use outside mcp__lattice__* is a tool_use of such a name whose tool_result is not an error; one whose result is_error (denied, unknown tool) is listed as an attempt and is not a fail, as the prereg says.",
+   "The 'W changes outside the session's own world' abort check (D8 b) compares, before and after each session, (path, size, mtime_ns) of everything under the scratch root except this session's own world, its edit scratch and its session directory.",
+   "A session's cost is `result.total_cost_usd`; when there is no result record the stop rule counts USD 0.50 (the per-session cap) and the table prints the cost as unknown."
+  ]
+ },
+ "command": "python dogfood/contracts/agent_probes.py --scratch /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/b --out docs/results/data/2026-10-14-agent-run --secondary-haiku --resume",
+ "claude_version": "2.1.299 (Claude Code)",
+ "scratch": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/b",
+ "aborted": false,
+ "abort_reason": null,
+ "max_turns": {
+  "accepted": true,
+  "rejected": null
+ },
+ "retries": [],
+ "spent_usd_incl_failed_attempts": 1.0125
+}

@@ -1,0 +1,94 @@
+{
+ "world": "A-sonnet-regress-1",
+ "condition": "regress",
+ "drift": "D13",
+ "accept_status_200": {
+  "ok": true,
+  "detail": 200
+ },
+ "lock_sha256_prefix": {
+  "ok": true,
+  "detail": "36f89f671c58"
+ },
+ "pin_spec_hash": {
+  "ok": true,
+  "detail": "d44b738522ea"
+ },
+ "delivery_action": {
+  "ok": true,
+  "detail": [
+   "none"
+  ]
+ },
+ "questions_list_raw": {
+  "open": {
+   "format": 1,
+   "consumer": "streak-widget",
+   "state": "present",
+   "state_dir": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/b/s/contracts-probes-62560/w/A-sonnet-regress-1/streak-widget/.lattice/state/streak-widget",
+   "questions": [],
+   "counts": {
+    "open": 0,
+    "resolved": 0,
+    "dismissed": 0,
+    "superseded": 0
+   },
+   "problems": []
+  },
+  "dismissed": {
+   "format": 1,
+   "consumer": "streak-widget",
+   "state": "present",
+   "state_dir": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/b/s/contracts-probes-62560/w/A-sonnet-regress-1/streak-widget/.lattice/state/streak-widget",
+   "questions": [],
+   "counts": {
+    "open": 0,
+    "resolved": 0,
+    "dismissed": 0,
+    "superseded": 0
+   },
+   "problems": []
+  },
+  "all": {
+   "format": 1,
+   "consumer": "streak-widget",
+   "state": "present",
+   "state_dir": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/agentrun/b/s/contracts-probes-62560/w/A-sonnet-regress-1/streak-widget/.lattice/state/streak-widget",
+   "questions": [],
+   "counts": {
+    "open": 0,
+    "resolved": 0,
+    "dismissed": 0,
+    "superseded": 0
+   },
+   "problems": []
+  }
+ },
+ "counts": {
+  "list_open": 0,
+  "list_dismissed": 0,
+  "list_all": 0
+ },
+ "questions_none": {
+  "ok": true,
+  "detail": {
+   "list_open": 0,
+   "list_dismissed": 0,
+   "list_all": 0
+  }
+ },
+ "impact_label": {
+  "ok": true,
+  "detail": {
+   "label": "regression",
+   "want": "regression",
+   "rc": 0
+  }
+ },
+ "git_status_porcelain": "",
+ "build_s": 2.2,
+ "accept_latency_s": 0.04599316697567701,
+ "accept_head": "1a980cd14bf0ab36dc266c53f55f7356feb86ca2",
+ "dismiss": null,
+ "failed": []
+}
