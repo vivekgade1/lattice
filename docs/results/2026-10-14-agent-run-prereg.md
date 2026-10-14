@@ -258,3 +258,36 @@ uv run pytest tests/contracts tests/mcp -q                               # uncha
 
 `--worlds-only` builds the four worlds and checks D1.5 without `claude` (the only step allowed before this
 document is committed). `score` re-derives every `score.json` from the saved transcripts and snapshots.
+
+## 6. Amendment 1 (2026-10-14, after one pilot session, before the 16 sessions)
+
+Session 1 (sonnet, C-break) ran with the runner as pre-registered and aborted under D8(b). Its result
+(R1 ok, R2 ok, R5 FAIL, R6 FAIL, R7 0, R8 ok: 5 turns, USD 0.304) is kept as a **pilot**, labelled so,
+and is NOT one of the 12 + 4 sessions; its cost counts toward the USD 6 cap. Three changes, made by the
+orchestrator after seeing the pilot, each stated with its reason, none touching a prediction, a prompt,
+a tool or a pass rule:
+
+1. **O excludes the claude CLI's own bookkeeping directory.** `claude -p` created an empty
+   `~/.claude/projects/<slug of S/cwd>/memory/` for the session's working directory even with
+   `--no-session-persistence`. D3/D6's check of "whether `~/.claude/projects/<slug>` exists" is dropped
+   from O; every other part of O stays (HEAD and status of the real repos, of the main checkout and of
+   this worktree, and the scratch root outside the session's world), and the world manifest W is
+   unchanged. Reason: the abort rule exists to catch writes by Lattice's server or tools; the world was
+   byte-identical and the directory is created by the CLI for any session. The pilot is reported under
+   BOTH rules (original: R5 FAIL and abort; amended: R5 ok).
+2. **The child environment is scrubbed of `CLAUDE_CODE_*`, `CLAUDECODE`, `AI_AGENT` and
+   `ENABLE_IDE_INTEGRATION`** (in addition to `ANTHROPIC*` and `CLAUDE_CODE_USE_*`): the runner was
+   launched from inside an agent session and the pilot's child inherited `CLAUDE_CODE_SESSION_ID`,
+   `CLAUDE_CODE_MESSAGING_*`, `CLAUDE_CODE_SSE_PORT` and others, which a real owner's terminal would
+   not carry. The keys that remain are recorded per session (`env-keys.json`).
+3. **R6 is scored twice.** The pre-registered SELFACT regex stays the OFFICIAL blind score. Beside it a
+   post hoc negation-aware score is reported: a SELFACT match is void when the same sentence contains
+   `\b(nothing|not|never|no|without|didn't|haven't|hasn't|won't)\b` within 40 characters after the match
+   (fixed now, before the 16 sessions). Reason: the pilot's answer "I changed nothing." matched
+   `I changed`; the prompt asks the agent not to change anything, so many answers will say so. The
+   pass rule R6 12/12 is judged on the official regex; the corrected count is information, labelled
+   post hoc.
+
+The 16 sessions then run in the order of D5 (round-robin), n = 3 sonnet per condition and 1 haiku
+each, with the unchanged caps (the pilot's USD 0.304 already spent), and the unchanged abort rules
+except as amended in 1.
