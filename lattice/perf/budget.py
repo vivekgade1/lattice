@@ -20,11 +20,16 @@ more sizes through the app's API (the seed's steps, ``count`` "N" or a number; `
 string is the 1-based index of the step's repetition, ``{uuid}`` a fresh UUID), sends the
 endpoint ``runs`` times and counts the app's statements per request. :func:`fit` fits
 constant and per-item from the exact counts (smallest and largest size; ``exact`` when every
-run of every size lies on that line); :func:`judge` fails the budget when the fitted
-constant or per-item exceeds the budget's, or when a size's count exceeds ``constant +
-per_item * n`` (a count that is not linear in N). Latency is reported (min, median, max of
-the runs) and compared only when ``latency_ms`` is set: the median at ``size`` must be at
-most ``median * (1 + margin)``.
+run of every size lies on that line). :func:`judge` fails the budget when the fitted
+per-item exceeds the budget's, or when a size's count exceeds ``constant + per_item * n``
+(a count that is not linear in N), or when the fitted constant exceeds the budget's and is
+not traded for per-item. The constant may rise when the per-item term falls (owner decision,
+2026-10-13): a fitted constant c' above the budget's c is accepted when the fitted per-item
+p' is below the budget's p and every measured size is within its allowed count; the
+fitted line is then at or under the budget for N >= N* = (c' - c) / (p - p') and over it
+below N*, and the notes say so. Latency is reported (min, median, max of the runs) and
+compared only when ``latency_ms`` is set: the median at ``size`` must be at most
+``median * (1 + margin)``, independently of the counts.
 
 The report's JSON (:meth:`Report.to_dict`) is ``{budget_id, endpoint, sizes: [{n,
 statements: [per run], latency_ms: {min, median, max}}], fit: {constant, per_item, exact},
@@ -370,7 +375,8 @@ class Report:
     notes: list[str] = field(default_factory=list)
 
     def delta(self) -> dict[str, Any] | None:
-        """fit minus budget (negative: better than the budget)."""
+        """fit minus budget (negative: better than the budget; a positive constant with a
+        negative per_item is a trade the rule accepts)."""
         if self.fit is None:
             return None
         return {"constant": _num(self.fit.constant - self.budget.constant),
@@ -398,8 +404,10 @@ def judge(budget: Budget, sizes: list[SizeResult], notes: list[str] | None = Non
         return report
     f = fit(points)
     report.fit = f
+    within = all(not s.statements or max(s.statements) <= budget.allowed(s.n) for s in sizes)
+    trade = f.constant > budget.constant and f.per_item < budget.per_item and within
     failures: list[str] = []
-    if f.constant > budget.constant:
+    if f.constant > budget.constant and not trade:
         failures.append(f"constant {_show(f.constant)} > budget {_show(budget.constant)}")
     if f.per_item > budget.per_item:
         failures.append(f"per_item {_show(f.per_item)} > budget {_show(budget.per_item)}")
@@ -437,15 +445,22 @@ def judge(budget: Budget, sizes: list[SizeResult], notes: list[str] | None = Non
     if failures:
         report.verdict = "fail"
         report.notes[:0] = [f"over budget: {x}" for x in failures]
-        if f.per_item < budget.per_item and all(
-            not s.statements or max(s.statements) <= budget.allowed(s.n) for s in sizes
-        ):
-            report.notes.append(
-                "every measured size is within its allowed count: the constant grew while the "
-                "per-item cost fell (a trade the budget's rule counts as over budget)"
-            )
     else:
         report.verdict = "pass"
+    if trade:
+        n_star = _show((f.constant - budget.constant) / (budget.per_item - f.per_item))
+        report.notes.append(
+            f"constant traded for per-item: constant {_show(f.constant)} > budget "
+            f"{_show(budget.constant)} accepted (per_item {_show(f.per_item)} < budget "
+            f"{_show(budget.per_item)}, every measured size within its allowed count); "
+            f"at or under the budget for N >= N* = {n_star}, over it for N < {n_star}"
+        )
+    elif f.constant > budget.constant and f.per_item < budget.per_item:
+        report.notes.append(
+            f"no trade: per_item {_show(f.per_item)} < budget {_show(budget.per_item)}, but a "
+            f"measured size is over its allowed count, so constant {_show(f.constant)} > "
+            f"budget {_show(budget.constant)} stays over budget"
+        )
     if better:
         report.notes.append("better than the budget: " + ", ".join(better))
     return report

@@ -1,0 +1,140 @@
+{
+ "id": "J4i",
+ "identical": true,
+ "observed": {
+  "cases": {
+   "fail (J1d)": {
+    "keys_new": [
+     "budget_id",
+     "endpoint",
+     "sizes",
+     "fit",
+     "budget",
+     "verdict",
+     "delta",
+     "notes"
+    ],
+    "keys_old": [
+     "budget_id",
+     "endpoint",
+     "sizes",
+     "fit",
+     "budget",
+     "verdict",
+     "delta",
+     "notes"
+    ],
+    "ok": true,
+    "paths_equal": true,
+    "verdict": "fail"
+   },
+   "pass (J1b)": {
+    "keys_new": [
+     "budget_id",
+     "endpoint",
+     "sizes",
+     "fit",
+     "budget",
+     "verdict",
+     "delta",
+     "notes"
+    ],
+    "keys_old": [
+     "budget_id",
+     "endpoint",
+     "sizes",
+     "fit",
+     "budget",
+     "verdict",
+     "delta",
+     "notes"
+    ],
+    "ok": true,
+    "paths_equal": true,
+    "verdict": "pass"
+   },
+   "trade (J1a)": {
+    "keys_new": [
+     "budget_id",
+     "endpoint",
+     "sizes",
+     "fit",
+     "budget",
+     "verdict",
+     "delta",
+     "notes"
+    ],
+    "keys_old": [
+     "budget_id",
+     "endpoint",
+     "sizes",
+     "fit",
+     "budget",
+     "verdict",
+     "delta",
+     "notes"
+    ],
+    "ok": true,
+    "paths_equal": true,
+    "verdict": "pass"
+   },
+   "unmeasured": {
+    "keys_new": [
+     "budget_id",
+     "endpoint",
+     "sizes",
+     "fit",
+     "budget",
+     "verdict",
+     "delta",
+     "notes"
+    ],
+    "keys_old": [
+     "budget_id",
+     "endpoint",
+     "sizes",
+     "fit",
+     "budget",
+     "verdict",
+     "delta",
+     "notes"
+    ],
+    "ok": true,
+    "paths_equal": true,
+    "verdict": "unmeasured"
+   }
+  },
+  "n_ok": 4,
+  "summary": "4/4 same keys and key paths old vs new",
+  "verdicts": {
+   "fail (J1d)": "fail",
+   "pass (J1b)": "pass",
+   "trade (J1a)": "pass",
+   "unmeasured": "unmeasured"
+  }
+ },
+ "pass": true,
+ "prediction": {
+  "n_ok": 4,
+  "text": "4/4 same keys and key paths old vs new",
+  "verdicts": {
+   "fail (J1d)": "fail",
+   "pass (J1b)": "pass",
+   "trade (J1a)": "pass",
+   "unmeasured": "unmeasured"
+  }
+ },
+ "runs": 10,
+ "sha256": [
+  "3d45a598ce474f0f35c2e9533e541ca487faec610ae10c9e46911195a3935229",
+  "3d45a598ce474f0f35c2e9533e541ca487faec610ae10c9e46911195a3935229",
+  "3d45a598ce474f0f35c2e9533e541ca487faec610ae10c9e46911195a3935229",
+  "3d45a598ce474f0f35c2e9533e541ca487faec610ae10c9e46911195a3935229",
+  "3d45a598ce474f0f35c2e9533e541ca487faec610ae10c9e46911195a3935229",
+  "3d45a598ce474f0f35c2e9533e541ca487faec610ae10c9e46911195a3935229",
+  "3d45a598ce474f0f35c2e9533e541ca487faec610ae10c9e46911195a3935229",
+  "3d45a598ce474f0f35c2e9533e541ca487faec610ae10c9e46911195a3935229",
+  "3d45a598ce474f0f35c2e9533e541ca487faec610ae10c9e46911195a3935229",
+  "3d45a598ce474f0f35c2e9533e541ca487faec610ae10c9e46911195a3935229"
+ ]
+}

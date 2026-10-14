@@ -1,0 +1,99 @@
+{
+ "id": "J4ii",
+ "identical": true,
+ "observed": {
+  "new": {
+   "crossover_shown": true,
+   "exit": 0,
+   "fit": {
+    "constant": 2,
+    "exact": true,
+    "per_item": 0
+   },
+   "notes": [
+    "database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)",
+    "2 run(s) per size, one fresh app and database per size",
+    "constant traded for per-item: constant 2 > budget 1 accepted (per_item 0 < budget 1, every measured size within its allowed count); at or under the budget for N >= N* = 1, over it for N < 1",
+    "better than the budget: per_item 0 < 1"
+   ],
+   "top_keys": [
+    "version",
+    "command",
+    "project",
+    "budget_file",
+    "verdict",
+    "reports"
+   ],
+   "trade_note": true,
+   "verdict": "pass"
+  },
+  "old": {
+   "exit": 1,
+   "notes": [
+    "over budget: constant 2 > budget 1",
+    "database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)",
+    "2 run(s) per size, one fresh app and database per size",
+    "every measured size is within its allowed count: the constant grew while the per-item cost fell (a trade the budget's rule counts as over budget)",
+    "better than the budget: per_item 0 < 1"
+   ],
+   "top_keys": [
+    "version",
+    "command",
+    "project",
+    "budget_file",
+    "verdict",
+    "reports"
+   ],
+   "verdict": "fail"
+  },
+  "summary": "new exit 0 pass, old exit 1 fail, keys equal True"
+ },
+ "pass": true,
+ "prediction": {
+  "new": {
+   "crossover_shown": true,
+   "exit": 0,
+   "fit": {
+    "constant": 2,
+    "exact": true,
+    "per_item": 0
+   },
+   "top_keys": [
+    "version",
+    "command",
+    "project",
+    "budget_file",
+    "verdict",
+    "reports"
+   ],
+   "trade_note": true,
+   "verdict": "pass"
+  },
+  "old": {
+   "exit": 1,
+   "top_keys": [
+    "version",
+    "command",
+    "project",
+    "budget_file",
+    "verdict",
+    "reports"
+   ],
+   "verdict": "fail"
+  },
+  "text": "new exit 0 pass with trade note N* = 1, old exit 1, same top-level keys"
+ },
+ "runs": 10,
+ "sha256": [
+  "7a690b630ebbc0aeb904d3cc01c1f6473717741fdfad1099dac4a1809f26367d",
+  "7a690b630ebbc0aeb904d3cc01c1f6473717741fdfad1099dac4a1809f26367d",
+  "7a690b630ebbc0aeb904d3cc01c1f6473717741fdfad1099dac4a1809f26367d",
+  "7a690b630ebbc0aeb904d3cc01c1f6473717741fdfad1099dac4a1809f26367d",
+  "7a690b630ebbc0aeb904d3cc01c1f6473717741fdfad1099dac4a1809f26367d",
+  "7a690b630ebbc0aeb904d3cc01c1f6473717741fdfad1099dac4a1809f26367d",
+  "7a690b630ebbc0aeb904d3cc01c1f6473717741fdfad1099dac4a1809f26367d",
+  "7a690b630ebbc0aeb904d3cc01c1f6473717741fdfad1099dac4a1809f26367d",
+  "7a690b630ebbc0aeb904d3cc01c1f6473717741fdfad1099dac4a1809f26367d",
+  "7a690b630ebbc0aeb904d3cc01c1f6473717741fdfad1099dac4a1809f26367d"
+ ]
+}

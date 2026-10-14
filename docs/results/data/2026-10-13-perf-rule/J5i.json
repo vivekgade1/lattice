@@ -1,0 +1,43 @@
+{
+ "id": "J5i",
+ "identical": true,
+ "observed": {
+  "checks": {
+   "fit 8 + 0N": true,
+   "fit not exact first": true,
+   "trade note N* = 2": true
+  },
+  "new": "pass",
+  "notes": [
+   "fit not exact: runs differ at {5: [7, 8], 25: [7, 8]}; the counts are not one line in N (the fit uses the largest count per size)",
+   "constant traded for per-item: constant 8 > budget 6 accepted (per_item 0 < budget 1, every measured size within its allowed count); at or under the budget for N >= N* = 2, over it for N < 2",
+   "better than the budget: per_item 0 < 1"
+  ],
+  "old": "fail",
+  "summary": "fail -> pass"
+ },
+ "pass": true,
+ "prediction": {
+  "checks": {
+   "fit 8 + 0N": true,
+   "fit not exact first": true,
+   "trade note N* = 2": true
+  },
+  "new": "pass",
+  "old": "fail",
+  "text": "fail -> pass; fit 8 + 0N, fit not exact first, trade note N* = 2"
+ },
+ "runs": 10,
+ "sha256": [
+  "4d33fd917eeaab8b27d67792f2e5e7ce41054c10d6da010a9ad40dfe91ebd27e",
+  "4d33fd917eeaab8b27d67792f2e5e7ce41054c10d6da010a9ad40dfe91ebd27e",
+  "4d33fd917eeaab8b27d67792f2e5e7ce41054c10d6da010a9ad40dfe91ebd27e",
+  "4d33fd917eeaab8b27d67792f2e5e7ce41054c10d6da010a9ad40dfe91ebd27e",
+  "4d33fd917eeaab8b27d67792f2e5e7ce41054c10d6da010a9ad40dfe91ebd27e",
+  "4d33fd917eeaab8b27d67792f2e5e7ce41054c10d6da010a9ad40dfe91ebd27e",
+  "4d33fd917eeaab8b27d67792f2e5e7ce41054c10d6da010a9ad40dfe91ebd27e",
+  "4d33fd917eeaab8b27d67792f2e5e7ce41054c10d6da010a9ad40dfe91ebd27e",
+  "4d33fd917eeaab8b27d67792f2e5e7ce41054c10d6da010a9ad40dfe91ebd27e",
+  "4d33fd917eeaab8b27d67792f2e5e7ce41054c10d6da010a9ad40dfe91ebd27e"
+ ]
+}

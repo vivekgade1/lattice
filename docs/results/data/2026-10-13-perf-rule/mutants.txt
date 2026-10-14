@@ -1,0 +1,31 @@
+hashes: {"lattice/perf/budget.py": "9aff69d8c9c5fdf4", "lattice/perf/measure.py": "51976f333940ff4c", "lattice/perf/__main__.py": "1426b9b7f239fa59", "tests/perf/test_budget.py": "c84c27017518a7cf", "tests/perf/test_measure.py": "365fba5fffc06c12", "dogfood/perf_mutants.py": "dae05be26c1b67d6"}
+control: PASS (control)
+PM2: caught (by pytest; pytest failed 7: test_exactly_at_budget_passes, test_latency_compared_only_when_set, test_zero_per_item_budget_met_exactly_passes, test_cli_check_pass_is_exit_0, test_cli_json_report, test_constant_endpoint_counts_exactly, test_in_repo_racy_notes_app)
+PM1: caught (by pytest; pytest failed 13: test_constant_over_with_equal_per_item_still_fails, test_exactly_at_budget_passes, test_falling_count_trades_against_a_zero_per_item_budget, test_fit_constant_is_the_intercept_not_a_count, test_fit_is_rational_and_exact, test_fit_of_the_p0_numbers_is_n_plus_6, test_latency_compared_only_when_set, test_render_table, test_report_schema, test_reverse_trade_is_refused, test_trade_shows_a_fractional_crossover, test_cli_json_report, test_n_plus_one_is_fitted_and_fails_a_constant_budget)
+PM3: caught (by pytest; pytest failed 2: test_app_statements_excludes_the_tools_connections_and_other_commands, test_mysql_counter_truncates_counts_app_rows_and_restores)
+PM4: caught (by pytest; pytest failed 2: test_cli_check_over_budget_is_exit_1_and_measure_is_0, test_lattice_perf_dispatch)
+PR2: caught (by pytest; pytest failed 3: test_constant_over_budget_fails, test_constant_over_with_equal_per_item_still_fails, test_no_trade_when_a_size_is_over_its_allowed_count)
+PR1: caught (by pytest; pytest failed 1: test_no_trade_when_a_size_is_over_its_allowed_count)
+PR3: caught (by pytest; pytest failed 2: test_per_item_over_budget_fails, test_reverse_trade_is_refused)
+PR4: caught (by pytest; pytest failed 5: test_falling_count_trades_against_a_zero_per_item_budget, test_trade_at_the_boundary_size_passes, test_trade_does_not_excuse_latency, test_trade_shows_a_fractional_crossover, test_trading_constant_for_per_item_passes_and_shows_the_crossover)
+PR5: caught (by pytest; pytest failed 5: test_falling_count_trades_against_a_zero_per_item_budget, test_trade_at_the_boundary_size_passes, test_trade_does_not_excuse_latency, test_trade_shows_a_fractional_crossover, test_trading_constant_for_per_item_passes_and_shows_the_crossover)
+PR6: caught (by pytest; pytest failed 2: test_falling_count_trades_against_a_zero_per_item_budget, test_trade_shows_a_fractional_crossover)
+PR8: caught (by pytest; pytest failed 1: test_trade_does_not_excuse_latency)
+PR7: caught (by pytest; pytest failed 2: test_falling_count_trades_against_a_zero_per_item_budget, test_trade_at_the_boundary_size_passes)
+PR9: caught (by pytest; pytest failed 1: test_no_trade_when_a_size_is_over_its_allowed_count)
+control | PASS (control) | pytest: 68 passed in 0.55s
+id | behaviour | verdict | caught by | failed tests | predicted killers
+PM1 | the fit takes the larger size's count as the constant | caught | pytest | 13: test_constant_over_with_equal_per_item_still_fails, test_exactly_at_budget_passes, test_falling_count_trades_against_a_zero_per_item_budget, test_fit_constant_is_the_intercept_not_a_count, test_fit_is_rational_and_exact, test_fit_of_the_p0_numbers_is_n_plus_6, test_latency_compared_only_when_set, test_render_table, test_report_schema, test_reverse_trade_is_refused, test_trade_shows_a_fractional_crossover, test_cli_json_report, test_n_plus_one_is_fitted_and_fails_a_constant_budget | -
+PM2 | per_item compared with >= instead of > | caught | pytest | 7: test_exactly_at_budget_passes, test_latency_compared_only_when_set, test_zero_per_item_budget_met_exactly_passes, test_cli_check_pass_is_exit_0, test_cli_json_report, test_constant_endpoint_counts_exactly, test_in_repo_racy_notes_app | -
+PM3 | counting includes the tool's own statements | caught | pytest | 2: test_app_statements_excludes_the_tools_connections_and_other_commands, test_mysql_counter_truncates_counts_app_rows_and_restores | -
+PM4 | a failing budget exits 0 | caught | pytest | 2: test_cli_check_over_budget_is_exit_1_and_measure_is_0, test_lattice_perf_dispatch | -
+PR1 | a trade needs no size within its allowed count (the within conjunct dropped) | caught | pytest | 1: test_no_trade_when_a_size_is_over_its_allowed_count | all present
+PR2 | the constant failure is never recorded | caught | pytest | 3: test_constant_over_budget_fails, test_constant_over_with_equal_per_item_still_fails, test_no_trade_when_a_size_is_over_its_allowed_count | all present
+PR3 | the per_item check never fires (p' > p allowed) | caught | pytest | 2: test_per_item_over_budget_fails, test_reverse_trade_is_refused | all present
+PR4 | the trade note is not appended | caught | pytest | 5: test_falling_count_trades_against_a_zero_per_item_budget, test_trade_at_the_boundary_size_passes, test_trade_does_not_excuse_latency, test_trade_shows_a_fractional_crossover, test_trading_constant_for_per_item_passes_and_shows_the_crossover | all present
+PR5 | the constant failure ignores trade (the verdict as before the trade) | caught | pytest | 5: test_falling_count_trades_against_a_zero_per_item_budget, test_trade_at_the_boundary_size_passes, test_trade_does_not_excuse_latency, test_trade_shows_a_fractional_crossover, test_trading_constant_for_per_item_passes_and_shows_the_crossover | all present
+PR6 | N* uses the budget's per_item as the denominator | caught | pytest | 2: test_falling_count_trades_against_a_zero_per_item_budget, test_trade_shows_a_fractional_crossover | all present
+PR7 | within uses < instead of <= | caught | pytest | 2: test_falling_count_trades_against_a_zero_per_item_budget, test_trade_at_the_boundary_size_passes | all present
+PR8 | a trade excuses a latency failure | caught | pytest | 1: test_trade_does_not_excuse_latency | all present
+PR9 | the no-trade note is not appended | caught | pytest | 1: test_no_trade_when_a_size_is_over_its_allowed_count | all present
+mutants: 13/13 killed

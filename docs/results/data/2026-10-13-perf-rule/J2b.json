@@ -1,0 +1,30 @@
+{
+ "id": "J2b",
+ "identical": true,
+ "observed": {
+  "formula": 599,
+  "newly_passing": 599,
+  "set_equal": true,
+  "summary": "set_equal True, 599 cells"
+ },
+ "pass": true,
+ "prediction": {
+  "formula": 599,
+  "newly_passing": 599,
+  "set_equal": true,
+  "text": "set_equal True, 599 cells"
+ },
+ "runs": 10,
+ "sha256": [
+  "71a8b27c582e8d73ed5f2867c520aca7b11eb7941af7f2c852e92a29e8a45dde",
+  "71a8b27c582e8d73ed5f2867c520aca7b11eb7941af7f2c852e92a29e8a45dde",
+  "71a8b27c582e8d73ed5f2867c520aca7b11eb7941af7f2c852e92a29e8a45dde",
+  "71a8b27c582e8d73ed5f2867c520aca7b11eb7941af7f2c852e92a29e8a45dde",
+  "71a8b27c582e8d73ed5f2867c520aca7b11eb7941af7f2c852e92a29e8a45dde",
+  "71a8b27c582e8d73ed5f2867c520aca7b11eb7941af7f2c852e92a29e8a45dde",
+  "71a8b27c582e8d73ed5f2867c520aca7b11eb7941af7f2c852e92a29e8a45dde",
+  "71a8b27c582e8d73ed5f2867c520aca7b11eb7941af7f2c852e92a29e8a45dde",
+  "71a8b27c582e8d73ed5f2867c520aca7b11eb7941af7f2c852e92a29e8a45dde",
+  "71a8b27c582e8d73ed5f2867c520aca7b11eb7941af7f2c852e92a29e8a45dde"
+ ]
+}

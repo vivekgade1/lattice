@@ -1,0 +1,50 @@
+{
+ "id": "J5c",
+ "identical": true,
+ "observed": {
+  "checks": {
+   "to_dict identical": true
+  },
+  "new": [
+   "pass",
+   "fail",
+   "pass"
+  ],
+  "old": [
+   "pass",
+   "fail",
+   "pass"
+  ],
+  "summary": "old ['pass', 'fail', 'pass'] new ['pass', 'fail', 'pass']"
+ },
+ "pass": true,
+ "prediction": {
+  "checks": {
+   "to_dict identical": true
+  },
+  "new": [
+   "pass",
+   "fail",
+   "pass"
+  ],
+  "old": [
+   "pass",
+   "fail",
+   "pass"
+  ],
+  "text": "pass, fail, pass (same); to_dict identical"
+ },
+ "runs": 10,
+ "sha256": [
+  "25e62921276404a049caa14ce6a29a1771acce5171b8e21d2e61ca07507ed0cf",
+  "25e62921276404a049caa14ce6a29a1771acce5171b8e21d2e61ca07507ed0cf",
+  "25e62921276404a049caa14ce6a29a1771acce5171b8e21d2e61ca07507ed0cf",
+  "25e62921276404a049caa14ce6a29a1771acce5171b8e21d2e61ca07507ed0cf",
+  "25e62921276404a049caa14ce6a29a1771acce5171b8e21d2e61ca07507ed0cf",
+  "25e62921276404a049caa14ce6a29a1771acce5171b8e21d2e61ca07507ed0cf",
+  "25e62921276404a049caa14ce6a29a1771acce5171b8e21d2e61ca07507ed0cf",
+  "25e62921276404a049caa14ce6a29a1771acce5171b8e21d2e61ca07507ed0cf",
+  "25e62921276404a049caa14ce6a29a1771acce5171b8e21d2e61ca07507ed0cf",
+  "25e62921276404a049caa14ce6a29a1771acce5171b8e21d2e61ca07507ed0cf"
+ ]
+}

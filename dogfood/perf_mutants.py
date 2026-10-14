@@ -11,9 +11,16 @@ those fits, and a too-tight budget (``GET /v1/home`` 8 + 0*N) must exit 1. A mut
 when either fails. A control run of the unpatched copy comes first. The working tree is never
 patched.
 
+PR1-PR9 (2026-10-13, ``docs/results/2026-10-13-perf-rule-prereg.md`` section 4) mutate the judging
+rule "a budget's constant may rise when its per-item term falls" (``judge`` in budget.py); each
+has the tests it was predicted to be caught by (``PREDICTED``), reported next to the ones that
+did fail. The equivalent mutants PE1 and PE2 are not here: they survive by construction and are
+checked on the grid by ``dogfood/perf_rule_probes.py`` (J2e).
+
 Usage: ``uv run python dogfood/perf_mutants.py [--out FILE] [--jobs N] [--streak DIR
 [--python PY]] [ID ...]`` (``--python``: an interpreter with PyMySQL for the Streak runs).
-Exit 0 when the control passes and every mutant is caught.
+Prints a table and ends ``mutants: N/N killed``; exit 0 when the control passes and every
+mutant is caught.
 """
 
 from __future__ import annotations
@@ -63,6 +70,94 @@ MUTANTS: dict[str, tuple[str, str, str, str]] = {
         '    return {"pass": 0, "fail": 1}.get(overall, 2)\n',
         '    return {"pass": 0, "fail": 0}.get(overall, 2)  # MUTANT PM4\n',
     ),
+    "PR1": (
+        "a trade needs no size within its allowed count (the within conjunct dropped)",
+        B,
+        "    trade = f.constant > budget.constant and f.per_item < budget.per_item and within\n",
+        "    trade = f.constant > budget.constant and f.per_item < budget.per_item  # MUTANT PR1\n",
+    ),
+    "PR2": (
+        "the constant failure is never recorded",
+        B,
+        "    if f.constant > budget.constant and not trade:\n",
+        "    if False:  # MUTANT PR2\n",
+    ),
+    "PR3": (
+        "the per_item check never fires (p' > p allowed)",
+        B,
+        "    if f.per_item > budget.per_item:\n",
+        "    if False and f.per_item > budget.per_item:  # MUTANT PR3\n",
+    ),
+    "PR4": (
+        "the trade note is not appended",
+        B,
+        '        report.notes.append(\n            f"constant traded for per-item: constant '
+        '{_show(f.constant)} > budget "\n'
+        '            f"{_show(budget.constant)} accepted (per_item {_show(f.per_item)} < budget "\n'
+        '            f"{_show(budget.per_item)}, every measured size within its allowed count); "\n'
+        '            f"at or under the budget for N >= N* = {n_star}, over it for N < {n_star}"\n'
+        "        )\n",
+        "        pass  # MUTANT PR4\n",
+    ),
+    "PR5": (
+        "the constant failure ignores trade (the verdict as before the trade)",
+        B,
+        "    if f.constant > budget.constant and not trade:\n",
+        "    if f.constant > budget.constant:  # MUTANT PR5\n",
+    ),
+    "PR6": (
+        "N* uses the budget's per_item as the denominator",
+        B,
+        "/ (budget.per_item - f.per_item))\n",
+        "/ budget.per_item)  # MUTANT PR6\n",
+    ),
+    "PR7": (
+        "within uses < instead of <=",
+        B,
+        "max(s.statements) <= budget.allowed(s.n) for s in sizes)\n",
+        "max(s.statements) < budget.allowed(s.n) for s in sizes)  # MUTANT PR7\n",
+    ),
+    "PR8": (
+        "a trade excuses a latency failure",
+        B,
+        '    if failures:\n        report.verdict = "fail"\n',
+        '    if failures and not trade:  # MUTANT PR8\n        report.verdict = "fail"\n',
+    ),
+    "PR9": (
+        "the no-trade note is not appended",
+        B,
+        "        report.notes.append(\n"
+        '            f"no trade: per_item {_show(f.per_item)} < budget {_show(budget.per_item)}, '
+        'but a "\n'
+        '            f"measured size is over its allowed count, so constant {_show(f.constant)} '
+        '> "\n'
+        '            f"budget {_show(budget.constant)} stays over budget"\n'
+        "        )\n",
+        "        pass  # MUTANT PR9\n",
+    ),
+}
+
+# the tests each PR mutant was predicted to be caught by (prereg section 4); PM1-PM4: none named
+_RULE = "test_trading_constant_for_per_item_passes_and_shows_the_crossover"
+_NO_TRADE = "test_no_trade_when_a_size_is_over_its_allowed_count"
+_FRACTION = "test_trade_shows_a_fractional_crossover"
+_BOUNDARY = "test_trade_at_the_boundary_size_passes"
+_LATENCY = "test_trade_does_not_excuse_latency"
+_FALLING = "test_falling_count_trades_against_a_zero_per_item_budget"
+PREDICTED: dict[str, list[str]] = {
+    "PR1": [_NO_TRADE],
+    "PR2": [
+        "test_constant_over_budget_fails",
+        _NO_TRADE,
+        "test_constant_over_with_equal_per_item_still_fails",
+    ],
+    "PR3": ["test_reverse_trade_is_refused", "test_per_item_over_budget_fails"],
+    "PR4": [_RULE, _FRACTION, _BOUNDARY, _LATENCY, _FALLING],
+    "PR5": [_RULE, _FRACTION, _BOUNDARY, _FALLING, _LATENCY],
+    "PR6": [_FRACTION, _FALLING],
+    "PR7": [_BOUNDARY, _FALLING],
+    "PR8": [_LATENCY],
+    "PR9": [_NO_TRADE],
 }
 
 SEED = {"items": "N", "steps": [{
@@ -179,6 +274,26 @@ def one(mid: str, streak: Path | None, python: str) -> dict[str, object]:
     return {**res, "caught_by": caught_by, "verdict": verdict}
 
 
+def print_table(
+    control: dict[str, object], rows: dict[str, dict[str, object]], ids: list[str]
+) -> None:
+    """One line per mutant: verdict, what caught it, the failed tests and whether every
+    predicted killer is among them (extra failures are not a miss)."""
+    print(f"control | {control['verdict']} | pytest: {control['pytest']['summary']}")  # type: ignore[index]
+    print("id | behaviour | verdict | caught by | failed tests | predicted killers")
+    for mid in ids:
+        res = rows.get(mid)
+        if res is None:
+            continue
+        failed = [f.split("::")[-1] for f in res["pytest"]["failed"]]  # type: ignore[index]
+        want = PREDICTED.get(mid, [])
+        missing = [t for t in want if t not in failed]
+        pred = "-" if not want else ("MISSING " + ", ".join(missing) if missing else "all present")
+        print(f"{mid} | {MUTANTS[mid][0]} | {res['verdict']} | "
+              f"{', '.join(res['caught_by']) or 'nothing'} | "
+              f"{len(failed)}: {', '.join(failed)} | {pred}")  # fmt: skip
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("ids", nargs="*", default=list(MUTANTS))
@@ -189,11 +304,11 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     hashes = {f: sha(ROOT / f) for f in FILES}
     print("hashes:", json.dumps(hashes), flush=True)
-    with tempfile.TemporaryDirectory() as d:  # every patch applies before anything runs
-        copy_tree(Path(d))
-        for mid in args.ids:
-            if mid not in MUTANTS:
-                raise SystemExit(f"unknown mutant {mid}")
+    for mid in args.ids:  # every patch applies, each to a fresh copy, before anything runs
+        if mid not in MUTANTS:
+            raise SystemExit(f"unknown mutant {mid}")
+        with tempfile.TemporaryDirectory() as d:
+            copy_tree(Path(d))
             apply(Path(d), mid)
     streak = args.streak.resolve() if args.streak else None
     results: dict[str, object] = {"hashes": hashes, "streak": str(streak), "runs": {}}
@@ -201,6 +316,7 @@ def main(argv: list[str] | None = None) -> int:
     results["runs"]["control"] = control  # type: ignore[index]
     print(f"control: {control['verdict']}", flush=True)
     ok = control["verdict"] == "PASS (control)"
+    rows: dict[str, dict[str, object]] = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, args.jobs)) as ex:
         futs = {ex.submit(one, mid, streak, args.python): mid for mid in args.ids}
         for fut in concurrent.futures.as_completed(futs):
@@ -212,8 +328,12 @@ def main(argv: list[str] | None = None) -> int:
                   f"pytest failed {len(failed)}: {', '.join(f.split('::')[-1] for f in failed)})",
                   flush=True)  # fmt: skip
             ok = ok and res["verdict"] == "caught"
+            rows[mid] = res
     if args.out:
         args.out.write_text(json.dumps(results, indent=1))
+    print_table(control, rows, list(args.ids))
+    killed = sum(1 for r in rows.values() if r["verdict"] == "caught")
+    print(f"mutants: {killed}/{len(args.ids)} killed", flush=True)
     return 0 if ok else 1
 
 
