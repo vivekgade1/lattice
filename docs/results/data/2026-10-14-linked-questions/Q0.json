@@ -1,0 +1,2202 @@
+{
+ "id": "Q0",
+ "prediction": "job D6, D7, D10, Streak D8, D9, D12 and the 11 unaffected controls: every row `action: none`, 0 files added or changed in the consumer's directory after init, linked_questions/ empty, exit 0; --dry-run on job D2: created, dry_run true, 0 files written. 18/18",
+ "observed": "18/18 rows as predicted; J-D6 none, J-D7 none, J-D10 none",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "J-D6": true,
+  "J-D7": true,
+  "J-D10": true,
+  "S-D8": true,
+  "S-D9": true,
+  "S-D12": true,
+  "J-C1": true,
+  "J-C2": true,
+  "J-C3": true,
+  "J-C4": true,
+  "S-C1": true,
+  "S-C2": true,
+  "S-C3": true,
+  "S-C4": true,
+  "S-C5": true,
+  "S-C6": true,
+  "I3x-a": true,
+  "dry-run J-D2": true,
+  "all_18": true
+ },
+ "extra": {},
+ "runs": [
+  {
+   "J-D6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D7": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D10": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D8": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D9": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D12": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C5": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "I3x-a": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "dry-run J-D2": {
+    "rc": 0,
+    "action": "created",
+    "question": "lq1",
+    "dry_run": true,
+    "names": [],
+    "delta": {
+     "changed": [],
+     "outside": []
+    }
+   }
+  },
+  {
+   "J-D6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D7": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D10": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D8": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D9": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D12": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C5": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "I3x-a": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "dry-run J-D2": {
+    "rc": 0,
+    "action": "created",
+    "question": "lq1",
+    "dry_run": true,
+    "names": [],
+    "delta": {
+     "changed": [],
+     "outside": []
+    }
+   }
+  },
+  {
+   "J-D6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D7": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D10": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D8": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D9": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D12": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C5": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "I3x-a": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "dry-run J-D2": {
+    "rc": 0,
+    "action": "created",
+    "question": "lq1",
+    "dry_run": true,
+    "names": [],
+    "delta": {
+     "changed": [],
+     "outside": []
+    }
+   }
+  },
+  {
+   "J-D6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D7": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D10": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D8": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D9": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D12": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C5": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "I3x-a": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "dry-run J-D2": {
+    "rc": 0,
+    "action": "created",
+    "question": "lq1",
+    "dry_run": true,
+    "names": [],
+    "delta": {
+     "changed": [],
+     "outside": []
+    }
+   }
+  },
+  {
+   "J-D6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D7": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D10": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D8": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D9": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D12": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C5": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "I3x-a": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "dry-run J-D2": {
+    "rc": 0,
+    "action": "created",
+    "question": "lq1",
+    "dry_run": true,
+    "names": [],
+    "delta": {
+     "changed": [],
+     "outside": []
+    }
+   }
+  },
+  {
+   "J-D6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D7": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D10": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D8": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D9": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D12": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C5": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "I3x-a": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "dry-run J-D2": {
+    "rc": 0,
+    "action": "created",
+    "question": "lq1",
+    "dry_run": true,
+    "names": [],
+    "delta": {
+     "changed": [],
+     "outside": []
+    }
+   }
+  },
+  {
+   "J-D6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D7": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D10": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D8": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D9": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D12": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C5": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "I3x-a": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "dry-run J-D2": {
+    "rc": 0,
+    "action": "created",
+    "question": "lq1",
+    "dry_run": true,
+    "names": [],
+    "delta": {
+     "changed": [],
+     "outside": []
+    }
+   }
+  },
+  {
+   "J-D6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D7": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D10": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D8": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D9": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D12": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C5": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "I3x-a": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "dry-run J-D2": {
+    "rc": 0,
+    "action": "created",
+    "question": "lq1",
+    "dry_run": true,
+    "names": [],
+    "delta": {
+     "changed": [],
+     "outside": []
+    }
+   }
+  },
+  {
+   "J-D6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D7": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D10": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D8": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D9": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D12": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C5": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "I3x-a": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "dry-run J-D2": {
+    "rc": 0,
+    "action": "created",
+    "question": "lq1",
+    "dry_run": true,
+    "names": [],
+    "delta": {
+     "changed": [],
+     "outside": []
+    }
+   }
+  },
+  {
+   "J-D6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D7": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-D10": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D8": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D9": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-D12": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "J-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C1": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C2": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C3": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C4": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C5": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "S-C6": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "I3x-a": {
+    "rc": 0,
+    "label": "unaffected",
+    "action": "none",
+    "question": null,
+    "exit_code": 0,
+    "delta": {
+     "changed": [],
+     "outside": []
+    },
+    "names": []
+   },
+   "dry-run J-D2": {
+    "rc": 0,
+    "action": "created",
+    "question": "lq1",
+    "dry_run": true,
+    "names": [],
+    "delta": {
+     "changed": [],
+     "outside": []
+    }
+   }
+  }
+ ]
+}

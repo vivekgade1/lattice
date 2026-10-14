@@ -20,7 +20,9 @@ Each project gets its own Toolbox (and backend), built on first use. Every exist
 optional ``project`` (a name or a path as ``project_list`` gives it; default: the active project,
 which only ``project_set_active`` changes, for the life of the process). ``project_list`` and
 ``project_set_active`` are always listed (also ``--readonly``); ``workspace_impact``,
-``contract_check`` (layer 3) and ``contract_impact`` (layer 4a) only when a workspace is known.
+``contract_check`` (layer 3), ``contract_impact`` (layer 4a) and ``linked_question_list`` (layer
+4b, read only: a session can see the notes other projects left in a consumer, never clear one)
+only when a workspace is known.
 
 **Single-project compatibility.** With exactly one known project the existing tools' definitions,
 the ``initialize`` instructions and every result are exactly the single-project server's: the
@@ -50,6 +52,7 @@ WORKSPACE_TOOLS = (  # listed only with a workspace
     "workspace_impact",
     "contract_check",
     "contract_impact",
+    "linked_question_list",
 )
 OWN_TOOLS = ("project_list", "project_set_active", *WORKSPACE_TOOLS)
 MULTI_NOTE = (
@@ -404,6 +407,51 @@ class ProjectRouter:
             },
             contract_impact,
             required=("provider", "candidate"),
+        )
+
+        def linked_question_list(a: Mapping[str, Any]) -> dict[str, Any]:
+            from lattice import workspace as wsmod
+            from lattice.contracts import linked
+
+            consumer, status = a.get("consumer"), a.get("status")
+            if not isinstance(consumer, str) or not consumer:
+                raise ToolError("argument 'consumer' is required (a non-empty string)")
+            if status is not None and not isinstance(status, str):
+                raise ToolError("argument 'status' must be a string")
+            # the manifest is re-read on every call, so the answer is the CLI's at this moment
+            ws, problems = wsmod.try_load(self.workspace.path)
+            if ws is None or ws.errors:
+                why = "; ".join(p.message for p in (problems if ws is None else ws.errors))
+                raise ToolError(f"manifest_error: {why or 'the workspace manifest has errors'}")
+            wp = ws.project(consumer)
+            if wp is None:
+                raise ToolError(f"unknown_project: no project {consumer!r} in the workspace "
+                                f"(have {', '.join(ws.names()) or 'none'})")  # fmt: skip
+            loc = linked.locate(wp.path, wp.name)
+            try:
+                return linked.list_body(wp.name, loc.state, loc.state_dir, status, loc.warnings)
+            except linked.LinkedError as e:
+                raise ToolError(f"{e.code}: {e.message}") from None
+
+        self._reg(
+            "linked_question_list",
+            "List the linked questions in a consumer project: the advisory notes other projects "
+            "left in its own state when an accepted provider contract broke its pin (a "
+            "`contradiction` of `contract_impact`). `consumer`: a workspace project name; "
+            "`status`: open, resolved, dismissed or all (default all). Returns what `lattice "
+            "contracts questions list CONSUMER --json` prints: the questions with their "
+            "findings, `superseded` (a newer question or a clean state replaced it) and "
+            "`resolution`, counts and problems. Read-only: a question is cleared only by the "
+            "consumer's owner (CLI or its Studio), never by this server.",
+            {
+                "consumer": {"type": "string", "description": "a project name of the workspace"},
+                "status": {
+                    "type": "string",
+                    "description": "open, resolved, dismissed or all (default all)",
+                },
+            },
+            linked_question_list,
+            required=("consumer",),
         )
 
 

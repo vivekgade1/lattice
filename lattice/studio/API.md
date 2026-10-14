@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.18)
+# Lattice Studio API contract (v1.19)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -968,3 +968,79 @@ With a workspace, `python -m lattice.mcp serve` also lists `contract_impact {pro
 
 ### The mock
 `GET /api/contracts/impact` answers the real shape for the `owner-dev` fixture manifest: provider `scheduler` has one opted-in consumer, `scheduler-web` (static), `contradiction` (the findings of v1.17's link) with `exit_code` 1; `studio` one live link, `unaffected`; any other project `no_consumers`; an unknown provider `unknown_project`; an empty argument `missing_argument`. The candidate is echoed as a `ref` resolving to a fixed fixture SHA. No write route.
+
+## v1.19 additions (linked pending questions in consumers, multi-project slice 4b)
+
+When a provider's accepted contract change **breaks a consumer's pin**, the provider's Studio leaves an advisory note, a *linked question*, in the consumer's own state directory; only the consumer's owner clears it. Nothing reads a question to decide anything: no gate, build, plan, pin, check or accept looks at it, and a delivery never blocks, delays or alters the provider's accept. Code: `lattice/contracts/linked.py`, `lattice/studio/server.py` (`Studio.accept` queues, `_linked_deliver` runs), `lattice/mcp/projects.py` (`linked_question_list`); the CLI is `lattice contracts notify PROVIDER --candidate REF|PATH [--dry-run]` and `lattice contracts questions list|resolve|dismiss|init CONSUMER`. Design and evidence: `docs/results/2026-10-14-linked-questions-prereg.md`. There is no web UI change in this version. No existing response changes (`/api/model`, `/api/projects` and the accept's answer are what they were).
+
+### Which accept notifies, and whom
+Once an accept has succeeded (the files are written and committed, or "not a git repository"), the Studio enqueues one notification on a per-Studio worker thread (`studio-linkedq`, accept order, one at a time) and returns its unchanged response. A refused or failed accept, a build, a plan, a landing and `sync-spec` notify nothing. The notification is slice 4a's impact of the accepted commit on this project's consumers, delivered for each `contradiction` row only (`regression`, `unaffected`, gaps and rows in error never create a question). The Studio's root is matched to a manifest project **by resolved path** (never by Studio name); the manifest is the server's (`--workspace`, `$LATTICE_WORKSPACE`, else walking up from the cwd) and is re-read per notification. A Studio built without a workspace, a project outside the manifest, a link without a `contract` key, a consumer outside the manifest and a transitive consumer get nothing; the outcome is recorded (below). Spec changes made outside Studio, and a re-delivery after a warning, use the CLI (`lattice contracts notify`).
+
+### Where a question lives, and what may be written
+`<consumer state directory>/linked_questions/`: `lq<N>.json` (one question), `links/<provider>.<contract>.json` (the latest contradicting question of that link, or null) and `.lock`. A provider's process writes **only** those paths in a foreign state directory, atomically (temp file, fsync, `os.replace`) under an exclusive flock on `.lock`, never through `StateStore`, and never creates a state directory that does not exist (`lattice contracts questions init CONSUMER`, run by the consumer's owner, does). Ids are `lq<N>`: 1 + the highest N among the file names, never reused. An unparsable `lq*.json` is kept, its id taken, and listed under `problems` (`unreadable_question`); a `format` above 1 is read with unknown fields kept (`newer_format`). A consumer with `[state] enabled = false` is skipped (`consumer_state_disabled`), `[state] dir` is honoured, a `linked_questions` that is a symlink or not a directory is `consumer_state_unsafe`, an unwritable one `consumer_state_unwritable`, a lock held for more than 5 s `consumer_state_busy`. These are per-consumer warnings: the other consumers still run and the accept is unaffected.
+
+### The question
+```json
+{"format": 1, "id": "lq1", "key": "sha256:9b1c...", "kind": "linked_question", "workspace": "shop",
+ "provider": "billing-api", "consumer": "web-app", "contract": "static", "status": "open",
+ "label": "contradiction",
+ "pinned": {"spec_ref": "spec:SPEC", "spec_hash": "3c1f...", "git_ref": "5a0c...", "dirty": false},
+ "provider_after": {"spec_ref": "spec:SPEC", "spec_hash": "e1d2...", "git_ref": "9d3e...", "dirty": false},
+ "candidate": {"input": "9d3e...", "kind": "ref", "resolved": "9d3e..."},
+ "imports_affected": ["POST /invoices/{}/pay"],
+ "findings": [{"class": "BROKEN", "provider": "billing-api", "endpoint": "POST /invoices/{}/pay",
+               "kind": "status_not_observed", "item": "201", "detail": "the spec now shows statuses [200]"},
+              {"class": "CHANGED", "provider": "billing-api", "endpoint": "POST /invoices/{}/pay",
+               "kind": "status_added", "item": "200", "relied": true, "detail": "status 200 is now observed"}],
+ "counts": {"broken": 1, "changed_relied": 1, "changed_unrelied": 0, "gaps": 1},
+ "text": "billing-api's accepted contract (spec_hash e1d2c3b4a596, commit 9d3e5f7a) contradicts web-app's pin (spec_hash 3c1f0b6a52d9): 1 import(s) BROKEN on 1 endpoint(s)\n  BROKEN   status_not_observed  201  @ POST /invoices/{}/pay\n  CHANGED* status_added  200  @ POST /invoices/{}/pay",
+ "suggestion": "advisory, nothing was changed in web-app: adapt web-app to the findings, then \"lattice contracts pin web-app\" and \"lattice contracts check web-app\"; or ask billing-api's owner to revert. Clear it with \"lattice contracts questions resolve|dismiss web-app lq1\"",
+ "source": {"via": "accept", "change": "c4", "commit": "9d3e..."},
+ "created_at": "2026-10-14T09:30:00Z", "resolution": null,
+ "superseded": null}
+```
+Every key is always present. `findings` is layer 3's shape and order: every BROKEN plus every CHANGED with `relied: true` (unrelied CHANGED findings and gaps are dropped; `counts` is the row's full count). `imports_affected` is the sorted distinct endpoints of the BROKEN findings. `source.via` is `accept` or `cli` (`change`: the change id for an accept, else null). `resolution` is null, or `{status, note, at, via}` with `via` `cli` or `studio`. `superseded` is derived at read time (never stored): null, or for an `open` question whose link's `current` is not its id `{by: "lqN"|null, reason: "newer_question"|"no_contradiction", since}`. A notification never changes a status: an unseen question stays `open`.
+
+**Idempotence.** `key = sha256(canonical JSON [provider, consumer, contract, the pin's spec_hash, sorted [endpoint, kind, item] of each BROKEN])`: no candidate ref or hash, so a later change that leaves the same reliances broken is the same question, while a re-pin or another BROKEN set is a new one. A notification creates a question unless an `open` question with the key exists or the link's `current` already points at a question with the key. A resolved or dismissed question is never reopened, and a break that **returns** after the link was in another state (clean, or another BROKEN set) is a new question.
+
+### GET /api/linked-questions[?status=open|resolved|dismissed|all]
+Project-scoped (also `/p/<name>/api/linked-questions`): this project's own `linked_questions/`, read on every request (no cache, nothing written). `consumer` is the Studio's name.
+```json
+{"format": 1, "consumer": "web-app", "state": "present",
+ "state_dir": "/work/web-app/.lattice/state/web-app",
+ "questions": [{"id": "lq1", "...": "..."}],
+ "counts": {"open": 1, "resolved": 0, "dismissed": 0, "superseded": 0},
+ "problems": []}
+```
+`questions` are in id order, filtered by `status` (absent or `all`: every one); `counts` are over every question (`superseded` counts open questions that read as superseded). A project that keeps no durable state answers `state: "disabled"`, `state_dir` null and no questions; a bad `status` answers 422 `bad_status`. `state` is `present`, `missing` (CLI and MCP only: no state directory yet) or `disabled`. `problems` rows are `{code, file, message}` (`unreadable_question`, `newer_format`, `consumer_state_ambiguous`).
+
+### GET /api/linked-questions/{id}
+The question (with `superseded`), or 404 `unknown_question`.
+
+### POST /api/linked-questions/{id}/resolve and /dismiss
+Body `{"note": "..."?}` (a string of at most 2000 characters, default `""`). The owner of THIS project clears a note another project left: `resolve` = handled (adapted, re-pinned, agreed), `dismiss` = not relevant; `open` becomes that status with `resolution {status, note, at, via: "studio"}` and nothing else changes. Terminal: there is no reopen, a superseded question is clearable, no re-pin is required and no check is run. Answers 200 with the updated question; 404 `unknown_question` (also an id of another project's store: the route reads only this project's), 404 `no_state` (no durable state), 409 `not_open` (the stored resolution is unchanged), 422 `bad_note`, 503 `consumer_state_busy`. Error bodies are `{"detail", "code"}`. An agent cannot do this: the MCP tool below lists only.
+
+### GET /api/linked-notifications
+The provider's side: this Studio's accept outcomes since it started, newest first, at most 20, in memory only (lost on restart; `lattice contracts notify` re-delivers idempotently).
+```json
+{"notifications": [{"change": "c4", "commit": "9d3e...", "status": "done", "reason": null,
+                    "started_at": "2026-10-14T09:30:00Z", "error": null,
+                    "result": {"format": 1, "workspace": "shop", "provider": "billing-api",
+                               "candidate": {"...": "..."}, "source": {"via": "accept", "change": "c4", "commit": "9d3e..."},
+                               "advisory": true, "dry_run": false,
+                               "consumers": [{"consumer": "web-app", "contract": "static", "label": "contradiction",
+                                              "error": null, "action": "created", "question": "lq1", "current": "lq1",
+                                              "state_dir": "/work/web-app/.lattice/state/web-app", "warning": null}],
+                               "counts": {"created": 1, "existing": 0, "none": 0, "undelivered": 0, "skipped": 0},
+                               "problems": [], "exit_code": 0, "elapsed_s": 0.9}}]}
+```
+`status` is `running` (queued or delivering), `done` or `skipped` (`reason`: `no_workspace`, `manifest_error`, `not_in_workspace`, `no_consumers`; nothing was written). `result` is `lattice contracts notify --json` (each consumer row's `action` is `created`, `existing`, `none`, `undelivered` with a `warning` `{code, message}`, or `skipped` for a row in error). `error` is set when the worker itself raised (the accept was never affected). There is no write route: `POST /api/linked-notifications` answers 404.
+
+### The CLI
+`lattice contracts notify PROVIDER --candidate REF|PATH [--workspace PATH] [--dry-run] [--json]`: exit 0, 1 a consumer undelivered or in error, 2 the impact could not run; `--dry-run` decides and writes nothing. `lattice contracts questions list CONSUMER [--status ...] [--json]` (exit 0, 2 unknown consumer or manifest error), `resolve|dismiss CONSUMER ID [--note T] [--json]` (0, 1 refused: `not_open`, `bad_note`; 2 cannot: `unknown_question`, `no_state`, `unknown_project`), `init CONSUMER` (creates the state directory through the real `state_dir_for`, `.git/info/exclude` included, and `linked_questions/`; idempotent).
+
+### The MCP server
+With a workspace, `python -m lattice.mcp serve` also lists `linked_question_list {consumer, status?}` (`consumer` required): the same body as the CLI's `questions list CONSUMER --json` (the manifest re-read on each call). It is read-only, so `--readonly` lists it; without a workspace it is not listed. **No MCP tool resolves or dismisses**: a session can see the notes and tell the owner, only the CLI or the consumer's own Studio clears them. Errors are tool errors that begin with the code (`unknown_project`, `bad_status`, `manifest_error`).
+
+### The mock
+`owner-dev`: the consumer `scheduler-web` (a manifest project the mock does not serve; `/p/scheduler-web/api/linked-*` is answered specially) holds `lq1` open (v1.17's link findings) and `lq2` dismissed; `POST .../resolve|dismiss` answers in memory (`not_open`, `bad_note`, `unknown_question` as above). Every served project lists no question (`state: present`); `job-scheduler-studio` (the manifest's `scheduler`) holds one `done` notification.

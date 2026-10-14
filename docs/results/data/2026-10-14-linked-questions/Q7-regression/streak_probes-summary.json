@@ -1,0 +1,590 @@
+{
+ "experiment": "2026-10-13-contracts-streak",
+ "command": "python dogfood/contracts/streak_probes.py --runs 10 --allow-code-diff --scratch /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/linkedq/q2/q7-streak_probes --out /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/linkedq/q2/q7-streak_probes-data",
+ "runs": 10,
+ "code_root": "/Users/vivekgade/Documents/lattice-linkedq",
+ "preflight": {
+  "lattice_diff_vs_573aafc": "lattice/cli.py                |  16 +-\n lattice/contracts/__main__.py | 223 ++++++++++++++-\n lattice/contracts/check.py    |  80 ++++--\n lattice/contracts/export.py   |  77 ++++-\n lattice/contracts/impact.py   | 413 +++++++++++++++++++++++++++\n lattice/contracts/live.py     |  26 +-\n lattice/improve/__main__.py   |  97 ++++++-\n lattice/improve/draft.py      | 300 +++++++++++++++++++\n lattice/improve/verify.py     | 649 ++++++++++++++++++++++++++++++++++++++++++\n lattice/mcp/projects.py       | 106 ++++++-\n lattice/perf/budget.py        |  43 ++-\n lattice/studio/API.md         | 128 ++++++++-\n lattice/studio/mock_server.py | 271 ++++++++++++++++++\n lattice/studio/server.py      | 184 ++++++++++++\n lattice/studio/state.py       |  26 +-\n lattice/workspace.py          |  29 +-\n 16 files changed, 2588 insertions(+), 80 deletions(-)",
+  "lattice_diff_empty": false,
+  "code_head": "bfb59d6da96b17e7c8cb961bbc66f075a3ddd870",
+  "golden_exists": true,
+  "widget_files": [
+   "README.md",
+   "client.py",
+   "lattice.imports.toml"
+  ],
+  "allow_code_diff": true
+ },
+ "streak_ref": "a0db033",
+ "wall_s": 180.3,
+ "probes": [
+  {
+   "id": "B0",
+   "prediction": "export 26 endpoints (public 5, token 21, unknown 0); error_body json_key(error), observed; statuses = R1 26/26; GET /v1/habits envelope only; granted ann 21, ben 10, refused none; /health and /test/clock exported; pin exit 0, 26 endpoints; check exit 0, 0 findings, 2 gaps (cursor @ GET /v1/habits, access_token @ POST /v1/auth/login)",
+   "observed": "26 endpoints; auth public 5 token 21 unknown 0; error_body json_key(error); statuses==R1 True; ann 21 ben 10; bodies object 19 empty 7; /health True /test/clock True; pin exit 0 (26 endpoints); check exit 0, 0 findings, gaps request_field_unobserved GET /v1/habits cursor; response_field_unobserved POST /v1/auth/login access_token",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "endpoints_26": true,
+    "auth_public_5": true,
+    "auth_token_21": true,
+    "auth_unknown_0": true,
+    "error_body_json_key_error": true,
+    "basis_observed": true,
+    "statuses_equal_r1_26_of_26": true,
+    "habits_response_fields_envelope": true,
+    "habits_query_fields": true,
+    "habits_body_object": true,
+    "bodies_object_19": true,
+    "bodies_empty_7_named": true,
+    "widget_table_6_of_6": true,
+    "ann_granted_21": true,
+    "ben_granted_exactly_10": true,
+    "public_granted_empty": true,
+    "refused_empty_26": true,
+    "health_exported_public": true,
+    "clock_exported_public_now": true,
+    "export_exit_0": true,
+    "pin_exit_0": true,
+    "lock_26_endpoints": true,
+    "check_exit_0": true,
+    "check_0_findings": true,
+    "version_changed_false": true,
+    "dirty_false": true,
+    "gaps_exactly_2_in_order": true,
+    "as_user_ann_on_6_token_imports": true,
+    "w6_200_and_201_hold": true
+   }
+  },
+  {
+   "id": "D1",
+   "prediction": "endpoint removed (every GET /v1/home 2xx becomes 404): BROKEN; BROKEN endpoint_missing GET /v1/home; CHANGED 0: none; version_changed true; gaps 2",
+   "observed": "BROKEN; BROKEN endpoint_missing GET /v1/home; CHANGED 0: none; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true
+   }
+  },
+  {
+   "id": "D2",
+   "prediction": "status changed (dismiss 200 -> 204): BROKEN; BROKEN status_not_observed POST /v1/nudges/{}/dismiss 200; CHANGED 1: status_added 204 @ POST /v1/nudges/{}/dismiss relied; version_changed true; gaps 2",
+   "observed": "BROKEN; BROKEN status_not_observed POST /v1/nudges/{}/dismiss 200; CHANGED 1: status_added 204 @ POST /v1/nudges/{}/dismiss relied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true
+   }
+  },
+  {
+   "id": "D3",
+   "prediction": "response field renamed (expires_in -> expires_in_s): BROKEN; BROKEN response_field_missing POST /v1/auth/login expires_in; CHANGED 3: field_added response expires_in_s @ POST /v1/auth/login relied; field_added response expires_in_s @ POST /v1/auth/refresh unrelied; field_removed response expires_in @ POST /v1/auth/refresh unrelied; version_changed true; gaps 2",
+   "observed": "BROKEN; BROKEN response_field_missing POST /v1/auth/login expires_in; CHANGED 3: field_added response expires_in_s @ POST /v1/auth/login relied; field_added response expires_in_s @ POST /v1/auth/refresh unrelied; field_removed response expires_in @ POST /v1/auth/refresh unrelied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true
+   }
+  },
+  {
+   "id": "D4",
+   "prediction": "request field renamed (password -> passphrase): BROKEN; BROKEN request_field_missing POST /v1/auth/login password; CHANGED 1: field_added request passphrase @ POST /v1/auth/login relied; version_changed true; gaps 2",
+   "observed": "BROKEN; BROKEN request_field_missing POST /v1/auth/login password; CHANGED 1: field_added request passphrase @ POST /v1/auth/login relied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true
+   }
+  },
+  {
+   "id": "D5",
+   "prediction": "access removed from ann (GET /v1/home 200 -> 404): BROKEN; BROKEN auth_changed GET /v1/home as_user ann; CHANGED 1: status_added 404 @ GET /v1/home relied; version_changed true; gaps 2",
+   "observed": "BROKEN; BROKEN auth_changed GET /v1/home as_user ann; CHANGED 1: status_added 404 @ GET /v1/home relied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true
+   }
+  },
+  {
+   "id": "D6",
+   "prediction": "next_cursor renamed to next: BROKEN; BROKEN response_field_missing GET /v1/habits next_cursor; CHANGED 5: field_added response next @ GET /v1/habits relied; field_added response next @ GET /v1/habits/{}/completions unrelied; field_added response next @ GET /v1/nudges unrelied; field_removed response next_cursor @ GET /v1/habits/{}/completions unrelied; field_removed response next_cursor @ GET /v1/nudges unrelied; version_changed true; gaps 2",
+   "observed": "BROKEN; BROKEN response_field_missing GET /v1/habits next_cursor; CHANGED 5: field_added response next @ GET /v1/habits relied; field_added response next @ GET /v1/habits/{}/completions unrelied; field_added response next @ GET /v1/nudges unrelied; field_removed response next_cursor @ GET /v1/habits/{}/completions unrelied; field_removed response next_cursor @ GET /v1/nudges unrelied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true
+   }
+  },
+  {
+   "id": "D7",
+   "prediction": "version bump /v1/ -> /v2/: BROKEN; BROKEN endpoint_missing GET /v1/habits; endpoint_missing GET /v1/habits/{}/progress; endpoint_missing GET /v1/home; endpoint_missing GET /v1/me; endpoint_missing POST /v1/auth/login; endpoint_missing POST /v1/habits/{}/completions; endpoint_missing POST /v1/nudges/{}/dismiss; CHANGED 41 (17 removed + 24 added); version_changed true; gaps 0",
+   "observed": "BROKEN; BROKEN endpoint_missing GET /v1/habits; endpoint_missing GET /v1/habits/{}/progress; endpoint_missing GET /v1/home; endpoint_missing GET /v1/me; endpoint_missing POST /v1/auth/login; endpoint_missing POST /v1/habits/{}/completions; endpoint_missing POST /v1/nudges/{}/dismiss; CHANGED 41; exit 1; version_changed True; spec_hash_changed True; gaps 0",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true,
+    "endpoints_still_26": true,
+    "changed_41": true
+   }
+  },
+  {
+   "id": "D8",
+   "prediction": "endpoint added (GET /v1/me/stats): CHANGED; BROKEN none; CHANGED 1: endpoint_added @ GET /v1/me/stats unrelied; version_changed true; gaps 2",
+   "observed": "CHANGED; BROKEN none; CHANGED 1: endpoint_added @ GET /v1/me/stats unrelied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true
+   }
+  },
+  {
+   "id": "D9",
+   "prediction": "field type changed (expires_in 900 -> '900'): MISS (0 findings, spec_hash equal, exit 0); BROKEN none; CHANGED 0: none; version_changed true; gaps 2",
+   "observed": "none; BROKEN none; CHANGED 0: none; exit 0; version_changed True; spec_hash_changed False; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true,
+    "no_findings": true
+   }
+  },
+  {
+   "id": "D10",
+   "prediction": "required field added (client_tz on completions): CHANGED; BROKEN none; CHANGED 1: field_added request client_tz @ POST /v1/habits/{}/completions relied; version_changed true; gaps 2",
+   "observed": "CHANGED; BROKEN none; CHANGED 1: field_added request client_tz @ POST /v1/habits/{}/completions relied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true
+   }
+  },
+  {
+   "id": "D11",
+   "prediction": "ownership (ben's progress 200 -> 404): CHANGED; BROKEN none; CHANGED 1: auth_tightened as_user ben @ GET /v1/habits/{}/progress relied; version_changed true; gaps 2",
+   "observed": "CHANGED; BROKEN none; CHANGED 1: auth_tightened as_user ben @ GET /v1/habits/{}/progress relied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true
+   }
+  },
+  {
+   "id": "D12",
+   "prediction": "nested item key renamed (name -> title): MISS (0 findings, spec_hash equal, exit 0); BROKEN none; CHANGED 0: none; version_changed true; gaps 2",
+   "observed": "none; BROKEN none; CHANGED 0: none; exit 0; version_changed True; spec_hash_changed False; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true,
+    "no_findings": true
+   }
+  },
+  {
+   "id": "D13",
+   "prediction": "relied noise (the only 429 on GET /v1/me): CHANGED; BROKEN none; CHANGED 1: status_removed 429 @ GET /v1/me relied; version_changed true; gaps 2",
+   "observed": "CHANGED; BROKEN none; CHANGED 1: status_removed 429 @ GET /v1/me relied; exit 1; version_changed True; spec_hash_changed True; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps": true,
+    "spec_hash_changed_iff_findings": true
+   }
+  },
+  {
+   "id": "C1",
+   "prediction": "exit 0, 0 findings, B0's 2 gaps, version_changed false",
+   "observed": "exit 0, 0 findings, 2 gap(s), version_changed False",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "exit_0": true,
+    "0_findings": true,
+    "gaps_equal_b0": true,
+    "version_changed_false": true
+   }
+  },
+  {
+   "id": "C2",
+   "prediction": "spec.py sha256 changes; spec_hash equal; exit 0; version_changed true",
+   "observed": "file sha256 changed True; spec_hash_changed False; exit 0, 0 findings; version_changed True",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "file_sha_changes": true,
+    "spec_hash_equal": true,
+    "exit_0": true,
+    "0_findings": true,
+    "version_changed_true": true
+   }
+  },
+  {
+   "id": "C3",
+   "prediction": "all 156 scenarios reordered: spec_hash equal; exit 0",
+   "observed": "spec_hash_changed False; exit 0, 0 findings",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "spec_hash_equal": true,
+    "exit_0": true,
+    "0_findings": true
+   }
+  },
+  {
+   "id": "C4",
+   "prediction": "exit 1; exactly 1 CHANGED field_added response id @ POST /v1/auth/register, unrelied; 0 BROKEN",
+   "observed": "exit 1; CHANGED field_added response id @ POST /v1/auth/register unrelied; BROKEN none",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "exit_1": true,
+    "changed_exactly": true,
+    "0_broken": true,
+    "findings_total_1": true
+   }
+  },
+  {
+   "id": "C5",
+   "prediction": "one scenario's UUIDs (101 -> 777 in progress_timezone_example): spec_hash equal; exit 0",
+   "observed": "spec_hash_changed False; exit 0, 0 findings",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "spec_hash_equal": true,
+    "exit_0": true,
+    "0_findings": true
+   }
+  },
+  {
+   "id": "C6",
+   "prediction": "every UUID of the spec becomes another valid UUID: spec_hash equal; exit 0",
+   "observed": "spec_hash_changed False; exit 0, 0 findings",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "spec_hash_equal": true,
+    "exit_0": true,
+    "0_findings": true
+   }
+  },
+  {
+   "id": "W1",
+   "prediction": "no contract key, spec.py ending in raise RuntimeError: exit 0, checked 0 (spec never loaded); the same link 'static': exit 2 export_failed",
+   "observed": "absent: exit 0, checked 0; static: exit 2 export_failed",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "absent_exit_0": true,
+    "absent_checked_0": true,
+    "static_exit_2": true,
+    "static_export_failed": true
+   }
+  },
+  {
+   "id": "W2",
+   "prediction": "'static' link: the spec loads and the check runs; the result equals B0; live is null",
+   "observed": "live None; result equals B0 True; exit 0; gaps 2",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "live_null": true,
+    "contract_static": true,
+    "result_equals_b0": true,
+    "exit_0": true,
+    "gaps_equal_b0": true
+   }
+  },
+  {
+   "id": "W3",
+   "prediction": "contract 'live' on Streak: check exit 2, link status error, error.code unsupported_database, findings and gaps []; nothing started (no Docker, no Go build, no provider process); --static-only exit 0 with live not_run/static-only; pin exit 0",
+   "observed": "check exit 2, link status error, error.code unsupported_database, findings 0, gaps 0; docker/go/mysql calls 0; ps lines seen 7, provider-like 0; bin/ present False; static-only exit 0 live {'status': 'not_run', 'reason': 'static-only'}; pin exit 0",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "check_exit_2": true,
+    "link_status_error": true,
+    "error_code_unsupported_database": true,
+    "findings_empty": true,
+    "gaps_empty": true,
+    "no_docker_go_mysql_called": true,
+    "no_docker_go_mysql_seen_in_ps": true,
+    "bin_absent_before_and_after": true,
+    "clone_tree_unchanged": true,
+    "static_only_exit_0": true,
+    "static_only_not_run": true,
+    "pin_exit_0": true,
+    "pin_lock_unchanged": true
+   }
+  },
+  {
+   "id": "W4",
+   "prediction": "a manifest without layer-3 keys: workspace show, show --json, validate, validate --json, impact streak, impact streak --json are byte-identical (6 of 6) to the old code (c0cdefc)",
+   "observed": "6/6 byte-identical to the old code; exits 0,0,0,0,0,0; old HEAD c0cdefc, workspace.py modified False",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "old_reference_usable": true,
+    "old_head_c0cdefc": true,
+    "new_is_new": true,
+    "old_is_old": true,
+    "6_of_6_identical": true,
+    "new_exit_codes_0": true
+   }
+  },
+  {
+   "id": "V1",
+   "prediction": "10 pins on the clean clone: locks byte-identical to each other and to the golden; spec_hash == sha256 of the embedded export; no scratch path, no timestamp",
+   "observed": "1 distinct lock(s) in 10; equals golden True; spec_hash d44b738522ea == recomputed d44b738522ea; scratch path hits 0; timestamps 0",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "all_pins_exit_0": true,
+    "locks_identical": true,
+    "equals_golden": true,
+    "spec_hash_recomputed": true,
+    "no_scratch_path": true,
+    "no_timestamp": true
+   }
+  },
+  {
+   "id": "V2",
+   "prediction": "no lock: exit 2, no_pin, the message names the lock path and 'lattice contracts pin'",
+   "observed": "exit 2 no_pin; streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget`",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "exit_2": true,
+    "no_pin": true,
+    "names_lock_path": true,
+    "names_pin_command": true
+   }
+  },
+  {
+   "id": "V3",
+   "prediction": "after D1: pin exit 1, lock bytes unchanged; pin --force writes the lock; the next check exits 0 with a third gap endpoint_unobserved GET /v1/home",
+   "observed": "pin exit 1, lock unchanged True; --force exit 0, wrote True; check exit 0, 0 findings, gaps endpoint_unobserved GET /v1/home; request_field_unobserved GET /v1/habits cursor; response_field_unobserved POST /v1/auth/login access_token",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "pin_exit_1": true,
+    "lock_unchanged": true,
+    "force_exit_0": true,
+    "force_wrote": true,
+    "check_exit_0": true,
+    "gaps_exactly_3": true,
+    "no_findings": true
+   }
+  },
+  {
+   "id": "V4",
+   "prediction": "README-only commit: exit 0, 0 findings, version_changed true, same spec_hash, git_ref other than a0db033",
+   "observed": "exit 0, 0 findings, version_changed True, spec_hash_changed False, git_ref a0db033a -> 214cc5db",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "exit_0": true,
+    "0_findings": true,
+    "version_changed": true,
+    "same_spec_hash": true,
+    "git_ref_differs": true
+   }
+  },
+  {
+   "id": "V5",
+   "prediction": "C2's edit left uncommitted: dirty true, version_changed true, exit 0",
+   "observed": "dirty True, version_changed True, exit 0, 0 findings",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "dirty_true": true,
+    "version_changed_true": true,
+    "exit_0": true,
+    "0_findings": true
+   }
+  },
+  {
+   "id": "V6",
+   "prediction": "the lock with one hex digit of spec_hash flipped: exit 2, bad_pin",
+   "observed": "exit 2 bad_pin; $WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget`",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "exit_2": true,
+    "bad_pin": true
+   }
+  },
+  {
+   "id": "S1",
+   "prediction": "Streak HEAD a0db033... and ' M studio.toml' before and after the whole run; studio.toml sha256 unchanged; find -newer finds no file",
+   "observed": "before a0db033 ' M studio.toml' studio.toml 540211a64cb5; after a0db033 ' M studio.toml' 540211a64cb5; files newer than the start marker: 0 []",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "head_before": true,
+    "head_after": true,
+    "status_before": true,
+    "status_after": true,
+    "studio_sha_unchanged": true,
+    "no_newer_file": true,
+    "identical": true
+   }
+  },
+  {
+   "id": "T1",
+   "prediction": "median wall time of the static check of one link over 10 runs <= 10 s (predicted <= 1 s); `contracts export streak` time reported",
+   "observed": "static check median 0.34 s wall (0.29 s elapsed_s); export median 0.33 s wall",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "static_median_le_10s": true,
+    "static_prediction_le_1s": true
+   }
+  }
+ ],
+ "totals": {
+  "pass": 32,
+  "total": 32
+ },
+ "d_series": {
+  "core_pass": 13,
+  "full_pass": 13
+ },
+ "s1": {
+  "before": {
+   "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+   "status": " M studio.toml",
+   "studio_toml_sha256": "540211a64cb54f1c0c595cf4596e1439783ecb72417cd7a6abe1a8dc1293a7cf"
+  }
+ },
+ "leftover_processes": [],
+ "leftover_tmp_entries": [],
+ "scratch_removed": true,
+ "post_hoc": {
+  "script_corrections": [
+   "W3 shims: in the first complete run (32/32 pass) the shim scripts and their log were put in the run's TMPDIR, which made leftover_tmp_entries non-empty (['shim.log', 'shims']): a script artefact, not a leftover of the check. They now live under the scratch root.",
+   "V2 and V6 observed text: the first complete run cut the error message after 90-100 characters before the scratch path was replaced by $WORK, so a partial scratch path showed in the data. The message is now scrubbed before it is shown. No pass rule changed.",
+   "V1 'no timestamp' check: the first debug run (--runs 2, before the final run) flagged 7 'timestamps' because the check matched the field NAME \"timezone\" with a loose regex (a script bug, the lock has no timestamp). It now looks for ISO date-times in the text and for JSON object keys that name a time (time, timestamp, date, created, updated, *_at); field names listed as values are not keys."
+  ],
+  "procedure": [
+   "Helpers: Ctx, Edit, Result and the canonical-output functions are imported from probes.py (the first experiment's runner); Ctx is subclassed here for Streak (clone, manifest, consumer name). `str.replace` edits assert their count first; E5a's old string ends with a newline (the line-ending anchor of the prereg).",
+   "Commits in the scratch clones use `-c user.name=probe -c user.email=probe@example.invalid`; the GIT_AUTHOR_*/GIT_COMMITTER_* names of the base Ctx are removed from the environment so that these flags apply (the dates stay fixed).",
+   "Item notation: the code writes the auth item as 'as_user:ann'; comparisons normalise ':' after as_user to a space, nothing else.",
+   "D1 item: the prereg gives no item for endpoint_missing; the expected item is the empty string (the claim 'endpoint' has none). Likewise the CHANGED rows of endpoint_added, endpoint_removed and the status/auth kinds have `where` empty; field kinds have 'request' or 'response'.",
+   "The expected CHANGED set of D7 (17 endpoint_removed + 24 endpoint_added, all unrelied) is derived from the clean export's 24 `/v1/` endpoints minus the 7 imported ones, as the prereg's counts say; the 26 endpoints count is checked on a `contracts export` run on the drifted clone.",
+   "R1 statuses: the 26 expect_status lists below are copied from R1 (r1-streak-surface.json, templates), with names `{...}` written `{}` as the export does.",
+   "W3 evidence that nothing is started: PATH is prefixed with shims for docker, go, mysqld, mysql and streak-api that log any call and exit 127; a `ps` sampler (20 ms) records the process command lines seen during the check; the clone's `git status --ignored` and bin/ are compared before and after. The check's own Python child (lattice.contracts.live) is expected: it loads the spec and refuses before any provider process.",
+   "S1's git calls use --no-optional-locks so that `git status` cannot refresh the real repository's index; `find -newer` excludes .git only.",
+   "T1 wall times are whole subprocess times (interpreter start included); the check's own elapsed_s is recorded beside them.",
+   "W4 compares each of the 6 outputs (exit code, stdout, stderr) of the working tree and of the detached worktree lattice-contracts-base (HEAD c0cdefc, lattice/workspace.py unmodified, checked at run time), and records which lattice/workspace.py a child imports under each PYTHONPATH and whether lattice.contracts exists there."
+  ]
+ }
+}

@@ -12,6 +12,11 @@ workspace's opted-in links (lattice/contracts/check.py), read-only.
 ``GET /api/contracts/impact?provider=NAME&candidate=REF`` (API.md v1.18) is the advisory,
 read-only preview of a candidate provider version against the consumers' pins
 (lattice/contracts/impact.py).
+``GET /api/linked-questions`` (API.md v1.19) lists the advisory notes other projects left in
+THIS project's state directory when their contracts broke this project's pins (resolved or
+dismissed here, by this project's owner only); ``GET /api/linked-notifications`` is the other
+side: what this Studio's accepts delivered. A delivery runs on a background worker and never
+blocks, delays or alters an accept (lattice/contracts/linked.py).
 
 **The project directory** holds ``REQUIREMENTS.md``, ``spec.py`` (defines ``SPEC``),
 ``spec.trace.json`` and, optionally, ``studio.toml``::
@@ -101,6 +106,7 @@ import hashlib
 import json
 import mimetypes
 import os
+import queue
 import re
 import signal
 import subprocess
@@ -168,6 +174,7 @@ COMMIT_TRAILER = (
 
 LIVE_STATUSES = ("drafting", "checking")
 MAX_WAIT = 60.0  # seconds GET /api/changes/{id}?wait= may hold a request
+LINKED_LOG_MAX = 20  # delivery outcomes kept in memory (API v1.19)
 
 
 def log(msg: str) -> None:
@@ -189,6 +196,11 @@ class ApiError(Exception):
 
     def body(self) -> dict[str, str]:
         return {"detail": self.detail, **({"code": self.code} if self.code else {})}
+
+
+def _linked_api_error(e: Any) -> ApiError:
+    """A :class:`lattice.contracts.linked.LinkedError` as the API's refusal (its ``code``)."""
+    return ApiError(HTTPStatus(e.status), e.message, e.code)
 
 
 # ---- studio.toml ----------------------------------------------------------------------------
@@ -910,6 +922,7 @@ class Studio:
         claude_bin: str | None = None,
         name: str | None = None,
         state: bool = True,
+        workspace_path: Path | None = None,
     ) -> None:
         self.root = root.resolve()
         self.name = name or self.root.name
@@ -936,6 +949,12 @@ class Studio:
         self._rebuilder: Rebuilder | None = None
         self._plans: PlanManager | None = None
         self.base_url: str | None = None  # set by StudioServer once it is bound
+        # API v1.19: the manifest an accept notifies the consumers of (None: no trigger), the
+        # worker that delivers, and this Studio's delivery outcomes (memory only, newest last)
+        self.workspace_path = Path(workspace_path) if workspace_path is not None else None
+        self._linked_jobs: queue.Queue[dict[str, Any]] = queue.Queue()
+        self._linked_worker: threading.Thread | None = None
+        self._linked_log: list[dict[str, Any]] = []
         self.pool = concurrent.futures.ThreadPoolExecutor(
             max_workers=4, thread_name_prefix="studio-ask"
         )
@@ -1765,6 +1784,7 @@ class Studio:
         message = f"spec: {request}\n\n{COMMIT_TRAILER}\n"
         if not is_git_repo(self.root):
             log(f"{cid}: accepted; files written (not a git repository)")
+            self._queue_linked(cid, None)
             return {
                 "commit": None,
                 "message": message,
@@ -1782,7 +1802,121 @@ class Studio:
         sha = git(self.root, "rev-parse", "HEAD").stdout.strip()
         self.invalidate()
         log(f"{cid}: accepted as {sha[:10]}")
+        self._queue_linked(cid, sha)
         return {"commit": sha, "message": message}
+
+    # -- linked pending questions (lattice/contracts/linked.py, API v1.19)
+    def _queue_linked(self, cid: str, commit: str | None) -> None:
+        """After a successful accept: one notification on the worker, accept order. O(1) and
+        it never raises (the accept's response is unchanged whatever happens here)."""
+        try:
+            entry: dict[str, Any] = {"change": cid, "commit": commit, "status": "running",
+                                     "reason": None, "started_at": now_iso(), "result": None,
+                                     "error": None}  # fmt: skip
+            with self.lock:
+                self._linked_log.append(entry)
+                del self._linked_log[:-LINKED_LOG_MAX]
+                if self.workspace_path is None:
+                    entry.update(status="skipped", reason="no_workspace")
+                    return
+                if self._linked_worker is None:
+                    self._linked_worker = threading.Thread(
+                        target=self._linked_loop, name="studio-linkedq", daemon=True
+                    )
+                    self._linked_worker.start()
+            self._linked_jobs.put(entry)
+        except Exception as exc:  # noqa: BLE001 -- advisory: never reaches the accept
+            log(f"linked questions: not queued ({type(exc).__name__}: {exc})")
+
+    def _linked_loop(self) -> None:
+        while True:
+            entry = self._linked_jobs.get()
+            try:
+                self._linked_deliver(entry)
+            except Exception as exc:  # noqa: BLE001 -- recorded, never raised
+                with self.lock:
+                    entry.update(status="done", error=f"{type(exc).__name__}: {exc}")
+                log(f"linked questions: {entry['change']}: {type(exc).__name__}: {exc}")
+
+    def _linked_deliver(self, entry: dict[str, Any]) -> None:
+        """One notification: who this project is in the manifest (by resolved path, never by
+        Studio name), then ``lattice.contracts.linked.notify`` for the accepted commit."""
+        from lattice import workspace as wsmod
+        from lattice.contracts import linked
+
+        def skip(reason: str) -> None:
+            with self.lock:
+                entry.update(status="skipped", reason=reason)
+            log(f"linked questions: {entry['change']}: skipped ({reason})")
+
+        ws, _problems = wsmod.try_load(self.workspace_path)
+        if ws is None or ws.errors:
+            return skip("manifest_error")
+        wp = ws.by_path(self.root)
+        if wp is None:
+            return skip("not_in_workspace")
+        if not any(lk.target == wp.name and lk.contract for lk in ws.links):
+            return skip("no_consumers")
+        doc = linked.notify(
+            ws,
+            wp.name,
+            entry["commit"] or str(self.root),
+            via="accept",
+            base=ws.root,
+            change=entry["change"],
+            commit=entry["commit"],
+        )
+        with self.lock:
+            entry.update(status="done", result=doc)
+        log(f"linked questions: {entry['change']}: {doc['counts']}")
+
+    def get_linked_notifications(self) -> dict[str, Any]:
+        """``GET /api/linked-notifications``: this Studio's accept outcomes since start,
+        newest first, at most 20."""
+        with self.lock:
+            rows = [dict(e) for e in reversed(self._linked_log)]
+        return {"notifications": rows}
+
+    def _linked_dir(self) -> Path | None:
+        return self.store.root if self.store is not None else None
+
+    def get_linked_questions(self, status: str | None = None) -> dict[str, Any]:
+        """``GET /api/linked-questions[?status=]``: the questions in this project's own state
+        directory, read on every request."""
+        from lattice.contracts import linked
+
+        d = self._linked_dir()
+        try:
+            return linked.list_body(self.name, "present" if d else "disabled", d, status)
+        except linked.LinkedError as e:
+            raise _linked_api_error(e) from None
+
+    def get_linked_question(self, qid: str) -> dict[str, Any]:
+        from lattice.contracts import linked
+
+        d = self._linked_dir()
+        try:
+            if d is None:
+                raise linked.LinkedError("no_state", f"{self.name} keeps no durable state")
+            return linked.get_question(d, qid)
+        except linked.LinkedError as e:
+            raise _linked_api_error(e) from None
+
+    def clear_linked_question(self, qid: str, verb: str, body: Mapping[str, Any]) -> dict[str, Any]:
+        """``POST /api/linked-questions/<id>/resolve|dismiss {note?}``: the owner of THIS
+        project clears a note another project left (``via: studio``)."""
+        from lattice.contracts import linked
+
+        d = self._linked_dir()
+        status = linked.RESOLVED if verb == "resolve" else linked.DISMISSED
+        try:
+            if d is None:
+                raise linked.LinkedError("no_state", f"{self.name} keeps no durable state")
+            out = linked.clear(d, qid, status, body.get("note"), "studio")
+        except linked.LinkedError as e:
+            raise _linked_api_error(e) from None
+        log(f"{qid}: {status} (linked question)")
+        return out
 
     # -- the full check
     def start_check(self) -> dict[str, Any]:
@@ -1958,6 +2092,16 @@ class Handler(BaseHTTPRequestHandler):
             return self._dispatch(st.get_branches)
         if path == "/api/engines":
             return self._dispatch(st.get_engines)
+        if path == "/api/linked-questions":  # API v1.19: the notes other projects left here
+            raw = (parse_qs(urlparse(self.path).query).get("status") or [""])[-1] or None
+            return self._dispatch(lambda: st.get_linked_questions(raw))
+        if path.startswith("/api/linked-questions/") and "/" not in path.removeprefix(
+            "/api/linked-questions/"
+        ):
+            qid = unquote(path.removeprefix("/api/linked-questions/"))
+            return self._dispatch(lambda: st.get_linked_question(qid))
+        if path == "/api/linked-notifications":  # API v1.19: what this project's accepts sent
+            return self._dispatch(st.get_linked_notifications)
         if path == "/api/improve":
             return self._dispatch(st.get_improve)
         if path == "/api/mcp":
@@ -2055,6 +2199,10 @@ class Handler(BaseHTTPRequestHandler):
                 parts = path.removeprefix("/api/session/").split("/")
                 if len(parts) == 2 and parts[1] == "message":
                     return Reply(st.sessions.message(parts[0], body), 202)
+            if path.startswith("/api/linked-questions/"):
+                parts = path.removeprefix("/api/linked-questions/").split("/")
+                if len(parts) == 2 and parts[1] in ("resolve", "dismiss"):
+                    return st.clear_linked_question(unquote(parts[0]), parts[1], body)
             if path.startswith("/api/changes/"):
                 parts = path.removeprefix("/api/changes/").split("/")
                 if len(parts) == 2 and parts[1] == "accept":
@@ -2226,6 +2374,7 @@ def make_server(
         generator_factory=generator_factory,
         claude_bin=claude_bin,
         name=project_name(root),
+        workspace_path=workspace,
     )
     return StudioServer(("127.0.0.1", port), studio, web_dir, verbose, workspace)
 
@@ -2258,6 +2407,7 @@ def make_hub_server(
             generator_factory=generator_factory,
             claude_bin=claude_bin,
             name=name,
+            workspace_path=workspace,
         )
 
     hub = StudioHub(projects, factory, default=default, prefixed=prefixed, claude_bin=claude_bin)

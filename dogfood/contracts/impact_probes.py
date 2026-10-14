@@ -1397,18 +1397,26 @@ def i8(h: H) -> Result:
     env = clean_env()
     checks: dict[str, Any] = {}
     extra: dict[str, Any] = {}
-    # -- old code: HEAD and lattice/ first
-    head = subprocess.run(
-        ["git", "-C", str(OLD_CHECKOUT), "rev-parse", "HEAD"], text=True, capture_output=True
-    ).stdout.strip()
-    diff = subprocess.run(
-        ["git", "-C", str(OLD_CHECKOUT), "diff", "--stat", OLD_HEAD, "--", "lattice/"],
-        text=True,
-        capture_output=True,
-    ).stdout.strip()
-    checks["old_checkout_head_is_67189af"] = head.startswith(OLD_HEAD)
-    checks["old_checkout_lattice_equals_67189af"] = diff == ""
-    extra["old_checkout"] = {"head": head, "lattice_diff_stat": diff}
+    # -- old code: lattice/ at 67189af materialised from this repository's object database (post
+    # hoc, 2026-10-14: this probe used to compare with whatever the main checkout's HEAD was, which
+    # stopped being 67189af once next-phases moved on; a commit is a stable reference, a
+    # checkout is not)
+    old_root = scratch / "I8-old-code"
+    shutil.rmtree(old_root, ignore_errors=True)
+    old_root.mkdir(parents=True)
+    arch = subprocess.run(
+        ["git", "-C", str(REPO), "archive", OLD_HEAD, "lattice"], capture_output=True, check=False
+    )
+    if arch.returncode == 0:
+        subprocess.run(
+            ["tar", "-x", "-C", str(old_root)], input=arch.stdout, check=False, capture_output=True
+        )
+    checks["old_code_materialised_from_67189af"] = (old_root / "lattice" / "workspace.py").is_file()
+    extra["old_code"] = {
+        "ref": OLD_HEAD,
+        "root": "scratch/I8-old-code",
+        "archive_rc": arch.returncode,
+    }
     # -- byte comparison on the I1 workspace (own manifest and consumer copies)
     clone = ep.shared(jc)
     copies: dict[str, Path] = {}
@@ -1448,7 +1456,7 @@ def i8(h: H) -> Result:
     cmp_rows = []
     for argv in cmds:
         res = {}
-        for tag, root in (("new", REPO), ("old", OLD_CHECKOUT)):
+        for tag, root in (("new", REPO), ("old", old_root)):
             e = dict(env, PYTHONPATH=str(root))
             r = subprocess.run(
                 [sys.executable, *argv, "--workspace", str(copies["new"])],
@@ -1466,7 +1474,7 @@ def i8(h: H) -> Result:
             {"argv": " ".join(argv[1:]), "equal": res["new"] == res["old"], "rc": res["new"][0]}
         )
     pins = {}
-    for tag, root in (("new", REPO), ("old", OLD_CHECKOUT)):
+    for tag, root in (("new", REPO), ("old", old_root)):
         d = copies[tag].parent.parent
         (d / "ci-bot" / LOCK).unlink(missing_ok=True)
         r = subprocess.run(
