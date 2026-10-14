@@ -260,6 +260,15 @@ IMPACT_UNKNOWN = {**IMPACT_NONE, "provider": "nobody",
                   "exit_code": 2}  # fmt: skip
 IMPACT_PARAMS = {"provider": "billing", "candidate": "HEAD"}
 
+# ---- linked pending questions (API.md v1.19, slice 4b) ----------------------------------------
+# the seed's state directory holds no note, and its accepts have notified nobody
+LINKED_EMPTY = {"format": 1, "consumer": "notes", "state": "present", "questions": [],
+                "counts": {"open": 0, "resolved": 0, "dismissed": 0, "superseded": 0},
+                "problems": []}  # fmt: skip
+LINKED_NONE = {"detail": "no linked question 'lq9'", "code": "unknown_question"}
+LINKED_BAD_STATUS = {"detail": "status must be one of open, resolved, dismissed, all",
+                     "code": "bad_status"}  # fmt: skip
+
 # ---- database engines and modules (API.md v1.14) ---------------------------------------------
 # the seed has no [app], no [engines] and no modules: the built-ins, SQLite used (the default)
 ENGINES_SEED = {"engines": [
@@ -1297,6 +1306,26 @@ SCENARIOS = (
         Step("GET", "/api/contracts/impact", params=IMPACT_PARAMS, expect_body=IMPACT_NONE),
         UNCHANGED,
     )),
+    Scenario("linked_questions_are_listed_read_only", steps=(
+        Step("GET", "/api/linked-questions", expect_body=LINKED_EMPTY),
+        Step("GET", "/api/linked-questions", params={"status": "open"}, expect_body=LINKED_EMPTY),
+        Step("GET", "/api/linked-questions", params={"status": "bogus"}, expect_status=422,
+             expect_body=LINKED_BAD_STATUS),
+        Step("GET", "/api/linked-questions/lq9", expect_status=404, expect_body=LINKED_NONE),
+        Step("POST", "/api/linked-questions/lq9/resolve", json={}, expect_status=404,
+             expect_body=LINKED_NONE),
+        Step("POST", "/api/linked-questions/lq9/dismiss", json={"note": "not ours"},
+             expect_status=404, expect_body=LINKED_NONE),
+        Step("GET", "/p/notes/api/linked-questions", expect_body=LINKED_EMPTY),
+        Step("GET", "/api/linked-questions", expect_body=LINKED_EMPTY),
+        UNCHANGED,
+    )),
+    Scenario("linked_notifications_start_empty_and_are_read_only", steps=(
+        Step("GET", "/api/linked-notifications", expect_body={"notifications": []}),
+        refused("POST", "/api/linked-notifications", 404, "no such route", json={}),
+        Step("GET", "/p/notes/api/linked-notifications", expect_body={"notifications": []}),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1473,6 +1502,15 @@ UNCHECKED = (
               "and the harness's manifest has no `contract` key; tests/contracts/test_impact.py "
               "checks them against `lattice contracts check`, tests/studio/test_impact_api.py on "
               "the real server and the mock."),
+    Unchecked("R96 (a note's findings, supersede, resolve and dismiss with a note, a refused "
+              "second clear) needs a note another project's accept or `lattice contracts "
+              "notify` left in this project's state directory, and nothing in the harness's "
+              "manifest or seed does; tests/contracts/test_linked.py checks them over the CLI, "
+              "tests/studio/test_linked_api.py on the real server and the mock."),
+    Unchecked("R97 (an accept that notifies: done, skipped with its reason, an undelivered "
+              "warning) needs a provider with a git history, a consumer with a pin and an opted-in "
+              "link, and the harness's manifest has no `contract` key; "
+              "tests/studio/test_linked_api.py checks them on the real server."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

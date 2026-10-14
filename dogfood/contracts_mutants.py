@@ -65,11 +65,42 @@ named are ``dogfood/contracts/impact_probes.py``):
 * IMP13 a ``no_pin`` row reported ``unaffected``                           (I4-g)
 * IMP14 the temporary directory not removed                                (I6 (2))
 
+The eighteen mutants of linked pending questions in consumers (slice 4b,
+``docs/results/2026-10-14-linked-questions-prereg.md`` section 4; the patches are changes of
+``lattice/contracts/linked.py``, ``lattice/studio/server.py`` and ``lattice/mcp/projects.py``, the
+tests are ``tests/contracts/test_linked.py``, ``tests/studio/test_linked_api.py`` and
+``tests/mcp/test_linked_questions.py``, the probes named are in
+``dogfood/contracts/linkedq_probes.py``):
+
+* LQ1  a question for every label                                          (Q0, Q1 job D8, D9)
+* LQ2  ``regression`` also creates a question                              (Q1 D8, D9, D10, D13)
+* LQ3  key check skipped (no idempotence)                                  (Q2 s2)
+* LQ4  the key includes the candidate's spec_hash                          (Q2 s3 d2c4)
+* LQ5  the ``current`` guard dropped: a dismissed key is recreated         (Q2 s7)
+* LQ6  the question saved via ``StateStore.save`` into ``changes/``        (Q3 a, b)
+* LQ7  ids from ``StateStore.allocate`` (writes ``meta.json``)             (Q3 b)
+* LQ8  the missing state dir created (``mkdir(parents=True)``)             (Q3 d)
+* LQ9  state dir computed from the provider (its path and name)            (Q1, Q3 a)
+* LQ10 ``[state] dir`` ignored                                             (Q3 e)
+* LQ11 delivery run inline in ``accept`` and its exception propagated      (Q4 ii)
+* LQ12 notification run synchronously in ``accept``                        (Q4 iv)
+* LQ13 a clean notification sets ``status: resolved`` (auto-clear)         (Q2 s5)
+* LQ14 ``atomic_write`` replaced by ``write_text``                         (Q3 f)
+* LQ15 no ``flock`` around allocation                                      (Q3 g)
+* LQ16 resolve looks the id up in every workspace project                  (Q5 /p/scheduler/)
+* LQ17 an MCP ``linked_question_resolve`` tool is registered               (Q5 tools/list)
+* LQ18 a key present in any status is never recreated (the draft's rule)   (Q2 s9)
+
+LQ14 and LQ15 are probabilistic (races): a survivor is a finding, not a pass.
+
 Test selection: ``tests/contracts tests/workspace -q -x`` (about a minute); a mutant that
 touches only ``live.py`` runs ``tests/contracts/test_live.py`` first and the rest only when it
 survives that; an XM mutant runs ``tests/contracts/test_exclude.py`` first and the rest only when
 it survives that; an IMP mutant runs ``tests/contracts/test_impact.py`` first and the rest only
-when it survives that. ``--all-failures`` drops ``-x`` to list every killing test.
+when it survives that; an LQ mutant runs its own test file first (contracts, studio or mcp) and
+the three linked-question test files together when it survives that. The control runs the suite
+and then the studio and mcp linked-question tests. ``--all-failures`` drops ``-x`` to list
+every killing test.
 
 Usage: ``python dogfood/contracts_mutants.py [--out FILE] [--jobs N] [--all-failures] [ID ...]``.
 Exit 0 when the control passes and every mutant is killed; the last line is
@@ -98,6 +129,10 @@ SUITE = ["tests/contracts", "tests/workspace"]
 LIVE_ONLY = ["tests/contracts/test_live.py"]
 EXCLUDE_ONLY = ["tests/contracts/test_exclude.py"]
 IMPACT_ONLY = ["tests/contracts/test_impact.py"]
+LQ_CONTRACTS = ["tests/contracts/test_linked.py"]
+LQ_STUDIO = ["tests/studio/test_linked_api.py"]
+LQ_MCP = ["tests/mcp/test_linked_questions.py"]
+LQ_ALL = [*LQ_CONTRACTS, *LQ_STUDIO, *LQ_MCP]
 CK, EX, LV, WS, IM = (
     "lattice/contracts/check.py",
     "lattice/contracts/export.py",
@@ -105,13 +140,16 @@ CK, EX, LV, WS, IM = (
     "lattice/workspace.py",
     "lattice/contracts/impact.py",
 )
+LK, SV, PJ = (
+    "lattice/contracts/linked.py",
+    "lattice/studio/server.py",
+    "lattice/mcp/projects.py",
+)
 # copied into the scratch tree (dogfood/contracts only: the fixtures, not another node's probes)
 COPY = [
     "lattice",
     "pyproject.toml",
-    "tests/conftest.py",
-    "tests/contracts",
-    "tests/workspace",
+    "tests",
     "dogfood/contracts/ci-bot",
     "dogfood/contracts/golden",
     "dogfood/contracts/golden-streak",
@@ -411,6 +449,168 @@ MUTANTS: dict[str, tuple[str, str, str, str, list[str] | None]] = {
         "            pass  # MUTANT IMP14: left behind\n",
         IMPACT_ONLY,
     ),
+    "LQ1": (
+        "linked: a question for every label",
+        LK,
+        '    if row["label"] != imp.CONTRADICTION:\n',
+        "    if False:  # MUTANT LQ1: every label creates a question\n",
+        LQ_CONTRACTS,
+    ),
+    "LQ2": (
+        "linked: a regression also creates a question",
+        LK,
+        '    if row["label"] != imp.CONTRADICTION:\n',
+        '    if row["label"] not in (imp.CONTRADICTION, imp.REGRESSION):  # MUTANT LQ2\n',
+        LQ_CONTRACTS,
+    ),
+    "LQ3": (
+        "linked: the key check is skipped (no idempotence)",
+        LK,
+        '    key = key_of(row["provider"], row["consumer"], row["contract"], row)\n',
+        '    key = key_of(row["provider"], row["consumer"], row["contract"], row)\n'
+        "    key += str(time.time_ns())  # MUTANT LQ3: never the same key twice\n",
+        LQ_CONTRACTS,
+    ),
+    "LQ4": (
+        "linked: the key includes the candidate's spec_hash",
+        LK,
+        '    key = key_of(row["provider"], row["consumer"], row["contract"], row)\n',
+        '    key = key_of(row["provider"], row["consumer"], row["contract"], row)\n'
+        '    key += str((candidate.get("version") or {}).get("spec_hash"))  # MUTANT LQ4\n',
+        LQ_CONTRACTS,
+    ),
+    "LQ5": (
+        "linked: the `current` guard dropped (a dismissed key is recreated)",
+        LK,
+        '    if qid is None and cur in by_id and by_id[cur].get("key") == key:'
+        "  # the state is unchanged\n",
+        "    if False:  # MUTANT LQ5: the unchanged-state guard is gone\n",
+        LQ_CONTRACTS,
+    ),
+    "LQ6": (
+        "linked: the question saved through StateStore.save into changes/",
+        LK,
+        "                _put(path, doc)\n",
+        '                if path.name.startswith("lq"):  # MUTANT LQ6\n'
+        "                    from lattice.studio.state import StateStore\n\n"
+        '                    StateStore(Path(state_dir)).save("changes", path.stem, doc, {})\n'
+        "                else:\n"
+        "                    _put(path, doc)\n",
+        LQ_CONTRACTS,
+    ),
+    "LQ7": (
+        "linked: ids from StateStore.allocate (writes meta.json)",
+        LK,
+        '        qid, action = f"lq{top + 1}", CREATED\n',
+        "        from lattice.studio.state import StateStore  # MUTANT LQ7\n\n"
+        "        qid, action = f\"lq{StateStore(qdir.parent).allocate('changes')}\", CREATED\n",
+        LQ_CONTRACTS,
+    ),
+    "LQ8": (
+        "linked: the missing state dir is created (mkdir parents)",
+        LK,
+        "        path.mkdir(exist_ok=True)  # one level: the state directory must already exist\n",
+        "        path.mkdir(parents=True, exist_ok=True)  # MUTANT LQ8\n",
+        LQ_CONTRACTS,
+    ),
+    "LQ9": (
+        "linked: the state dir is the provider's, not the consumer's",
+        LK,
+        "        loc = locate(wp.path, wp.name)\n",
+        "        loc = locate(ws.project(provider).path, provider)  # MUTANT LQ9\n",
+        LQ_CONTRACTS,
+    ),
+    "LQ10": (
+        "linked: [state] dir of the consumer's studio.toml is ignored",
+        LK,
+        "    cands = list(dict.fromkeys(state_dir_path(project, n, state_t, rebuild_t) "
+        "for n in names))\n",
+        "    cands = list(dict.fromkeys(state_dir_path(project, n, {}, rebuild_t) "
+        "for n in names))  # MUTANT LQ10\n",
+        LQ_CONTRACTS,
+    ),
+    "LQ11": (
+        "studio: the delivery runs inline in accept and its exception propagates",
+        SV,
+        "            self._linked_jobs.put(entry)\n"
+        "        except Exception as exc:  # noqa: BLE001 -- advisory: never reaches the accept\n",
+        "            self._linked_deliver(entry)  # MUTANT LQ11: inline, exceptions propagate\n"
+        "        except OSError as exc:\n",
+        LQ_STUDIO,
+    ),
+    "LQ12": (
+        "studio: the notification is delivered synchronously in accept",
+        SV,
+        "            self._linked_jobs.put(entry)\n",
+        "            self._linked_deliver(entry)  # MUTANT LQ12: synchronous\n",
+        LQ_STUDIO,
+    ),
+    "LQ13": (
+        "linked: a clean notification resolves the open questions (auto-clear)",
+        LK,
+        "            puts.append((qdir / LINKS / lname, "
+        "_link_doc(row, None, candidate, source)))\n",
+        "            puts.append((qdir / LINKS / lname, "
+        "_link_doc(row, None, candidate, source)))\n"
+        "            for n, _x, d in rows:  # MUTANT LQ13\n"
+        '                if d and d.get("status") == OPEN:\n'
+        '                    puts.append((qdir / f"lq{n}.json", {**d, "status": "resolved"}))\n',
+        LQ_CONTRACTS,
+    ),
+    "LQ14": (
+        "linked: atomic_write replaced by write_text (torn reads possible)",
+        LK,
+        '    atomic_write(path, json.dumps(doc, indent=1, ensure_ascii=False).encode("utf-8"))\n',
+        '    path.write_text(json.dumps(doc, indent=1, ensure_ascii=False), encoding="utf-8")'
+        "  # MUTANT LQ14\n",
+        LQ_CONTRACTS,
+    ),
+    "LQ15": (
+        "linked: no flock around allocation",
+        LK,
+        "                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)\n",
+        "                pass  # MUTANT LQ15: no lock\n",
+        LQ_CONTRACTS,
+    ),
+    "LQ16": (
+        "studio: clearing looks the id up in every workspace project's state",
+        SV,
+        "        d = self._linked_dir()\n"
+        '        status = linked.RESOLVED if verb == "resolve" else linked.DISMISSED\n',
+        "        d = self._linked_dir()\n"
+        '        status = linked.RESOLVED if verb == "resolve" else linked.DISMISSED\n'
+        "        from lattice import workspace as wsmod  # MUTANT LQ16\n\n"
+        "        other, _p = wsmod.try_load(self.workspace_path)\n"
+        "        for wp in other.projects if other is not None else []:\n"
+        "            loc = linked.locate(wp.path, wp.name)\n"
+        '            if loc.state_dir and (loc.state_dir / linked.DIR / f"{qid}.json").is_file():\n'
+        "                d = loc.state_dir\n"
+        "                break\n",
+        LQ_STUDIO,
+    ),
+    "LQ17": (
+        "mcp: a linked_question_resolve tool is registered",
+        PJ,
+        '            linked_question_list,\n            required=("consumer",),\n        )\n',
+        "            linked_question_list,\n"
+        '            required=("consumer",),\n'
+        "        )\n"
+        "        self._reg(  # MUTANT LQ17\n"
+        '            "linked_question_resolve",\n'
+        '            "resolve a linked question",\n'
+        '            {"consumer": {"type": "string"}, "id": {"type": "string"}},\n'
+        '            lambda a: {"ok": True},\n'
+        '            required=("consumer", "id"),\n'
+        "        )\n",
+        LQ_MCP,
+    ),
+    "LQ18": (
+        "linked: a key present in any status is never recreated (the draft's rule)",
+        LK,
+        '        if doc is not None and doc.get("key") == key and doc.get("status") == OPEN:\n',
+        '        if doc is not None and doc.get("key") == key:  # MUTANT LQ18\n',
+        LQ_CONTRACTS,
+    ),
 }
 
 
@@ -497,7 +697,12 @@ def one(mid: str, all_failures: bool) -> dict[str, Any]:
     only when a first stage exists and the mutant survived it."""
     t0 = time.monotonic()
     first = None if mid == "control" else MUTANTS[mid][4]
-    stages: list[list[str]] = [first, SUITE] if first else [SUITE]
+    if mid == "control":
+        stages: list[list[str]] = [SUITE, [*LQ_STUDIO, *LQ_MCP]]
+    elif mid.startswith("LQ"):
+        stages = [first, LQ_ALL] if first else [LQ_ALL]
+    else:
+        stages = [first, SUITE] if first else [SUITE]
     with tempfile.TemporaryDirectory(prefix=f"lattice-contracts-mutant-{mid}-") as d:
         dst = Path(d)
         copy_tree(dst)
@@ -522,7 +727,7 @@ def one(mid: str, all_failures: bool) -> dict[str, Any]:
 
 def _order(mid: str) -> tuple[int, int]:
     prefix = mid.rstrip("0123456789")
-    return (("CM", "XM", "IMP").index(prefix), int(mid[len(prefix) :]))
+    return (("CM", "XM", "IMP", "LQ").index(prefix), int(mid[len(prefix) :]))
 
 
 def main(argv: list[str] | None = None) -> int:

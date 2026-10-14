@@ -1,0 +1,449 @@
+{
+ "id": "Q6",
+ "prediction": "hub Studio serving ci-bot; notify d1, d2, d3 (lq1-lq3, lq3 current); dismiss lq1 via API; SIGKILL; restart: GET /api/linked-questions byte-identical, order lq1, lq2, lq3; notify d2: existing. A writer SIGKILLed at 50 random points: every lq*.json parses, no temp file listed, the next write sweeps them. 3/3",
+ "observed": "restart identical yes order ['lq1', 'lq2', 'lq3'] d2 existing/lq2; 50 kills: parse errors 0, temp files left after a kill 0 (swept by the next write: yes), alive at kill 50/50",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "restart_list_byte_identical_in_order": true,
+  "restart_notify_d2_existing": true,
+  "kills_50_all_parse_no_temp_listed_next_write_sweeps": true
+ },
+ "extra": {
+  "kills": [
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   },
+   {
+    "alive_at_kill": true,
+    "parse_errors": [],
+    "tmp_left": []
+   }
+  ]
+ },
+ "runs": [
+  {
+   "restart": {
+    "identical": true,
+    "order": [
+     "lq1",
+     "lq2",
+     "lq3"
+    ],
+    "statuses": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "d2": "existing",
+    "d2_question": "lq2",
+    "current": "lq2"
+   }
+  },
+  {
+   "restart": {
+    "identical": true,
+    "order": [
+     "lq1",
+     "lq2",
+     "lq3"
+    ],
+    "statuses": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "d2": "existing",
+    "d2_question": "lq2",
+    "current": "lq2"
+   }
+  },
+  {
+   "restart": {
+    "identical": true,
+    "order": [
+     "lq1",
+     "lq2",
+     "lq3"
+    ],
+    "statuses": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "d2": "existing",
+    "d2_question": "lq2",
+    "current": "lq2"
+   }
+  },
+  {
+   "restart": {
+    "identical": true,
+    "order": [
+     "lq1",
+     "lq2",
+     "lq3"
+    ],
+    "statuses": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "d2": "existing",
+    "d2_question": "lq2",
+    "current": "lq2"
+   }
+  },
+  {
+   "restart": {
+    "identical": true,
+    "order": [
+     "lq1",
+     "lq2",
+     "lq3"
+    ],
+    "statuses": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "d2": "existing",
+    "d2_question": "lq2",
+    "current": "lq2"
+   }
+  },
+  {
+   "restart": {
+    "identical": true,
+    "order": [
+     "lq1",
+     "lq2",
+     "lq3"
+    ],
+    "statuses": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "d2": "existing",
+    "d2_question": "lq2",
+    "current": "lq2"
+   }
+  },
+  {
+   "restart": {
+    "identical": true,
+    "order": [
+     "lq1",
+     "lq2",
+     "lq3"
+    ],
+    "statuses": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "d2": "existing",
+    "d2_question": "lq2",
+    "current": "lq2"
+   }
+  },
+  {
+   "restart": {
+    "identical": true,
+    "order": [
+     "lq1",
+     "lq2",
+     "lq3"
+    ],
+    "statuses": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "d2": "existing",
+    "d2_question": "lq2",
+    "current": "lq2"
+   }
+  },
+  {
+   "restart": {
+    "identical": true,
+    "order": [
+     "lq1",
+     "lq2",
+     "lq3"
+    ],
+    "statuses": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "d2": "existing",
+    "d2_question": "lq2",
+    "current": "lq2"
+   }
+  },
+  {
+   "restart": {
+    "identical": true,
+    "order": [
+     "lq1",
+     "lq2",
+     "lq3"
+    ],
+    "statuses": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "d2": "existing",
+    "d2_question": "lq2",
+    "current": "lq2"
+   }
+  }
+ ]
+}

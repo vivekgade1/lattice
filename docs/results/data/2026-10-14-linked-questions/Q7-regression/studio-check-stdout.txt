@@ -1,0 +1,17 @@
+PASS: 0 findings (D 0, X 0); 435 cases run
+
+not checked (stated in the spec, not checkable yet):
+  - R1: the server's purpose and setting (one project directory, 127.0.0.1, no login) is context; binding to 127.0.0.1 only is not observable over HTTP from the same host.
+  - R3 is checked only for the paths the scenarios walk (ready, rejected, cancelled, failed changes leave markdown and git_head alone); a write to the files by a non-accept path the scenarios never take would go unseen.
+  - R4: the `checking` status in between is not observed: with the stub LLM the pipeline is too fast to catch it, and a scenario has no conditional poll.
+  - R7: 'exactly one commit of those files' is checked through a reproducible commit id (fixed git identity and dates in the harness): the id pins the tree, the parent and the message. The spec cannot read the repository itself; the id was recorded from the real server once and verified by hand.
+  - R16: the window before a follow-up is ready is not covered: while the first follow-up is drafting its parent is still ready, and the server accepts a second follow-up on it (see the results doc).
+  - R17: one commit for a follow-up's accept is checked by the written markdown and the message, not by a commit id.
+  - R20: checked on the error answers the scenarios provoke, not on every route.
+  - R21/R22: what an answer says comes from the LLM; the stub always answers not_specified, so only the route and the answer's shape are checked.
+  - R24, R25, R26, R27: the full check (POST /api/check), the Claude Code chat sessions, the change impact against a configured app, and accept outside git or on a git failure need an app, the claude binary or a broken repository; they stay with tests/studio/test_server.py and test_session.py.
+  - R28: `capabilities.session` depends on whether the claude binary is on the host's PATH, so the scenarios state only `capabilities.rebuild`; a project's `last_check` after a check needs an app (R24).
+  - R29: only the routes the scenarios walk are checked under the prefix (model, changes, wait, accept, an unknown route); the session routes need the claude binary (R25).
+  - R31: the harness serves one project directory, so two projects' change sets cannot be compared here; tests/studio/test_projects.py checks the isolation.
+  - R32-R39: the agent here is the TEST-ONLY stub (a scripted edit); the real Claude Code agent's argv, isolation (acceptEdits, Bash limited to the gate commands, the guard on the worktree, no API credentials), --resume and the findings-as-prompt are checked against a fake claude in tests/studio/test_rebuild.py, as are the gate's import path, the process-group kill on DELETE and usage-limit rounds.
+  - R32/R39: the worktree's location and its removal on DELETE, and that the owner's working tree stays untouched, are seen here only through the record (`worktree: null`, `branch: null`) and `git_head`; the spec cannot read the repository. R35's commit is pinned by a reproducible id (R

@@ -1,5 +1,5 @@
-"""``lattice contracts export|pin|check|impact``: contracts between projects (multi-project
-layers 3 and 4a).
+"""``lattice contracts export|pin|check|impact|notify|questions``: contracts between projects
+(multi-project layers 3, 4a and 4b).
 
     lattice contracts export NAME [--spec REF] [--workspace PATH]    # the provider's export
     lattice contracts export --project DIR [--spec REF] [--exclude "METHOD /path" ...]
@@ -7,6 +7,10 @@ layers 3 and 4a).
     lattice contracts pin CONSUMER [--force] [--json] [--workspace PATH]
     lattice contracts check [CONSUMER] [--json] [--static-only] [--workspace PATH]
     lattice contracts impact PROVIDER --candidate REF|PATH [--json] [--workspace PATH]
+    lattice contracts notify PROVIDER --candidate REF|PATH [--dry-run] [--json] [--workspace PATH]
+    lattice contracts questions list CONSUMER [--status open|resolved|dismissed|all] [--json]
+    lattice contracts questions resolve|dismiss CONSUMER ID [--note TEXT] [--json]
+    lattice contracts questions init CONSUMER
 
 ``export`` prints the canonical JSON ``{"export", "spec_ref", "version"}`` (exit 0, or 2 when the
 spec cannot be loaded), plus ``exclude_unmatched`` when the provider excludes routes. The
@@ -23,6 +27,14 @@ repository) would do to each consumer's declared reliance, against that consumer
 read-only, static only; one row per opted-in link, labelled ``contradiction`` (a BROKEN finding),
 ``regression`` (a relied CHANGED one) or ``unaffected``; exit 0, 1 on a contradiction, 2 when it
 cannot run (a ``regression`` alone exits 0). See :mod:`lattice.contracts.impact`.
+``notify`` is ``impact`` plus advisory notes in the consumers' own state (multi-project slice
+4b): every consumer row that is a ``contradiction`` gets a linked question (``created``, or
+``existing`` when the same break is already open), delivered with the first cross-project write
+(only ``<consumer state>/linked_questions/``); exit 0, 1 a consumer undelivered or in error, 2
+the impact could not run; ``--dry-run`` writes nothing. ``questions`` is the consumer owner's
+side: ``list`` (exit 0, 2 unknown consumer or manifest error), ``resolve`` / ``dismiss`` (0, 1
+refused: not open, bad note, 2 cannot), ``init`` creates the consumer's state directory. See
+:mod:`lattice.contracts.linked`.
 """
 
 from __future__ import annotations
@@ -81,6 +93,38 @@ def _parser() -> argparse.ArgumentParser:
     )
     i.add_argument("--json", action="store_true")
     common(i)
+    n = sub.add_parser("notify", help="leave advisory linked questions in the consumers' state "
+                       "for the contradictions of a candidate provider version")  # fmt: skip
+    n.add_argument("provider", help="a project of the workspace")
+    n.add_argument(
+        "--candidate",
+        required=True,
+        metavar="REF|PATH",
+        help="a directory (the provider project), or a git ref of its repository",
+    )
+    n.add_argument("--dry-run", action="store_true", help="decide, write nothing")
+    n.add_argument("--json", action="store_true")
+    common(n)
+    q = sub.add_parser("questions", help="a consumer's linked questions (its owner's side)")
+    qsub = q.add_subparsers(dest="qcmd", required=True)
+    ql = qsub.add_parser("list", help="list the consumer's linked questions")
+    ql.add_argument("consumer")
+    ql.add_argument("--status", choices=["open", "resolved", "dismissed", "all"], default="all")
+    ql.add_argument("--json", action="store_true")
+    common(ql)
+    for verb, what in (("resolve", "handled: adapted, re-pinned or agreed"),
+                       ("dismiss", "not relevant")):  # fmt: skip
+        qc = qsub.add_parser(verb, help=f"clear an open question as {what}")
+        qc.add_argument("consumer")
+        qc.add_argument("id", metavar="ID", help="a question id (lq1, lq2, ...)")
+        qc.add_argument("--note", default="", help="a note of at most 2000 characters")
+        qc.add_argument("--json", action="store_true")
+        common(qc)
+    qi = qsub.add_parser("init", help="create the consumer's state directory and its "
+                         "linked_questions/ (idempotent)")  # fmt: skip
+    qi.add_argument("consumer")
+    qi.add_argument("--json", action="store_true")
+    common(qi)
     return ap
 
 
@@ -188,6 +232,81 @@ def _print_pin(report: Any) -> None:
         print(f"wrote {report.extra['lock']}")
 
 
+def _print_questions(doc: dict[str, Any]) -> None:
+    n = doc["counts"]
+    where = f" ({doc['state_dir']})" if doc["state_dir"] else ""
+    print(f"{doc['consumer']}: state {doc['state']}{where}: {n['open']} open, "
+          f"{n['resolved']} resolved, {n['dismissed']} dismissed, "
+          f"{n['superseded']} superseded")  # fmt: skip
+    for q in doc["questions"]:
+        sup = q.get("superseded")
+        flag = f"  superseded by {sup['by'] or 'nothing'} ({sup['reason']})" if sup else ""
+        ends = ", ".join(q["imports_affected"])
+        print(f"{q['id']}  {q['status'].upper()}  {q['provider']} [{q['contract']}]  "
+              f"{len(q['imports_affected'])} endpoint(s): {ends}{flag}")  # fmt: skip
+        if q.get("resolution"):
+            res = q["resolution"]
+            print(f"  {res['status']} ({res['via']}) {res['at']}: {res['note']}".rstrip(": "))
+    for p in doc["problems"]:
+        print(f"  warning: [{p['code']}] {p['message']}")
+
+
+def _questions(ns: argparse.Namespace, ws: wsmod.Workspace) -> int:
+    from lattice.contracts import linked
+
+    as_json = getattr(ns, "json", False)
+
+    def fail(code: str, message: str, rc: int) -> int:
+        if as_json:
+            err = {"format": linked.FORMAT, "error": {"code": code, "message": message}}
+            print(json.dumps(err, indent=1))
+        else:
+            print(f"lattice contracts questions: [{code}] {message}", file=sys.stderr)
+        return rc
+
+    if ws.errors:
+        return fail("manifest_error", "; ".join(p.message for p in ws.errors), 2)
+    wp = ws.project(ns.consumer)
+    if wp is None:
+        have = ", ".join(ws.names()) or "none"
+        return fail("unknown_project", f"no project {ns.consumer!r} in the workspace "
+                    f"(have {have})", 2)  # fmt: skip
+    loc = linked.locate(wp.path, wp.name)
+    if ns.qcmd == "init":
+        try:
+            d, created = linked.init_state(wp.path, wp.name)
+        except linked.LinkedError as e:
+            return fail(e.code, e.message, 2)
+        if as_json:
+            doc = {"format": linked.FORMAT, "consumer": wp.name, "state_dir": str(d),
+                   "created": created}  # fmt: skip
+            print(json.dumps(doc, indent=1))
+        else:
+            print(f"{wp.name}: state directory {d} ({'created' if created else 'exists'}); "
+                  f"{linked.DIR}/ ready")  # fmt: skip
+        return 0
+    if ns.qcmd == "list":
+        doc = linked.list_body(wp.name, loc.state, loc.state_dir, ns.status, loc.warnings)
+        if as_json:
+            print(json.dumps(doc, indent=1))
+        else:
+            _print_questions(doc)
+        return 0
+    status = linked.RESOLVED if ns.qcmd == "resolve" else linked.DISMISSED
+    if loc.state != "present" or loc.state_dir is None:
+        return fail("no_state", f"{wp.name} has no state directory ({loc.state})", 2)
+    try:
+        q = linked.clear(loc.state_dir, ns.id, status, ns.note, "cli")
+    except linked.LinkedError as e:
+        return fail(e.code, e.message, 1 if e.code in ("not_open", "bad_note") else 2)
+    if as_json:
+        print(json.dumps(q, indent=1))
+    else:
+        print(f"{q['id']}: {q['status']} (advisory: nothing was re-pinned; "
+              f"`lattice contracts check {wp.name}` shows the link now)")  # fmt: skip
+    return 0
+
+
 def _workspace(ns: argparse.Namespace) -> wsmod.Workspace | int:
     path = wsmod.find(explicit=ns.workspace)
     if path is None:
@@ -257,6 +376,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             _print_impact(rep)
         return rep.exit_code
+    if ns.cmd == "notify":
+        from lattice.contracts import linked
+
+        doc = linked.notify(ws, ns.provider, ns.candidate, via="cli", base=Path.cwd(),
+                            dry_run=ns.dry_run)  # fmt: skip
+        if ns.json:
+            print(json.dumps(doc, indent=1))
+        else:
+            linked.print_notify(doc)
+        return int(doc["exit_code"])
+    if ns.cmd == "questions":
+        return _questions(ns, ws)
     from lattice.contracts import check
 
     if ns.cmd == "pin":

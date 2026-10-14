@@ -46,7 +46,12 @@ def router(w: World, *, readonly: bool = False, with_ws: bool = True) -> Project
 def test_listed_only_with_a_workspace_and_a_read_only_tool(world: World) -> None:
     r = router(world)
     names = r.names()
-    assert names[-3:] == ["workspace_impact", "contract_check", "contract_impact"]
+    assert names[-4:] == [
+        "workspace_impact",
+        "contract_check",
+        "contract_impact",
+        "linked_question_list",
+    ]
     d = next(t for t in r.list_tools() if t["name"] == "contract_check")
     assert d["annotations"]["readOnlyHint"] is True
     assert d["inputSchema"]["properties"] == {
@@ -155,6 +160,7 @@ def test_a_workspace_appends_the_tool_after_the_old_ones(world: World, tmp_path:
         "workspace_impact",
         "contract_check",
         "contract_impact",
+        "linked_question_list",
     ]
     assert r.instructions(INSTRUCTIONS) == INSTRUCTIONS
 
@@ -173,7 +179,12 @@ def test_over_stdio_the_tool_equals_the_cli(world: World) -> None:
     out = serve(world.root, msgs, "--readonly")
     by = {o["id"]: o for o in out}
     names = [t["name"] for t in by[1]["result"]["tools"]]
-    assert names[-3:] == ["workspace_impact", "contract_check", "contract_impact"]
+    assert names[-4:] == [
+        "workspace_impact",
+        "contract_check",
+        "contract_impact",
+        "linked_question_list",
+    ]
     assert "change_propose" not in names and "check_run" not in names
     rc, cli = world.run("check", "--static-only")
     assert rc == 1

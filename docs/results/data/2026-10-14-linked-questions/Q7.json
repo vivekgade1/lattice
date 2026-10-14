@@ -1,0 +1,230 @@
+{
+ "id": "Q7",
+ "prediction": "probes.py --runs 10 35/35, streak_probes.py --allow-code-diff 32/32, exclude_probes.py 12/12, impact_probes.py --runs 10 12/12; pytest tests/contracts tests/workspace tests/mcp tests/studio 0 failures; dogfood/studio/check.sh PASS (422 + R96/R97's steps); restart_drill.py A B C F; on the Q1 workspace workspace show|validate|impact, contracts export|check|impact (text, --json) and the pin lock byte-identical to 33d8de1; state_dir_for paths equal",
+ "observed": "byte-identical 12/12; state_dir_for equal yes; probes 35/35; streak_probes 32/32; exclude_probes 12/12; impact_probes 11/11; pytest 967 passed, 1 skipped in 545.13s (0:09:05); check.sh PASS: 0 findings (D 0, X 0); 435 cases run; restart_drill rc 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "old_checkout_head_is_33d8de1": true,
+  "old_checkout_lattice_equals_33d8de1": true,
+  "bytes_identical_to_33d8de1": true,
+  "pin_lock_equals_golden": true,
+  "state_dir_for_paths_equal_33d8de1": true,
+  "probes_35_of_35": true,
+  "streak_probes_32_of_32": true,
+  "exclude_probes_12_of_12": true,
+  "impact_probes_11_of_11": true,
+  "pytest_0_failures": true,
+  "studio_check_pass": true,
+  "restart_drill_A_B_C_F": true
+ },
+ "extra": {
+  "old_checkout": {
+   "head": "33d8de1a3ffc5512e6e668fd8de211c80d89e306",
+   "lattice_diff_stat": ""
+  },
+  "byte_comparison": [
+   {
+    "argv": "lattice.workspace show",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace show --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts export scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts impact scheduler --candidate d2 --json",
+    "equal": true,
+    "rc": 1
+   },
+   {
+    "argv": "lattice.contracts impact scheduler --candidate d2",
+    "equal": true,
+    "rc": 1
+   },
+   {
+    "argv": "contracts pin ci-bot (lock bytes)",
+    "equal": true,
+    "rc": 0
+   }
+  ],
+  "state_dir_for": {
+   "new": "[\"$WORK_J/w/Q7-sd-0/.lattice/state/notes\", \"$WORK_J/w/Q7-sd-1/st\", \"$WORK_J/w/Q7-sd-2/.lattice/state/y\"]",
+   "old": "[\"$WORK_J/w/Q7-sd-0/.lattice/state/notes\", \"$WORK_J/w/Q7-sd-1/st\", \"$WORK_J/w/Q7-sd-2/.lattice/state/y\"]"
+  },
+  "probes": {
+   "rc": 0,
+   "passed": 35,
+   "total": 35,
+   "last_line": "probes: 35/35 pass",
+   "wall_s": 244.7,
+   "stderr_tail": [
+    "... W6",
+    "... A1",
+    "... T1"
+   ]
+  },
+  "streak_probes": {
+   "rc": 0,
+   "passed": 32,
+   "total": 32,
+   "last_line": "probes: 32/32 pass",
+   "wall_s": 181.6,
+   "stderr_tail": [
+    "... V5",
+    "... V6",
+    "... T1"
+   ]
+  },
+  "exclude_probes": {
+   "rc": 0,
+   "passed": 12,
+   "total": 12,
+   "last_line": "probes: 12/12 pass",
+   "wall_s": 692.7,
+   "stderr_tail": [
+    "... X7",
+    "... X8",
+    "... X9"
+   ]
+  },
+  "impact_probes": {
+   "rc": 0,
+   "passed": 11,
+   "total": 11,
+   "last_line": "probes: 11/11 pass",
+   "wall_s": 992.4,
+   "stderr_tail": [
+    "... I7",
+    "... T",
+    "... I6"
+   ]
+  },
+  "pytest": {
+   "rc": 0,
+   "last_line": [
+    "967 passed, 1 skipped in 545.13s (0:09:05)"
+   ],
+   "wall_s": 545.4
+  },
+  "studio_check": {
+   "rc": 0,
+   "first_line": "PASS: 0 findings (D 0, X 0); 435 cases run",
+   "wall_s": 62.7
+  },
+  "restart_drill": {
+   "rc": 0,
+   "wall_s": 13.8,
+   "tail": [
+    "  [ok] the owner's branch never moved",
+    "  [ok] no process of the project is left  (pids [])",
+    "      resume: {\"available\": true, \"kind\": \"continue\", \"from_level\": 1, \"will_skip\": [\"writing\"], \"will_run\": [\"reading\", \"integration\"]}",
+    "      claude_calls: [{\"n\": 1, \"resume\": null, \"prompt\": \"# Build brief\\n\\nThe project's spec lives in the repository ro\"}, {\"n\": 2, \"resume\": null, \"prompt\": \"# Build brief\\n\\nThe project's spec lives in the repository ro\"}, {\"n\": 3, \"resume\": \"sess-fake-1\", \"prompt\": \"Studio was restarted while you were working, which ended you\"}]",
+    "",
+    "report: /var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-drill-a7ms75v3/report.json"
+   ]
+  }
+ },
+ "runs": [
+  [
+   {
+    "argv": "lattice.workspace show",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace show --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts export scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts impact scheduler --candidate d2 --json",
+    "equal": true,
+    "rc": 1
+   },
+   {
+    "argv": "lattice.contracts impact scheduler --candidate d2",
+    "equal": true,
+    "rc": 1
+   },
+   {
+    "argv": "contracts pin ci-bot (lock bytes)",
+    "equal": true,
+    "rc": 0
+   }
+  ]
+ ]
+}

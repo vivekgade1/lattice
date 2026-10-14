@@ -141,7 +141,16 @@ empty argument ``missing_argument``, both with ``exit_code`` 2. The candidate is
 ``ref`` that resolves to a fixed fixture SHA. ``workspace_enabled = False`` answers the
 no-manifest shape. Read only.
 
-Run it with
+API v1.19 (linked pending questions in consumers, multi-project slice 4b): ``GET
+/api/linked-questions[?status=]``, ``GET /api/linked-questions/<id>``, ``POST
+/api/linked-questions/<id>/resolve|dismiss {note?}`` and ``GET /api/linked-notifications`` answer
+the real server's shapes. The consumer ``scheduler-web`` (a manifest project the mock does not
+serve, so ``/p/scheduler-web/api/linked-*`` is answered specially) holds ``lq1`` open (v1.17's
+link findings) and ``lq2`` dismissed; clearing answers in memory (``not_open`` 409, ``bad_note``
+422, ``unknown_question`` 404). Every served project lists no question (``state: present``); the
+provider ``job-scheduler-studio`` holds one ``done`` notification (its change ``c0`` created
+``lq1``).
+
 Run it with ``uv run python -m lattice.studio.mock_server --port 8765``.
 """
 
@@ -272,6 +281,83 @@ MOCK_IMPACT_ROWS = {
             "live": {"status": "not_run", "reason": "static-only"},
         },
     ),
+}  # fmt: skip
+
+# API v1.19: the linked questions of the fixture consumer (GET /api/linked-questions)
+MOCK_LINKED_CONSUMER = "scheduler-web"
+MOCK_LINKED_STATE = "/Users/owner/scheduler-web/.lattice/state/scheduler-web"
+
+
+def _mock_linked_question(
+    qid: str,
+    status: str,
+    findings: list[dict[str, Any]],
+    endpoints: list[str],
+    resolution: dict[str, Any] | None,
+    key: str,
+) -> dict[str, Any]:
+    broken = [f for f in findings if f["class"] == "BROKEN"]
+    relied = sum(1 for f in findings if f["class"] == "CHANGED" and f.get("relied"))
+    ver = MOCK_IMPACT_VERSION
+    return {
+        "format": 1, "id": qid, "key": key, "kind": "linked_question",
+        "workspace": MOCK_WORKSPACE_NAME, "provider": "scheduler",
+        "consumer": MOCK_LINKED_CONSUMER, "contract": "static", "status": status,
+        "label": "contradiction", "pinned": dict(MOCK_CONTRACT_VERSION_PINNED),
+        "provider_after": {"spec_ref": "spec.tickets:t5", "spec_hash": ver["spec_hash"],
+                           "git_ref": ver["git_ref"], "dirty": False},
+        "candidate": {"input": ver["git_ref"], "kind": "ref", "resolved": ver["git_ref"]},
+        "imports_affected": endpoints, "findings": findings,
+        "counts": {"broken": len(broken), "changed_relied": relied, "changed_unrelied": 0,
+                   "gaps": 1},
+        "text": f"scheduler's accepted contract (spec_hash {ver['spec_hash'][:12]}, commit "
+                f"{ver['git_ref'][:8]}) contradicts scheduler-web's pin (spec_hash "
+                f"{MOCK_CONTRACT_VERSION_PINNED['spec_hash'][:12]}): {len(broken)} import(s) "
+                f"BROKEN on {len(endpoints)} endpoint(s)",
+        "suggestion": "advisory, nothing was changed in scheduler-web: adapt scheduler-web to "
+                      'the findings, then "lattice contracts pin scheduler-web" and "lattice '
+                      'contracts check scheduler-web"; or ask scheduler\'s owner to revert. '
+                      f'Clear it with "lattice contracts questions resolve|dismiss '
+                      f'scheduler-web {qid}"',
+        "source": {"via": "accept", "change": "c0", "commit": ver["git_ref"]},
+        "created_at": "2026-10-14T09:30:00Z", "resolution": resolution, "superseded": None,
+    }  # fmt: skip
+
+
+MOCK_LINKED_QUESTIONS = (
+    _mock_linked_question(
+        "lq1", "open", copy.deepcopy(MOCK_CONTRACT_LINKS[0]["findings"]),
+        ["POST /applications/{}/jobs/{}/runs"], None,
+        "sha256:" + "1f" * 32,
+    ),
+    _mock_linked_question(
+        "lq2", "dismissed",
+        [{"class": "BROKEN", "provider": "scheduler", "endpoint": "GET /applications/{}/jobs",
+          "kind": "endpoint_missing", "item": "", "detail": "the provider's spec has no such "
+                                                           "endpoint"}],
+        ["GET /applications/{}/jobs"],
+        {"status": "dismissed", "note": "the web UI no longer lists jobs", "at":
+         "2026-10-14T10:05:00Z", "via": "studio"},
+        "sha256:" + "2e" * 32,
+    ),
+)  # fmt: skip
+MOCK_LINKED_NOTIFICATION = {
+    "change": "c0", "commit": MOCK_IMPACT_SHA, "status": "done", "reason": None,
+    "started_at": "2026-10-14T09:30:00Z", "error": None,
+    "result": {
+        "format": 1, "workspace": MOCK_WORKSPACE_NAME, "provider": "scheduler",
+        "candidate": {"input": MOCK_IMPACT_SHA, "kind": "ref", "resolved": MOCK_IMPACT_SHA,
+                      "spec_ref": "spec.tickets:t5", "version": dict(MOCK_IMPACT_VERSION),
+                      "endpoints": 18},
+        "source": {"via": "accept", "change": "c0", "commit": MOCK_IMPACT_SHA},
+        "advisory": True, "dry_run": False,
+        "consumers": [{"consumer": MOCK_LINKED_CONSUMER, "contract": "static",
+                       "label": "contradiction", "error": None, "action": "created",
+                       "question": "lq1", "current": "lq1", "state_dir": MOCK_LINKED_STATE,
+                       "warning": None}],
+        "counts": {"created": 1, "existing": 0, "none": 0, "undelivered": 0, "skipped": 0},
+        "problems": [], "exit_code": 0, "elapsed_s": 0.0,
+    },
 }  # fmt: skip
 
 # How many polls of GET /api/changes/{id} a change spends in each state.
@@ -2869,10 +2955,29 @@ class Handler(BaseHTTPRequestHandler):
             return path, self.server.state
         seg, _, rest = path.removeprefix("/p/").partition("/")
         state = self.server.states.get(unquote(seg))
+        if (
+            state is None
+            and unquote(seg) == MOCK_LINKED_CONSUMER
+            and rest.startswith("api/linked-")
+        ):  # v1.19: a manifest consumer the mock does not serve answers its notes
+            state = self.server.state
         if state is None:
             self._error(HTTPStatus.NOT_FOUND, "no such project")
             return None
         return "/" + rest, state
+
+    def _owner(self) -> str:
+        """The project name of the request's ``/p/<name>`` prefix (default: the default project)."""
+        path = urlparse(self.path).path
+        if not path.startswith("/p/"):
+            return DEFAULT_PROJECT
+        return unquote(path.removeprefix("/p/").partition("/")[0])
+
+    def _refusal(self, fn: Any) -> None:
+        try:
+            self._json(fn())
+        except MockRefusal as e:
+            self._json(e.body(), e.status)
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
@@ -2899,6 +3004,17 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(state.branches())
         if path == "/api/engines":
             return self._json(state.engines())
+        if path == "/api/linked-questions":
+            return self._refusal(
+                lambda: self.server.linked_list(self._owner(), query.get("status") or None)
+            )
+        if path.startswith("/api/linked-questions/") and "/" not in path.removeprefix(
+            "/api/linked-questions/"
+        ):
+            qid = unquote(path.removeprefix("/api/linked-questions/"))
+            return self._refusal(lambda: self.server.linked_get(self._owner(), qid))
+        if path == "/api/linked-notifications":
+            return self._json(self.server.linked_notifications(self._owner()))
         if path == "/api/improve":
             return self._json(state.improve())
         if path == "/api/mcp":
@@ -3002,6 +3118,13 @@ class Handler(BaseHTTPRequestHandler):
         if path.startswith("/api/session/") and path.endswith("/message"):
             sid = path.removeprefix("/api/session/").removesuffix("/message")
             return self._session(lambda: state.sessions.message(sid, body), 202)
+        if path.startswith("/api/linked-questions/"):
+            parts = path.removeprefix("/api/linked-questions/").split("/")
+            if len(parts) == 2 and parts[1] in ("resolve", "dismiss"):
+                qid, verb = unquote(parts[0]), parts[1]
+                return self._refusal(
+                    lambda: self.server.linked_clear(self._owner(), qid, verb, body)
+                )
         if path == "/api/ask":
             if not str(body.get("question", "")).strip():
                 return self._error(HTTPStatus.UNPROCESSABLE_ENTITY, "question is empty")
@@ -3176,6 +3299,9 @@ class MockServer(ThreadingHTTPServer):
         self.states[SECOND_PROJECT].plans.seed_fixtures()  # API v1.10: resume fixtures
         self.verbose = verbose
         self.workspace_enabled = True  # API v1.16: False answers the no-manifest shape
+        # API v1.19: the fixture consumer's linked questions, cleared in memory
+        self.linked: list[dict[str, Any]] = [copy.deepcopy(q) for q in MOCK_LINKED_QUESTIONS]
+        self.linked_lock = threading.Lock()
 
     def workspace(self) -> dict[str, Any]:
         """``GET /api/workspace`` (v1.16): the fixture manifest over the mock's projects."""
@@ -3261,6 +3387,60 @@ class MockServer(ThreadingHTTPServer):
             out["counts"][row["label"]] += 1
         out["exit_code"] = 1 if out["counts"]["contradiction"] else 0
         return out
+
+    def _linked_rows(self, owner: str) -> list[dict[str, Any]]:
+        return self.linked if owner == MOCK_LINKED_CONSUMER else []
+
+    def linked_list(self, owner: str, status: str | None) -> dict[str, Any]:
+        """``GET /api/linked-questions[?status=]`` (v1.19): the consumer's notes (the fixture
+        consumer holds two; every served project none)."""
+        if status not in (None, "all", "open", "resolved", "dismissed"):
+            raise MockRefusal(422, "status must be one of open, resolved, dismissed, all",
+                              "bad_status")  # fmt: skip
+        with self.linked_lock:
+            rows = [copy.deepcopy(q) for q in self._linked_rows(owner)]
+        counts = {k: sum(1 for q in rows if q["status"] == k)
+                  for k in ("open", "resolved", "dismissed")}  # fmt: skip
+        counts["superseded"] = sum(1 for q in rows if q["superseded"])
+        shown = [q for q in rows if status in (None, "all") or q["status"] == status]
+        if owner == MOCK_LINKED_CONSUMER:
+            where = MOCK_LINKED_STATE
+        else:
+            where = f"{self.states[owner].model['project']['root']}/.lattice/state/{owner}"
+        return {"format": 1, "consumer": owner, "state": "present", "state_dir": where,
+                "questions": shown, "counts": counts, "problems": []}  # fmt: skip
+
+    def linked_get(self, owner: str, qid: str) -> dict[str, Any]:
+        with self.linked_lock:
+            for q in self._linked_rows(owner):
+                if q["id"] == qid:
+                    return copy.deepcopy(q)
+        raise MockRefusal(404, f"no linked question {qid!r}", "unknown_question")
+
+    def linked_clear(self, owner: str, qid: str, verb: str, body: dict[str, Any]) -> dict[str, Any]:
+        """``POST /api/linked-questions/<id>/resolve|dismiss`` (v1.19), in memory."""
+        note = body.get("note")
+        text = "" if note is None else note
+        if not isinstance(text, str) or len(text) > 2000:
+            raise MockRefusal(422, "note must be a string of at most 2000 characters",
+                              "bad_note")  # fmt: skip
+        with self.linked_lock:
+            for q in self._linked_rows(owner):
+                if q["id"] != qid:
+                    continue
+                if q["status"] != "open":
+                    raise MockRefusal(409, f"{qid} is already {q['status']}", "not_open")
+                status = "resolved" if verb == "resolve" else "dismissed"
+                at = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+                q["status"] = status
+                q["resolution"] = {"status": status, "note": text, "at": at, "via": "studio"}
+                return copy.deepcopy(q)
+        raise MockRefusal(404, f"no linked question {qid!r}", "unknown_question")
+
+    def linked_notifications(self, owner: str) -> dict[str, Any]:
+        """``GET /api/linked-notifications`` (v1.19): the provider's one fixture delivery."""
+        rows = [copy.deepcopy(MOCK_LINKED_NOTIFICATION)] if owner == DEFAULT_PROJECT else []
+        return {"notifications": rows}
 
     def projects(self) -> list[dict[str, Any]]:
         """``GET /api/projects``."""

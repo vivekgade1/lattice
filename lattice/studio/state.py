@@ -74,6 +74,7 @@ __all__ = [
     "proc_info",
     "remove_owned_containers",
     "state_dir_for",
+    "state_dir_path",
     "terminate_tree",
 ]
 
@@ -187,6 +188,23 @@ def ensure_excluded(repo: Path, line: str, comment: str) -> None:
         f.write(f"# {comment}\n{line}\n")
 
 
+def state_dir_path(
+    project: Path,
+    name: str,
+    state_table: Mapping[str, Any] | None = None,
+    rebuild_table: Mapping[str, Any] | None = None,
+) -> Path:
+    """The project's state directory (see the module docstring) with no side effect: nothing is
+    created and no ``.git/info/exclude`` is touched (:func:`state_dir_for` is this plus that)."""
+    project = Path(project).resolve()
+    st = dict(state_table or {})
+    rb = dict(rebuild_table or {})
+    if isinstance(st.get("dir"), str) and st["dir"].strip():
+        return (project / st["dir"].strip()).resolve()
+    root = _toplevel((project / str(rb.get("repo") or ".")).resolve()) or project
+    return root / STATE_DIR / _slug(name)
+
+
 def state_dir_for(
     project: Path,
     name: str,
@@ -196,13 +214,7 @@ def state_dir_for(
     """The project's state directory (see the module docstring); made git-ignored when it
     lies inside a repository."""
     project = Path(project).resolve()
-    st = dict(state_table or {})
-    rb = dict(rebuild_table or {})
-    if isinstance(st.get("dir"), str) and st["dir"].strip():
-        d = (project / st["dir"].strip()).resolve()
-    else:
-        root = _toplevel((project / str(rb.get("repo") or ".")).resolve()) or project
-        d = root / STATE_DIR / _slug(name)
+    d = state_dir_path(project, name, state_table, rebuild_table)
     top = _toplevel(d.parent if not d.exists() else d) or _toplevel(project)
     if top is not None and d.is_relative_to(top):
         rel = d.relative_to(top).as_posix()
