@@ -63,7 +63,15 @@ language and `docs/lattice-language-rules.md` are untouched.
    mutants (all 12 run); X9(b)'s text is garbled (implemented as 17 endpoints, 1 BROKEN, 0 CHANGED).
 4. `streak_probes.py` could not run with any change under `lattice/` (its preflight refused); it
    gained `--allow-code-diff`, which records the diff instead of refusing (decision 14).
-5. No script corrections to any prediction; the previous node run died of an expired login after
+5. **Post-hoc fix of finding 1 (commit after 84cff6b; the blind numbers above stay as measured).**
+   `dogfood/contracts/probes.py` W5 no longer requires the primary checkout to be at `c0cdefc`
+   (`primary_old_usable` is not a pass check; the primary is still recorded in the data). One old
+   reference at `c0cdefc` (the detached `lattice-contracts-base` worktree) is required and compared
+   byte for byte, as before. Re-run by the orchestrator: `probes.py --runs 10` **35/35**;
+   `exclude_probes.py --only X0` **pass** (goldens, `exclude = []`, check == B0 docs, both old
+   runners). Residual risk, disclosed: W5 now depends on the `lattice-contracts-base` worktree
+   existing; deleting it makes W5 fail with `old_reference_usable` false, loudly.
+6. No script corrections to any prediction; the previous node run died of an expired login after
    one partial edit (`export.py`), which the restart reviewed and kept.
 
 ## Orchestrator verification
