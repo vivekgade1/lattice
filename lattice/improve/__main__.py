@@ -1,16 +1,25 @@
 """``python -m lattice.improve`` (``lattice improve``): the improvement report of a project's
-event log, the import of an existing plan record, and the improvement ledger.
+event log, the import of an existing plan record, the improvement ledger, and the two commands
+that close the loop: whether a closed improvement worked, and a draft of an open proposal.
 
     lattice improve report      [--project DIR] [--state DIR] [--top N] [--json]
     lattice improve import-plan RECORD.json [--project DIR] [--state DIR] [--json]
     lattice improve ledger      [--project DIR] [--state DIR] [--json]
                                 [--signal KEY --status open|closed [--id ID] [--commit SHA]]
+    lattice improve verify      ID [--at TS] [--project DIR] [--state DIR] [--json]
+    lattice improve draft       ID [--out FILE] [--project DIR] [--state DIR] [--json]
 
 The log is ``<state dir>/events.jsonl`` (Studio's state directory of the project: ``[state]
 dir`` of its ``studio.toml``, else ``<repo root>/.lattice/state/<project>/``); the ledger is
 ``improvements.jsonl`` beside it. ``report`` states the method and its blind spots: the
 ranking is an input to the owner, who decides. Exit codes: 0 done, 2 could not read (no such
 project directory, an unreadable log, a record that is not a plan).
+
+``verify`` and ``draft`` only read (the log, the ledger, ``studio.toml``); the state directory
+is never created. ``verify`` exits 0 when the verdict is ``improved``, 1 for any other verdict,
+3 when refused. ``draft`` exits 0 when a draft was produced, 3 when refused (a closed proposal,
+one that needs the owner, an unknown id, ``--out`` inside the project). Its one write is
+``--out``; nothing is applied.
 """
 
 from __future__ import annotations
@@ -24,8 +33,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from lattice.improve.analyze import IMPROVEMENTS_FILE, analyze, read_ledger, report_text
+from lattice.improve.draft import draft
 from lattice.improve.events import EVENTS_FILE, EventLog, read_events
 from lattice.improve.importer import plan_events
+from lattice.improve.verify import verify, verify_text
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -42,6 +53,33 @@ def _parser() -> argparse.ArgumentParser:
     g.add_argument("--status", choices=("open", "closed"))
     g.add_argument("--id", dest="item", help="the improvement's id (e.g. I-05)")
     g.add_argument("--commit", help="the commit that closed it")
+    v = sub.add_parser(
+        "verify",
+        help="did a closed improvement work? compare the log before and after its close",
+        description="Compare the occurrences of a closed ledger entry's signal before and after "
+        "its close (read only). Exit 0: improved; 1: any other verdict; 3: refused.",
+    )
+    v.add_argument("id", help="a ledger id (e.g. I-05) or a proposal id (imp-xxxxxxxx)")
+    v.add_argument(
+        "--at",
+        metavar="TS",
+        help="the time the change took effect, YYYY-MM-DDTHH:MM:SSZ; replaces the ledger ts as "
+        "the closing point of a closed entry",
+    )
+    w = sub.add_parser(
+        "draft",
+        help="draft an open proposal (a change request, a studio.toml snippet, a module "
+        "skeleton or a pre-registration stub); applies nothing",
+        description="Write a draft of one open proposal from the log, the ledger and "
+        "studio.toml. Nothing is applied. Exit 0: drafted; 2: cannot read or write; 3: refused.",
+    )
+    w.add_argument("id", help="a proposal id (imp-xxxxxxxx) from `lattice improve report`")
+    w.add_argument(
+        "--out",
+        metavar="FILE",
+        help="write the draft (markdown) to FILE instead of stdout; refused inside the project "
+        "or the state directory",
+    )
     for s in sub.choices.values():
         s.add_argument("--project", default=".", help="the project directory (default: cwd)")
         s.add_argument("--state", help="the state directory (default: the project's)")
@@ -80,6 +118,61 @@ def _err(msg: str) -> int:
     return 2
 
 
+def _close_the_loop(args: argparse.Namespace, project: Path) -> int:
+    """``verify`` and ``draft``: read the log, the ledger and (draft) ``studio.toml``; write
+    nothing but ``draft --out``."""
+    d = state_dir(project, args.state)
+    path, lpath = d / EVENTS_FILE, d / IMPROVEMENTS_FILE
+    for p in (path, lpath):
+        if p.exists() and not p.is_file():
+            return _err(f"cannot read {p}")
+        try:
+            if p.exists():
+                p.open("rb").close()
+        except OSError as exc:
+            return _err(f"cannot read {p}: {exc}")
+    res = read_events(path)
+    ledger, lw = read_ledger(lpath)
+    cfg: dict = {}
+    out: Path | None = None
+    if args.command == "draft":
+        toml = project / "studio.toml"
+        if toml.is_file():
+            try:
+                cfg = tomllib.loads(toml.read_text(encoding="utf-8"))
+            except (OSError, tomllib.TOMLDecodeError) as exc:
+                return _err(f"cannot read {toml}: {exc}")
+        out = Path(args.out).resolve() if args.out else None
+        inside = out is not None and any(out == x or x in out.parents for x in (project, d))
+        code, doc = draft(res.events, ledger, args.id, cfg, out_inside=inside)
+    else:
+        code, doc = verify(res.events, ledger, args.id, at=args.at, warnings=res.warnings + lw)
+    if doc.get("refused"):
+        print(f"lattice improve: refused: {doc['detail']}", file=sys.stderr)
+        if args.json:
+            print(json.dumps(doc, indent=1))
+        return code
+    if args.command == "verify":
+        print(
+            json.dumps(doc, indent=1) if args.json else verify_text(doc),
+            end="\n" if args.json else "",
+        )
+        return code
+    if out is not None:
+        data = doc["text"].encode("utf-8")
+        try:
+            out.write_bytes(data)
+        except OSError as exc:
+            return _err(f"cannot write {out}: {exc}")
+    if args.json:
+        print(json.dumps(doc, indent=1))
+    elif out is not None:
+        print(f"draft {args.id}: {len(data)} bytes written")
+    else:
+        print(doc["text"], end="")
+    return code
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(list(sys.argv[1:] if argv is None else argv))
     project = Path(args.project).resolve()
@@ -105,6 +198,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             end="" if not args.json else "\n",
         )
         return 0
+    if args.command in ("verify", "draft"):
+        return _close_the_loop(args, project)
     if args.command == "import-plan":
         try:
             rec = json.loads(Path(args.record).read_text(encoding="utf-8"))

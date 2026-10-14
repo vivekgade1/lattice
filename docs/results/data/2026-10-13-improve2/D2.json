@@ -1,0 +1,266 @@
+{
+ "id": "D2",
+ "predicted": "5 of 5 refusals (rc3, reasons needs_owner x2 logs, needs_owner model.py, closed, unknown_id, out_in_project); no --out file after any",
+ "observed": "5 of 5 rows as predicted, --out files left: 0",
+ "pass": true,
+ "checks": [
+  {
+   "name": "D2 checker (I-4)",
+   "argv": [
+    "draft",
+    "imp-56861ff8",
+    "--out",
+    "/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/improve2-4vv4m_7h/d2-out/D2_checker_(I-4).md"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 3,
+    "refused": true,
+    "reason": "needs_owner",
+    "command": "draft"
+   },
+   "observed": {
+    "rc": 3,
+    "refused": true,
+    "reason": "needs_owner",
+    "command": "draft"
+   },
+   "short": "rc3 refused:needs_owner",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"id\": \"imp-56861ff8\",\n \"refused\": true,\n \"reason\": \"needs_owner\",\n \"detail\": \"no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically\"\n}\n",
+   "json_stderr": "lattice improve: refused: no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically\n",
+   "text_stdout": "",
+   "text_stderr": "lattice improve: refused: no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically\n",
+   "run_digests": [
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5"
+   ],
+   "out_exists": false
+  },
+  {
+   "name": "D2 checker (I-3)",
+   "argv": [
+    "draft",
+    "imp-56861ff8",
+    "--out",
+    "/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/improve2-4vv4m_7h/d2-out/D2_checker_(I-3).md"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 3,
+    "refused": true,
+    "reason": "needs_owner",
+    "command": "draft"
+   },
+   "observed": {
+    "rc": 3,
+    "refused": true,
+    "reason": "needs_owner",
+    "command": "draft"
+   },
+   "short": "rc3 refused:needs_owner",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"id\": \"imp-56861ff8\",\n \"refused\": true,\n \"reason\": \"needs_owner\",\n \"detail\": \"no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically\"\n}\n",
+   "json_stderr": "lattice improve: refused: no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically\n",
+   "text_stdout": "",
+   "text_stderr": "lattice improve: refused: no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically\n",
+   "run_digests": [
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5",
+    "3489492af4b91db5"
+   ],
+   "out_exists": false
+  },
+  {
+   "name": "D2 model.py",
+   "argv": [
+    "draft",
+    "imp-adeea5ef",
+    "--out",
+    "/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/improve2-4vv4m_7h/d2-out/D2_model.py.md"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 3,
+    "refused": true,
+    "reason": "needs_owner",
+    "command": "draft"
+   },
+   "observed": {
+    "rc": 3,
+    "refused": true,
+    "reason": "needs_owner",
+    "command": "draft"
+   },
+   "short": "rc3 refused:needs_owner",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"id\": \"imp-adeea5ef\",\n \"refused\": true,\n \"reason\": \"needs_owner\",\n \"detail\": \"2 rule(s) are unchecked because the DSL cannot say this (docs/lattice-language-rules.md: all targets or gated) -- touches lattice/spec/model.py (the checker or the spec language): the owner decides; never drafted automatically\"\n}\n",
+   "json_stderr": "lattice improve: refused: 2 rule(s) are unchecked because the DSL cannot say this (docs/lattice-language-rules.md: all targets or gated) -- touches lattice/spec/model.py (the checker or the spec language): the owner decides; never drafted automatically\n",
+   "text_stdout": "",
+   "text_stderr": "lattice improve: refused: 2 rule(s) are unchecked because the DSL cannot say this (docs/lattice-language-rules.md: all targets or gated) -- touches lattice/spec/model.py (the checker or the spec language): the owner decides; never drafted automatically\n",
+   "run_digests": [
+    "ff68631a0dc420c3",
+    "ff68631a0dc420c3",
+    "ff68631a0dc420c3",
+    "ff68631a0dc420c3",
+    "ff68631a0dc420c3",
+    "ff68631a0dc420c3",
+    "ff68631a0dc420c3",
+    "ff68631a0dc420c3",
+    "ff68631a0dc420c3",
+    "ff68631a0dc420c3"
+   ],
+   "out_exists": false
+  },
+  {
+   "name": "D2 closed",
+   "argv": [
+    "draft",
+    "imp-3e1cd7f9",
+    "--out",
+    "/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/improve2-4vv4m_7h/d2-out/D2_closed.md"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 3,
+    "refused": true,
+    "reason": "closed",
+    "command": "draft"
+   },
+   "observed": {
+    "rc": 3,
+    "refused": true,
+    "reason": "closed",
+    "command": "draft"
+   },
+   "short": "rc3 refused:closed",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"id\": \"imp-3e1cd7f9\",\n \"refused\": true,\n \"reason\": \"closed\",\n \"detail\": \"closed by I-01 at 2026-10-12T23:08:00Z\"\n}\n",
+   "json_stderr": "lattice improve: refused: closed by I-01 at 2026-10-12T23:08:00Z\n",
+   "text_stdout": "",
+   "text_stderr": "lattice improve: refused: closed by I-01 at 2026-10-12T23:08:00Z\n",
+   "run_digests": [
+    "cc2fa7c04589c9b6",
+    "cc2fa7c04589c9b6",
+    "cc2fa7c04589c9b6",
+    "cc2fa7c04589c9b6",
+    "cc2fa7c04589c9b6",
+    "cc2fa7c04589c9b6",
+    "cc2fa7c04589c9b6",
+    "cc2fa7c04589c9b6",
+    "cc2fa7c04589c9b6",
+    "cc2fa7c04589c9b6"
+   ],
+   "out_exists": false
+  },
+  {
+   "name": "D2 unknown",
+   "argv": [
+    "draft",
+    "imp-00000000",
+    "--out",
+    "/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/improve2-4vv4m_7h/d2-out/D2_unknown.md"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 3,
+    "refused": true,
+    "reason": "unknown_id",
+    "command": "draft"
+   },
+   "observed": {
+    "rc": 3,
+    "refused": true,
+    "reason": "unknown_id",
+    "command": "draft"
+   },
+   "short": "rc3 refused:unknown_id",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"id\": \"imp-00000000\",\n \"refused\": true,\n \"reason\": \"unknown_id\",\n \"detail\": \"no proposal imp-00000000 in the log\"\n}\n",
+   "json_stderr": "lattice improve: refused: no proposal imp-00000000 in the log\n",
+   "text_stdout": "",
+   "text_stderr": "lattice improve: refused: no proposal imp-00000000 in the log\n",
+   "run_digests": [
+    "7cc9c8d8c53543a1",
+    "7cc9c8d8c53543a1",
+    "7cc9c8d8c53543a1",
+    "7cc9c8d8c53543a1",
+    "7cc9c8d8c53543a1",
+    "7cc9c8d8c53543a1",
+    "7cc9c8d8c53543a1",
+    "7cc9c8d8c53543a1",
+    "7cc9c8d8c53543a1",
+    "7cc9c8d8c53543a1"
+   ],
+   "out_exists": false
+  },
+  {
+   "name": "D2 out in project",
+   "argv": [
+    "draft",
+    "imp-3e1cd7f9",
+    "--out",
+    "/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/improve2-4vv4m_7h/042-D2-out/proj/draft.md"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 3,
+    "refused": true,
+    "reason": "out_in_project",
+    "command": "draft"
+   },
+   "observed": {
+    "rc": 3,
+    "refused": true,
+    "reason": "out_in_project",
+    "command": "draft"
+   },
+   "short": "rc3 refused:out_in_project",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"id\": \"imp-3e1cd7f9\",\n \"refused\": true,\n \"reason\": \"out_in_project\",\n \"detail\": \"--out is inside the project or the state directory\"\n}\n",
+   "json_stderr": "lattice improve: refused: --out is inside the project or the state directory\n",
+   "text_stdout": "",
+   "text_stderr": "lattice improve: refused: --out is inside the project or the state directory\n",
+   "run_digests": [
+    "2f47f11f781f95d2",
+    "2f47f11f781f95d2",
+    "2f47f11f781f95d2",
+    "2f47f11f781f95d2",
+    "2f47f11f781f95d2",
+    "2f47f11f781f95d2",
+    "2f47f11f781f95d2",
+    "2f47f11f781f95d2",
+    "2f47f11f781f95d2",
+    "2f47f11f781f95d2"
+   ],
+   "out_exists": false
+  }
+ ]
+}

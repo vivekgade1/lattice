@@ -1,0 +1,56 @@
+{
+ "id": "V1c",
+ "predicted": "not_enough_data rc1, 3/2, at_close 1, predicted -71.7, error null",
+ "observed": "rc1 not_enough_data n3/2 119.51->58.47 dNone p-71.7 eNone",
+ "pass": true,
+ "checks": [
+  {
+   "name": "V1c",
+   "argv": [
+    "verify",
+    "I-01"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 1,
+    "verdict": "not_enough_data",
+    "before.n": 3,
+    "after.n": 2,
+    "excluded.at_close": 1,
+    "predicted.delta": -71.7,
+    "error": null,
+    "change.delta": null
+   },
+   "observed": {
+    "rc": 1,
+    "verdict": "not_enough_data",
+    "before.n": 3,
+    "after.n": 2,
+    "excluded.at_close": 1,
+    "predicted.delta": -71.7,
+    "error": null,
+    "change.delta": null
+   },
+   "short": "rc1 not_enough_data n3/2 119.51->58.47 dNone p-71.7 eNone",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"verify\",\n \"id\": \"I-01\",\n \"entry\": {\n  \"id\": \"I-01\",\n  \"signal\": \"gate:level_regression:X\",\n  \"status\": \"closed\",\n  \"commit\": \"scratch-clone studio.toml (not merged)\",\n  \"ts\": \"2026-10-12T23:09:06Z\"\n },\n \"closing_point\": {\n  \"ts\": \"2026-10-12T23:09:06Z\",\n  \"source\": \"ledger\"\n },\n \"keys\": [\n  \"gate:level_regression:X\"\n ],\n \"family\": \"cost\",\n \"unit\": \"s\",\n \"verdict\": \"not_enough_data\",\n \"reason\": \"needs 3 occurrences in each window (before 3, after 2)\",\n \"direction\": \"flat\",\n \"before\": {\n  \"n\": 3,\n  \"frequency\": 3,\n  \"cost_per\": 119.51,\n  \"min\": 119.31,\n  \"max\": 119.75,\n  \"first_ts\": \"2026-10-12T23:02:23Z\",\n  \"last_ts\": \"2026-10-12T23:07:11Z\",\n  \"exposure\": null,\n  \"evidence\": [\n   \"e-e8d9c91c15964512\",\n   \"e-327c71cd641f49a0\",\n   \"e-f6061c7895644d98\"\n  ]\n },\n \"after\": {\n  \"n\": 2,\n  \"frequency\": 2,\n  \"cost_per\": 58.47,\n  \"min\": 58.44,\n  \"max\": 58.51,\n  \"first_ts\": \"2026-10-12T23:10:28Z\",\n  \"last_ts\": \"2026-10-12T23:11:50Z\",\n  \"exposure\": null,\n  \"evidence\": [\n   \"e-9e47b5542c8f4b45\",\n   \"e-4cbd0ccd6d9d4a08\"\n  ]\n },\n \"change\": {\n  \"delta\": null,\n  \"relative\": null,\n  \"separated\": null\n },\n \"predicted\": {\n  \"delta\": -71.7,\n  \"unit\": \"s\",\n  \"source\": \"the report's expected saving, rebuilt from the before window alone (none was recorded)\",\n  \"basis\": \"layer X seconds scale with tries per race (x_repeats); x_repeats 5 -> 2\"\n },\n \"prediction_note\": \"\",\n \"error\": null,\n \"excluded\": {\n  \"at_close\": 1,\n  \"undated\": 0\n },\n \"context\": {\n  \"other_closes\": [],\n  \"per_window\": {\n   \"before\": {\n    \"x_repeats\": [\n     5\n    ],\n    \"selected\": [\n     152\n    ],\n    \"mode\": [\n     \"regression\"\n    ],\n    \"sha\": [\n     \"a0679e9\"\n    ]\n   },\n   \"after\": {\n    \"x_repeats\": [\n     2\n    ],\n    \"selected\": [\n     152\n    ],\n    \"mode\": [\n     \"regression\"\n    ],\n    \"sha\": [\n     \"a0679e9\"\n    ]\n   }\n  }\n },\n \"per_key\": [\n  {\n   \"key\": \"gate:level_regression:X\",\n   \"family\": \"cost\",\n   \"verdict\": \"not_enough_data\",\n   \"reason\": \"needs 3 occurrences in each window (before 3, after 2)\",\n   \"n_before\": 3,\n   \"n_after\": 2,\n   \"frequency_before\": 3,\n   \"frequency_after\": 2,\n   \"cost_per_before\": 119.51,\n   \"cost_per_after\": 58.47,\n   \"delta\": null\n  }\n ],\n \"blind_spots\": [\n  \"confounders: everything else that changed between the two windows is credited to this change (a new model, a slower machine, a different plan)\",\n  \"small n: 3 against 3 is the floor; full separation of 3 against 3 is p = 0.05 one-sided, weak evidence, and it is one project's log\",\n  \"the prediction is a heuristic: only the layer X templates predict (X proportional to repeats); frequency x cost is the cost of a problem, not a predicted saving\",\n  \"Goodhart: hiding a signal (a renamed key, a gate that is not run) reads as improved; exposure catches 'not exercised', not 'not logged'\",\n  \"unseen: human time, coverage and risk (fewer repeats save seconds and look for fewer races)\",\n  \"timing: the close is when the owner ran the ledger (or the time given with --at), and a gate run is stamped when it ends\"\n ],\n \"warnings\": []\n}\n",
+   "json_stderr": "",
+   "text_stdout": "Lattice improve verify: I-01 (gate:level_regression:X), closed 2026-10-12T23:09:06Z, commit scratch-clone studio.toml (not merged)\n\nVerdict: not_enough_data (needs 3 occurrences in each window (before 3, after 2))\nFamily: cost (unit s); keys: gate:level_regression:X\nBefore (ts < close): n 3, f 3, mean 119.51 s (min 119.31 s, max 119.75 s), 2026-10-12T23:02:23Z .. 2026-10-12T23:07:11Z\nAfter (ts > close): n 2, f 2, mean 58.47 s (min 58.44 s, max 58.51 s), 2026-10-12T23:10:28Z .. 2026-10-12T23:11:50Z\nChange: -\nPredicted: -71.7 s (the report's expected saving, rebuilt from the before window alone (none was recorded); layer X seconds scale with tries per race (x_repeats); x_repeats 5 -> 2)\nError: |measured - predicted| / |predicted| = -\nExcluded: at the close second 1, undated 0\nContext: x_repeats 5 -> 2; selected 152 -> 152; mode regression -> regression; sha a0679e9 -> a0679e9\nEvidence (before): e-e8d9c91c15964512, e-327c71cd641f49a0, e-f6061c7895644d98\nEvidence (after): e-9e47b5542c8f4b45, e-4cbd0ccd6d9d4a08\nBlind spots:\n  - confounders: everything else that changed between the two windows is credited to this change (a new model, a slower machine, a different plan)\n  - small n: 3 against 3 is the floor; full separation of 3 against 3 is p = 0.05 one-sided, weak evidence, and it is one project's log\n  - the prediction is a heuristic: only the layer X templates predict (X proportional to repeats); frequency x cost is the cost of a problem, not a predicted saving\n  - Goodhart: hiding a signal (a renamed key, a gate that is not run) reads as improved; exposure catches 'not exercised', not 'not logged'\n  - unseen: human time, coverage and risk (fewer repeats save seconds and look for fewer races)\n  - timing: the close is when the owner ran the ledger (or the time given with --at), and a gate run is stamped when it ends\n",
+   "text_stderr": "",
+   "run_digests": [
+    "b80d36bd96ed743e",
+    "b80d36bd96ed743e",
+    "b80d36bd96ed743e",
+    "b80d36bd96ed743e",
+    "b80d36bd96ed743e",
+    "b80d36bd96ed743e",
+    "b80d36bd96ed743e",
+    "b80d36bd96ed743e",
+    "b80d36bd96ed743e",
+    "b80d36bd96ed743e"
+   ]
+  }
+ ]
+}

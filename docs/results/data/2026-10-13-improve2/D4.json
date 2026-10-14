@@ -1,0 +1,81 @@
+{
+ "id": "D4",
+ "predicted": "0 differing bytes over 10 runs (1.1 s gap, two cwds, a state copy) for V1a, V2a, D1b, D2-checker x text/json/out",
+ "observed": "0 differing bytes over 12 case/mode x 10 runs",
+ "pass": true,
+ "checks": [],
+ "detail": {
+  "V1a/text": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "e73e94b3c8eb2697"
+  },
+  "V1a/json": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "b377f2652a2f52c9"
+  },
+  "V1a/out": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "e73e94b3c8eb2697"
+  },
+  "V2a/text": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "e4a5807059dd8775"
+  },
+  "V2a/json": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "9ce21962e0fd7e7b"
+  },
+  "V2a/out": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "e4a5807059dd8775"
+  },
+  "D1b/text": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "549d1d1bf3bf0242"
+  },
+  "D1b/json": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "0625ef7019b8a6a3"
+  },
+  "D1b/out": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "fdf4fc7b6a7aeb83"
+  },
+  "D2-checker/text": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "cdacd3ba4a3ea4e1"
+  },
+  "D2-checker/json": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "73d7a5761a7ec799"
+  },
+  "D2-checker/out": {
+   "runs": 10,
+   "differing_runs": 0,
+   "differing_bytes": 0,
+   "digest": "cdacd3ba4a3ea4e1"
+  }
+ }
+}

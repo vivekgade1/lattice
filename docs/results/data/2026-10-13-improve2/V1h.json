@@ -1,0 +1,88 @@
+{
+ "id": "V1h",
+ "predicted": "rc3 bad_at; rc3 not_closed",
+ "observed": "rc3 refused:bad_at ; rc3 refused:not_closed",
+ "pass": true,
+ "checks": [
+  {
+   "name": "V1h malformed",
+   "argv": [
+    "verify",
+    "I-01",
+    "--at",
+    "2026-10-12 23:08"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 3,
+    "refused": true,
+    "reason": "bad_at"
+   },
+   "observed": {
+    "rc": 3,
+    "refused": true,
+    "reason": "bad_at"
+   },
+   "short": "rc3 refused:bad_at",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"verify\",\n \"id\": \"I-01\",\n \"refused\": true,\n \"reason\": \"bad_at\",\n \"detail\": \"--at must be exactly YYYY-MM-DDTHH:MM:SSZ (got '2026-10-12 23:08')\"\n}\n",
+   "json_stderr": "lattice improve: refused: --at must be exactly YYYY-MM-DDTHH:MM:SSZ (got '2026-10-12 23:08')\n",
+   "text_stdout": "",
+   "text_stderr": "lattice improve: refused: --at must be exactly YYYY-MM-DDTHH:MM:SSZ (got '2026-10-12 23:08')\n",
+   "run_digests": [
+    "fe9505d734543c0a",
+    "fe9505d734543c0a",
+    "fe9505d734543c0a",
+    "fe9505d734543c0a",
+    "fe9505d734543c0a",
+    "fe9505d734543c0a",
+    "fe9505d734543c0a",
+    "fe9505d734543c0a",
+    "fe9505d734543c0a",
+    "fe9505d734543c0a"
+   ]
+  },
+  {
+   "name": "V1h open",
+   "argv": [
+    "verify",
+    "I-01",
+    "--at",
+    "2026-10-12T23:08:00Z"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 3,
+    "refused": true,
+    "reason": "not_closed"
+   },
+   "observed": {
+    "rc": 3,
+    "refused": true,
+    "reason": "not_closed"
+   },
+   "short": "rc3 refused:not_closed",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"verify\",\n \"id\": \"I-01\",\n \"refused\": true,\n \"reason\": \"not_closed\",\n \"detail\": \"the latest ledger entry for I-01 is open\"\n}\n",
+   "json_stderr": "lattice improve: refused: the latest ledger entry for I-01 is open\n",
+   "text_stdout": "",
+   "text_stderr": "lattice improve: refused: the latest ledger entry for I-01 is open\n",
+   "run_digests": [
+    "11e691eeb9e6715e",
+    "11e691eeb9e6715e",
+    "11e691eeb9e6715e",
+    "11e691eeb9e6715e",
+    "11e691eeb9e6715e",
+    "11e691eeb9e6715e",
+    "11e691eeb9e6715e",
+    "11e691eeb9e6715e",
+    "11e691eeb9e6715e",
+    "11e691eeb9e6715e"
+   ]
+  }
+ ]
+}
