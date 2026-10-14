@@ -277,6 +277,7 @@ class SCtx(base.Ctx):
         contract: str | None = "static",
         lock: bytes | None | str = "clean",
         variant: str = "m",
+        exclude: list[str] | None = None,
     ) -> Path:
         d = self.work / name
         widget = d / CONSUMER
@@ -290,9 +291,12 @@ class SCtx(base.Ctx):
         link = f'from = "{CONSUMER}"\nto = "{PROVIDER_NAME}"\nkind = "uses"\n'
         if contract is not None:
             link += f'contract = "{contract}"\n'
+        # the route exclusion (2026-10-13-contracts-exclude): one line, only when asked for
+        excl = f"exclude = {json.dumps(exclude)}\n" if exclude is not None else ""
         (md / MANIFEST).write_text(
             '[workspace]\nname = "probe"\n\n'
-            f'[[project]]\nname = "{PROVIDER_NAME}"\npath = "{clone}"\nrole = "provider"\n\n'
+            f'[[project]]\nname = "{PROVIDER_NAME}"\npath = "{clone}"\nrole = "provider"\n'
+            f"{excl}\n"
             f'[[project]]\nname = "{CONSUMER}"\npath = "{widget}"\nrole = "consumer"\n\n'
             f"[[link]]\n{link}"
         )
@@ -1566,6 +1570,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", required=True, type=Path)
     ap.add_argument("--only", default="", help="comma-separated probe ids")
     ap.add_argument("--keep", action="store_true", help="keep the scratch clones (default: delete)")
+    ap.add_argument("--allow-code-diff", action="store_true",
+                    help=f"run although lattice/ differs from {CODE_BASE} (the diff stat is "
+                    "recorded in summary.json)")  # fmt: skip
     ns = ap.parse_args(argv)
     ids = [i for i in ns.only.split(",") if i] or ORDER
     unknown = [i for i in ids if i not in PROBES]
@@ -1574,7 +1581,8 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     ids = [i for i in ORDER if i in ids]
     pre = preflight()
-    if not pre["lattice_diff_empty"]:
+    pre["allow_code_diff"] = ns.allow_code_diff
+    if not pre["lattice_diff_empty"] and not ns.allow_code_diff:
         print(f"lattice/ differs from {CODE_BASE}: the experiment needs no code change\n"
               f"{pre['lattice_diff_vs_573aafc']}", file=sys.stderr)  # fmt: skip
         return 2

@@ -31,14 +31,20 @@ Layer 3 (contracts between projects, :mod:`lattice.contracts`) adds optional key
 * ``[[project]] spec`` (``module:attr``, default ``spec:SPEC``), and for live checks ``app``,
   ``db``, ``login``, ``src`` (strings) and ``env`` (a table of strings; ``$PROJECT`` expands to the
   project directory). A wrong type gives ``bad_type``.
+* ``[[project]] exclude``: a list of ``"METHOD /path"`` strings, the routes of a provider that
+  are not part of its contract (test harness, internal triggers). It acts where the project is
+  the ``to`` of a link with a ``contract`` key, for all its consumers. Normalised like an import
+  (:func:`lattice.contracts.export.check_exclude`) and kept in declared order; ``[]`` is valid and
+  excludes nothing. A value that is not a list of valid, distinct endpoints gives one error
+  ``bad_exclude`` for the project, naming every reason, and the key is dropped.
 
 Problems (:class:`Problem`, ``severity`` error or warning): ``unknown_project`` (a link end that is
 not a declared project), ``duplicate_name``, ``self_link``, ``depends_on_cycle`` (a cycle made of
 ``depends_on`` links; ``uses`` links may form cycles), ``bad_name``, ``bad_role``, ``bad_kind``,
-``missing_field``, ``bad_type``, ``bad_contract``, and the warning ``missing_path`` (a declared
-directory that does not exist). :func:`load` raises :class:`ManifestInvalid` on an error,
-:class:`ManifestUnreadable` when the file cannot be read or is not TOML; :func:`parse` returns the
-workspace and every problem without raising on content.
+``missing_field``, ``bad_type``, ``bad_contract``, ``bad_exclude``, and the warning
+``missing_path`` (a declared directory that does not exist). :func:`load` raises
+:class:`ManifestInvalid` on an error, :class:`ManifestUnreadable` when the file cannot be read or
+is not TOML; :func:`parse` returns the workspace and every problem without raising on content.
 
 Finding the manifest (:func:`find`): an explicit path (the file, or a directory holding it), else
 ``$LATTICE_WORKSPACE``, else the first ``lattice.workspace.toml`` walking up from the start
@@ -61,6 +67,8 @@ import tomllib
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
+
+from lattice.contracts.export import check_exclude
 
 MANIFEST = "lattice.workspace.toml"
 ENV = "LATTICE_WORKSPACE"
@@ -97,15 +105,18 @@ class WsProject:
     login: str | None = None
     src: str | None = None
     env: dict[str, str] | None = None
+    exclude: tuple[str, ...] | None = None  # normalised endpoint keys, in declared order
 
     @property
     def exists(self) -> bool:
         return self.path.is_dir()
 
     def settings(self) -> dict[str, Any]:
-        """The layer 3 keys that are set, as written (``env`` unexpanded)."""
+        """The layer 3 keys that are set, as written (``env`` unexpanded; ``exclude`` as its
+        normalised keys)."""
         out: dict[str, Any] = {k: getattr(self, k) for k in PROJECT_STRINGS}
         out["env"] = self.env
+        out["exclude"] = None if self.exclude is None else list(self.exclude)
         return {k: v for k, v in out.items() if v is not None}
 
     def expanded_env(self) -> dict[str, str]:
@@ -339,6 +350,12 @@ def parse(path: Path | str) -> Workspace:
             else:
                 probs.append(Problem("bad_type", f"project {pname}: env must be a table of "
                                      "strings"))  # fmt: skip
+        if "exclude" in item:
+            keys, reasons = check_exclude(item["exclude"])
+            if reasons:
+                probs.append(Problem("bad_exclude", f"project {pname}: " + "; ".join(reasons)))
+            else:
+                extra["exclude"] = keys
         wp = WsProject(pname, real, role, ppath.strip(), **extra)
         if not wp.exists:
             probs.append(Problem("missing_path", f"project {pname}: {real} does not exist",
@@ -485,7 +502,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         state = "" if p.exists else "  (missing)"
         print(f"  {p.name:<{w}}  {p.role or '-':<8}  {p.path}{state}")
         for key, val in p.settings().items():
-            print(f"  {'':<{w}}    {key} = {json.dumps(val) if key == 'env' else val}")
+            print(f"  {'':<{w}}    {key} = {json.dumps(val) if key in ('env', 'exclude') else val}")
     if ws.links:
         print("links:")
         for lk in ws.links:

@@ -25,9 +25,30 @@ prereg's probe series; the tests are in ``tests/contracts``):
 * CM10 live: the ``ensure_safe_target`` call removed                     (L5)
 * CM11 ``Link.to_dict`` always emits ``contract``                        (W5)
 
+The twelve mutants of the route exclusion (``docs/results/2026-10-13-contracts-exclude-prereg.md``
+section 4; the tests are ``tests/contracts/test_exclude.py``, the probes named are
+``dogfood/contracts/exclude_probes.py``):
+
+* XM1  filter not applied: every endpoint kept, ``excluded`` still set   (X1, X2, X9b)
+* XM2  filter after hashing: ``spec_hash`` over the unfiltered export    (X1)
+* XM3  normalisation skipped: raw strings stored and compared            (X2b, X4c)
+* XM4  validation off: bad entries dropped, no problem                   (X5)
+* XM5  duplicate check removed                                           (X5 row 5)
+* XM6  excluded imports treated as satisfied (``evaluate`` skips them)   (X3)
+* XM7  ``excluded`` not recorded in the export                           (X4d, X6b)
+* XM8  diff ignores ``excluded``: ``endpoint_removed``, no ``exclusion_added``  (X4a, X1)
+* XM9  live replays excluded imports                                     (X9b)
+* XM10 ``exclude_unmatched`` never emitted                               (X6a, X4d)
+* XM11 ``WsProject.to_dict`` always emits ``exclude``                    (X8)
+* XM12 an excluded import is BROKEN only when the pin held it            (X3 pinned after, X9b)
+
+(XM12 is the prereg's draft rule, amended before the build; it is listed after XM11.) The
+prereg's table says "11 of 11" and lists twelve rows: all twelve are run, 11 + 12 = 23.
+
 Test selection: ``tests/contracts tests/workspace -q -x`` (about a minute); a mutant that
 touches only ``live.py`` runs ``tests/contracts/test_live.py`` first and the rest only when it
-survives that. ``--all-failures`` drops ``-x`` to list every killing test.
+survives that; an XM mutant runs ``tests/contracts/test_exclude.py`` first and the rest only when
+it survives that. ``--all-failures`` drops ``-x`` to list every killing test.
 
 Usage: ``python dogfood/contracts_mutants.py [--out FILE] [--jobs N] [--all-failures] [ID ...]``.
 Exit 0 when the control passes and every mutant is killed; the last line is
@@ -54,6 +75,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 SUITE = ["tests/contracts", "tests/workspace"]
 LIVE_ONLY = ["tests/contracts/test_live.py"]
+EXCLUDE_ONLY = ["tests/contracts/test_exclude.py"]
 CK, EX, LV, WS = (
     "lattice/contracts/check.py",
     "lattice/contracts/export.py",
@@ -69,6 +91,8 @@ COPY = [
     "tests/workspace",
     "dogfood/contracts/ci-bot",
     "dogfood/contracts/golden",
+    "dogfood/contracts/golden-streak",
+    "dogfood/contracts/streak-widget",
 ]
 
 # id -> (behaviour, file, old text, new text, first-stage tests or None)
@@ -161,6 +185,96 @@ MUTANTS: dict[str, tuple[str, str, str, str, list[str] | None]] = {
         '        if self.contract is not None:\n            out["contract"] = self.contract\n',
         '        out["contract"] = self.contract  # MUTANT CM11: emitted even when None\n',
         None,
+    ),
+    "XM1": (
+        "exclude: the filter is not applied (every endpoint kept, excluded still set)",
+        EX,
+        '    out["endpoints"] = {k: v for k, v in held.items() if k not in keys}\n',
+        '    out["endpoints"] = dict(held)  # MUTANT XM1: nothing is dropped\n',
+        EXCLUDE_ONLY,
+    ),
+    "XM2": (
+        "exclude: spec_hash over the unfiltered export (filter after hashing)",
+        EX,
+        '        "version": {"dirty": dirty, "git_ref": git_ref, '
+        '"spec_hash": spec_hash(export)},\n',
+        '        "version": {"dirty": dirty, "git_ref": git_ref, "spec_hash": spec_hash('
+        "export_spec(load_spec(project, ref)))},  # MUTANT XM2: hashed before the filter\n",
+        EXCLUDE_ONLY,
+    ),
+    "XM3": (
+        "exclude: normalisation skipped (raw strings stored and compared)",
+        EX,
+        "            keys.append(parse_endpoint(entry))\n",
+        "            parse_endpoint(entry)\n"
+        "            keys.append(entry)  # MUTANT XM3: the raw string is kept\n",
+        EXCLUDE_ONLY,
+    ),
+    "XM4": (
+        "exclude: validation off (bad entries dropped, no problem)",
+        WS,
+        '            keys, reasons = check_exclude(item["exclude"])\n',
+        '            keys, reasons = check_exclude(item["exclude"])[0], []  # MUTANT XM4\n',
+        EXCLUDE_ONLY,
+    ),
+    "XM5": (
+        "exclude: the duplicate check removed",
+        EX,
+        "    for key in dict.fromkeys(k for k in keys if keys.count(k) > 1):\n",
+        "    for key in ():  # MUTANT XM5: a key named twice is accepted\n",
+        EXCLUDE_ONLY,
+    ),
+    "XM6": (
+        "exclude: an import of an excluded endpoint is treated as satisfied",
+        CK,
+        "        if imp.endpoint in excluded:\n",
+        "        if imp.endpoint in excluded:\n"
+        "            continue  # MUTANT XM6: evaluate skips it\n",
+        EXCLUDE_ONLY,
+    ),
+    "XM7": (
+        "exclude: excluded is not recorded in the export",
+        EX,
+        '    out["excluded"] = keys\n',
+        "    pass  # MUTANT XM7: the declaration is not kept\n",
+        EXCLUDE_ONLY,
+    ),
+    "XM8": (
+        "exclude: the diff ignores excluded (endpoint_removed, no exclusion_added)",
+        CK,
+        '    p_ex, c_ex = set(pinned.get("excluded", ())), set(current.get("excluded", ()))\n',
+        "    p_ex, c_ex = set(), set()  # MUTANT XM8: excluded is not diffed\n",
+        EXCLUDE_ONLY,
+    ),
+    "XM9": (
+        "exclude: live replays an excluded import",
+        LV,
+        "    replayable = [imp for imp in imports if imp.endpoint not in excluded]\n",
+        "    replayable = list(imports)  # MUTANT XM9: the excluded are replayed too\n",
+        EXCLUDE_ONLY,
+    ),
+    "XM10": (
+        "exclude: exclude_unmatched is never emitted",
+        CK,
+        '        self.unmatched.update((name, k) for k in got.get("exclude_unmatched", ()))\n',
+        "        pass  # MUTANT XM10: no warning\n",
+        EXCLUDE_ONLY,
+    ),
+    "XM11": (
+        "exclude: WsProject.to_dict always emits exclude ([] when None)",
+        WS,
+        '        out["exclude"] = None if self.exclude is None else list(self.exclude)\n',
+        '        out["exclude"] = [] if self.exclude is None else list(self.exclude)'
+        "  # MUTANT XM11\n",
+        EXCLUDE_ONLY,
+    ),
+    "XM12": (
+        "exclude: an excluded import is BROKEN only when the pin held it (the draft rule)",
+        CK,
+        "        if imp.endpoint in excluded:\n",
+        '        if imp.endpoint in excluded and holds(seen, imp, "endpoint", ""):'
+        "  # MUTANT XM12\n",
+        EXCLUDE_ONLY,
     ),
 }
 
@@ -271,8 +385,8 @@ def one(mid: str, all_failures: bool) -> dict[str, Any]:
     return {"pytest": res, "verdict": verdict, "seconds": round(time.monotonic() - t0, 1)}
 
 
-def _order(mid: str) -> int:
-    return int(mid[2:])
+def _order(mid: str) -> tuple[bool, int]:
+    return (not mid.startswith("CM"), int(mid[2:]))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -320,7 +434,7 @@ def main(argv: list[str] | None = None) -> int:
         print(control["pytest"]["tail"], flush=True)
     changed = [f for f in files if sha(ROOT / f) != hashes[f]]
     print(f"\n{'id':<8} {'verdict':<14} {'sec':>6}  {'change':<62} killed by (first failing test)")
-    for mid in sorted(runs, key=lambda m: -1 if m == "control" else _order(m)):
+    for mid in sorted(runs, key=lambda m: (False, -1) if m == "control" else _order(m)):
         res = runs[mid]
         if mid == "control":
             what, by = "unmutated copy", res["pytest"]["summary"]

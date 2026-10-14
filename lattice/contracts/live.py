@@ -21,6 +21,9 @@ is compared with the import, never with the pin:
 * a 2xx answer without a relied response field: ``response_field_missing`` (an empty list answer
   shows no field names: it is listed under ``fields_unobservable``, never a finding).
 
+An import of an endpoint the provider excludes from its contract (``excluded`` in the current
+export) is not replayed: it is listed under ``not_replayed``, and is BROKEN in the static part.
+
 Static gaps (claims the current export does not hold) that the live answer satisfies are listed
 under ``verified_live``. Request fields are not checked (the replay sends the spec step's body,
 not the consumer's): the result says ``not_checked: ["request_fields"]``.
@@ -56,6 +59,7 @@ LIVE_KINDS = ("status_not_observed", "auth_changed", "response_field_missing")
 NOT_CHECKED = ["request_fields"]
 TIMEOUT_S = 300.0
 AUTH_REFUSALS = (401, 403)
+EXCLUDED_REASON = "excluded by the provider (exclude)"
 
 # the shapes of an answer body whose field names can be read
 OBJECT, LIST, EMPTY_LIST, OTHER = "object", "list", "empty_list", "other"
@@ -234,7 +238,11 @@ def run_live(
 
     `current_export` is the provider's current export (the ``export`` dict of
     :func:`lattice.contracts.export.compute_export`), from which the static gaps follow
-    (:func:`lattice.contracts.check.claims_of` and :func:`~lattice.contracts.check.holds`).
+    (:func:`lattice.contracts.check.claims_of` and :func:`~lattice.contracts.check.holds`). An
+    import of an endpoint in its ``excluded`` is not sent to the child: it is listed in
+    ``not_replayed`` with the reason :data:`EXCLUDED_REASON`, and ``replayed`` counts the rest
+    (the exclusion governs the contract, not the app: the spec's scenarios still send an excluded
+    endpoint as an earlier step).
     `clone_env` is extra environment for the provider app (it wins over the manifest's ``env``).
     Raises :class:`LiveError`: ``not_loopback`` / ``live_url_unsupported`` (a ``live_url``),
     ``no_harness`` (the provider has no usable app/db), ``provider_missing``, ``spec_failed``,
@@ -248,6 +256,8 @@ def run_live(
         raise LiveError("provider_missing", f"{link.target}: {project.path} is not a directory")
     from lattice.contracts.export import DEFAULT_SPEC
 
+    excluded = set(current_export.get("excluded", ()))
+    replayable = [imp for imp in imports if imp.endpoint not in excluded]
     root = str(Path(__file__).resolve().parent.parent.parent)
     env = {**os.environ, **project.expanded_env(), **dict(clone_env or {})}
     env["PYTHONPATH"] = os.pathsep.join(
@@ -260,8 +270,10 @@ def run_live(
         job = {
             "project": str(project.path),
             "spec": project.spec or DEFAULT_SPEC,
-            "settings": {k: v for k, v in project.settings().items() if k != "env"},
-            "imports": [imp.to_dict() for imp in imports],
+            "settings": {
+                k: v for k, v in project.settings().items() if k not in ("env", "exclude")
+            },
+            "imports": [imp.to_dict() for imp in replayable],
         }
         got = _spawn(job, project.path, env, tmp)
     finally:
@@ -270,9 +282,13 @@ def run_live(
     findings: dict[tuple[str, str, str, str], dict[str, Any]] = {}
     verified: dict[tuple[str, str, str], dict[str, Any]] = {}
     unobservable: dict[tuple[str, tuple[str, ...]], dict[str, Any]] = {}
-    not_replayed: list[dict[str, str]] = []
+    not_replayed: list[dict[str, str]] = [
+        {"endpoint": imp.endpoint, "reason": EXCLUDED_REASON}
+        for imp in imports
+        if imp.endpoint in excluded
+    ]
     replays: list[dict[str, Any]] = []
-    for imp, res in zip(imports, got["outcomes"], strict=True):
+    for imp, res in zip(replayable, got["outcomes"], strict=True):
         if "reason" in res:
             not_replayed.append({"endpoint": imp.endpoint, "reason": res["reason"]})
             continue

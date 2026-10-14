@@ -23,6 +23,17 @@ endpoint, each status, each request and response field, the auth):
 * every item of the diff ``P -> E`` that is not folded into a BROKEN is **CHANGED**, tagged
   ``relied`` when some import names its endpoint.
 
+A provider can exclude routes from its contract (``exclude`` in the workspace manifest, applied
+in the export, see :mod:`lattice.contracts.export`). An import of an excluded endpoint is
+**BROKEN** ``endpoint_missing`` (item ``""``, detail :data:`EXCLUDED_DETAIL`) whether or not the
+pin held it: an exclusion is a stated fact, not an observed one, so the rule that BROKEN needs the
+pin does not apply, and ``evaluate`` reports it even with no pinned export (a first ``pin``
+refuses it without ``force``; ``force`` does not clear it, the next check is still BROKEN). A
+change of the list is CHANGED: ``exclusion_added`` (absorbing the ``endpoint_removed`` of the same
+key, and folded into the BROKEN of an import) and ``exclusion_removed`` (absorbing
+``endpoint_added``). A declared key that the export does not hold is the warning
+``exclude_unmatched`` (once per provider and key, after the manifest's problems).
+
 Findings sort by (class, endpoint, kind, item). ``version_changed`` and the gaps are
 informational. ``check`` exits 0 when no BROKEN and no CHANGED, 1 otherwise, 2 when it cannot
 run (``no_pin``, ``bad_pin``, ``bad_imports``, ``export_failed``, a manifest error...); ``pin``
@@ -48,7 +59,7 @@ from lattice.contracts.export import (
     parse_endpoint,
     spec_hash,
 )
-from lattice.workspace import ERROR, Link, Problem, Workspace
+from lattice.workspace import ERROR, WARNING, Link, Problem, Workspace
 
 LOCK_FILE = "lattice.contracts.lock.json"
 IMPORTS_FILE = "lattice.imports.toml"
@@ -67,6 +78,8 @@ BROKEN_KINDS = {
 GAP_KINDS = {k: f"{k}_unobserved" for k in CLAIM_KINDS}
 _IMPORT_KEYS = ("provider", "endpoint", "status", "auth", "as_user", "request_fields",
                 "response_fields")  # fmt: skip
+# the detail of the BROKEN endpoint_missing of an import of an endpoint the provider excludes
+EXCLUDED_DETAIL = "the provider excludes it from its contract (exclude in the workspace manifest)"
 _AUTH_RANK = {"public": 0, "unknown": 1, "token": 2}
 _STATE_RANK = {"granted": 0, "none": 1, "refused": 2}
 
@@ -323,20 +336,30 @@ def _detail(kind: str, item: str, now: Mapping[str, Any] | None) -> str:
 
 
 def evaluate(
-    imports: Sequence[Import], current: Mapping[str, Any], pinned: Mapping[str, Any]
+    imports: Sequence[Import], current: Mapping[str, Any], pinned: Mapping[str, Any] | None
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """``(broken, gaps)`` of the imports against the current export and the pinned one. When the
-    endpoint itself is missing from the current export only the endpoint claim is reported."""
+    """``(broken, gaps)`` of the imports against the current export and the pinned one (None: no
+    pin yet, so nothing is observed and only the excluded endpoints can be BROKEN). When the
+    endpoint itself is missing from the current export only the endpoint claim is reported. An
+    import of an endpoint in ``current["excluded"]`` is always BROKEN ``endpoint_missing``, pinned
+    or not (:data:`EXCLUDED_DETAIL`)."""
     broken: dict[tuple[str, str, str, str], dict[str, Any]] = {}
     gaps: dict[tuple[str, str, str, str], dict[str, Any]] = {}
+    excluded = set(current.get("excluded", ()))
+    seen: Mapping[str, Any] = {"endpoints": {}} if pinned is None else pinned
     for imp in imports:
+        if imp.endpoint in excluded:
+            f = finding(BROKEN, imp.provider, imp.endpoint, BROKEN_KINDS["endpoint"], "",
+                        detail=EXCLUDED_DETAIL)  # fmt: skip
+            broken[_sort_key(f)] = f
+            continue
         now = current["endpoints"].get(imp.endpoint)
         for kind, item in claims_of(imp):
             if holds(current, imp, kind, item):
                 continue
             if kind != "endpoint" and now is None:
                 continue  # the endpoint claim says it
-            if holds(pinned, imp, kind, item):
+            if holds(seen, imp, kind, item):
                 f = finding(BROKEN, imp.provider, imp.endpoint, BROKEN_KINDS[kind], item,
                             detail=_detail(kind, item, now))  # fmt: skip
                 broken[_sort_key(f)] = f
@@ -357,8 +380,10 @@ def diff_exports(pinned: Mapping[str, Any], current: Mapping[str, Any]) -> list[
     """The items of the diff ``pinned -> current`` over the whole export: dicts with ``kind``
     (``endpoint_added``, ``endpoint_removed``, ``status_added``, ``status_removed``,
     ``field_added``, ``field_removed`` (with ``where``), ``auth_tightened``, ``auth_loosened``,
-    ``body_shape_changed``, ``error_body_changed``), ``endpoint`` (``*`` for the whole API),
-    ``item`` and ``detail``. Sorted by (endpoint, kind, item)."""
+    ``body_shape_changed``, ``error_body_changed``, ``exclusion_added``, ``exclusion_removed``),
+    ``endpoint`` (``*`` for the whole API), ``item`` and ``detail``. Sorted by (endpoint, kind,
+    item). A key that enters ``excluded`` is one ``exclusion_added`` (no ``endpoint_removed``), one
+    that leaves it one ``exclusion_removed`` (no ``endpoint_added``)."""
     items: list[dict[str, Any]] = []
 
     def add(kind: str, endpoint: str, item: str, detail: str, **extra: Any) -> None:
@@ -366,10 +391,15 @@ def diff_exports(pinned: Mapping[str, Any], current: Mapping[str, Any]) -> list[
                       **extra})  # fmt: skip
 
     p_eps, c_eps = pinned["endpoints"], current["endpoints"]
-    for key in sorted(set(c_eps) - set(p_eps)):
+    p_ex, c_ex = set(pinned.get("excluded", ())), set(current.get("excluded", ()))
+    for key in sorted(set(c_eps) - set(p_eps) - p_ex):
         add("endpoint_added", key, "", "a new endpoint in the provider's spec")
-    for key in sorted(set(p_eps) - set(c_eps)):
+    for key in sorted(set(p_eps) - set(c_eps) - c_ex):
         add("endpoint_removed", key, "", "no longer in the provider's spec")
+    for key in sorted(c_ex - p_ex):
+        add("exclusion_added", key, "", "the provider now excludes it from its contract")
+    for key in sorted(p_ex - c_ex):
+        add("exclusion_removed", key, "", "the provider no longer excludes it from its contract")
     for key in sorted(set(p_eps) & set(c_eps)):
         old, new = p_eps[key], c_eps[key]
         for s in sorted(set(new["statuses"]) - set(old["statuses"])):
@@ -411,7 +441,7 @@ def _folded(broken: Sequence[Mapping[str, Any]], diff: Sequence[Mapping[str, Any
                 continue
             dk, di, where = d["kind"], d["item"], d.get("where")
             if (
-                (kind == "endpoint_missing" and dk == "endpoint_removed")
+                (kind == "endpoint_missing" and dk in ("endpoint_removed", "exclusion_added"))
                 or (kind == "status_not_observed" and dk == "status_removed" and di == item)
                 or (kind == "request_field_missing" and dk == "field_removed" and di == item
                     and where in ("request", "query"))
@@ -482,27 +512,37 @@ class Report:
 
 class _Session:
     """What one run shares between its links: exports (each provider is loaded once), imports
-    and locks (read once per consumer)."""
+    and locks (read once per consumer). ``unmatched`` collects the ``(provider, key)`` pairs of
+    the exclusions that a provider's export does not hold."""
 
     def __init__(self, ws: Workspace) -> None:
         self.ws = ws
-        self._exports: dict[tuple[str, str], dict[str, Any] | ExportFailed] = {}
+        self._exports: dict[tuple[str, str, tuple[str, ...]], dict[str, Any] | ExportFailed] = {}
+        self.unmatched: set[tuple[str, str]] = set()
 
     def export(self, name: str) -> dict[str, Any]:
         project = self.ws.project(name)
         if project is None:
             raise ContractError("unknown_project", f"{name} is not a project of the workspace")
         ref = project.spec or DEFAULT_SPEC
-        key = (str(project.path), ref)
+        exclude = tuple(project.exclude or ())
+        key = (str(project.path), ref, exclude)
         if key not in self._exports:
             try:
-                self._exports[key] = compute_export(project.path, ref)
+                self._exports[key] = compute_export(project.path, ref, exclude)
             except ExportFailed as e:
                 self._exports[key] = e
         got = self._exports[key]
         if isinstance(got, ExportFailed):
             raise ContractError("export_failed", f"{name}: {got}")
+        self.unmatched.update((name, k) for k in got.get("exclude_unmatched", ()))
         return got
+
+    def warnings(self) -> list[Problem]:
+        """``exclude_unmatched`` for each provider and declared key its export does not hold."""
+        return [Problem("exclude_unmatched", f"{name}: exclude names {key}, which its export does "
+                        "not hold (no 2xx step in its spec)", WARNING)
+                for name, key in sorted(self.unmatched)]  # fmt: skip
 
     def imports(self, link: Link) -> list[Import]:
         consumer = self.ws.project(link.source)
@@ -623,14 +663,16 @@ def run_check(ws: Workspace, consumer: str | None = None, *, static_only: bool =
             report.links.append(_check_link(session, lk, static_only, clone_env))
         except ContractError as e:
             report.links.append(_error_link(lk, e))
+    report.problems.extend(session.warnings())
     report.elapsed_s = time.monotonic() - t0
     return report
 
 
 def run_pin(ws: Workspace, consumer: str, *, force: bool = False) -> Report:
     """Pin the current exports of `consumer`'s opted-in providers into its lock. Refuses (exit 1,
-    nothing written) while a link has a BROKEN finding against the existing pin, unless `force`;
-    with nothing opted in or an error, nothing is written (exit 2)."""
+    nothing written) while a link has a BROKEN finding against the existing pin, or an import of
+    an excluded endpoint (BROKEN with or without a pin), unless `force`; with nothing opted in or
+    an error, nothing is written (exit 2)."""
     t0 = time.monotonic()
     report = Report("pin", ws.name, consumer)
     if _manifest_problems(ws, report):
@@ -659,9 +701,8 @@ def run_pin(ws: Workspace, consumer: str, *, force: bool = False) -> Report:
             report.links.append(_error_link(lk, e))
             continue
         old = existing.get(lk.target)
-        broken: list[dict[str, Any]] = []
-        if old is not None:
-            broken, _gaps = evaluate(imports, cur["export"], old["export"])
+        # no pin yet: only an import of an excluded endpoint can be BROKEN
+        broken, _gaps = evaluate(imports, cur["export"], None if old is None else old["export"])
         row = {
             "consumer": consumer, "provider": lk.target, "contract": lk.contract,
             "status": "refused" if broken and not force else "pinned", "error": None,
@@ -680,5 +721,6 @@ def run_pin(ws: Workspace, consumer: str, *, force: bool = False) -> Report:
                                "providers": providers})  # fmt: skip
         report.extra["lock"] = str(lock_path)
     report.extra["written"] = report.exit_code == 0 and bool(new_entries)
+    report.problems.extend(session.warnings())
     report.elapsed_s = time.monotonic() - t0
     return report
