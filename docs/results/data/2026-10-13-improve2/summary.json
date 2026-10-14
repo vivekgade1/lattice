@@ -1,0 +1,230 @@
+{
+ "runs": 10,
+ "base_ref": "7358be2",
+ "table": [
+  {
+   "id": "V1a",
+   "predicted": "improved rc0, 3/3, 119.51->58.50 s, delta -61.01 (-0.510, separated), predicted -71.7, error 0.149",
+   "observed": "rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149",
+   "pass": true
+  },
+  {
+   "id": "V1b",
+   "predicted": "not_enough_data rc1, 2/3, at_close 1, predicted -71.7, error null",
+   "observed": "rc1 not_enough_data n2/3 119.53->58.5 dNone p-71.7 eNone",
+   "pass": true
+  },
+  {
+   "id": "V1c",
+   "predicted": "not_enough_data rc1, 3/2, at_close 1, predicted -71.7, error null",
+   "observed": "rc1 not_enough_data n3/2 119.51->58.47 dNone p-71.7 eNone",
+   "pass": true
+  },
+  {
+   "id": "V1d",
+   "predicted": "not_enough_data rc1, 6/0, predicted null (repeats tie 5/2), error null",
+   "observed": "rc1 not_enough_data n6/0 89.01->None dNone pNone eNone",
+   "pass": true
+  },
+  {
+   "id": "V1e",
+   "predicted": "not_improved (no material change) rc1, 3/3, 22.52->22.31, delta -0.21 (-0.009, flat, separated), predicted null",
+   "observed": "rc1 not_improved n3/3 22.52->22.31 d-0.21 pNone eNone",
+   "pass": true
+  },
+  {
+   "id": "V1f",
+   "predicted": "improved rc0, 3/3, 4 keys summed, 142.46->81.19, delta -61.27 (-0.430), predicted null",
+   "observed": "rc0 improved n3/3 142.46->81.19 d-61.27 pNone eNone",
+   "pass": true
+  },
+  {
+   "id": "V1g",
+   "predicted": "= V1a: improved rc0, 3/3, 119.51->58.50, error 0.149; source --at + override warning",
+   "observed": "rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149",
+   "pass": true
+  },
+  {
+   "id": "V1h",
+   "predicted": "rc3 bad_at; rc3 not_closed",
+   "observed": "rc3 refused:bad_at ; rc3 refused:not_closed",
+   "pass": true
+  },
+  {
+   "id": "V2",
+   "predicted": "11 of 11 rows exact (a-j; d' is two sub-rows, h three checks)",
+   "observed": "12 of 12 sub-rows exact",
+   "pass": true
+  },
+  {
+   "id": "V3",
+   "predicted": "7 of 7 rows exact",
+   "observed": "7 of 7 sub-rows exact",
+   "pass": true
+  },
+  {
+   "id": "D1",
+   "predicted": "6 of 6 drafts hold every required heading in order and every key line",
+   "observed": "6 of 6: D1a change_request, D1b config, D1c module, D1d prereg, D1e prereg, D1f config",
+   "pass": true
+  },
+  {
+   "id": "D2",
+   "predicted": "5 of 5 refusals (rc3, reasons needs_owner x2 logs, needs_owner model.py, closed, unknown_id, out_in_project); no --out file after any",
+   "observed": "5 of 5 rows as predicted, --out files left: 0",
+   "pass": true
+  },
+  {
+   "id": "D3",
+   "predicted": "0 file changes over every V and D call (refusals included); --out adds exactly one file; imports stdlib + lattice.improve only; 0 literals",
+   "observed": "0 changes over 993 guarded calls; 0 issues; literals {'71.7': 0, '119.5': 0, '61.01': 0, '3e1cd7f9': 0}",
+   "pass": true
+  },
+  {
+   "id": "D4",
+   "predicted": "0 differing bytes over 10 runs (1.1 s gap, two cwds, a state copy) for V1a, V2a, D1b, D2-checker x text/json/out",
+   "observed": "0 differing bytes over 12 case/mode x 10 runs",
+   "pass": true
+  },
+  {
+   "id": "D5",
+   "predicted": "verify/draft --help rc0 listing every option; report/ledger/import-plan/--help byte-identical to 7358be2; report = committed reports",
+   "observed": "12 byte-identical comparisons; 0 issues",
+   "pass": true
+  }
+ ],
+ "sub_rows": [
+  {
+   "id": "V2a",
+   "predicted": "improved rc0, 100.00->40.00, delta -60.00 (-0.600), predicted -60.0, error 0.000",
+   "observed": "rc0 improved n3/3 100.0->40.0 d-60.0 p-60.0 e0.0",
+   "pass": true
+  },
+  {
+   "id": "V2b",
+   "predicted": "not_improved rc1, delta 0.00, flat, error 1.000",
+   "observed": "rc1 not_improved n3/3 100.0->100.0 d0.0 p-60.0 e1.0",
+   "pass": true
+  },
+  {
+   "id": "V2c",
+   "predicted": "not_improved (cost rose) rc1, delta +10.00 (+0.100, up), error 1.167",
+   "observed": "rc1 not_improved n3/3 100.0->110.0 d10.0 p-60.0 e1.167",
+   "pass": true
+  },
+  {
+   "id": "V2d",
+   "predicted": "recurred rc1, f 3->1, exposure 5->4",
+   "observed": "rc1 recurred n3/1 600.0->600.0 d-2.0 pNone eNone",
+   "pass": true
+  },
+  {
+   "id": "V2d'a",
+   "predicted": "improved rc0, exposure_after 3",
+   "observed": "rc0 improved n3/0 600.0->None d-3.0 pNone eNone",
+   "pass": true
+  },
+  {
+   "id": "V2d'b",
+   "predicted": "not_enough_data rc1, exposure_after 2",
+   "observed": "rc1 not_enough_data n3/0 600.0->None d-3.0 pNone eNone",
+   "pass": true
+  },
+  {
+   "id": "V2e",
+   "predicted": "not_enough_data rc1, n_after 0, predicted -60.0, error null",
+   "observed": "rc1 not_enough_data n3/0 100.0->None dNone p-60.0 eNone",
+   "pass": true
+  },
+  {
+   "id": "V2f",
+   "predicted": "not_enough_data rc1, n_after 1",
+   "observed": "rc1 not_enough_data n3/1 100.0->40.0 dNone p-60.0 eNone",
+   "pass": true
+  },
+  {
+   "id": "V2g",
+   "predicted": "as V2a; keys [X]; D and lint absent",
+   "observed": "rc0 improved n3/3 100.0->40.0 d-60.0 p-60.0 e0.0",
+   "pass": true
+  },
+  {
+   "id": "V2h",
+   "predicted": "(ii) improved usd 0.50->null; (iii) improved unit null; (iv) recurred unit s, after null",
+   "observed": "rc0 improved n3/0 0.5->None d-3.0 pNone eNone ; rc0 improved n3/0 None->None d-3.0 pNone eNone ; rc1 recurred n3/1 600.0->None d-2.0 pNone eNone",
+   "pass": true
+  },
+  {
+   "id": "V2i",
+   "predicted": "as V2a; at_close 1, means unchanged",
+   "observed": "rc0 improved n3/3 100.0->40.0 d-60.0 p-60.0 e0.0",
+   "pass": true
+  },
+  {
+   "id": "V2j",
+   "predicted": "as V2a; undated 1",
+   "observed": "rc0 improved n3/3 100.0->40.0 d-60.0 p-60.0 e0.0",
+   "pass": true
+  },
+  {
+   "id": "V3a",
+   "predicted": "rc3 not_closed",
+   "observed": "rc3 refused:not_closed",
+   "pass": true
+  },
+  {
+   "id": "V3b",
+   "predicted": "rc3 not_closed",
+   "observed": "rc3 refused:not_closed",
+   "pass": true
+  },
+  {
+   "id": "V3c",
+   "predicted": "rc3 unknown_id (I-99, imp-00000000)",
+   "observed": "rc3 refused:unknown_id ; rc3 refused:unknown_id",
+   "pass": true
+  },
+  {
+   "id": "V3d",
+   "predicted": "rc0, V1a's numbers, warning no commit recorded",
+   "observed": "rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149",
+   "pass": true
+  },
+  {
+   "id": "V3e",
+   "predicted": "rc0, closing point 23:08:00, V1a's numbers, warning closed 2 times in a row",
+   "observed": "rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149",
+   "pass": true
+  },
+  {
+   "id": "V3f",
+   "predicted": "rc3 no_closing_point",
+   "observed": "rc3 refused:no_closing_point",
+   "pass": true
+  },
+  {
+   "id": "V3g",
+   "predicted": "rc0, V1a's numbers (id null, by imp-3e1cd7f9)",
+   "observed": "rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149",
+   "pass": true
+  }
+ ],
+ "probes_passed": 15,
+ "probes_total": 15,
+ "guard": {
+  "calls": 993,
+  "changed": []
+ },
+ "elapsed_s": 53.4,
+ "findings": [
+  "V1g: the prereg says the output differs from V1a in two fields only (closing_point.source and the override warning); observed leaf differences: ['closing_point.source', 'entry.ts', 'warnings']. entry.ts echoes the ledger line's own ts, and V1g's ledger line (ts 23:12:00) is V1d's, not V1a's (23:08:00); every number is V1a's."
+ ],
+ "post_hoc_script_corrections": [
+  "V1g: the first complete run (14/15) flagged V1g because the script compared the V1a/V1g documents field by field and named the differing warnings list 'warnings.0'; when the two lists differ in length the differing path is 'warnings'. A script bug (the numbers, source and warning were as predicted); the comparison now lists leaf paths and allows closing_point.source, warnings and entry.ts (see findings)."
+ ],
+ "decisions": [
+  "Observed/predicted strings are compact renderings of the fields the prereg's tables name; the per-field comparison is exact (numbers as printed: costs 2 decimals, relative and error 3).",
+  "A '-' in a prereg cost column (V1b-V1d) is checked as change.delta null; the window means the command also prints are recorded in the raw data, not asserted.",
+  "D1/D2 key lines are checked as substrings or per-line regexes on the draft text; the full bytes are recorded as observed (the prereg did not predict them)."
+ ]
+}

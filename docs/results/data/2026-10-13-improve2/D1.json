@@ -1,0 +1,242 @@
+{
+ "id": "D1",
+ "predicted": "6 of 6 drafts hold every required heading in order and every key line",
+ "observed": "6 of 6: D1a change_request, D1b config, D1c module, D1d prereg, D1e prereg, D1f config",
+ "pass": true,
+ "checks": [
+  {
+   "name": "D1a",
+   "argv": [
+    "draft",
+    "imp-f377ca42"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 0,
+    "template": "change_request",
+    "proposal.id": "imp-f377ca42"
+   },
+   "observed": {
+    "rc": 0,
+    "template": "change_request",
+    "proposal.id": "imp-f377ca42"
+   },
+   "short": "rc0 change_request toml=no",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"proposal\": {\n  \"id\": \"imp-f377ca42\",\n  \"title\": \"Lint L012: tune it (it fired 6 time(s) at a cost)\",\n  \"signal_key\": \"lint:L012\",\n  \"evidence\": [\n   \"e-2026-10-01T00:00:00Z\",\n   \"e-2026-10-01T00:01:00Z\",\n   \"e-2026-10-01T00:02:00Z\",\n   \"e-2026-10-01T00:03:00Z\",\n   \"e-2026-10-01T00:04:00Z\",\n   \"e-2026-10-01T00:05:00Z\"\n  ],\n  \"score\": 1080.0,\n  \"unit\": \"s\",\n  \"score_class\": \"A\",\n  \"frequency\": 6,\n  \"cost_per\": 180.0,\n  \"kind\": \"change_set\",\n  \"target_paths\": [\n   \"lattice/spec/lint.py\",\n   \"lattice/spec/preconditions.py\"\n  ],\n  \"why\": \"the L012 lint's findings carry the cost; precision first\",\n  \"status\": \"open\",\n  \"draftable\": true\n },\n \"as_of\": \"2026-10-01T01:00:00Z\",\n \"template\": \"change_request\",\n \"sections\": [\n  {\n   \"heading\": \"What to change\",\n   \"body\": \"Lint L012: tune it (it fired 6 time(s) at a cost)\\n\\nTargets: lattice/spec/lint.py, lattice/spec/preconditions.py\"\n  },\n  {\n   \"heading\": \"Why\",\n   \"body\": \"the L012 lint's findings carry the cost; precision first\"\n  },\n  {\n   \"heading\": \"Evidence\",\n   \"body\": \"signal lint:L012: 6 x 180.0 s = 1080.0 s [A]\\ne-2026-10-01T00:00:00Z 2026-10-01T00:00:00Z 180.0 s\\ne-2026-10-01T00:01:00Z 2026-10-01T00:01:00Z 180.0 s\\ne-2026-10-01T00:02:00Z 2026-10-01T00:02:00Z 180.0 s\\ne-2026-10-01T00:03:00Z 2026-10-01T00:03:00Z 180.0 s\\ne-2026-10-01T00:04:00Z 2026-10-01T00:04:00Z 180.0 s\\ne-2026-10-01T00:05:00Z 2026-10-01T00:05:00Z 180.0 s\"\n  },\n  {\n   \"heading\": \"Acceptance gate\",\n   \"body\": \"the owner names the gate (no [rebuild] gates in studio.toml)\"\n  },\n  {\n   \"heading\": \"Measure afterwards\",\n   \"body\": \"Record the close when the change lands:\\n\\n    lattice improve ledger --signal lint:L012 --status closed --id imp-f377ca42 --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-f377ca42\\n\\nminimum 3 exposures (change events) after the close (the change should stop the signal; exposure says how often it could have occurred).\"\n  },\n  {\n   \"heading\": \"Not decided here\",\n   \"body\": \"- cost to fix: not estimated (the ranker does not take it as an input)\\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\\n- human time: not counted (review, diagnosis and merging are not in the log)\"\n  }\n ],\n \"toml\": null,\n \"ledger_command\": \"lattice improve ledger --signal lint:L012 --status closed --id imp-f377ca42 --commit <SHA>\",\n \"verify_command\": \"lattice improve verify imp-f377ca42\",\n \"text\": \"# Draft: Lint L012: tune it (it fired 6 time(s) at a cost)\\n\\nProposal imp-f377ca42 (change_set), signal lint:L012; status open. As of 2026-10-01T01:00:00Z.\\n\\nNOT APPLIED: this draft changes nothing; the owner decides.\\n\\n## What to change\\n\\nLint L012: tune it (it fired 6 time(s) at a cost)\\n\\nTargets: lattice/spec/lint.py, lattice/spec/preconditions.py\\n\\n## Why\\n\\nthe L012 lint's findings carry the cost; precision first\\n\\n## Evidence\\n\\nsignal lint:L012: 6 x 180.0 s = 1080.0 s [A]\\ne-2026-10-01T00:00:00Z 2026-10-01T00:00:00Z 180.0 s\\ne-2026-10-01T00:01:00Z 2026-10-01T00:01:00Z 180.0 s\\ne-2026-10-01T00:02:00Z 2026-10-01T00:02:00Z 180.0 s\\ne-2026-10-01T00:03:00Z 2026-10-01T00:03:00Z 180.0 s\\ne-2026-10-01T00:04:00Z 2026-10-01T00:04:00Z 180.0 s\\ne-2026-10-01T00:05:00Z 2026-10-01T00:05:00Z 180.0 s\\n\\n## Acceptance gate\\n\\nthe owner names the gate (no [rebuild] gates in studio.toml)\\n\\n## Measure afterwards\\n\\nRecord the close when the change lands:\\n\\n    lattice improve ledger --signal lint:L012 --status closed --id imp-f377ca42 --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-f377ca42\\n\\nminimum 3 exposures (change events) after the close (the change should stop the signal; exposure says how often it could have occurred).\\n\\n## Not decided here\\n\\n- cost to fix: not estimated (the ranker does not take it as an input)\\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\\n- human time: not counted (review, diagnosis and merging are not in the log)\\n\"\n}\n",
+   "json_stderr": "",
+   "text_stdout": "# Draft: Lint L012: tune it (it fired 6 time(s) at a cost)\n\nProposal imp-f377ca42 (change_set), signal lint:L012; status open. As of 2026-10-01T01:00:00Z.\n\nNOT APPLIED: this draft changes nothing; the owner decides.\n\n## What to change\n\nLint L012: tune it (it fired 6 time(s) at a cost)\n\nTargets: lattice/spec/lint.py, lattice/spec/preconditions.py\n\n## Why\n\nthe L012 lint's findings carry the cost; precision first\n\n## Evidence\n\nsignal lint:L012: 6 x 180.0 s = 1080.0 s [A]\ne-2026-10-01T00:00:00Z 2026-10-01T00:00:00Z 180.0 s\ne-2026-10-01T00:01:00Z 2026-10-01T00:01:00Z 180.0 s\ne-2026-10-01T00:02:00Z 2026-10-01T00:02:00Z 180.0 s\ne-2026-10-01T00:03:00Z 2026-10-01T00:03:00Z 180.0 s\ne-2026-10-01T00:04:00Z 2026-10-01T00:04:00Z 180.0 s\ne-2026-10-01T00:05:00Z 2026-10-01T00:05:00Z 180.0 s\n\n## Acceptance gate\n\nthe owner names the gate (no [rebuild] gates in studio.toml)\n\n## Measure afterwards\n\nRecord the close when the change lands:\n\n    lattice improve ledger --signal lint:L012 --status closed --id imp-f377ca42 --commit <SHA>\n\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\n\n    lattice improve verify imp-f377ca42\n\nminimum 3 exposures (change events) after the close (the change should stop the signal; exposure says how often it could have occurred).\n\n## Not decided here\n\n- cost to fix: not estimated (the ranker does not take it as an input)\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\n- human time: not counted (review, diagnosis and merging are not in the log)\n",
+   "text_stderr": "",
+   "run_digests": [
+    "703af88a94b32f74",
+    "703af88a94b32f74",
+    "703af88a94b32f74",
+    "703af88a94b32f74",
+    "703af88a94b32f74",
+    "703af88a94b32f74",
+    "703af88a94b32f74",
+    "703af88a94b32f74",
+    "703af88a94b32f74",
+    "703af88a94b32f74"
+   ],
+   "draft_bytes": 1552
+  },
+  {
+   "name": "D1b",
+   "argv": [
+    "draft",
+    "imp-3e1cd7f9"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 0,
+    "template": "config",
+    "proposal.id": "imp-3e1cd7f9"
+   },
+   "observed": {
+    "rc": 0,
+    "template": "config",
+    "proposal.id": "imp-3e1cd7f9"
+   },
+   "short": "rc0 config toml=yes",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"proposal\": {\n  \"id\": \"imp-3e1cd7f9\",\n  \"title\": \"Fewer layer X repeats at level gates (regression): level_gate_args = [\\\"--x-repeats\\\", \\\"2\\\"]\",\n  \"signal_key\": \"gate:level_regression:X\",\n  \"evidence\": [\n   \"e-e8d9c91c15964512\",\n   \"e-327c71cd641f49a0\",\n   \"e-f6061c7895644d98\"\n  ],\n  \"score\": 358.54,\n  \"unit\": \"s\",\n  \"score_class\": \"A\",\n  \"frequency\": 3,\n  \"cost_per\": 119.51,\n  \"kind\": \"change_set\",\n  \"target_paths\": [\n   \"studio.toml\"\n  ],\n  \"why\": \"layer X is the measured cost of these gates; the final full gate keeps the project's repeats, so coverage is traded only at level gates\",\n  \"status\": \"open\",\n  \"draftable\": true,\n  \"expected\": {\n   \"x_repeats_from\": 5,\n   \"x_repeats_to\": 2,\n   \"x_seconds_now\": 119.5,\n   \"saving_s_per_gate\": 71.7,\n   \"drop\": 0.6,\n   \"basis\": \"layer X seconds scale with tries per race (x_repeats)\"\n  }\n },\n \"as_of\": \"2026-10-12T23:07:11Z\",\n \"template\": \"config\",\n \"sections\": [\n  {\n   \"heading\": \"What to change\",\n   \"body\": \"Edit `studio.toml` in the project:\\n\\n```toml\\n[rebuild]\\nlevel_gate_args = [\\\"--x-repeats\\\", \\\"2\\\"]\\n```\\n\\ncurrent: not set\"\n  },\n  {\n   \"heading\": \"Expected\",\n   \"body\": \"expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\"\n  },\n  {\n   \"heading\": \"Why\",\n   \"body\": \"layer X is the measured cost of these gates; the final full gate keeps the project's repeats, so coverage is traded only at level gates\"\n  },\n  {\n   \"heading\": \"Evidence\",\n   \"body\": \"signal gate:level_regression:X: 3 x 119.5 s = 358.5 s [A]\\ne-e8d9c91c15964512 2026-10-12T23:02:23Z 119.8 s\\ne-327c71cd641f49a0 2026-10-12T23:04:47Z 119.3 s\\ne-f6061c7895644d98 2026-10-12T23:07:11Z 119.5 s\"\n  },\n  {\n   \"heading\": \"Acceptance gate\",\n   \"body\": \"Run before accepting: `./check.sh`\"\n  },\n  {\n   \"heading\": \"Measure afterwards\",\n   \"body\": \"Record the close when the change lands:\\n\\n    lattice improve ledger --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-3e1cd7f9\\n\\nminimum 3 occurrences after the close and 3 before (the mean cost per occurrence is compared).\"\n  },\n  {\n   \"heading\": \"Not decided here\",\n   \"body\": \"- cost to fix: not estimated (the ranker does not take it as an input)\\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\\n- human time: not counted (review, diagnosis and merging are not in the log)\"\n  }\n ],\n \"toml\": \"[rebuild]\\nlevel_gate_args = [\\\"--x-repeats\\\", \\\"2\\\"]\",\n \"ledger_command\": \"lattice improve ledger --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit <SHA>\",\n \"verify_command\": \"lattice improve verify imp-3e1cd7f9\",\n \"text\": \"# Draft: Fewer layer X repeats at level gates (regression): level_gate_args = [\\\"--x-repeats\\\", \\\"2\\\"]\\n\\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X; status open. As of 2026-10-12T23:07:11Z.\\n\\nNOT APPLIED: this draft changes nothing; the owner decides.\\n\\n## What to change\\n\\nEdit `studio.toml` in the project:\\n\\n```toml\\n[rebuild]\\nlevel_gate_args = [\\\"--x-repeats\\\", \\\"2\\\"]\\n```\\n\\ncurrent: not set\\n\\n## Expected\\n\\nexpected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\\n\\n## Why\\n\\nlayer X is the measured cost of these gates; the final full gate keeps the project's repeats, so coverage is traded only at level gates\\n\\n## Evidence\\n\\nsignal gate:level_regression:X: 3 x 119.5 s = 358.5 s [A]\\ne-e8d9c91c15964512 2026-10-12T23:02:23Z 119.8 s\\ne-327c71cd641f49a0 2026-10-12T23:04:47Z 119.3 s\\ne-f6061c7895644d98 2026-10-12T23:07:11Z 119.5 s\\n\\n## Acceptance gate\\n\\nRun before accepting: `./check.sh`\\n\\n## Measure afterwards\\n\\nRecord the close when the change lands:\\n\\n    lattice improve ledger --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-3e1cd7f9\\n\\nminimum 3 occurrences after the close and 3 before (the mean cost per occurrence is compared).\\n\\n## Not decided here\\n\\n- cost to fix: not estimated (the ranker does not take it as an input)\\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\\n- human time: not counted (review, diagnosis and merging are not in the log)\\n\"\n}\n",
+   "json_stderr": "",
+   "text_stdout": "# Draft: Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]\n\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X; status open. As of 2026-10-12T23:07:11Z.\n\nNOT APPLIED: this draft changes nothing; the owner decides.\n\n## What to change\n\nEdit `studio.toml` in the project:\n\n```toml\n[rebuild]\nlevel_gate_args = [\"--x-repeats\", \"2\"]\n```\n\ncurrent: not set\n\n## Expected\n\nexpected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\n\n## Why\n\nlayer X is the measured cost of these gates; the final full gate keeps the project's repeats, so coverage is traded only at level gates\n\n## Evidence\n\nsignal gate:level_regression:X: 3 x 119.5 s = 358.5 s [A]\ne-e8d9c91c15964512 2026-10-12T23:02:23Z 119.8 s\ne-327c71cd641f49a0 2026-10-12T23:04:47Z 119.3 s\ne-f6061c7895644d98 2026-10-12T23:07:11Z 119.5 s\n\n## Acceptance gate\n\nRun before accepting: `./check.sh`\n\n## Measure afterwards\n\nRecord the close when the change lands:\n\n    lattice improve ledger --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit <SHA>\n\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\n\n    lattice improve verify imp-3e1cd7f9\n\nminimum 3 occurrences after the close and 3 before (the mean cost per occurrence is compared).\n\n## Not decided here\n\n- cost to fix: not estimated (the ranker does not take it as an input)\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\n- human time: not counted (review, diagnosis and merging are not in the log)\n",
+   "text_stderr": "",
+   "run_digests": [
+    "bcc09a8bf28a05fc",
+    "bcc09a8bf28a05fc",
+    "bcc09a8bf28a05fc",
+    "bcc09a8bf28a05fc",
+    "bcc09a8bf28a05fc",
+    "bcc09a8bf28a05fc",
+    "bcc09a8bf28a05fc",
+    "bcc09a8bf28a05fc",
+    "bcc09a8bf28a05fc",
+    "bcc09a8bf28a05fc"
+   ],
+   "draft_bytes": 1561
+  },
+  {
+   "name": "D1c",
+   "argv": [
+    "draft",
+    "imp-7fad29b4"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 0,
+    "template": "module",
+    "proposal.id": "imp-7fad29b4"
+   },
+   "observed": {
+    "rc": 0,
+    "template": "module",
+    "proposal.id": "imp-7fad29b4"
+   },
+   "short": "rc0 module toml=yes",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"proposal\": {\n  \"id\": \"imp-7fad29b4\",\n  \"title\": \"Service stubs that record what they were sent\",\n  \"signal_key\": \"unchecked:stub_observability\",\n  \"evidence\": [\n   \"e-ddf0ec95bc824d83\"\n  ],\n  \"score\": null,\n  \"unit\": null,\n  \"score_class\": \"C\",\n  \"frequency\": 3,\n  \"cost_per\": null,\n  \"kind\": \"module_draft\",\n  \"target_paths\": [\n   \"lattice/spec/services.py\"\n  ],\n  \"why\": \"3 unchecked rule(s) need a stub that records calls\",\n  \"status\": \"open\",\n  \"draftable\": true\n },\n \"as_of\": \"2026-10-12T23:07:11Z\",\n \"template\": \"module\",\n \"sections\": [\n  {\n   \"heading\": \"Module skeleton\",\n   \"body\": \"`lattice-module.toml` (a skeleton; the owner fills it):\\n\\n```toml\\nname = \\\"stub_observability\\\"\\nversion = \\\"0.0.0\\\"\\nkind = \\\"custom\\\"\\ndescription = \\\"Service stubs that record what they were sent\\\"\\nprovides = []\\nrequires = []\\n```\"\n  },\n  {\n   \"heading\": \"What it must provide\",\n   \"body\": \"Service stubs that record what they were sent\\n\\nWhy: 3 unchecked rule(s) need a stub that records calls\\n\\nTargets: lattice/spec/services.py\"\n  },\n  {\n   \"heading\": \"Evidence\",\n   \"body\": \"signal unchecked:stub_observability: f = 3 (no cost recorded) [C]\\ne-ddf0ec95bc824d83 2026-10-12T23:02:23Z -\"\n  },\n  {\n   \"heading\": \"Acceptance gate\",\n   \"body\": \"the owner names the gate (no [rebuild] gates in studio.toml)\"\n  },\n  {\n   \"heading\": \"Measure afterwards\",\n   \"body\": \"Record the close when the change lands:\\n\\n    lattice improve ledger --signal unchecked:stub_observability --status closed --id imp-7fad29b4 --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-7fad29b4\\n\\nminimum 1 snapshot after the close (the latest level is compared).\"\n  },\n  {\n   \"heading\": \"Not decided here\",\n   \"body\": \"- cost to fix: not estimated (the ranker does not take it as an input)\\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\\n- human time: not counted (review, diagnosis and merging are not in the log)\"\n  }\n ],\n \"toml\": \"name = \\\"stub_observability\\\"\\nversion = \\\"0.0.0\\\"\\nkind = \\\"custom\\\"\\ndescription = \\\"Service stubs that record what they were sent\\\"\\nprovides = []\\nrequires = []\",\n \"ledger_command\": \"lattice improve ledger --signal unchecked:stub_observability --status closed --id imp-7fad29b4 --commit <SHA>\",\n \"verify_command\": \"lattice improve verify imp-7fad29b4\",\n \"text\": \"# Draft: Service stubs that record what they were sent\\n\\nProposal imp-7fad29b4 (module_draft), signal unchecked:stub_observability; status open. As of 2026-10-12T23:07:11Z.\\n\\nNOT APPLIED: this draft changes nothing; the owner decides.\\n\\n## Module skeleton\\n\\n`lattice-module.toml` (a skeleton; the owner fills it):\\n\\n```toml\\nname = \\\"stub_observability\\\"\\nversion = \\\"0.0.0\\\"\\nkind = \\\"custom\\\"\\ndescription = \\\"Service stubs that record what they were sent\\\"\\nprovides = []\\nrequires = []\\n```\\n\\n## What it must provide\\n\\nService stubs that record what they were sent\\n\\nWhy: 3 unchecked rule(s) need a stub that records calls\\n\\nTargets: lattice/spec/services.py\\n\\n## Evidence\\n\\nsignal unchecked:stub_observability: f = 3 (no cost recorded) [C]\\ne-ddf0ec95bc824d83 2026-10-12T23:02:23Z -\\n\\n## Acceptance gate\\n\\nthe owner names the gate (no [rebuild] gates in studio.toml)\\n\\n## Measure afterwards\\n\\nRecord the close when the change lands:\\n\\n    lattice improve ledger --signal unchecked:stub_observability --status closed --id imp-7fad29b4 --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-7fad29b4\\n\\nminimum 1 snapshot after the close (the latest level is compared).\\n\\n## Not decided here\\n\\n- cost to fix: not estimated (the ranker does not take it as an input)\\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\\n- human time: not counted (review, diagnosis and merging are not in the log)\\n\"\n}\n",
+   "json_stderr": "",
+   "text_stdout": "# Draft: Service stubs that record what they were sent\n\nProposal imp-7fad29b4 (module_draft), signal unchecked:stub_observability; status open. As of 2026-10-12T23:07:11Z.\n\nNOT APPLIED: this draft changes nothing; the owner decides.\n\n## Module skeleton\n\n`lattice-module.toml` (a skeleton; the owner fills it):\n\n```toml\nname = \"stub_observability\"\nversion = \"0.0.0\"\nkind = \"custom\"\ndescription = \"Service stubs that record what they were sent\"\nprovides = []\nrequires = []\n```\n\n## What it must provide\n\nService stubs that record what they were sent\n\nWhy: 3 unchecked rule(s) need a stub that records calls\n\nTargets: lattice/spec/services.py\n\n## Evidence\n\nsignal unchecked:stub_observability: f = 3 (no cost recorded) [C]\ne-ddf0ec95bc824d83 2026-10-12T23:02:23Z -\n\n## Acceptance gate\n\nthe owner names the gate (no [rebuild] gates in studio.toml)\n\n## Measure afterwards\n\nRecord the close when the change lands:\n\n    lattice improve ledger --signal unchecked:stub_observability --status closed --id imp-7fad29b4 --commit <SHA>\n\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\n\n    lattice improve verify imp-7fad29b4\n\nminimum 1 snapshot after the close (the latest level is compared).\n\n## Not decided here\n\n- cost to fix: not estimated (the ranker does not take it as an input)\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\n- human time: not counted (review, diagnosis and merging are not in the log)\n",
+   "text_stderr": "",
+   "run_digests": [
+    "6b3b0016faaac048",
+    "6b3b0016faaac048",
+    "6b3b0016faaac048",
+    "6b3b0016faaac048",
+    "6b3b0016faaac048",
+    "6b3b0016faaac048",
+    "6b3b0016faaac048",
+    "6b3b0016faaac048",
+    "6b3b0016faaac048",
+    "6b3b0016faaac048"
+   ],
+   "draft_bytes": 1477
+  },
+  {
+   "name": "D1d",
+   "argv": [
+    "draft",
+    "imp-a8f0a344"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 0,
+    "template": "prereg",
+    "proposal.id": "imp-a8f0a344"
+   },
+   "observed": {
+    "rc": 0,
+    "template": "prereg",
+    "proposal.id": "imp-a8f0a344"
+   },
+   "short": "rc0 prereg toml=no",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"proposal\": {\n  \"id\": \"imp-a8f0a344\",\n  \"title\": \"Unchecked rules (free text)\",\n  \"signal_key\": \"unchecked:free_text\",\n  \"evidence\": [\n   \"e-5eb5a759b8344fbc\"\n  ],\n  \"score\": null,\n  \"unit\": null,\n  \"score_class\": \"C\",\n  \"frequency\": 5,\n  \"cost_per\": null,\n  \"kind\": \"experiment\",\n  \"target_paths\": [\n   \"docs/lattice-reference.md\"\n  ],\n  \"why\": \"5 rule(s) unchecked for this reason\",\n  \"status\": \"open\",\n  \"draftable\": true\n },\n \"as_of\": \"2026-10-12T23:07:11Z\",\n \"template\": \"prereg\",\n \"sections\": [\n  {\n   \"heading\": \"1. Status\",\n   \"body\": \"written BEFORE any probe. As of 2026-10-12T23:07:11Z. Nothing of the change exists yet.\"\n  },\n  {\n   \"heading\": \"2. Question\",\n   \"body\": \"Unchecked rules (free text)\\n\\nWhy this is asked: 5 rule(s) unchecked for this reason\"\n  },\n  {\n   \"heading\": \"3. Signal and evidence\",\n   \"body\": \"signal unchecked:free_text: f = 5 (no cost recorded) [C]\\ne-5eb5a759b8344fbc 2026-10-12T23:02:23Z -\"\n  },\n  {\n   \"heading\": \"4. Probe\",\n   \"body\": \"The owner writes the probe: what is run, on which input, how many times.\\nTargets: docs/lattice-reference.md\"\n  },\n  {\n   \"heading\": \"5. Pass rule and blind prediction\",\n   \"body\": \"Pass rule: the owner writes it before any probe runs.\\n\\nPREDICT:\\nPREDICT:\"\n  },\n  {\n   \"heading\": \"6. Measure afterwards\",\n   \"body\": \"Record the close when the change lands:\\n\\n    lattice improve ledger --signal unchecked:free_text --status closed --id imp-a8f0a344 --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-a8f0a344\\n\\nminimum 1 snapshot after the close (the latest level is compared).\"\n  },\n  {\n   \"heading\": \"7. Blind spots\",\n   \"body\": \"- human time: approvals, diagnosis and hand merges are not a cost here (human events are counted, not timed)\\n- risk and correctness: a wrong answer or a hidden bug costs no seconds, so it ranks by frequency only\\n- recurrence: f counts past occurrences, not future ones; a one-off scores like a habit\\n- cost to fix is not an input (a cheap fix and an expensive one with the same signal rank the same)\\n- causes an old record cannot state (other) and signals no event records (a workaround that hides an error)\\n- one project's log: n is small, so a ranking can overfit that project\"\n  }\n ],\n \"toml\": null,\n \"ledger_command\": \"lattice improve ledger --signal unchecked:free_text --status closed --id imp-a8f0a344 --commit <SHA>\",\n \"verify_command\": \"lattice improve verify imp-a8f0a344\",\n \"text\": \"# Unchecked rules (free text): pre-registration (stub)\\n\\nProposal imp-a8f0a344 (experiment), signal unchecked:free_text; status open. As of 2026-10-12T23:07:11Z.\\n\\nNOT APPLIED: this draft changes nothing; the owner decides.\\n\\n## 1. Status\\n\\nwritten BEFORE any probe. As of 2026-10-12T23:07:11Z. Nothing of the change exists yet.\\n\\n## 2. Question\\n\\nUnchecked rules (free text)\\n\\nWhy this is asked: 5 rule(s) unchecked for this reason\\n\\n## 3. Signal and evidence\\n\\nsignal unchecked:free_text: f = 5 (no cost recorded) [C]\\ne-5eb5a759b8344fbc 2026-10-12T23:02:23Z -\\n\\n## 4. Probe\\n\\nThe owner writes the probe: what is run, on which input, how many times.\\nTargets: docs/lattice-reference.md\\n\\n## 5. Pass rule and blind prediction\\n\\nPass rule: the owner writes it before any probe runs.\\n\\nPREDICT:\\nPREDICT:\\n\\n## 6. Measure afterwards\\n\\nRecord the close when the change lands:\\n\\n    lattice improve ledger --signal unchecked:free_text --status closed --id imp-a8f0a344 --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-a8f0a344\\n\\nminimum 1 snapshot after the close (the latest level is compared).\\n\\n## 7. Blind spots\\n\\n- human time: approvals, diagnosis and hand merges are not a cost here (human events are counted, not timed)\\n- risk and correctness: a wrong answer or a hidden bug costs no seconds, so it ranks by frequency only\\n- recurrence: f counts past occurrences, not future ones; a one-off scores like a habit\\n- cost to fix is not an input (a cheap fix and an expensive one with the same signal rank the same)\\n- causes an old record cannot state (other) and signals no event records (a workaround that hides an error)\\n- one project's log: n is small, so a ranking can overfit that project\\n\"\n}\n",
+   "json_stderr": "",
+   "text_stdout": "# Unchecked rules (free text): pre-registration (stub)\n\nProposal imp-a8f0a344 (experiment), signal unchecked:free_text; status open. As of 2026-10-12T23:07:11Z.\n\nNOT APPLIED: this draft changes nothing; the owner decides.\n\n## 1. Status\n\nwritten BEFORE any probe. As of 2026-10-12T23:07:11Z. Nothing of the change exists yet.\n\n## 2. Question\n\nUnchecked rules (free text)\n\nWhy this is asked: 5 rule(s) unchecked for this reason\n\n## 3. Signal and evidence\n\nsignal unchecked:free_text: f = 5 (no cost recorded) [C]\ne-5eb5a759b8344fbc 2026-10-12T23:02:23Z -\n\n## 4. Probe\n\nThe owner writes the probe: what is run, on which input, how many times.\nTargets: docs/lattice-reference.md\n\n## 5. Pass rule and blind prediction\n\nPass rule: the owner writes it before any probe runs.\n\nPREDICT:\nPREDICT:\n\n## 6. Measure afterwards\n\nRecord the close when the change lands:\n\n    lattice improve ledger --signal unchecked:free_text --status closed --id imp-a8f0a344 --commit <SHA>\n\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\n\n    lattice improve verify imp-a8f0a344\n\nminimum 1 snapshot after the close (the latest level is compared).\n\n## 7. Blind spots\n\n- human time: approvals, diagnosis and hand merges are not a cost here (human events are counted, not timed)\n- risk and correctness: a wrong answer or a hidden bug costs no seconds, so it ranks by frequency only\n- recurrence: f counts past occurrences, not future ones; a one-off scores like a habit\n- cost to fix is not an input (a cheap fix and an expensive one with the same signal rank the same)\n- causes an old record cannot state (other) and signals no event records (a workaround that hides an error)\n- one project's log: n is small, so a ranking can overfit that project\n",
+   "text_stderr": "",
+   "run_digests": [
+    "e75c22c189b09bb2",
+    "e75c22c189b09bb2",
+    "e75c22c189b09bb2",
+    "e75c22c189b09bb2",
+    "e75c22c189b09bb2",
+    "e75c22c189b09bb2",
+    "e75c22c189b09bb2",
+    "e75c22c189b09bb2",
+    "e75c22c189b09bb2",
+    "e75c22c189b09bb2"
+   ],
+   "draft_bytes": 1761
+  },
+  {
+   "name": "D1e",
+   "argv": [
+    "draft",
+    "imp-3e1cd7f9"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 0,
+    "template": "prereg",
+    "proposal.id": "imp-3e1cd7f9"
+   },
+   "observed": {
+    "rc": 0,
+    "template": "prereg",
+    "proposal.id": "imp-3e1cd7f9"
+   },
+   "short": "rc0 prereg toml=no",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"proposal\": {\n  \"id\": \"imp-3e1cd7f9\",\n  \"title\": \"Fewer layer X repeats at level gates (regression): level_gate_args = [\\\"--x-repeats\\\", \\\"2\\\"]\",\n  \"signal_key\": \"gate:level_regression:X\",\n  \"evidence\": [\n   \"e-e8d9c91c15964512\",\n   \"e-327c71cd641f49a0\",\n   \"e-f6061c7895644d98\",\n   \"e-07264822a1c541d2\",\n   \"e-9e47b5542c8f4b45\",\n   \"e-4cbd0ccd6d9d4a08\"\n  ],\n  \"score\": 534.05,\n  \"unit\": \"s\",\n  \"score_class\": \"A\",\n  \"frequency\": 6,\n  \"cost_per\": 89.01,\n  \"kind\": \"experiment\",\n  \"target_paths\": [\n   \"studio.toml\"\n  ],\n  \"why\": \"layer X is the measured cost of these gates; the final full gate keeps the project's repeats, so coverage is traded only at level gates\",\n  \"status\": \"open\",\n  \"draftable\": true\n },\n \"as_of\": \"2026-10-12T23:11:50Z\",\n \"template\": \"prereg\",\n \"sections\": [\n  {\n   \"heading\": \"1. Status\",\n   \"body\": \"written BEFORE any probe. As of 2026-10-12T23:11:50Z. Nothing of the change exists yet.\"\n  },\n  {\n   \"heading\": \"2. Question\",\n   \"body\": \"Fewer layer X repeats at level gates (regression): level_gate_args = [\\\"--x-repeats\\\", \\\"2\\\"]\\n\\nWhy this is asked: layer X is the measured cost of these gates; the final full gate keeps the project's repeats, so coverage is traded only at level gates\"\n  },\n  {\n   \"heading\": \"3. Signal and evidence\",\n   \"body\": \"signal gate:level_regression:X: 6 x 89.0 s = 534.0 s [A]\\ne-e8d9c91c15964512 2026-10-12T23:02:23Z 119.8 s\\ne-327c71cd641f49a0 2026-10-12T23:04:47Z 119.3 s\\ne-f6061c7895644d98 2026-10-12T23:07:11Z 119.5 s\\ne-07264822a1c541d2 2026-10-12T23:09:06Z 58.6 s\\ne-9e47b5542c8f4b45 2026-10-12T23:10:28Z 58.5 s\\ne-4cbd0ccd6d9d4a08 2026-10-12T23:11:50Z 58.4 s\"\n  },\n  {\n   \"heading\": \"4. Probe\",\n   \"body\": \"The owner writes the probe: what is run, on which input, how many times.\\nTargets: studio.toml\"\n  },\n  {\n   \"heading\": \"5. Pass rule and blind prediction\",\n   \"body\": \"Pass rule: the owner writes it before any probe runs.\\n\\nPREDICT:\\nPREDICT:\"\n  },\n  {\n   \"heading\": \"6. Measure afterwards\",\n   \"body\": \"Record the close when the change lands:\\n\\n    lattice improve ledger --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-3e1cd7f9\\n\\nminimum 3 occurrences after the close and 3 before (the mean cost per occurrence is compared).\"\n  },\n  {\n   \"heading\": \"7. Blind spots\",\n   \"body\": \"- human time: approvals, diagnosis and hand merges are not a cost here (human events are counted, not timed)\\n- risk and correctness: a wrong answer or a hidden bug costs no seconds, so it ranks by frequency only\\n- recurrence: f counts past occurrences, not future ones; a one-off scores like a habit\\n- cost to fix is not an input (a cheap fix and an expensive one with the same signal rank the same)\\n- causes an old record cannot state (other) and signals no event records (a workaround that hides an error)\\n- one project's log: n is small, so a ranking can overfit that project\"\n  }\n ],\n \"toml\": null,\n \"ledger_command\": \"lattice improve ledger --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit <SHA>\",\n \"verify_command\": \"lattice improve verify imp-3e1cd7f9\",\n \"text\": \"# Fewer layer X repeats at level gates (regression): level_gate_args = [\\\"--x-repeats\\\", \\\"2\\\"]: pre-registration (stub)\\n\\nProposal imp-3e1cd7f9 (experiment), signal gate:level_regression:X; status open. As of 2026-10-12T23:11:50Z.\\n\\nNOT APPLIED: this draft changes nothing; the owner decides.\\n\\n## 1. Status\\n\\nwritten BEFORE any probe. As of 2026-10-12T23:11:50Z. Nothing of the change exists yet.\\n\\n## 2. Question\\n\\nFewer layer X repeats at level gates (regression): level_gate_args = [\\\"--x-repeats\\\", \\\"2\\\"]\\n\\nWhy this is asked: layer X is the measured cost of these gates; the final full gate keeps the project's repeats, so coverage is traded only at level gates\\n\\n## 3. Signal and evidence\\n\\nsignal gate:level_regression:X: 6 x 89.0 s = 534.0 s [A]\\ne-e8d9c91c15964512 2026-10-12T23:02:23Z 119.8 s\\ne-327c71cd641f49a0 2026-10-12T23:04:47Z 119.3 s\\ne-f6061c7895644d98 2026-10-12T23:07:11Z 119.5 s\\ne-07264822a1c541d2 2026-10-12T23:09:06Z 58.6 s\\ne-9e47b5542c8f4b45 2026-10-12T23:10:28Z 58.5 s\\ne-4cbd0ccd6d9d4a08 2026-10-12T23:11:50Z 58.4 s\\n\\n## 4. Probe\\n\\nThe owner writes the probe: what is run, on which input, how many times.\\nTargets: studio.toml\\n\\n## 5. Pass rule and blind prediction\\n\\nPass rule: the owner writes it before any probe runs.\\n\\nPREDICT:\\nPREDICT:\\n\\n## 6. Measure afterwards\\n\\nRecord the close when the change lands:\\n\\n    lattice improve ledger --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-3e1cd7f9\\n\\nminimum 3 occurrences after the close and 3 before (the mean cost per occurrence is compared).\\n\\n## 7. Blind spots\\n\\n- human time: approvals, diagnosis and hand merges are not a cost here (human events are counted, not timed)\\n- risk and correctness: a wrong answer or a hidden bug costs no seconds, so it ranks by frequency only\\n- recurrence: f counts past occurrences, not future ones; a one-off scores like a habit\\n- cost to fix is not an input (a cheap fix and an expensive one with the same signal rank the same)\\n- causes an old record cannot state (other) and signals no event records (a workaround that hides an error)\\n- one project's log: n is small, so a ranking can overfit that project\\n\"\n}\n",
+   "json_stderr": "",
+   "text_stdout": "# Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]: pre-registration (stub)\n\nProposal imp-3e1cd7f9 (experiment), signal gate:level_regression:X; status open. As of 2026-10-12T23:11:50Z.\n\nNOT APPLIED: this draft changes nothing; the owner decides.\n\n## 1. Status\n\nwritten BEFORE any probe. As of 2026-10-12T23:11:50Z. Nothing of the change exists yet.\n\n## 2. Question\n\nFewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]\n\nWhy this is asked: layer X is the measured cost of these gates; the final full gate keeps the project's repeats, so coverage is traded only at level gates\n\n## 3. Signal and evidence\n\nsignal gate:level_regression:X: 6 x 89.0 s = 534.0 s [A]\ne-e8d9c91c15964512 2026-10-12T23:02:23Z 119.8 s\ne-327c71cd641f49a0 2026-10-12T23:04:47Z 119.3 s\ne-f6061c7895644d98 2026-10-12T23:07:11Z 119.5 s\ne-07264822a1c541d2 2026-10-12T23:09:06Z 58.6 s\ne-9e47b5542c8f4b45 2026-10-12T23:10:28Z 58.5 s\ne-4cbd0ccd6d9d4a08 2026-10-12T23:11:50Z 58.4 s\n\n## 4. Probe\n\nThe owner writes the probe: what is run, on which input, how many times.\nTargets: studio.toml\n\n## 5. Pass rule and blind prediction\n\nPass rule: the owner writes it before any probe runs.\n\nPREDICT:\nPREDICT:\n\n## 6. Measure afterwards\n\nRecord the close when the change lands:\n\n    lattice improve ledger --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit <SHA>\n\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\n\n    lattice improve verify imp-3e1cd7f9\n\nminimum 3 occurrences after the close and 3 before (the mean cost per occurrence is compared).\n\n## 7. Blind spots\n\n- human time: approvals, diagnosis and hand merges are not a cost here (human events are counted, not timed)\n- risk and correctness: a wrong answer or a hidden bug costs no seconds, so it ranks by frequency only\n- recurrence: f counts past occurrences, not future ones; a one-off scores like a habit\n- cost to fix is not an input (a cheap fix and an expensive one with the same signal rank the same)\n- causes an old record cannot state (other) and signals no event records (a workaround that hides an error)\n- one project's log: n is small, so a ranking can overfit that project\n",
+   "text_stderr": "",
+   "run_digests": [
+    "3af398f33d8e4263",
+    "3af398f33d8e4263",
+    "3af398f33d8e4263",
+    "3af398f33d8e4263",
+    "3af398f33d8e4263",
+    "3af398f33d8e4263",
+    "3af398f33d8e4263",
+    "3af398f33d8e4263",
+    "3af398f33d8e4263",
+    "3af398f33d8e4263"
+   ],
+   "draft_bytes": 2250
+  },
+  {
+   "name": "D1f",
+   "argv": [
+    "draft",
+    "imp-256fef6a"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 10,
+   "mismatches": [],
+   "expected": {
+    "rc": 0,
+    "template": "config",
+    "proposal.id": "imp-256fef6a"
+   },
+   "observed": {
+    "rc": 0,
+    "template": "config",
+    "proposal.id": "imp-256fef6a"
+   },
+   "short": "rc0 config toml=yes",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"draft\",\n \"proposal\": {\n  \"id\": \"imp-256fef6a\",\n  \"title\": \"Cap Await waits at level gates (regression): level_gate_args += [\\\"--await-cap\\\", \\\"5\\\"]\",\n  \"signal_key\": \"gate:level_regression:D\",\n  \"evidence\": [\n   \"e-e8d9c91c15964512\",\n   \"e-327c71cd641f49a0\",\n   \"e-f6061c7895644d98\"\n  ],\n  \"score\": 67.55,\n  \"unit\": \"s\",\n  \"score_class\": \"A\",\n  \"frequency\": 3,\n  \"cost_per\": 22.52,\n  \"kind\": \"change_set\",\n  \"target_paths\": [\n   \"studio.toml\"\n  ],\n  \"why\": \"layer D (scenarios) is the measured cost; waits on unbuilt services are the usual reason (I-06)\",\n  \"status\": \"open\",\n  \"draftable\": true\n },\n \"as_of\": \"2026-10-12T23:07:11Z\",\n \"template\": \"config\",\n \"sections\": [\n  {\n   \"heading\": \"What to change\",\n   \"body\": \"Edit `studio.toml` in the project:\\n\\n```toml\\n[rebuild]\\nlevel_gate_args = [\\\"--await-cap\\\", \\\"5\\\"]\\n```\\n\\ncurrent: not set\"\n  },\n  {\n   \"heading\": \"Why\",\n   \"body\": \"layer D (scenarios) is the measured cost; waits on unbuilt services are the usual reason (I-06)\"\n  },\n  {\n   \"heading\": \"Evidence\",\n   \"body\": \"signal gate:level_regression:D: 3 x 22.5 s = 67.5 s [A]\\ne-e8d9c91c15964512 2026-10-12T23:02:23Z 22.4 s\\ne-327c71cd641f49a0 2026-10-12T23:04:47Z 22.8 s\\ne-f6061c7895644d98 2026-10-12T23:07:11Z 22.4 s\"\n  },\n  {\n   \"heading\": \"Acceptance gate\",\n   \"body\": \"Run before accepting: `./check.sh`\"\n  },\n  {\n   \"heading\": \"Measure afterwards\",\n   \"body\": \"Record the close when the change lands:\\n\\n    lattice improve ledger --signal gate:level_regression:D --status closed --id imp-256fef6a --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-256fef6a\\n\\nminimum 3 occurrences after the close and 3 before (the mean cost per occurrence is compared).\"\n  },\n  {\n   \"heading\": \"Not decided here\",\n   \"body\": \"- cost to fix: not estimated (the ranker does not take it as an input)\\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\\n- human time: not counted (review, diagnosis and merging are not in the log)\"\n  }\n ],\n \"toml\": \"[rebuild]\\nlevel_gate_args = [\\\"--await-cap\\\", \\\"5\\\"]\",\n \"ledger_command\": \"lattice improve ledger --signal gate:level_regression:D --status closed --id imp-256fef6a --commit <SHA>\",\n \"verify_command\": \"lattice improve verify imp-256fef6a\",\n \"text\": \"# Draft: Cap Await waits at level gates (regression): level_gate_args += [\\\"--await-cap\\\", \\\"5\\\"]\\n\\nProposal imp-256fef6a (change_set), signal gate:level_regression:D; status open. As of 2026-10-12T23:07:11Z.\\n\\nNOT APPLIED: this draft changes nothing; the owner decides.\\n\\n## What to change\\n\\nEdit `studio.toml` in the project:\\n\\n```toml\\n[rebuild]\\nlevel_gate_args = [\\\"--await-cap\\\", \\\"5\\\"]\\n```\\n\\ncurrent: not set\\n\\n## Why\\n\\nlayer D (scenarios) is the measured cost; waits on unbuilt services are the usual reason (I-06)\\n\\n## Evidence\\n\\nsignal gate:level_regression:D: 3 x 22.5 s = 67.5 s [A]\\ne-e8d9c91c15964512 2026-10-12T23:02:23Z 22.4 s\\ne-327c71cd641f49a0 2026-10-12T23:04:47Z 22.8 s\\ne-f6061c7895644d98 2026-10-12T23:07:11Z 22.4 s\\n\\n## Acceptance gate\\n\\nRun before accepting: `./check.sh`\\n\\n## Measure afterwards\\n\\nRecord the close when the change lands:\\n\\n    lattice improve ledger --signal gate:level_regression:D --status closed --id imp-256fef6a --commit <SHA>\\n\\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\\n\\n    lattice improve verify imp-256fef6a\\n\\nminimum 3 occurrences after the close and 3 before (the mean cost per occurrence is compared).\\n\\n## Not decided here\\n\\n- cost to fix: not estimated (the ranker does not take it as an input)\\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\\n- human time: not counted (review, diagnosis and merging are not in the log)\\n\"\n}\n",
+   "json_stderr": "",
+   "text_stdout": "# Draft: Cap Await waits at level gates (regression): level_gate_args += [\"--await-cap\", \"5\"]\n\nProposal imp-256fef6a (change_set), signal gate:level_regression:D; status open. As of 2026-10-12T23:07:11Z.\n\nNOT APPLIED: this draft changes nothing; the owner decides.\n\n## What to change\n\nEdit `studio.toml` in the project:\n\n```toml\n[rebuild]\nlevel_gate_args = [\"--await-cap\", \"5\"]\n```\n\ncurrent: not set\n\n## Why\n\nlayer D (scenarios) is the measured cost; waits on unbuilt services are the usual reason (I-06)\n\n## Evidence\n\nsignal gate:level_regression:D: 3 x 22.5 s = 67.5 s [A]\ne-e8d9c91c15964512 2026-10-12T23:02:23Z 22.4 s\ne-327c71cd641f49a0 2026-10-12T23:04:47Z 22.8 s\ne-f6061c7895644d98 2026-10-12T23:07:11Z 22.4 s\n\n## Acceptance gate\n\nRun before accepting: `./check.sh`\n\n## Measure afterwards\n\nRecord the close when the change lands:\n\n    lattice improve ledger --signal gate:level_regression:D --status closed --id imp-256fef6a --commit <SHA>\n\n(run it when the change lands, before the runs that measure it), then, once the runs exist:\n\n    lattice improve verify imp-256fef6a\n\nminimum 3 occurrences after the close and 3 before (the mean cost per occurrence is compared).\n\n## Not decided here\n\n- cost to fix: not estimated (the ranker does not take it as an input)\n- risk: not assessed (lost coverage or a wrong answer costs no seconds in the log)\n- human time: not counted (review, diagnosis and merging are not in the log)\n",
+   "text_stderr": "",
+   "run_digests": [
+    "5ce09133fdb05e40",
+    "5ce09133fdb05e40",
+    "5ce09133fdb05e40",
+    "5ce09133fdb05e40",
+    "5ce09133fdb05e40",
+    "5ce09133fdb05e40",
+    "5ce09133fdb05e40",
+    "5ce09133fdb05e40",
+    "5ce09133fdb05e40",
+    "5ce09133fdb05e40"
+   ],
+   "draft_bytes": 1429
+  }
+ ]
+}

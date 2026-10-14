@@ -1,5 +1,6 @@
 """The mutation run of spike 3 (``lattice.improve`` and Studio's improvement signals),
-pre-registered with ``docs/results/2026-10-12-spike3-prereg.md``.
+pre-registered with ``docs/results/2026-10-12-spike3-prereg.md``; IM7-IM21 are the second
+half's (``lattice improve verify`` and ``draft``, ``docs/results/2026-10-13-improve2-prereg.md``).
 
 Modelled on ``dogfood/security_mutants.py``: for each mutant, ``lattice/``, ``tests/``,
 ``dogfood/`` and ``docs/results/data/streak-plans-2026-10-11`` are copied to a scratch
@@ -8,7 +9,7 @@ in the CURRENT source), then the suite runs there with the copy first on ``PYTHO
 mutant is CAUGHT when the suite fails. A control run of the unpatched copy comes first and must
 pass. The working tree is never patched.
 
-The six mutants and the tests predicted to catch each:
+The mutants and the tests predicted to catch each:
 
 * IM1 the ranker converts dollars into seconds (one cost unit)
       -> test_analyze: test_the_i_r_arithmetic_and_class_order,
@@ -26,9 +27,26 @@ The six mutants and the tests predicted to catch each:
          test_the_ranker_reads_the_live_log
 * IM6 ``layer_seconds`` copied from the wrong layer
       -> test_events (studio): test_a_layer_seconds_copied_from_the_report
+* IM7 an event at the close second counted as after (>=)         -> V1c, V2i
+* IM8 an event at the close second counted as before (<=)        -> V1b, V2i
+* IM9 not_enough_data reported as improved (exit 0)              -> V1d, V2e, V2f
+* IM10 minimum 2 occurrences instead of 3                        -> V1b, V1c, V2d'
+* IM11 dollars converted into seconds                            -> V2h (ii), (iv)
+* IM12 the error is sign-dependent                               -> V2c
+* IM13 recurrence ignored (improved when f_after > 0)            -> V2d
+* IM14 the pattern filter dropped (all keys pooled)              -> V2g
+* IM15 the prediction from the whole log, not the before window  -> V1a
+* IM16 the score used as the prediction without an expected      -> V1e, V2d
+* IM17 a needs_owner proposal drafted                             -> D2
+* IM18 the draft written into the project; verify appends a line -> D3 hashes
+* IM19 closed twice: the last close used                         -> V3e
+* IM20 wall-clock time in the draft header                       -> D4 (1.1 s gap)
+* IM21 --at ignored (the ledger ts used)                         -> V1g
+  (tests/improve/test_verify.py and test_draft.py: one test per probe row)
 
 Usage: ``uv run python dogfood/improve_mutants.py [--out FILE] [--jobs N] [ID ...]``.
-Exit 0 when the control passes and every mutant is caught.
+Exit 0 when the control passes and every mutant is caught; the last line is
+``mutants: N/N killed``.
 """
 
 from __future__ import annotations
@@ -49,7 +67,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SUITE = ["tests/improve", "tests/studio/test_events.py"]
 AN, EV, RB = "lattice/improve/analyze.py", "lattice/improve/events.py", "lattice/studio/rebuild.py"
-FILES = [AN, EV, RB, "lattice/improve/signals.py", "lattice/studio/plan.py",
+VF, DR, MN = "lattice/improve/verify.py", "lattice/improve/draft.py", "lattice/improve/__main__.py"
+FILES = [AN, EV, RB, VF, DR, MN, "lattice/improve/signals.py", "lattice/studio/plan.py",
          "dogfood/improve_mutants.py"]  # fmt: skip
 
 # id -> (behaviour, file, old text, new text)
@@ -125,6 +144,114 @@ MUTANTS: dict[str, tuple[str, str, str, str]] = {
         "    out = {str(k): float(v) for k, v in zip(_ks, _vs[1:] + _vs[:1])\n"
         "           if isinstance(v, int | float) and not isinstance(v, bool)}  # fmt: skip\n",
     ),
+    "IM7": (
+        "an event at the close second counted as after (>=)",
+        VF,
+        '        return "at_close"\n',
+        '        return "after"  # MUTANT IM7: the close second is after\n',
+    ),
+    "IM8": (
+        "an event at the close second counted as before (<=)",
+        VF,
+        "    if ts == close:\n",
+        "    if False:  # MUTANT IM8: the close second is before\n",
+    ),
+    "IM9": (
+        "not_enough_data reported as improved (exit 0)",
+        VF,
+        '            return "not_enough_data", (\n'
+        '                f"needs {MIN_OCCURRENCES} occurrences in each window',
+        '            return "improved", (  # MUTANT IM9\n'
+        '                f"needs {MIN_OCCURRENCES} occurrences in each window',
+    ),
+    "IM10": (
+        "minimum 2 occurrences instead of 3",
+        VF,
+        "MIN_OCCURRENCES = 3  #",
+        "MIN_OCCURRENCES = 2  # MUTANT IM10:",
+    ),
+    "IM11": (
+        "dollars converted into seconds when a window has no seconds ($1 = 3600 s)",
+        VF,
+        '    return o.seconds if unit == "s" else o.usd if unit == "usd" else None\n',
+        "    if o.seconds is not None:  # MUTANT IM11: one unit\n"
+        "        return o.seconds\n"
+        "    return o.usd * 3600 if o.usd is not None else None\n",
+    ),
+    "IM12": (
+        "the error is sign-dependent: | |measured| - |predicted| | / |predicted|",
+        VF,
+        '            error = abs(ch["delta"] - pd) / abs(pd)\n',
+        '            error = abs(abs(ch["delta"]) - abs(pd)) / abs(pd)  # MUTANT IM12\n',
+    ),
+    "IM13": (
+        "recurrence ignored (improved when f_after > 0)",
+        VF,
+        '    if fa > 0:\n        return "recurred", ',
+        '    if fa > 0:  # MUTANT IM13: a recurrence is not looked at\n        return "improved", ',
+    ),
+    "IM14": (
+        "the pattern filter dropped (every key of the log pooled)",
+        VF,
+        "else sorted(k for k in occs if fnmatch.fnmatchcase(k, signal))\n",
+        "else sorted(occs)  # MUTANT IM14: every key\n",
+    ),
+    "IM15": (
+        "the prediction rebuilt from the whole log, not the before window",
+        VF,
+        '    predicted, note = _predict(keys, res["family"], res["before_occ"])\n',
+        "    predicted, note = _predict(  # MUTANT IM15: the whole log\n"
+        '        keys, res["family"], [o for k in keys for o in occs[k]]\n'
+        "    )\n",
+    ),
+    "IM16": (
+        "the score used as the prediction when the proposal has no expected saving",
+        VF,
+        '    if family != "cost" or not is_x:\n        return None, "no prediction recorded"\n',
+        '    if family != "cost" or not is_x:  # MUTANT IM16: f x c as a saving\n'
+        '        sc = _proposal(Cluster(keys[0], list(before_occ)))["score"] if keys else None\n'
+        "        if sc:\n"
+        '            return {"delta": -sc, "unit": "s", "source": "score", "basis": "score"}, ""\n'
+        '        return None, "no prediction recorded"\n',
+    ),
+    "IM17": (
+        "a needs_owner proposal is drafted",
+        DR,
+        '    if p["status"] == "needs_owner":\n',
+        "    if False:  # MUTANT IM17: needs_owner drafted\n",
+    ),
+    "IM18": (
+        "draft written into the project; verify appends a ledger line",
+        MN,
+        '    if args.command == "verify":\n        print(\n',
+        '    if args.command == "verify":  # MUTANT IM18: writes where it must not\n'
+        '        with lpath.open("a", encoding="utf-8") as _f:\n'
+        '            _f.write(json.dumps({"id": args.id, "status": "open"}) + "\\n")\n'
+        "    else:\n"
+        '        (project / "improve-draft.md").write_text(doc["text"], encoding="utf-8")\n'
+        '    if args.command == "verify":\n'
+        "        print(\n",
+    ),
+    "IM19": (
+        "closed twice: the last close used, not the first of the run",
+        VF,
+        "            cur[1] += 1\n",
+        "            cur[1] += 1\n"
+        "            cur[0] = e  # MUTANT IM19: the last close of the run\n",
+    ),
+    "IM20": (
+        "wall-clock time in the draft header",
+        DR,
+        '        f"Proposal {ident} ({kind}), signal {key}; status open. As of {as_of}.",\n',
+        '        f"Proposal {ident} ({kind}), signal {key}; status open. As of "\n'
+        "        f\"{__import__('datetime').datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')}.\",\n",
+    ),
+    "IM21": (
+        "--at ignored (the ledger ts is the closing point)",
+        VF,
+        '    if at is not None:\n        close, source = at, "--at"\n',
+        '    if False:  # MUTANT IM21: --at ignored\n        close, source = at, "--at"\n',
+    ),
 }
 
 
@@ -134,7 +261,13 @@ def sha(path: Path) -> str:
 
 def copy_tree(dst: Path) -> None:
     ignore = shutil.ignore_patterns("__pycache__", ".pytest_cache", "*.pyc", ".ruff_cache")
-    for rel in ("lattice", "tests", "dogfood", "docs/results/data/streak-plans-2026-10-11"):
+    for rel in (
+        "lattice",
+        "tests",
+        "dogfood",
+        "docs/results/data/streak-plans-2026-10-11",
+        "docs/results/data/2026-10-12-spike3",
+    ):
         shutil.copytree(ROOT / rel, dst / rel, ignore=ignore)
 
 
@@ -218,6 +351,8 @@ def main(argv: list[str] | None = None) -> int:
             ok = ok and res["verdict"] == "caught"
     if args.out:
         args.out.write_text(json.dumps(results, indent=1))
+    killed = sum(1 for m in args.ids if results["runs"][m]["verdict"] == "caught")  # type: ignore[index]
+    print(f"mutants: {killed}/{len(args.ids)} killed", flush=True)
     return 0 if ok else 1
 
 

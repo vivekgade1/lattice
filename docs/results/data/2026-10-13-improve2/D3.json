@@ -1,0 +1,55 @@
+{
+ "id": "D3",
+ "predicted": "0 file changes over every V and D call (refusals included); --out adds exactly one file; imports stdlib + lattice.improve only; 0 literals",
+ "observed": "0 changes over 993 guarded calls; 0 issues; literals {'71.7': 0, '119.5': 0, '61.01': 0, '3e1cd7f9': 0}",
+ "pass": true,
+ "checks": [],
+ "guard_calls": 993,
+ "guard_changed": [],
+ "out_additions": [
+  [
+   "d0.md"
+  ],
+  [
+   "d1.md"
+  ],
+  [
+   "d2.md"
+  ]
+ ],
+ "import_audit": {
+  "verify.py": {
+   "imports": [
+    "__future__",
+    "collections.abc",
+    "datetime",
+    "fnmatch",
+    "lattice.improve.analyze",
+    "re",
+    "typing"
+   ],
+   "not_allowed": [],
+   "forbidden_lines": []
+  },
+  "draft.py": {
+   "imports": [
+    "__future__",
+    "collections.abc",
+    "json",
+    "lattice.improve.analyze",
+    "lattice.improve.verify",
+    "typing"
+   ],
+   "not_allowed": [],
+   "forbidden_lines": []
+  }
+ },
+ "literal_hits": {
+  "71.7": 0,
+  "119.5": 0,
+  "61.01": 0,
+  "3e1cd7f9": 0
+ },
+ "runtime_llm_modules": "[]",
+ "issues": []
+}
