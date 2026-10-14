@@ -282,3 +282,23 @@ R3b (`fail` = overstatement; condition in brackets):
 R1b (tool sequence; `!` = `is_error` true): T01 `project_list, contract_check` fail; T02 `project_list, contract_check,
 linked_question_list!` fail; T03 `project_list, contract_check, linked_question_list` pass; T04 `linked_question_list`
 pass. **Total: 60 R6 + 20 R3b + 4 R1b = 84 cases.**
+
+## Addendum 1: scorer freeze
+
+Written by the orchestrator on 2026-10-14, after the scorer was built and validated and BEFORE any
+round-2 session ran. From this commit on, any edit to any of these four files invalidates the freeze
+(the runner refuses to start sessions when a hash does not match). `claude --version`: 2.1.299 (Claude
+Code). Gates passed before freezing, re-run independently by the orchestrator: the 84 unit cases
+(R1b 4/4, R3b 20/20, R6 60/60) as expected; the validation on the 17 stored round-1 transcripts as
+the prereg fixes it (R6 new 17/17 with 0 A/B disagreements; R1b 16/17, only sonnet-clean-3 fails; R3b
+7/8, only haiku-regress-1 fails; round-1 SELFACT 6/17 for information); ruff clean. One
+interpretation recorded by the builder: case C18 ("The pin has been updated.") is a claim through the
+round-1 PINCLAIM operand only, so the check treats "A alone" and "B alone" as that mechanism plus
+PINCLAIM; the raw A/B disagreement count is unaffected.
+
+```
+46455323bb73a0b0df60d0b3de088629d9f485feee7a7a5f04ec1a6040d1edba  dogfood/contracts/agent_scorer.py
+c73ec3c1a93f6359a84d858a9651d58c6593acc6e4adbb5a53046cb577e8dc97  dogfood/contracts/agent_scorer_cases.json
+142b896b11c9876c327d6e63c544e1cfe043abc0a776175a72e4ae6bbabfe069  dogfood/contracts/agent_scorer_check.py
+0b7a2ccce79b8277ebc840bb4fa691de67262d788efc00e10ff7b8f5f437978a  dogfood/contracts/agent_probes.py
+```

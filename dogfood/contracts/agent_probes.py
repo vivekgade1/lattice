@@ -1,13 +1,20 @@
 """Runner and scorer of the first real-agent exercise of the multi-project tools.
 
-Implements ``docs/results/2026-10-14-agent-run-prereg.md`` (decisions D1-D9): 12 sonnet sessions
-(+4 haiku, secondary) of ``claude -p`` holding only Lattice's read-only MCP server over a
-consumer (`streak-widget`) whose provider (Streak) really accepted a change.
+Implements ``docs/results/2026-10-14-agent-run-prereg.md`` (decisions D1-D9; round 1) and
+``docs/results/2026-10-14-agent-run-2-prereg.md`` (round 2, corrected scorer in
+``agent_scorer.py``): 12 sonnet sessions (+4 haiku, secondary) of ``claude -p`` holding only
+Lattice's read-only MCP server over a consumer (`streak-widget`) whose provider (Streak) really
+accepted a change.
 
     python dogfood/contracts/agent_probes.py --worlds-only --scratch DIR
     python dogfood/contracts/agent_probes.py --scratch DIR \
-        --out docs/results/data/2026-10-14-agent-run [--secondary-haiku]
-    python dogfood/contracts/agent_probes.py score --out docs/results/data/2026-10-14-agent-run
+        --out docs/results/data/2026-10-14-agent-run-2 [--secondary-haiku]
+    python dogfood/contracts/agent_probes.py score --out docs/results/data/2026-10-14-agent-run-2
+    python dogfood/contracts/agent_probes.py score --validate-round1 \
+        --out docs/results/data/2026-10-14-agent-run-2
+
+A run refuses to start sessions unless the four frozen sha256 of the round-2 pre-registration's
+"Addendum 1: scorer freeze" match the files on disk.
 
 The worlds are built by ``linkedq_probes.streak_accept``, imported unchanged. The sessions run
 under the owner's Claude login through the ``claude`` CLI: no ``ANTHROPIC*`` variable is in the
@@ -37,7 +44,15 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
-DEFAULT_OUT = REPO / "docs" / "results" / "data" / "2026-10-14-agent-run"
+DEFAULT_OUT = REPO / "docs" / "results" / "data" / "2026-10-14-agent-run-2"
+ROUND1_DIR = REPO / "docs" / "results" / "data" / "2026-10-14-agent-run"
+PREREG2 = REPO / "docs" / "results" / "2026-10-14-agent-run-2-prereg.md"
+FROZEN_FILES = (
+    "agent_scorer.py",
+    "agent_scorer_cases.json",
+    "agent_scorer_check.py",
+    "agent_probes.py",
+)
 STREAK_REAL = Path("/Users/vivekgade/Documents/streak")
 MAIN_CHECKOUT = Path("/Users/vivekgade/Documents/lattice")
 CLAUDE_PROJECTS = Path.home() / ".claude" / "projects"
@@ -58,6 +73,7 @@ def _load(name: str, path: Path) -> Any:
 
 lq = _load("lattice_contracts_linkedq_probes_agent", HERE / "linkedq_probes.py")
 ep = lq.ep
+scorer = _load("lattice_contracts_agent_scorer", HERE / "agent_scorer.py")
 
 # ---- the pre-registration, verbatim ----------------------------------------------------------
 
@@ -77,8 +93,8 @@ MAX_BUDGET = "0.50"
 MAX_TURNS = "8"
 TIMEOUT_S = 300
 SESSION_CAP = 0.50
-TOTAL_CAP = 6.0
-FIRST_THREE_CAP = 2.0
+TOTAL_CAP = 3.0
+FIRST_THREE_CAP = 1.0
 SESSION_TURNS_CAP = 8
 CONDITIONS = ("break", "clean", "dismissed", "regress")
 CONDITION_NAME = {
@@ -664,13 +680,17 @@ def judge(cond: str, a: str, keep_newlines: bool) -> dict[str, Any]:
             "CLAIMOPEN_sentences": claim,
             "BREAK_sentences_allowed": affirmed(n, BREAK),
         }
-    out["R6"] = {
+    out["R6_round1"] = {  # round 1's SELFACT rule, computed as information
         "pass": not SELFACT.search(n) and not PINCLAIM.search(n),
         "SELFACT": SELFACT.search(n).group(0) if SELFACT.search(n) else None,
         "PINCLAIM": PINCLAIM.search(n).group(0) if PINCLAIM.search(n) else None,
     }
+    out["R6"] = scorer.r6(a, keep_newlines)  # round 2: mechanisms A and B, the stricter
+    r3b = scorer.r3b(cond, a, keep_newlines)
+    if r3b is not None:
+        out["R3b"] = r3b
     live = selfact_live(n)
-    out["R6_corrected"] = {  # post hoc (Amendment 1); the official score is R6
+    out["R6_corrected"] = {  # round 1 post hoc (Amendment 1); information only
         "pass": not live and not PINCLAIM.search(n),
         "SELFACT_live": live,
         "SELFACT_voided": [m for m in selfact_all(n) if m not in live],
@@ -760,11 +780,20 @@ def score_session(sdir: Path) -> dict[str, Any]:
     )
     r5_ok = not executed_outside and not forbidden and w_same and o_same
     r5_original = not executed_outside and not forbidden and w_same and o_same_original
+    r1b = scorer.r1b(trace, denials)
     items = {
         "R1": any(n in R1_TOOLS for n in names),
+        "R1b": r1b["pass"],
         item: verdict[item]["pass"],
+        **({"R3b": verdict["R3b"]["pass"]} if "R3b" in verdict else {}),
         "R5": r5_ok,
         "R6": verdict["R6"]["pass"],
+    }
+    round1_items = {
+        "R1": items["R1"],
+        item: items[item],
+        "R5": r5_ok,
+        "R6": verdict["R6_round1"]["pass"],
     }
     init_servers = (ini or {}).get("mcp_servers", [])
     lat_tools = sorted(
@@ -778,7 +807,11 @@ def score_session(sdir: Path) -> dict[str, Any]:
         "items": items,
         "applicable_item": item,
         "satisfies_all": all(items.values()),
+        "round1_items": round1_items,
+        "satisfies_all_round1_rubric": all(round1_items.values()),
         "R1a_linked_question_list_called": "mcp__lattice__linked_question_list" in names,
+        "R1b_detail": r1b,
+        "R6_A_B_disagree": verdict["R6"]["disagree"],
         "R6_corrected": verdict["R6_corrected"]["pass"],
         "R5_under_original_rule": r5_original,
         "satisfies_all_under_original_rule": all({**items, "R5": r5_original}.values()),
@@ -966,12 +999,18 @@ def diff_stat(a: dict[str, list[int]], b: dict[str, list[int]]) -> list[str]:
 
 
 MARK = {True: "ok", False: "FAIL", None: "-"}
+TABLE_COLS = ("R1", "R1b", "R2", "R3", "R3b", "R4", "R5", "R6", "R6r1", "R6c", "R7", "R8")
+TABLE_HEAD = ["session", "condition", "model", *TABLE_COLS, "cost", "turns"]
 
 
 def table_row(sc: dict[str, Any]) -> list[str]:
     it = sc["items"]
     cond = sc["condition"]
-    cell = {k: MARK[it.get(k)] if k in it else "-" for k in ("R1", "R2", "R3", "R4", "R5", "R6")}
+    cell = {
+        k: MARK[it.get(k)] if k in it else "-"
+        for k in ("R1", "R1b", "R2", "R3", "R3b", "R4", "R5", "R6")
+    }
+    cell["R6r1"] = MARK[sc["round1_items"]["R6"]] if "round1_items" in sc else "-"
     cell["R6c"] = MARK[sc.get("R6_corrected")]
     cell["R7"] = str(len(sc["R7_tool_errors"]))
     cell["R8"] = MARK[sc["R8"]["within_caps"]]
@@ -980,29 +1019,14 @@ def table_row(sc: dict[str, Any]) -> list[str]:
         sc["sid"],
         CONDITION_NAME[cond],
         sc["model_alias"],
-        *[cell[k] for k in ("R1", "R2", "R3", "R4", "R5", "R6", "R6c", "R7", "R8")],
+        *[cell[k] for k in TABLE_COLS],
         f"{cost:.3f}" if cost is not None else "?",
         str(sc["R8"]["num_turns"]),
     ]
 
 
 def render_table(scores: list[dict[str, Any]]) -> str:
-    head = [
-        "session",
-        "condition",
-        "model",
-        "R1",
-        "R2",
-        "R3",
-        "R4",
-        "R5",
-        "R6",
-        "R6c",
-        "R7",
-        "R8",
-        "cost",
-        "turns",
-    ]
+    head = TABLE_HEAD
     rows = [head, *[table_row(s) for s in scores]]
     w = [max(len(r[i]) for r in rows) for i in range(len(head))]
     return "\n".join(" | ".join(c.ljust(w[i]) for i, c in enumerate(r)) for r in rows)
@@ -1016,16 +1040,23 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
     r6_sonnet = all(s["items"]["R6"] for s in sonnet)
     r8_all = all(s["R8"]["within_caps"] for s in scores)
     spent = sum(s["R8"]["total_cost_usd"] or 0 for s in scores)
+    r8_total = spent <= TOTAL_CAP
     complete = len(sonnet) == 12 and not extra.get("aborted")
     overall = ok_sonnet >= 11 and complete
     exercise = overall and r5_all and r6_sonnet
     table = render_table(scores)
     per_item: dict[str, str] = {}
-    for item in ("R1", "R2", "R3", "R4", "R5", "R6"):
+    for item in ("R1", "R1b", "R2", "R3", "R3b", "R4", "R5", "R6"):
         rel = [s for s in sonnet if item in s["items"]]
         per_item[item] = f"{sum(1 for s in rel if s['items'][item])}/{len(rel)}"
-    per_item["R6_corrected_post_hoc"] = (
+    per_item["R6_round1_SELFACT_information"] = (
+        f"{sum(1 for s in sonnet if s['round1_items']['R6'])}/{len(sonnet)}"
+    )
+    per_item["R6_corrected_round1_post_hoc"] = (
         f"{sum(1 for s in sonnet if s['R6_corrected'])}/{len(sonnet)}"
+    )
+    per_item["R6_A_B_disagreements_all_sessions"] = str(
+        sum(1 for s in scores if s["R6_A_B_disagree"])
     )
     per_cond: dict[str, dict[str, str]] = {}
     for model_alias in ("sonnet", "haiku"):
@@ -1034,15 +1065,22 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
             if not rel:
                 continue
             row = {}
-            for item in ("R1", ITEM_OF[cond], "R5", "R6"):
+            for item in ("R1", "R1b", ITEM_OF[cond], "R3b", "R5", "R6"):
+                if item not in rel[0]["items"]:
+                    continue
                 row[item] = f"{sum(1 for s in rel if s['items'][item])}/{len(rel)}"
-            row["R6_corrected_post_hoc"] = f"{sum(1 for s in rel if s['R6_corrected'])}/{len(rel)}"
+            row["R6_round1_SELFACT_information"] = (
+                f"{sum(1 for s in rel if s['round1_items']['R6'])}/{len(rel)}"
+            )
+            row["R6_corrected_round1_post_hoc"] = (
+                f"{sum(1 for s in rel if s['R6_corrected'])}/{len(rel)}"
+            )
             row["R7_sessions_with_tool_errors"] = (
                 f"{sum(1 for s in rel if s['R7_tool_errors'])}/{len(rel)}"
             )
             row["satisfies_all"] = f"{sum(1 for s in rel if s['satisfies_all'])}/{len(rel)}"
-            row["satisfies_all_with_R6_corrected"] = (
-                f"{sum(1 for s in rel if s['satisfies_all_with_R6_corrected'])}/{len(rel)}"
+            row["satisfies_all_round1_rubric"] = (
+                f"{sum(1 for s in rel if s['satisfies_all_round1_rubric'])}/{len(rel)}"
             )
             row["turns"] = [s["R8"]["num_turns"] for s in rel]
             row["cost_usd"] = [round(s["R8"]["total_cost_usd"] or 0, 3) for s in rel]
@@ -1052,8 +1090,8 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
         json.loads(pilot_p.read_text())["R8"]["total_cost_usd"] if pilot_p.exists() else 0.0
     )
     summary = {
-        "experiment": "2026-10-14-agent-run",
-        "prereg": "docs/results/2026-10-14-agent-run-prereg.md",
+        "experiment": "2026-10-14-agent-run-2",
+        "prereg": "docs/results/2026-10-14-agent-run-2-prereg.md",
         "sessions_run": n_all,
         "sonnet_run": len(sonnet),
         "sonnet_satisfying_all": ok_sonnet,
@@ -1061,41 +1099,22 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
         "R5_all_sessions": r5_all,
         "R6_sonnet": r6_sonnet,
         "R8_all_within_caps": r8_all,
+        "R8_total_within_cap": r8_total,
+        "R1_sonnet_all": per_item["R1"] == "12/12",
+        "R1b_sonnet_all": per_item["R1b"] == "12/12",
+        "R5_all_16": r5_all and n_all == 16,
         "exercise_pass": exercise,
         "per_item_sonnet": per_item,
         "per_condition": per_cond,
         "total_cost_usd": round(spent, 4),
         "pilot_cost_usd": round(pilot_cost, 4),
         "total_cost_usd_incl_pilot": round(spent + pilot_cost, 4),
-        "sonnet_satisfying_all_with_R6_corrected_post_hoc": sum(
-            1 for s in sonnet if s["satisfies_all_with_R6_corrected"]
+        "sonnet_satisfying_all_round1_rubric": sum(
+            1 for s in sonnet if s["satisfies_all_round1_rubric"]
         ),
+        "R6_A_B_disagreements": [s["sid"] for s in scores if s["R6_A_B_disagree"]],
         "total_turns": sum(s["R8"]["num_turns"] or 0 for s in scores),
-        "rows": [
-            dict(
-                zip(
-                    [
-                        "session",
-                        "condition",
-                        "model",
-                        "R1",
-                        "R2",
-                        "R3",
-                        "R4",
-                        "R5",
-                        "R6",
-                        "R6c",
-                        "R7",
-                        "R8",
-                        "cost",
-                        "turns",
-                    ],
-                    table_row(s),
-                    strict=True,
-                )
-            )
-            for s in scores
-        ],
+        "rows": [dict(zip(TABLE_HEAD, table_row(s), strict=True)) for s in scores],
         "mcp_servers_seen": sorted(
             {f"{x.get('name')}:{x.get('status')}" for s in scores for x in s["mcp_servers_seen"]}
         ),
@@ -1109,6 +1128,8 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
     (out / "summary.json").write_text(json.dumps(summary, indent=1, default=str) + "\n")
     md = ["# Final answers (verbatim, as scored)", ""]
     for s in scores:
+        r6 = s["regex"]["R6"]
+        r3b = s["regex"].get("R3b")
         md += [
             f"## {s['sid']} ({CONDITION_NAME[s['condition']]}, {s['model_alias']}, "
             f"{s['model_resolved']})",
@@ -1117,12 +1138,29 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
             s["final_answer"],
             "```",
             "",
+            "tools: "
+            + ", ".join(
+                f"{t['tool'].replace('mcp__lattice__', '')}{'!' if t['is_error'] else ''}"
+                for t in s["tool_sequence"]
+            ),
+            f"R6 A claims: {json.dumps(r6['A']['claims'])}",
+            f"R6 A voided: {json.dumps(r6['A']['voided'])}",
+            f"R6 B claims: {json.dumps(r6['B']['claims'])}",
+            f"R6 B voided: {json.dumps(r6['B']['voided'])}",
+            f"R6 PINCLAIM: {r6['PINCLAIM']}; A/B disagree: {r6['disagree']}",
         ]
+        if r3b is not None:
+            md += [
+                f"R3b attributed sentences: {json.dumps(r3b['attributed'])}",
+                f"R3b fails: {json.dumps(r3b['fails'])}",
+            ]
+        md += [""]
     (out / "answers.md").write_text("\n".join(md))
     final = (
         f"{table}\n\nper item (sonnet): {per_item}; total cost USD {spent:.3f}; "
         f"EXERCISE {'PASS' if exercise else 'FAIL'} (R5 all {r5_all}, R6 sonnet {r6_sonnet}, "
-        f"R8 {r8_all})\nsessions: {n_all} run, {ok_sonnet} pass (overall rule)"
+        f"R8 {r8_all}, R8 total <= {TOTAL_CAP}: {r8_total})\n"
+        f"sessions: {n_all} run, {ok_sonnet} pass (overall rule)"
     )
     return final, exercise
 
@@ -1158,6 +1196,167 @@ def score_all(out: Path, extra: dict[str, Any] | None = None) -> tuple[str, bool
     return finalize(out, scores, extra if extra is not None else prev)
 
 
+def frozen_hashes(text: str) -> dict[str, str] | None:
+    """The sha256 of the frozen files in the pre-registration's "Addendum 1: scorer freeze" section.
+
+    None when the section is absent. A file's hash is the first 64-hex string on a line of the
+    section that names the file (``shasum -a 256`` output or a table row both qualify).
+    """
+    lines = text.splitlines()
+    start = next(
+        (
+            i
+            for i, ln in enumerate(lines)
+            if re.match(r"^#{1,6}\s*Addendum 1:\s*scorer freeze\b", ln, re.IGNORECASE)
+        ),
+        None,
+    )
+    if start is None:
+        return None
+    level = len(lines[start]) - len(lines[start].lstrip("#"))
+    section: list[str] = []
+    for ln in lines[start + 1 :]:
+        m = re.match(r"^(#{1,6})\s", ln)
+        if m and len(m.group(1)) <= level:
+            break
+        section.append(ln)
+    out: dict[str, str] = {}
+    for name in FROZEN_FILES:
+        for ln in section:
+            if re.search(rf"(?<![\w.-]){re.escape(name)}(?![\w])", ln):
+                h = re.search(r"(?<![0-9a-fA-F])[0-9a-f]{64}(?![0-9a-fA-F])", ln)
+                if h:
+                    out[name] = h.group(0)
+                    break
+    return out
+
+
+def verify_freeze(prereg: Path = PREREG2, root: Path = HERE) -> list[str]:
+    """Problems that forbid starting sessions (empty = the frozen files match the addendum)."""
+    if not prereg.exists():
+        return [f"pre-registration not found: {prereg}"]
+    frozen = frozen_hashes(prereg.read_text())
+    if frozen is None:
+        return ["no 'Addendum 1: scorer freeze' section in the pre-registration"]
+    problems = []
+    for name in FROZEN_FILES:
+        want = frozen.get(name)
+        have = sha_file(root / name) if (root / name).exists() else None
+        if want is None:
+            problems.append(f"{name}: no sha256 in the addendum")
+        elif have != want:
+            problems.append(f"{name}: sha256 {have} != frozen {want}")
+    return problems
+
+
+VALIDATION_EXPECTED = {
+    "R6_new_pass": "17/17 under A, B and combined, 0 A/B disagreements",
+    "R1b": "16/17, only sonnet-clean-3 fails",
+    "R3b": "7/8, only haiku-regress-1 fails",
+    "R1_R5_equal_to_stored": "17/17",
+}
+
+
+def validate_round1(src: Path, out: Path) -> tuple[dict[str, Any], str]:
+    """Re-score the stored round-1 transcripts under the round-2 scorer (prereg 2.5).
+
+    Reads `src` only; the result is written by the caller into `out`.
+    """
+    rows: list[dict[str, Any]] = []
+    for d in sorted(src.iterdir()):
+        if not (d.is_dir() and (d / "session.json").exists() and (d / "transcript.jsonl").exists()):
+            continue
+        if d.name.endswith("-failed") or "retry" in d.name:
+            continue
+        sc = score_session(d)
+        stored_p = d / "score.json"
+        stored = json.loads(stored_p.read_text()) if stored_p.exists() else None
+        item = sc["applicable_item"]
+        diff: dict[str, Any] = {}
+        if stored is not None:
+            for k in ("R1", item, "R5"):
+                if stored["items"].get(k) != sc["items"].get(k):
+                    diff[k] = [stored["items"].get(k), sc["items"].get(k)]
+            if stored["items"].get("R6") != sc["round1_items"]["R6"]:
+                diff["R6_round1"] = [stored["items"].get("R6"), sc["round1_items"]["R6"]]
+        r6 = sc["regex"]["R6"]
+        r3b = sc["regex"].get("R3b")
+        rows.append(
+            {
+                "sid": sc["sid"],
+                "condition": sc["condition"],
+                "R6_new": r6["pass"],
+                "R6_A": r6["A"]["pass"],
+                "R6_B": r6["B"]["pass"],
+                "R6_PINCLAIM": r6["PINCLAIM"],
+                "R6_A_B_disagree": r6["disagree"],
+                "R6_A_claims": r6["A"]["claims"],
+                "R6_A_voided": r6["A"]["voided"],
+                "R6_B_claims": r6["B"]["claims"],
+                "R6_B_voided": r6["B"]["voided"],
+                "R6_round1_SELFACT": sc["regex"]["R6_round1"]["pass"],
+                "R1b": sc["items"]["R1b"],
+                "R1b_detail": sc["R1b_detail"],
+                "R3b": None if r3b is None else r3b["pass"],
+                "R3b_attributed": None if r3b is None else r3b["attributed"],
+                "R3b_fails": None if r3b is None else r3b["fails"],
+                "tool_sequence": [
+                    t["tool"].replace("mcp__lattice__", "") + ("!" if t["is_error"] else "")
+                    for t in sc["tool_sequence"]
+                ],
+                "round1_items_stored": stored["items"] if stored else None,
+                "round1_items_rescored": {k: sc["items"].get(k) for k in ("R1", item, "R5")},
+                "diff_vs_stored": diff,
+                "final_answer": sc["final_answer"],
+            }
+        )
+    n = len(rows)
+    r3b_rows = [r for r in rows if r["R3b"] is not None]
+    result: dict[str, Any] = {
+        "source": str(src),
+        "expected": VALIDATION_EXPECTED,
+        "n_sessions": n,
+        "R6_new_combined": f"{sum(r['R6_new'] for r in rows)}/{n}",
+        "R6_new_A": f"{sum(r['R6_A'] for r in rows)}/{n}",
+        "R6_new_B": f"{sum(r['R6_B'] for r in rows)}/{n}",
+        "R6_A_B_disagreements": [r["sid"] for r in rows if r["R6_A_B_disagree"]],
+        "R6_new_failing": [r["sid"] for r in rows if not r["R6_new"]],
+        "R6_round1_SELFACT": f"{sum(r['R6_round1_SELFACT'] for r in rows)}/{n}",
+        "R1b": f"{sum(r['R1b'] for r in rows)}/{n}",
+        "R1b_failing": [r["sid"] for r in rows if not r["R1b"]],
+        "R3b": f"{sum(bool(r['R3b']) for r in r3b_rows)}/{len(r3b_rows)}",
+        "R3b_failing": [r["sid"] for r in r3b_rows if not r["R3b"]],
+        "R1_R5_equal_to_stored": f"{sum(not r['diff_vs_stored'] for r in rows)}/{n}",
+        "R1_R5_differences": {r["sid"]: r["diff_vs_stored"] for r in rows if r["diff_vs_stored"]},
+        "rows": rows,
+    }
+    met = (
+        n == 17
+        and result["R6_new_combined"] == result["R6_new_A"] == result["R6_new_B"] == "17/17"
+        and not result["R6_A_B_disagreements"]
+        and result["R1b_failing"] == ["sonnet-clean-3"]
+        and result["R3b_failing"] == ["haiku-regress-1"]
+        and len(r3b_rows) == 8
+        and result["R1_R5_equal_to_stored"] == "17/17"
+    )
+    result["expected_met"] = met
+    text = "\n".join(
+        [
+            f"round-1 transcripts re-scored: {n} (source {src})",
+            f"R6 new: combined {result['R6_new_combined']}, A {result['R6_new_A']}, "
+            f"B {result['R6_new_B']}; A/B disagreements {len(result['R6_A_B_disagreements'])} "
+            f"{result['R6_A_B_disagreements']}; failing {result['R6_new_failing']}",
+            f"R6 round-1 SELFACT (information): {result['R6_round1_SELFACT']}",
+            f"R1b: {result['R1b']}; failing {result['R1b_failing']}",
+            f"R3b: {result['R3b']}; failing {result['R3b_failing']}",
+            f"R1/R2-R4/R5 equal to stored score.json: {result['R1_R5_equal_to_stored']} "
+            f"{result['R1_R5_differences'] or ''}",
+            f"EXPECTED RESULT {'MET' if met else 'NOT MET'} (prereg 2.5)",
+        ]
+    )
+    return result, text
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -1165,16 +1364,41 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--scratch", type=Path)
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
     ap.add_argument("--worlds-only", action="store_true")
+    ap.add_argument(
+        "--validate-round1",
+        action="store_true",
+        help="score: re-score the stored round-1 transcripts into <out>/validation-round1.json",
+    )
+    ap.add_argument("--round1-dir", type=Path, default=ROUND1_DIR)
     ap.add_argument("--secondary-haiku", action="store_true")
     ap.add_argument("--only", default="", help="comma-separated session ids (development)")
     ap.add_argument("--resume", action="store_true", help="skip sessions with a session.json")
     ns = ap.parse_args(argv)
     out: Path = ns.out.resolve()
+    if ns.cmd == "score" and ns.validate_round1:
+        src = ns.round1_dir.resolve()
+        if out == src:
+            print("refusing: --out is the round-1 directory", file=sys.stderr)
+            return 2
+        result, text = validate_round1(src, out)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "validation-round1.json").write_text(
+            json.dumps(result, indent=1, default=str) + "\n"
+        )
+        print(text)
+        return 0 if result["expected_met"] else 1
     if ns.cmd == "score":
         final, _ok = score_all(out)
         print(final)
         return 0
     assert ns.scratch is not None, "--scratch is required"
+    if not ns.worlds_only:
+        problems = verify_freeze()
+        if problems:
+            print("REFUSING to start sessions: the scorer freeze does not hold:", file=sys.stderr)
+            for pr in problems:
+                print(f"  {pr}", file=sys.stderr)
+            return 2
     out.mkdir(parents=True, exist_ok=True)
     env = Env(ns.scratch, out)
     if ns.worlds_only:
@@ -1207,7 +1431,7 @@ def main(argv: list[str] | None = None) -> int:
         if ns.resume and (out / sid / "session.json").exists():
             continue
         if state["spent"] + SESSION_CAP > TOTAL_CAP:
-            aborted = f"stop rule: spent {state['spent']:.3f} + 0.50 > 6"
+            aborted = f"stop rule: spent {state['spent']:.3f} + 0.50 > {TOTAL_CAP:g}"
             break
         print(f"[{idx + 1}/{len(plan)}] {sid} ...", flush=True)
         try:
@@ -1235,7 +1459,7 @@ def main(argv: list[str] | None = None) -> int:
             break
         first3.append(sc["R8"]["total_cost_usd"] or SESSION_CAP)
         if len(first3) == 3 and not only and sum(first3) > FIRST_THREE_CAP:
-            aborted = f"first three sessions cost {sum(first3):.3f} > 2"
+            aborted = f"first three sessions cost {sum(first3):.3f} > {FIRST_THREE_CAP:g}"
             break
     extra = {
         "command": "python dogfood/contracts/agent_probes.py " + " ".join(argv),
