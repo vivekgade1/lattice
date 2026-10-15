@@ -1,0 +1,108 @@
+{
+ "runs": 10,
+ "a2a_runs": 3,
+ "base_ref": "a4ab4a1",
+ "table": [
+  {
+   "id": "A0",
+   "predicted": "18 of 18 rows (a-r, 24 cases) exact; hashes unchanged on every exit-2/3 row",
+   "observed": "18 rows, 24 cases; 0 problem(s)",
+   "pass": true,
+   "seconds": 57.2
+  },
+  {
+   "id": "A1a",
+   "predicted": "exit 0; improve/imp-3e1cd7f9 off next-phases a4ab4a1; inserted line 22; sha256 c516bc836f33cdc8; blob 642c32d -> 3def11c; tree ce7f02cf0d0b1156; 1 + line, 0 - lines; no warning",
+   "observed": "tree ce7f02cf0d0b1156; 0 problem(s) over 10 runs",
+   "pass": true,
+   "seconds": 19.4
+  },
+  {
+   "id": "A1b",
+   "predicted": "exit 0; main a0db033; inserted line 22; sha256 4c4d6bd878d47f0d; blob 12b2948 -> b8a7c2f; tree c585c3bd71872cd3; gates skipped; integration_branch warning",
+   "observed": "tree c585c3bd71872cd3; gates skipped; 0 problem(s) over 10 runs",
+   "pass": true,
+   "seconds": 5.7
+  },
+  {
+   "id": "A2a",
+   "predicted": "3 of 3 passed, each gate seconds in (0, 900); check.sh tail `PASS: 0 findings (D 0, X 0); 435 cases run` ~53 s, pytest ~190 s; untracked_after []",
+   "observed": "3 runs; seconds [[71.48, 359.53], [69.82, 359.86], [69.24, 356.36]]; 0 problem(s)",
+   "pass": true,
+   "seconds": 1291.4
+  },
+  {
+   "id": "A2b-f",
+   "predicted": "b exit 1 failed (0,1) kept; c exit 1 124 timed_out 2-9 s; d exit 0 none_configured + warning; e exit 0 skipped; f exit 2 interrupted, no sleep left (5 of 5)",
+   "observed": "5 rows; 0 problem(s)",
+   "pass": true,
+   "seconds": 64.5
+  },
+  {
+   "id": "A3",
+   "predicted": "0 changed hashes, 0 unexpected paths or argv; static: stdlib + lattice.improve imports, no claude/anthropic/lattice.llm, no I-3 literals; A3b: only info/exclude",
+   "observed": "0 problem(s); rows ['A0j', 'A1a', 'A1b', 'A2b', 'A3b', 'A5a']",
+   "pass": true,
+   "seconds": 58.5
+  },
+  {
+   "id": "A4",
+   "predicted": "13 of 13 rows (a-m); on each exit-0 row new parse = old + the one key and every other byte identical",
+   "observed": "14 cases; 0 problem(s)",
+   "pass": true,
+   "seconds": 40.9
+  },
+  {
+   "id": "A5",
+   "predicted": "a -> 0 (worktree, branch gone; record renamed byte-identical; hashes = before apply); b not_applied; c branch_moved; d merged; e worktree_dirty; b-e remove nothing (5 of 5)",
+   "observed": "5 rows; 0 problem(s)",
+   "pass": true,
+   "seconds": 19.3
+  },
+  {
+   "id": "A6",
+   "predicted": "a: second apply leaves record and branch byte-identical; b: apply, discard, apply = same tree, diff, message, records; c: 10 fresh clones x A1a, A1b from two cwds: one record (masked), tree ids as A1 (3 of 3)",
+   "observed": "0 problem(s); c {'A1a': {'records': 10, 'distinct': 1}, 'A1b': {'records': 10, 'distinct': 1}}",
+   "pass": true,
+   "seconds": 29.3
+  },
+  {
+   "id": "A7",
+   "predicted": "a improved exit 0 100.00 -> 40.00, delta -60.00, rel -0.600, predicted -60.0, error 0.000, entry.commit = apply sha; b not_improved exit 1 error 1.000; c closed; d merged (4 of 4)",
+   "observed": "a improved -60.0; b not_improved; 0 problem(s)",
+   "pass": true,
+   "seconds": 9.8
+  },
+  {
+   "id": "A8",
+   "predicted": "tests/improve + tests/test_cli.py 0 failures; improve2 15 of 15; IM1-IM21 21 of 21; check.sh PASS 435 cases; the five older commands and their --help byte-identical to a4ab4a1; improve --help differs by the apply lines only",
+   "observed": "pytest `200 passed in 24.51s`; improve2 `probes: 15/15 pass`; IM {'killed': 21, 'total': 21}; identity 22/22; 0 problem(s)",
+   "pass": true,
+   "seconds": 139.9
+  }
+ ],
+ "probes_passed": 11,
+ "probes_total": 11,
+ "elapsed_s": 3420.8,
+ "findings": [],
+ "post_hoc_script_corrections": [
+  "A3, A8 (first complete run): (1) A3 listed the number of new paths in the per-run observation, which varies by one with the loose-object fan-out directory the new commit lands in; the count is raw data only now (the unexpected paths are the observation). (2) A8 ran the base tree's commands with cwd = this tree, so `python -m` imported this tree for both sides (the identity check was vacuous: only the stateful import-plan and the help-line filter differed); cwd is the tree being run now. import-plan also ran twice on one state directory (the second run writes nothing); each tree gets a fresh one. A8 and A3 were rerun alone (`--only A3,A8`).",
+  "A2a (first complete run): the three gated records were compared with an ungated reference made in another scratch root (`A2a-ref`), so the worktree and `next` paths differed; all three gates of all three runs had passed. A script bug; the comparison masks the root path now and A2a was rerun alone (`--only A2a`, summary merged).",
+  "A0 (first full run, aborted after A1b): the 10 runs of A0 differed only in the 7-hex commit sha that the knob_pending detail names (the commit sha is a masked field, 2.9); the script did not mask it in the observation. A script bug; the sha7 is masked now and the whole probe run was restarted (nothing of that run is reported).",
+  "A3 (first complete debug run, 1 run): the snapshot listed the new branch improve/<id> among 'branches' and the allowed-new-paths rule did not allow the directory `.git/worktrees` itself (only `.git/worktrees/<id>/**`); both are script bugs (the rule text names the branch's ref and worktrees/<id>/), corrected before any reported run."
+ ],
+ "decisions": [
+  "A0 l-n: `--branch main` is a branch_exists case only when main is not protected, so that group's synthetic studio.toml sets `protected_branches = [\"master\"]` (master stays protected, as row l needs); a second observation (default protection, main existing) is recorded as `bad_branch`: the order of 2.2 (9) puts bad_branch before branch_exists.",
+  "A0 r has two cases (an unparseable studio.toml; `--discard ID --no-gates`), which makes the 24 cases of the rule (o-r list five items).",
+  "A4 c: the row's file has a [rebuild] table without the key (so `inserted`) and the key in [check]; with no [rebuild] at all the same file is row d's created_table.",
+  "A2f: SIGTERM is sent 2.0 s after the process starts (the gate has been running since about 0.7 s).",
+  "A8: IM1-IM21 are read from the mutant script's mutants.json (run first); the probe runs the script itself only when that file is missing."
+ ],
+ "reruns": [
+  [
+   "A2a",
+   "A3",
+   "A8"
+  ]
+ ]
+}

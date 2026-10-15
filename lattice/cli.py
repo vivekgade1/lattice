@@ -8,7 +8,7 @@
     lattice perf  measure|check [--project DIR] ...                       # lattice.perf
     lattice module install|list|info|uninstall ...                        # lattice.modules
     lattice attack plan|run|report --project DIR ...                       # lattice.security
-    lattice improve report|import-plan|ledger|verify|draft --project DIR ... # lattice.improve
+    lattice improve report|import-plan|ledger|verify|draft|apply --project DIR ... # lattice.improve
     lattice workspace show|validate|impact NAME [--json]                  # lattice.workspace
     lattice contracts export|pin|check|impact|notify|questions ...        # lattice.contracts
     lattice projects [DIR ...]                                            # discover projects
@@ -50,9 +50,10 @@ commands:
   attack    plan|run|report --project DIR           spec-driven security attacks against the
             [--scope ...] [--classes ...]          app this starts on a loopback throwaway DB
                                                    (separate module; owner's own systems only)
-  improve   report|import-plan|ledger|verify|draft improvement proposals ranked from the
-            [--project DIR] [--top N] [--json]     project's event log (frequency x cost;
-                                                   no model; the owner decides)
+  improve   report|import-plan|ledger|verify|draft|apply  improvement proposals ranked from
+            [--project DIR] [--top N] [--json]     the project's event log (frequency x cost;
+                                                   no model; the owner decides; apply puts a
+                                                   config draft on a branch, never merges)
   workspace show|validate|impact NAME [--json]     the workspace manifest (lattice.workspace.toml):
             [--workspace PATH]                     projects, links, problems; impact = who
                                                    relies on NAME (declared links only)

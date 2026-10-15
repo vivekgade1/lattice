@@ -1,0 +1,491 @@
+{
+ "id": "A2b-f",
+ "predicted": "b exit 1 failed (0,1) kept; c exit 1 124 timed_out 2-9 s; d exit 0 none_configured + warning; e exit 0 skipped; f exit 2 interrupted, no sleep left (5 of 5)",
+ "observed": "5 rows; 0 problem(s)",
+ "pass": true,
+ "problems": [],
+ "digests": [
+  "0b9be80913211a1a",
+  "0b9be80913211a1a",
+  "0b9be80913211a1a",
+  "0b9be80913211a1a",
+  "0b9be80913211a1a",
+  "0b9be80913211a1a",
+  "0b9be80913211a1a",
+  "0b9be80913211a1a",
+  "0b9be80913211a1a",
+  "0b9be80913211a1a"
+ ],
+ "raw": {
+  "b": {
+   "format": 1,
+   "command": "apply",
+   "proposal": {
+    "id": "imp-3e1cd7f9",
+    "kind": "change_set",
+    "signal_key": "gate:level_regression:X",
+    "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]"
+   },
+   "draft": {
+    "template": "config",
+    "as_of": "2026-10-12T23:07:11Z",
+    "toml": "[rebuild]\nlevel_gate_args = [\"--x-repeats\", \"2\"]",
+    "current": "current: not set",
+    "expected": "expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)",
+    "sha256": "7fa2ccaf132f3c1e0082d2240d59cf48a26298c23690e4b253a1deafda9f7051"
+   },
+   "edit": {
+    "file": "studio.toml",
+    "table": "rebuild",
+    "key": "level_gate_args",
+    "op": "=",
+    "old": null,
+    "new": [
+     "--x-repeats",
+     "2"
+    ],
+    "line": "level_gate_args = [\"--x-repeats\", \"2\"]",
+    "line_no": 2,
+    "action": "inserted",
+    "diff": "diff --git a/studio.toml b/studio.toml\nindex 2af3679..a61cd7f 100644\n--- a/studio.toml\n+++ b/studio.toml\n@@ -1,2 +1,3 @@\n [rebuild]\n+level_gate_args = [\"--x-repeats\", \"2\"]\n gates = [\"true\", \"false\"]\n"
+   },
+   "base": {
+    "branch": "trunk",
+    "sha": "8bd734aa2ff9ceb96850767c2f8b4735fdff2325"
+   },
+   "branch": "improve/imp-3e1cd7f9",
+   "worktree": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/repo.improve/imp-3e1cd7f9",
+   "commit": {
+    "sha": "b39f6309163990e9a6d4ab65b34550df052edc1c",
+    "tree": "0b6350d70836629dcb16ee1c7c008eb65a02dc04",
+    "message": "improve: [rebuild] level_gate_args = [\"--x-repeats\", \"2\"]\n\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X.\nDraft as of 2026-10-12T23:07:11Z; current: not set.\nPredicted: expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\nApplied by `lattice improve apply`; not merged. The owner reviews and merges.\n\nLattice-Improve: imp-3e1cd7f9\n"
+   },
+   "applied_at": "2026-10-15T13:50:46Z",
+   "gates": {
+    "status": "failed",
+    "timeout_s": 900.0,
+    "results": [
+     {
+      "command": "true",
+      "exit_code": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.01,
+      "output_tail": ""
+     },
+     {
+      "command": "false",
+      "exit_code": 1,
+      "passed": false,
+      "timed_out": false,
+      "seconds": 0.01,
+      "output_tail": ""
+     }
+    ],
+    "untracked_after": []
+   },
+   "integration_branch": null,
+   "next": [
+    {
+     "step": "review",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/repo diff 8bd734aa2ff9ceb96850767c2f8b4735fdff2325 improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "merge",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/repo merge improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "close",
+     "command": "lattice improve ledger --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/state --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit b39f6309163990e9a6d4ab65b34550df052edc1c"
+    },
+    {
+     "step": "verify",
+     "command": "lattice improve verify imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/state --at <YYYY-MM-DDTHH:MM:SSZ the merge landed>"
+    },
+    {
+     "step": "tidy",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/repo worktree remove /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/repo.improve/imp-3e1cd7f9 && git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/repo branch -d improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "drop",
+     "command": "lattice improve apply --discard imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/b/state"
+    }
+   ],
+   "warnings": []
+  },
+  "c": {
+   "format": 1,
+   "command": "apply",
+   "proposal": {
+    "id": "imp-3e1cd7f9",
+    "kind": "change_set",
+    "signal_key": "gate:level_regression:X",
+    "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]"
+   },
+   "draft": {
+    "template": "config",
+    "as_of": "2026-10-12T23:07:11Z",
+    "toml": "[rebuild]\nlevel_gate_args = [\"--x-repeats\", \"2\"]",
+    "current": "current: not set",
+    "expected": "expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)",
+    "sha256": "f7168a08cb6e2d7503e04a4e537f889044e3d85204ada557761cd43a19372130"
+   },
+   "edit": {
+    "file": "studio.toml",
+    "table": "rebuild",
+    "key": "level_gate_args",
+    "op": "=",
+    "old": null,
+    "new": [
+     "--x-repeats",
+     "2"
+    ],
+    "line": "level_gate_args = [\"--x-repeats\", \"2\"]",
+    "line_no": 2,
+    "action": "inserted",
+    "diff": "diff --git a/studio.toml b/studio.toml\nindex 3643b07..bfc359c 100644\n--- a/studio.toml\n+++ b/studio.toml\n@@ -1,4 +1,5 @@\n [rebuild]\n+level_gate_args = [\"--x-repeats\", \"2\"]\n gates = [\"sleep 30\"]\n gate_timeout = 2\n stop_grace = 1\n"
+   },
+   "base": {
+    "branch": "trunk",
+    "sha": "b16e9b0f724c45f6af01bbfc19c5d2572085ac44"
+   },
+   "branch": "improve/imp-3e1cd7f9",
+   "worktree": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/repo.improve/imp-3e1cd7f9",
+   "commit": {
+    "sha": "94c9515f6943d8005b893a27c9c0596898a7e4c4",
+    "tree": "982f9f23ac31850a20922d21ecfc06726558bb88",
+    "message": "improve: [rebuild] level_gate_args = [\"--x-repeats\", \"2\"]\n\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X.\nDraft as of 2026-10-12T23:07:11Z; current: not set.\nPredicted: expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\nApplied by `lattice improve apply`; not merged. The owner reviews and merges.\n\nLattice-Improve: imp-3e1cd7f9\n"
+   },
+   "applied_at": "2026-10-15T13:50:46Z",
+   "gates": {
+    "status": "failed",
+    "timeout_s": 2.0,
+    "results": [
+     {
+      "command": "sleep 30",
+      "exit_code": 124,
+      "passed": false,
+      "timed_out": true,
+      "seconds": 2.23,
+      "output_tail": "\n[lattice improve apply] the gate timed out after 2s\n"
+     }
+    ],
+    "untracked_after": []
+   },
+   "integration_branch": null,
+   "next": [
+    {
+     "step": "review",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/repo diff b16e9b0f724c45f6af01bbfc19c5d2572085ac44 improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "merge",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/repo merge improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "close",
+     "command": "lattice improve ledger --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/state --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit 94c9515f6943d8005b893a27c9c0596898a7e4c4"
+    },
+    {
+     "step": "verify",
+     "command": "lattice improve verify imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/state --at <YYYY-MM-DDTHH:MM:SSZ the merge landed>"
+    },
+    {
+     "step": "tidy",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/repo worktree remove /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/repo.improve/imp-3e1cd7f9 && git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/repo branch -d improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "drop",
+     "command": "lattice improve apply --discard imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/c/state"
+    }
+   ],
+   "warnings": []
+  },
+  "d": {
+   "format": 1,
+   "command": "apply",
+   "proposal": {
+    "id": "imp-3e1cd7f9",
+    "kind": "change_set",
+    "signal_key": "gate:level_regression:X",
+    "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]"
+   },
+   "draft": {
+    "template": "config",
+    "as_of": "2026-10-12T23:07:11Z",
+    "toml": "[rebuild]\nlevel_gate_args = [\"--x-repeats\", \"2\"]",
+    "current": "current: not set",
+    "expected": "expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)",
+    "sha256": "a6a901315a7a8e95695861194a2f3157ca10108f8b5243a7aa68511859125198"
+   },
+   "edit": {
+    "file": "studio.toml",
+    "table": "rebuild",
+    "key": "level_gate_args",
+    "op": "=",
+    "old": null,
+    "new": [
+     "--x-repeats",
+     "2"
+    ],
+    "line": "level_gate_args = [\"--x-repeats\", \"2\"]",
+    "line_no": 4,
+    "action": "created_table",
+    "diff": "diff --git a/studio.toml b/studio.toml\nindex 38c626f..04acdbd 100644\n--- a/studio.toml\n+++ b/studio.toml\n@@ -1 +1,4 @@\n [project]\n+\n+[rebuild]\n+level_gate_args = [\"--x-repeats\", \"2\"]\n"
+   },
+   "base": {
+    "branch": "trunk",
+    "sha": "5a1514d9634d5f21892afb2d71d48b981e1f66a2"
+   },
+   "branch": "improve/imp-3e1cd7f9",
+   "worktree": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/repo.improve/imp-3e1cd7f9",
+   "commit": {
+    "sha": "9f129805cc92528877eae0693ae0cf8d94b5ea7a",
+    "tree": "06bc2bab1fc00301ee7c153adbb31bee072174b0",
+    "message": "improve: [rebuild] level_gate_args = [\"--x-repeats\", \"2\"]\n\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X.\nDraft as of 2026-10-12T23:07:11Z; current: not set.\nPredicted: expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\nApplied by `lattice improve apply`; not merged. The owner reviews and merges.\n\nLattice-Improve: imp-3e1cd7f9\n"
+   },
+   "applied_at": "2026-10-15T13:50:49Z",
+   "gates": {
+    "status": "none_configured",
+    "timeout_s": 900.0,
+    "results": [],
+    "untracked_after": []
+   },
+   "integration_branch": null,
+   "next": [
+    {
+     "step": "review",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/repo diff 5a1514d9634d5f21892afb2d71d48b981e1f66a2 improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "merge",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/repo merge improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "close",
+     "command": "lattice improve ledger --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/state --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit 9f129805cc92528877eae0693ae0cf8d94b5ea7a"
+    },
+    {
+     "step": "verify",
+     "command": "lattice improve verify imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/state --at <YYYY-MM-DDTHH:MM:SSZ the merge landed>"
+    },
+    {
+     "step": "tidy",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/repo worktree remove /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/repo.improve/imp-3e1cd7f9 && git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/repo branch -d improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "drop",
+     "command": "lattice improve apply --discard imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/d/state"
+    }
+   ],
+   "warnings": [
+    "no gate ran: no [rebuild] gates and no check.sh in the project"
+   ]
+  },
+  "e": {
+   "format": 1,
+   "command": "apply",
+   "proposal": {
+    "id": "imp-3e1cd7f9",
+    "kind": "change_set",
+    "signal_key": "gate:level_regression:X",
+    "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]"
+   },
+   "draft": {
+    "template": "config",
+    "as_of": "2026-10-12T23:07:11Z",
+    "toml": "[rebuild]\nlevel_gate_args = [\"--x-repeats\", \"2\"]",
+    "current": "current: not set",
+    "expected": "expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)",
+    "sha256": "7944fef44c6ccc68d246a847ea0792c0d13c6049a7dbda29e6ca822a2ccfd940"
+   },
+   "edit": {
+    "file": "studio.toml",
+    "table": "rebuild",
+    "key": "level_gate_args",
+    "op": "=",
+    "old": null,
+    "new": [
+     "--x-repeats",
+     "2"
+    ],
+    "line": "level_gate_args = [\"--x-repeats\", \"2\"]",
+    "line_no": 2,
+    "action": "inserted",
+    "diff": "diff --git a/studio.toml b/studio.toml\nindex 449730c..7cda63c 100644\n--- a/studio.toml\n+++ b/studio.toml\n@@ -1,2 +1,3 @@\n [rebuild]\n+level_gate_args = [\"--x-repeats\", \"2\"]\n gates = [\"false\"]\n"
+   },
+   "base": {
+    "branch": "trunk",
+    "sha": "dd0ee3edd0ce51202f39f528111a46648cc9403d"
+   },
+   "branch": "improve/imp-3e1cd7f9",
+   "worktree": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/repo.improve/imp-3e1cd7f9",
+   "commit": {
+    "sha": "b5fcb6474af36e6e230d1e430b99e21bb00ed862",
+    "tree": "df0f2bc5ec2c00cec9e692f835be3ea2b4cb6ca6",
+    "message": "improve: [rebuild] level_gate_args = [\"--x-repeats\", \"2\"]\n\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X.\nDraft as of 2026-10-12T23:07:11Z; current: not set.\nPredicted: expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\nApplied by `lattice improve apply`; not merged. The owner reviews and merges.\n\nLattice-Improve: imp-3e1cd7f9\n"
+   },
+   "applied_at": "2026-10-15T13:50:49Z",
+   "gates": {
+    "status": "skipped",
+    "timeout_s": 900.0,
+    "results": [],
+    "untracked_after": []
+   },
+   "integration_branch": null,
+   "next": [
+    {
+     "step": "review",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/repo diff dd0ee3edd0ce51202f39f528111a46648cc9403d improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "merge",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/repo merge improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "close",
+     "command": "lattice improve ledger --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/state --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit b5fcb6474af36e6e230d1e430b99e21bb00ed862"
+    },
+    {
+     "step": "verify",
+     "command": "lattice improve verify imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/state --at <YYYY-MM-DDTHH:MM:SSZ the merge landed>"
+    },
+    {
+     "step": "tidy",
+     "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/repo worktree remove /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/repo.improve/imp-3e1cd7f9 && git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/repo branch -d improve/imp-3e1cd7f9"
+    },
+    {
+     "step": "drop",
+     "command": "lattice improve apply --discard imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/e/state"
+    }
+   ],
+   "warnings": []
+  },
+  "f": {
+   "rc": 2,
+   "err": "lattice improve: interrupted; the branch, worktree and record are kept",
+   "record": {
+    "format": 1,
+    "command": "apply",
+    "proposal": {
+     "id": "imp-3e1cd7f9",
+     "kind": "change_set",
+     "signal_key": "gate:level_regression:X",
+     "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]"
+    },
+    "draft": {
+     "template": "config",
+     "as_of": "2026-10-12T23:07:11Z",
+     "toml": "[rebuild]\nlevel_gate_args = [\"--x-repeats\", \"2\"]",
+     "current": "current: not set",
+     "expected": "expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)",
+     "sha256": "f7168a08cb6e2d7503e04a4e537f889044e3d85204ada557761cd43a19372130"
+    },
+    "edit": {
+     "file": "studio.toml",
+     "table": "rebuild",
+     "key": "level_gate_args",
+     "op": "=",
+     "old": null,
+     "new": [
+      "--x-repeats",
+      "2"
+     ],
+     "line": "level_gate_args = [\"--x-repeats\", \"2\"]",
+     "line_no": 2,
+     "action": "inserted",
+     "diff": "diff --git a/studio.toml b/studio.toml\nindex 861d74d..434a8fd 100644\n--- a/studio.toml\n+++ b/studio.toml\n@@ -1,2 +1,3 @@\n [rebuild]\n+level_gate_args = [\"--x-repeats\", \"2\"]\n gates = [\"sleep 30\"]\n"
+    },
+    "base": {
+     "branch": "trunk",
+     "sha": "86b84d46321fa85b2f0708c5f04b070def0b15be"
+    },
+    "branch": "improve/imp-3e1cd7f9",
+    "worktree": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/repo.improve/imp-3e1cd7f9",
+    "commit": {
+     "sha": "211ba122800a48c3e2b1dae9414085f7383a0333",
+     "tree": "42d14735725f23225cae9e34541002f5c1cc8624",
+     "message": "improve: [rebuild] level_gate_args = [\"--x-repeats\", \"2\"]\n\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X.\nDraft as of 2026-10-12T23:07:11Z; current: not set.\nPredicted: expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\nApplied by `lattice improve apply`; not merged. The owner reviews and merges.\n\nLattice-Improve: imp-3e1cd7f9\n"
+    },
+    "applied_at": "2026-10-15T13:50:50Z",
+    "gates": {
+     "status": "interrupted",
+     "timeout_s": 900.0,
+     "results": [
+      {
+       "command": "sleep 30",
+       "exit_code": -15,
+       "passed": false,
+       "timed_out": false,
+       "seconds": 2.03,
+       "output_tail": ""
+      }
+     ],
+     "untracked_after": []
+    },
+    "integration_branch": null,
+    "next": [
+     {
+      "step": "review",
+      "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/repo diff 86b84d46321fa85b2f0708c5f04b070def0b15be improve/imp-3e1cd7f9"
+     },
+     {
+      "step": "merge",
+      "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/repo merge improve/imp-3e1cd7f9"
+     },
+     {
+      "step": "close",
+      "command": "lattice improve ledger --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/state --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit 211ba122800a48c3e2b1dae9414085f7383a0333"
+     },
+     {
+      "step": "verify",
+      "command": "lattice improve verify imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/state --at <YYYY-MM-DDTHH:MM:SSZ the merge landed>"
+     },
+     {
+      "step": "tidy",
+      "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/repo worktree remove /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/repo.improve/imp-3e1cd7f9 && git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/repo branch -d improve/imp-3e1cd7f9"
+     },
+     {
+      "step": "drop",
+      "command": "lattice improve apply --discard imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/repo --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A2/f/state"
+     }
+    ],
+    "warnings": []
+   }
+  }
+ },
+ "obs": {
+  "b": {
+   "rc": 1,
+   "status": "failed",
+   "exits": [
+    0,
+    1
+   ]
+  },
+  "c": {
+   "rc": 1,
+   "exit_code": 124,
+   "timed_out": true,
+   "status": "failed"
+  },
+  "d": {
+   "rc": 0,
+   "status": "none_configured",
+   "warnings": [
+    "no gate ran: no [rebuild] gates and no check.sh in the project"
+   ]
+  },
+  "e": {
+   "rc": 0,
+   "status": "skipped",
+   "results": 0
+  },
+  "f": {
+   "rc": 2,
+   "status": "interrupted",
+   "sleep_left": 0
+  }
+ },
+ "seconds": 64.5
+}

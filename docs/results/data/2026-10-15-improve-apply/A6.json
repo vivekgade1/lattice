@@ -1,0 +1,42 @@
+{
+ "id": "A6",
+ "predicted": "a: second apply leaves record and branch byte-identical; b: apply, discard, apply = same tree, diff, message, records; c: 10 fresh clones x A1a, A1b from two cwds: one record (masked), tree ids as A1 (3 of 3)",
+ "observed": "0 problem(s); c {'A1a': {'records': 10, 'distinct': 1}, 'A1b': {'records': 10, 'distinct': 1}}",
+ "pass": true,
+ "problems": [],
+ "digests": [
+  "4fe067e41414fc6a",
+  "4fe067e41414fc6a",
+  "4fe067e41414fc6a",
+  "4fe067e41414fc6a",
+  "4fe067e41414fc6a",
+  "4fe067e41414fc6a",
+  "4fe067e41414fc6a",
+  "4fe067e41414fc6a",
+  "4fe067e41414fc6a",
+  "4fe067e41414fc6a"
+ ],
+ "raw": {
+  "ab": {
+   "a": 3,
+   "b": {
+    "rc": [
+     0,
+     0
+    ],
+    "same": true
+   }
+  },
+  "c": {
+   "A1a": {
+    "records": 10,
+    "distinct": 1
+   },
+   "A1b": {
+    "records": 10,
+    "distinct": 1
+   }
+  }
+ },
+ "seconds": 29.3
+}

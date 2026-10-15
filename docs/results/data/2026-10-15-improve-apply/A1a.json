@@ -1,0 +1,99 @@
+{
+ "id": "A1a",
+ "predicted": "exit 0; improve/imp-3e1cd7f9 off next-phases a4ab4a1; inserted line 22; sha256 c516bc836f33cdc8; blob 642c32d -> 3def11c; tree ce7f02cf0d0b1156; 1 + line, 0 - lines; no warning",
+ "observed": "tree ce7f02cf0d0b1156; 0 problem(s) over 10 runs",
+ "pass": true,
+ "problems": [],
+ "digests": [
+  "a7943aae46abf741",
+  "a7943aae46abf741",
+  "a7943aae46abf741",
+  "a7943aae46abf741",
+  "a7943aae46abf741",
+  "a7943aae46abf741",
+  "a7943aae46abf741",
+  "a7943aae46abf741",
+  "a7943aae46abf741",
+  "a7943aae46abf741"
+ ],
+ "raw": {
+  "format": 1,
+  "command": "apply",
+  "proposal": {
+   "id": "imp-3e1cd7f9",
+   "kind": "change_set",
+   "signal_key": "gate:level_regression:X",
+   "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]"
+  },
+  "draft": {
+   "template": "config",
+   "as_of": "2026-10-12T23:07:11Z",
+   "toml": "[rebuild]\nlevel_gate_args = [\"--x-repeats\", \"2\"]",
+   "current": "current: not set",
+   "expected": "expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)",
+   "sha256": "c516bc836f33cdc83d6a47b976d31188ae814e5d5efe26ba43d5daef97481fec"
+  },
+  "edit": {
+   "file": "dogfood/studio/studio.toml",
+   "table": "rebuild",
+   "key": "level_gate_args",
+   "op": "=",
+   "old": null,
+   "new": [
+    "--x-repeats",
+    "2"
+   ],
+   "line": "level_gate_args = [\"--x-repeats\", \"2\"]",
+   "line_no": 22,
+   "action": "inserted",
+   "diff": "diff --git a/dogfood/studio/studio.toml b/dogfood/studio/studio.toml\nindex 642c32d..3def11c 100644\n--- a/dogfood/studio/studio.toml\n+++ b/dogfood/studio/studio.toml\n@@ -19,5 +19,6 @@ model = \"sonnet\"\n # The rebuild loop (lattice/studio/rebuild.py, API.md v1.7): the repository is the lattice\n # checkout, the gates run from its root in the rebuild's worktree.\n [rebuild]\n+level_gate_args = [\"--x-repeats\", \"2\"]\n repo = \"../..\"\n gates = [\"dogfood/studio/check.sh\", \"uv run pytest tests/studio -q\"]\n"
+  },
+  "base": {
+   "branch": "next-phases",
+   "sha": "a4ab4a1a620d0263d6b62da0150abac060bea574"
+  },
+  "branch": "improve/imp-3e1cd7f9",
+  "worktree": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/lattice.improve/imp-3e1cd7f9",
+  "commit": {
+   "sha": "c1c0014592ac31ac47976a4dbda8ee399bc2b134",
+   "tree": "ce7f02cf0d0b1156d597a7ca8012591f070c1031",
+   "message": "improve: [rebuild] level_gate_args = [\"--x-repeats\", \"2\"]\n\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X.\nDraft as of 2026-10-12T23:07:11Z; current: not set.\nPredicted: expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\nApplied by `lattice improve apply`; not merged. The owner reviews and merges.\n\nLattice-Improve: imp-3e1cd7f9\n"
+  },
+  "applied_at": "2026-10-15T13:25:39Z",
+  "gates": {
+   "status": "skipped",
+   "timeout_s": 900.0,
+   "results": [],
+   "untracked_after": []
+  },
+  "integration_branch": null,
+  "next": [
+   {
+    "step": "review",
+    "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/lattice diff a4ab4a1a620d0263d6b62da0150abac060bea574 improve/imp-3e1cd7f9"
+   },
+   {
+    "step": "merge",
+    "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/lattice merge improve/imp-3e1cd7f9"
+   },
+   {
+    "step": "close",
+    "command": "lattice improve ledger --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/lattice/dogfood/studio --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/state --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit c1c0014592ac31ac47976a4dbda8ee399bc2b134"
+   },
+   {
+    "step": "verify",
+    "command": "lattice improve verify imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/lattice/dogfood/studio --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/state --at <YYYY-MM-DDTHH:MM:SSZ the merge landed>"
+   },
+   {
+    "step": "tidy",
+    "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/lattice worktree remove /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/lattice.improve/imp-3e1cd7f9 && git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/lattice branch -d improve/imp-3e1cd7f9"
+   },
+   {
+    "step": "drop",
+    "command": "lattice improve apply --discard imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/lattice/dogfood/studio --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1a/state"
+   }
+  ],
+  "warnings": []
+ },
+ "seconds": 19.4
+}

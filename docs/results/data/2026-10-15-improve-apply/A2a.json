@@ -1,0 +1,73 @@
+{
+ "id": "A2a",
+ "predicted": "3 of 3 passed, each gate seconds in (0, 900); check.sh tail `PASS: 0 findings (D 0, X 0); 435 cases run` ~53 s, pytest ~190 s; untracked_after []",
+ "observed": "3 runs; seconds [[71.48, 359.53], [69.82, 359.86], [69.24, 356.36]]; 0 problem(s)",
+ "pass": true,
+ "problems": [],
+ "raw": [
+  {
+   "run": 0,
+   "rc": 0,
+   "wall_s": 431.8,
+   "status": "passed",
+   "gates": [
+    {
+     "command": "dogfood/studio/check.sh",
+     "exit_code": 0,
+     "seconds": 71.48,
+     "tail": "00, steps 3.12, 12 requests)\n  3.45s land_is_409_when_nothing_waits (start 0.55, db 0.00, steps 2.84, 11 requests)\n  3.33s one_rebuild_at_a_time_and_stop (start 0.54, db 0.00, steps 2.74, 14 requests)"
+    },
+    {
+     "command": "uv run pytest tests/studio -q",
+     "exit_code": 0,
+     "seconds": 359.53,
+     "tail": ".................................................. [ 98%]\n.......                                                                                      [100%]\n466 passed, 1 skipped in 359.20s (0:05:59)"
+    }
+   ],
+   "untracked_after": []
+  },
+  {
+   "run": 1,
+   "rc": 0,
+   "wall_s": 430.5,
+   "status": "passed",
+   "gates": [
+    {
+     "command": "dogfood/studio/check.sh",
+     "exit_code": 0,
+     "seconds": 69.82,
+     "tail": "00, steps 3.00, 12 requests)\n  3.40s land_is_409_when_nothing_waits (start 0.53, db 0.00, steps 2.84, 11 requests)\n  3.28s one_rebuild_at_a_time_and_stop (start 0.51, db 0.00, steps 2.71, 14 requests)"
+    },
+    {
+     "command": "uv run pytest tests/studio -q",
+     "exit_code": 0,
+     "seconds": 359.86,
+     "tail": ".................................................. [ 98%]\n.......                                                                                      [100%]\n466 passed, 1 skipped in 359.49s (0:05:59)"
+    }
+   ],
+   "untracked_after": []
+  },
+  {
+   "run": 2,
+   "rc": 0,
+   "wall_s": 426.4,
+   "status": "passed",
+   "gates": [
+    {
+     "command": "dogfood/studio/check.sh",
+     "exit_code": 0,
+     "seconds": 69.24,
+     "tail": "00, steps 2.96, 12 requests)\n  3.33s land_is_409_when_nothing_waits (start 0.52, db 0.00, steps 2.79, 11 requests)\n  3.23s one_rebuild_at_a_time_and_stop (start 0.52, db 0.00, steps 2.66, 14 requests)"
+    },
+    {
+     "command": "uv run pytest tests/studio -q",
+     "exit_code": 0,
+     "seconds": 356.36,
+     "tail": ".................................................. [ 98%]\n.......                                                                                      [100%]\n466 passed, 1 skipped in 356.05s (0:05:56)"
+    }
+   ],
+   "untracked_after": []
+  }
+ ],
+ "seconds": 1291.4
+}
