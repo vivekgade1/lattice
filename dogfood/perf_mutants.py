@@ -23,6 +23,11 @@ container's arguments). A mutant that no test without a server fails, whose pred
 include a Docker-backed test that was skipped, is reported **pending a server** (never
 killed): ``tests/perf/test_counting_docker.py`` runs where Docker and the drivers exist.
 
+MI1-MI12 (2026-10-15, ``docs/results/2026-10-15-perf-missing-index-prereg.md`` section 4)
+mutate the missing-index check (``lattice/perf/explain.py``, its placement in ``measure.py``,
+the exit helper and the seeded-id substitution in ``budget.py``); their predicted killers are in
+``tests/perf/test_explain.py`` and ``tests/perf/test_seeded_id.py`` and need no server.
+
 Usage: ``uv run python dogfood/perf_mutants.py [--out FILE] [--jobs N] [--streak DIR
 [--python PY]] [ID ...]`` (``--python``: an interpreter with PyMySQL for the Streak runs; with
 the drivers installed it also runs the Docker tests). Prints a table and ends
@@ -257,6 +262,115 @@ PREDICTED: dict[str, list[str]] = {
 # the Docker-backed tests among them (tests/perf/test_counting_docker.py): skipped without a server
 DOCKER_TESTS = {"test_pg_counts_exactly", "test_pg_process_app_counts_the_same",
                 "test_ch_counts_exactly", "test_no_perf_container_left"}  # fmt: skip
+
+# MI1-MI12: the missing-index check and seeded ids (appended; the mutants above are untouched)
+X = "lattice/perf/explain.py"
+FILES.append(X)
+MUTANTS.update(
+    {
+        "MI1": (
+            "SQLite: a bare SCAN <t> is not a finding (only AUTOMATIC INDEX)",
+            X,
+            '        if scan and has_where and scan.group(1) not in ("CONSTANT",):\n',
+            "        if False and scan and has_where:  # MUTANT MI1\n",
+        ),
+        "MI2": (
+            "SQLite: SEARCH ... USING INDEX counted as a scan",
+            X,
+            '_SQLITE_SCAN = re.compile(r"^SCAN (?:TABLE )',
+            '_SQLITE_SCAN = re.compile(r"^(?:SCAN|SEARCH) (?:TABLE )',  # MUTANT MI2
+        ),
+        "MI3": (
+            "threshold > instead of >= (a table with exactly min_rows rows is dropped)",
+            X,
+            "                if rows < threshold:\n",
+            "                if rows <= threshold:  # MUTANT MI3\n",
+        ),
+        "MI4": (
+            "Postgres: only Seq Scan flagged (a primary-key scan with a Filter is missed)",
+            X,
+            '            full = kind == "Seq Scan" or (\n',
+            '            full = kind == "Seq Scan" or False and (  # MUTANT MI4\n',
+        ),
+        "MI5": (
+            "Postgres: enable_seqscan = off is not sent",
+            X,
+            '        "SET enable_seqscan = off",\n',
+            "",
+        ),
+        "MI6": (
+            "MySQL: type ALL flagged without Using where / Using join buffer",
+            X,
+            '        if "Using where" not in extra and "Using join buffer" not in extra:\n',
+            "        if False:  # MUTANT MI6\n",
+        ),
+        "MI7": (
+            "the ; guard removed (a multi-statement text is explained)",
+            X,
+            "            if multi_statement(sql):\n",
+            "            if False:  # MUTANT MI7\n",
+        ),
+        "MI8": (
+            "the SQLite explain connection opened read-write",
+            X,
+            '        uri = Path(path).resolve().as_uri() + "?mode=ro"\n',
+            '        uri = Path(path).resolve().as_uri() + "?mode=rw"  # MUTANT MI8\n',
+        ),
+        "MI9": (
+            "the check runs at the smallest size",
+            M,
+            "explain if n == max(ns) else None",
+            "explain if n == min(ns) else None",
+        ),
+        "MI10": (
+            "the check runs inside the counting loop (before the last window, app open)",
+            M,
+            "                    if run == 0 and explain_at is not None:\n"
+            "                        result.raw_statements = list(stmts)\n",
+            "                    if run == 0 and explain_at is not None:\n"
+            "                        result.raw_statements = list(stmts)\n"
+            "                        result.explain = _explain_size(  # MUTANT MI10\n"
+            "                            budget, n, h, make_db, db, tmp, result.raw_statements,\n"
+            "                            explain_at,\n"
+            "                        )\n",
+        ),
+        "MI11": (
+            "check --explain exits 0 on a finding and on a partial/unchecked budget",
+            B,
+            '    if overall == "fail" or summary["findings"]:\n'
+            "        return 1\n"
+            '    if overall != "pass" or summary["unchecked"]:\n'
+            "        return 2\n",
+            '    if overall == "fail":  # MUTANT MI11\n'
+            "        return 1\n"
+            '    if overall != "pass":\n'
+            "        return 2\n",
+        ),
+        "MI12": (
+            "capture substitutes every {x} (an uncaptured name too, as empty)",
+            B,
+            "            if name not in captured:\n                return m.group(0)\n",
+            '            if name not in captured:\n                return ""  # MUTANT MI12\n',
+        ),
+    }
+)
+PREDICTED.update(
+    {
+        "MI1": ["test_sqlite_drop_index_is_found"],
+        "MI2": ["test_sqlite_clean_has_no_finding"],
+        "MI3": ["test_threshold_boundary_counts"],
+        "MI4": ["test_pg_full_index_scan_filter"],
+        "MI5": ["test_pg_explain_session_statements"],
+        "MI6": ["test_mysql_plan_rows_classified"],
+        "MI7": ["test_multi_statement_is_skipped_not_run"],
+        "MI8": ["test_explain_connection_is_read_only"],
+        "MI9": ["test_explain_runs_at_largest_size"],
+        "MI10": ["test_counts_identical_with_explain"],
+        "MI11": ["test_cli_explain_exit_codes"],
+        "MI12": ["test_uncaptured_braces_stay_literal"],
+    }
+)
+DOCKER_TESTS |= {"test_clean_schema_has_no_finding", "test_dropped_index_is_found"}
 
 SEED = {"items": "N", "steps": [{
     "method": "POST", "path": "/v1/habits", "user": "ann", "count": "N",

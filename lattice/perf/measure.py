@@ -39,6 +39,12 @@ free port, or FastAPI's in-process transport), and callers log in through the ha
   a server whose statistics are not available (a ``setup`` or ``check`` statement failed).
 
 **Latency** is the client-side wall time of the request (send to body read), per run.
+
+**The index check** (``explain=ExplainOptions(...)``, ``--explain``; :mod:`lattice.perf.explain`):
+per budget, at its largest measured size only, the first run's raw statements are explained on
+the measured clone after the size's last counting window (after ``rt.close(app)``, before
+``release_db``), so no statement of the check is ever counted. Without ``explain`` nothing of
+this runs and every result is what it was.
 """
 
 from __future__ import annotations
@@ -58,7 +64,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from lattice.perf.budget import Budget, BudgetFile, Report, SizeResult, expand, judge
+from lattice.perf import explain as explain_mod
+from lattice.perf.budget import (
+    Budget,
+    BudgetFile,
+    Report,
+    SizeResult,
+    expand,
+    judge,
+    pluck,
+    substitute,
+)
 
 CONTAINER_PREFIX = "lattice-perf-"
 COUNTED_MYSQL = ("Query", "Execute")
@@ -469,11 +485,51 @@ def _ok(status: int) -> bool:
     return 200 <= status < 300
 
 
+def _explain_target(h: Harness, make_db: Any, db: Any, tmp: Path) -> str | None:
+    """Why ``db`` is not a database this run made and may be explained (None: it is)."""
+    live = getattr(make_db, "live", None)
+    if live is not None:  # a server's clone: never a template or a database not cloned here
+        from lattice.spec.db import database_name
+
+        if database_name(str(db)) not in live:
+            return "the database is not a clone this run made"
+        return None
+    try:
+        if not Path(str(db)).resolve().is_relative_to(tmp.resolve()):
+            return "the database file is not in the run's temporary directory"
+    except OSError as err:
+        return f"the database file cannot be resolved ({err})"
+    return None
+
+
+def _explain_size(
+    budget: Budget, n: int, h: Harness, make_db: Any, db: Any, tmp: Path,
+    raw: list[str], opts: Any,
+) -> dict[str, Any]:  # fmt: skip
+    """The explain object of the measured clone ``db`` (see :mod:`lattice.perf.explain`)."""
+    from lattice.spec import engines
+
+    min_rows = n if opts.min_rows is None else opts.min_rows
+    engine = h.database
+    if engine not in explain_mod.SUPPORTED:
+        try:
+            title = engines.find(engine).title
+        except Exception:  # noqa: BLE001 -- an engine the registry does not know
+            title = engine
+        return explain_mod.unchecked(f"explain is not supported on {title}", engine, n, min_rows)
+    refused = _explain_target(h, make_db, db, tmp)
+    if refused is not None:
+        raise MeasureError(f"budget {budget.id!r} N={n}: refusing to explain: {refused}")
+    return explain_mod.explain_statements(engine, db, raw, n, opts.min_rows)
+
+
 def measure_size(
     budget: Budget, n: int, h: Harness, make_db: Callable[[str, Path], Any], counter: Any,
-    tmp: Path, runs: int, want_shapes: bool = False,
+    tmp: Path, runs: int, want_shapes: bool = False, explain_at: Any = None,
 ) -> SizeResult:  # fmt: skip
-    """One size: a fresh database and app, the seed, then ``runs`` measured requests."""
+    """One size: a fresh database and app, the seed, then ``runs`` measured requests.
+    ``explain_at`` (an :class:`~lattice.perf.explain.ExplainOptions`): explain the first
+    run's statements on the clone once the app is closed (see the module docstring)."""
     from lattice.importer.transport import AppRuntime
     from lattice.spec.check import release_db
 
@@ -502,24 +558,40 @@ def measure_size(
                 guard = isinstance(counter, SqlCounter) and seeds > 0
                 if guard:
                     counter.begin()  # one window over the seed phase (login included)
+                captured: dict[str, str] = {}  # seeded ids ({name} of a step's capture)
                 for step in budget.steps:
                     for i in range(1, step.times(n) + 1):
                         new = lambda: str(uuid.uuid4())  # noqa: E731
-                        path = expand(step.path, i, new)
-                        body = expand(step.json, i, new)
+                        path = substitute(expand(step.path, i, new), captured, path=True)
+                        body = substitute(expand(step.json, i, new), captured)
                         r = client.request(step.method, path, json=body, headers=headers(step.user))
                         if not _ok(r.status_code):
                             raise MeasureError(
                                 f"budget {budget.id!r} N={n}: seed step {step.method} {path} "
                                 f"#{i} answered {r.status_code}: {r.text[:300]}"
                             )
+                        if i == 1 and step.capture:
+                            try:
+                                payload = r.json()
+                            except ValueError:
+                                payload = None
+                            for name, key in step.capture:
+                                value = pluck(payload, key)
+                                if value is None:
+                                    raise MeasureError(
+                                        f"budget {budget.id!r} N={n}: seed step "
+                                        f"{step.method} {path} #1: capture {name}: response "
+                                        f"has no {key}"
+                                    )
+                                captured[name] = value
                 if guard:
                     counter.liveness(n, seeds)
                 h_req = headers(budget.user)
+                endpoint_path = substitute(budget.path, captured, path=True)
                 for run in range(runs):
                     counter.begin()
                     t0 = time.perf_counter()
-                    r = client.request(budget.method, budget.path, headers=h_req)
+                    r = client.request(budget.method, endpoint_path, headers=h_req)
                     _ = r.content
                     ms = (time.perf_counter() - t0) * 1000
                     stmts = counter.end()
@@ -531,8 +603,14 @@ def measure_size(
                     result.latency_ms.append(round(ms, 3))
                     if run == 0 and want_shapes:
                         result.shapes = shapes_of(stmts)
+                    if run == 0 and explain_at is not None:
+                        result.raw_statements = list(stmts)
         finally:
             rt.close(app)
+        if explain_at is not None and result.raw_statements is not None:
+            # after the last counting window and the app's close, before the clone is dropped
+            result.explain = _explain_size(budget, n, h, make_db, db, tmp,
+                                           result.raw_statements, explain_at)  # fmt: skip
     finally:
         release_db(make_db, db)
     return result
@@ -540,9 +618,11 @@ def measure_size(
 
 def measure(
     budgets: BudgetFile, h: Harness, sizes: list[int] | None = None, runs: int = 10,
-    ids: list[str] | None = None, want_shapes: bool = False,
+    ids: list[str] | None = None, want_shapes: bool = False, explain: Any = None,
 ) -> list[Report]:  # fmt: skip
-    """Every budget (or those ``ids`` names) measured and judged."""
+    """Every budget (or those ``ids`` names) measured and judged. ``explain``: an
+    :class:`~lattice.perf.explain.ExplainOptions` to add the index check (each report's
+    ``explain`` object, at the budget's largest size); None: not run."""
     chosen = [b for b in budgets.budgets if not ids or b.id in ids]
     if ids:
         unknown = sorted(set(ids) - {b.id for b in budgets.budgets})
@@ -561,17 +641,23 @@ def measure(
             ns = sorted(set(sizes)) if sizes is not None else list(b.sizes)
             if counter is None:
                 r = Report(b, [], notes=list(notes))
+                if explain is not None:
+                    r.explain = explain_mod.unchecked("the budget is unmeasured")
                 reports.append(r)
                 continue
             results = []
             checked = getattr(counter, "liveness_checked", 0)  # SqlCounter's guard
             try:
                 for n in ns:
+                    at = explain if n == max(ns) else None  # the index check: largest size
                     results.append(
-                        measure_size(b, n, h, make_db, counter, Path(d), runs, want_shapes)
+                        measure_size(b, n, h, make_db, counter, Path(d), runs, want_shapes, at)
                     )
             except Unmeasured as err:  # the liveness guard: no size of this budget counts
-                reports.append(Report(b, [], notes=[*notes, str(err)]))
+                r = Report(b, [], notes=[*notes, str(err)])
+                if explain is not None:
+                    r.explain = explain_mod.unchecked("the budget is unmeasured")
+                reports.append(r)
                 continue
             after = []
             if isinstance(counter, SqlCounter) and counter.liveness_checked == checked:
@@ -584,9 +670,19 @@ def measure(
                         *notes,
                         f"{runs} run(s) per size, one fresh app and database per size",
                         *after,
+                        *[
+                            f"seeded id: {{{name}}} from seed step {k} (key {key})"
+                            for k, step in enumerate(b.steps, 1)
+                            for name, key in step.capture
+                        ],
                     ],
                 )
             )
+            if explain is not None:
+                last = results[-1]
+                reports[-1].explain = last.explain or explain_mod.unchecked(
+                    "no statement was explained", h.database, last.n
+                )
     return reports
 
 

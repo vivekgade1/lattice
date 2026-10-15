@@ -1,0 +1,727 @@
+{
+ "hashes": {
+  "lattice/perf/budget.py": "dd0e546561db496d",
+  "lattice/perf/measure.py": "3e62797e46bd7f06",
+  "lattice/perf/__main__.py": "8aff46e42b9a3f3d",
+  "tests/perf/test_budget.py": "c84c27017518a7cf",
+  "tests/perf/test_measure.py": "365fba5fffc06c12",
+  "dogfood/perf_mutants.py": "b6141ff1a1920eba",
+  "lattice/perf/explain.py": "2c058623b41546cc"
+ },
+ "streak": "None",
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "184 passed, 8 skipped in 2.41s",
+    "docker_skipped": true,
+    "seconds": 2.6,
+    "tail": "........................................................................ [ 37%]\n...................ssss................................................. [ 75%]\n...ssss.........................................                         [100%]\n=========================== short test summary info ============================\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n184 passed, 8 skipped in 2.41s\n"
+   },
+   "caught_by": [],
+   "verdict": "PASS (control)"
+  },
+  "PM2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_exactly_at_budget_passes",
+     "tests/perf/test_budget.py::test_latency_compared_only_when_set",
+     "tests/perf/test_budget.py::test_zero_per_item_budget_met_exactly_passes",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_liveness_guard_is_per_budget",
+     "tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests",
+     "tests/perf/test_explain.py::test_cli_explain_exit_codes",
+     "tests/perf/test_explain.py::test_report_json_and_text_with_explain",
+     "tests/perf/test_explain.py::test_sqlite_drop_index_is_found",
+     "tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2",
+     "tests/perf/test_measure.py::test_cli_check_pass_is_exit_0",
+     "tests/perf/test_measure.py::test_cli_json_report",
+     "tests/perf/test_measure.py::test_constant_endpoint_counts_exactly",
+     "tests/perf/test_measure.py::test_in_repo_racy_notes_app",
+     "tests/perf/test_seeded_id.py::test_seeded_id_counts_exactly_on_the_real_app"
+    ],
+    "summary": "16 failed, 168 passed, 8 skipped in 2.17s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "_exactly_on_the_real_app _________________\n\n    def test_seeded_id_counts_exactly_on_the_real_app():\n        h = Harness(indexapp.make_app, indexapp.build_db, None, indexapp.login, \"sqlite\")\n        (r,) = measure(_file(_budget(NOTES)), h, runs=3)\n        assert [s.statements for s in r.sizes] == [[3] * 3, [3] * 3]\n        assert r.fit.to_dict() == {\"constant\": 3, \"per_item\": 0, \"exact\": True}\n>       assert r.verdict == \"pass\"\nE       AssertionError: assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_seeded_id.py:202: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_exactly_at_budget_passes - AssertionEr...\nFAILED tests/perf/test_budget.py::test_zero_per_item_budget_met_exactly_passes\nFAILED tests/perf/test_budget.py::test_latency_compared_only_when_set - Asser...\nFAILED tests/perf/test_counting.py::test_liveness_guard_is_per_budget - Asser...\nFAILED tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]\nFAILED tests/perf/test_explain.py::test_sqlite_drop_index_is_found - Assertio...\nFAILED tests/perf/test_explain.py::test_report_json_and_text_with_explain - V...\nFAILED tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2\nFAILED tests/perf/test_explain.py::test_cli_explain_exit_codes - AssertionErr...\nFAILED tests/perf/test_measure.py::test_constant_endpoint_counts_exactly - As...\nFAILED tests/perf/test_measure.py::test_in_repo_racy_notes_app - AssertionErr...\nFAILED tests/perf/test_measure.py::test_cli_check_pass_is_exit_0 - AssertionE...\nFAILED tests/perf/test_measure.py::test_cli_json_report - AssertionError: ass...\nFAILED tests/perf/test_seeded_id.py::test_seeded_id_counts_exactly_on_the_real_app\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n16 failed, 168 passed, 8 skipped in 2.17s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PM1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails",
+     "tests/perf/test_budget.py::test_exactly_at_budget_passes",
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_fit_constant_is_the_intercept_not_a_count",
+     "tests/perf/test_budget.py::test_fit_is_rational_and_exact",
+     "tests/perf/test_budget.py::test_fit_of_the_p0_numbers_is_n_plus_6",
+     "tests/perf/test_budget.py::test_latency_compared_only_when_set",
+     "tests/perf/test_budget.py::test_render_table",
+     "tests/perf/test_budget.py::test_report_schema",
+     "tests/perf/test_budget.py::test_reverse_trade_is_refused",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_measure.py::test_cli_json_report",
+     "tests/perf/test_measure.py::test_n_plus_one_is_fitted_and_fails_a_constant_budget"
+    ],
+    "summary": "15 failed, 169 passed, 8 skipped in 2.44s",
+    "docker_skipped": true,
+    "seconds": 2.7,
+    "tail": "      \"max\": 0.624\n     }\n    }\n   ],\n   \"fit\": {\n    \"constant\": 6,\n    \"per_item\": 1,\n    \"exact\": false\n   },\n   \"budget\": {\n    \"queries\": {\n     \"constant\": 2,\n     \"per_item\": 1\n    },\n    \"latency_ms\": null\n   },\n   \"verdict\": \"fail\",\n   \"delta\": {\n    \"constant\": 4,\n    \"per_item\": 0\n   },\n   \"notes\": [\n    \"over budget: constant 6 > budget 2\",\n    \"database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\",\n    \"2 run(s) per size, one fresh app and database per size\",\n    \"fit not exact: the counts are not one line in N (the fit uses the largest count per size)\"\n   ]\n  }\n ]\n}\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_fit_of_the_p0_numbers_is_n_plus_6 - as...\nFAILED tests/perf/test_budget.py::test_fit_constant_is_the_intercept_not_a_count\nFAILED tests/perf/test_budget.py::test_fit_is_rational_and_exact - assert (Fr...\nFAILED tests/perf/test_budget.py::test_exactly_at_budget_passes - AssertionEr...\nFAILED tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails\nFAILED tests/perf/test_budget.py::test_reverse_trade_is_refused - AssertionEr...\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - a...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nFAILED tests/perf/test_budget.py::test_latency_compared_only_when_set - Asser...\nFAILED tests/perf/test_budget.py::test_report_schema - AssertionError: assert...\nFAILED tests/perf/test_budget.py::test_render_table - AssertionError: assert ...\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]\nFAILED tests/perf/test_measure.py::test_n_plus_one_is_fitted_and_fails_a_constant_budget\nFAILED tests/perf/test_measure.py::test_cli_json_report - AssertionError: ass...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n15 failed, 169 passed, 8 skipped in 2.44s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PM3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_app_statements_excludes_the_tools_connections_and_other_commands",
+     "tests/perf/test_measure.py::test_mysql_counter_truncates_counts_app_rows_and_restores"
+    ],
+    "summary": "2 failed, 182 passed, 8 skipped in 2.52s",
+    "docker_skipped": true,
+    "seconds": 2.8,
+    "tail": "ype, argument FROM mysql.general_log'\nE         Use -v to get more diff\n\ntests/perf/test_budget.py:328: AssertionError\n__________ test_mysql_counter_truncates_counts_app_rows_and_restores ___________\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d479c50>\n\n    def test_mysql_counter_truncates_counts_app_rows_and_restores(monkeypatch):\n        log = [(41, \"Query\", \"SELECT thread_id, command_type, argument FROM mysql.general_log\"),\n               (50, \"Prepare\", \"SELECT * FROM t WHERE id = ?\"),\n               (50, \"Execute\", \"SELECT * FROM t WHERE id = 1\"),\n               (50, \"Close stmt\", \"\"), (42, \"Query\", \"CREATE DATABASE x\")]  # fmt: skip\n        tool, admin = _FakeConn(41, log), _FakeConn(42, [])\n    \n        class Server:\n            url, container = \"mysql://root:x@127.0.0.1:1/mysql\", \"lattice-perf-mysql-0\"\n    \n            def admin(self):\n                return admin\n    \n        monkeypatch.setattr(\"lattice.spec.db.open_db\", lambda url: tool)\n        c = MysqlCounter(Server())\n        c.start()\n        assert c.tool_threads == {41, 42}\n        assert \"SET GLOBAL general_log = 1\" in tool.sent\n        c.begin()\n        assert tool.sent[-1] == \"TRUNCATE TABLE mysql.general_log\"\n>       assert c.end() == [\"SELECT * FROM t WHERE id = 1\"]\nE       AssertionError: assert ['SELECT thre...E DATABASE x'] == ['SELECT * FR...WHERE id = 1']\nE         \nE         At index 0 diff: 'SELECT thread_id, command_type, argument FROM mysql.general_log' != 'SELECT * FROM t WHERE id = 1'\nE         Left contains 2 more items, first extra item: 'SELECT * FROM t WHERE id = 1'\nE         Use -v to get more diff\n\ntests/perf/test_measure.py:169: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_app_statements_excludes_the_tools_connections_and_other_commands\nFAILED tests/perf/test_measure.py::test_mysql_counter_truncates_counts_app_rows_and_restores\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n2 failed, 182 passed, 8 skipped in 2.52s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PM4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_measure.py::test_cli_check_over_budget_is_exit_1_and_measure_is_0",
+     "tests/perf/test_measure.py::test_lattice_perf_dispatch"
+    ],
+    "summary": "2 failed, 182 passed, 8 skipped in 2.47s",
+    "docker_skipped": true,
+    "seconds": 2.7,
+    "tail": "ed)\n__________________________ test_lattice_perf_dispatch __________________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/pytest-of-vivekgade/pytest-6/test_lattice_perf_dispatch0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10b1b8af0>\n\n    def test_lattice_perf_dispatch(tmp_path, capsys):\n        d = _project(tmp_path, [_budget(\"GET /items_n1\", 2, 0)])\n>       assert cli.main([\"perf\", \"check\", \"--project\", str(d), \"--runs\", \"1\"]) == 1\nE       AssertionError: assert 0 == 1\nE        +  where 0 = <function main at 0x10a73cbf0>(['perf', 'check', '--project', '/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/pytest-of-vivekgade/pytest-6/test_lattice_perf_dispatch0/proj', '--runs', '1'])\nE        +    where <function main at 0x10a73cbf0> = cli.main\n\ntests/perf/test_measure.py:248: AssertionError\n----------------------------- Captured stdout call -----------------------------\nb: GET /items_n1  budget 2 + 0*N statements  ->  FAIL\n      N  statements per run            allowed    latency ms min/median/max\n      2  4 x1                                2           0.59 / 0.59 / 0.59\n      6  8 x1                                2           0.55 / 0.55 / 0.55\n  fit: 2 + 1*N (exact)\n  - over budget: per_item 1 > budget 0\n  - over budget: N=2: 4 statements > allowed 2\n  - over budget: N=6: 8 statements > allowed 2\n  - database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\n  - 1 run(s) per size, one fresh app and database per size\nperf: fail (0 pass, 1 fail, 0 unmeasured)\n=========================== short test summary info ============================\nFAILED tests/perf/test_measure.py::test_cli_check_over_budget_is_exit_1_and_measure_is_0\nFAILED tests/perf/test_measure.py::test_lattice_perf_dispatch - AssertionErro...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n2 failed, 182 passed, 8 skipped in 2.47s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count"
+    ],
+    "summary": "1 failed, 183 passed, 8 skipped in 2.46s",
+    "docker_skipped": true,
+    "seconds": 2.7,
+    "tail": "....................................F................................... [ 37%]\n...................ssss................................................. [ 75%]\n...ssss.........................................                         [100%]\n=================================== FAILURES ===================================\n_____________ test_no_trade_when_a_size_is_over_its_allowed_count ______________\n\n    def test_no_trade_when_a_size_is_over_its_allowed_count():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [12] * 10}))\n        assert r.verdict == \"fail\"\n>       assert \"over budget: constant 12 > budget 6\" in r.notes\nE       AssertionError: assert 'over budget: constant 12 > budget 6' in ['over budget: N=5: 12 statements > allowed 11', 'constant traded for per-item: constant 12 > budget 6 accepted (per_i...s allowed count); at or under the budget for N >= N* = 6, over it for N < 6', 'better than the budget: per_item 0 < 1']\nE        +  where ['over budget: N=5: 12 statements > allowed 11', 'constant traded for per-item: constant 12 > budget 6 accepted (per_i...s allowed count); at or under the budget for N >= N* = 6, over it for N < 6', 'better than the budget: per_item 0 < 1'] = Report(budget=Budget(id='home', method='GET', path='/v1/home', user='ann', steps=(SeedStep(method='POST', path='/v1/ha...); at or under the budget for N >= N* = 6, over it for N < 6', 'better than the budget: per_item 0 < 1'], explain=None).notes\n\ntests/perf/test_budget.py:207: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n1 failed, 183 passed, 8 skipped in 2.46s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_constant_over_budget_fails",
+     "tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails",
+     "tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count"
+    ],
+    "summary": "3 failed, 181 passed, 8 skipped in 2.49s",
+    "docker_skipped": true,
+    "seconds": 2.8,
+    "tail": "st_no_trade_when_a_size_is_over_its_allowed_count():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [12] * 10}))\n        assert r.verdict == \"fail\"\n>       assert \"over budget: constant 12 > budget 6\" in r.notes\nE       AssertionError: assert 'over budget: constant 12 > budget 6' in ['over budget: N=5: 12 statements > allowed 11', 'no trade: per_item 0 < budget 1, but a measured size is over its allowed count, so constant 12 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1']\nE        +  where ['over budget: N=5: 12 statements > allowed 11', 'no trade: per_item 0 < budget 1, but a measured size is over its allowed count, so constant 12 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1'] = Report(budget=Budget(id='home', method='GET', path='/v1/home', user='ann', steps=(SeedStep(method='POST', path='/v1/ha...s allowed count, so constant 12 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1'], explain=None).notes\n\ntests/perf/test_budget.py:207: AssertionError\n______________ test_constant_over_with_equal_per_item_still_fails ______________\n\n    def test_constant_over_with_equal_per_item_still_fails():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [32] * 10}))\n        assert r.verdict == \"fail\"\n        assert r.delta() == {\"constant\": 1, \"per_item\": 0}\n>       assert any(\"constant 7 > budget 6\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_constant_over_with_equal_per_item_still_fails.<locals>.<genexpr> at 0x10b671a40>)\n\ntests/perf/test_budget.py:217: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_constant_over_budget_fails - Assertion...\nFAILED tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count\nFAILED tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n3 failed, 181 passed, 8 skipped in 2.49s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_per_item_over_budget_fails",
+     "tests/perf/test_budget.py::test_reverse_trade_is_refused"
+    ],
+    "summary": "2 failed, 182 passed, 8 skipped in 2.48s",
+    "docker_skipped": true,
+    "seconds": 2.8,
+    "tail": "................................F.....F................................. [ 37%]\n...................ssss................................................. [ 75%]\n...ssss.........................................                         [100%]\n=================================== FAILURES ===================================\n_______________________ test_per_item_over_budget_fails ________________________\n\n    def test_per_item_over_budget_fails():\n        r = judge(_budget(4, 0), _sizes({5: [9] * 10, 25: [29] * 10}))\n        assert r.verdict == \"fail\"\n>       assert any(\"per_item 1 > budget 0\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_per_item_over_budget_fails.<locals>.<genexpr> at 0x1084e4040>)\n\ntests/perf/test_budget.py:172: AssertionError\n________________________ test_reverse_trade_is_refused _________________________\n\n    def test_reverse_trade_is_refused():\n        # a cheaper constant bought with a per-item cost the budget does not allow\n        r = judge(_budget(30, 0), _sizes({5: [5] * 10, 25: [25] * 10}))\n>       assert r.verdict == \"fail\"\nE       AssertionError: assert 'pass' == 'fail'\nE         \nE         - fail\nE         + pass\n\ntests/perf/test_budget.py:224: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_per_item_over_budget_fails - assert False\nFAILED tests/perf/test_budget.py::test_reverse_trade_is_refused - AssertionEr...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n2 failed, 182 passed, 8 skipped in 2.48s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes",
+     "tests/perf/test_budget.py::test_trade_does_not_excuse_latency",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover",
+     "tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover"
+    ],
+    "summary": "5 failed, 179 passed, 8 skipped in 2.45s",
+    "docker_skipped": true,
+    "seconds": 2.7,
+    "tail": "or object test_trade_at_the_boundary_size_passes.<locals>.<genexpr> at 0x10b041d80>)\n\ntests/perf/test_budget.py:241: AssertionError\n______________________ test_trade_does_not_excuse_latency ______________________\n\n    def test_trade_does_not_excuse_latency():\n        slow = _sizes({5: [7] * 3, 25: [7] * 3}, lat=[100.0, 120.0, 110.0])\n        r = judge(_budget(6, 1, {\"median\": 50, \"size\": 25, \"margin\": 0.5}), slow)\n        assert r.verdict == \"fail\"\n        assert any(n.startswith(\"over budget: latency: median 110.00 ms\") for n in r.notes)\n>       assert any(n.startswith(\"constant traded for per-item\") for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_trade_does_not_excuse_latency.<locals>.<genexpr> at 0x10ab93d80>)\n\ntests/perf/test_budget.py:249: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n        r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (9, Fraction(-1, 5))\n        assert r.verdict == \"pass\", r.notes\n>       assert any(\"constant 9 > budget 8\" in n and \"N* = 5\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_falling_count_trades_against_a_zero_per_item_budget.<locals>.<genexpr> at 0x10b0413c0>)\n\ntests/perf/test_budget.py:257: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - a...\nFAILED tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes - as...\nFAILED tests/perf/test_budget.py::test_trade_does_not_excuse_latency - assert...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n5 failed, 179 passed, 8 skipped in 2.45s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes",
+     "tests/perf/test_budget.py::test_trade_does_not_excuse_latency",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover",
+     "tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover"
+    ],
+    "summary": "5 failed, 179 passed, 8 skipped in 2.57s",
+    "docker_skipped": true,
+    "seconds": 2.9,
+    "tail": "cuse_latency ______________________\n\n    def test_trade_does_not_excuse_latency():\n        slow = _sizes({5: [7] * 3, 25: [7] * 3}, lat=[100.0, 120.0, 110.0])\n        r = judge(_budget(6, 1, {\"median\": 50, \"size\": 25, \"margin\": 0.5}), slow)\n        assert r.verdict == \"fail\"\n        assert any(n.startswith(\"over budget: latency: median 110.00 ms\") for n in r.notes)\n        assert any(n.startswith(\"constant traded for per-item\") for n in r.notes)\n>       assert not any(n.startswith(\"over budget: constant\") for n in r.notes)\nE       assert not True\nE        +  where True = any(<generator object test_trade_does_not_excuse_latency.<locals>.<genexpr> at 0x10ae7bd80>)\n\ntests/perf/test_budget.py:250: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n        r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (9, Fraction(-1, 5))\n>       assert r.verdict == \"pass\", r.notes\nE       AssertionError: ['over budget: constant 9 > budget 8', 'constant traded for per-item: constant 9 > budget 8 accepted (per_item -0.2 < ...llowed count); at or under the budget for N >= N* = 5, over it for N < 5', 'better than the budget: per_item -0.2 < 0']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:256: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - A...\nFAILED tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes - As...\nFAILED tests/perf/test_budget.py::test_trade_does_not_excuse_latency - assert...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n5 failed, 179 passed, 8 skipped in 2.57s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover"
+    ],
+    "summary": "2 failed, 182 passed, 8 skipped in 2.59s",
+    "docker_skipped": true,
+    "seconds": 2.9,
+    "tail": "ssover():\n        r = judge(_budget(4, 3), _sizes({5: [12] * 10, 25: [32] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (7, 1)\n        assert r.verdict == \"pass\", r.notes\n>       assert any(\"constant 7 > budget 4\" in n and \"N* = 1.5\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_trade_shows_a_fractional_crossover.<locals>.<genexpr> at 0x10b2b4040>)\n\ntests/perf/test_budget.py:234: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n>       r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/perf/test_budget.py:254: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nlattice/perf/budget.py:563: in judge\n    n_star = _show((f.constant - budget.constant) / budget.per_item)  # MUTANT PR6\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/fractions.py:699: in forward\n    return monomorphic_operator(a, b)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\na = Fraction(1, 1), b = Fraction(0, 1)\n\n    def _div(a, b):\n        \"\"\"a / b\"\"\"\n        # Same as _mul(), with inversed b.\n        nb, db = b._numerator, b._denominator\n        if nb == 0:\n>           raise ZeroDivisionError('Fraction(%s, 0)' % db)\nE           ZeroDivisionError: Fraction(1, 0)\n\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/fractions.py:847: ZeroDivisionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - a...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n2 failed, 182 passed, 8 skipped in 2.59s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes"
+    ],
+    "summary": "2 failed, 182 passed, 8 skipped in 2.40s",
+    "docker_skipped": true,
+    "seconds": 2.6,
+    "tail": "..........................F.F............................. [ 37%]\n...................ssss................................................. [ 75%]\n...ssss.........................................                         [100%]\n=================================== FAILURES ===================================\n____________________ test_trade_at_the_boundary_size_passes ____________________\n\n    def test_trade_at_the_boundary_size_passes():\n        # 11 statements at N=5 is exactly the allowed 6 + 1*5; the crossover is the size itself\n        r = judge(_budget(6, 1), _sizes({5: [11] * 10, 25: [11] * 10}))\n>       assert r.verdict == \"pass\", r.notes\nE       AssertionError: ['over budget: constant 11 > budget 6', 'no trade: per_item 0 < budget 1, but a measured size is over its allowed count, so constant 11 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:240: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n        r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (9, Fraction(-1, 5))\n>       assert r.verdict == \"pass\", r.notes\nE       AssertionError: ['over budget: constant 9 > budget 8', 'no trade: per_item -0.2 < budget 0, but a measured size is over its allowed count, so constant 9 > budget 8 stays over budget', 'better than the budget: per_item -0.2 < 0']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:256: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes - As...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n2 failed, 182 passed, 8 skipped in 2.40s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_trade_does_not_excuse_latency"
+    ],
+    "summary": "1 failed, 183 passed, 8 skipped in 2.39s",
+    "docker_skipped": true,
+    "seconds": 2.6,
+    "tail": ".........................................F.............................. [ 37%]\n...................ssss................................................. [ 75%]\n...ssss.........................................                         [100%]\n=================================== FAILURES ===================================\n______________________ test_trade_does_not_excuse_latency ______________________\n\n    def test_trade_does_not_excuse_latency():\n        slow = _sizes({5: [7] * 3, 25: [7] * 3}, lat=[100.0, 120.0, 110.0])\n        r = judge(_budget(6, 1, {\"median\": 50, \"size\": 25, \"margin\": 0.5}), slow)\n>       assert r.verdict == \"fail\"\nE       AssertionError: assert 'pass' == 'fail'\nE         \nE         - fail\nE         + pass\n\ntests/perf/test_budget.py:247: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trade_does_not_excuse_latency - Assert...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n1 failed, 183 passed, 8 skipped in 2.39s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count"
+    ],
+    "summary": "1 failed, 183 passed, 8 skipped in 2.49s",
+    "docker_skipped": true,
+    "seconds": 2.8,
+    "tail": "....................................F................................... [ 37%]\n...................ssss................................................. [ 75%]\n...ssss.........................................                         [100%]\n=================================== FAILURES ===================================\n_____________ test_no_trade_when_a_size_is_over_its_allowed_count ______________\n\n    def test_no_trade_when_a_size_is_over_its_allowed_count():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [12] * 10}))\n        assert r.verdict == \"fail\"\n        assert \"over budget: constant 12 > budget 6\" in r.notes\n        assert \"over budget: N=5: 12 statements > allowed 11\" in r.notes\n>       assert any(n.startswith(\"no trade:\") for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_no_trade_when_a_size_is_over_its_allowed_count.<locals>.<genexpr> at 0x10d513140>)\n\ntests/perf/test_budget.py:209: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n1 failed, 183 passed, 8 skipped in 2.49s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests",
+     "tests/perf/test_counting.py::test_pg_shapes_follow_read_order",
+     "tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order",
+     "tests/perf/test_counting.py::test_the_tools_statements_are_not_counted"
+    ],
+    "summary": "5 failed, 179 passed, 8 skipped in 2.52s",
+    "docker_skipped": true,
+    "seconds": 2.8,
+    "tail": "HERE user_id = $? ORDER BY id')\nE         Left contains 2 more items, first extra item: (3, 'SELECT name FROM users WHERE id = $?')\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:514: AssertionError\n__________________ test_the_tools_statements_are_not_counted ___________________\n\nworld = <tests.perf.fakeengines.World object at 0x108c45710>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1087c69c0>\n\n    def test_the_tools_statements_are_not_counted(world, monkeypatch):\n        \"\"\"A noisy tool: statements on the measuring and on the admin connection inside a\n        window are not the app's, because the read is bound to the measured database.\"\"\"\n    \n        class Noisy(SqlCounter):\n            def begin(self) -> None:\n                super().begin()\n                for _ in range(5):\n                    self.conn.query(\"SELECT 1\")\n                    self.server.admin().query(\"SELECT 1\")\n    \n        monkeypatch.setattr(measure_mod, \"SqlCounter\", Noisy)\n        for engine in (\"postgres\", \"clickhouse\"):\n            (r,) = measure(_file(_budget(\"b\", \"GET /items\", 2, 0)), _harness(engine), runs=2)\n>           assert [s.statements for s in r.sizes] == [[2, 2], [2, 2]], engine\nE           AssertionError: postgres\nE           assert [[9, 11], [17, 19]] == [[2, 2], [2, 2]]\nE             \nE             At index 0 diff: [9, 11] != [2, 2]\nE             Use -v to get more diff\n\ntests/perf/test_counting.py:535: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order\nFAILED tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_pg_shapes_follow_read_order - Assert...\nFAILED tests/perf/test_counting.py::test_the_tools_statements_are_not_counted\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n5 failed, 179 passed, 8 skipped in 2.52s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]",
+     "tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order",
+     "tests/perf/test_counting.py::test_the_tools_statements_are_not_counted",
+     "tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2"
+    ],
+    "summary": "4 failed, 180 passed, 8 skipped in 2.39s",
+    "docker_skipped": true,
+    "seconds": 2.7,
+    "tail": "res\", \"clickhouse\"):\n            (r,) = measure(_file(_budget(\"b\", \"GET /items\", 2, 0)), _harness(engine), runs=2)\n>           assert [s.statements for s in r.sizes] == [[2, 2], [2, 2]], engine\nE           AssertionError: clickhouse\nE           assert [] == [[2, 2], [2, 2]]\nE             \nE             Right contains 2 more items, first extra item: [2, 2]\nE             Use -v to get more diff\n\ntests/perf/test_counting.py:535: AssertionError\n_______________ test_unsupported_engine_is_unchecked_and_exit_2 ________________\n\n    def test_unsupported_engine_is_unchecked_and_exit_2():\n        from tests.perf import fakeengines as fe\n        from tests.perf import serverapp\n    \n        seed = {\"items\": \"N\", \"steps\": [{\"method\": \"POST\", \"path\": \"/items\", \"user\": \"ann\",\n                                         \"count\": \"N\", \"json\": {\"name\": \"item-{i}\"}}]}  # fmt: skip\n        budgets = parse({\"version\": 1, \"budgets\": [{\n            \"id\": \"items\", \"endpoint\": \"GET /items\", \"user\": \"ann\", \"seed\": seed, \"sizes\": [3, 7],\n            \"queries\": {\"constant\": 2, \"per_item\": 0}, \"latency_ms\": None}]})  # fmt: skip\n        with fe.installed():\n            h = Harness(serverapp.make_app, serverapp.build_db, None, serverapp.login, \"clickhouse\")\n            (r,) = measure(budgets, h, runs=1, explain=_opts())\n>       assert r.verdict == \"pass\"  # counted\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert 'unmeasured' == 'pass'\nE         \nE         - pass\nE         + unmeasured\n\ntests/perf/test_explain.py:521: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]\nFAILED tests/perf/test_counting.py::test_the_tools_statements_are_not_counted\nFAILED tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n4 failed, 180 passed, 8 skipped in 2.39s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_pg_shapes_follow_read_order",
+     "tests/perf/test_counting.py::test_sql_counter_expands_calls"
+    ],
+    "summary": "3 failed, 181 passed, 8 skipped in 2.44s",
+    "docker_skipped": true,
+    "seconds": 2.7,
+    "tail": "_on_a_simulated_server(world, engine):\n        reports = measure(\n            _file(_budget(\"items\", \"GET /items\", 2, 0), _budget(\"n1-tight\", \"GET /items_n1\", 2, 0),\n                  _budget(\"n1\", \"GET /items_n1\", 2, 1), _budget(\"nodb\", \"GET /nodb\", 0, 0)),\n            _harness(engine), runs=3, want_shapes=True,\n        )  # fmt: skip\n        by = {r.budget.id: r for r in reports}\n        assert [s.statements for s in by[\"items\"].sizes] == [[2] * 3, [2] * 3]\n>       assert [s.statements for s in by[\"n1\"].sizes] == [[5] * 3, [9] * 3]\nE       assert [[3, 3, 3], [3, 3, 3]] == [[5, 5, 5], [9, 9, 9]]\nE         \nE         At index 0 diff: [3, 3, 3] != [5, 5, 5]\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:502: AssertionError\n_______________________ test_pg_shapes_follow_read_order _______________________\n\nworld = <tests.perf.fakeengines.World object at 0x10b20eb30>\n\n    def test_pg_shapes_follow_read_order(world):\n        (r,) = measure(_file(_budget(\"n1\", \"GET /items_n1\", 2, 1)), _harness(\"postgres\"), runs=1,\n                       want_shapes=True)  # fmt: skip\n>       assert r.sizes[0].shapes == [\n            (1, \"SELECT * FROM items WHERE user_id = $? ORDER BY id\"),\n            (1, \"SELECT id FROM users WHERE token = $?\"),\n            (3, \"SELECT name FROM users WHERE id = $?\"),\n        ]\nE       AssertionError: assert [(1, 'SELECT ...ERE id = $?')] == [(1, 'SELECT ...ERE id = $?')]\nE         \nE         At index 2 diff: (1, 'SELECT name FROM users WHERE id = $?') != (3, 'SELECT name FROM users WHERE id = $?')\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:514: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_sql_counter_expands_calls - Assertio...\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_pg_shapes_follow_read_order - Assert...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n3 failed, 181 passed, 8 skipped in 2.44s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_liveness_guard_is_per_budget",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]",
+     "tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests",
+     "tests/perf/test_counting.py::test_pg_shapes_follow_read_order",
+     "tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order",
+     "tests/perf/test_counting.py::test_the_tools_statements_are_not_counted",
+     "tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2"
+    ],
+    "summary": "10 failed, 174 passed, 8 skipped in 2.71s",
+    "docker_skipped": true,
+    "seconds": 3.0,
+    "tail": "________________\n\n    def test_unsupported_engine_is_unchecked_and_exit_2():\n        from tests.perf import fakeengines as fe\n        from tests.perf import serverapp\n    \n        seed = {\"items\": \"N\", \"steps\": [{\"method\": \"POST\", \"path\": \"/items\", \"user\": \"ann\",\n                                         \"count\": \"N\", \"json\": {\"name\": \"item-{i}\"}}]}  # fmt: skip\n        budgets = parse({\"version\": 1, \"budgets\": [{\n            \"id\": \"items\", \"endpoint\": \"GET /items\", \"user\": \"ann\", \"seed\": seed, \"sizes\": [3, 7],\n            \"queries\": {\"constant\": 2, \"per_item\": 0}, \"latency_ms\": None}]})  # fmt: skip\n        with fe.installed():\n            h = Harness(serverapp.make_app, serverapp.build_db, None, serverapp.login, \"clickhouse\")\n            (r,) = measure(budgets, h, runs=1, explain=_opts())\n>       assert r.verdict == \"pass\"  # counted\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert 'unmeasured' == 'pass'\nE         \nE         - pass\nE         + unmeasured\n\ntests/perf/test_explain.py:521: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]\nFAILED tests/perf/test_counting.py::test_liveness_guard_is_per_budget - Asser...\nFAILED tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]\nFAILED tests/perf/test_counting.py::test_pg_shapes_follow_read_order - Assert...\nFAILED tests/perf/test_counting.py::test_the_tools_statements_are_not_counted\nFAILED tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n10 failed, 174 passed, 8 skipped in 2.71s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_liveness_guard_is_per_budget",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]"
+    ],
+    "summary": "3 failed, 181 passed, 8 skipped in 2.75s",
+    "docker_skipped": true,
+    "seconds": 3.0,
+    "tail": "(tmp_path), serverapp.build_db, None, serverapp.login, engine)\n        (r,) = measure(_file(_budget(\"b\", \"GET /items\", 5, 5)), h, runs=2)\n>       assert r.verdict == \"unmeasured\" and r.sizes == [] and r.fit is None\nE       AssertionError: assert ('pass' == 'unmeasured'\nE         \nE         - unmeasured\nE         + pass)\n\ntests/perf/test_counting.py:458: AssertionError\n______________________ test_liveness_guard_is_per_budget _______________________\n\nworld = <tests.perf.fakeengines.World object at 0x10d3cf050>\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/pytest-of-vivekgade/pytest-20/test_liveness_guard_is_per_bud0')\n\n    def test_liveness_guard_is_per_budget(world, tmp_path):\n        \"\"\"On an app that ignores its database, the budget whose seed left nothing is\n        unmeasured and a budget with no seed request is judged (and says it was not guarded).\"\"\"\n        h = Harness(_silent_app_factory(tmp_path), serverapp.build_db, None, serverapp.login,\n                    \"postgres\")  # fmt: skip\n        no_seed = {\"items\": \"N\", \"steps\": []}\n        seeded, free = measure(\n            _file(_budget(\"items\", \"GET /items\", 2, 0), _budget(\"free\", \"GET /nodb\", 0, 0, no_seed)),\n            h, runs=2,\n        )  # fmt: skip\n>       assert (seeded.verdict, free.verdict) == (\"unmeasured\", \"pass\")\nE       AssertionError: assert ('pass', 'pass') == ('unmeasured', 'pass')\nE         \nE         At index 0 diff: 'pass' != 'unmeasured'\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:476: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]\nFAILED tests/perf/test_counting.py::test_liveness_guard_is_per_budget - Asser...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n3 failed, 181 passed, 8 skipped in 2.75s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_setup_statements_run_only_on_a_container_the_tool_started",
+     "tests/perf/test_counting.py::test_sql_counter_on_given_server_skips_setup"
+    ],
+    "summary": "2 failed, 182 passed, 8 skipped in 2.39s",
+    "docker_skipped": true,
+    "seconds": 2.6,
+    "tail": "........................................... [ 37%]\n..F..F.............ssss................................................. [ 75%]\n...ssss.........................................                         [100%]\n=================================== FAILURES ===================================\n________ test_setup_statements_run_only_on_a_container_the_tool_started ________\n\nworld = <tests.perf.fakeengines.World object at 0x10d756520>\n\n    def test_setup_statements_run_only_on_a_container_the_tool_started(world):\n        \"\"\"Given a server (a URL), nothing is set up: no CREATE EXTENSION, so no pgss.\"\"\"\n        given = world.add_server(\"postgres\", preloaded=True)\n        (r,) = measure(_file(_budget(\"a\", \"GET /items\", 2, 0)), _harness(\"postgres\", url=given.url()),\n                       runs=1)  # fmt: skip\n>       assert r.verdict == \"unmeasured\"\nE       AssertionError: assert 'pass' == 'unmeasured'\nE         \nE         - unmeasured\nE         + pass\n\ntests/perf/test_counting.py:270: AssertionError\n_________________ test_sql_counter_on_given_server_skips_setup _________________\n\nworld = <tests.perf.fakeengines.World object at 0x10d580490>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d5819d0>\n\n    def test_sql_counter_on_given_server_skips_setup(world, monkeypatch):\n        rec = _Recording(monkeypatch)\n        perf = engines.engine(\"postgres\").perf\n        # a given server without pgss: only the check is sent, and it fails (unmeasured)\n        given, _server = _counter(world, \"postgres\", owned=False)\n>       with pytest.raises(Unmeasured):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE Unmeasured\n\ntests/perf/test_counting.py:393: Failed\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_setup_statements_run_only_on_a_container_the_tool_started\nFAILED tests/perf/test_counting.py::test_sql_counter_on_given_server_skips_setup\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n2 failed, 182 passed, 8 skipped in 2.39s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_a_dead_server_is_cannot_run_not_unmeasured",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_dispatch_by_descriptor_counter",
+     "tests/perf/test_counting.py::test_extra_args_follow_server_args",
+     "tests/perf/test_counting.py::test_liveness_guard_is_per_budget",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]",
+     "tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests",
+     "tests/perf/test_counting.py::test_pg_shapes_follow_read_order",
+     "tests/perf/test_counting.py::test_the_tools_statements_are_not_counted"
+    ],
+    "summary": "9 failed, 175 passed, 8 skipped in 2.27s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "s.engine(\"postgres\").server.args, *perf.server_args]  # fmt: skip\n        # and the perf run asks for them (a started container only)\n        asked: list[dict] = []\n    \n        def fake_server_for(dialect, url=None, name_prefix=\"lattice-\", extra_args=()):\n            asked.append({\"dialect\": dialect, \"extra_args\": tuple(extra_args)})\n            raise dbserver.DbServerError(\"stop here\")\n    \n        monkeypatch.setattr(dbserver, \"server_for\", fake_server_for)\n        with pytest.raises(MeasureError, match=\"stop here\"):\n            measure(_file(_budget(\"b\", \"GET /items\", 2, 0)), _harness(\"postgres\"), runs=1)\n>       assert asked == [{\"dialect\": \"postgres\", \"extra_args\": perf.server_args}]\nE       AssertionError: assert [{'dialect': ...ra_args': ()}] == [{'dialect': ...utility=on')}]\nE         \nE         At index 0 diff: {'dialect': 'postgres', 'extra_args': ()} != {'dialect': 'postgres', 'extra_args': ('-c', 'shared_preload_libraries=pg_stat_statements', '-c', 'pg_stat_statements.track=top', '-c', 'pg_stat_statements.track_utility=on')}\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:617: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_dispatch_by_descriptor_counter - Ass...\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]\nFAILED tests/perf/test_counting.py::test_liveness_guard_is_per_budget - Asser...\nFAILED tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_pg_shapes_follow_read_order - IndexE...\nFAILED tests/perf/test_counting.py::test_the_tools_statements_are_not_counted\nFAILED tests/perf/test_counting.py::test_a_dead_server_is_cannot_run_not_unmeasured\nFAILED tests/perf/test_counting.py::test_extra_args_follow_server_args - Asse...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n9 failed, 175 passed, 8 skipped in 2.27s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_check_failure_is_unmeasured_and_server_stopped"
+    ],
+    "summary": "1 failed, 183 passed, 8 skipped in 2.44s",
+    "docker_skipped": true,
+    "seconds": 2.8,
+    "tail": "=============== FAILURES ===================================\n_____________ test_check_failure_is_unmeasured_and_server_stopped ______________\n\nworld = <tests.perf.fakeengines.World object at 0x109932850>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10992e8b0>\n\n    def test_check_failure_is_unmeasured_and_server_stopped(world, monkeypatch):\n        \"\"\"A container whose statistics are not available (pgss not loaded): every budget is\n        unmeasured with the reason, the report still comes, and the container is removed.\"\"\"\n        real = dbserver.start_container\n    \n        def without_server_args(dialect, *a, extra_args=(), **kw):\n            return real(dialect, *a, extra_args=(), **kw)\n    \n        monkeypatch.setattr(dbserver, \"start_container\", without_server_args)\n        reports = measure(\n            _file(_budget(\"a\", \"GET /items\", 2, 0), _budget(\"b\", \"GET /nodb\", 0, 0)),\n            _harness(\"postgres\"),\n            runs=1,\n        )\n        assert [r.verdict for r in reports] == [\"unmeasured\", \"unmeasured\"]\n        for r in reports:\n            assert r.sizes == []\n            (note,) = r.notes\n            assert note.startswith(\"unmeasured: statement counting on PostgreSQL is not available \"\n                                   \"on this server: 'SELECT count(*) FROM pg_stat_statements' \"\n                                   \"failed: \")  # fmt: skip\n            assert \"pg_stat_statements\" in note and \"shared_preload_libraries\" in note\n>       assert world.live_containers() == [] and len(world.removed) == 1\nE       AssertionError: assert (['lattice-per...res-a9e146fb'] == []\nE         \nE         Left contains one more item: 'lattice-perf-postgres-a9e146fb'\nE         Use -v to get more diff)\n\ntests/perf/test_counting.py:262: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_check_failure_is_unmeasured_and_server_stopped\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n1 failed, 183 passed, 8 skipped in 2.44s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_perf_section_validation_messages[perf2-E:"
+    ],
+    "summary": "1 failed, 183 passed, 8 skipped in 2.46s",
+    "docker_skipped": true,
+    "seconds": 2.8,
+    "tail": "\n                {**SQL_OK, \"setup\": [\"SELECT {db}\"]},\n                \"E: perf.setup: unknown placeholder {db} (known: none)\",\n            ),\n            (\n                {**SQL_OK, \"check\": [\"SELECT {mark}\"]},\n                \"E: perf.check: unknown placeholder {mark} (known: none)\",\n            ),\n            (\n                {**SQL_OK, \"begin\": [\"SELECT {mark}\"]},\n                \"E: perf.begin: unknown placeholder {mark} (known: {db})\",\n            ),\n            ({**SQL_OK, \"mark\": \"SELECT {db}\"}, \"E: perf.mark: unknown placeholder {db} (known: none)\"),\n            (\n                {\"counter\": \"general_log\", \"read\": \"SELECT {db}\"},\n                'E: perf.read: only for counter = \"sql\"',\n            ),\n            ({**SQL_OK, \"read\": \"SELECT {db}, {mark}\"}, \"E: perf.read: {mark} needs perf.mark\"),\n            ({**SQL_OK, \"mark\": \"SELECT 1\"}, \"E: perf.read: must use {mark} when perf.mark is set\"),\n            ({\"counter\": \"sql\", \"source\": \"s\"}, \"E: [perf] missing required field 'read'\"),\n            ({\"counter\": \"sql\", \"read\": \"SELECT {db}\"}, \"E: [perf] missing required field 'source'\"),\n            ({\"source\": \"s\"}, \"E: [perf] missing required field 'counter'\"),\n            ({**SQL_OK, \"setup\": [\"\"]}, \"E: perf.setup: must be a list of non-empty strings\"),\n            ({**SQL_OK, \"server_args\": \"-c x\"}, \"E: perf.server_args: must be a list of strings\"),\n            (\"sql\", \"E: perf: must be a table, not a string\"),\n        ],\n    )\n    def test_perf_section_validation_messages(perf, message):\n>       with pytest.raises(EngineError) as err:\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE EngineError\n\ntests/perf/test_counting.py:121: Failed\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_perf_section_validation_messages[perf2-E: perf.read: must use {db} (the measured database; the tool's own statements are excluded by it)]\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n1 failed, 183 passed, 8 skipped in 2.46s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_a_dead_server_is_cannot_run_not_unmeasured",
+     "tests/perf/test_counting.py::test_check_failure_is_unmeasured_and_server_stopped",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_descriptor_without_perf_is_unmeasured_with_reason",
+     "tests/perf/test_counting.py::test_dispatch_by_descriptor_counter",
+     "tests/perf/test_counting.py::test_extra_args_follow_server_args",
+     "tests/perf/test_counting.py::test_liveness_guard_is_per_budget",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]",
+     "tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests",
+     "tests/perf/test_counting.py::test_pg_shapes_follow_read_order",
+     "tests/perf/test_counting.py::test_setup_statements_run_only_on_a_container_the_tool_started",
+     "tests/perf/test_counting.py::test_the_tools_statements_are_not_counted",
+     "tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2"
+    ],
+    "summary": "15 failed, 169 passed, 8 skipped in 2.26s",
+    "docker_skipped": true,
+    "seconds": 2.6,
+    "tail": " \"items\", \"endpoint\": \"GET /items\", \"user\": \"ann\", \"seed\": seed, \"sizes\": [3, 7],\n            \"queries\": {\"constant\": 2, \"per_item\": 0}, \"latency_ms\": None}]})  # fmt: skip\n        with fe.installed():\n            h = Harness(serverapp.make_app, serverapp.build_db, None, serverapp.login, \"clickhouse\")\n            (r,) = measure(budgets, h, runs=1, explain=_opts())\n>       assert r.verdict == \"pass\"  # counted\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert 'unmeasured' == 'pass'\nE         \nE         - pass\nE         + unmeasured\n\ntests/perf/test_explain.py:521: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_descriptor_without_perf_is_unmeasured_with_reason\nFAILED tests/perf/test_counting.py::test_dispatch_by_descriptor_counter - Ass...\nFAILED tests/perf/test_counting.py::test_check_failure_is_unmeasured_and_server_stopped\nFAILED tests/perf/test_counting.py::test_setup_statements_run_only_on_a_container_the_tool_started\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]\nFAILED tests/perf/test_counting.py::test_liveness_guard_is_per_budget - Asser...\nFAILED tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]\nFAILED tests/perf/test_counting.py::test_pg_shapes_follow_read_order - IndexE...\nFAILED tests/perf/test_counting.py::test_the_tools_statements_are_not_counted\nFAILED tests/perf/test_counting.py::test_a_dead_server_is_cannot_run_not_unmeasured\nFAILED tests/perf/test_counting.py::test_extra_args_follow_server_args - Fail...\nFAILED tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n15 failed, 169 passed, 8 skipped in 2.26s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_perf_section_validation_messages[perf0-E:"
+    ],
+    "summary": "1 failed, 183 passed, 8 skipped in 2.38s",
+    "docker_skipped": true,
+    "seconds": 2.7,
+    "tail": "t)\",\n            ),\n            (\n                {**SQL_OK, \"setup\": [\"SELECT {db}\"]},\n                \"E: perf.setup: unknown placeholder {db} (known: none)\",\n            ),\n            (\n                {**SQL_OK, \"check\": [\"SELECT {mark}\"]},\n                \"E: perf.check: unknown placeholder {mark} (known: none)\",\n            ),\n            (\n                {**SQL_OK, \"begin\": [\"SELECT {mark}\"]},\n                \"E: perf.begin: unknown placeholder {mark} (known: {db})\",\n            ),\n            ({**SQL_OK, \"mark\": \"SELECT {db}\"}, \"E: perf.mark: unknown placeholder {db} (known: none)\"),\n            (\n                {\"counter\": \"general_log\", \"read\": \"SELECT {db}\"},\n                'E: perf.read: only for counter = \"sql\"',\n            ),\n            ({**SQL_OK, \"read\": \"SELECT {db}, {mark}\"}, \"E: perf.read: {mark} needs perf.mark\"),\n            ({**SQL_OK, \"mark\": \"SELECT 1\"}, \"E: perf.read: must use {mark} when perf.mark is set\"),\n            ({\"counter\": \"sql\", \"source\": \"s\"}, \"E: [perf] missing required field 'read'\"),\n            ({\"counter\": \"sql\", \"read\": \"SELECT {db}\"}, \"E: [perf] missing required field 'source'\"),\n            ({\"source\": \"s\"}, \"E: [perf] missing required field 'counter'\"),\n            ({**SQL_OK, \"setup\": [\"\"]}, \"E: perf.setup: must be a list of non-empty strings\"),\n            ({**SQL_OK, \"server_args\": \"-c x\"}, \"E: perf.server_args: must be a list of strings\"),\n            (\"sql\", \"E: perf: must be a table, not a string\"),\n        ],\n    )\n    def test_perf_section_validation_messages(perf, message):\n>       with pytest.raises(EngineError) as err:\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE EngineError\n\ntests/perf/test_counting.py:121: Failed\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_perf_section_validation_messages[perf0-E: perf.counter: must be \"general_log\" or \"sql\", not 'evil:Code']\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n1 failed, 183 passed, 8 skipped in 2.38s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_cli_explain_exit_codes",
+     "tests/perf/test_explain.py::test_cli_explain_json_and_flags",
+     "tests/perf/test_explain.py::test_min_rows_zero_checks_every_table",
+     "tests/perf/test_explain.py::test_report_json_and_text_with_explain",
+     "tests/perf/test_explain.py::test_sqlite_clean_has_no_finding",
+     "tests/perf/test_explain.py::test_sqlite_drop_index_is_found"
+    ],
+    "summary": "6 failed, 178 passed, 8 skipped in 2.16s",
+    "docker_skipped": true,
+    "seconds": 2.4,
+    "tail": "g index: notes (6 rows) is read by a full scan [SEARCH notes USING INDEX notes_item_id (item_id=?)] in: SELECT id, item_id, body FROM notes WHERE item_id = ? ORDER BY id\nperf: pass (2 pass, 0 fail, 0 unmeasured)\nexplain: findings (2 finding(s) in 2 budget(s), 0 unchecked or partial)\n_______________________ test_cli_explain_json_and_flags ________________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/pytest-of-vivekgade/pytest-28/test_cli_explain_json_and_flag0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10ba47390>\n\n    def test_cli_explain_json_and_flags(tmp_path, capsys):\n        d = _project(tmp_path, \"drop_notes\")\n        assert perf_main([\"check\", \"--project\", str(d), \"--runs\", \"1\", \"--explain\", \"--json\"]) == 1\n        data = json.loads(capsys.readouterr().out)\n        assert list(data)[-1] == \"explain\"\n>       assert data[\"explain\"] == {\"verdict\": \"findings\", \"findings\": 1, \"budgets\": 1, \"unchecked\": 0}\nE       AssertionError: assert {'verdict': '...unchecked': 0} == {'verdict': '...unchecked': 0}\nE         \nE         Omitting 2 identical items, use -vv to show\nE         Differing items:\nE         {'findings': 2} != {'findings': 1}\nE         {'budgets': 2} != {'budgets': 1}\nE         Use -v to get more diff\n\ntests/perf/test_explain.py:606: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_sqlite_clean_has_no_finding - Asserti...\nFAILED tests/perf/test_explain.py::test_sqlite_drop_index_is_found - Assertio...\nFAILED tests/perf/test_explain.py::test_min_rows_zero_checks_every_table - Va...\nFAILED tests/perf/test_explain.py::test_report_json_and_text_with_explain - A...\nFAILED tests/perf/test_explain.py::test_cli_explain_exit_codes - AssertionErr...\nFAILED tests/perf/test_explain.py::test_cli_explain_json_and_flags - Assertio...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n6 failed, 178 passed, 8 skipped in 2.16s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_a_join_without_an_index_is_found_through_the_alias",
+     "tests/perf/test_explain.py::test_cli_explain_exit_codes",
+     "tests/perf/test_explain.py::test_cli_explain_json_and_flags",
+     "tests/perf/test_explain.py::test_counts_identical_with_explain",
+     "tests/perf/test_explain.py::test_explain_runs_at_largest_size",
+     "tests/perf/test_explain.py::test_kinds_ignored_and_deduplicated",
+     "tests/perf/test_explain.py::test_min_rows_zero_checks_every_table",
+     "tests/perf/test_explain.py::test_report_json_and_text_with_explain",
+     "tests/perf/test_explain.py::test_sqlite_clean_has_no_finding",
+     "tests/perf/test_explain.py::test_sqlite_drop_index_is_found",
+     "tests/perf/test_explain.py::test_threshold_boundary_counts",
+     "tests/perf/test_explain.py::test_unexpanded_placeholders_still_explain",
+     "tests/perf/test_explain.py::test_unresolved_name_is_skipped_with_a_reason"
+    ],
+    "summary": "13 failed, 171 passed, 8 skipped in 2.30s",
+    "docker_skipped": true,
+    "seconds": 2.6,
+    "tail": ",\n    \"per_item\": 0,\n    \"exact\": true\n   },\n   \"budget\": {\n    \"queries\": {\n     \"constant\": 3,\n     \"per_item\": 0\n    },\n    \"latency_ms\": null\n   },\n   \"verdict\": \"pass\",\n   \"delta\": {\n    \"constant\": 0,\n    \"per_item\": 0\n   },\n   \"notes\": [\n    \"database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\",\n    \"1 run(s) per size, one fresh app and database per size\",\n    \"seeded id: {item} from seed step 1 (key id)\"\n   ],\n   \"explain\": {\n    \"size\": 6,\n    \"engine\": \"sqlite\",\n    \"status\": \"checked\",\n    \"reason\": \"\",\n    \"min_rows\": 6,\n    \"explained\": 3,\n    \"ignored\": 0,\n    \"below_threshold\": 0,\n    \"skipped\": [],\n    \"tables\": {},\n    \"findings\": []\n   }\n  }\n ],\n \"explain\": {\n  \"verdict\": \"clean\",\n  \"findings\": 0,\n  \"budgets\": 0,\n  \"unchecked\": 0\n }\n}\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_sqlite_clean_has_no_finding - Asserti...\nFAILED tests/perf/test_explain.py::test_sqlite_drop_index_is_found - ValueErr...\nFAILED tests/perf/test_explain.py::test_min_rows_zero_checks_every_table - Va...\nFAILED tests/perf/test_explain.py::test_threshold_boundary_counts - Assertion...\nFAILED tests/perf/test_explain.py::test_a_join_without_an_index_is_found_through_the_alias\nFAILED tests/perf/test_explain.py::test_unresolved_name_is_skipped_with_a_reason\nFAILED tests/perf/test_explain.py::test_kinds_ignored_and_deduplicated - Asse...\nFAILED tests/perf/test_explain.py::test_unexpanded_placeholders_still_explain\nFAILED tests/perf/test_explain.py::test_explain_runs_at_largest_size - Assert...\nFAILED tests/perf/test_explain.py::test_counts_identical_with_explain - asser...\nFAILED tests/perf/test_explain.py::test_report_json_and_text_with_explain - I...\nFAILED tests/perf/test_explain.py::test_cli_explain_exit_codes - AssertionErr...\nFAILED tests/perf/test_explain.py::test_cli_explain_json_and_flags - Assertio...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n13 failed, 171 passed, 8 skipped in 2.30s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_a_join_without_an_index_is_found_through_the_alias",
+     "tests/perf/test_explain.py::test_cli_explain_exit_codes",
+     "tests/perf/test_explain.py::test_cli_explain_json_and_flags",
+     "tests/perf/test_explain.py::test_counts_identical_with_explain",
+     "tests/perf/test_explain.py::test_explain_runs_at_largest_size",
+     "tests/perf/test_explain.py::test_mysql_alias_resolution",
+     "tests/perf/test_explain.py::test_pg_explain_session_statements",
+     "tests/perf/test_explain.py::test_report_json_and_text_with_explain",
+     "tests/perf/test_explain.py::test_sqlite_drop_index_is_found",
+     "tests/perf/test_explain.py::test_threshold_boundary_counts"
+    ],
+    "summary": "10 failed, 174 passed, 8 skipped in 2.18s",
+    "docker_skipped": true,
+    "seconds": 2.4,
+    "tail": "\n     }\n    },\n    {\n     \"n\": 6,\n     \"statements\": [\n      3\n     ],\n     \"latency_ms\": {\n      \"min\": 0.582,\n      \"median\": 0.582,\n      \"max\": 0.582\n     }\n    }\n   ],\n   \"fit\": {\n    \"constant\": 3,\n    \"per_item\": 0,\n    \"exact\": true\n   },\n   \"budget\": {\n    \"queries\": {\n     \"constant\": 3,\n     \"per_item\": 0\n    },\n    \"latency_ms\": null\n   },\n   \"verdict\": \"pass\",\n   \"delta\": {\n    \"constant\": 0,\n    \"per_item\": 0\n   },\n   \"notes\": [\n    \"database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\",\n    \"1 run(s) per size, one fresh app and database per size\",\n    \"seeded id: {item} from seed step 1 (key id)\"\n   ],\n   \"explain\": {\n    \"size\": 6,\n    \"engine\": \"sqlite\",\n    \"status\": \"checked\",\n    \"reason\": \"\",\n    \"min_rows\": 6,\n    \"explained\": 3,\n    \"ignored\": 0,\n    \"below_threshold\": 2,\n    \"skipped\": [],\n    \"tables\": {\n     \"notes\": 6,\n     \"users\": 2\n    },\n    \"findings\": []\n   }\n  }\n ],\n \"explain\": {\n  \"verdict\": \"clean\",\n  \"findings\": 0,\n  \"budgets\": 0,\n  \"unchecked\": 0\n }\n}\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_sqlite_drop_index_is_found - ValueErr...\nFAILED tests/perf/test_explain.py::test_threshold_boundary_counts - Assertion...\nFAILED tests/perf/test_explain.py::test_a_join_without_an_index_is_found_through_the_alias\nFAILED tests/perf/test_explain.py::test_pg_explain_session_statements - Asser...\nFAILED tests/perf/test_explain.py::test_mysql_alias_resolution - AssertionErr...\nFAILED tests/perf/test_explain.py::test_explain_runs_at_largest_size - Assert...\nFAILED tests/perf/test_explain.py::test_counts_identical_with_explain - asser...\nFAILED tests/perf/test_explain.py::test_report_json_and_text_with_explain - I...\nFAILED tests/perf/test_explain.py::test_cli_explain_exit_codes - AssertionErr...\nFAILED tests/perf/test_explain.py::test_cli_explain_json_and_flags - Assertio...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n10 failed, 174 passed, 8 skipped in 2.18s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_pg_explain_session_statements",
+     "tests/perf/test_explain.py::test_pg_full_index_scan_filter"
+    ],
+    "summary": "2 failed, 182 passed, 8 skipped in 2.40s",
+    "docker_skipped": true,
+    "seconds": 2.6,
+    "tail": "ter; a filter on top of an Index Cond is not.\"\"\"\n>       assert ex.pg_candidates(PG_PK_FILTER) == [\n            (\"items\", \"Index Scan on items, Filter: (user_id = $1)\")\n        ]\nE       AssertionError: assert [] == [('items', 'I...er_id = $1)')]\nE         \nE         Right contains one more item: ('items', 'Index Scan on items, Filter: (user_id = $1)')\nE         Use -v to get more diff\n\ntests/perf/test_explain.py:288: AssertionError\n______________________ test_pg_explain_session_statements ______________________\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ac08680>\n\n    def test_pg_explain_session_statements(monkeypatch):\n        \"\"\"The Postgres session: read only, a timeout and enable_seqscan = off before any\n        EXPLAIN (GENERIC_PLAN, FORMAT JSON), sent with no parameters; then counts.\"\"\"\n        rec = _Recorder(PG_PK_FILTER, {\"items\": 6})\n        monkeypatch.setattr(\"lattice.spec.db.open_db\", lambda url: rec)\n        got = ex.explain_statements(\"postgres\", \"postgresql://x/db\", [USER_ITEMS.replace(\"?\", \"$1\")],\n                                    n=6)  # fmt: skip\n>       assert rec.sent == [\n            \"SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY\",\n            \"SET statement_timeout = '5s'\",\n            \"SET enable_seqscan = off\",\n            \"EXPLAIN (GENERIC_PLAN, FORMAT JSON) \"\n            \"SELECT id, user_id, name FROM items WHERE user_id = $1 ORDER BY id\",\n            'SELECT COUNT(*) FROM \"items\"',\n        ]\nE       assert ['SET SESSION... ORDER BY id'] == ['SET SESSION...FROM \"items\"']\nE         \nE         Right contains one more item: 'SELECT COUNT(*) FROM \"items\"'\nE         Use -v to get more diff\n\ntests/perf/test_explain.py:309: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_pg_full_index_scan_filter - Assertion...\nFAILED tests/perf/test_explain.py::test_pg_explain_session_statements - asser...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n2 failed, 182 passed, 8 skipped in 2.40s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_pg_explain_session_statements"
+    ],
+    "summary": "1 failed, 183 passed, 8 skipped in 2.57s",
+    "docker_skipped": true,
+    "seconds": 2.9,
+    "tail": "........................................................................ [ 37%]\n...................ssss......................F.......................... [ 75%]\n...ssss.........................................                         [100%]\n=================================== FAILURES ===================================\n______________________ test_pg_explain_session_statements ______________________\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1098fa620>\n\n    def test_pg_explain_session_statements(monkeypatch):\n        \"\"\"The Postgres session: read only, a timeout and enable_seqscan = off before any\n        EXPLAIN (GENERIC_PLAN, FORMAT JSON), sent with no parameters; then counts.\"\"\"\n        rec = _Recorder(PG_PK_FILTER, {\"items\": 6})\n        monkeypatch.setattr(\"lattice.spec.db.open_db\", lambda url: rec)\n        got = ex.explain_statements(\"postgres\", \"postgresql://x/db\", [USER_ITEMS.replace(\"?\", \"$1\")],\n                                    n=6)  # fmt: skip\n>       assert rec.sent == [\n            \"SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY\",\n            \"SET statement_timeout = '5s'\",\n            \"SET enable_seqscan = off\",\n            \"EXPLAIN (GENERIC_PLAN, FORMAT JSON) \"\n            \"SELECT id, user_id, name FROM items WHERE user_id = $1 ORDER BY id\",\n            'SELECT COUNT(*) FROM \"items\"',\n        ]\nE       assert ['SET SESSION...FROM \"items\"'] == ['SET SESSION...FROM \"items\"']\nE         \nE         At index 2 diff: 'EXPLAIN (GENERIC_PLAN, FORMAT JSON) SELECT id, user_id, name FROM items WHERE user_id = $1 ORDER BY id' != 'SET enable_seqscan = off'\nE         Right contains one more item: 'SELECT COUNT(*) FROM \"items\"'\nE         Use -v to get more diff\n\ntests/perf/test_explain.py:309: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_pg_explain_session_statements - asser...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n1 failed, 183 passed, 8 skipped in 2.57s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_mysql_plan_rows_classified"
+    ],
+    "summary": "1 failed, 183 passed, 8 skipped in 2.55s",
+    "docker_skipped": true,
+    "seconds": 2.8,
+    "tail": "........................................................................ [ 37%]\n...................ssss........................F........................ [ 75%]\n...ssss.........................................                         [100%]\n=================================== FAILURES ===================================\n_______________________ test_mysql_plan_rows_classified ________________________\n\n    def test_mysql_plan_rows_classified():\n        \"\"\"type ALL or index with Using where / Using join buffer; not without them, not a\n        served lookup, not a derived table.\"\"\"\n    \n        def row(**kw: Any) -> dict:\n            return {\"id\": 1, \"select_type\": \"SIMPLE\", \"table\": \"items\", \"type\": \"ALL\", \"key\": None,\n                    \"Extra\": \"Using where\", **kw}  # fmt: skip\n    \n        assert ex.mysql_candidates([row()]) == [(\"items\", \"type=ALL key=NULL Extra=Using where\")]\n        assert ex.mysql_candidates(\n            [row(type=\"index\", key=\"PRIMARY\", Extra=\"Using where; Using index\")]\n        ) == [(\"items\", \"type=index key=PRIMARY Extra=Using where; Using index\")]\n        assert ex.mysql_candidates([row(Extra=\"Using join buffer (hash join)\")])\n>       assert ex.mysql_candidates([row(Extra=None)]) == []  # a bare ALL without a predicate\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert [('items', 't...NULL Extra=')] == []\nE         \nE         Left contains one more item: ('items', 'type=ALL key=NULL Extra=')\nE         Use -v to get more diff\n\ntests/perf/test_explain.py:347: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_mysql_plan_rows_classified - Assertio...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n1 failed, 183 passed, 8 skipped in 2.55s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_cli_explain_exit_codes",
+     "tests/perf/test_explain.py::test_multi_statement_is_skipped_not_run"
+    ],
+    "summary": "2 failed, 182 passed, 8 skipped in 2.44s",
+    "docker_skipped": true,
+    "seconds": 2.7,
+    "tail": "ath, capsys, monkeypatch):\n        clean = _project(tmp_path / \"a\")\n        assert perf_main([\"check\", \"--project\", str(clean), \"--runs\", \"1\", \"--explain\"]) == 0\n        out = capsys.readouterr().out\n        assert out.rstrip().endswith(\n            \"explain: clean (0 finding(s) in 0 budget(s), 0 unchecked or partial)\"\n        )\n        assert perf_main([\"check\", \"--project\", str(clean), \"--runs\", \"1\"]) == 0  # no flag: count only\n        assert \"explain\" not in capsys.readouterr().out\n    \n        bad = _project(tmp_path / \"b\", \"drop_items\")\n        assert perf_main([\"check\", \"--project\", str(bad), \"--runs\", \"1\"]) == 0  # counts cannot see it\n        capsys.readouterr()\n        assert perf_main([\"check\", \"--project\", str(bad), \"--runs\", \"1\", \"--explain\"]) == 1\n        assert \"missing index: items (6 rows)\" in capsys.readouterr().out\n        assert perf_main([\"measure\", \"--project\", str(bad), \"--runs\", \"1\", \"--explain\"]) == 0\n        capsys.readouterr()\n    \n        # a statement that cannot be explained makes the budget partial: nothing passes unchecked\n        monkeypatch.setattr(ex, \"EXTRA_STATEMENTS\", [\"SELECT 1; DELETE FROM items\"])\n        assert perf_main([\"check\", \"--project\", str(clean), \"--runs\", \"1\", \"--explain\"]) == 2\n        out = capsys.readouterr().out\n>       assert \"not explained: more than one statement\" in out\nE       AssertionError: assert 'not explained: more than one statement' in 'items: GET /items  budget 2 + 0*N statements  ->  PASS\\n      N  statements per run            allowed    latency ms ...nperf: pass (2 pass, 0 fail, 0 unmeasured)\\nexplain: unchecked (0 finding(s) in 0 budget(s), 2 unchecked or partial)\\n'\n\ntests/perf/test_explain.py:587: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_multi_statement_is_skipped_not_run - ...\nFAILED tests/perf/test_explain.py::test_cli_explain_exit_codes - AssertionErr...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n2 failed, 182 passed, 8 skipped in 2.44s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_explain_connection_is_read_only"
+    ],
+    "summary": "1 failed, 183 passed, 8 skipped in 2.51s",
+    "docker_skipped": true,
+    "seconds": 2.8,
+    "tail": "........................................................................ [ 37%]\n...................ssss....................F............................ [ 75%]\n...ssss.........................................                         [100%]\n=================================== FAILURES ===================================\n_____________________ test_explain_connection_is_read_only _____________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/pytest-of-vivekgade/pytest-34/test_explain_connection_is_rea0')\n\n    def test_explain_connection_is_read_only(tmp_path):\n        db = _db_with_rows(tmp_path, 2, index=False)\n        conn = ex.open_explainer(\"sqlite\", db)\n        try:\n>           with pytest.raises(sqlite3.OperationalError, match=\"readonly\"):\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE           Failed: DID NOT RAISE OperationalError\n\ntests/perf/test_explain.py:217: Failed\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_explain_connection_is_read_only - Fai...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n1 failed, 183 passed, 8 skipped in 2.51s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_cli_explain_exit_codes",
+     "tests/perf/test_explain.py::test_cli_explain_json_and_flags",
+     "tests/perf/test_explain.py::test_explain_runs_at_largest_size",
+     "tests/perf/test_explain.py::test_min_rows_zero_checks_every_table",
+     "tests/perf/test_explain.py::test_report_json_and_text_with_explain",
+     "tests/perf/test_explain.py::test_sqlite_clean_has_no_finding",
+     "tests/perf/test_explain.py::test_sqlite_drop_index_is_found",
+     "tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2"
+    ],
+    "summary": "8 failed, 176 passed, 8 skipped in 2.09s",
+    "docker_skipped": true,
+    "seconds": 2.4,
+    "tail": "ET /items/{item}/notes\",\n   \"sizes\": [\n    {\n     \"n\": 2,\n     \"statements\": [\n      3\n     ],\n     \"latency_ms\": {\n      \"min\": 0.658,\n      \"median\": 0.658,\n      \"max\": 0.658\n     }\n    },\n    {\n     \"n\": 6,\n     \"statements\": [\n      3\n     ],\n     \"latency_ms\": {\n      \"min\": 0.601,\n      \"median\": 0.601,\n      \"max\": 0.601\n     }\n    }\n   ],\n   \"fit\": {\n    \"constant\": 3,\n    \"per_item\": 0,\n    \"exact\": true\n   },\n   \"budget\": {\n    \"queries\": {\n     \"constant\": 3,\n     \"per_item\": 0\n    },\n    \"latency_ms\": null\n   },\n   \"verdict\": \"pass\",\n   \"delta\": {\n    \"constant\": 0,\n    \"per_item\": 0\n   },\n   \"notes\": [\n    \"database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\",\n    \"1 run(s) per size, one fresh app and database per size\",\n    \"seeded id: {item} from seed step 1 (key id)\"\n   ],\n   \"explain\": {\n    \"size\": 6,\n    \"engine\": \"sqlite\",\n    \"status\": \"unchecked\",\n    \"reason\": \"no statement was explained\",\n    \"min_rows\": 0,\n    \"explained\": 0,\n    \"ignored\": 0,\n    \"below_threshold\": 0,\n    \"skipped\": [],\n    \"tables\": {},\n    \"findings\": []\n   }\n  }\n ],\n \"explain\": {\n  \"verdict\": \"unchecked\",\n  \"findings\": 0,\n  \"budgets\": 0,\n  \"unchecked\": 2\n }\n}\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_sqlite_clean_has_no_finding - Asserti...\nFAILED tests/perf/test_explain.py::test_sqlite_drop_index_is_found - ValueErr...\nFAILED tests/perf/test_explain.py::test_min_rows_zero_checks_every_table - Va...\nFAILED tests/perf/test_explain.py::test_explain_runs_at_largest_size - Assert...\nFAILED tests/perf/test_explain.py::test_report_json_and_text_with_explain - I...\nFAILED tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2\nFAILED tests/perf/test_explain.py::test_cli_explain_exit_codes - AssertionErr...\nFAILED tests/perf/test_explain.py::test_cli_explain_json_and_flags - Assertio...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n8 failed, 176 passed, 8 skipped in 2.09s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_counts_identical_with_explain"
+    ],
+    "summary": "1 failed, 183 passed, 8 skipped in 2.46s",
+    "docker_skipped": true,
+    "seconds": 2.7,
+    "tail": "ore the clone is dropped.\"\"\"\n        plain = measure(_file(), _harness(indexapp.drop_items), runs=3)\n        with_explain = measure(_file(), _harness(indexapp.drop_items), runs=3, explain=_opts())\n        for a, b in zip(plain, with_explain, strict=True):\n            assert [s.statements for s in a.sizes] == [s.statements for s in b.sizes]\n            assert a.verdict == b.verdict and a.explain is None and b.explain is not None\n    \n        events: list[str] = []\n    \n        class Spy(SqliteCounter):\n            def begin(self) -> None:\n                events.append(\"begin\")\n                super().begin()\n    \n            def end(self) -> list[str]:\n                events.append(\"end\")\n                return super().end()\n    \n        real = ex.explain_statements\n    \n        def spy_explain(*a: Any, **k: Any) -> dict:\n            events.append(\"explain\")\n            return real(*a, **k)\n    \n        rt = AppRuntime(dispose=(lambda app: events.append(\"close\"),))\n        h = _harness(indexapp.drop_items, rt)\n        from lattice.spec.check import as_db_factory\n    \n        monkeypatch.setattr(ex, \"explain_statements\", spy_explain)\n        counter = Spy()\n        counter.start()\n        try:\n            b = _file().budgets[0]\n            res = measure_size(b, 4, h, as_db_factory(h.db_factory), counter, tmp_path, 3, False,\n                               _opts())  # fmt: skip\n        finally:\n            counter.stop()\n>       assert events == [\"begin\", \"end\"] * 3 + [\"close\", \"explain\"]\nE       AssertionError: assert ['begin', 'en... 'begin', ...] == ['begin', 'en...', 'end', ...]\nE         \nE         At index 2 diff: 'explain' != 'begin'\nE         Left contains one more item: 'explain'\nE         Use -v to get more diff\n\ntests/perf/test_explain.py:457: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_counts_identical_with_explain - Asser...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n1 failed, 183 passed, 8 skipped in 2.46s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_explain.py::test_cli_explain_exit_codes",
+     "tests/perf/test_explain.py::test_cli_explain_json_and_flags",
+     "tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2"
+    ],
+    "summary": "3 failed, 181 passed, 8 skipped in 2.33s",
+    "docker_skipped": true,
+    "seconds": 2.6,
+    "tail": "on\": \"\",\n    \"min_rows\": 6,\n    \"explained\": 2,\n    \"ignored\": 0,\n    \"below_threshold\": 1,\n    \"skipped\": [],\n    \"tables\": {\n     \"users\": 2\n    },\n    \"findings\": []\n   }\n  },\n  {\n   \"budget_id\": \"notes\",\n   \"endpoint\": \"GET /items/{item}/notes\",\n   \"sizes\": [\n    {\n     \"n\": 2,\n     \"statements\": [\n      3\n     ],\n     \"latency_ms\": {\n      \"min\": 0.711,\n      \"median\": 0.711,\n      \"max\": 0.711\n     }\n    },\n    {\n     \"n\": 6,\n     \"statements\": [\n      3\n     ],\n     \"latency_ms\": {\n      \"min\": 0.615,\n      \"median\": 0.615,\n      \"max\": 0.615\n     }\n    }\n   ],\n   \"fit\": {\n    \"constant\": 3,\n    \"per_item\": 0,\n    \"exact\": true\n   },\n   \"budget\": {\n    \"queries\": {\n     \"constant\": 3,\n     \"per_item\": 0\n    },\n    \"latency_ms\": null\n   },\n   \"verdict\": \"pass\",\n   \"delta\": {\n    \"constant\": 0,\n    \"per_item\": 0\n   },\n   \"notes\": [\n    \"database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\",\n    \"1 run(s) per size, one fresh app and database per size\",\n    \"seeded id: {item} from seed step 1 (key id)\"\n   ],\n   \"explain\": {\n    \"size\": 6,\n    \"engine\": \"sqlite\",\n    \"status\": \"checked\",\n    \"reason\": \"\",\n    \"min_rows\": 6,\n    \"explained\": 3,\n    \"ignored\": 0,\n    \"below_threshold\": 1,\n    \"skipped\": [],\n    \"tables\": {\n     \"notes\": 6,\n     \"users\": 2\n    },\n    \"findings\": [\n     {\n      \"table\": \"notes\",\n      \"rows\": 6,\n      \"access\": \"SCAN notes\",\n      \"sql\": \"SELECT id, item_id, body FROM notes WHERE item_id = ? ORDER BY id\"\n     }\n    ]\n   }\n  }\n ],\n \"explain\": {\n  \"verdict\": \"findings\",\n  \"findings\": 1,\n  \"budgets\": 1,\n  \"unchecked\": 0\n }\n}\n=========================== short test summary info ============================\nFAILED tests/perf/test_explain.py::test_unsupported_engine_is_unchecked_and_exit_2\nFAILED tests/perf/test_explain.py::test_cli_explain_exit_codes - AssertionErr...\nFAILED tests/perf/test_explain.py::test_cli_explain_json_and_flags - Assertio...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n3 failed, 181 passed, 8 skipped in 2.33s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "MI12": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_seeded_id.py::test_substitute_and_pluck",
+     "tests/perf/test_seeded_id.py::test_uncaptured_braces_stay_literal"
+    ],
+    "summary": "2 failed, 182 passed, 8 skipped in 2.48s",
+    "docker_skipped": true,
+    "seconds": 2.8,
+    "tail": "=============================\n__________________________ test_substitute_and_pluck ___________________________\n\n    def test_substitute_and_pluck():\n        got = {\"item\": \"a/b c\", \"n\": \"3\"}\n        assert substitute(\"/items/{item}/notes/{n}\", got, path=True) == \"/items/a%2Fb%20c/notes/3\"\n        assert substitute({\"k\": [\"{item}\", 4, {\"z\": \"{n}\"}]}, got) == {\"k\": [\"a/b c\", 4, {\"z\": \"3\"}]}\n>       assert substitute(\"/x/{other}/{item}\", got) == \"/x/{other}/a/b c\"  # uncaptured: literal\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert '/x//a/b c' == '/x/{other}/a/b c'\nE         \nE         - /x/{other}/a/b c\nE         + /x//a/b c\n\ntests/perf/test_seeded_id.py:90: AssertionError\n_____________________ test_uncaptured_braces_stay_literal ______________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/pytest-of-vivekgade/pytest-38/test_uncaptured_braces_stay_li0')\n\n    def test_uncaptured_braces_stay_literal(tmp_path):\n        steps = [NOTES[0], {\"method\": \"POST\", \"path\": \"/items/{item}/{other}/notes\", \"user\": \"ann\",\n                            \"count\": \"N\", \"json\": {\"body\": \"{other}-{item}\"}}]  # fmt: skip\n        log = _run(tmp_path, _budget(steps, \"GET /items/{item}/{other}\"), lambda m, p: {\"id\": 5})\n>       assert log[1] == (\"POST\", \"/items/5/{other}/notes\", {\"body\": \"{other}-5\"})\nE       AssertionError: assert ('POST', '/it...'body': '-5'}) == ('POST', '/it... '{other}-5'})\nE         \nE         At index 1 diff: '/items/5//notes' != '/items/5/{other}/notes'\nE         Use -v to get more diff\n\ntests/perf/test_seeded_id.py:170: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_seeded_id.py::test_substitute_and_pluck - AssertionErr...\nFAILED tests/perf/test_seeded_id.py::test_uncaptured_braces_stay_literal - As...\nSKIPPED [3] tests/perf/test_counting_docker.py:68: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [1] tests/perf/test_counting_docker.py:68: clickhouse_connect is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: psycopg is not installed (use a scratch venv, see the pre-registration)\nSKIPPED [2] tests/perf/test_explain_docker.py:74: pymysql is not installed (use a scratch venv, see the pre-registration)\n2 failed, 182 passed, 8 skipped in 2.48s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  }
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "id": "J5h",
+ "identical": true,
+ "observed": {
+  "checks": {
+   "per_item -0.2": true,
+   "trade note N* = 5": true
+  },
+  "new": "pass",
+  "notes": [
+   "constant traded for per-item: constant 9 > budget 8 accepted (per_item -0.2 < budget 0, every measured size within its allowed count); at or under the budget for N >= N* = 5, over it for N < 5",
+   "better than the budget: per_item -0.2 < 0"
+  ],
+  "old": "fail",
+  "summary": "fail -> pass"
+ },
+ "pass": true,
+ "prediction": {
+  "checks": {
+   "per_item -0.2": true,
+   "trade note N* = 5": true
+  },
+  "new": "pass",
+  "old": "fail",
+  "text": "fail -> pass; per_item -0.2, trade note N* = 5"
+ },
+ "runs": 10,
+ "sha256": [
+  "0bd12aef0f5f6f9ce9b4d7f8846f6b3690eaee663b3d24424b62bda3a0ad9fb9",
+  "0bd12aef0f5f6f9ce9b4d7f8846f6b3690eaee663b3d24424b62bda3a0ad9fb9",
+  "0bd12aef0f5f6f9ce9b4d7f8846f6b3690eaee663b3d24424b62bda3a0ad9fb9",
+  "0bd12aef0f5f6f9ce9b4d7f8846f6b3690eaee663b3d24424b62bda3a0ad9fb9",
+  "0bd12aef0f5f6f9ce9b4d7f8846f6b3690eaee663b3d24424b62bda3a0ad9fb9",
+  "0bd12aef0f5f6f9ce9b4d7f8846f6b3690eaee663b3d24424b62bda3a0ad9fb9",
+  "0bd12aef0f5f6f9ce9b4d7f8846f6b3690eaee663b3d24424b62bda3a0ad9fb9",
+  "0bd12aef0f5f6f9ce9b4d7f8846f6b3690eaee663b3d24424b62bda3a0ad9fb9",
+  "0bd12aef0f5f6f9ce9b4d7f8846f6b3690eaee663b3d24424b62bda3a0ad9fb9",
+  "0bd12aef0f5f6f9ce9b4d7f8846f6b3690eaee663b3d24424b62bda3a0ad9fb9"
+ ]
+}

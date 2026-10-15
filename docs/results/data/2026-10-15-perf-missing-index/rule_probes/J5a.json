@@ -1,0 +1,42 @@
+{
+ "id": "J5a",
+ "identical": true,
+ "observed": {
+  "checks": {
+   "N=10 over": true,
+   "not exact": true,
+   "to_dict identical": true
+  },
+  "new": "fail",
+  "notes": [
+   "over budget: N=10: 12 statements > allowed 4",
+   "fit not exact: the counts are not one line in N (the fit uses the largest count per size)"
+  ],
+  "old": "fail",
+  "summary": "fail -> fail"
+ },
+ "pass": true,
+ "prediction": {
+  "checks": {
+   "N=10 over": true,
+   "not exact": true,
+   "to_dict identical": true
+  },
+  "new": "fail",
+  "old": "fail",
+  "text": "fail -> fail; N=10 over, not exact, to_dict identical"
+ },
+ "runs": 10,
+ "sha256": [
+  "e6b641985a1f56cc2b267dd42b989613880180a5d040c1e3fcd8a10c6499f32a",
+  "e6b641985a1f56cc2b267dd42b989613880180a5d040c1e3fcd8a10c6499f32a",
+  "e6b641985a1f56cc2b267dd42b989613880180a5d040c1e3fcd8a10c6499f32a",
+  "e6b641985a1f56cc2b267dd42b989613880180a5d040c1e3fcd8a10c6499f32a",
+  "e6b641985a1f56cc2b267dd42b989613880180a5d040c1e3fcd8a10c6499f32a",
+  "e6b641985a1f56cc2b267dd42b989613880180a5d040c1e3fcd8a10c6499f32a",
+  "e6b641985a1f56cc2b267dd42b989613880180a5d040c1e3fcd8a10c6499f32a",
+  "e6b641985a1f56cc2b267dd42b989613880180a5d040c1e3fcd8a10c6499f32a",
+  "e6b641985a1f56cc2b267dd42b989613880180a5d040c1e3fcd8a10c6499f32a",
+  "e6b641985a1f56cc2b267dd42b989613880180a5d040c1e3fcd8a10c6499f32a"
+ ]
+}

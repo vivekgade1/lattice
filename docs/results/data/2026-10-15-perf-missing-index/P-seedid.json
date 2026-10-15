@@ -1,0 +1,82 @@
+{
+ "id": "P-seedid",
+ "status": "RAN",
+ "title": "seeded-id capture",
+ "predicted": "(a) old tool exit 2 unknown key(s) capture; (b) new counts 3/3 at N=2,6, note once, 1 hash; (c) key nope exit 2; (d) {x} literal; (e) a/b reaches the app as a%2Fb",
+ "observed": "(a)-(e) as predicted; counts 3/3 at N=2 and 6 exact, note once, 1 hash in 10",
+ "pass": true,
+ "repetitions": 10,
+ "seconds": 5.0,
+ "error": null,
+ "facts": {
+  "a_old": {
+   "rc": 2,
+   "stderr": "lattice perf: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/project-16/perf.budget.json: invalid budget file:\n  budget 'notes'.seed.steps[0]: unknown key(s) capture"
+  },
+  "b": {
+   "as_predicted": 10,
+   "runs": 10,
+   "distinct_hashes": 1
+  },
+  "c": {
+   "rc": 2,
+   "stderr": "lattice perf: budget 'notes' N=2: seed step POST /items #1: capture item: response has no nope"
+  },
+  "d": [
+   [
+    "POST",
+    "/items",
+    {
+     "name": "i"
+    }
+   ],
+   [
+    "POST",
+    "/items/5/{x}/notes",
+    {
+     "body": "{x}"
+    }
+   ],
+   [
+    "POST",
+    "/items/5/{x}/notes",
+    {
+     "body": "{x}"
+    }
+   ],
+   [
+    "GET",
+    "/items/5/{x}",
+    null
+   ]
+  ],
+  "e": [
+   [
+    "POST",
+    "/items",
+    {
+     "name": "item"
+    }
+   ],
+   [
+    "POST",
+    "/items/a%2Fb/notes",
+    {
+     "body": "note-1"
+    }
+   ],
+   [
+    "POST",
+    "/items/a%2Fb/notes",
+    {
+     "body": "note-2"
+    }
+   ],
+   [
+    "GET",
+    "/items/a%2Fb/notes",
+    null
+   ]
+  ]
+ }
+}

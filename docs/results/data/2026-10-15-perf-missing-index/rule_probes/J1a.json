@@ -1,0 +1,64 @@
+{
+ "id": "J1a",
+ "identical": true,
+ "observed": {
+  "new": {
+   "delta": {
+    "constant": 1,
+    "per_item": -1
+   },
+   "notes": [
+    "constant traded for per-item: constant 7 > budget 6 accepted (per_item 0 < budget 1, every measured size within its allowed count); at or under the budget for N >= N* = 1, over it for N < 1",
+    "better than the budget: per_item 0 < 1"
+   ],
+   "verdict": "pass"
+  },
+  "old": {
+   "notes": [
+    "over budget: constant 7 > budget 6",
+    "every measured size is within its allowed count: the constant grew while the per-item cost fell (a trade the budget's rule counts as over budget)",
+    "better than the budget: per_item 0 < 1"
+   ],
+   "verdict": "fail"
+  },
+  "summary": "J1a: old fail -> new pass; 2 notes; delta {'constant': 1, 'per_item': -1}",
+  "to_dict_identical": false
+ },
+ "pass": true,
+ "prediction": {
+  "new": {
+   "delta": {
+    "constant": 1,
+    "per_item": -1
+   },
+   "notes": [
+    "constant traded for per-item: constant 7 > budget 6 accepted (per_item 0 < budget 1, every measured size within its allowed count); at or under the budget for N >= N* = 1, over it for N < 1",
+    "better than the budget: per_item 0 < 1"
+   ],
+   "verdict": "pass"
+  },
+  "old": {
+   "notes": [
+    "over budget: constant 7 > budget 6",
+    "every measured size is within its allowed count: the constant grew while the per-item cost fell (a trade the budget's rule counts as over budget)",
+    "better than the budget: per_item 0 < 1"
+   ],
+   "verdict": "fail"
+  },
+  "text": "old fail -> new pass; 2 notes; delta {'constant': 1, 'per_item': -1}; old notes = recorded three",
+  "to_dict_identical": false
+ },
+ "runs": 10,
+ "sha256": [
+  "4c4541a2eb58372b92d95410d0c0c8cb50e704b04eb82f5361d7d6c457727805",
+  "4c4541a2eb58372b92d95410d0c0c8cb50e704b04eb82f5361d7d6c457727805",
+  "4c4541a2eb58372b92d95410d0c0c8cb50e704b04eb82f5361d7d6c457727805",
+  "4c4541a2eb58372b92d95410d0c0c8cb50e704b04eb82f5361d7d6c457727805",
+  "4c4541a2eb58372b92d95410d0c0c8cb50e704b04eb82f5361d7d6c457727805",
+  "4c4541a2eb58372b92d95410d0c0c8cb50e704b04eb82f5361d7d6c457727805",
+  "4c4541a2eb58372b92d95410d0c0c8cb50e704b04eb82f5361d7d6c457727805",
+  "4c4541a2eb58372b92d95410d0c0c8cb50e704b04eb82f5361d7d6c457727805",
+  "4c4541a2eb58372b92d95410d0c0c8cb50e704b04eb82f5361d7d6c457727805",
+  "4c4541a2eb58372b92d95410d0c0c8cb50e704b04eb82f5361d7d6c457727805"
+ ]
+}

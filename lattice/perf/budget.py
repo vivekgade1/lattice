@@ -34,6 +34,15 @@ compared only when ``latency_ms`` is set: the median at ``size`` must be at most
 The report's JSON (:meth:`Report.to_dict`) is ``{budget_id, endpoint, sizes: [{n,
 statements: [per run], latency_ms: {min, median, max}}], fit: {constant, per_item, exact},
 budget, verdict: pass|fail|unmeasured, delta, notes}``.
+
+**Seeded ids.** A seed step may carry ``"capture": {"item": "id"}``: the response's value at
+that (dotted) key after the step's first repetition becomes ``{item}`` for the size, usable
+in the later steps' ``path`` and ``json`` and in the endpoint's path (percent-quoted in paths).
+Only captured names are substituted: any other ``{x}`` stays literal.
+
+**The index check** (``--explain``, :mod:`lattice.perf.explain`): each report may carry an
+``explain`` object, emitted only when the check ran. It is a separate verdict from the count
+budget's: ``Report.verdict`` is unchanged.
 """
 
 from __future__ import annotations
@@ -45,11 +54,15 @@ from dataclasses import dataclass, field
 from fractions import Fraction
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 BUDGET_FILE = "perf.budget.json"
 VERSION = 1
 METHODS = ("GET", "POST", "PUT", "PATCH", "DELETE")
 _ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}")
+_CAPTURE_NAME = re.compile(r"[a-z_][a-z0-9_]{0,31}")
+_RESERVED_NAMES = ("i", "uuid")
+_BRACES = re.compile(r"\{([A-Za-z_][A-Za-z0-9_]*)\}")
 
 
 class BudgetError(ValueError):
@@ -65,6 +78,7 @@ class SeedStep:
     user: str | None = None
     json: Any = None
     count: int | str = "N"
+    capture: tuple[tuple[str, str], ...] = ()  # (name, dotted key) of the first response
 
     def times(self, n: int) -> int:
         return n if self.count == "N" else int(self.count)
@@ -154,7 +168,7 @@ def _steps(raw: Any, where: str, problems: list[str]) -> tuple[SeedStep, ...]:
         if not isinstance(s, dict):
             problems.append(f"{at}: an object")
             continue
-        unknown = set(s) - {"method", "path", "user", "json", "count"}
+        unknown = set(s) - {"method", "path", "user", "json", "count", "capture"}
         if unknown:
             problems.append(f"{at}: unknown key(s) {', '.join(sorted(unknown))}")
         method = s.get("method")
@@ -173,10 +187,65 @@ def _steps(raw: Any, where: str, problems: list[str]) -> tuple[SeedStep, ...]:
         if not _count(count):
             problems.append(f'{at}.count: "N" or a non-negative integer')
             continue
-        out.append(SeedStep(method.upper(), path, user, s.get("json"), count))
+        capture = _capture(s.get("capture"), f"{at}.capture", problems)
+        if capture is None:
+            continue
+        out.append(SeedStep(method.upper(), path, user, s.get("json"), count, capture))
+    if raw and len(out) == len(raw):
+        _check_captures(out, where, problems)
     if raw and not any(st.count == "N" for st in out) and len(out) == len(raw):
         problems.append(f'{where}.steps: no step has count "N", so the seed does not grow with N')
     return tuple(out)
+
+
+def _capture(raw: Any, at: str, problems: list[str]) -> tuple[tuple[str, str], ...] | None:
+    """A step's ``capture`` as ``((name, key), ...)``; None when it is not valid."""
+    if raw is None:
+        return ()
+    if not isinstance(raw, dict) or not raw:
+        problems.append(f'{at}: an object {{"name": "dotted.key"}}')
+        return None
+    out: list[tuple[str, str]] = []
+    ok = True
+    for name, key in raw.items():
+        if not isinstance(name, str) or not _CAPTURE_NAME.fullmatch(name) \
+                or name in _RESERVED_NAMES:  # fmt: skip
+            problems.append(f"{at}: name {name!r} must be [a-z_][a-z0-9_]{{0,31}} and not "
+                            f"{' or '.join(_RESERVED_NAMES)}")  # fmt: skip
+            ok = False
+        elif not isinstance(key, str) or not key or any(not p for p in key.split(".")):
+            problems.append(f"{at}.{name}: a dotted key of the response (string)")
+            ok = False
+        else:
+            out.append((name, key))
+    return tuple(out) if ok else None
+
+
+def _names_in(value: Any) -> set[str]:
+    if isinstance(value, str):
+        return set(_BRACES.findall(value))
+    if isinstance(value, list):
+        return set().union(*(_names_in(v) for v in value)) if value else set()
+    if isinstance(value, dict):
+        return set().union(*(_names_in(v) for v in value.values())) if value else set()
+    return set()
+
+
+def _check_captures(steps: list[SeedStep], where: str, problems: list[str]) -> None:
+    """A name is captured once and used only by a later step."""
+    captured: dict[str, int] = {}
+    for j, st in enumerate(steps):
+        for name, _key in st.capture:
+            if name in captured:
+                problems.append(f"{where}.steps[{j}].capture: {name!r} is already captured by "
+                                f"steps[{captured[name]}]")  # fmt: skip
+            else:
+                captured[name] = j
+    for j, st in enumerate(steps):
+        for name in sorted((_names_in(st.path) | _names_in(st.json)) & set(captured)):
+            if captured[name] >= j:
+                problems.append(f"{where}.steps[{j}]: {{{name}}} is used before the step that "
+                                f"captures it (steps[{captured[name]}])")  # fmt: skip
 
 
 def _latency(raw: Any, sizes: tuple[int, ...], where: str, problems: list[str]):
@@ -299,6 +368,42 @@ def load(path: Path | str) -> BudgetFile:
     return parse(data, p)
 
 
+def substitute(value: Any, captured: dict[str, str], path: bool = False) -> Any:
+    """``value`` with every ``{name}`` of ``captured`` replaced (one pass, recursively); any
+    other ``{x}`` stays literal. ``path``: the value is percent-quoted (``quote(v, safe="")``)."""
+    if not captured:
+        return value
+    if isinstance(value, str):
+
+        def one(m: re.Match[str]) -> str:
+            name = m.group(1)
+            if name not in captured:
+                return m.group(0)
+            return quote(captured[name], safe="") if path else captured[name]
+
+        return _BRACES.sub(one, value)
+    if isinstance(value, list):
+        return [substitute(v, captured, path) for v in value]
+    if isinstance(value, dict):
+        return {k: substitute(v, captured, path) for k, v in value.items()}
+    return value
+
+
+def pluck(data: Any, key: str) -> str | None:
+    """The scalar (string or non-bool number) at the dotted ``key`` of ``data`` as text, or
+    None when the key is missing or its value is not a scalar."""
+    for part in key.split("."):
+        if isinstance(data, dict) and part in data:
+            data = data[part]
+        elif isinstance(data, list) and part.isdigit() and int(part) < len(data):
+            data = data[int(part)]
+        else:
+            return None
+    if isinstance(data, bool) or not isinstance(data, str | int | float):
+        return None
+    return str(data)
+
+
 def expand(value: Any, i: int, new_uuid) -> Any:
     """``value`` with ``{i}`` and ``{uuid}`` replaced in every string (recursively)."""
     if isinstance(value, str):
@@ -350,6 +455,9 @@ class SizeResult:
     statements: list[int] = field(default_factory=list)
     latency_ms: list[float] = field(default_factory=list)
     shapes: list[tuple[int, str]] | None = None  # (count, statement shape), first run
+    # kept in memory for the index check, never in to_dict: the first run's raw statements
+    raw_statements: list[str] | None = field(default=None, compare=False, repr=False)
+    explain: dict[str, Any] | None = field(default=None, compare=False, repr=False)
 
     def latency(self) -> dict[str, float] | None:
         if not self.latency_ms:
@@ -373,6 +481,7 @@ class Report:
     fit: Fit | None = None
     verdict: str = "unmeasured"  # pass | fail | unmeasured
     notes: list[str] = field(default_factory=list)
+    explain: dict[str, Any] | None = None  # the index check (--explain), a separate verdict
 
     def delta(self) -> dict[str, Any] | None:
         """fit minus budget (negative: better than the budget; a positive constant with a
@@ -383,7 +492,7 @@ class Report:
                 "per_item": _num(self.fit.per_item - self.budget.per_item)}  # fmt: skip
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "budget_id": self.budget.id,
             "endpoint": self.budget.endpoint,
             "sizes": [s.to_dict() for s in self.sizes],
@@ -393,6 +502,9 @@ class Report:
             "delta": self.delta(),
             "notes": list(self.notes),
         }
+        if self.explain is not None:
+            d["explain"] = self.explain
+        return d
 
 
 def judge(budget: Budget, sizes: list[SizeResult], notes: list[str] | None = None) -> Report:
@@ -504,11 +616,62 @@ def render(reports: list[Report]) -> str:
                          f"({'exact' if r.fit.exact else 'not exact'})")  # fmt: skip
         for note in r.notes:
             lines.append(f"  - {note}")
+        if r.explain is not None:
+            lines.extend(render_explain(r.explain))
     verdicts = [r.verdict for r in reports]
     overall = overall_verdict(verdicts)
     lines.append(f"perf: {overall} ({verdicts.count('pass')} pass, {verdicts.count('fail')} fail, "
                  f"{verdicts.count('unmeasured')} unmeasured)")  # fmt: skip
+    if any(r.explain is not None for r in reports):
+        s = explain_summary(reports)
+        lines.append(f"explain: {s['verdict']} ({s['findings']} finding(s) in {s['budgets']} "
+                     f"budget(s), {s['unchecked']} unchecked or partial)")  # fmt: skip
     return "\n".join(lines)
+
+
+def render_explain(e: dict[str, Any]) -> list[str]:
+    """The text lines of one report's explain object."""
+    lines: list[str] = []
+    if e["explained"] or e["skipped"] or e["status"] == "checked":
+        lines.append(f"  explain at N={e['size']} ({e['engine']}): {e['explained']} "
+                     f"statement(s) explained, {len(e['skipped'])} skipped, "
+                     f"{len(e['findings'])} finding(s)")  # fmt: skip
+    else:
+        lines.append(f"  explain: {e['status']}: {e['reason']}")
+    for f in e["findings"]:
+        lines.append(f"  - missing index: {f['table']} ({f['rows']} rows) is read by a full "
+                     f"scan [{f['access']}] in: {f['sql'][:110]}")  # fmt: skip
+    for s in e["skipped"]:
+        lines.append(f"  - not explained: {s['reason']}: {s['sql'][:110]}")
+    return lines
+
+
+def explain_summary(reports: list[Report]) -> dict[str, Any]:
+    """``{verdict, findings, budgets, unchecked}`` over the reports that carry an explain
+    object: findings in total, budgets with a finding, budgets unchecked or partial;
+    verdict ``findings`` > ``unchecked`` > ``clean``."""
+    objs = [r.explain for r in reports if r.explain is not None]
+    findings = sum(len(e["findings"]) for e in objs)
+    with_findings = sum(1 for e in objs if e["findings"])
+    unchecked = sum(1 for e in objs if e["status"] in ("partial", "unchecked"))
+    verdict = "findings" if findings else ("unchecked" if unchecked else "clean")
+    return {"verdict": verdict, "findings": findings, "budgets": with_findings,
+            "unchecked": unchecked}  # fmt: skip
+
+
+def check_exit(reports: list[Report], explain: bool = False) -> int:
+    """``check``'s exit code: 1 when a budget fails (with ``explain``: or any finding), else
+    2 when a budget is unmeasured (with ``explain``: or a status is partial/unchecked),
+    else 0. Without ``explain`` this is exactly the count verdict's code."""
+    overall = overall_verdict([r.verdict for r in reports])
+    if not explain:
+        return {"pass": 0, "fail": 1}.get(overall, 2)
+    summary = explain_summary(reports)
+    if overall == "fail" or summary["findings"]:
+        return 1
+    if overall != "pass" or summary["unchecked"]:
+        return 2
+    return 0
 
 
 def overall_verdict(verdicts: list[str]) -> str:
@@ -531,11 +694,16 @@ __all__ = [
     "Report",
     "SeedStep",
     "SizeResult",
+    "check_exit",
     "expand",
+    "explain_summary",
     "fit",
     "judge",
     "load",
     "overall_verdict",
     "parse",
+    "pluck",
     "render",
+    "render_explain",
+    "substitute",
 ]

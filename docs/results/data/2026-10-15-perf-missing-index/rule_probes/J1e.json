@@ -1,0 +1,66 @@
+{
+ "id": "J1e",
+ "identical": true,
+ "observed": {
+  "new": {
+   "delta": {
+    "constant": 0,
+    "per_item": 1
+   },
+   "notes": [
+    "over budget: per_item 1 > budget 0",
+    "over budget: N=5: 9 statements > allowed 4",
+    "over budget: N=25: 29 statements > allowed 4"
+   ],
+   "verdict": "fail"
+  },
+  "old": {
+   "notes": [
+    "over budget: per_item 1 > budget 0",
+    "over budget: N=5: 9 statements > allowed 4",
+    "over budget: N=25: 29 statements > allowed 4"
+   ],
+   "verdict": "fail"
+  },
+  "summary": "J1e: old fail -> new fail; 3 notes; delta {'constant': 0, 'per_item': 1}",
+  "to_dict_identical": true
+ },
+ "pass": true,
+ "prediction": {
+  "new": {
+   "delta": {
+    "constant": 0,
+    "per_item": 1
+   },
+   "notes": [
+    "over budget: per_item 1 > budget 0",
+    "over budget: N=5: 9 statements > allowed 4",
+    "over budget: N=25: 29 statements > allowed 4"
+   ],
+   "verdict": "fail"
+  },
+  "old": {
+   "notes": [
+    "over budget: per_item 1 > budget 0",
+    "over budget: N=5: 9 statements > allowed 4",
+    "over budget: N=25: 29 statements > allowed 4"
+   ],
+   "verdict": "fail"
+  },
+  "text": "old fail -> new fail; 3 notes; delta {'constant': 0, 'per_item': 1}; to_dict old==new",
+  "to_dict_identical": true
+ },
+ "runs": 10,
+ "sha256": [
+  "b2f78f56179f388aad185d593756d9f2fb6721e669db20d148b1017df63266c8",
+  "b2f78f56179f388aad185d593756d9f2fb6721e669db20d148b1017df63266c8",
+  "b2f78f56179f388aad185d593756d9f2fb6721e669db20d148b1017df63266c8",
+  "b2f78f56179f388aad185d593756d9f2fb6721e669db20d148b1017df63266c8",
+  "b2f78f56179f388aad185d593756d9f2fb6721e669db20d148b1017df63266c8",
+  "b2f78f56179f388aad185d593756d9f2fb6721e669db20d148b1017df63266c8",
+  "b2f78f56179f388aad185d593756d9f2fb6721e669db20d148b1017df63266c8",
+  "b2f78f56179f388aad185d593756d9f2fb6721e669db20d148b1017df63266c8",
+  "b2f78f56179f388aad185d593756d9f2fb6721e669db20d148b1017df63266c8",
+  "b2f78f56179f388aad185d593756d9f2fb6721e669db20d148b1017df63266c8"
+ ]
+}

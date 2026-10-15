@@ -1,0 +1,27 @@
+{
+ "id": "P-det-streak",
+ "status": "RAN",
+ "title": "determinism: Streak arms",
+ "predicted": "1 sha256 per arm over 10 runs",
+ "observed": "2 arms x 10 runs: 1 sha256 each",
+ "pass": true,
+ "repetitions": 10,
+ "seconds": 0.0,
+ "error": null,
+ "facts": {
+  "streak/clean": {
+   "runs": 10,
+   "distinct": 1,
+   "hashes": [
+    "bc17e56d60aa6a42"
+   ]
+  },
+  "streak/S3": {
+   "runs": 10,
+   "distinct": 1,
+   "hashes": [
+    "ae94a267a7bdef0e"
+   ]
+  }
+ }
+}

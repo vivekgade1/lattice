@@ -1,0 +1,133 @@
+{
+ "id": "P-safe",
+ "status": "RAN",
+ "title": "the check cannot change the database (SQLite arms)",
+ "predicted": "(a) injected 'SELECT 1; DELETE ...' skipped, rows unchanged, partial, exit 2; (b) explain connection refuses a write; (c) only EXPLAIN/SET/COUNT sent; (d) process app: unmeasured, unchecked, exit 2",
+ "observed": "(a)-(d) as predicted: injected text skipped and not run, rows unchanged, partial exit 2; read-only write refused; only EXPLAIN/SET/COUNT sent; process app unmeasured/unchecked exit 2",
+ "pass": true,
+ "repetitions": 10,
+ "seconds": 1.3,
+ "error": null,
+ "facts": {
+  "a": {
+   "rc": 1,
+   "explain": {
+    "items": {
+     "size": 6,
+     "engine": "sqlite",
+     "status": "partial",
+     "reason": "1 statement(s) not explained",
+     "min_rows": 6,
+     "explained": 2,
+     "ignored": 0,
+     "below_threshold": 1,
+     "skipped": [
+      {
+       "sql": "SELECT ?; DELETE FROM items",
+       "reason": "more than one statement"
+      }
+     ],
+     "tables": {
+      "items": 6,
+      "users": 2
+     },
+     "findings": [
+      {
+       "table": "items",
+       "rows": 6,
+       "access": "SCAN items",
+       "sql": "SELECT id, user_id, name FROM items WHERE user_id = ? ORDER BY id"
+      }
+     ]
+    },
+    "notes": {
+     "size": 6,
+     "engine": "sqlite",
+     "status": "partial",
+     "reason": "1 statement(s) not explained",
+     "min_rows": 6,
+     "explained": 3,
+     "ignored": 0,
+     "below_threshold": 1,
+     "skipped": [
+      {
+       "sql": "SELECT ?; DELETE FROM items",
+       "reason": "more than one statement"
+      }
+     ],
+     "tables": {
+      "users": 2
+     },
+     "findings": []
+    }
+   },
+   "seen": {
+    "rows": [
+     [
+      6,
+      6
+     ],
+     [
+      1,
+      1
+     ]
+    ],
+    "sent": [
+     "SELECT COUNT(*) FROM \"users\"",
+     "SELECT COUNT(*) FROM \"items\"",
+     "SELECT COUNT(*) FROM \"users\""
+    ],
+    "write": "OperationalError: attempt to write a readonly database"
+   }
+  },
+  "a_clean_rc": 2,
+  "c_sent": [
+   "SELECT COUNT(*) FROM \"users\"",
+   "SELECT COUNT(*) FROM \"items\"",
+   "SELECT COUNT(*) FROM \"users\""
+  ],
+  "d": {
+   "rc": 2,
+   "reports": [
+    {
+     "verdict": "unmeasured",
+     "notes": [
+      "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+     ],
+     "explain": {
+      "size": null,
+      "engine": "",
+      "status": "unchecked",
+      "reason": "the budget is unmeasured",
+      "min_rows": 0,
+      "explained": 0,
+      "ignored": 0,
+      "below_threshold": 0,
+      "skipped": [],
+      "tables": {},
+      "findings": []
+     }
+    },
+    {
+     "verdict": "unmeasured",
+     "notes": [
+      "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+     ],
+     "explain": {
+      "size": null,
+      "engine": "",
+      "status": "unchecked",
+      "reason": "the budget is unmeasured",
+      "min_rows": 0,
+      "explained": 0,
+      "ignored": 0,
+      "below_threshold": 0,
+      "skipped": [],
+      "tables": {},
+      "findings": []
+     }
+    }
+   ]
+  }
+ }
+}

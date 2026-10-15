@@ -1,0 +1,50 @@
+{
+ "id": "J1f",
+ "identical": true,
+ "observed": {
+  "new": {
+   "delta": {
+    "constant": 0,
+    "per_item": 0
+   },
+   "notes": [],
+   "verdict": "pass"
+  },
+  "old": {
+   "notes": [],
+   "verdict": "pass"
+  },
+  "summary": "J1f: old pass -> new pass; 0 notes; delta {'constant': 0, 'per_item': 0}",
+  "to_dict_identical": true
+ },
+ "pass": true,
+ "prediction": {
+  "new": {
+   "delta": {
+    "constant": 0,
+    "per_item": 0
+   },
+   "notes": [],
+   "verdict": "pass"
+  },
+  "old": {
+   "notes": [],
+   "verdict": "pass"
+  },
+  "text": "old pass -> new pass; 0 notes; delta {'constant': 0, 'per_item': 0}; to_dict old==new",
+  "to_dict_identical": true
+ },
+ "runs": 10,
+ "sha256": [
+  "0214e5a756506313bb70b11c9db77c9bf6d221dd727343590d34f93737e8f2dc",
+  "0214e5a756506313bb70b11c9db77c9bf6d221dd727343590d34f93737e8f2dc",
+  "0214e5a756506313bb70b11c9db77c9bf6d221dd727343590d34f93737e8f2dc",
+  "0214e5a756506313bb70b11c9db77c9bf6d221dd727343590d34f93737e8f2dc",
+  "0214e5a756506313bb70b11c9db77c9bf6d221dd727343590d34f93737e8f2dc",
+  "0214e5a756506313bb70b11c9db77c9bf6d221dd727343590d34f93737e8f2dc",
+  "0214e5a756506313bb70b11c9db77c9bf6d221dd727343590d34f93737e8f2dc",
+  "0214e5a756506313bb70b11c9db77c9bf6d221dd727343590d34f93737e8f2dc",
+  "0214e5a756506313bb70b11c9db77c9bf6d221dd727343590d34f93737e8f2dc",
+  "0214e5a756506313bb70b11c9db77c9bf6d221dd727343590d34f93737e8f2dc"
+ ]
+}

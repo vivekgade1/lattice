@@ -1,0 +1,592 @@
+{
+ "id": "P-pg",
+ "status": "RAN",
+ "title": "indexapp on Postgres 16, in-process",
+ "predicted": "clean 0 findings; drop_items items (6 rows) Seq Scan or Index Scan with Filter; drop_notes notes (6 rows); statuses checked; 10/10 per variant; 0 containers",
+ "observed": "30/30 runs as predicted, 1 hash per variant, 0 containers left; access seen {'clean': [], 'drop_items': ['Index Scan on items, Filter: (user_id = $1)'], 'drop_notes': ['Index Scan on notes, Filter: (item_id = $1)']}",
+ "pass": true,
+ "repetitions": 10,
+ "seconds": 55.9,
+ "error": null,
+ "facts": {
+  "clean": {
+   "as_predicted": 10,
+   "runs": 10,
+   "access_seen": [],
+   "distinct_hashes": 1,
+   "sample": {
+    "version": 1,
+    "command": "check",
+    "project": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/project-25",
+    "budget_file": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/project-25/perf.budget.json",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [
+       {
+        "n": 2,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "latency_ms": {
+         "min": 4.789,
+         "median": 5.143,
+         "max": 7.157
+        }
+       },
+       {
+        "n": 6,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "latency_ms": {
+         "min": 5.985,
+         "median": 6.876,
+         "max": 9.438
+        }
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       },
+       "latency_ms": null
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: postgres (container lattice-perf-postgres-aa354f7d); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ],
+      "explain": {
+       "size": 6,
+       "engine": "postgres",
+       "status": "checked",
+       "reason": "",
+       "min_rows": 6,
+       "explained": 2,
+       "ignored": 0,
+       "below_threshold": 1,
+       "skipped": [],
+       "tables": {
+        "users": 2
+       },
+       "findings": []
+      }
+     },
+     {
+      "budget_id": "notes",
+      "endpoint": "GET /items/{item}/notes",
+      "sizes": [
+       {
+        "n": 2,
+        "statements": [
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3
+        ],
+        "latency_ms": {
+         "min": 4.891,
+         "median": 5.257,
+         "max": 6.768
+        }
+       },
+       {
+        "n": 6,
+        "statements": [
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3
+        ],
+        "latency_ms": {
+         "min": 5.278,
+         "median": 5.485,
+         "max": 6.227
+        }
+       }
+      ],
+      "fit": {
+       "constant": 3,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 3,
+        "per_item": 0
+       },
+       "latency_ms": null
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: postgres (container lattice-perf-postgres-aa354f7d); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size",
+       "seeded id: {item} from seed step 1 (key id)"
+      ],
+      "explain": {
+       "size": 6,
+       "engine": "postgres",
+       "status": "checked",
+       "reason": "",
+       "min_rows": 6,
+       "explained": 3,
+       "ignored": 0,
+       "below_threshold": 1,
+       "skipped": [],
+       "tables": {
+        "users": 2
+       },
+       "findings": []
+      }
+     }
+    ],
+    "explain": {
+     "verdict": "clean",
+     "findings": 0,
+     "budgets": 0,
+     "unchecked": 0
+    }
+   }
+  },
+  "drop_items": {
+   "as_predicted": 10,
+   "runs": 10,
+   "access_seen": [
+    "Index Scan on items, Filter: (user_id = $1)"
+   ],
+   "distinct_hashes": 1,
+   "sample": {
+    "version": 1,
+    "command": "check",
+    "project": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/project-26",
+    "budget_file": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/project-26/perf.budget.json",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [
+       {
+        "n": 2,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "latency_ms": {
+         "min": 5.61,
+         "median": 6.966,
+         "max": 8.666
+        }
+       },
+       {
+        "n": 6,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "latency_ms": {
+         "min": 4.613,
+         "median": 5.346,
+         "max": 8.209
+        }
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       },
+       "latency_ms": null
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: postgres (container lattice-perf-postgres-88b2704a); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ],
+      "explain": {
+       "size": 6,
+       "engine": "postgres",
+       "status": "checked",
+       "reason": "",
+       "min_rows": 6,
+       "explained": 2,
+       "ignored": 0,
+       "below_threshold": 1,
+       "skipped": [],
+       "tables": {
+        "items": 6,
+        "users": 2
+       },
+       "findings": [
+        {
+         "table": "items",
+         "rows": 6,
+         "access": "Index Scan on items, Filter: (user_id = $1)",
+         "sql": "SELECT id, user_id, name FROM items WHERE user_id = $? ORDER BY id"
+        }
+       ]
+      }
+     },
+     {
+      "budget_id": "notes",
+      "endpoint": "GET /items/{item}/notes",
+      "sizes": [
+       {
+        "n": 2,
+        "statements": [
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3
+        ],
+        "latency_ms": {
+         "min": 5.093,
+         "median": 5.445,
+         "max": 5.806
+        }
+       },
+       {
+        "n": 6,
+        "statements": [
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3
+        ],
+        "latency_ms": {
+         "min": 4.912,
+         "median": 5.2,
+         "max": 5.742
+        }
+       }
+      ],
+      "fit": {
+       "constant": 3,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 3,
+        "per_item": 0
+       },
+       "latency_ms": null
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: postgres (container lattice-perf-postgres-88b2704a); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size",
+       "seeded id: {item} from seed step 1 (key id)"
+      ],
+      "explain": {
+       "size": 6,
+       "engine": "postgres",
+       "status": "checked",
+       "reason": "",
+       "min_rows": 6,
+       "explained": 3,
+       "ignored": 0,
+       "below_threshold": 1,
+       "skipped": [],
+       "tables": {
+        "users": 2
+       },
+       "findings": []
+      }
+     }
+    ],
+    "explain": {
+     "verdict": "findings",
+     "findings": 1,
+     "budgets": 1,
+     "unchecked": 0
+    }
+   }
+  },
+  "drop_notes": {
+   "as_predicted": 10,
+   "runs": 10,
+   "access_seen": [
+    "Index Scan on notes, Filter: (item_id = $1)"
+   ],
+   "distinct_hashes": 1,
+   "sample": {
+    "version": 1,
+    "command": "check",
+    "project": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/project-27",
+    "budget_file": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/project-27/perf.budget.json",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [
+       {
+        "n": 2,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "latency_ms": {
+         "min": 4.372,
+         "median": 4.513,
+         "max": 5.461
+        }
+       },
+       {
+        "n": 6,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "latency_ms": {
+         "min": 4.18,
+         "median": 4.471,
+         "max": 4.679
+        }
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       },
+       "latency_ms": null
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: postgres (container lattice-perf-postgres-4e83da23); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ],
+      "explain": {
+       "size": 6,
+       "engine": "postgres",
+       "status": "checked",
+       "reason": "",
+       "min_rows": 6,
+       "explained": 2,
+       "ignored": 0,
+       "below_threshold": 1,
+       "skipped": [],
+       "tables": {
+        "users": 2
+       },
+       "findings": []
+      }
+     },
+     {
+      "budget_id": "notes",
+      "endpoint": "GET /items/{item}/notes",
+      "sizes": [
+       {
+        "n": 2,
+        "statements": [
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3
+        ],
+        "latency_ms": {
+         "min": 4.533,
+         "median": 5.116,
+         "max": 5.825
+        }
+       },
+       {
+        "n": 6,
+        "statements": [
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3,
+         3
+        ],
+        "latency_ms": {
+         "min": 4.536,
+         "median": 4.679,
+         "max": 6.032
+        }
+       }
+      ],
+      "fit": {
+       "constant": 3,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 3,
+        "per_item": 0
+       },
+       "latency_ms": null
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: postgres (container lattice-perf-postgres-4e83da23); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size",
+       "seeded id: {item} from seed step 1 (key id)"
+      ],
+      "explain": {
+       "size": 6,
+       "engine": "postgres",
+       "status": "checked",
+       "reason": "",
+       "min_rows": 6,
+       "explained": 3,
+       "ignored": 0,
+       "below_threshold": 1,
+       "skipped": [],
+       "tables": {
+        "notes": 6,
+        "users": 2
+       },
+       "findings": [
+        {
+         "table": "notes",
+         "rows": 6,
+         "access": "Index Scan on notes, Filter: (item_id = $1)",
+         "sql": "SELECT id, item_id, body FROM notes WHERE item_id = $? ORDER BY id"
+        }
+       ]
+      }
+     }
+    ],
+    "explain": {
+     "verdict": "findings",
+     "findings": 1,
+     "budgets": 1,
+     "unchecked": 0
+    }
+   }
+  },
+  "containers_left": []
+ }
+}
