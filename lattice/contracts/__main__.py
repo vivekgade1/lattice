@@ -6,7 +6,8 @@
                                                                      # ... without a workspace
     lattice contracts pin CONSUMER [--force] [--json] [--workspace PATH]
     lattice contracts check [CONSUMER] [--json] [--static-only] [--workspace PATH]
-    lattice contracts impact PROVIDER --candidate REF|PATH [--json] [--workspace PATH]
+    lattice contracts impact PROVIDER --candidate REF|PATH [--transitive] [--json]
+                             [--workspace PATH]
     lattice contracts notify PROVIDER --candidate REF|PATH [--dry-run] [--json] [--workspace PATH]
     lattice contracts questions list CONSUMER [--status open|resolved|dismissed|all] [--json]
     lattice contracts questions resolve|dismiss CONSUMER ID [--note TEXT] [--json]
@@ -27,6 +28,10 @@ repository) would do to each consumer's declared reliance, against that consumer
 read-only, static only; one row per opted-in link, labelled ``contradiction`` (a BROKEN finding),
 ``regression`` (a relied CHANGED one) or ``unaffected``; exit 0, 1 on a contradiction, 2 when it
 cannot run (a ``regression`` alone exits 0). See :mod:`lattice.contracts.impact`.
+``impact --transitive`` adds the projects that rely on a ``contradiction`` consumer through
+opted-in links, at any depth, as ``downstream`` rows: declared reachability, unverified, never a
+label of the first-order tier and never in its counts or exit code (one extra ``transitive`` key
+in ``--json``, one extra block in the text). See :mod:`lattice.contracts.transitive`.
 ``notify`` is ``impact`` plus advisory notes in the consumers' own state (multi-project slice
 4b): every consumer row that is a ``contradiction`` gets a linked question (``created``, or
 ``existing`` when the same break is already open), delivered with the first cross-project write
@@ -91,6 +96,9 @@ def _parser() -> argparse.ArgumentParser:
         metavar="REF|PATH",
         help="a directory (the provider project), or a git ref of its repository",
     )
+    i.add_argument("--transitive", action="store_true", help="also list the projects that rely "
+                   "on a contradiction consumer through opted-in links (declared "
+                   "reachability, unverified, advisory)")  # fmt: skip
     i.add_argument("--json", action="store_true")
     common(i)
     n = sub.add_parser("notify", help="leave advisory linked questions in the consumers' state "
@@ -202,6 +210,23 @@ def _print_impact(rep: Any) -> None:
     print(f"{len(rep.consumers)} consumer(s): {n['contradiction']} contradiction, "
           f"{n['regression']} regression, {n['unaffected']} unaffected, "
           f"{n['error']} error")  # fmt: skip
+
+
+def _print_transitive(doc: dict[str, Any]) -> None:
+    n = doc["counts"]
+    print(f"downstream (declared links, unverified; from {', '.join(doc['propagates_from'])} "
+          f"only): {n['roots']} root(s), {n['downstream']} project(s)")  # fmt: skip
+    for row in doc["downstream"]:
+        print(f"{row['consumer']}  {row['label'].upper()}  depth {row['depth']} via "
+              f"{', '.join(row['via'])} (roots: {', '.join(row['roots'])})")  # fmt: skip
+        for lk in row["links"]:
+            relies = lk["relies_on"]
+            what = "unreadable" if relies is None else (", ".join(relies) or "nothing")
+            pin = _short(lk["pinned"]) if lk["pinned"] else "no pin"
+            notes = f" [{', '.join(lk['notes'])}]" if lk["notes"] else ""
+            print(f"  {lk['provider']} {lk['contract']}: relies on {what}; pinned {pin}{notes}")
+    for note in doc["notes"]:
+        print(f"  note: [{note['code']}] {note['message']}")
 
 
 def _print_pin(report: Any) -> None:
@@ -370,11 +395,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     if ns.cmd == "impact":
         from lattice.contracts import impact
 
-        rep = impact.run_impact(ws, ns.provider, ns.candidate, base=Path.cwd())
+        rep = impact.run_impact(ws, ns.provider, ns.candidate, base=Path.cwd(),
+                                transitive=ns.transitive)  # fmt: skip
         if ns.json:
             print(json.dumps(rep.to_dict(), indent=1))
         else:
             _print_impact(rep)
+            if rep.transitive is not None:
+                _print_transitive(rep.transitive)
         return rep.exit_code
     if ns.cmd == "notify":
         from lattice.contracts import linked

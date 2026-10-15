@@ -1,0 +1,284 @@
+{
+ "experiment": "2026-10-15-transitive-impact",
+ "mode": "mutants",
+ "command": "python dogfood/contracts/transitive_probes.py --mutants --scratch $SCRATCH --out $SCRATCH-data",
+ "control": {
+  "rc": 0,
+  "last": "32 passed in 36.12s",
+  "failed": [],
+  "wall_s": 36.3
+ },
+ "mutants": [
+  {
+   "id": "TR1",
+   "what": "regression rows are roots too",
+   "file": "lattice/contracts/transitive.py",
+   "old": "ROOT_LABELS = (\"contradiction\",)",
+   "new": "ROOT_LABELS = (\"contradiction\", \"regression\")",
+   "killer": "regression does not propagate (reg candidate)",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "5 failed, 27 passed in 35.59s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_a_contradiction_gives_a_root_and_its_dependent_downstream",
+    "tests/contracts/test_transitive.py::test_the_text_is_the_flag_off_text_plus_one_block",
+    "tests/contracts/test_transitive.py::test_only_a_contradiction_propagates[reg]",
+    "tests/contracts/test_transitive.py::test_a_diamond_is_one_row_with_every_exposed_provider",
+    "tests/contracts/test_transitive.py::test_regression_unaffected_and_error_rows_are_not_roots"
+   ],
+   "wall_s": 35.7
+  },
+  {
+   "id": "TR2",
+   "what": "every non-error row is a root",
+   "file": "lattice/contracts/transitive.py",
+   "old": "        elif row[\"label\"] in ROOT_LABELS:",
+   "new": "        elif True:",
+   "killer": "only a contradiction propagates (add, HEAD)",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "7 failed, 25 passed in 35.36s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_only_a_contradiction_propagates[reg]",
+    "tests/contracts/test_transitive.py::test_only_a_contradiction_propagates[add]",
+    "tests/contracts/test_transitive.py::test_only_a_contradiction_propagates[HEAD]",
+    "tests/contracts/test_transitive.py::test_depth_has_no_cap_and_each_row_follows_its_predecessor",
+    "tests/contracts/test_transitive.py::test_a_diamond_is_one_row_with_every_exposed_provider",
+    "tests/contracts/test_transitive.py::test_a_first_order_consumer_that_is_downstream_keeps_both_answers",
+    "tests/contracts/test_transitive.py::test_regression_unaffected_and_error_rows_are_not_roots"
+   ],
+   "wall_s": 35.5
+  },
+  {
+   "id": "TR3",
+   "what": "downstream rows counted in counts.contradiction",
+   "file": "lattice/contracts/impact.py",
+   "old": "            out[row[\"label\"] or \"error\"] += 1",
+   "new": "            out[row[\"label\"] or \"error\"] += 1 + len((self.transitive or {}).get(\"downstream\", [])) * (row[\"label\"] == CONTRADICTION)",
+   "killer": "first-order answer untouched by the flag (counts)",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "5 failed, 27 passed in 27.24s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_the_first_order_answer_is_untouched_by_the_flag",
+    "tests/contracts/test_transitive.py::test_the_text_is_the_flag_off_text_plus_one_block",
+    "tests/contracts/test_transitive.py::test_downstream_never_enters_counts_labels_or_the_consumers",
+    "tests/contracts/test_transitive.py::test_a_missing_lock_is_a_note_and_never_changes_the_exit",
+    "tests/contracts/test_transitive.py::test_the_flag_changes_nothing_else_for_any_candidate"
+   ],
+   "wall_s": 27.4
+  },
+  {
+   "id": "TR4",
+   "what": "downstream label contradiction",
+   "file": "lattice/contracts/transitive.py",
+   "old": "                    \"label\": DOWNSTREAM,",
+   "new": "                    \"label\": \"contradiction\",",
+   "killer": "row shape (label downstream)",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "2 failed, 30 passed in 36.35s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_a_contradiction_gives_a_root_and_its_dependent_downstream",
+    "tests/contracts/test_transitive.py::test_the_text_is_the_flag_off_text_plus_one_block"
+   ],
+   "wall_s": 36.5
+  },
+  {
+   "id": "TR5",
+   "what": "a downstream link note raises the exit code to 2",
+   "file": "lattice/contracts/impact.py",
+   "old": "            or any(row[\"error\"] is not None for row in self.consumers)",
+   "new": "            or any(row[\"error\"] is not None for row in self.consumers) or any(l[\"notes\"] for r in (self.transitive or {}).get(\"downstream\", []) for l in r[\"links\"])",
+   "killer": "a missing lock is a note, exit stays 1",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "3 failed, 29 passed in 33.44s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_depth_has_no_cap_and_each_row_follows_its_predecessor",
+    "tests/contracts/test_transitive.py::test_a_missing_lock_is_a_note_and_never_changes_the_exit",
+    "tests/contracts/test_transitive.py::test_a_bad_lock_and_a_bad_imports_file_are_notes_too"
+   ],
+   "wall_s": 33.6
+  },
+  {
+   "id": "TR6",
+   "what": "no visited filter (revisits)",
+   "file": "lattice/contracts/transitive.py",
+   "old": "dependents.get(b, ())} - visited)",
+   "new": "dependents.get(b, ())})",
+   "killer": "cycles list each project once",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "4 failed, 28 passed in 35.83s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_a_cycle_through_the_root_lists_each_project_once",
+    "tests/contracts/test_transitive.py::test_the_provider_is_never_a_row_and_a_cycle_through_it_is_noted",
+    "tests/contracts/test_transitive.py::test_mutual_links_below_the_root_are_each_listed_once_and_exposed",
+    "tests/contracts/test_transitive.py::test_every_exposed_link_is_listed_not_only_the_bfs_parents"
+   ],
+   "wall_s": 36.0
+  },
+  {
+   "id": "TR7",
+   "what": "provider not excluded",
+   "file": "lattice/contracts/transitive.py",
+   "old": "    visited = {provider}",
+   "new": "    visited = set()",
+   "killer": "the provider is never a row",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "1 failed, 31 passed in 35.83s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_the_provider_is_never_a_row_and_a_cycle_through_it_is_noted"
+   ],
+   "wall_s": 36.0
+  },
+  {
+   "id": "TR8",
+   "what": "roots not seeded as visited",
+   "file": "lattice/contracts/transitive.py",
+   "old": "    visited.update(roots)",
+   "new": "    pass",
+   "killer": "a cycle through the root does not re-list it",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "1 failed, 31 passed in 35.33s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_a_cycle_through_the_root_lists_each_project_once"
+   ],
+   "wall_s": 35.5
+  },
+  {
+   "id": "TR9",
+   "what": "links without contract followed",
+   "file": "lattice/contracts/transitive.py",
+   "old": "        if lk.contract not in CONTRACTS:",
+   "new": "        if False:",
+   "killer": "ops (no contract) is never listed",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "11 failed, 21 passed in 34.20s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_a_contradiction_gives_a_root_and_its_dependent_downstream",
+    "tests/contracts/test_transitive.py::test_the_text_is_the_flag_off_text_plus_one_block",
+    "tests/contracts/test_transitive.py::test_the_ops_link_without_a_contract_is_not_followed",
+    "tests/contracts/test_transitive.py::test_depth_has_no_cap_and_each_row_follows_its_predecessor",
+    "tests/contracts/test_transitive.py::test_a_cycle_through_the_root_lists_each_project_once",
+    "tests/contracts/test_transitive.py::test_the_provider_is_never_a_row_and_a_cycle_through_it_is_noted",
+    "tests/contracts/test_transitive.py::test_mutual_links_below_the_root_are_each_listed_once_and_exposed",
+    "tests/contracts/test_transitive.py::test_a_missing_lock_is_a_note_and_never_changes_the_exit",
+    "tests/contracts/test_transitive.py::test_a_root_in_error_does_not_propagate_and_is_noted",
+    "tests/contracts/test_transitive.py::test_a_stale_pin_gives_downstream_rows_for_head_too",
+    "tests/contracts/test_transitive.py::test_unknown_ends_and_self_links_and_no_contract_are_not_edges"
+   ],
+   "wall_s": 34.4
+  },
+  {
+   "id": "TR10",
+   "what": "via = BFS parents only",
+   "file": "lattice/contracts/transitive.py",
+   "old": "            via = sorted(set(relies_on_of.get(name, ())) & exposed)",
+   "new": "            via = sorted(set(relies_on_of.get(name, ())) & set(levels[depth - 2]))",
+   "killer": "diamond / cycle via lists every exposed link",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "2 failed, 30 passed in 36.08s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_mutual_links_below_the_root_are_each_listed_once_and_exposed",
+    "tests/contracts/test_transitive.py::test_every_exposed_link_is_listed_not_only_the_bfs_parents"
+   ],
+   "wall_s": 36.2
+  },
+  {
+   "id": "TR11",
+   "what": "depth off by one",
+   "file": "lattice/contracts/transitive.py",
+   "old": "                    \"depth\": depth,",
+   "new": "                    \"depth\": depth + 1,",
+   "killer": "depths 2..N",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "8 failed, 24 passed in 34.21s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_a_contradiction_gives_a_root_and_its_dependent_downstream",
+    "tests/contracts/test_transitive.py::test_the_text_is_the_flag_off_text_plus_one_block",
+    "tests/contracts/test_transitive.py::test_depth_has_no_cap_and_each_row_follows_its_predecessor",
+    "tests/contracts/test_transitive.py::test_mutual_links_below_the_root_are_each_listed_once_and_exposed",
+    "tests/contracts/test_transitive.py::test_a_diamond_is_one_row_with_every_exposed_provider",
+    "tests/contracts/test_transitive.py::test_every_exposed_link_is_listed_not_only_the_bfs_parents",
+    "tests/contracts/test_transitive.py::test_a_chain_of_twelve_has_a_row_per_project_at_its_distance",
+    "tests/contracts/test_transitive.py::test_two_roots_share_the_rows_below_them"
+   ],
+   "wall_s": 34.4
+  },
+  {
+   "id": "TR12",
+   "what": "transitive key emitted with the flag off",
+   "file": "lattice/contracts/impact.py",
+   "old": "        if self.transitive is not None:",
+   "new": "        if True:",
+   "killer": "flag off has no transitive key",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "4 failed, 28 passed in 26.35s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_the_first_order_answer_is_untouched_by_the_flag",
+    "tests/contracts/test_transitive.py::test_a_missing_lock_is_a_note_and_never_changes_the_exit",
+    "tests/contracts/test_transitive.py::test_the_flag_changes_nothing_else_for_any_candidate",
+    "tests/contracts/test_transitive.py::test_the_library_call_equals_the_cli"
+   ],
+   "wall_s": 26.5
+  },
+  {
+   "id": "TR13",
+   "what": "downstream providers exported (compute_export)",
+   "file": "lattice/contracts/transitive.py",
+   "old": "            files[name] = (_imports_of(ws, name), _lock_of(ws, name))",
+   "new": "            files[name] = (_imports_of(ws, name), _lock_of(ws, name))\n            with __import__(\"contextlib\").suppress(Exception):\n                __import__(\"lattice.contracts.export\", fromlist=[\"x\"]).compute_export(ws.project(name).path)",
+   "killer": "export children equal with and without the flag",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "1 failed, 31 passed in 45.37s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_nothing_is_written_and_no_export_is_added"
+   ],
+   "wall_s": 45.5
+  },
+  {
+   "id": "TR14",
+   "what": "error rows propagate",
+   "file": "lattice/contracts/transitive.py",
+   "old": "        elif row[\"label\"] in ROOT_LABELS:",
+   "new": "        if row[\"error\"] is not None or row[\"label\"] in ROOT_LABELS:",
+   "killer": "a root in error does not propagate",
+   "killed": true,
+   "why": "",
+   "rc": 1,
+   "last": "2 failed, 30 passed in 34.90s",
+   "failed": [
+    "tests/contracts/test_transitive.py::test_a_root_in_error_does_not_propagate_and_is_noted",
+    "tests/contracts/test_transitive.py::test_regression_unaffected_and_error_rows_are_not_roots"
+   ],
+   "wall_s": 35.1
+  }
+ ],
+ "totals": {
+  "killed": 14,
+  "total": 14
+ },
+ "wall_s": 525.7
+}

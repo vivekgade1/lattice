@@ -1,0 +1,341 @@
+{
+ "experiment": "2026-10-15-transitive-impact",
+ "command": "python dogfood/contracts/transitive_probes.py --runs 10 --scratch $SCRATCH --base /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/transitive/base --out $SCRATCH-data --regression",
+ "runs": 10,
+ "code_root": "/Users/vivekgade/Documents/lattice-transitive",
+ "code_head": "8e4755e657e96f4112cb58cce04604bfd9d97108",
+ "old_code": "a4ab4a1",
+ "job_scheduler_ref": "ef17cf8",
+ "wall_s": 4055.8,
+ "probes": [
+  {
+   "id": "T-basis",
+   "prediction": "`contracts export ci-bot` with the scheduler clone at HEAD and at each of d1..d5 (outside any impact call): spec_hash identical 6 of 6 (ci-bot's export does not depend on the scheduler)",
+   "observed": "ci-bot spec_hash identical 6/6 (9d3d965a8aa7); the scheduler's own spec_hash takes 6 distinct values over the same 6 checkouts",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "all_exports_ok": true,
+    "six_of_six_identical_spec_hash": true,
+    "six_of_six_identical_stdout": true,
+    "scheduler_export_does_move": true
+   }
+  },
+  {
+   "id": "T-chain",
+   "prediction": "impact scheduler --candidate dN --transitive, N=1..10 (ci-bot <- ci-dash): D1-D5 first-order contradiction exit 1 = committed row, roots [ci-bot] with its one BROKEN endpoint, one downstream row ci-dash (depth 2, via/roots [ci-bot], 1 link: static, relies_on [GET /builds/{}], pinned = the setup pin, notes []); D6/D7/D10 unaffected exit 0, D8/D9 regression exit 0: roots [] downstream []; ops never listed; workspace impact lists 3 projects for every D; 5 roots, 5 rows in all",
+   "observed": "D1 contradiction/1 roots 1 rows 1; D2 contradiction/1 roots 1 rows 1; D3 contradiction/1 roots 1 rows 1; D4 contradiction/1 roots 1 rows 1; D5 contradiction/1 roots 1 rows 1; D6 unaffected/0 roots 0 rows 0; D7 unaffected/0 roots 0 rows 0; D8 regression/0 roots 0 rows 0; D9 regression/0 roots 0 rows 0; D10 unaffected/0 roots 0 rows 0; workspace impact ['ci-bot', 'ci-dash', 'ops']",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "D1_first_order_equals_committed_label_exit": true,
+    "D1_transitive_as_predicted": true,
+    "D1_ops_never_listed": true,
+    "D1_counts_untouched": true,
+    "D1_checked_1": true,
+    "D1_workspace_impact_lists_3": true,
+    "D1_additive": true,
+    "D2_first_order_equals_committed_label_exit": true,
+    "D2_transitive_as_predicted": true,
+    "D2_ops_never_listed": true,
+    "D2_counts_untouched": true,
+    "D2_checked_1": true,
+    "D2_workspace_impact_lists_3": true,
+    "D2_additive": true,
+    "D3_first_order_equals_committed_label_exit": true,
+    "D3_transitive_as_predicted": true,
+    "D3_ops_never_listed": true,
+    "D3_counts_untouched": true,
+    "D3_checked_1": true,
+    "D3_workspace_impact_lists_3": true,
+    "D3_additive": true,
+    "D4_first_order_equals_committed_label_exit": true,
+    "D4_transitive_as_predicted": true,
+    "D4_ops_never_listed": true,
+    "D4_counts_untouched": true,
+    "D4_checked_1": true,
+    "D4_workspace_impact_lists_3": true,
+    "D4_additive": true,
+    "D5_first_order_equals_committed_label_exit": true,
+    "D5_transitive_as_predicted": true,
+    "D5_ops_never_listed": true,
+    "D5_counts_untouched": true,
+    "D5_checked_1": true,
+    "D5_workspace_impact_lists_3": true,
+    "D5_additive": true,
+    "D6_first_order_equals_committed_label_exit": true,
+    "D6_transitive_as_predicted": true,
+    "D6_ops_never_listed": true,
+    "D6_counts_untouched": true,
+    "D6_checked_1": true,
+    "D6_workspace_impact_lists_3": true,
+    "D6_additive": true,
+    "D7_first_order_equals_committed_label_exit": true,
+    "D7_transitive_as_predicted": true,
+    "D7_ops_never_listed": true,
+    "D7_counts_untouched": true,
+    "D7_checked_1": true,
+    "D7_workspace_impact_lists_3": true,
+    "D7_additive": true,
+    "D8_first_order_equals_committed_label_exit": true,
+    "D8_transitive_as_predicted": true,
+    "D8_ops_never_listed": true,
+    "D8_counts_untouched": true,
+    "D8_checked_1": true,
+    "D8_workspace_impact_lists_3": true,
+    "D8_additive": true,
+    "D9_first_order_equals_committed_label_exit": true,
+    "D9_transitive_as_predicted": true,
+    "D9_ops_never_listed": true,
+    "D9_counts_untouched": true,
+    "D9_checked_1": true,
+    "D9_workspace_impact_lists_3": true,
+    "D9_additive": true,
+    "D10_first_order_equals_committed_label_exit": true,
+    "D10_transitive_as_predicted": true,
+    "D10_ops_never_listed": true,
+    "D10_counts_untouched": true,
+    "D10_checked_1": true,
+    "D10_workspace_impact_lists_3": true,
+    "D10_additive": true,
+    "totals_5_roots_5_rows": true
+   }
+  },
+  {
+   "id": "T-diamond",
+   "prediction": "a D1: tier 1 = 4a I4-a (ci-bot contradiction, ci-bot-2 unaffected), roots [ci-bot], one row dash (depth 2, via [ci-bot], roots [ci-bot], 1 link), exit 1; b D4: both contradiction, roots [ci-bot, ci-bot-2], ONE row dash, via and roots both, 2 links, exit 1; c D8: both regression, roots [] downstream [], exit 0; d = a + dash also imports the scheduler's GET /applications: tier 1 adds dash unaffected (exactly 1 unrelied CHANGED endpoint_removed, 0 gaps), dash also downstream as in a, checked 3, exit 1; e = a + ci-dash + dash2 (dash2 -> ci-bot, ci-dash): rows ci-dash, dash, dash2 (depth 2), dash2.via [ci-bot, ci-dash], roots [ci-bot], notes [no_imports, no_pin]",
+   "observed": "a rows ['dash'] roots ['ci-bot'] exit 1; b rows ['dash'] via ['ci-bot', 'ci-bot-2'] links 2; c roots 0 rows 0 exit 0; d checked 3 dash unaffected rows ['dash']; e rows ['ci-dash', 'dash', 'dash2']",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "a_tier1_is_4a_I4a": true,
+    "a_roots": true,
+    "a_one_row_dash": true,
+    "b_both_contradiction": true,
+    "b_roots": true,
+    "b_one_row_two_links": true,
+    "c_both_regression_nothing": true,
+    "d_dash_first_order_unaffected": true,
+    "d_dash_also_downstream": true,
+    "e_rows": true,
+    "e_dash2": true,
+    "e_tier1_as_a": true,
+    "additive_all": true
+   }
+  },
+  {
+   "id": "T-cycle",
+   "prediction": "on the T-chain workspace, D1; each call terminates (60 s timeout): (a) ci-bot -> ci-dash (a uses cycle through the root): downstream [ci-dash] only, ci-bot not re-listed; (b) scheduler -> ci-bot: downstream [ci-dash], one note provider_downstream naming ci-bot, scheduler never a row, exit 1; (c) x <-> ci-dash: rows ci-dash (2) and x (3) once each, ci-dash.via [ci-bot, x], x.via [ci-dash], both roots [ci-bot]; (d) two depends_on links forming a cycle: manifest error depends_on_cycle, exit 2, consumers [], roots [], downstream [] (flag off: exit 2 too)",
+   "observed": "a rows ['ci-dash']; b rows ['ci-dash'] notes ['provider_downstream'] exit 1; c rows [('ci-dash', 2, ['ci-bot', 'x']), ('x', 3, ['ci-dash'])]; d exit 2/2 problems ['depends_on_cycle']",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "a_downstream_ci_dash_only": true,
+    "b_downstream_ci_dash_note_exit_1": true,
+    "c_each_once_with_exposed_via": true,
+    "d_manifest_error_exit_2": true,
+    "none_timed_out": true,
+    "additive_all": true
+   }
+  },
+  {
+   "id": "T-long",
+   "prediction": "scheduler <- ci-bot <- p2 <- p3 <- p4 <- p5 <- p6 (static, p2..p6 empty directories): D1 5 rows, depths 2..6 in order, each via its predecessor, roots [ci-bot], link relies_on null, pinned null, notes [no_imports, no_pin], exit 1; D6: 0 rows",
+   "observed": "D1 rows [('p2', 2), ('p3', 3), ('p4', 4), ('p5', 5), ('p6', 6)] exit 1; D6 rows 0 exit 0",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "D1_five_rows_depths_2_to_6_in_order": true,
+    "D1_each_via_its_predecessor_roots_ci_bot": true,
+    "D1_links_null_null_notes": true,
+    "D6_zero_rows_exit_0": true,
+    "additive_all": true
+   }
+  },
+  {
+   "id": "T-edge",
+   "prediction": "(a) ci-dash lock deleted, D1: link pinned null, notes [no_pin], relies_on still [GET /builds/{}], exit 1; (b) ci-dash's imports not TOML: relies_on null, notes [bad_imports], exit 1; (c) ci-bot's lock deleted: tier-1 row error no_pin, exit 2, roots [], downstream [], one note root_error naming ci-bot and 1 dependent; (d) ci-dash -> ci-bot live: link contract live, same row, 2 export children; (e) provider nobody: exit 2 unknown_project, transitive present and empty; (f) provider ci-dash: exit 0 no_consumers, transitive empty; (g) stale pin (clone HEAD at d2, --candidate HEAD): ci-bot contradiction, downstream [ci-dash]",
+   "observed": "a 1 ['no_pin']/['GET /builds/{}']; b 1 ['bad_imports']/None; c 2 ['root_error']; d 1 contract live; e 2; f 0; g 1 rows ['ci-dash']",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "a_pinned_null_no_pin_relies_kept_exit_1": true,
+    "b_relies_null_bad_imports_exit_1": true,
+    "c_row_error_no_pin_exit_2_empty_root_error_note": true,
+    "d_live_listed_same_row_2_children": true,
+    "e_unknown_project_exit_2_transitive_empty": true,
+    "f_no_consumers_exit_0_transitive_empty": true,
+    "g_stale_pin_contradiction_downstream": true,
+    "additive_all": true
+   }
+  },
+  {
+   "id": "T-flagoff",
+   "prediction": "without the flag the worktree's `impact` text and --json are byte-identical to a4ab4a1's (git archive a4ab4a1 lattice): T-chain D1..D10, T-diamond a..e, T-edge c, e, f, the regenerated 4a I4 rows, and `notify --dry-run --json` on T-chain D1; plus (--regression) impact_probes.py --runs 10 12/12, linkedq_probes.py as committed and pytest tests/contracts tests/workspace tests/mcp tests/studio 0 failures",
+   "observed": "30/30 cases byte-identical to a4ab4a1 (10 runs each); probes 35/35 rc 0; streak_probes 32/32 rc 1; impact_probes_skip_regression 11/12 rc 1; pytest 1042 passed, 1 skipped in 649.26s (0:10:49)",
+   "pass": false,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "flagoff_T-chain/D1": true,
+    "flagoff_T-chain/D2": true,
+    "flagoff_T-chain/D3": true,
+    "flagoff_T-chain/D4": true,
+    "flagoff_T-chain/D5": true,
+    "flagoff_T-chain/D6": true,
+    "flagoff_T-chain/D7": true,
+    "flagoff_T-chain/D8": true,
+    "flagoff_T-chain/D9": true,
+    "flagoff_T-chain/D10": true,
+    "flagoff_T-diamond/a": true,
+    "flagoff_T-diamond/b": true,
+    "flagoff_T-diamond/c": true,
+    "flagoff_T-diamond/d": true,
+    "flagoff_T-diamond/e": true,
+    "flagoff_T-edge/c": true,
+    "flagoff_T-edge/e": true,
+    "flagoff_T-edge/f": true,
+    "flagoff_I4/a": true,
+    "flagoff_I4/b": true,
+    "flagoff_I4/c": true,
+    "flagoff_I4/d": true,
+    "flagoff_I4/e": true,
+    "flagoff_I4/f": true,
+    "flagoff_I4/g": true,
+    "flagoff_I4/h_sched": true,
+    "flagoff_I4/h_streak": true,
+    "flagoff_I4/i_ci_bot": true,
+    "flagoff_I4/i_nobody": true,
+    "flagoff_notify/T-chain/D1": true,
+    "no_case_missing": true,
+    "regression_run": true,
+    "probes_35_of_35": true,
+    "streak_probes_32_of_32": false,
+    "impact_probes_skip_regression_only_I8_regression_run_fails": true,
+    "pytest_0_failures": true
+   }
+  },
+  {
+   "id": "T-additive",
+   "prediction": "every flagged call of the run: flag-on JSON minus `transitive` == flag-off JSON (elapsed_s dropped), flag-on text = the flag-off bytes + a block starting `downstream (`, exit codes equal",
+   "observed": "28/28 pairs additive",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "every_pair_additive": true,
+    "pairs_gt_0": true
+   }
+  },
+  {
+   "id": "T-parity",
+   "prediction": "CLI --transitive --json == run_impact(..., transitive=True).to_dict() in-process on T-chain D1, T-diamond b and T-cycle c; MCP contract_impact (stdio) and GET /api/contracts/impact (real server) on T-chain D1 == the CLI without the flag, with no `transitive` key",
+   "observed": "T-chain-D1: lib==cli yes; T-diamond-b: lib==cli yes; T-cycle-c: lib==cli yes; mcp==cli(off) yes; api==cli(off) yes; no transitive key mcp yes api yes",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "lib_equals_cli_T-chain-D1": true,
+    "lib_equals_cli_T-diamond-b": true,
+    "lib_equals_cli_T-cycle-c": true,
+    "mcp_equals_cli_flag_off": true,
+    "mcp_no_transitive_key": true,
+    "api_equals_cli_flag_off": true,
+    "api_no_transitive_key": true,
+    "cli_has_transitive_key": true,
+    "cycle_c_matches_t_cycle_record": true
+   }
+  },
+  {
+   "id": "T-cost",
+   "prediction": "median wall of `impact --transitive` minus `impact` over 10 interleaved runs on T-chain D1 <= 0.2 s (predicted < 0.05 s: no subprocess, 2 small file reads per link)",
+   "observed": "median wall off 0.938 s, on 0.941 s, delta +0.003 s; median elapsed_s off 0.875, on 0.878, delta +0.003",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "wall_delta_le_0_2s": true,
+    "prediction_lt_0_05s": true
+   }
+  },
+  {
+   "id": "T-safety",
+   "prediction": "over every traced call: sha256 of the workspace, consumers (locks, imports), provider clone and the worktree unchanged, 0 files newer; TMPDIR empty; 0 socket connects; only git {rev-parse, ls-tree, cat-file, status} and the export child, export children as expected (2; 0 for T-cycle d, T-edge e, f) and EQUAL with and without the flag; no claude, no ANTHROPIC variable; no linked_questions/ or state dir created; the real job-scheduler and Streak git status unchanged, 0 newer files",
+   "observed": "1430 traced calls; tree changed 0, newer 0, tmp left 0, bad argv 0, connects 0, children mismatches 0, labels with differing children 0, claude/ANTHROPIC 0; real repos: job-scheduler: ef17cf8 ' M uv.lock' -> ef17cf8 ' M uv.lock', 0 newer files []; streak: a0db033 ' M studio.toml' -> a0db033 ' M studio.toml', 0 newer files []; worktree newer since marker 0",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "calls_traced_gt_0": true,
+    "tree_unchanged_every_call": true,
+    "no_file_newer_than_a_call": true,
+    "tmpdir_empty_after_every_call": true,
+    "only_allowed_argv": true,
+    "zero_connects": true,
+    "export_children_as_expected": true,
+    "children_equal_with_and_without_flag": true,
+    "no_claude_no_anthropic": true,
+    "no_state_dir_or_linked_questions": true,
+    "real_repos_unchanged": true,
+    "worktree_newer_since_marker_0": true
+   }
+  }
+ ],
+ "totals": {
+  "pass": 10,
+  "total": 11
+ },
+ "regression_run": true,
+ "trace": {
+  "calls": 1430,
+  "tree_changed": [],
+  "newer": [],
+  "tmp_left": [],
+  "bad_popen": [],
+  "connects": 0,
+  "children_mismatch": [],
+  "claude_or_anthropic": [],
+  "by_probe": {
+   "T-chain": 400,
+   "T-cost": 20,
+   "T-cycle": 160,
+   "T-diamond": 200,
+   "T-edge": 280,
+   "T-flagoff": 230,
+   "T-long": 80,
+   "T-parity": 60
+  }
+ },
+ "safety_before": {
+  "job-scheduler": {
+   "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+   "status": " M uv.lock"
+  },
+  "streak": {
+   "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+   "status": " M studio.toml"
+  }
+ },
+ "leftover_processes": [],
+ "leftover_tmp_entries": [],
+ "scratch_removed": true,
+ "post_hoc": {
+  "script_corrections": [
+   "A first development run (--runs 1) crashed T-additive with a KeyError: the flag-off-only records that T-flagoff stores (I4 rows, notify) were also registered as flagged pairs. They are now registered only when the case has a flag-on call.",
+   "The same development run failed T-safety's 'export children equal with and without the flag' on a grouping error of my script: calls were paired by (probe, label) where a label named the provider and candidate only, so T-cycle's four manifests (2 children; 0 for the manifest error) shared one label. The label now ends with the manifest's world and variant directory. No pass rule changed; no product code changed."
+  ],
+  "procedure": [
+   "Helpers: JCtx and SX (exclude_probes.py), the Tracer, H.ref and mcp_impact (impact_probes.py) are reused. A candidate ref dN is the committed edit list applied to a clone of the clean clone (`ctx.clone`, the runners' fixed author and dates, so the sha is the committed Dn's) and fetched into the provider clone as refs/heads/dN before the measured window.",
+   "Each case makes four traced calls per run: `impact --json` and `impact` (text), with and without --transitive. The canonical record holds all four (JSON without elapsed_s). T-additive and T-flagoff read them back from the first run (every run is identical to it by the 10/10 rule). The old-code (a4ab4a1) calls of T-flagoff are made once per case, untraced, with PYTHONPATH = the extracted `lattice/` and compared with the worktree's flag-off record of every run.",
+   "The ci-bot provider is a scratch copy of dogfood/contracts/ci-bot + the committed golden lock (it is also a consumer of the scheduler) + a generated spec.py (one scenario, anonymous GET /builds/1 -> 200 with body {id, state}); ci-dash relies on `GET /builds/{}` of ci-bot (status [200], public, response_fields [state]) and is pinned with `contracts pin ci-dash` before the window; `ops` is an empty directory.",
+   "`roots[].dependents` is a sorted list of project names (the prereg's 'root dependents 1' is its length).",
+   "T-parity: the prereg says 4/4 but names three in-process library comparisons (T-chain D1, T-diamond b, T-cycle c) plus MCP and API: five checks are recorded, all must hold."
+  ]
+ }
+}
