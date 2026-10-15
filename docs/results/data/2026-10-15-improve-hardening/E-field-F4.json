@@ -1,0 +1,7 @@
+{
+ "id": "E-field-F4",
+ "predicted": "report not rewritten during the gate: none; 10 runs identical (masked)",
+ "observed": "3 events; setup values ['<absent>', '<absent>', '<absent>']; identical True",
+ "pass": true,
+ "wall_s": 23.8
+}

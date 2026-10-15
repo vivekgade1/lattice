@@ -1,0 +1,109 @@
+{
+ "id": "E-lock-b",
+ "predicted": "10/10: returns in 2.0-2.5 s, the 2.3 warning, line first",
+ "observed": "10/10 pass; elapsed 2.001-2.007 s; warnings [1]",
+ "pass": true,
+ "runs": [
+  {
+   "elapsed": 2.003,
+   "warnings": [
+    "events: waited 2.0 s for the lock on /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0041-lock/events.jsonl; appended without it"
+   ],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0041-lock/events.jsonl",
+   "pass": true
+  },
+  {
+   "elapsed": 2.005,
+   "warnings": [
+    "events: waited 2.0 s for the lock on /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0042-lock/events.jsonl; appended without it"
+   ],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0042-lock/events.jsonl",
+   "pass": true
+  },
+  {
+   "elapsed": 2.007,
+   "warnings": [
+    "events: waited 2.0 s for the lock on /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0043-lock/events.jsonl; appended without it"
+   ],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0043-lock/events.jsonl",
+   "pass": true
+  },
+  {
+   "elapsed": 2.002,
+   "warnings": [
+    "events: waited 2.0 s for the lock on /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0044-lock/events.jsonl; appended without it"
+   ],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0044-lock/events.jsonl",
+   "pass": true
+  },
+  {
+   "elapsed": 2.001,
+   "warnings": [
+    "events: waited 2.0 s for the lock on /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0045-lock/events.jsonl; appended without it"
+   ],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0045-lock/events.jsonl",
+   "pass": true
+  },
+  {
+   "elapsed": 2.002,
+   "warnings": [
+    "events: waited 2.0 s for the lock on /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0046-lock/events.jsonl; appended without it"
+   ],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0046-lock/events.jsonl",
+   "pass": true
+  },
+  {
+   "elapsed": 2.002,
+   "warnings": [
+    "events: waited 2.0 s for the lock on /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0047-lock/events.jsonl; appended without it"
+   ],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0047-lock/events.jsonl",
+   "pass": true
+  },
+  {
+   "elapsed": 2.002,
+   "warnings": [
+    "events: waited 2.0 s for the lock on /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0048-lock/events.jsonl; appended without it"
+   ],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0048-lock/events.jsonl",
+   "pass": true
+  },
+  {
+   "elapsed": 2.006,
+   "warnings": [
+    "events: waited 2.0 s for the lock on /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0049-lock/events.jsonl; appended without it"
+   ],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0049-lock/events.jsonl",
+   "pass": true
+  },
+  {
+   "elapsed": 2.006,
+   "warnings": [
+    "events: waited 2.0 s for the lock on /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0050-lock/events.jsonl; appended without it"
+   ],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ih/0050-lock/events.jsonl",
+   "pass": true
+  }
+ ],
+ "wall_s": 16.7
+}

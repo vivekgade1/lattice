@@ -1,0 +1,41 @@
+  [stress 2.9 s]
+  [kill 7.7 s]
+  [lock 16.6 s]
+  [import 4.4 s]
+  [heal 0.8 s]
+  [short 0.0 s]
+  [cap 0.0 s]
+  [field 18.6 s]
+  [compat 0.0 s]
+  [i2 0.0 s]
+  [ledger 3.3 s]
+  [cost 2.8 s]
+arm: control   tree: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/control
+id | predicted | observed | pass
+E-stress | 10/10 runs: 4000 lines, 0 torn, 0 lost, 0 dup ids, order kept, 0 timeouts | 10/10 runs pass; lines [4000], torn 0, lost 0, dup 0; wall 0.15-0.18 s | pass
+E-kill | 10/10: 0 unparseable incl. tail; per writer 0..m-1, acked <= m <= acked+1 | 0/10 runs pass; every clause but 'killed m < 500' 10/10; killed writers cut short 12/40, wrote m = 225-500 events (of 500); unparseable 0 | FAIL
+E-holder-kill | 10/10: next append < 0.2 s (predicted ~0.01 s) | 10/10 pass; append 0.0003-0.0005 s | pass
+E-lock-a | 10/10: waits 0.35-0.8 s, line after the holder's, no warning | 0/10 pass; elapsed 0.0-0.001 s | FAIL
+E-lock-b | 10/10: returns in 2.0-2.5 s, the 2.3 warning, line first | 0/10 pass; elapsed 0.0-0.001 s; warnings [0] | FAIL
+E-import-p1 | 10/10: events.jsonl = one sequential import; stdout 1 x 'N written, 0 already there' + 3 x '0 written, N already there' | 2/10 pass; 1 events; duplicates or a wrong count in 8 runs | FAIL
+E-import-p2 | 10/10: events.jsonl = one sequential import; stdout 1 x 'N written, 0 already there' + 3 x '0 written, N already there' | 0/10 pass; 8 events; duplicates or a wrong count in 10 runs | FAIL
+E-import-p2-final | 10/10: events.jsonl = one sequential import; stdout 1 x 'N written, 0 already there' + 3 x '0 written, N already there' | 0/10 pass; 27 events; duplicates or a wrong count in 10 runs | FAIL
+E-import-p3 | 10/10: events.jsonl = one sequential import; stdout 1 x 'N written, 0 already there' + 3 x '0 written, N already there' | 1/10 pass; 5 events; duplicates or a wrong count in 9 runs | FAIL
+E-heal | 10/10: file = old + newline + line; 4 events, 1 warning; 2nd append no blank | 0/10 pass; read 3 events, warnings ['events.jsonl line 4: not an event (skipped)'] | FAIL
+E-short | 10/10: a <=7-byte write gives one whole line; an OSError on the 3rd call warns and the next append heals | n/a in the control arm (the tests import the new API) | pass
+E-cap | 10/10: 65536 written, 65537 dropped | n/a in the control arm (the tests import the new API) | pass
+E-field-F1 | 3 gate_run events (round 0 build_baseline, 1, 2) with setup = the report's, same order, db_clones an int; 10 runs identical (masked) | 3 events; setup [False, False, False]; roles [('build_baseline', 0), ('build', 1), ('build', 2)]; identical True | FAIL
+E-field-F2 | an empty timings.setup: no key; 10 runs identical (masked) | 3 events; setup values ['<absent>', '<absent>', '<absent>']; identical True | pass
+E-field-F3 | no timings: no setup and no layer_seconds; 10 runs identical (masked) | 3 events; keys setup/layer_seconds present: [(False, False), (False, False), (False, False)]; identical True | pass
+E-field-F4 | report not rewritten during the gate: none; 10 runs identical (masked) | 3 events; setup values ['<absent>', '<absent>', '<absent>']; identical True | pass
+E-field-F5 | only finite numbers: {'database_server_s': 2.5}; 10 runs identical (masked) | 3 events; setup values ['<absent>', '<absent>', '<absent>']; identical True | FAIL
+E-field-F6 | two gate commands, only the second rewrites the report: only its events; 10 runs identical (masked) | commands ['./gate.sh', './gate1.sh']; setup by command [('./gate.sh', False), ('./gate1.sh', False)]; identical True | FAIL
+E-field-F7 | the saved build record has no 'setup' and equals the a4ab4a1 record (masked); 10 runs identical (masked) | setup key anywhere: False; records equal: {'F1': True, 'F2': True, 'F3': True, 'F4': True, 'F5': True, 'F6': True}; identical True | pass
+E-field-F8 | apart from setup, id, ts each event equals its a4ab4a1 counterpart; 10 runs identical (masked) | events equal by scenario: {'F1': True, 'F2': True, 'F3': True, 'F4': True, 'F5': True, 'F6': True}; identical True | pass
+E-compat | 0 differing bytes | n/a in the control arm (compares the two trees) | pass
+E-compat-forward | 0 differing bytes | n/a in the control arm (compares the two trees) | pass
+E-i2-probes | improve2_probes.py --runs N: 15/15 on both trees, per-probe sha256 lists equal | n/a in the control arm (compares the two trees) | pass
+E-ledger | 10/10: 1600 entries, 0 not JSON, 0 lost or duplicated (measured, not a rule) | 10/10 as predicted; entries [1600], not JSON 0, lost 0, dup 0 | pass
+E-cost | median per append <= control + 1.0 ms (predicted < 0.1 ms: fsync dominates) | 10/10 pass; delta of medians -0.005 to 0.005 ms (tested median 0.06 ms, control 0.059 ms) | pass
+probes: 14/25 pass
+uv run python dogfood/improve_hardening_probes.py --runs 10 --arm control      72.10s user 53.43s system 218% cpu 57.417 total

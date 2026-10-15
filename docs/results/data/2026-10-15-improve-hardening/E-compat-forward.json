@@ -1,0 +1,9 @@
+{
+ "id": "E-compat-forward",
+ "predicted": "0 differing bytes: i3 log + setup on every gate_run = the unmodified log",
+ "observed": "tested tree: 0 differing bytes of 42322 over 25 comparisons ([]); control tree: 0 of 42322 ([])",
+ "pass": true,
+ "differing_bytes": 0,
+ "control_differing_bytes": 0,
+ "wall_s": 4.0
+}

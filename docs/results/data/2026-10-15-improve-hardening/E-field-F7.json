@@ -1,0 +1,7 @@
+{
+ "id": "E-field-F7",
+ "predicted": "the saved build record has no 'setup' and equals the a4ab4a1 record (masked); 10 runs identical (masked)",
+ "observed": "setup key anywhere: False; records equal: {'F1': True, 'F2': True, 'F3': True, 'F4': True, 'F5': True, 'F6': True}; identical True",
+ "pass": true,
+ "wall_s": 23.8
+}

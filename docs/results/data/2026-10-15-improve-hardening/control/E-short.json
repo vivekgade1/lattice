@@ -1,0 +1,8 @@
+{
+ "id": "E-short",
+ "predicted": "10/10: a <=7-byte write gives one whole line; an OSError on the 3rd call warns and the next append heals",
+ "observed": "n/a in the control arm (the tests import the new API)",
+ "pass": true,
+ "skipped": true,
+ "wall_s": 0.0
+}

@@ -1,0 +1,7 @@
+{
+ "id": "E-i2-probes",
+ "predicted": "improve2_probes.py --runs N: 15/15 on both trees, per-probe sha256 lists equal",
+ "observed": "tested 'probes: 15/15 pass', control 'probes: 15/15 pass'; probe documents equal: True (differing: [])",
+ "pass": true,
+ "wall_s": 151.0
+}

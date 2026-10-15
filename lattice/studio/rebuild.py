@@ -773,6 +773,23 @@ def report_layer_seconds(data: Mapping[str, Any] | None) -> dict[str, float] | N
     return out or None
 
 
+def report_setup(data: Mapping[str, Any] | None) -> dict[str, int | float] | None:
+    """A ``lattice spec check --json`` report's ``timings.setup`` (container start, database
+    setup: keys verbatim, in report order, values as written: ``*_s`` seconds, ``db_clones``
+    a count), numeric finite entries only, or None when there is none (improvement log)."""
+    if not isinstance(data, Mapping) or not isinstance(data.get("timings"), Mapping):
+        return None
+    setup = data["timings"].get("setup")
+    if not isinstance(setup, Mapping):
+        return None
+    kept = {}
+    for k, v in setup.items():
+        # v - v == 0 is False for inf and nan and does not overflow for a huge int
+        if isinstance(v, int | float) and not isinstance(v, bool) and v - v == 0:
+            kept[str(k)] = v
+    return kept if kept else None
+
+
 def report_x_repeats(data: Mapping[str, Any] | None, cmd: str = "") -> int | None:
     """How many tries per race layer X ran with: the report's layer X note ("each up to N
     time(s)"), else the most tries of a race, else ``--x-repeats`` in the command."""
@@ -2530,8 +2547,10 @@ class Rebuilder:
                                why=rec["status"])  # fmt: skip
 
     def _log_gates(self, run: _Run, n: int, gates: Sequence[Mapping[str, Any]],
-                   counts: Mapping[str, int]) -> None:  # fmt: skip
-        """One ``gate_run`` per gate that ran to its end (a stopped gate logs nothing)."""
+                   counts: Mapping[str, int],
+                   setups: Sequence[Mapping[str, Any] | None] = ()) -> None:  # fmt: skip
+        """One ``gate_run`` per gate that ran to its end (a stopped gate logs nothing);
+        `setups` are the gates' report ``timings.setup`` (None: the gate wrote none)."""
         ctx = run.gate_ctx
         role = ctx.get("gate") or ("build_baseline" if n == 0
                                    else "node" if run.plan_node else "build")  # fmt: skip
@@ -2552,6 +2571,7 @@ class Rebuilder:
                 level=ctx.get("level"), round=n, command=g.get("command"),
                 exit_code=g.get("exit_code"), seconds=g.get("seconds"),
                 layer_seconds=g.get("layer_seconds"), x_repeats=g.get("x_repeats"),
+                setup=setups[i] if i < len(setups) else None,
                 counts=dict(counts) if i == 0 else None, selected=selected, reused=False,
                 sha=sha,
             )  # fmt: skip
@@ -3419,6 +3439,7 @@ class Rebuilder:
         )
         run.report_scenarios = []
         gates = self._gates(run, n, jpath)
+        setups = [report_setup(g.get("_report")) for g in gates]
         reports = [g.pop("_report") for g in gates if "_report" in g]
         counts: dict[str, int] = {}
         findings: list[dict[str, Any]] = []
@@ -3454,7 +3475,7 @@ class Rebuilder:
                     )
             if isinstance(data, dict):
                 self._log_unchecked(data)
-        self._log_gates(run, n, gates, counts)
+        self._log_gates(run, n, gates, counts, setups)
         return gates, counts, findings
 
     def _tree(self, run: _Run) -> str:

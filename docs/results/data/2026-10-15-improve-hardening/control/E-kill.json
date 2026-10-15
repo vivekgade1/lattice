@@ -1,0 +1,689 @@
+{
+ "id": "E-kill",
+ "predicted": "10/10: 0 unparseable incl. tail; per writer 0..m-1, acked <= m <= acked+1",
+ "observed": "0/10 runs pass; every clause but 'killed m < 500' 10/10; killed writers cut short 12/40, wrote m = 225-500 events (of 500); unparseable 0",
+ "pass": false,
+ "runs": [
+  {
+   "kills_s": {
+    "0": 0.43,
+    "1": 0.3911,
+    "2": 0.2393,
+    "3": 0.1665
+   },
+   "seed": 0,
+   "unparseable": 0,
+   "blank": 0,
+   "tail_open": false,
+   "writers": [
+    {
+     "w": 0,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 1,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 2,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 3,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 4,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    }
+   ],
+   "post_append_s": 0.0005,
+   "post_wall_s": 0.011,
+   "post_present": true,
+   "pass_all_clauses_but_m_lt_500": true,
+   "killed_cut_short": 0,
+   "pass": false
+  },
+  {
+   "kills_s": {
+    "0": 0.1105,
+    "1": 0.4313,
+    "2": 0.3937,
+    "3": 0.1648
+   },
+   "seed": 1,
+   "unparseable": 0,
+   "blank": 0,
+   "tail_open": false,
+   "writers": [
+    {
+     "w": 0,
+     "acked": 322,
+     "m": 323,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 2,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 3,
+     "acked": 463,
+     "m": 463,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    }
+   ],
+   "post_append_s": 0.0004,
+   "post_wall_s": 0.011,
+   "post_present": true,
+   "pass_all_clauses_but_m_lt_500": true,
+   "killed_cut_short": 2,
+   "pass": false
+  },
+  {
+   "kills_s": {
+    "0": 0.4802,
+    "1": 0.4765,
+    "2": 0.0754,
+    "3": 0.0882
+   },
+   "seed": 2,
+   "unparseable": 0,
+   "blank": 0,
+   "tail_open": false,
+   "writers": [
+    {
+     "w": 0,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 1,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 2,
+     "acked": 225,
+     "m": 225,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "acked": 238,
+     "m": 238,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    }
+   ],
+   "post_append_s": 0.0004,
+   "post_wall_s": 0.008,
+   "post_present": true,
+   "pass_all_clauses_but_m_lt_500": true,
+   "killed_cut_short": 2,
+   "pass": false
+  },
+  {
+   "kills_s": {
+    "0": 0.1571,
+    "1": 0.2949,
+    "2": 0.2165,
+    "3": 0.3218
+   },
+   "seed": 3,
+   "unparseable": 0,
+   "blank": 0,
+   "tail_open": false,
+   "writers": [
+    {
+     "w": 0,
+     "acked": 470,
+     "m": 471,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 2,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 3,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 4,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    }
+   ],
+   "post_append_s": 0.0003,
+   "post_wall_s": 0.008,
+   "post_present": true,
+   "pass_all_clauses_but_m_lt_500": true,
+   "killed_cut_short": 1,
+   "pass": false
+  },
+  {
+   "kills_s": {
+    "0": 0.1562,
+    "1": 0.0964,
+    "2": 0.2282,
+    "3": 0.1197
+   },
+   "seed": 4,
+   "unparseable": 0,
+   "blank": 0,
+   "tail_open": false,
+   "writers": [
+    {
+     "w": 0,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 1,
+     "acked": 367,
+     "m": 367,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 3,
+     "acked": 425,
+     "m": 426,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    }
+   ],
+   "post_append_s": 0.0004,
+   "post_wall_s": 0.01,
+   "post_present": true,
+   "pass_all_clauses_but_m_lt_500": true,
+   "killed_cut_short": 2,
+   "pass": false
+  },
+  {
+   "kills_s": {
+    "0": 0.3303,
+    "1": 0.3838,
+    "2": 0.4078,
+    "3": 0.4741
+   },
+   "seed": 5,
+   "unparseable": 0,
+   "blank": 0,
+   "tail_open": false,
+   "writers": [
+    {
+     "w": 0,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 1,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 2,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 3,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 4,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    }
+   ],
+   "post_append_s": 0.0004,
+   "post_wall_s": 0.011,
+   "post_present": true,
+   "pass_all_clauses_but_m_lt_500": true,
+   "killed_cut_short": 0,
+   "pass": false
+  },
+  {
+   "kills_s": {
+    "0": 0.407,
+    "1": 0.4199,
+    "2": 0.2683,
+    "3": 0.1677
+   },
+   "seed": 6,
+   "unparseable": 0,
+   "blank": 0,
+   "tail_open": false,
+   "writers": [
+    {
+     "w": 0,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 1,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 2,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 3,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 4,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    }
+   ],
+   "post_append_s": 0.0004,
+   "post_wall_s": 0.008,
+   "post_present": true,
+   "pass_all_clauses_but_m_lt_500": true,
+   "killed_cut_short": 0,
+   "pass": false
+  },
+  {
+   "kills_s": {
+    "0": 0.1957,
+    "1": 0.1179,
+    "2": 0.3429,
+    "3": 0.0826
+   },
+   "seed": 7,
+   "unparseable": 0,
+   "blank": 0,
+   "tail_open": false,
+   "writers": [
+    {
+     "w": 0,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 1,
+     "acked": 375,
+     "m": 376,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 3,
+     "acked": 265,
+     "m": 265,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    }
+   ],
+   "post_append_s": 0.0004,
+   "post_wall_s": 0.011,
+   "post_present": true,
+   "pass_all_clauses_but_m_lt_500": true,
+   "killed_cut_short": 2,
+   "pass": false
+  },
+  {
+   "kills_s": {
+    "0": 0.152,
+    "1": 0.483,
+    "2": 0.1068,
+    "3": 0.3672
+   },
+   "seed": 8,
+   "unparseable": 0,
+   "blank": 0,
+   "tail_open": false,
+   "writers": [
+    {
+     "w": 0,
+     "acked": 440,
+     "m": 441,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 2,
+     "acked": 294,
+     "m": 295,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 4,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    }
+   ],
+   "post_append_s": 0.0005,
+   "post_wall_s": 0.009,
+   "post_present": true,
+   "pass_all_clauses_but_m_lt_500": true,
+   "killed_cut_short": 2,
+   "pass": false
+  },
+  {
+   "kills_s": {
+    "0": 0.2584,
+    "1": 0.218,
+    "2": 0.1123,
+    "3": 0.44
+   },
+   "seed": 9,
+   "unparseable": 0,
+   "blank": 0,
+   "tail_open": false,
+   "writers": [
+    {
+     "w": 0,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 1,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 2,
+     "acked": 350,
+     "m": 350,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "acked": 500,
+     "m": 500,
+     "ok": false
+    },
+    {
+     "w": 4,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "acked": 500,
+     "m": 500,
+     "ok": true
+    }
+   ],
+   "post_append_s": 0.0003,
+   "post_wall_s": 0.008,
+   "post_present": true,
+   "pass_all_clauses_but_m_lt_500": true,
+   "killed_cut_short": 1,
+   "pass": false
+  }
+ ],
+ "wall_s": 7.7
+}

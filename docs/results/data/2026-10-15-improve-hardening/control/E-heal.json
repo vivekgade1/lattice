@@ -1,0 +1,189 @@
+{
+ "id": "E-heal",
+ "predicted": "10/10: file = old + newline + line; 4 events, 1 warning; 2nd append no blank",
+ "observed": "0/10 pass; read 3 events, warnings ['events.jsonl line 4: not an event (skipped)']",
+ "pass": false,
+ "runs": [
+  {
+   "mid_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-ee98a67d45db470c\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-1d7c5fc638d24b71\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 3,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2"
+    ]
+   },
+   "bytes_ok": false,
+   "second_ok": true,
+   "pass": false
+  },
+  {
+   "mid_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-ab3407f81c724e32\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-00b6c81f9be64dd1\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 3,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2"
+    ]
+   },
+   "bytes_ok": false,
+   "second_ok": true,
+   "pass": false
+  },
+  {
+   "mid_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-ee0742feb3274267\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-b158bb25707349ee\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 3,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2"
+    ]
+   },
+   "bytes_ok": false,
+   "second_ok": true,
+   "pass": false
+  },
+  {
+   "mid_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-a4a38e3f6efa4eaa\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-b9beb19d716f4fcc\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 3,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2"
+    ]
+   },
+   "bytes_ok": false,
+   "second_ok": true,
+   "pass": false
+  },
+  {
+   "mid_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-d4de615099744ec6\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-047e9c37a9334d52\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 3,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2"
+    ]
+   },
+   "bytes_ok": false,
+   "second_ok": true,
+   "pass": false
+  },
+  {
+   "mid_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-86be7e5b768d472c\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-cd1339c8b62640bc\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 3,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2"
+    ]
+   },
+   "bytes_ok": false,
+   "second_ok": true,
+   "pass": false
+  },
+  {
+   "mid_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-cdfbd493e99a4e43\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-94b18c2c630640d3\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 3,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2"
+    ]
+   },
+   "bytes_ok": false,
+   "second_ok": true,
+   "pass": false
+  },
+  {
+   "mid_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-6d25f4a4f8844e7b\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-57c476bd96714ec2\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 3,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2"
+    ]
+   },
+   "bytes_ok": false,
+   "second_ok": true,
+   "pass": false
+  },
+  {
+   "mid_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-ac07caac62ba4f25\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:19Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-9ba1203199204c9b\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 3,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2"
+    ]
+   },
+   "bytes_ok": false,
+   "second_ok": true,
+   "pass": false
+  },
+  {
+   "mid_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:20Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-65b7edcd3b6848d5\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:39:20Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-8fed1f3b923f413d\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 3,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2"
+    ]
+   },
+   "bytes_ok": false,
+   "second_ok": true,
+   "pass": false
+  }
+ ],
+ "wall_s": 0.8
+}

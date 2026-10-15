@@ -1,0 +1,8 @@
+{
+ "id": "E-compat",
+ "predicted": "0 differing bytes",
+ "observed": "n/a in the control arm (compares the two trees)",
+ "pass": true,
+ "skipped": true,
+ "wall_s": 0.0
+}

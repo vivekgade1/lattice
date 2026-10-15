@@ -1,0 +1,96 @@
+{
+ "id": "E-field-F1",
+ "predicted": "3 gate_run events (round 0 build_baseline, 1, 2) with setup = the report's, same order, db_clones an int; 10 runs identical (masked)",
+ "observed": "3 events; setup [True, True, True]; roles [('build_baseline', 0), ('build', 1), ('build', 2)]; identical True",
+ "pass": true,
+ "events": [
+  {
+   "v": 1,
+   "ts": "2026-10-15T13:35:43Z",
+   "project": "notes",
+   "kind": "gate_run",
+   "id": "e-c6dbf075c96e4565",
+   "gate": "build_baseline",
+   "mode": "full",
+   "build": "b1",
+   "round": 0,
+   "command": "./gate.sh",
+   "exit_code": 1,
+   "seconds": 0.09,
+   "layer_seconds": {
+    "C": 0.1
+   },
+   "setup": {
+    "database_server_s": 3.2101,
+    "seed_build_s.default": 0.8123,
+    "db_clones": 12,
+    "db_clone_mean_s": 0.0412,
+    "database_teardown_s": 1.5034
+   },
+   "counts": {
+    "D": 1
+   },
+   "reused": false,
+   "line": 1
+  },
+  {
+   "v": 1,
+   "ts": "2026-10-15T13:35:43Z",
+   "project": "notes",
+   "kind": "gate_run",
+   "id": "e-0ce9f5726e5c4ad8",
+   "gate": "build",
+   "mode": "full",
+   "build": "b1",
+   "round": 1,
+   "command": "./gate.sh",
+   "exit_code": 1,
+   "seconds": 0.05,
+   "layer_seconds": {
+    "C": 0.1
+   },
+   "setup": {
+    "database_server_s": 3.2101,
+    "seed_build_s.default": 0.8123,
+    "db_clones": 12,
+    "db_clone_mean_s": 0.0412,
+    "database_teardown_s": 1.5034
+   },
+   "counts": {
+    "D": 1
+   },
+   "reused": false,
+   "line": 2
+  },
+  {
+   "v": 1,
+   "ts": "2026-10-15T13:35:43Z",
+   "project": "notes",
+   "kind": "gate_run",
+   "id": "e-168352a95d784c51",
+   "gate": "build",
+   "mode": "full",
+   "build": "b1",
+   "round": 2,
+   "command": "./gate.sh",
+   "exit_code": 0,
+   "seconds": 0.05,
+   "layer_seconds": {
+    "C": 0.1
+   },
+   "setup": {
+    "database_server_s": 3.2101,
+    "seed_build_s.default": 0.8123,
+    "db_clones": 12,
+    "db_clone_mean_s": 0.0412,
+    "database_teardown_s": 1.5034
+   },
+   "counts": {
+    "D": 0
+   },
+   "reused": false,
+   "line": 3
+  }
+ ],
+ "wall_s": 23.8
+}
