@@ -1,0 +1,17 @@
+{
+ "baseline_before_first_edit": {
+  "verdict": "PASS",
+  "findings": 0,
+  "cases": 435,
+  "scenarios": 53
+ },
+ "after": {
+  "verdict": "pass",
+  "counts": {
+   "D": 0,
+   "X": 0
+  },
+  "cases": 449,
+  "scenarios": 54
+ }
+}

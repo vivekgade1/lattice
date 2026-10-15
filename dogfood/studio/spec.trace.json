@@ -582,6 +582,12 @@
       "text": "GET /api/linked-notifications answers `notifications`, this project's accept outcomes since the server started (newest first, at most 20; each says which consumers were left a note, or why none was), empty before any accept; it is read-only: POST /api/linked-notifications answers 404 and nothing changes.",
       "section": "Lattice Studio server: requirements > Workspace",
       "line": 153
+    },
+    {
+      "id": "R98",
+      "text": "POST /api/session with `mode` ask, explain or change answers 201 with an idle session (`turns` 0, `claude_session_id` and `resume_command` null) and starts no process; `rebuild` answers 501, any other mode and a `change` that is not a change id answer 422; GET /api/session lists the sessions in the order they were created; a message with no text answers 422 before the session is looked up, a message to, the events of or a DELETE of a session that does not exist answer 404, and an `after` that is not an integer >= 0 answers 422.",
+      "section": "Lattice Studio server: requirements > Chat sessions",
+      "line": 157
     }
   ],
   "links": {
@@ -867,6 +873,9 @@
     ],
     "R97": [
       "scenario:linked_notifications_start_empty_and_are_read_only"
+    ],
+    "R98": [
+      "scenario:chat_sessions_start_idle_and_refuse_bad_requests"
     ]
   },
   "unchecked": {
@@ -880,8 +889,8 @@
     "R54": "the repair loop's exhaustion and the loop off need a stub that never repairs or another configuration; tests/studio/test_level_repair.py and test_build_plan.py cover them",
     "R69": "process trees, containers and agent timeouts are not observable over HTTP; tests/studio/test_stop_cleanup.py covers them with a fake docker and a fake claude",
     "R75": "the web UI is not observable over HTTP; tests/studio/test_spec_sync.py checks the banner's code statically and the browser check is recorded in docs/results/2026-10-11-spec-sync-results.md",
-    "R80": "a chat session needs the claude binary and the owner's account; tests/studio/test_mcp_intake.py checks the argv per mode (no --strict-mcp-config), the allowlist, allow_writes and the hermetic rebuild and planner argv against a fake claude, and docs/results/2026-10-12-spike4-results.md records the real-session probes (K-3, K-4)",
-    "R81": "the web UI is not observable over HTTP; tests/studio/test_mcp_intake.py checks its code statically and the browser check is recorded in docs/results/2026-10-12-spike4-results.md",
+    "R80": "a chat session needs the claude binary and the owner's account; tests/studio/test_mcp_intake_http.py checks it over HTTP against a real Studio process with a fake claude (GET /api/mcp bodies and discovery counts, the exact --allowedTools and --disallowedTools of 17 turns, no credential in the environment), tests/studio/test_mcp_intake.py checks the argv per mode, the allowlist, allow_writes and the hermetic rebuild and planner argv, and docs/results/2026-10-12-spike4-results.md records the real-session probes (K-3, K-4)",
+    "R81": "the panel's data (state, allowed_in, writes_allowed, Refresh) is checked over HTTP by tests/studio/test_mcp_intake_http.py; only the rendering is web UI, not observable over HTTP, and the browser check is recorded in docs/results/2026-10-12-spike4-results.md",
     "R84": "a project with its own engines and modules is not in the seed; tests/studio/test_engines_api.py covers the registration, the re-hash on every read and the refusal of a changed module, tests/modules/test_modules.py the install, the lock and the checker's refusal",
     "R88": "the log's contents need a build with a JSON-writing gate, a give-up and a stop; tests/studio/test_events.py checks each field (layer_seconds, cause, actor, the ledger's own wall time, signal_key) on a stub plan of this seed whose gate writes a check-shaped report",
     "R89": "the seed's log never holds a checker-targeted or closed cluster; tests/improve/test_analyze.py checks the arithmetic, the class order (no conversion), the ledger and the needs_owner refusal, tests/improve/test_cli.py the CLI run",

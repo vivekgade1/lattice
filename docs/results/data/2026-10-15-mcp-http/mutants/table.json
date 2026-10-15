@@ -1,0 +1,328 @@
+[
+ {
+  "id": "control",
+  "verdict": "PASS (control)",
+  "caught_by": [],
+  "pytest": "46 passed in 5.70s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 5.9,
+  "dogfood_s": 64.8,
+  "failed_tests": [],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-3",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "7 failed, 39 passed in 8.67s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 8.9,
+  "dogfood_s": 68.7,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_call_counts_and_no_leftover_process",
+   "tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I8]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-2",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "22 failed, 24 passed in 8.67s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 8.9,
+  "dogfood_s": 68.8,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I3]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I4]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I6]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I7]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask2]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.explain]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.ask]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.explain]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I3.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I4.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I6.ask]"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-1",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "5 failed, 41 passed in 8.67s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 8.9,
+  "dogfood_s": 68.8,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_invariant_holds_on_every_turn[allowed_external_read]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.ask]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.explain]"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-6",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "6 failed, 40 passed in 6.52s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 6.8,
+  "dogfood_s": 69.5,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I3]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-5",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "7 failed, 39 passed in 6.43s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 6.8,
+  "dogfood_s": 69.6,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_call_counts_and_no_leftover_process",
+   "tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I8]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-4",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "6 failed, 40 passed in 7.20s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 7.5,
+  "dogfood_s": 69.2,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_call_counts_and_no_leftover_process",
+   "tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I7]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I8]"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-7",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "22 failed, 24 passed in 6.18s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 6.5,
+  "dogfood_s": 67.9,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I3]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I4]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]",
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I7]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_invariant_holds_on_every_turn[allowed_external_read]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask2]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.explain]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.ask]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.explain]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I3.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I4.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-8",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "14 failed, 32 passed in 6.08s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 6.3,
+  "dogfood_s": 68.0,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask2]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.explain]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.ask]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.explain]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I3.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I4.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I6.ask]"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-9",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "14 failed, 32 passed in 6.10s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 6.4,
+  "dogfood_s": 67.9,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask1]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask2]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.explain]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.ask]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.explain]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I3.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I4.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I6.ask]"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-11",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "1 failed, 45 passed in 5.64s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 5.9,
+  "dogfood_s": 71.1,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-10",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "1 failed, 45 passed in 5.70s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 6.0,
+  "dogfood_s": 71.1,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-12",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "1 failed, 45 passed in 5.63s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 5.9,
+  "dogfood_s": 71.2,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_invariant_holds_on_every_turn[no_strict_mcp_config]"
+  ],
+  "dogfood_first_failures": []
+ },
+ {
+  "id": "MH-14",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest",
+   "dogfood"
+  ],
+  "pytest": "1 failed, 45 passed in 6.24s",
+  "dogfood": "FAIL: 1 finding (D 1, X 0); 439 cases run",
+  "pytest_s": 6.5,
+  "dogfood_s": 68.9,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]"
+  ],
+  "dogfood_first_failures": [
+   "chat_sessions_start_idle_and_refuse_bad_requests / step 4"
+  ]
+ },
+ {
+  "id": "MH-13",
+  "verdict": "caught",
+  "caught_by": [
+   "pytest"
+  ],
+  "pytest": "9 failed, 37 passed in 6.25s",
+  "dogfood": "PASS: 0 findings (D 0, X 0); 449 cases run",
+  "pytest_s": 6.6,
+  "dogfood_s": 68.9,
+  "failed_tests": [
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I10.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I3.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I4.change]",
+   "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]"
+  ],
+  "dogfood_first_failures": []
+ }
+]

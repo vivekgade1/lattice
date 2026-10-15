@@ -1,0 +1,134 @@
+hashes: {"lattice/studio/mcp_intake.py": "e6d54ce618076bfb", "lattice/studio/session.py": "c7c474e56724c39b", "lattice/studio/server.py": "d1121f84c8beef50", "dogfood/studio/spec.py": "ef23a62960795bfb", "dogfood/studio/spec.trace.json": "928628795886563d", "tests/studio/test_mcp_intake_http.py": "3b0796e23b007737", "tests/studio/test_mcp_intake_mutants.py": "53897482c9c7bb57"}
+control: PASS (control)
+MH-3: caught by ['pytest']; pytest exit 1 (7 failed, 39 passed in 8.67s; 8.9s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 68.7s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_call_counts_and_no_leftover_process
+    FAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I8]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]
+MH-2: caught by ['pytest']; pytest exit 1 (22 failed, 24 passed in 8.67s; 8.9s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 68.8s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I3]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I4]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I6]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I7]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask2]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.explain]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.ask]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.explain]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I3.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I4.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I6.ask]
+MH-1: caught by ['pytest']; pytest exit 1 (5 failed, 41 passed in 8.67s; 8.9s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 68.8s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_invariant_holds_on_every_turn[allowed_external_read]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.ask]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.explain]
+MH-6: caught by ['pytest']; pytest exit 1 (6 failed, 40 passed in 6.52s; 6.8s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 69.5s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I3]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]
+MH-5: caught by ['pytest']; pytest exit 1 (7 failed, 39 passed in 6.43s; 6.8s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 69.6s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_call_counts_and_no_leftover_process
+    FAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I8]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]
+MH-4: caught by ['pytest']; pytest exit 1 (6 failed, 40 passed in 7.20s; 7.5s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 69.2s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_call_counts_and_no_leftover_process
+    FAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I7]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I8]
+MH-7: caught by ['pytest']; pytest exit 1 (22 failed, 24 passed in 6.18s; 6.5s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 67.9s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I3]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I4]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I7]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_invariant_holds_on_every_turn[allowed_external_read]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask2]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.explain]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.ask]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.explain]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I3.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I4.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]
+MH-8: caught by ['pytest']; pytest exit 1 (14 failed, 32 passed in 6.08s; 6.3s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 68.0s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask2]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.explain]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.ask]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.explain]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I3.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I4.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I6.ask]
+MH-9: caught by ['pytest']; pytest exit 1 (14 failed, 32 passed in 6.10s; 6.4s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 67.9s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.ask2]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.explain]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.ask]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.explain]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I3.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I4.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I6.ask]
+MH-11: caught by ['pytest']; pytest exit 1 (1 failed, 45 passed in 5.64s; 5.9s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 71.1s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude
+MH-10: caught by ['pytest']; pytest exit 1 (1 failed, 45 passed in 5.70s; 6.0s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 71.1s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude
+MH-12: caught by ['pytest']; pytest exit 1 (1 failed, 45 passed in 5.63s; 5.9s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 71.2s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_invariant_holds_on_every_turn[no_strict_mcp_config]
+MH-14: caught by ['pytest', 'dogfood']; pytest exit 1 (1 failed, 45 passed in 6.24s; 6.5s); dogfood exit 1 (FAIL: 1 finding (D 1, X 0); 439 cases run; 68.9s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I0]
+    dogfood: chat_sessions_start_idle_and_refuse_bad_requests / step 4
+MH-13: caught by ['pytest']; pytest exit 1 (9 failed, 37 passed in 6.25s; 6.6s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 449 cases run; 68.9s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I0.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I1.change_B]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I10.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I2.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I3.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I4.change]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]
+exit=0
