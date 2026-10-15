@@ -66,7 +66,7 @@ def test_listed_only_with_a_workspace_and_read_only(world: World) -> None:
     d = next(t for t in r.list_tools() if t["name"] == "linked_question_list")
     assert d["annotations"]["readOnlyHint"] is True
     assert set(d["inputSchema"]["properties"]) == {"consumer", "status"}
-    assert d["inputSchema"]["required"] == ["consumer"]
+    assert d["inputSchema"]["required"] == []  # API v1.20 (F3): defaults to the active consumer
     assert d["inputSchema"]["additionalProperties"] is False
     plain = router(world, with_ws=False)
     assert "linked_question_list" not in plain.names()
@@ -141,13 +141,18 @@ def test_it_writes_nothing_and_rereads_the_manifest(world: World) -> None:
 # ---------------------------------------------------------------- errors
 
 
-@pytest.mark.parametrize(
-    "args",
-    [{}, {"consumer": ""}, {"consumer": 3}, {"status": "open"}],
-)
-def test_the_consumer_is_a_required_string(world: World, args: dict[str, Any]) -> None:
+@pytest.mark.parametrize("args", [{}, {"consumer": ""}, {"status": "open"}])
+def test_the_consumer_is_required_when_the_active_project_is_not_one(
+    world: World, args: dict[str, Any]
+) -> None:
+    # the fixture's active project is `prov`, not a consumer (API v1.20, F3)
     with pytest.raises(ToolError, match="is required"):
         router(world).call("linked_question_list", args)
+
+
+def test_a_non_string_consumer_is_an_error(world: World) -> None:
+    with pytest.raises(ToolError, match="argument 'consumer' must be a string"):
+        router(world).call("linked_question_list", {"consumer": 3})
 
 
 def test_errors_name_their_code(world: World) -> None:

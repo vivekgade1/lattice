@@ -41,7 +41,9 @@ Q_KEYS = {
     "label", "pinned", "provider_after", "candidate", "imports_affected", "findings", "counts",
     "text", "suggestion", "source", "created_at", "resolution", "superseded",
 }  # fmt: skip
-LIST_KEYS = {"format", "consumer", "state", "state_dir", "questions", "counts", "problems"}
+LIST_KEYS = {
+    "format", "consumer", "state", "state_dir", "questions", "counts", "problems", "legend",
+}  # fmt: skip
 NOTE_KEYS = {"change", "commit", "status", "reason", "started_at", "result", "error"}
 
 

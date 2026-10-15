@@ -1,0 +1,1235 @@
+{
+ "source": "/Users/vivekgade/Documents/lattice-fixes/docs/results/data/2026-10-14-agent-run",
+ "expected": {
+  "R6_new_pass": "17/17 under A, B and combined, 0 A/B disagreements",
+  "R1b": "16/17, only sonnet-clean-3 fails",
+  "R3b": "7/8, only haiku-regress-1 fails",
+  "R1_R5_equal_to_stored": "17/17"
+ },
+ "n_sessions": 17,
+ "R6_new_combined": "17/17",
+ "R6_new_A": "17/17",
+ "R6_new_B": "17/17",
+ "R6_A_B_disagreements": [],
+ "R6_new_failing": [],
+ "R6_round1_SELFACT": "6/17",
+ "R1b": "16/17",
+ "R1b_failing": [
+  "sonnet-clean-3"
+ ],
+ "R3b": "7/8",
+ "R3b_failing": [
+  "haiku-regress-1"
+ ],
+ "R3c": "8/8",
+ "R3c_failing": [],
+ "R3_information": "8/8",
+ "R9_default_calls": {
+  "haiku-break-1": 0,
+  "haiku-clean-1": 0,
+  "haiku-dismissed-1": 0,
+  "haiku-regress-1": 0,
+  "sonnet-break-1": 0,
+  "sonnet-break-2": 0,
+  "sonnet-break-3": 0,
+  "sonnet-clean-1": 0,
+  "sonnet-clean-2": 0,
+  "sonnet-clean-3": 0,
+  "sonnet-dismissed-1": 0,
+  "sonnet-dismissed-2": 0,
+  "sonnet-dismissed-3": 0,
+  "sonnet-regress-1": 0,
+  "sonnet-regress-2": 0,
+  "sonnet-regress-3": 0
+ },
+ "R9_default_call_errors": 0,
+ "R1_R5_equal_to_stored": "17/17",
+ "R1_R5_differences": {},
+ "rows": [
+  {
+   "sid": "haiku-break-1",
+   "condition": "break",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [],
+   "R6_B_claims": [],
+   "R6_B_voided": [],
+   "R6_round1_SELFACT": true,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01BfKCD7mvz64SNqZQWzDxCf",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": null,
+   "R3b_attributed": null,
+   "R3b_fails": null,
+   "R3": null,
+   "R3c": null,
+   "R3c_claimopen": null,
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R2": true,
+    "R5": true,
+    "R6": true
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R2": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes. A provider change broke one of streak-widget's calls, and there's one open contradiction question (`lq1`) waiting for you. I haven't changed anything.\n\n**What changed:** `streak` (the provider) was updated to commit `8abd99bc`. The accepted contract for `POST /v1/nudges/{}/dismiss` changed, and streak-widget is still pinned to the previous version (commit `a0db033a`).\n\n- **BROKEN:** streak-widget relies on a `200` response from `POST /v1/nudges/{}/dismiss`, but the spec no longer shows `200`. Its statuses are now `204, 401, 404, 409`.\n- **CHANGED (relied on):** `204` is now a documented success status. This is the likely cause: a `204` has no body, so any code that parses the response body on success will probably fail.\n\n**Other findings (not breaking):** Two gaps, meaning fields the provider's spec doesn't show, so the static check can't confirm them:\n- `GET /v1/habits`, request field `cursor`\n- `POST /v1/auth/login`, response field `access_token`\n\n**What to do:**\n1. Look at how streak-widget calls `dismiss`. Make sure it handles `204` (no body) as success, and decide how to handle `401`, `404`, and `409`. Also check that the code doesn't depend on a `200` body.\n2. Once that's fixed, re-pin with `lattice contracts pin streak-widget`, then run `lattice contracts check streak-widget`. The check should come back clean.\n3. Clear the question with `lattice contracts questions resolve streak-widget lq1` (or dismiss it if it no longer applies).\n4. Alternatively, if the `200` \u2192 `204` change wasn't intended, ask streak's owner to revert it. I can't make that call for them.\n5. Optionally, confirm that the two gaps are fine with streak's owner, since the static check can't verify them.\n\nI can find the code locations that call `dismiss` if you want to start on step 1."
+  },
+  {
+   "sid": "haiku-clean-1",
+   "condition": "clean",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_013oYrFNkZ3XvUvhDvcnbjqh",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": true,
+   "R3b_attributed": [
+    "- One finding, classed CHANGED: a new endpoint, GET /v1/me/stats.",
+    "The new /v1/me/stats endpoint is safe to ignore unless you want to use it."
+   ],
+   "R3b_fails": [],
+   "R3": true,
+   "R3c": true,
+   "R3c_claimopen": [],
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R3": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R3": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "**Short answer: nothing that streak-widget relies on has broken.** The provider `streak` has changed since streak-widget's pinned version, but the one change the static check flagged is not something streak-widget uses. No action is strictly required. I changed nothing.\n\n**What changed in `streak`**\n- Pinned at git ref `a0db033`, now at `5045026`. The spec hash changed too.\n- One finding, classed CHANGED: a new endpoint, `GET /v1/me/stats`. `relied: false`, so streak-widget doesn't depend on it.\n\n**Gaps to check by hand**\nThe provider's spec doesn't show two fields that streak-widget's imports touch. This is a gap, not a breakage, so the check can't confirm or rule them out:\n- `GET /v1/habits`, request field `cursor`. If streak-widget paginates habits, confirm it still sends `cursor` and that the server still honors it.\n- `POST /v1/auth/login`, response field `access_token`. If streak-widget reads the token from the login response, confirm that field is still returned.\n\n**Other status**\n- No open, resolved, or dismissed linked questions for streak-widget, so no provider owner has flagged a broken pin.\n- streak-widget has no spec of its own (`spec: missing`), so this check compares its 7 imports against the provider's spec. It doesn't cover streak-widget's own behavior.\n\n**What I'd do**\n1. Nothing urgent. The new `/v1/me/stats` endpoint is safe to ignore unless you want to use it.\n2. Verify the two gap fields in the code, using the code locations for `GET /v1/habits` and `POST /v1/auth/login` if you want Lattice to find them.\n3. If you bump the pin to `5045026`, rerun the contract check after the check-in above. Hold off until the gaps are confirmed, since the new version is not yet verified against what streak-widget reads."
+  },
+  {
+   "sid": "haiku-dismissed-1",
+   "condition": "dismissed",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [],
+   "R6_B_claims": [],
+   "R6_B_voided": [],
+   "R6_round1_SELFACT": true,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_0154kMXz3KRgWuhtJ4a7b1qQ",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": null,
+   "R3b_attributed": null,
+   "R3b_fails": null,
+   "R3": null,
+   "R3c": null,
+   "R3c_claimopen": null,
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "workspace_impact",
+    "contract_check",
+    "linked_question_list",
+    "code_links!"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R4": true,
+    "R5": true,
+    "R6": true
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R4": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes. The `streak` provider's accepted change (commit `8abd99bc`) breaks one call that `streak-widget` makes, and the mismatch is still open.\n\n**What changed in `streak`**\n\n- **`POST /v1/nudges/{}/dismiss` (broken):** The provider no longer documents a `200` response. Its spec now lists `204`, `401`, `404`, and `409`. Your pin still expects `200`, so the contract check reports this as BROKEN.\n- **Same endpoint, relied on (changed):** `204` is newly observed. This is the success status to handle.\n- **Two gaps, not breaks:** `GET /v1/habits` (`cursor` request field) and `POST /v1/auth/login` (`access_token` response field) are not in the provider's spec. The check can't confirm them, but it doesn't say they changed.\n\n**The question was already dismissed**\n\nA linked question (`lq1`) for this contradiction was dismissed from the CLI at 2026-10-14 16:15 UTC, with no note. Dismissing it only clears the notice. The contract check still reports the link as broken, so the problem remains.\n\n**What I'd do**\n\n1. Find where `streak-widget` calls the dismiss endpoint. Lattice couldn't do this for me because `streak-widget` has no spec yet (`REQUIREMENTS.md`, `spec.py`, and `spec.trace.json` are missing). A search for `/nudges` or `dismiss` in the project should find it.\n2. Update that code to treat `204` as success, and handle `401`, `404`, and `409` explicitly. Check that nothing still depends on `200`.\n3. Run `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`. The check should come back clean.\n4. Optionally, reopen or re-raise `lq1` so the dismissal doesn't hide the issue. Alternatively, ask the `streak` owner whether dropping `200` was intentional. If it wasn't, they can revert it.\n\nIf you want, I can write the spec for `streak-widget` next so Lattice can map the call sites. I haven't changed anything."
+  },
+  {
+   "sid": "haiku-regress-1",
+   "condition": "regress",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [],
+   "R6_B_claims": [],
+   "R6_B_voided": [],
+   "R6_round1_SELFACT": true,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01XEvz11BwZmNyruSXgmLMVu",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": false,
+   "R3b_attributed": [
+    "- Breaking for you: GET /v1/me no longer documents or returns status 429.",
+    "streak-widget relies on that status (relied: true), so any handling you have for rate limits on that endpoint may now be dead code, or the provider may no longer tell you when you're rate-limited.",
+    "Search streak-widget for calls to /v1/me and any code that handles a 429 from it.",
+    "Confirm whether that code depends on the 429 path.",
+    "Decide with the streak owner whether the 429 removal was intended.",
+    "I can find the 429 handling in streak-widget's code next if you'd like, since that's the one dependency that's confirmed to be affected."
+   ],
+   "R3b_fails": [
+    {
+     "sentence": "- Breaking for you: GET /v1/me no longer documents or returns status 429.",
+     "breakw": "Breaking"
+    }
+   ],
+   "R3": true,
+   "R3c": true,
+   "R3c_claimopen": [],
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "workspace_impact"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R3": true,
+    "R5": true,
+    "R6": true
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R3": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "**Yes, one change affects streak-widget.** The `streak` provider changed, and streak-widget relies on the part that changed.\n\n**What changed**\n- `streak` moved from `a0db033` (pinned by streak-widget) to `1a980cd`. The spec hash changed too.\n- **Breaking for you:** `GET /v1/me` no longer documents or returns status `429`. streak-widget relies on that status (`relied: true`), so any handling you have for rate limits on that endpoint may now be dead code, or the provider may no longer tell you when you're rate-limited.\n- **Unverified (not confirmed breaks):** the provider's spec doesn't show `cursor` on `GET /v1/habits` or `access_token` in the `POST /v1/auth/login` response. If streak-widget uses either, check them against the code.\n\n**Other state**\n- No linked questions are open, resolved, or dismissed for streak-widget.\n- streak-widget has no spec (`spec: missing`), so I couldn't check its own requirements against this change.\n- The contract check was static only. I didn't run any live checks.\n\n**What I'd do**\n1. Search streak-widget for calls to `/v1/me` and any code that handles a 429 from it. Confirm whether that code depends on the 429 path.\n2. Confirm `cursor` (habits) and `access_token` (login) are still used and still returned by the live service. Their absence from the spec may just be a gap in the spec, not a removal.\n3. Decide with the `streak` owner whether the 429 removal was intended. If it was, update streak-widget to stop expecting it. If not, ask them to restore it, since the change would break you.\n4. Once the code is settled, re-run `contract_check` for streak-widget, and create a spec for streak-widget if you want it covered by the checks.\n\nI didn't change anything in either project. I can find the 429 handling in streak-widget's code next if you'd like, since that's the one dependency that's confirmed to be affected."
+  },
+  {
+   "sid": "sonnet-break-1",
+   "condition": "break",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_014E7SKFnhHrFwBwPEsmz4Mj",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": null,
+   "R3b_attributed": null,
+   "R3b_fails": null,
+   "R3": null,
+   "R3c": null,
+   "R3c_claimopen": null,
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "workspace_impact",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R2": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R2": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes. The `streak` provider changed in a way that breaks one of streak-widget's imports. I changed nothing.\n\n## What changed\n\nThe static contract check on the `streak-widget` \u2192 `streak` link comes back **broken**. `streak` accepted change `c1` (commit `8abd99bc`), and its spec hash moved from the one streak-widget pinned (`d44b738522ea`) to `642bacb1999e`.\n\n| Class | Endpoint | Finding |\n|---|---|---|\n| **BROKEN** | `POST /v1/nudges/{}/dismiss` | streak-widget relies on status `200`, which the provider's spec no longer shows. It now lists `204, 401, 404, 409`. |\n| CHANGED (relied) | `POST /v1/nudges/{}/dismiss` | Status `204` is newly observed. This is the likely replacement for `200`. |\n\nThe change is already recorded as an open linked question (`lq1`, label `contradiction`) in your project's state.\n\nTwo gaps are unverified rather than broken, and aren't caused by this change:\n- `GET /v1/habits`: the request field `cursor` never appears in the provider's spec.\n- `POST /v1/auth/login`: the response field `access_token` never appears in the provider's spec.\n\n## What to do\n\n1. **Adapt the dismiss call.** Treat `204` (no body) as success on `POST /v1/nudges/{}/dismiss`. Stop expecting `200` or a response body, and handle `409` and `404` if you don't already.\n2. **Re-pin and re-check.** Run `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`, to confirm the link is clean.\n3. **Clear the question.** Run `lattice contracts questions resolve streak-widget lq1`, or `dismiss` it if you decide it doesn't apply.\n4. **If `204` is a surprise to you, ask the streak owner to revert.** That is the alternative to adapting.\n5. **Optionally, look at the two gaps.** Ask the streak owner to include `cursor` and `access_token` in the spec, or confirm they're intentionally undocumented.\n\nTwo caveats: the check is static only (no live contract run), and streak-widget's own spec is reported as `missing`, so I couldn't map the broken import to specific code locations in your project."
+  },
+  {
+   "sid": "sonnet-break-1",
+   "condition": "break",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01XDbuJpmup7EdH5rwYLg7ru",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": null,
+   "R3b_attributed": null,
+   "R3b_fails": null,
+   "R3": null,
+   "R3c": null,
+   "R3c_claimopen": null,
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "workspace_impact",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R2": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R2": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes. The `streak` provider changed in a way that breaks streak-widget. I changed nothing.\n\n## What changed\n\nstreak's accepted contract (commit `8abd99bc`, via change `c1`) now conflicts with streak-widget's pinned contract (`a0db033a`). The static check reports the link as **broken**.\n\n| Endpoint | Finding | Detail |\n|---|---|---|\n| `POST /v1/nudges/{}/dismiss` | **BROKEN** | The widget relies on status `200`, which streak no longer returns. The spec now shows `204, 401, 404, 409`. |\n| `POST /v1/nudges/{}/dismiss` | **CHANGED** (relied on) | Status `204` is now returned. This is the replacement for the old `200`. |\n\nIn short, dismissing a nudge now returns `204 No Content` instead of `200`. Any widget code that checks for `200` or reads a response body from that call will treat a successful dismiss as a failure.\n\nThere is one open linked question for this, `lq1`, labeled \"contradiction\".\n\n## Gaps (not breakages)\n\nThese are fields the widget uses that streak's spec never shows, so the check can't verify them either way:\n- `GET /v1/habits`: request field `cursor`\n- `POST /v1/auth/login`: response field `access_token`\n\n## What to do\n\n1. **Adapt the widget** in its dismiss-nudge handling: treat `204` as success, stop expecting a `200` body, and decide how to handle `409` and `404`, which are also listed.\n2. **Re-pin and re-check** once that's done:\n   - `lattice contracts pin streak-widget`\n   - `lattice contracts check streak-widget`\n3. **Clear the question** with `lattice contracts questions resolve streak-widget lq1`, or use `dismiss` if you decide it doesn't apply.\n4. **Alternatively**, ask streak's owner to revert the status change if the `204` was unintended. In that case the question clears without any widget change.\n\n## Optional follow-up\n\nAsk streak's owner to cover `cursor` on `GET /v1/habits` and `access_token` on `POST /v1/auth/login` in their spec, so those two gaps become checkable.\n\nOne note: `project_list` shows streak-widget's own spec as `missing`. The contract check still ran against its imports, but the project has no `REQUIREMENTS.md` or `spec.py` of its own."
+  },
+  {
+   "sid": "sonnet-break-2",
+   "condition": "break",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_017cHAyrBjiMazmWEr22k5jH",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": null,
+   "R3b_attributed": null,
+   "R3b_fails": null,
+   "R3": null,
+   "R3c": null,
+   "R3c_claimopen": null,
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "workspace_impact",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R2": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R2": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes. The `streak` provider changed in a way that breaks streak-widget. I changed nothing.\n\n**What changed**\n- `POST /v1/nudges/{}/dismiss` used to return `200`. The provider's accepted spec (commit `8abd99bc`) now shows `[204, 401, 404, 409]`.\n- streak-widget relies on that `200`, so the contract check reports it as **BROKEN**. The new `204` is flagged as a relied-on change.\n- There is one open linked question, `lq1`, recording this contradiction. It came from provider change `c1`.\n\n**Not affected, but worth knowing**\n- Two gaps, meaning the provider's spec doesn't show things you use:\n  - `GET /v1/habits` request field `cursor`\n  - `POST /v1/auth/login` response field `access_token`\n- These aren't breakages, but the spec gives you no guarantee for either.\n\n**What to do**\n1. Update streak-widget's dismiss handling to treat `204 No Content` as success. Don't expect a `200` or a response body. Also check how it handles `401`, `404` and `409`.\n2. Re-pin and re-check:\n   - `lattice contracts pin streak-widget`\n   - `lattice contracts check streak-widget`\n3. Clear the question with `lattice contracts questions resolve streak-widget lq1`, or `dismiss` it if you decide it's not applicable.\n4. If you can't adapt, ask the `streak` owner to revert the change or to keep returning `200`.\n5. Optionally, ask the `streak` owner to document `cursor` and `access_token` in their spec so those two gaps close."
+  },
+  {
+   "sid": "sonnet-break-3",
+   "condition": "break",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01AYkbz7YnRk8UEnFQHqWXvx",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": null,
+   "R3b_attributed": null,
+   "R3b_fails": null,
+   "R3": null,
+   "R3c": null,
+   "R3c_claimopen": null,
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "workspace_impact",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R2": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R2": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes, one change from the `streak` provider affects streak-widget. I changed nothing.\n\n## What changed\n\n`streak` accepted a contract change (commit `8abd99bc`, spec hash `642bacb1\u2026`). The static contract check against streak-widget's pin (`d44b7385\u2026`, commit `a0db033a`) now reports the link as **broken**.\n\n| Class | Endpoint | Finding |\n|---|---|---|\n| **BROKEN** | `POST /v1/nudges/{}/dismiss` | Status `200` is no longer observed. The spec now shows `[204, 401, 404, 409]`. |\n| CHANGED (relied on) | `POST /v1/nudges/{}/dismiss` | Status `204` is newly observed. |\n\nIn plain terms, dismissing a nudge now returns `204 No Content` instead of `200`. Any widget code that checks for `200`, or parses a JSON body from that response, will treat a successful dismiss as a failure. This is the only endpoint affected (1 of 7 imports).\n\nThere is one open linked question for this, `lq1`, labelled \"contradiction\".\n\n## Gaps\n\nThese are not breakages. The provider's spec simply never shows these fields, so the check can't verify them:\n- `GET /v1/habits`: request field `cursor`\n- `POST /v1/auth/login`: response field `access_token`\n\n## What to do\n\n1. **Adapt the widget.** Find where it calls `POST /v1/nudges/{id}/dismiss` and accept `204` as success. Don't read a response body, and keep handling `401`, `404` and `409`. Accept `200` as well during rollout if you want it to work with both versions.\n2. **Re-pin and re-check.** Run `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`, to confirm the link is clean.\n3. **Clear the question.** Run `lattice contracts questions resolve streak-widget lq1`, or `dismiss` it if you decide it doesn't apply.\n4. **Or push back.** If `204` is unacceptable for you, ask the `streak` owner to revert.\n5. **Optional:** ask the `streak` owner to show `cursor` and `access_token` in their spec so the two gaps close.\n\nNote that the project list reports streak-widget's own spec as `missing`, so I couldn't map the broken import to a specific rule or code location through Lattice. You'll need to grep the codebase for the dismiss call."
+  },
+  {
+   "sid": "sonnet-clean-1",
+   "condition": "clean",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01BjaBhzGFpY59KWGx3gsocB",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": true,
+   "R3b_attributed": [
+    "- The only change is a new endpoint, GET /v1/me/stats (endpoint_added).",
+    "It is marked relied: false, so the widget doesn't use it.",
+    "If you want the new GET /v1/me/stats (the widget is a streak display, so it may be useful), you'd adopt it deliberately."
+   ],
+   "R3b_fails": [],
+   "R3": true,
+   "R3c": true,
+   "R3c_claimopen": [],
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "workspace_impact",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R3": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R3": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes, the provider `streak` has changed since streak-widget pinned it, but nothing it relies on is broken.\n\n**What changed**\n- The check was static, comparing 7 imports against the pinned and current spec of `streak`. The link status is `changed`, not `broken`.\n- The provider's spec hash and git ref both moved (`a0db033` \u2192 `5045026`).\n- The only change is a new endpoint, `GET /v1/me/stats` (`endpoint_added`). It is marked `relied: false`, so the widget doesn't use it.\n- There are no linked questions open against streak-widget.\n\n**Gaps to know about**\n\nThese are things the provider's spec never shows, so the check couldn't verify them. They aren't new breakage.\n- `GET /v1/habits`: request field `cursor` (pagination) is unobserved.\n- `POST /v1/auth/login`: response field `access_token` is unobserved.\n\nThe widget presumably uses both. If streak's spec is incomplete there, a real change to either could slip past this check.\n\n**What I'd do**\n1. Take no urgent action, since nothing the widget depends on was removed or altered.\n2. If you want the new `GET /v1/me/stats` (the widget is a streak display, so it may be useful), you'd adopt it deliberately. Re-pin to the current spec afterwards so the `changed` status clears.\n3. Ask the streak owner to document `cursor` on `GET /v1/habits` and `access_token` on `POST /v1/auth/login` in its spec, so those two reliances can be checked.\n4. A `live` contract check wasn't run (`live: null`). Run one if you want it verified against the running provider.\n\nI changed nothing."
+  },
+  {
+   "sid": "sonnet-clean-2",
+   "condition": "clean",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01HDjX6nfRg4A56SuRWDXF2v",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": true,
+   "R3b_attributed": [
+    "- The only difference is an added endpoint, GET /v1/me/stats.",
+    "It is a CHANGED finding with relied: false, so streak-widget doesn't use it and none of its 7 imports are affected.",
+    "Optionally, adopt GET /v1/me/stats if the widget could use it."
+   ],
+   "R3b_fails": [],
+   "R3": true,
+   "R3c": true,
+   "R3c_claimopen": [],
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R3": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R3": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "The streak provider has changed since streak-widget pinned it, but nothing it relies on is broken. I changed nothing.\n\n**What changed**\n- The provider's spec hash and git ref moved from `a0db033` to `5045026`, so you are pinned to an older version than the current one.\n- The only difference is an added endpoint, `GET /v1/me/stats`. It is a CHANGED finding with `relied: false`, so streak-widget doesn't use it and none of its 7 imports are affected.\n- No findings are BROKEN, and there are no open linked questions from the provider.\n\n**Gaps (unverified, not breakages)**\n- `GET /v1/habits`: the request field `cursor` never appears in the provider's spec, so the contract can't confirm that pagination parameter.\n- `POST /v1/auth/login`: the response field `access_token` never appears in the provider's spec, so the contract can't confirm it either.\n\nThe `access_token` gap matters most because auth depends on it. Neither gap is new in this change.\n\n**What to do**\n1. No urgent action is needed, and nothing is blocking you.\n2. Re-pin to the current provider version so the contract check goes clean. You can do this with the Lattice CLI or Studio; I didn't touch it.\n3. Ask the streak owner to document `cursor` on `GET /v1/habits` and `access_token` on the login response. Alternatively, confirm they exist by running a live contract check, since this check was static only.\n4. Optionally, adopt `GET /v1/me/stats` if the widget could use it.\n\nOne more thing: the streak-widget project reports `spec: missing`, so it has no spec of its own. That is why the check only covers which provider endpoints it imports."
+  },
+  {
+   "sid": "sonnet-clean-3",
+   "condition": "clean",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I made",
+     "clause": "I made no changes.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i made",
+     "clause": "i made no changes",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": true,
+   "R1b": false,
+   "R1b_detail": {
+    "pass": false,
+    "calls": []
+   },
+   "R3b": true,
+   "R3b_attributed": [
+    "- There is one change: a new endpoint, GET /v1/me/stats, was added.",
+    "The /v1/me/stats addition is purely additive.",
+    "Consider /v1/me/stats if the widget could use it, for example for streak totals."
+   ],
+   "R3b_fails": [],
+   "R3": true,
+   "R3c": true,
+   "R3c_claimopen": [],
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "contract_check"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R3": true,
+    "R5": true,
+    "R6": true
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R3": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes, the `streak` provider has changed since streak-widget pinned it, but nothing it relies on has broken. I checked this with a static contract check only, and made no changes.\n\n**What changed**\n- The provider's spec hash and git ref moved (pinned `a0db033` \u2192 current `5045026`).\n- There is one change: a new endpoint, `GET /v1/me/stats`, was added.\n- It is marked `relied: false`, so streak-widget doesn't use it. There are no BROKEN findings, so the widget is not contradicted by the new version.\n\n**Gaps (unverified, not breakage)**\nThe checker couldn't confirm these because the provider's spec never shows them:\n- `GET /v1/habits`: the request field `cursor` is unobserved.\n- `POST /v1/auth/login`: the response field `access_token` is unobserved.\n\nIf the widget depends on `cursor` pagination or on reading `access_token` from login, those aren't guaranteed by the provider's spec.\n\n**What I'd do**\n1. No urgent fix is needed. The `/v1/me/stats` addition is purely additive.\n2. Re-pin to the provider's current spec once you're comfortable with it, so the check goes back to clean.\n3. Ask the `streak` owner to document `cursor` and `access_token` in their spec. Otherwise those two gaps will keep showing up and you have no contract coverage for them.\n4. Consider `/v1/me/stats` if the widget could use it, for example for streak totals.\n\n**Limits of this check**\n- The contract is static only; no live check was run (`live: null`).\n- streak-widget's own spec is reported as `missing`, so Lattice can't trace which rules rely on these endpoints."
+  },
+  {
+   "sid": "sonnet-dismissed-1",
+   "condition": "dismissed",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01HzX4oTR2aibsnZgnsPfDdo",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": null,
+   "R3b_attributed": null,
+   "R3b_fails": null,
+   "R3": null,
+   "R3c": null,
+   "R3c_claimopen": null,
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "workspace_impact",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R4": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R4": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes, a change in the `streak` provider has broken `streak-widget`. The contract check reports the link as **broken**, and the linked question about it was dismissed without a note, so the problem is still live.\n\n**What changed**\n- `streak` accepted change `c1` (commit `8abd99bc`), which moved its spec hash from `d44b738522ea` (your pin) to `642bacb1999e`.\n- `POST /v1/nudges/{}/dismiss` no longer returns `200`. Its observed statuses are now `204, 401, 404, 409`.\n- **BROKEN:** your widget relies on `200`, which is no longer observed.\n- **CHANGED (relied):** `204` is now returned, and your widget uses this endpoint.\n\n**Gaps (not breakages, but unverified)**\n- `GET /v1/habits`: the provider's spec never shows the `cursor` request field.\n- `POST /v1/auth/login`: the provider's spec never shows the `access_token` response field.\n\n**What to do**\n1. Find where streak-widget handles the dismiss response. Any check for `200`, or any attempt to parse a JSON body, needs to treat `204 No Content` as success and not read a body.\n2. Decide how the widget should handle `409`, `404` and `401` if it doesn't already.\n3. Run `lattice contracts pin streak-widget` to move your pin to the new provider spec, then `lattice contracts check streak-widget` to confirm the link is clean.\n4. If the `200` \u2192 `204` change is unintended, ask the `streak` owner to revert it instead.\n5. Look into the two gaps with the `streak` owner, since the provider spec doesn't confirm that `cursor` or `access_token` exist.\n\nThe dismissed question `lq1` was cleared from the CLI with no resolution note. That doesn't fix the underlying breakage, so you may want to reopen or track it separately.\n\nI changed nothing. Note that `streak-widget` has `spec: missing` in the project list, so the Studio spec tools (rules, code links) have nothing to read for it. To locate the dismiss handler you'll need to grep the code directly."
+  },
+  {
+   "sid": "sonnet-dismissed-2",
+   "condition": "dismissed",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [],
+   "R6_B_claims": [],
+   "R6_B_voided": [],
+   "R6_round1_SELFACT": true,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01GjeV21RybxY5uRqAXvVtZC",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": null,
+   "R3b_attributed": null,
+   "R3b_fails": null,
+   "R3": null,
+   "R3c": null,
+   "R3c_claimopen": null,
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R4": true,
+    "R5": true,
+    "R6": true
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R4": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes, a change in `streak` (its only provider) breaks `streak-widget`. Nothing was changed on my side.\n\n**What changed**\n- `streak` accepted a change at commit `8abd99bc`. `streak-widget` is still pinned to `a0db033a`.\n- `POST /v1/nudges/{}/dismiss` used to return `200` and now returns `204`, `401`, `404` or `409`.\n- The contract check reports this link as **broken**: your import relies on the `200` status, which the provider no longer produces. The new `204` is flagged as a relied-on change.\n\n**The question was dismissed, not fixed**\n- The linked question `lq1` about this break was **dismissed** via the CLI at 2026-10-14T16:14:10Z, with no note.\n- No open question is left, but the break is still there, as the check above shows.\n\n**What to do**\n1. Update the widget's dismiss-nudge handling to treat `204` (no body) as success. Don't parse a JSON body, and don't require `200`. Also handle `409` and `404` explicitly, since they are now documented outcomes.\n2. Run `lattice contracts pin streak-widget` to re-pin to the current spec, then `lattice contracts check streak-widget` to confirm it's clean.\n3. Alternatively, if the `200` \u2192 `204` change was unintended, ask `streak`'s owner to revert it.\n\n**Minor gaps** (not breaking, but unverified by the provider's spec)\n- `GET /v1/habits` request field `cursor`\n- `POST /v1/auth/login` response field `access_token`\n\nIf the dismissal was deliberate, for example because you already handle `204`, the pin is just stale, and step 2 alone clears it. Note that the dismissed question hasn't made the check pass."
+  },
+  {
+   "sid": "sonnet-dismissed-3",
+   "condition": "dismissed",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I made",
+     "clause": "I made no changes.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i made",
+     "clause": "i made no changes",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": true,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01PhgL9qXMBE8PSBATKbpXQc",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": null,
+   "R3b_attributed": null,
+   "R3b_fails": null,
+   "R3": null,
+   "R3c": null,
+   "R3c_claimopen": null,
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R4": true,
+    "R5": true,
+    "R6": true
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R4": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes, a change in the `streak` provider has broken streak-widget. The contract check status is `broken`.\n\n**What changed**\n- `POST /v1/nudges/{}/dismiss` used to return `200`. Its spec now shows `[204, 401, 404, 409]`.\n- streak-widget relies on the `200` (BROKEN), and the new `204` is a relied-on addition (CHANGED).\n- The provider change was accepted in commit `8abd99bc`. Your pin is at `a0db033a`.\n\n**A dismissed question doesn't mean this is fixed**\n- A linked question (`lq1`) was raised for this contradiction, but it was dismissed through the CLI at 2026-10-14T16:15:00Z, with no note.\n- Dismissing only cleared the advisory. The check still reports the contract as broken, so the underlying mismatch remains.\n\n**Lower-priority gaps (not breakages)**\n- `GET /v1/habits`: the provider's spec never shows the `cursor` request field.\n- `POST /v1/auth/login`: the provider's spec never shows the `access_token` response field.\n- Both are unverifiable rather than changed. They are worth confirming with the streak owner.\n\n**What to do**\n1. Update streak-widget's dismiss call so it treats `204` (no body) as success instead of expecting `200`. Also check that it doesn't try to parse a response body.\n2. Check that it handles `401`, `404` and `409` as well, since those are the only other statuses the spec shows.\n3. Run `lattice contracts pin streak-widget` and then `lattice contracts check streak-widget`. The check should come back `ok`.\n4. If the status change was unintentional, ask streak's owner to revert it instead.\n5. Optionally, resolve `lq1` rather than leaving it dismissed, so the record shows it was handled.\n\nI made no changes. Note that the streak-widget project has no spec of its own (`spec: missing`), so its imports are only tracked through the contract link."
+  },
+  {
+   "sid": "sonnet-regress-1",
+   "condition": "regress",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_013B9inDtWaHPEUBdrpn3xpi",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": true,
+   "R3b_attributed": [
+    "- GET /v1/me no longer shows status 429, and streak-widget relies on that status.",
+    "The endpoint still exists, but the rate-limit response is gone from the provider's spec.",
+    "Ask the streak owner whether /v1/me stopped returning 429 on purpose (rate limiting removed, or moved elsewhere) or the spec just lost the case.",
+    "Check your widget's handling of 429 on /v1/me.",
+    "If the provider still sends 429 but the spec omits it, keep the handling and ask them to restore it in their spec."
+   ],
+   "R3b_fails": [],
+   "R3": true,
+   "R3c": true,
+   "R3c_claimopen": [],
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "workspace_impact",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R3": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R3": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes, one change from the `streak` provider affects streak-widget. It's a relied-on behavior that is no longer observed, not a hard break. I changed nothing.\n\n**What changed**\n- The provider's spec moved from git ref `a0db033` (your pin) to `1a980cd` (current), and its spec hash differs.\n- **`GET /v1/me` no longer shows status `429`**, and streak-widget relies on that status. Classification: `CHANGED`, not `BROKEN`. The endpoint still exists, but the rate-limit response is gone from the provider's spec.\n\n**Gaps (unverifiable, not regressions)**\n- `GET /v1/habits`: the request field `cursor` is never shown in the provider's spec, so pagination can't be verified.\n- `POST /v1/auth/login`: the response field `access_token` is never shown in the provider's spec.\n\n**Other checks**\n- There are no open linked questions, so nobody has formally flagged this yet.\n- No other workspace projects depend on streak-widget.\n- The link's contract is `static`, so no live check ran.\n\n**What to do**\n1. **Ask the streak owner** whether `/v1/me` stopped returning 429 on purpose (rate limiting removed, or moved elsewhere) or the spec just lost the case. Run `contract_impact` against the provider if you want to preview candidate versions.\n2. **Check your widget's handling of 429 on `/v1/me`.** If the provider really dropped it, that retry/backoff path is dead code you can simplify. If the provider still sends 429 but the spec omits it, keep the handling and ask them to restore it in their spec.\n3. **Confirm the two gaps.** Make sure `cursor` and `access_token` are still part of the real API, since the spec doesn't show them.\n4. **Re-pin** once you've reviewed it, so the check stops reporting `changed`. That's done on your side, in the CLI or Lattice Studio.\n\nSeparately, `project_list` reports streak-widget's own spec as `missing`. That doesn't block the check, but you may want to add one."
+  },
+  {
+   "sid": "sonnet-regress-2",
+   "condition": "regress",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01YQcwUh5eUieNvevH8xs3Y1",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": true,
+   "R3b_attributed": [
+    "- GET /v1/me no longer returns status 429 (rate limited), and streak-widget relies on that status.",
+    "Ask the streak owner whether 429 was dropped on purpose.",
+    "The provider may have removed rate limiting, or it may have stopped documenting it while still enforcing it.",
+    "If rate limiting is gone, the widget's 429 handling on /v1/me is dead code.",
+    "If it's still enforced but undocumented, ask the provider to restore 429 in their spec."
+   ],
+   "R3b_fails": [],
+   "R3": true,
+   "R3c": true,
+   "R3c_claimopen": [],
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R3": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R3": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes, one change from the `streak` provider affects streak-widget. Nothing is broken, but one thing needs your attention. I changed nothing.\n\n**What changed**\n- The provider's spec has moved since streak-widget's pin: the pinned git ref is `a0db033` and the current one is `1a980cd`.\n- `GET /v1/me` no longer returns status **429** (rate limited), and streak-widget relies on that status.\n- The contract check classifies this as `CHANGED`, not `BROKEN`. The endpoint still works, but the widget may be handling a response that never arrives.\n\n**Gaps (unverifiable, not regressions)**\n- `GET /v1/habits`: the `cursor` request field never appears in the provider's spec.\n- `POST /v1/auth/login`: the `access_token` response field never appears in the provider's spec.\n\nThe contract check found no linked questions open for the widget.\n\n**What I'd do**\n1. **Ask the streak owner whether 429 was dropped on purpose.** The provider may have removed rate limiting, or it may have stopped documenting it while still enforcing it.\n2. **If rate limiting is gone,** the widget's 429 handling on `/v1/me` is dead code. You can remove it, or keep it as harmless defensive handling.\n3. **If it's still enforced but undocumented,** ask the provider to restore 429 in their spec. Keep the widget's retry or back-off handling in the meantime.\n4. **Re-pin the contract** once you've decided, so the check goes clean.\n5. **Raise the two gaps with the provider if the widget depends on them.** `cursor` (pagination) and `access_token` (login) look important, so the provider's spec should show them.\n\nI can also run `contract_impact` against a candidate provider ref, or draft a change proposal, if you want either."
+  },
+  {
+   "sid": "sonnet-regress-3",
+   "condition": "regress",
+   "R6_new": true,
+   "R6_A": true,
+   "R6_B": true,
+   "R6_PINCLAIM": null,
+   "R6_A_B_disagree": false,
+   "R6_A_claims": [],
+   "R6_A_voided": [
+    {
+     "kind": "active",
+     "match": "I changed",
+     "clause": "I changed nothing.",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_B_claims": [],
+   "R6_B_voided": [
+    {
+     "kind": "active",
+     "match": "i changed",
+     "clause": "i changed nothing",
+     "void": "NEG_AFTER"
+    }
+   ],
+   "R6_round1_SELFACT": false,
+   "R1b": true,
+   "R1b_detail": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_019qeduN7Yd3buxPuudneu45",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "R3b": true,
+   "R3b_attributed": [
+    "What changed:",
+    "- GET /v1/me no longer returns status 429.",
+    "Streak-widget relies on that status, probably by handling rate limiting on that call.",
+    "What to do:",
+    "Ask the streak owner about the 429.",
+    "Did /v1/me stop rate-limiting, or did it just stop being documented or observed?",
+    "If rate limiting is gone, your 429 handling becomes dead code and is harmless to keep.",
+    "Look at how streak-widget handles 429 on /v1/me, so you know what you depend on before you hear back."
+   ],
+   "R3b_fails": [],
+   "R3": true,
+   "R3c": true,
+   "R3c_claimopen": [],
+   "R9": {
+    "n_default_calls": 0,
+    "n_errors": 0,
+    "per_tool": {},
+    "calls": []
+   },
+   "tool_sequence": [
+    "project_list",
+    "contract_check",
+    "linked_question_list"
+   ],
+   "round1_items_stored": {
+    "R1": true,
+    "R3": true,
+    "R5": true,
+    "R6": false
+   },
+   "round1_items_rescored": {
+    "R1": true,
+    "R3": true,
+    "R5": true
+   },
+   "diff_vs_stored": {},
+   "final_answer": "Yes, one provider change affects streak-widget. It's a warning-level change, not a break. I changed nothing.\n\n**The provider:** streak-widget uses one provider, `streak`, under a static contract. The pin is at git `a0db033` and the provider is now at `1a980cd`, and the spec hash differs.\n\n**What changed:**\n- **`GET /v1/me` no longer returns status `429`.** Streak-widget relies on that status, probably by handling rate limiting on that call. The provider's spec no longer shows it (class `CHANGED`, relied on).\n- Nothing was classed as `BROKEN`.\n\n**Gaps (unverified, not regressions):**\n- `GET /v1/habits`: the request field `cursor` is never shown in the provider's spec, so pagination can't be confirmed.\n- `POST /v1/auth/login`: the response field `access_token` is never shown in the provider's spec.\n\n**Other state:** there are no open linked questions for streak-widget, and the live contract check wasn't run (`live: null`).\n\n**What to do:**\n1. **Ask the streak owner about the 429.** Did `/v1/me` stop rate-limiting, or did it just stop being documented or observed? If rate limiting is gone, your 429 handling becomes dead code and is harmless to keep. If it's still enforced but undocumented, keep the handling and ask them to restore it in the spec.\n2. **Look at how streak-widget handles 429 on `/v1/me`**, so you know what you depend on before you hear back.\n3. **Ask the streak owner to cover `cursor` and `access_token` in their spec**, so those two reliances can be checked instead of left as gaps.\n4. **Re-pin once you've decided it's safe.** Re-pinning to `1a980cd` clears the \"changed\" status.\n\nI can also run `contract_impact` against a specific candidate ref if you want to preview an upcoming streak version."
+  }
+ ],
+ "expected_met": true
+}

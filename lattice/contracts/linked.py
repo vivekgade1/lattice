@@ -66,6 +66,15 @@ STATUSES = (OPEN, RESOLVED, DISMISSED)
 _QFILE = re.compile(r"^lq(\d+)\.json(?:\.bad-.*)?$")
 _QID = re.compile(r"^lq[1-9]\d*$")
 
+# the last key of every list body (API.md v1.20): what the two marks of a finding line mean
+LEGEND = {
+    "CHANGED*": "CHANGED on an endpoint this consumer imports (the finding has relied: true): the "
+    "provider's contract changed there since the pin, but none of the consumer's imported claims "
+    "stopped holding (that would be BROKEN)",
+    "{}": "a templated path parameter, any id or name: POST /invoices/{}/pay is the pay endpoint "
+    "of every invoice",
+}
+
 CREATED, EXISTING, NONE, UNDELIVERED, SKIPPED = (
     "created", "existing", "none", "undelivered", "skipped",
 )  # fmt: skip
@@ -349,8 +358,9 @@ def list_body(
 ) -> dict[str, Any]:  # fmt: skip
     """The list answer (CLI ``--json``, MCP, ``GET /api/linked-questions``): ``format``,
     ``consumer``, ``state`` (present|missing|disabled), ``state_dir``, ``questions`` (id order,
-    filtered by `status` when given and not ``all``), ``counts`` (over every question) and
-    ``problems``. Raises :class:`LinkedError` ``bad_status`` for an unknown status."""
+    filtered by `status` when given and not ``all``), ``counts`` (over every question),
+    ``problems`` and ``legend`` (always present: :data:`LEGEND`, a copy). Raises
+    :class:`LinkedError` ``bad_status`` for an unknown status."""
     if status not in (None, "all", *STATUSES):
         raise LinkedError("bad_status", f"status must be one of {', '.join((*STATUSES, 'all'))}")
     qs: list[dict[str, Any]] = []
@@ -361,7 +371,8 @@ def list_body(
     shown = [q for q in qs if status in (None, "all") or q.get("status") == status]
     return {"format": FORMAT, "consumer": consumer, "state": state,
             "state_dir": str(state_dir) if state_dir is not None else None,
-            "questions": shown, "counts": counts_of(qs), "problems": problems}  # fmt: skip
+            "questions": shown, "counts": counts_of(qs), "problems": problems,
+            "legend": dict(LEGEND)}  # fmt: skip
 
 
 def get_question(state_dir: Path, qid: str) -> dict[str, Any]:

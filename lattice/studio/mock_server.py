@@ -171,6 +171,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, unquote, urlparse
 
+from lattice.contracts.linked import LEGEND
 from lattice.studio import areas as areas_mod
 from lattice.studio import plan as plan_mod
 from lattice.studio.mcp_intake import McpIntake, SourceError, parse_init, parse_source
@@ -1189,8 +1190,11 @@ class MockState:
         rows += [row(r.engine, "builtin") for r in eng.REGISTRY.entries() if r.source == "builtin"]
         if MOCK_ENGINE_FILE.is_file():
             rows.append(row(eng.read_descriptor(MOCK_ENGINE_FILE), "project"))
-        return {"engines": rows, "modules": [dict(m) for m in MOCK_MODULES],
-                "errors": [MOCK_MODULE_ERROR]}
+        return {
+            "engines": rows,
+            "modules": [dict(m) for m in MOCK_MODULES],
+            "errors": [MOCK_MODULE_ERROR],
+        }
 
     # GET /api/improve (v1.15): the fixture event log, ranked by lattice.improve itself
     def improve(self) -> dict[str, Any]:
@@ -1847,9 +1851,12 @@ class MockState:
                                   "spec onto a protected branch", "branch_protected")  # fmt: skip
             if name not in self.branch_heads:
                 raise MockRefusal(404, f"no branch {name}", "no_branch")
-            busy = next((r["id"] for r in self.rebuilds.values()
-                         if r["status"] not in REBUILD_FINISHED), None) or next(
-                (p["id"] for p in self.plans.plans.values() if p["status"] == "running"), None)
+            busy = next(
+                (r["id"] for r in self.rebuilds.values() if r["status"] not in REBUILD_FINISHED),
+                None,
+            ) or next(
+                (p["id"] for p in self.plans.plans.values() if p["status"] == "running"), None
+            )
             if busy:
                 raise MockRefusal(409, f"a build is running in this project ({busy}); sync the "
                                   "spec when it has finished", "build_running")  # fmt: skip
@@ -3408,7 +3415,8 @@ class MockServer(ThreadingHTTPServer):
         else:
             where = f"{self.states[owner].model['project']['root']}/.lattice/state/{owner}"
         return {"format": 1, "consumer": owner, "state": "present", "state_dir": where,
-                "questions": shown, "counts": counts, "problems": []}  # fmt: skip
+                "questions": shown, "counts": counts, "problems": [],
+                "legend": dict(LEGEND)}  # fmt: skip
 
     def linked_get(self, owner: str, qid: str) -> dict[str, Any]:
         with self.linked_lock:
