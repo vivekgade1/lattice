@@ -1,0 +1,43 @@
+Thu Oct 15 08:35:02 CDT 2026
+hashes: {"lattice/mcp/guard.py": "eebc4effe73915f3", "lattice/mcp/server.py": "2bcb755e5f0e685c", "dogfood/multi_plumbing_probes.py": "e4a075f452caaaec", "dogfood/multi_plumbing_mutants.py": "dd8aab95fa7f5540"}
+control: PASS (control) (pytest: 276 passed in 106.75s (0:01:46); probes: probes: 44/44 pass)
+PM1 | no walk-down | predicted G01,G02,G03,G04,G05,G11,G12,G13,G17,G18,G25,G26,G29 | caught | probes failed: G01,G02,G03,G04,G05,G11,G12,G13,G17,G18,G25,G26,G29 | tests failed: 16 | missed predicted: -
+    also failed: test:test_exit2_mode_denies_with_the_reason_on_stderr, test:test_mv_walks_its_sources_and_not_its_destination, test:test_the_deny_has_exactly_the_documented_shape, test:test_the_table[row11], test:test_the_table[row12], test:test_the_table[row13], test:test_the_table[row17], test:test_the_table[row18], test:test_the_table[row1], test:test_the_table[row25], test:test_the_table[row26], test:test_the_table[row29], test:test_the_table[row2], test:test_the_table[row3], test:test_the_table[row4], test:test_the_table[row5]
+PM2 | the walk follows directory symlinks | predicted G10 | caught | probes failed: G10 | tests failed: 1 | missed predicted: -
+    also failed: test:test_the_table[row10]
+PM3 | depth cap 4 (off by one) | predicted G13 | caught | probes failed: G13 | tests failed: 2 | missed predicted: -
+    also failed: test:test_the_depth_is_five_levels_below_the_target, test:test_the_table[row13]
+PM4 | no budget | predicted G16,C16 | caught | probes failed: G16 | tests failed: 2 | missed predicted: C16
+    also failed: test:test_the_budget_fails_open_and_is_deterministic, test:test_the_table[row16]
+PM5 | pruned names are entered | predicted G09 | caught | probes failed: G09 | tests failed: 2 | missed predicted: -
+    also failed: test:test_pruned_names_are_neither_entered_nor_walked, test:test_the_table[row9]
+PM6 | the mv destination is walked | predicted G19 | caught | probes failed: G19 | tests failed: 2 | missed predicted: -
+    also failed: test:test_mv_walks_its_sources_and_not_its_destination, test:test_the_table[row19]
+PM8p | git rm walked down (must not exist) | predicted G24 | caught | probes failed: G24 | tests failed: 2 | missed predicted: -
+    also failed: test:test_the_reverted_widenings_stay_reverted, test:test_the_table[row24]
+PM7p | pathless git clean mapped to `.` (must not exist) | predicted G20,G22 | caught | probes failed: G20,G22,G23 | tests failed: 4 | missed predicted: -
+    also failed: G23, test:test_the_reverted_widenings_stay_reverted, test:test_the_table[row20], test:test_the_table[row22], test:test_the_table[row23]
+PM9 | non-first projects always local (today) | predicted U1,U2,U6 | caught | probes failed: U1,U2,U4,U6 | tests failed: 6 | missed predicted: -
+    also failed: U4, test:test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio, test:test_the_other_projects_writes_are_not_routed_to_the_studio, test:test_u1_the_listing_is_asked_once_per_other_project_and_by_path, test:test_u2_the_bare_base_url_works_too, test:test_u4_a_failed_listing_is_an_error_and_is_not_remembered, test:test_u6_a_symlinked_project_path_still_matches
+PM10 | matched by the hub's name instead of the path | predicted U1,U2,U6 | caught | probes failed: U1,U2,U6 | tests failed: 5 | missed predicted: -
+    also failed: test:test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio, test:test_the_other_projects_writes_are_not_routed_to_the_studio, test:test_u1_the_listing_is_asked_once_per_other_project_and_by_path, test:test_u2_the_bare_base_url_works_too, test:test_u6_a_symlinked_project_path_still_matches
+PM12 | a 404 listing is an error (no local fallback) | predicted U3 | caught | probes failed: U3 | tests failed: 1 | missed predicted: -
+    also failed: test:test_u3_a_studio_without_the_listing_falls_back_to_local
+PM11 | /p/<name> not stripped from the base | predicted U1 | caught | probes failed: U1,U6 | tests failed: 5 | missed predicted: -
+    also failed: U6, test:test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio, test:test_studio_base_strips_one_trailing_name, test:test_the_other_projects_writes_are_not_routed_to_the_studio, test:test_u1_the_listing_is_asked_once_per_other_project_and_by_path, test:test_u6_a_symlinked_project_path_still_matches
+PM15 | the fallback manifest is accepted without declaring the project | predicted P5 | caught | probes failed: P5 | tests failed: 1 | missed predicted: -
+    also failed: test:test_p5_a_manifest_that_does_not_declare_the_project_is_not_used
+PM13 | a failed listing is cached as a local box | predicted U4 | caught | probes failed: U4 | tests failed: 1 | missed predicted: -
+    also failed: test:test_u4_a_failed_listing_is_an_error_and_is_not_remembered
+PM14 | the listing is fetched with one project | predicted U5 | caught | probes failed: U1,U4,U5 | tests failed: 3 | missed predicted: -
+    also failed: U1, U4, test:test_u1_the_listing_is_asked_once_per_other_project_and_by_path, test:test_u4_a_failed_listing_is_an_error_and_is_not_remembered, test:test_u5_one_project_never_asks_for_the_listing
+PM16 | no fallback (launch walk-up only) | predicted P4 | caught | probes failed: P4,P5 | tests failed: 3 | missed predicted: -
+    also failed: P5, test:test_p4_the_manifest_is_found_from_the_project_when_the_launch_dir_has_none, test:test_p5_a_manifest_that_does_not_declare_the_project_is_not_used, test:test_p7_an_unreadable_manifest_above_the_project_changes_nothing
+PM17 | change_propose of a served non-first project is routed to that Studio | predicted U1 | caught | probes failed: U1 | tests failed: 2 | missed predicted: -
+    also failed: test:test_studio_reads_splits_reads_from_writes_and_keeps_its_own_change_local, test:test_the_other_projects_writes_are_not_routed_to_the_studio
+mutants: 17/17 killed
+
+real	14m14.116s
+user	27m17.333s
+sys	6m9.991s
+EXIT 0

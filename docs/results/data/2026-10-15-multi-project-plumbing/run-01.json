@@ -1,0 +1,1059 @@
+{
+ "G01": {
+  "checks": {
+   "--mode exit2: exit 2 with the reason on stderr": true,
+   "new: deny ws-p1": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p1"
+  },
+  "observed": "deny ws-p1"
+ },
+ "G01.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G02": {
+  "checks": {
+   "new: deny ws-p1": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p1"
+  },
+  "observed": "deny ws-p1"
+ },
+ "G02.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G03": {
+  "checks": {
+   "new: deny ws-p3": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p3"
+  },
+  "observed": "deny ws-p3"
+ },
+ "G03.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G04": {
+  "checks": {
+   "new: deny ws-p3": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p3"
+  },
+  "observed": "deny ws-p3"
+ },
+ "G04.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G05": {
+  "checks": {
+   "new: deny ws-p3": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p3"
+  },
+  "observed": "deny ws-p3"
+ },
+ "G05.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G06": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G06.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G07": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G07.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G08": {
+  "checks": {
+   "new: deny ws-p1": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p1"
+  },
+  "observed": "deny ws-p1"
+ },
+ "G08.old": {
+  "checks": {
+   "old: deny ws-p1": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p1"
+  },
+  "observed": "deny ws-p1"
+ },
+ "G09": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G09.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G10": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G10.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G11": {
+  "checks": {
+   "new: deny ws-p1": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p1"
+  },
+  "observed": "deny ws-p1"
+ },
+ "G11.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G12": {
+  "checks": {
+   "new: deny loop-p": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "loop-p"
+  },
+  "observed": "deny loop-p"
+ },
+ "G12.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G13": {
+  "checks": {
+   "--mode exit2: exit 2 with the reason on stderr": true,
+   "new: deny cap-p6": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "cap-p6"
+  },
+  "observed": "deny cap-p6"
+ },
+ "G13.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G14": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G14.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G15": {
+  "checks": {
+   "new: deny cap-p6": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "cap-p6"
+  },
+  "observed": "deny cap-p6"
+ },
+ "G15.old": {
+  "checks": {
+   "old: deny cap-p6": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "cap-p6"
+  },
+  "observed": "deny cap-p6"
+ },
+ "G16": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G16.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G17": {
+  "checks": {
+   "new: deny wide-p": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "wide-p"
+  },
+  "observed": "deny wide-p"
+ },
+ "G17.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G18": {
+  "checks": {
+   "new: deny ws-p1": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p1"
+  },
+  "observed": "deny ws-p1"
+ },
+ "G18.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G19": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G19.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G20": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G20.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G21": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G21.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G22": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G22.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G23": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G23.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G24": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G24.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G25": {
+  "checks": {
+   "new: deny ws-p3": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p3"
+  },
+  "observed": "deny ws-p3"
+ },
+ "G25.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G26": {
+  "checks": {
+   "new: deny ws-p3": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p3"
+  },
+  "observed": "deny ws-p3"
+ },
+ "G26.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G27": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G27.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G28": {
+  "checks": {
+   "new: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G28.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G29": {
+  "checks": {
+   "new: deny lattice-studio": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "lattice-studio"
+  },
+  "observed": "deny lattice-studio"
+ },
+ "G29.old": {
+  "checks": {
+   "old: allow": true
+  },
+  "facts": {
+   "decision": "allow",
+   "exit": 0,
+   "project": null
+  },
+  "observed": "allow"
+ },
+ "G30": {
+  "checks": {
+   "new: deny ws-p1": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p1"
+  },
+  "observed": "deny ws-p1"
+ },
+ "G30.old": {
+  "checks": {
+   "old: deny ws-p1": true
+  },
+  "facts": {
+   "decision": "deny",
+   "exit": 0,
+   "project": "ws-p1"
+  },
+  "observed": "deny ws-p1"
+ },
+ "P1": {
+  "checks": {
+   "${V:-d} without the var is d": true,
+   "${V} without the var is empty": true,
+   "args are mcp serve --project ${CLAUDE_PROJECT_DIR:-.}": true,
+   "both files parse": true,
+   "expanded with the var: the path": true,
+   "expanded without the var: --project .": true,
+   "git diff a4ab4a1 of both is empty": true
+  },
+  "facts": {
+   "args": [
+    "mcp",
+    "serve",
+    "--project",
+    "${CLAUDE_PROJECT_DIR:-.}"
+   ],
+   "git_diff_rc": 0
+  }
+ },
+ "P2": {
+  "checks": {
+   "abs: initialize byte-identical to old": true,
+   "abs: model_get byte-identical to old": true,
+   "abs: the instructions are the base text": true,
+   "abs: tools/list byte-identical to old": true,
+   "both expansions give the same tools/list": true,
+   "dot: initialize byte-identical to old": true,
+   "dot: model_get byte-identical to old": true,
+   "dot: the instructions are the base text": true,
+   "dot: tools/list byte-identical to old": true
+  },
+  "facts": {
+   "abs": {
+    "tools": [
+     "project_status",
+     "model_get",
+     "rule_get",
+     "spec_ask",
+     "spec_lint",
+     "check_run",
+     "code_links",
+     "graph_get",
+     "change_propose",
+     "change_get",
+     "change_list",
+     "project_list",
+     "project_set_active"
+    ]
+   },
+   "dot": {
+    "tools": [
+     "project_status",
+     "model_get",
+     "rule_get",
+     "spec_ask",
+     "spec_lint",
+     "check_run",
+     "code_links",
+     "graph_get",
+     "change_propose",
+     "change_get",
+     "change_list",
+     "project_list",
+     "project_set_active"
+    ]
+   }
+  }
+ },
+ "P3": {
+  "checks": {
+   "new: instructions = base + MULTI + WORKSPACE": true,
+   "new: proj explicit, other workspace": true,
+   "new: tools = single-project tools + the 4 workspace tools": true,
+   "old: initialize and tools/list byte-identical": true,
+   "old: instructions = base + MULTI + WORKSPACE": true,
+   "old: proj explicit, other workspace": true,
+   "old: tools = single-project tools + the 4 workspace tools": true
+  },
+  "facts": {
+   "sources": {
+    "other": "workspace",
+    "proj": "explicit"
+   }
+  }
+ },
+ "P4": {
+  "checks": {
+   "new: instructions = base + MULTI + WORKSPACE": true,
+   "new: proj explicit, other workspace": true,
+   "new: tools = single-project tools + the 4 workspace tools": true,
+   "old: instructions are the base text": true,
+   "old: one project": true,
+   "old: single-project tools, no workspace tools": true
+  },
+  "facts": {
+   "sources": {
+    "other": "workspace",
+    "proj": "explicit"
+   },
+   "stderr": []
+  }
+ },
+ "P5": {
+  "checks": {
+   "byte-identical to old": true,
+   "single project, no workspace tools": true,
+   "stderr names the manifest as not used": true
+  },
+  "facts": {
+   "stderr": [
+    "lattice mcp: workspace /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/ws5/lattice.workspace.toml (found from /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/ws5/proj) not used: it does not declare /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/ws5/proj"
+   ]
+  }
+ },
+ "P6": {
+  "checks": {
+   "byte-identical to old": true,
+   "new: instructions = base + MULTI + WORKSPACE": true,
+   "new: proj explicit, other workspace": true,
+   "new: tools = single-project tools + the 4 workspace tools": true,
+   "old: instructions = base + MULTI + WORKSPACE": true,
+   "old: proj explicit, other workspace": true,
+   "old: tools = single-project tools + the 4 workspace tools": true
+  },
+  "facts": {
+   "sources": {
+    "other": "workspace",
+    "proj": "explicit"
+   }
+  }
+ },
+ "P7": {
+  "checks": {
+   "byte-identical to old": true,
+   "no workspace row in project_list": true,
+   "one project": true
+  },
+  "facts": {
+   "stderr": [
+    "lattice mcp: workspace /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/ws7/lattice.workspace.toml (found from /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/ws7/proj) not used: it cannot be read: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/ws7/lattice.workspace.toml is not valid TOML: Invalid initial character for a key part (at line 1, column 3)"
+   ]
+  }
+ },
+ "R1": {
+  "checks": {
+   "MP-2 both --project: 10/10": true,
+   "MP-2 no --project: 10/10": true
+  },
+  "facts": {
+   "both --project": [
+    [
+     1,
+     "deny",
+     true
+    ],
+    [
+     2,
+     "deny",
+     true
+    ],
+    [
+     3,
+     "deny",
+     true
+    ],
+    [
+     4,
+     "deny",
+     true
+    ],
+    [
+     5,
+     "allow",
+     true
+    ],
+    [
+     6,
+     "allow",
+     true
+    ],
+    [
+     7,
+     "allow",
+     true
+    ],
+    [
+     8,
+     "allow",
+     true
+    ],
+    [
+     9,
+     "deny",
+     true
+    ],
+    [
+     10,
+     "deny",
+     true
+    ]
+   ],
+   "no --project": [
+    [
+     1,
+     "deny",
+     true
+    ],
+    [
+     2,
+     "deny",
+     true
+    ],
+    [
+     3,
+     "deny",
+     true
+    ],
+    [
+     4,
+     "deny",
+     true
+    ],
+    [
+     5,
+     "allow",
+     true
+    ],
+    [
+     6,
+     "allow",
+     true
+    ],
+    [
+     7,
+     "allow",
+     true
+    ],
+    [
+     8,
+     "allow",
+     true
+    ],
+    [
+     9,
+     "deny",
+     true
+    ],
+    [
+     10,
+     "deny",
+     true
+    ]
+   ]
+  }
+ },
+ "U1": {
+  "checks": {
+   "0 requests naming C": true,
+   "a = ALPHA via studio": true,
+   "b = BETA via studio": true,
+   "b's change_propose, spec_ask, check_run are local errors": true,
+   "b's writes are served as at a4ab4a1": true,
+   "c is a local error with C's path": true,
+   "exactly 2 GET /api/projects": true,
+   "no POST reached the Studio": true,
+   "the second b adds no listing request": true
+  },
+  "facts": {
+   "log": [
+    "GET /p/alpha/api/model",
+    "GET /p/alpha/api/model",
+    "GET /api/projects",
+    "GET /p/beta/api/model",
+    "GET /p/beta/api/model",
+    "GET /api/projects",
+    "GET /p/beta/api/model"
+   ],
+   "old_b_model_get": [
+    {
+     "error": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/url/b is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. (project: b)"
+    }
+   ],
+   "results": [
+    {
+     "ok": "{\"app\": {\"configured\": false}, \"changes\": [], \"hint\": \"pass section=rules|views|data_model|app|changes for the full part\", \"project\": \"a\", \"project_info\": {\"name\": \"alpha\"}, \"rule_count\": 1, \"rule_status_counts\": {\"ok\": 1}, \"rules\": [{\"id\": \"R1\", \"status\": \"ok\", \"text\": \"ALPHA via studio\"}], \"sections\": [\"rules\", \"views\", \"data_model\", \"app\", \"changes\"], \"tables\": []}"
+    },
+    {
+     "ok": "{\"app\": {\"configured\": false}, \"changes\": [], \"hint\": \"pass section=rules|views|data_model|app|changes for the full part\", \"project\": \"b\", \"project_info\": {\"name\": \"beta\"}, \"rule_count\": 1, \"rule_status_counts\": {\"ok\": 1}, \"rules\": [{\"id\": \"R1\", \"status\": \"ok\", \"text\": \"BETA via studio\"}], \"sections\": [\"rules\", \"views\", \"data_model\", \"app\", \"changes\"], \"tables\": []}"
+    },
+    {
+     "error": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/url/c is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. (project: c)"
+    },
+    {
+     "ok": "{\"app\": {\"configured\": false}, \"changes\": [], \"hint\": \"pass section=rules|views|data_model|app|changes for the full part\", \"project\": \"b\", \"project_info\": {\"name\": \"beta\"}, \"rule_count\": 1, \"rule_status_counts\": {\"ok\": 1}, \"rules\": [{\"id\": \"R1\", \"status\": \"ok\", \"text\": \"BETA via studio\"}], \"sections\": [\"rules\", \"views\", \"data_model\", \"app\", \"changes\"], \"tables\": []}"
+    },
+    {
+     "error": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/url/b is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. (project: b)"
+    },
+    {
+     "error": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/url/b is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. (project: b)"
+    },
+    {
+     "error": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/url/b is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. (project: b)"
+    }
+   ]
+  }
+ },
+ "U2": {
+  "checks": {
+   "a via /api/model": true,
+   "b via /p/beta/api/model": true,
+   "c is the local error": true
+  },
+  "facts": {
+   "paths": [
+    "/api/model",
+    "/api/model",
+    "/p/beta/api/model",
+    "/p/beta/api/model"
+   ],
+   "results": [
+    {
+     "ok": "{\"app\": {\"configured\": false}, \"changes\": [], \"hint\": \"pass section=rules|views|data_model|app|changes for the full part\", \"project\": \"a\", \"project_info\": {\"name\": \"alpha\"}, \"rule_count\": 1, \"rule_status_counts\": {\"ok\": 1}, \"rules\": [{\"id\": \"R1\", \"status\": \"ok\", \"text\": \"ALPHA via studio\"}], \"sections\": [\"rules\", \"views\", \"data_model\", \"app\", \"changes\"], \"tables\": []}"
+    },
+    {
+     "ok": "{\"app\": {\"configured\": false}, \"changes\": [], \"hint\": \"pass section=rules|views|data_model|app|changes for the full part\", \"project\": \"b\", \"project_info\": {\"name\": \"beta\"}, \"rule_count\": 1, \"rule_status_counts\": {\"ok\": 1}, \"rules\": [{\"id\": \"R1\", \"status\": \"ok\", \"text\": \"BETA via studio\"}], \"sections\": [\"rules\", \"views\", \"data_model\", \"app\", \"changes\"], \"tables\": []}"
+    },
+    {
+     "error": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/url/c is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. (project: c)"
+    }
+   ]
+  }
+ },
+ "U3": {
+  "checks": {
+   "a via the Studio": true,
+   "b is the local error (fallback)": true,
+   "nothing asked of /p/beta": true
+  },
+  "facts": {
+   "results": [
+    {
+     "ok": "{\"app\": {\"configured\": false}, \"changes\": [], \"hint\": \"pass section=rules|views|data_model|app|changes for the full part\", \"project\": \"a\", \"project_info\": {\"name\": \"alpha\"}, \"rule_count\": 1, \"rule_status_counts\": {\"ok\": 1}, \"rules\": [{\"id\": \"R1\", \"status\": \"ok\", \"text\": \"ALPHA via studio\"}], \"sections\": [\"rules\", \"views\", \"data_model\", \"app\", \"changes\"], \"tables\": []}"
+    },
+    {
+     "error": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/url/b is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. (project: b)"
+    }
+   ]
+  }
+ },
+ "U4": {
+  "checks": {
+   "2 listing requests (a failure is not cached)": true,
+   "both calls are errors with `Studio answered 500` and `(project: b)`": true
+  },
+  "facts": {
+   "results": [
+    {
+     "error": "Studio answered 500: listing unavailable (project: b)"
+    },
+    {
+     "error": "Studio answered 500: listing unavailable (project: b)"
+    }
+   ]
+  }
+ },
+ "U5": {
+  "checks": {
+   "0 /api/projects requests": true,
+   "initialize byte-identical to old": true,
+   "model_get byte-identical to old": true,
+   "model_get is the Studio's": true,
+   "tools/list byte-identical to old": true
+  },
+  "facts": {
+   "log": [
+    "GET /p/alpha/api/model",
+    "GET /p/alpha/api/model"
+   ]
+  }
+ },
+ "U6": {
+  "checks": {
+   "b via /p/beta (both sides realpath'd)": true,
+   "the request went to /p/beta/api/model": true
+  },
+  "facts": {
+   "results": [
+    {
+     "ok": "{\"app\": {\"configured\": false}, \"changes\": [], \"hint\": \"pass section=rules|views|data_model|app|changes for the full part\", \"project\": \"b\", \"project_info\": {\"name\": \"beta\"}, \"rule_count\": 1, \"rule_status_counts\": {\"ok\": 1}, \"rules\": [{\"id\": \"R1\", \"status\": \"ok\", \"text\": \"BETA via studio\"}], \"sections\": [\"rules\", \"views\", \"data_model\", \"app\", \"changes\"], \"tables\": []}"
+    }
+   ]
+  }
+ }
+}

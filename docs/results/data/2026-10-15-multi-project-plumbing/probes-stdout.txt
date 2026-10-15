@@ -1,0 +1,90 @@
+run 1/10 done (18s)
+run 2/10 done (36s)
+run 3/10 done (54s)
+run 4/10 done (71s)
+run 5/10 done (88s)
+run 6/10 done (106s)
+run 7/10 done (123s)
+run 8/10 done (139s)
+run 9/10 done (156s)
+run 10/10 done (173s)
+id | predicted | observed | pass
+P1 | holds | holds | pass
+P2 | byte-identical to old | holds | pass
+P3 | workspace server (old: the same) | holds | pass
+P4 | workspace server (old: single project) | holds | pass
+P5 | byte-identical to old; stderr: not used | holds | pass
+P6 | workspace server (old: the same) | holds | pass
+P7 | byte-identical to old | holds | pass
+U1 | a, b via Studio; c local; 2 listings; writes local | holds | pass
+U2 | a via /api/model, b via /p/beta, c local | holds | pass
+U3 | a via Studio; b local (fallback) | holds | pass
+U4 | b: Studio answered 500 twice; 2 listings | holds | pass
+U5 | 0 listings; byte-identical to old | holds | pass
+U6 | b via /p/beta | holds | pass
+G01 | deny ws-p1 | deny ws-p1 | pass
+G02 | deny ws-p1 | deny ws-p1 | pass
+G03 | deny ws-p3 | deny ws-p3 | pass
+G04 | deny ws-p3 | deny ws-p3 | pass
+G05 | deny ws-p3 | deny ws-p3 | pass
+G06 | allow | allow | pass
+G07 | allow | allow | pass
+G08 | deny ws-p1 | deny ws-p1 | pass
+G09 | allow | allow | pass
+G10 | allow | allow | pass
+G11 | deny ws-p1 | deny ws-p1 | pass
+G12 | deny loop-p | deny loop-p | pass
+G13 | deny cap-p6 | deny cap-p6 | pass
+G14 | allow | allow | pass
+G15 | deny cap-p6 | deny cap-p6 | pass
+G16 | allow | allow | pass
+G17 | deny wide-p | deny wide-p | pass
+G18 | deny ws-p1 | deny ws-p1 | pass
+G19 | allow | allow | pass
+G20 | allow | allow | pass
+G21 | allow | allow | pass
+G22 | allow | allow | pass
+G23 | allow | allow | pass
+G24 | allow | allow | pass
+G25 | deny ws-p3 | deny ws-p3 | pass
+G26 | deny ws-p3 | deny ws-p3 | pass
+G27 | allow | allow | pass
+G28 | allow | allow | pass
+G29 | deny lattice-studio | deny lattice-studio | pass
+G30 | deny ws-p1 | deny ws-p1 | pass
+G01.old | allow | allow | pass
+G02.old | allow | allow | pass
+G03.old | allow | allow | pass
+G04.old | allow | allow | pass
+G05.old | allow | allow | pass
+G06.old | allow | allow | pass
+G07.old | allow | allow | pass
+G08.old | deny ws-p1 | deny ws-p1 | pass
+G09.old | allow | allow | pass
+G10.old | allow | allow | pass
+G11.old | allow | allow | pass
+G12.old | allow | allow | pass
+G13.old | allow | allow | pass
+G14.old | allow | allow | pass
+G15.old | deny cap-p6 | deny cap-p6 | pass
+G16.old | allow | allow | pass
+G17.old | allow | allow | pass
+G18.old | allow | allow | pass
+G19.old | allow | allow | pass
+G20.old | allow | allow | pass
+G21.old | allow | allow | pass
+G22.old | allow | allow | pass
+G23.old | allow | allow | pass
+G24.old | allow | allow | pass
+G25.old | allow | allow | pass
+G26.old | allow | allow | pass
+G27.old | allow | allow | pass
+G28.old | allow | allow | pass
+G29.old | allow | allow | pass
+G30.old | deny ws-p1 | deny ws-p1 | pass
+R1 | 10/10 and 10/10 | holds | pass
+C16 | median <= 1.0 s, max <= 2.0 s | median 0.0886 s, max 0.1053 s | pass
+C29 | median <= 0.5 s | median 0.0004 s | pass
+real hub (reported only): {"hub_listing": [{"name": "plumb-one", "root": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/hub/one"}, {"name": "plumb-two", "root": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/hub/two"}], "replies": [{"backend": null, "error": false, "project": "plumb-one", "rule_count": 97}, {"backend": "http", "error": false, "project": "plumb-one", "rule_count": null}, {"backend": null, "error": false, "project": "plumb-two", "rule_count": 97}, {"backend": "http", "error": false, "project": "plumb-two", "rule_count": null}], "stderr": ""}
+probes: 76/76 pass
+uv run python dogfood/multi_plumbing_probes.py --old $S/old-a4ab4a1 --scratch  113.62s user 27.87s system 81% cpu 2:53.96 total

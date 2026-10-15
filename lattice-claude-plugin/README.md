@@ -66,3 +66,7 @@ Project-side template: `lattice/studio/templates/CLAUDE.md.tmpl` (copy to the pr
 - Claude Code namespaces a plugin's MCP tools: loaded through this plugin they are named `mcp__plugin_lattice_lattice__<tool>` (verified on Claude Code 2.1.296), registered by hand with `claude mcp add lattice` they are `mcp__lattice__<tool>`. The commands' `allowed-tools` list both spellings, so they run in `-p` mode without a permission prompt either way.
 - Verified on 2.1.296: `${CLAUDE_PROJECT_DIR:-.}` in `.mcp.json` resolves to the project when `claude` is started in the project root.
 - The MCP tools exposed are model_get, rule_get, spec_ask, spec_lint, check_run, code_links, graph_get, change_propose, change_get, change_list. There is deliberately no accept/reject tool; changes are accepted in Studio.
+
+## Several projects
+
+When the session's directory is not under a `lattice.workspace.toml`, the MCP server also looks for one above the project directory and uses it if it declares that project. Set `LATTICE_WORKSPACE` to point at a manifest explicitly.

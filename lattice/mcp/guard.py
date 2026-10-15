@@ -21,6 +21,17 @@ that name no path (an interpreter one-liner, ``git reset --hard``, a bare ``git 
 checked against the explicit projects and the project owning the command's working directory.
 The deny reason names the project (its ``[project] name`` and directory).
 
+**A parent of a project.** The owner walk goes up, so ``rm -rf <dir>`` of a directory that holds
+a project nobody named would pass. For a path the shell forms below check as a directory (``rm``,
+``mv`` sources, ``git checkout|restore|clean`` paths, ``git stash`` pathspecs) the guard also
+looks DOWN: breadth first, at most :data:`WALK_DEPTH` levels and :data:`WALK_BUDGET` directory
+listings, not entering :data:`PRUNED_DIRS` nor following directory symlinks; the first project
+found (a directory holding ``spec.trace.json``) is named in the deny. A ``mv`` destination is
+not walked; when the budget is spent the command is allowed (a safety net, not a sandbox). Known
+gaps: globs (``rm -rf *``), ``find -delete``, ``xargs rm``, ``rsync --delete``, ``$(...)``,
+``git rm`` and ``git mv`` of a directory, a pathless ``git clean`` (``git clean -fdx .`` is denied
+inside a project, ``git clean -fdx`` is not).
+
 Output format (Claude Code hooks):
 
 - allow: exit 0 and print nothing (the normal permission flow continues);
@@ -134,8 +145,9 @@ class Guard:
                 pass
         return None
 
-    def holds_protected(self, resolved: str) -> str | None:
-        """The protected file a directory `resolved` holds, or None."""
+    def holds_protected(self, resolved: str, below: bool = True) -> str | None:
+        """The protected file a directory `resolved` holds, or None. `below` is read by
+        :class:`MultiGuard` only (the walk down for a project nobody named)."""
         if not os.path.isdir(resolved):
             return None
         base = self._key(resolved.rstrip(os.sep)) + os.sep
@@ -200,9 +212,17 @@ class Guard:
                 out.append((t, self._resolve(t, cwd)))
         return out
 
-    def _first_hit(self, toks: Sequence[str], cwd: str, dirs: bool = False) -> str | None:
-        for _t, r in self._paths(toks, cwd):
-            n = self.protected_name(r) or (self.holds_protected(r) if dirs else None)
+    def _first_hit(
+        self, toks: Sequence[str], cwd: str, dirs: bool = False, dest_last: bool = False
+    ) -> str | None:
+        """The first protected name `toks` touch. `dirs`: a directory also counts when it holds
+        a protected file (and, for a :class:`MultiGuard`, when a project sits below it).
+        `dest_last`: the last path of several is a destination (``mv``): moving INTO a directory
+        leaves its contents, so it gets the checks without the walk down."""
+        ps = self._paths(toks, cwd)
+        for i, (_t, r) in enumerate(ps):
+            below = not (dest_last and len(ps) > 1 and i == len(ps) - 1)
+            n = self.protected_name(r) or (self.holds_protected(r, below=below) if dirs else None)
             if n:
                 return n
         return None
@@ -239,7 +259,7 @@ class Guard:
         if cmd in ("mv", "rm", "unlink", "truncate", "ln", "install", "rsync", "shred", "chmod"):
             if cmd == "chmod":
                 return None
-            return self._first_hit(args, cwd, dirs=cmd in ("mv", "rm"))
+            return self._first_hit(args, cwd, dirs=cmd in ("mv", "rm"), dest_last=cmd == "mv")
         if cmd == "cp":
             ps = self._paths([a for a in args if not a.startswith("-")], cwd)
             if ps:
@@ -323,6 +343,15 @@ class Guard:
 
 TRACE_FILE = "spec.trace.json"
 
+# The walk down (MultiGuard.project_below): directories never entered, how deep, how many
+# directories listed before the guard gives up (and allows).
+PRUNED_DIRS = frozenset(
+    {".git", "node_modules", "__pycache__", ".venv", "venv", ".mypy_cache", ".pytest_cache",
+     ".ruff_cache", ".tox"}
+)  # fmt: skip
+WALK_DEPTH = 5
+WALK_BUDGET = 4000
+
 
 def owner_of(path: str | Path) -> Path | None:
     """The project owning `path` (already a real path): the nearest directory holding
@@ -363,11 +392,62 @@ class MultiGuard(Guard):
         own = owner_of(resolved)
         if own is None:
             return None
+        return self._guard_of(own)
+
+    def _guard_of(self, own: Path) -> Guard:
         key = str(own)
-        if key not in self._owners:
+        found = self._owners.get(key)
+        if found is None:
             same = next((g for g in self.static if g.project == own.resolve()), None)
-            self._owners[key] = same or Guard(own)
-        return self._owners[key]
+            found = self._owners[key] = same or Guard(own)
+        return found
+
+    def project_below(self, target: str) -> Path | None:
+        """The first project found BELOW `target` (a real path), or None.
+
+        Only an existing directory that is not pruned (:data:`PRUNED_DIRS`) is walked. Breadth
+        first, the entries of each level sorted by name, so the shallowest and then first-sorted
+        project is the one named. A project is a directory holding ``spec.trace.json``.
+        Directories at depth 1..:data:`WALK_DEPTH` are listed; a directory symlink inside the
+        target is not followed (``rm -rf`` removes the link, and a cycle cannot loop); a
+        directory that cannot be listed is skipped. When :data:`WALK_BUDGET` listings are spent
+        the walk stops and answers None: the guard fails open there, never crashes."""
+        try:
+            if not os.path.isdir(target) or os.path.basename(target.rstrip(os.sep)) in PRUNED_DIRS:
+                return None
+        except OSError:
+            return None
+        level = [target]
+        spent = 0
+        for depth in range(WALK_DEPTH + 1):
+            nxt: list[str] = []
+            for d in level:
+                if spent >= WALK_BUDGET:
+                    return None
+                spent += 1
+                try:
+                    with os.scandir(d) as it:
+                        entries = sorted(it, key=lambda e: e.name)
+                except OSError:
+                    continue
+                for e in entries:
+                    try:
+                        if e.name == TRACE_FILE and e.is_file():
+                            return Path(d)
+                    except OSError:
+                        continue
+                if depth == WALK_DEPTH:
+                    continue
+                for e in entries:
+                    try:
+                        if e.name not in PRUNED_DIRS and e.is_dir(follow_symlinks=False):
+                            nxt.append(e.path)
+                    except OSError:
+                        continue
+            level = nxt
+            if not level:
+                break
+        return None
 
     def _guards_for(self, resolved: str) -> list[Guard]:
         out = list(self.static)
@@ -387,12 +467,22 @@ class MultiGuard(Guard):
                 return name
         return None
 
-    def holds_protected(self, resolved: str) -> str | None:
+    def holds_protected(self, resolved: str, below: bool = True) -> str | None:
+        """The protected file the directory `resolved` holds (an explicit project, or the one
+        owning it, walking up), else, with `below`, the first one of a project found below it
+        (:meth:`project_below`: ``rm -rf`` of a parent of a project nobody named)."""
         for g in self._guards_for(resolved):
             name = g.holds_protected(resolved)
             if name:
                 self.last_project = g.project
                 return name
+        if below:
+            found = self.project_below(resolved)
+            if found is not None:
+                g = self._guard_of(found)
+                if g.names:
+                    self.last_project = g.project
+                    return g.names[0]
         return None
 
 
