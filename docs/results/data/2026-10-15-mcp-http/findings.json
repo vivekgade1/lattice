@@ -1,0 +1,244 @@
+{
+ "F1": {
+  "what": "the stub note says the stub backend runs no Claude Code session, but a chat message on the stub server runs claude_bin",
+  "GET /api/mcp (I10)": {
+   "allowed_in": {
+    "ask": 0,
+    "change": 0,
+    "explain": 0
+   },
+   "note": "The stub LLM backend (test only) runs no Claude Code session, so no connected MCP server is discovered or used.",
+   "refreshed_at": null,
+   "servers": []
+  },
+  "fake claude turn calls on the stub server": [
+   {
+    "allowed": [
+     "Read",
+     "Grep",
+     "Glob",
+     "mcp__lattice__model_get",
+     "mcp__lattice__rule_get",
+     "mcp__lattice__spec_ask",
+     "mcp__lattice__code_links",
+     "mcp__lattice__graph_get",
+     "mcp__lattice__spec_lint",
+     "mcp__lattice__project_list",
+     "mcp__lattice__workspace_impact",
+     "mcp__lattice__contract_check",
+     "mcp__lattice__contract_impact",
+     "mcp__lattice__linked_question_list"
+    ],
+    "denied": [
+     "Edit",
+     "Write",
+     "MultiEdit",
+     "NotebookEdit",
+     "Bash"
+    ],
+    "text": "G9 I10.ask"
+   },
+   {
+    "allowed": [
+     "Read",
+     "Grep",
+     "Glob",
+     "mcp__lattice__model_get",
+     "mcp__lattice__rule_get",
+     "mcp__lattice__spec_ask",
+     "mcp__lattice__code_links",
+     "mcp__lattice__graph_get",
+     "mcp__lattice__spec_lint",
+     "mcp__lattice__project_list",
+     "mcp__lattice__workspace_impact",
+     "mcp__lattice__contract_check",
+     "mcp__lattice__contract_impact",
+     "mcp__lattice__linked_question_list",
+     "mcp__lattice__change_propose",
+     "mcp__lattice__change_get",
+     "mcp__lattice__change_list"
+    ],
+    "denied": [
+     "Edit",
+     "Write",
+     "MultiEdit",
+     "NotebookEdit",
+     "Bash"
+    ],
+    "text": "G9 I10.change"
+   }
+  ],
+  "discovery calls on the stub server": 0
+ },
+ "F2": {
+  "what": "the wide credential set is not scrubbed from the environment of claude",
+  "planted_wide_names": [
+   "ANTHROPIC_CUSTOM_HEADERS",
+   "ANTHROPIC_FOUNDRY_API_KEY",
+   "AWS_BEARER_TOKEN_BEDROCK"
+  ],
+  "calls_with_all_three_present": 32,
+  "calls": 32,
+  "core_names_present_in_any_call": false
+ },
+ "F3": {
+  "what": "writes_allowed is true for a listed server that is not connected (its counts stay 0)",
+  "I3 Notion row": {
+   "allowed_in": {
+    "ask": 0,
+    "change": 0,
+    "explain": 0
+   },
+   "name": "claude.ai Notion",
+   "source": "claudeai",
+   "status": "failed",
+   "tools": {
+    "read": [
+     "mcp__claude_ai_Notion__search"
+    ],
+    "unknown": [],
+    "write": [
+     "mcp__claude_ai_Notion__create_page"
+    ]
+   },
+   "writes_allowed": true
+  },
+  "I3 change turn": {
+   "allowed": [
+    "Read",
+    "Grep",
+    "Glob",
+    "mcp__lattice__model_get",
+    "mcp__lattice__rule_get",
+    "mcp__lattice__spec_ask",
+    "mcp__lattice__code_links",
+    "mcp__lattice__graph_get",
+    "mcp__lattice__spec_lint",
+    "mcp__lattice__project_list",
+    "mcp__lattice__workspace_impact",
+    "mcp__lattice__contract_check",
+    "mcp__lattice__contract_impact",
+    "mcp__lattice__linked_question_list",
+    "mcp__lattice__change_propose",
+    "mcp__lattice__change_get",
+    "mcp__lattice__change_list",
+    "mcp__claude_ai_Gmail__get_thread",
+    "mcp__claude_ai_Gmail__search_threads",
+    "mcp__claude_ai_Linear__get_issue",
+    "mcp__claude_ai_Linear__list_issues",
+    "mcp__claude_ai_Claude_Docs__export",
+    "mcp__claude_ai_Claude_Docs__query",
+    "mcp__claude_ai_Claude_Docs__read"
+   ],
+   "denied": [
+    "Edit",
+    "Write",
+    "MultiEdit",
+    "NotebookEdit",
+    "Bash",
+    "mcp__claude_ai_Gmail__get_draft",
+    "mcp__claude_ai_Gmail__send_message",
+    "mcp__claude_ai_Gmail__mark_message_spam",
+    "mcp__claude_ai_Linear__create_comment",
+    "mcp__claude_ai_Linear__update_issue",
+    "mcp__claude_ai_Linear__triage_issue",
+    "mcp__claude_ai_Claude_Docs__create",
+    "mcp__claude_ai_Claude_Docs__batch",
+    "mcp__claude_ai_Notion__search",
+    "mcp__claude_ai_Notion__create_page"
+   ],
+   "text": "G9 I3.change"
+  }
+ },
+ "F4": {
+  "what": "write-like names classify as read (search_and_replace, get_or_insert_row, fetch_and_archive) and are allowed in every mode",
+  "I6 Edge row": {
+   "allowed_in": {
+    "ask": 4,
+    "change": 4,
+    "explain": 4
+   },
+   "name": "claude.ai Edge",
+   "source": "claudeai",
+   "status": "connected",
+   "tools": {
+    "read": [
+     "mcp__claude_ai_Edge__fetch_and_archive",
+     "mcp__claude_ai_Edge__get_or_insert_row",
+     "mcp__claude_ai_Edge__list_drafts",
+     "mcp__claude_ai_Edge__search_and_replace"
+    ],
+    "unknown": [
+     "mcp__claude_ai_Edge__notion-search",
+     "mcp__claude_ai_Edge__run_query"
+    ],
+    "write": [
+     "mcp__claude_ai_Edge__exportAndSend"
+    ]
+   },
+   "writes_allowed": false
+  },
+  "I6 ask turn": {
+   "allowed": [
+    "Read",
+    "Grep",
+    "Glob",
+    "mcp__lattice__model_get",
+    "mcp__lattice__rule_get",
+    "mcp__lattice__spec_ask",
+    "mcp__lattice__code_links",
+    "mcp__lattice__graph_get",
+    "mcp__lattice__spec_lint",
+    "mcp__lattice__project_list",
+    "mcp__lattice__workspace_impact",
+    "mcp__lattice__contract_check",
+    "mcp__lattice__contract_impact",
+    "mcp__lattice__linked_question_list",
+    "mcp__claude_ai_Edge__fetch_and_archive",
+    "mcp__claude_ai_Edge__get_or_insert_row",
+    "mcp__claude_ai_Edge__list_drafts",
+    "mcp__claude_ai_Edge__search_and_replace"
+   ],
+   "denied": [
+    "Edit",
+    "Write",
+    "MultiEdit",
+    "NotebookEdit",
+    "Bash",
+    "mcp__claude_ai_Edge__exportAndSend",
+    "mcp__claude_ai_Edge__notion-search",
+    "mcp__claude_ai_Edge__run_query"
+   ],
+   "text": "G9 I6.ask"
+  }
+ },
+ "F5": {
+  "what": "allow_writes matches case-sensitively and says nothing about a name that matches no server",
+  "I5 Linear row (allow_writes = [\"claude.ai linear\"])": {
+   "allowed_in": {
+    "ask": 2,
+    "change": 2,
+    "explain": 2
+   },
+   "name": "claude.ai Linear",
+   "source": "claudeai",
+   "status": "connected",
+   "tools": {
+    "read": [
+     "mcp__claude_ai_Linear__get_issue",
+     "mcp__claude_ai_Linear__list_issues"
+    ],
+    "unknown": [
+     "mcp__claude_ai_Linear__triage_issue"
+    ],
+    "write": [
+     "mcp__claude_ai_Linear__create_comment",
+     "mcp__claude_ai_Linear__update_issue"
+    ]
+   },
+   "writes_allowed": false
+  },
+  "server stderr mentions allow_writes or linear": false,
+  "C4 (a string, not a list) logged \"must be a list\" on stderr": true
+ }
+}

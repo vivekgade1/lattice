@@ -1,0 +1,87 @@
+{
+ "baseline_before_first_edit": {
+  "probes": {
+   "passed": 35,
+   "total": 35,
+   "failing": [],
+   "exit_and_seconds": "exit=0 t=24"
+  },
+  "impact_probes": {
+   "passed": 11,
+   "total": 12,
+   "failing": [
+    "I8"
+   ],
+   "exit_and_seconds": "exit=1 t=756"
+  },
+  "linkedq_probes": {
+   "passed": 9,
+   "total": 10,
+   "failing": [
+    "Q7"
+   ],
+   "exit_and_seconds": "exit=1 t=977"
+  },
+  "exclude_probes": {
+   "passed": 11,
+   "total": 12,
+   "failing": [
+    "X0"
+   ],
+   "exit_and_seconds": "exit=1 t=73"
+  }
+ },
+ "after": {
+  "probes": {
+   "passed": 35,
+   "total": 35,
+   "failing": [],
+   "exit_and_seconds": "exit=0 t=27"
+  },
+  "impact_probes": {
+   "passed": 12,
+   "total": 12,
+   "failing": [],
+   "exit_and_seconds": "exit=1 t=770"
+  },
+  "linkedq_probes": {
+   "passed": 9,
+   "total": 10,
+   "failing": [
+    "Q7"
+   ],
+   "exit_and_seconds": "exit=1 t=883"
+  },
+  "exclude_probes": {
+   "passed": 11,
+   "total": 12,
+   "failing": [
+    "X0"
+   ],
+   "exit_and_seconds": "exit=1 t=63"
+  }
+ },
+ "after_rerun_with_a_fresh_empty_TMPDIR": {
+  "impact_probes": {
+   "passed": 11,
+   "total": 12,
+   "failing": [
+    "I8"
+   ],
+   "exit_and_seconds": "exit=1 t=745"
+  },
+  "linkedq_probes": {
+   "passed": 10,
+   "total": 10,
+   "failing": [],
+   "exit_and_seconds": "exit=0 t=861"
+  },
+  "exclude_probes": {
+   "passed": 12,
+   "total": 12,
+   "failing": [],
+   "exit_and_seconds": "exit=0"
+  }
+ },
+ "note": "the baseline and the after runs shared one TMPDIR with pytest runs, which leave lattice-cli-cwd-* directories: the runners' tmp-left guard (and the nested exclude_probes/streak_probes of impact I8 and linkedq Q7) then fail with no code difference. With an empty TMPDIR exclude_probes is 12/12 and linkedq_probes 10/10 (after state); impact_probes I8 still reports its nested exclude/streak probes failing, as in the baseline."
+}

@@ -205,6 +205,27 @@ MCP_STUB = {"servers": [], "refreshed_at": None,
 SOURCE = {"server": "claude.ai Linear", "item": "PROJ-7", "url": "https://tracker.example.com/PROJ-7",
           "title": "Notes can be starred"}  # fmt: skip
 
+# ---- chat sessions (POST /api/session and the routes under it) -------------------------------
+# a session starts idle and nothing runs until a message; no message is ever sent here
+NO_SESSION = "s0000000000"
+
+
+def idle_session(mode):
+    return {
+        "mode": mode,
+        "change": None,
+        "state": "idle",
+        "turns": 0,
+        "claude_session_id": None,
+        "resume_command": None,
+    }
+
+
+def new_session(mode):
+    return Step("POST", "/api/session", json={"mode": mode}, expect_status=201,
+                expect_body=idle_session(mode))  # fmt: skip
+
+
 # ---- improvement proposals (API.md v1.15, spike 3) ---------------------------------------------
 # the method and blind spots are lattice.improve's own text; the seed's log starts empty
 IMPROVE_EMPTY = {"proposals": [], "events": 0, "method": METHOD, "blind_spots": BLIND_SPOTS}
@@ -321,13 +342,15 @@ SYNC_FILES = ["REQUIREMENTS.md", "spec.trace.json"]
 SYNC_DRIFT = {"head": STARRED_COMMIT, "files": SYNC_FILES}
 BEHIND = {"in_sync": False, "files": SYNC_FILES, "head": STARRED_COMMIT}
 IN_SYNC = {"in_sync": True, "files": [], "head": STARRED_COMMIT}
-NOTHING_TO_SYNC = ("the spec on {} is the same as on main at " + STARRED_COMMIT[:7]
-                   + ": nothing to sync")
+NOTHING_TO_SYNC = (
+    "the spec on {} is the same as on main at " + STARRED_COMMIT[:7] + ": nothing to sync"
+)
 
 
 def drift_warning(target):
-    return (f"The spec on main differs from {target} in REQUIREMENTS.md, spec.trace.json: "
-            "sync it first")
+    return (
+        f"The spec on main differs from {target} in REQUIREMENTS.md, spec.trace.json: sync it first"
+    )
 
 
 def sync(name, status=200, **body):
@@ -1326,6 +1349,30 @@ SCENARIOS = (
         Step("GET", "/p/notes/api/linked-notifications", expect_body={"notifications": []}),
         UNCHANGED,
     )),
+    Scenario("chat_sessions_start_idle_and_refuse_bad_requests", steps=(
+        new_session("ask"),
+        new_session("explain"),
+        new_session("change"),
+        refused("POST", "/api/session", 501, "mode rebuild is not enabled yet",
+                json={"mode": "rebuild"}),
+        refused("POST", "/api/session", 422, "mode must be one of ask, explain, change, rebuild",
+                json={"mode": "admin"}),
+        refused("POST", "/api/session", 422, "change must be a change id",
+                json={"mode": "ask", "change": ""}),
+        Step("GET", "/api/session", expect_body=[idle_session("ask"), idle_session("explain"),
+                                                  idle_session("change")]),
+        Step("GET", "/api/mcp", expect_body=MCP_STUB),
+        # parsed before the lookup: an empty text is 422 even for a session that does not exist
+        refused("POST", f"/api/session/{NO_SESSION}/message", 422, "text is empty",
+                json={"text": ""}),
+        refused("POST", f"/api/session/{NO_SESSION}/message", 404, f"no session {NO_SESSION}",
+                json={"text": "hi"}),
+        refused("GET", f"/api/session/{NO_SESSION}/events", 404, f"no session {NO_SESSION}"),
+        refused("GET", f"/api/session/{NO_SESSION}/events", 422, "after must be an integer >= 0",
+                params={"after": "-1"}),
+        refused("DELETE", f"/api/session/{NO_SESSION}", 404, f"no session {NO_SESSION}"),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1458,15 +1505,21 @@ UNCHECKED = (
               "The discovery from a real init record, the cache, `refresh`, the per-server counts "
               "and `[mcp] allow_writes` are in tests/studio/test_mcp_intake.py against a fake "
               "claude."),
-    Unchecked("R80 (what a chat session sees and may run) needs the claude binary and the owner's "
-              "account: tests/studio/test_mcp_intake.py checks the chat argv per mode (no "
-              "--strict-mcp-config, --setting-sources \"\"), the allowlist (read tools of "
-              "connected servers only, unknown treated as write), allow_writes, and the hermetic "
-              "rebuild and planner argv; the real-session probes (prompt injection K-3, end to "
-              "end K-4) are in docs/results/2026-10-12-spike4-results.md."),
-    Unchecked("R81 (the Connected tools list and the source on a change card) is web UI, not "
-              "observable over HTTP; tests/studio/test_mcp_intake.py checks its code and the "
-              "mock's fields, and the browser check is in "
+    Unchecked("R80 (what a chat session sees and may run) is not observable here: the seed runs "
+              "the stub LLM, whose server has no intake, a scenario has no conditional poll for "
+              "the end of a turn and session ids are random. It is checked over HTTP, against a "
+              "real `python -m lattice.studio` with a fake claude, by "
+              "tests/studio/test_mcp_intake_http.py (the GET /api/mcp bodies and discovery "
+              "counts, the exact --allowedTools and --disallowedTools of 17 chat turns, no "
+              "credential in the environment of any call), and by tests/studio/test_mcp_intake.py "
+              "(the argv per mode, the allowlist, allow_writes, the hermetic rebuild and planner "
+              "argv); the fake does not enforce the lists, so the real-session probes (prompt "
+              "injection K-3, end to end K-4) are in docs/results/2026-10-12-spike4-results.md."),
+    Unchecked("R81 (the Connected tools list and the source on a change card): the panel's data "
+              "(each server's state, `allowed_in` per mode, `writes_allowed`, Refresh) is checked "
+              "over HTTP by tests/studio/test_mcp_intake_http.py and its code and the mock's "
+              "fields by tests/studio/test_mcp_intake.py; only the rendering is web UI, not "
+              "observable over HTTP, and the browser check is in "
               "docs/results/2026-10-12-spike4-results.md."),
     Unchecked("R84 (engines and modules registered, re-hashed on every read, a changed module "
               "refused) needs a project with its own [engines] paths and installed modules; the "
@@ -1511,6 +1564,11 @@ UNCHECKED = (
               "warning) needs a provider with a git history, a consumer with a pin and an opted-in "
               "link, and the harness's manifest has no `contract` key; "
               "tests/studio/test_linked_api.py checks them on the real server."),
+    Unchecked("R98 (chat sessions): no message is ever sent here, because on the stub server it "
+              "would run the host's `claude` (a turn runs `claude_bin` with only the mode's own "
+              "tool lists); a session's turns, events, interrupt and the allowlist are in "
+              "tests/studio/test_session.py and tests/studio/test_mcp_intake_http.py, and the "
+              "state of a running session cannot be polled to its end in a scenario."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

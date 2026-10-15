@@ -1,0 +1,118 @@
+{
+ "control": {
+  "exit": 0,
+  "summary": "113 passed in 11.23s",
+  "failed_first6": []
+ },
+ "MH-1": {
+  "exit": 1,
+  "summary": "1 failed, 112 passed in 11.28s",
+  "failed_first6": [
+   "tests/studio/test_mcp_intake.py::test_allow_writes_opens_one_server_in_change_mode_only"
+  ]
+ },
+ "MH-2": {
+  "exit": 1,
+  "summary": "12 failed, 101 passed in 11.23s",
+  "failed_first6": [
+   "tests/studio/test_mcp_intake.py::test_allow_writes_opens_one_server_in_change_mode_only",
+   "tests/studio/test_mcp_intake.py::test_allowlist_holds_read_tools_of_connected_servers_only",
+   "tests/studio/test_mcp_intake.py::test_api_shape_refresh_and_no_write_route",
+   "tests/studio/test_mcp_intake.py::test_chat_argv_per_mode_drops_strict_and_keeps_isolation",
+   "tests/studio/test_mcp_intake.py::test_classify_table[mcp__claude_ai_Claude_Docs__batch-unknown]",
+   "tests/studio/test_mcp_intake.py::test_classify_table[mcp__claude_ai_Claude_Docs__guide-unknown]"
+  ]
+ },
+ "MH-3": {
+  "exit": 1,
+  "summary": "3 failed, 110 passed in 10.29s",
+  "failed_first6": [
+   "tests/studio/test_mcp_intake.py::test_api_shape_refresh_and_no_write_route",
+   "tests/studio/test_mcp_intake.py::test_discover_cache_and_refresh",
+   "tests/studio/test_mcp_intake.py::test_discovery_retries_while_connectors_are_pending"
+  ]
+ },
+ "MH-4": {
+  "exit": 1,
+  "summary": "2 failed, 111 passed in 11.32s",
+  "failed_first6": [
+   "tests/studio/test_mcp_intake.py::test_api_shape_refresh_and_no_write_route",
+   "tests/studio/test_mcp_intake.py::test_discover_cache_and_refresh"
+  ]
+ },
+ "MH-5": {
+  "exit": 1,
+  "summary": "1 failed, 112 passed in 11.21s",
+  "failed_first6": [
+   "tests/studio/test_mcp_intake.py::test_api_shape_refresh_and_no_write_route"
+  ]
+ },
+ "MH-6": {
+  "exit": 1,
+  "summary": "1 failed, 112 passed in 11.45s",
+  "failed_first6": [
+   "tests/studio/test_mcp_intake.py::test_allow_writes_opens_one_server_in_change_mode_only"
+  ]
+ },
+ "MH-7": {
+  "exit": 1,
+  "summary": "1 failed, 112 passed in 11.38s",
+  "failed_first6": [
+   "tests/studio/test_mcp_intake.py::test_allowlist_holds_read_tools_of_connected_servers_only"
+  ]
+ },
+ "MH-8": {
+  "exit": 1,
+  "summary": "2 failed, 111 passed in 11.27s",
+  "failed_first6": [
+   "tests/studio/test_mcp_intake.py::test_chat_argv_per_mode_drops_strict_and_keeps_isolation",
+   "tests/studio/test_mcp_intake.py::test_session_turn_gets_the_read_tools_and_the_data_rule"
+  ]
+ },
+ "MH-9": {
+  "exit": 0,
+  "summary": "113 passed in 11.19s",
+  "failed_first6": []
+ },
+ "MH-10": {
+  "exit": 1,
+  "summary": "1 failed, 112 passed in 11.36s",
+  "failed_first6": [
+   "tests/studio/test_session.py::test_child_env_has_no_api_credentials"
+  ]
+ },
+ "MH-11": {
+  "exit": 1,
+  "summary": "2 failed, 111 passed in 10.81s",
+  "failed_first6": [
+   "tests/studio/test_mcp_intake.py::test_discover_reads_the_init_record_and_stops_early",
+   "tests/studio/test_mcp_intake.py::test_discovery_and_sessions_wait_for_connectors"
+  ]
+ },
+ "MH-12": {
+  "exit": 1,
+  "summary": "3 failed, 110 passed in 11.12s",
+  "failed_first6": [
+   "tests/studio/test_mcp_intake.py::test_chat_argv_per_mode_drops_strict_and_keeps_isolation",
+   "tests/studio/test_mcp_intake.py::test_session_turn_gets_the_read_tools_and_the_data_rule",
+   "tests/studio/test_session.py::test_argv_per_mode"
+  ]
+ },
+ "MH-13": {
+  "exit": 1,
+  "summary": "1 failed, 112 passed in 11.22s",
+  "failed_first6": [
+   "tests/studio/test_session_multi_tools.py::test_the_five_multi_project_tools_are_allowed[change]"
+  ]
+ },
+ "MH-14": {
+  "exit": 1,
+  "summary": "4 failed, 109 passed in 11.27s",
+  "failed_first6": [
+   "tests/studio/test_session.py::test_mock_error_interrupt_and_rejections",
+   "tests/studio/test_session.py::test_server_routes",
+   "tests/studio/test_session.py::test_validation_and_missing_binary",
+   "tests/studio/test_session_multi_tools.py::test_rebuild_is_disabled_and_its_agent_list_is_unchanged"
+  ]
+ }
+}
