@@ -1,6 +1,8 @@
 """The mutation run of spike 3 (``lattice.improve`` and Studio's improvement signals),
 pre-registered with ``docs/results/2026-10-12-spike3-prereg.md``; IM7-IM21 are the second
-half's (``lattice improve verify`` and ``draft``, ``docs/results/2026-10-13-improve2-prereg.md``).
+half's (``lattice improve verify`` and ``draft``, ``docs/results/2026-10-13-improve2-prereg.md``);
+IA1-IA16 are the apply step's (``lattice improve apply``,
+``docs/results/2026-10-15-improve-apply-prereg.md``, tests/improve/test_apply.py).
 
 Modelled on ``dogfood/security_mutants.py``: for each mutant, ``lattice/``, ``tests/``,
 ``dogfood/`` and ``docs/results/data/streak-plans-2026-10-11`` are copied to a scratch
@@ -43,6 +45,24 @@ The mutants and the tests predicted to catch each:
 * IM20 wall-clock time in the draft header                       -> D4 (1.1 s gap)
 * IM21 --at ignored (the ledger ts used)                         -> V1g
   (tests/improve/test_verify.py and test_draft.py: one test per probe row)
+* IA1 the base branch fast-forwarded to the apply commit       -> A3 (base ref), A5d
+* IA2 the edit written to the owner's studio.toml              -> A3 hashes, A1 diff
+* IA3 apply appends a closed line to the ledger                -> A3 (improvements.jsonl), A7
+* IA4 gate runs logged as gate_run events                      -> A3 (events.jsonl), A2b
+* IA5 not_config dropped (a module draft applied)              -> A0d, A0e
+* IA6 a failed gate still exits 0                              -> A2b, A2c
+* IA7 the line re-derived with compact json.dumps              -> A1 (diff, blob), A6c
+* IA8 a replaced line loses its trailing comment               -> A4a, A4f
+* IA9 --discard without branch_moved                           -> A5c
+* IA10 --discard without merged                                -> A5d, A7d
+* IA11 a model call (the claude binary) writes the message     -> A3 static (never executed:
+       the call sits behind an environment variable no test sets)
+* IA12 already_set dropped                                     -> A4h
+* IA13 already_applied dropped (a second branch)               -> A0f, A6a
+* IA14 the inserted line always ends \n                        -> A4i
+* IA15 the worktree under <repo>/.lattice/rebuilds/            -> A3 (working tree, exclude)
+* IA16 dirty_checkout dropped                                  -> A0i
+  (tests/improve/test_apply.py: one test per probe row)
 
 Usage: ``uv run python dogfood/improve_mutants.py [--out FILE] [--jobs N] [ID ...]``.
 Exit 0 when the control passes and every mutant is caught; the last line is
@@ -68,7 +88,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SUITE = ["tests/improve", "tests/studio/test_events.py"]
 AN, EV, RB = "lattice/improve/analyze.py", "lattice/improve/events.py", "lattice/studio/rebuild.py"
 VF, DR, MN = "lattice/improve/verify.py", "lattice/improve/draft.py", "lattice/improve/__main__.py"
-FILES = [AN, EV, RB, VF, DR, MN, "lattice/improve/signals.py", "lattice/studio/plan.py",
+AP = "lattice/improve/apply.py"
+FILES = [AN, EV, RB, VF, DR, MN, AP, "lattice/improve/signals.py", "lattice/studio/plan.py",
          "dogfood/improve_mutants.py"]  # fmt: skip
 
 # id -> (behaviour, file, old text, new text)
@@ -251,6 +272,118 @@ MUTANTS: dict[str, tuple[str, str, str, str]] = {
         VF,
         '    if at is not None:\n        close, source = at, "--at"\n',
         '    if False:  # MUTANT IM21: --at ignored\n        close, source = at, "--at"\n',
+    ),
+    "IA1": (
+        "the base branch is fast-forwarded to the apply commit",
+        AP,
+        '        sha = _git_ok(worktree, "rev-parse", "HEAD").strip()\n',
+        '        sha = _git_ok(worktree, "rev-parse", "HEAD").strip()\n'
+        '        _git_ok(top, "update-ref", f"refs/heads/{base_branch}", sha)  # MUTANT IA1\n',
+    ),
+    "IA2": (
+        "the edit is also written to the owner's studio.toml",
+        AP,
+        "        target.write_bytes(new_bytes)\n",
+        "        target.write_bytes(new_bytes)\n"
+        "        toml_path.write_bytes(new_bytes)  # MUTANT IA2: the owner's file\n",
+    ),
+    "IA3": (
+        "apply appends a closed line to the ledger",
+        AP,
+        '        record_path = applies / f"{ident}.json"\n',
+        '        record_path = applies / f"{ident}.json"\n'
+        '        with (state / IMPROVEMENTS_FILE).open("a", encoding="utf-8") as _f:'
+        "  # MUTANT IA3\n"
+        '            _f.write(json.dumps({"id": ident, "signal": key, "status": "closed",\n'
+        '                                 "commit": sha, "ts": applied_at}) + "\\n")\n',
+    ),
+    "IA4": (
+        "gate runs are logged as gate_run events (as the rebuild loop's gate_round does)",
+        AP,
+        '    rec["gates"] = {\n',
+        '    with (state / EVENTS_FILE).open("a", encoding="utf-8") as _f:  # MUTANT IA4\n'
+        "        for _r in results:\n"
+        '            _f.write(json.dumps({"v": 1, "ts": applied_at, "kind": "gate_run",\n'
+        '                                 "gate": "level", "seconds": _r["seconds"]}) + "\\n")\n'
+        '    rec["gates"] = {\n',
+    ),
+    "IA5": (
+        "not_config dropped (a module draft is applied)",
+        AP,
+        '    if doc["template"] != "config":\n',
+        "    if False:  # MUTANT IA5: not_config dropped\n",
+    ),
+    "IA6": (
+        "a failed gate still exits 0",
+        AP,
+        '    code = {"failed": 1, "interrupted": 2}.get(status_, 0)\n',
+        '    code = {"interrupted": 2}.get(status_, 0)  # MUTANT IA6\n',
+    ),
+    "IA7": (
+        "the line is re-derived with a compact json.dumps instead of the draft's own",
+        AP,
+        "    line = tl[1]\n",
+        "    line = f\"{name} = {json.dumps(want, separators=(',', ':'))}\"  # MUTANT IA7\n",
+    ),
+    "IA8": (
+        "a replaced line loses its trailing comment",
+        AP,
+        "            m.group(1) + line + value[len(value.rstrip()) :] + comment"
+        " + _ending(lines[k])\n",
+        "            m.group(1) + line + value[len(value.rstrip()) :] + _ending(lines[k])"
+        "  # MUTANT IA8\n",
+    ),
+    "IA9": (
+        "--discard without the branch_moved refusal",
+        AP,
+        "    if tip.returncode != 0 or tip.stdout.strip() != commit:\n",
+        "    if False:  # MUTANT IA9\n",
+    ),
+    "IA10": (
+        "--discard without the merged refusal",
+        AP,
+        "    if others:\n",
+        "    if False:  # MUTANT IA10\n",
+    ),
+    "IA11": (
+        "a model call writes the commit message (the call is behind an environment variable "
+        "no test sets: the mutation run never executes it)",
+        AP,
+        '    message = _message(ident, p, doc["as_of"], line, current, expected)\n',
+        '    message = _message(ident, p, doc["as_of"], line, current, expected)\n'
+        '    if os.environ.get("LATTICE_MUTANT_IA11"):  # MUTANT IA11: never set\n'
+        '        message = subprocess.run(["claude", "-p", message], capture_output=True,\n'
+        "                                 text=True).stdout\n",
+    ),
+    "IA12": (
+        "already_set dropped",
+        AP,
+        '    if key in rb and (cur == literal if op == "=" else _holds_run(cur, literal)):\n',
+        "    if False:  # MUTANT IA12\n",
+    ),
+    "IA13": (
+        "already_applied dropped (a second branch is made)",
+        AP,
+        '    if (state / APPLIES_DIR / f"{ident}.json").exists():\n',
+        "    if False:  # MUTANT IA13\n",
+    ),
+    "IA14": (
+        "the inserted line always ends in a bare newline",
+        AP,
+        "        new_lines.insert(h + 1, line + head_end)\n",
+        '        new_lines.insert(h + 1, line + "\\n")  # MUTANT IA14\n',
+    ),
+    "IA15": (
+        "the worktree under <repo>/.lattice/rebuilds/",
+        AP,
+        '    worktree = top.parent / f"{top.name}.improve" / ident\n',
+        '    worktree = top / ".lattice" / "rebuilds" / ident  # MUTANT IA15\n',
+    ),
+    "IA16": (
+        "dirty_checkout dropped",
+        AP,
+        "    if status.strip():\n",
+        "    if False:  # MUTANT IA16\n",
     ),
 }
 

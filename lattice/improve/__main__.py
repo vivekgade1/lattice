@@ -8,6 +8,8 @@ that close the loop: whether a closed improvement worked, and a draft of an open
                                 [--signal KEY --status open|closed [--id ID] [--commit SHA]]
     lattice improve verify      ID [--at TS] [--project DIR] [--state DIR] [--json]
     lattice improve draft       ID [--out FILE] [--project DIR] [--state DIR] [--json]
+    lattice improve apply       ID [--branch NAME] [--no-gates] [--project DIR] [--state DIR]
+                                [--json] | --discard ID [--project DIR] [--state DIR] [--json]
 
 The log is ``<state dir>/events.jsonl`` (Studio's state directory of the project: ``[state]
 dir`` of its ``studio.toml``, else ``<repo root>/.lattice/state/<project>/``); the ledger is
@@ -20,6 +22,11 @@ is never created. ``verify`` exits 0 when the verdict is ``improved``, 1 for any
 3 when refused. ``draft`` exits 0 when a draft was produced, 3 when refused (a closed proposal,
 one that needs the owner, an unknown id, ``--out`` inside the project). Its one write is
 ``--out``; nothing is applied.
+
+``apply`` puts one literal ``[rebuild]`` draft into a branch and a sibling worktree of its own
+(``<repo>.improve/<id>``), commits it there, runs the gates there and writes a record under
+``<state dir>/applies/``; it never merges, pushes or closes the ledger (``lattice.improve.apply``).
+Exit 0 applied or discarded, 1 a gate failed, 2 could not run, 3 refused.
 """
 
 from __future__ import annotations
@@ -79,6 +86,21 @@ def _parser() -> argparse.ArgumentParser:
         metavar="FILE",
         help="write the draft (markdown) to FILE instead of stdout; refused inside the project "
         "or the state directory",
+    )
+    a = sub.add_parser(
+        "apply",
+        help="apply a config draft to a branch of its own (not merged); --discard drops it",
+        description="Apply one open config proposal (a literal [rebuild] setting) as a commit "
+        "on a new branch in a sibling worktree, run the gates there and record it. Nothing is "
+        "merged. Exit 0: applied (or discarded); 1: a gate failed; 2: cannot run; 3: refused.",
+    )
+    a.add_argument(
+        "id", nargs="?", help="a proposal id (imp-xxxxxxxx) from `lattice improve report`"
+    )
+    a.add_argument("--discard", metavar="ID", help="remove ID's worktree, branch and record")
+    a.add_argument("--branch", metavar="NAME", help="the branch (default: improve/<id>)")
+    a.add_argument(
+        "--no-gates", action="store_true", help="skip the gates (they are a smoke check)"
     )
     for s in sub.choices.values():
         s.add_argument("--project", default=".", help="the project directory (default: cwd)")
@@ -200,6 +222,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     if args.command in ("verify", "draft"):
         return _close_the_loop(args, project)
+    if args.command == "apply":
+        from lattice.improve.apply import run as run_apply
+
+        return run_apply(
+            project,
+            state_dir(project, args.state),
+            lambda: state_dir(project, args.state, create=True),
+            ident=args.id,
+            discard_id=args.discard,
+            branch=args.branch,
+            no_gates=args.no_gates,
+            as_json=args.json,
+            state_flag=str(Path(args.state).resolve()) if args.state else None,
+        )
     if args.command == "import-plan":
         try:
             rec = json.loads(Path(args.record).read_text(encoding="utf-8"))

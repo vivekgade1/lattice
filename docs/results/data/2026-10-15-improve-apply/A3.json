@@ -1,0 +1,46 @@
+{
+ "id": "A3",
+ "predicted": "0 changed hashes, 0 unexpected paths or argv; static: stdlib + lattice.improve imports, no claude/anthropic/lattice.llm, no I-3 literals; A3b: only info/exclude",
+ "observed": "0 problem(s); rows ['A0j', 'A1a', 'A1b', 'A2b', 'A3b', 'A5a']",
+ "pass": true,
+ "problems": [],
+ "raw": {
+  "A1a": {
+   "rc": 0,
+   "changed": [],
+   "unexpected_paths": [],
+   "forbidden": [],
+   "git_calls": 18
+  },
+  "A1b": {
+   "rc": 0,
+   "changed": [],
+   "unexpected_paths": [],
+   "forbidden": [],
+   "git_calls": 18
+  },
+  "A2b": {
+   "rc": 1,
+   "changed": [],
+   "unexpected_paths": [],
+   "forbidden": [],
+   "git_calls": 18
+  },
+  "A0j": {
+   "rc": 0,
+   "changed": [],
+   "unexpected_paths": [],
+   "forbidden": [],
+   "git_calls": 18
+  },
+  "A5a": {
+   "apply_rc": 0,
+   "discard_rc": 0,
+   "changed": []
+  },
+  "A3b": [
+   "info/exclude"
+  ]
+ },
+ "seconds": 58.5
+}

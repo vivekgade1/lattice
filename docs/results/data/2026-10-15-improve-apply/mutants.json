@@ -1,0 +1,586 @@
+{
+ "hashes": {
+  "lattice/improve/analyze.py": "fef7473447985799",
+  "lattice/improve/events.py": "8d06ce8104647ac2",
+  "lattice/studio/rebuild.py": "ab4dd7b3124bfd6d",
+  "lattice/improve/verify.py": "eb576da2b02d23b2",
+  "lattice/improve/draft.py": "9a518ad2f336fab7",
+  "lattice/improve/__main__.py": "f4422fa4244628bb",
+  "lattice/improve/apply.py": "450a45829fab5f10",
+  "lattice/improve/signals.py": "4b3ec0139f0a0f0e",
+  "lattice/studio/plan.py": "ef6520932f25fe0b",
+  "dogfood/improve_mutants.py": "abf3348bf9d6e7aa"
+ },
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "190 passed in 63.83s (0:01:03)",
+    "seconds": 64.0,
+    "tail": "........................................................................ [ 37%]\n........................................................................ [ 75%]\n..............................................                           [100%]\n190 passed in 63.83s (0:01:03)\n"
+   },
+   "verdict": "PASS (control)"
+  },
+  "IM1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_analyze.py::test_at_most_n_proposals_with_evidence",
+     "tests/improve/test_analyze.py::test_closed_items_are_left_out_and_recurrence_is_counted",
+     "tests/improve/test_analyze.py::test_layer_x_at_level_gates_names_the_config_change_and_its_expected_saving",
+     "tests/improve/test_analyze.py::test_seconds_are_never_converted_to_dollars",
+     "tests/improve/test_analyze.py::test_the_i_r_arithmetic_and_class_order"
+    ],
+    "summary": "5 failed, 185 passed in 67.13s (0:01:07)",
+    "seconds": 67.4,
+    "tail": "sion:X'\nE         \nE         - gate:level_regression:X\nE         + change:rejected)\n\ntests/improve/test_analyze.py:145: AssertionError\n____________________ test_at_most_n_proposals_with_evidence ____________________\n\n    def test_at_most_n_proposals_with_evidence() -> None:\n        rep = analyze(hand_set(), top=2)\n        assert len(rep[\"proposals\"]) == 2\n        p = rep[\"proposals\"][1]\n>       assert p[\"evidence\"] == [\n            \"e-2026-10-01T00:00:00Z\",\n            \"e-2026-10-01T00:01:00Z\",\n            \"e-2026-10-01T00:02:00Z\",\n        ]\nE       AssertionError: assert ['e-2026-10-01T03:30:00Z'] == ['e-2026-10-0...01T00:02:00Z']\nE         \nE         At index 0 diff: 'e-2026-10-01T03:30:00Z' != 'e-2026-10-01T00:00:00Z'\nE         Right contains 2 more items, first extra item: 'e-2026-10-01T00:01:00Z'\nE         Use -v to get more diff\n\ntests/improve/test_analyze.py:171: AssertionError\n_ test_layer_x_at_level_gates_names_the_config_change_and_its_expected_saving __\n\n    def test_layer_x_at_level_gates_names_the_config_change_and_its_expected_saving() -> None:\n        p = analyze(hand_set(), top=2)[\"proposals\"][1]\n>       assert p[\"signal_key\"] == \"gate:level_regression:X\" and p[\"kind\"] == \"change_set\"\nE       AssertionError: assert ('cause:token_budget' == 'gate:level_regression:X'\nE         \nE         - gate:level_regression:X\nE         + cause:token_budget)\n\ntests/improve/test_analyze.py:197: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_analyze.py::test_the_i_r_arithmetic_and_class_order\nFAILED tests/improve/test_analyze.py::test_seconds_are_never_converted_to_dollars\nFAILED tests/improve/test_analyze.py::test_closed_items_are_left_out_and_recurrence_is_counted\nFAILED tests/improve/test_analyze.py::test_at_most_n_proposals_with_evidence\nFAILED tests/improve/test_analyze.py::test_layer_x_at_level_gates_names_the_config_change_and_its_expected_saving\n5 failed, 185 passed in 67.13s (0:01:07)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_analyze.py::test_i4_a_checker_proposal_needs_the_owner",
+     "tests/improve/test_apply.py::test_a0c_needs_owner",
+     "tests/improve/test_cli.py::test_i4_refusal_in_the_cli[i4_checker-needs_owner]",
+     "tests/improve/test_draft.py::test_d2_the_checker_is_never_drafted",
+     "tests/improve/test_draft.py::test_d2_the_spec_language_is_never_drafted",
+     "tests/improve/test_draft.py::test_d5_report_text_equals_the_committed_reports",
+     "tests/studio/test_events.py::test_the_mock_serves_the_same_shape"
+    ],
+    "summary": "7 failed, 183 passed in 67.71s (0:01:07)",
+    "seconds": 68.0,
+    "tail": "tus open\nE              why: no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically\nE              evidence: e-e8d9c91c15964512, e-327c71cd641f49a0, e-f6061c7895644d98\nE           ...\nE         \nE         ...Full output truncated (14 lines hidden), use '-vv' to show\n\ntests/improve/test_draft.py:357: AssertionError\n_____________________ test_the_mock_serves_the_same_shape ______________________\n\n    def test_the_mock_serves_the_same_shape() -> None:\n        srv = make_mock(0)\n        base = serve(srv)\n        try:\n            status, out = request(\"GET\", base + \"/api/improve\")\n            assert status == 200 and set(out) == {\"proposals\", \"events\", \"method\", \"blind_spots\"}\n            top = out[\"proposals\"][0]\n            assert top[\"signal_key\"] == \"gate:level_regression:X\" and top[\"kind\"] == \"change_set\"\n            assert top[\"expected\"][\"saving_s_per_gate\"] == 72.0\n>           assert any(p[\"status\"] == \"needs_owner\" for p in out[\"proposals\"])\nE           assert False\nE            +  where False = any(<generator object test_the_mock_serves_the_same_shape.<locals>.<genexpr> at 0x10884f510>)\n\ntests/studio/test_events.py:341: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_analyze.py::test_i4_a_checker_proposal_needs_the_owner\nFAILED tests/improve/test_apply.py::test_a0c_needs_owner - AssertionError: as...\nFAILED tests/improve/test_cli.py::test_i4_refusal_in_the_cli[i4_checker-needs_owner]\nFAILED tests/improve/test_draft.py::test_d2_the_checker_is_never_drafted - as...\nFAILED tests/improve/test_draft.py::test_d2_the_spec_language_is_never_drafted\nFAILED tests/improve/test_draft.py::test_d5_report_text_equals_the_committed_reports\nFAILED tests/studio/test_events.py::test_the_mock_serves_the_same_shape - ass...\n7 failed, 183 passed in 67.71s (0:01:07)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_analyze.py::test_closed_items_are_left_out_and_recurrence_is_counted",
+     "tests/improve/test_cli.py::test_ledger_closes_an_item",
+     "tests/improve/test_draft.py::test_d5_report_text_equals_the_committed_reports",
+     "tests/improve/test_import.py::test_the_i_r_replay",
+     "tests/studio/test_events.py::test_the_mock_serves_the_same_shape"
+    ],
+    "summary": "5 failed, 185 passed in 67.71s (0:01:07)",
+    "seconds": 68.0,
+    "tail": "e\"]) for p in rep[\"proposals\"]]\n>       assert got == [\n            (\"cause:stopped_by_owner\", 1, 2709.23),\n            (\"gate:baseline_rerun:total\", 2, 842.35),\n            (\"gate:level_regression:total\", 5, 716.34),\n            (\"cause:other\", 2, 634.0),\n            (\"gate:baseline:total\", 2, 296.8),\n        ]\nE       AssertionError: assert [('cause:stop...r', 2, 634.0)] == [('cause:stop...l', 2, 296.8)]\nE         \nE         At index 1 diff: ('gate:level_full:total', 2, 846.34) != ('gate:baseline_rerun:total', 2, 842.35)\nE         Use -v to get more diff\n\ntests/improve/test_import.py:111: AssertionError\n_____________________ test_the_mock_serves_the_same_shape ______________________\n\n    def test_the_mock_serves_the_same_shape() -> None:\n        srv = make_mock(0)\n        base = serve(srv)\n        try:\n            status, out = request(\"GET\", base + \"/api/improve\")\n            assert status == 200 and set(out) == {\"proposals\", \"events\", \"method\", \"blind_spots\"}\n            top = out[\"proposals\"][0]\n            assert top[\"signal_key\"] == \"gate:level_regression:X\" and top[\"kind\"] == \"change_set\"\n            assert top[\"expected\"][\"saving_s_per_gate\"] == 72.0\n>           assert any(p[\"status\"] == \"needs_owner\" for p in out[\"proposals\"])\nE           assert False\nE            +  where False = any(<generator object test_the_mock_serves_the_same_shape.<locals>.<genexpr> at 0x10a76bb90>)\n\ntests/studio/test_events.py:341: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_analyze.py::test_closed_items_are_left_out_and_recurrence_is_counted\nFAILED tests/improve/test_cli.py::test_ledger_closes_an_item - AssertionError...\nFAILED tests/improve/test_draft.py::test_d5_report_text_equals_the_committed_reports\nFAILED tests/improve/test_import.py::test_the_i_r_replay - AssertionError: as...\nFAILED tests/studio/test_events.py::test_the_mock_serves_the_same_shape - ass...\n5 failed, 185 passed in 67.71s (0:01:07)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_a_torn_last_line_is_skipped_with_a_warning",
+     "tests/improve/test_events.py::test_bad_middle_lines_unknown_fields_and_kinds_are_tolerated"
+    ],
+    "summary": "2 failed, 188 passed in 66.82s (0:01:06)",
+    "seconds": 67.1,
+    "tail": "       res = read_events(p)\n              ^^^^^^^^^^^^^^\n\ntests/improve/test_events.py:55: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-imp-mutant-IM4-7j237_i2/lattice/improve/events.py:208: in read_events\n    ev = json.loads(raw.decode(\"utf-8\"))  # MUTANT IM4: no tolerance\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py:346: in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py:345: in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <json.decoder.JSONDecoder object at 0x10180a510>, s = 'not json at all'\nidx = 0\n\n    def raw_decode(self, s, idx=0):\n        \"\"\"Decode a JSON document from ``s`` (a ``str`` beginning with\n        a JSON document) and return a 2-tuple of the Python\n        representation and the index in ``s`` where the document ended.\n    \n        This can be used to decode a JSON document from a string that may\n        have extraneous data at the end.\n    \n        \"\"\"\n        try:\n            obj, end = self.scan_once(s, idx)\n        except StopIteration as err:\n>           raise JSONDecodeError(\"Expecting value\", s, err.value) from None\nE           json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py:363: JSONDecodeError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_a_torn_last_line_is_skipped_with_a_warning\nFAILED tests/improve/test_events.py::test_bad_middle_lines_unknown_fields_and_kinds_are_tolerated\n2 failed, 188 passed in 66.82s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_events.py::test_b_cause_on_a_give_up",
+     "tests/studio/test_events.py::test_b_cause_on_an_owner_stop",
+     "tests/studio/test_events.py::test_the_ranker_reads_the_live_log"
+    ],
+    "summary": "3 failed, 187 passed in 67.06s (0:01:07)",
+    "seconds": 67.3,
+    "tail": "       while (\n                not any(n[\"status\"] == \"running\" and n.get(\"build_id\") for n in pm.get(pid)[\"nodes\"])\n                and time.time() - t0 < 30\n            ):\n                time.sleep(0.1)\n            pm.stop(pid)\n            rec = finish(pm, pid)\n            slow = next(n for n in rec[\"nodes\"] if n.get(\"build_id\"))\n            assert slow[\"status\"] == \"stopped\" and slow[\"cause\"] == \"stopped_by_owner\"\n            evs = read_events(log).events\n>           assert any(e[\"kind\"] == \"node_ended\" and e[\"cause\"] == \"stopped_by_owner\" for e in evs)\nE           assert False\nE            +  where False = any(<generator object test_b_cause_on_an_owner_stop.<locals>.<genexpr> at 0x108d92330>)\n\ntests/studio/test_events.py:224: AssertionError\n______________________ test_the_ranker_reads_the_live_log ______________________\n\ngive_up_plan = {'pm': <lattice.studio.plan.PlanManager object at 0x108f00980>, 'rec': {'id': 'p1', 'project': 'notes', 'status': 'par...': PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3142/events0/notes')}\n\n    def test_the_ranker_reads_the_live_log(give_up_plan) -> None:\n        from lattice.improve.analyze import analyze\n    \n        rep = analyze(give_up_plan[\"events\"], top=50)\n        keys = [p[\"signal_key\"] for p in rep[\"proposals\"]]\n>       assert \"cause:spec_unsatisfiable\" in keys and \"gate:node:D\" in keys\nE       AssertionError: assert ('cause:spec_unsatisfiable' in ['cause:other', 'gate:node:D', 'gate:baseline:X', 'gate:level_regression:X', 'gate:node:C', 'gate:baseline:D', ...])\n\ntests/studio/test_events.py:284: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_events.py::test_b_cause_on_a_give_up - AssertionErro...\nFAILED tests/studio/test_events.py::test_b_cause_on_an_owner_stop - assert False\nFAILED tests/studio/test_events.py::test_the_ranker_reads_the_live_log - Asse...\n3 failed, 187 passed in 67.06s (0:01:07)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_events.py::test_a_layer_seconds_copied_from_the_report"
+    ],
+    "summary": "1 failed, 189 passed in 67.07s (0:01:07)",
+    "seconds": 67.3,
+    "tail": "........................................................................ [ 37%]\n........................................................................ [ 75%]\n...................................F..........                           [100%]\n=================================== FAILURES ===================================\n_________________ test_a_layer_seconds_copied_from_the_report __________________\n\ngive_up_plan = {'pm': <lattice.studio.plan.PlanManager object at 0x108c4c980>, 'rec': {'id': 'p1', 'project': 'notes', 'status': 'par...': PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3141/events0/notes')}\n\n    def test_a_layer_seconds_copied_from_the_report(give_up_plan) -> None:\n        rec, events = give_up_plan[\"rec\"], give_up_plan[\"events\"]\n        gates = [e for e in events if e[\"kind\"] == \"gate_run\"]\n        assert gates, \"every gate run is logged\"\n        node_gates = [e for e in gates if e[\"gate\"] == \"node\"]\n        level = [e for e in gates if e[\"gate\"] in (\"level\", \"baseline\", \"final\")]\n        # node gates run --layers CD (the seed's scoped_gate_args): C and D only\n>       assert node_gates and all(e[\"layer_seconds\"] == {\"C\": 0.11, \"D\": 0.42} for e in node_gates)\nE       AssertionError: assert ([{'v': 1, 'ts': '2026-10-15T13:00:44Z', 'project': 'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-15T13:00...'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-15T13:00:47Z', 'project': 'notes', 'kind': 'gate_run', ...}] and False)\nE        +  where False = all(<generator object test_a_layer_seconds_copied_from_the_report.<locals>.<genexpr> at 0x108e0c130>)\n\ntests/studio/test_events.py:154: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_events.py::test_a_layer_seconds_copied_from_the_report\n1 failed, 189 passed in 67.07s (0:01:07)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run",
+     "tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run",
+     "tests/improve/test_verify.py::test_v2i_an_event_at_the_close_second_is_in_neither_window"
+    ],
+    "summary": "3 failed, 187 passed in 65.26s (0:01:05)",
+    "seconds": 65.5,
+    "tail": "efore_run(tmp_path: Path, capsys) -> None:\n        rc, d = v1(tmp_path, capsys, \"2026-10-12T23:07:11Z\")\n        assert rc == 1 and d[\"verdict\"] == \"not_enough_data\"\n>       assert (d[\"before\"][\"n\"], d[\"after\"][\"n\"]) == (2, 3) and d[\"excluded\"][\"at_close\"] == 1\nE       assert ((2, 4) == (2, 3)\nE         \nE         At index 1 diff: 4 != 3\nE         Use -v to get more diff)\n\ntests/improve/test_verify.py:148: AssertionError\n___________________ test_v1c_a_close_at_the_first_after_run ____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3155/test_v1c_a_close_at_the_first_0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10d32acd0>\n\n    def test_v1c_a_close_at_the_first_after_run(tmp_path: Path, capsys) -> None:\n        rc, d = v1(tmp_path, capsys, \"2026-10-12T23:09:06Z\")\n>       assert rc == 1 and d[\"verdict\"] == \"not_enough_data\"\nE       assert (0 == 1)\n\ntests/improve/test_verify.py:155: AssertionError\n__________ test_v2i_an_event_at_the_close_second_is_in_neither_window __________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3155/test_v2i_an_event_at_the_close0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10d26fdd0>\n\n    def test_v2i_an_event_at_the_close_second_is_in_neither_window(tmp_path: Path, capsys) -> None:\n        rc, d, _, _ = v2(tmp_path, capsys, [*v2_events(), gate(C, 1000.0, 5)])\n>       assert rc == 0 and d[\"verdict\"] == \"improved\" and d[\"excluded\"][\"at_close\"] == 1\nE       assert (1 == 0)\n\ntests/improve/test_verify.py:360: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run\nFAILED tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run\nFAILED tests/improve/test_verify.py::test_v2i_an_event_at_the_close_second_is_in_neither_window\n3 failed, 187 passed in 65.26s (0:01:05)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run",
+     "tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run",
+     "tests/improve/test_verify.py::test_v1d_closed_as_really_written_there_is_no_after_window",
+     "tests/improve/test_verify.py::test_v2e_no_run_after_the_close",
+     "tests/improve/test_verify.py::test_v2f_one_run_after_the_close"
+    ],
+    "summary": "5 failed, 185 passed in 65.83s (0:01:05)",
+    "seconds": 66.1,
+    "tail": "  def test_v1d_closed_as_really_written_there_is_no_after_window(tmp_path: Path, capsys) -> None:\n        rc, d = v1(tmp_path, capsys, \"2026-10-12T23:12:00Z\")\n>       assert rc == 1 and d[\"verdict\"] == \"not_enough_data\"\nE       assert (0 == 1)\n\ntests/improve/test_verify.py:162: AssertionError\n_______________________ test_v2e_no_run_after_the_close ________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3158/test_v2e_no_run_after_the_clos0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x108a086d0>\n\n    def test_v2e_no_run_after_the_close(tmp_path: Path, capsys) -> None:\n        rc, d, _, _ = v2(tmp_path, capsys, v2_events()[:3])\n>       assert rc == 1 and d[\"verdict\"] == \"not_enough_data\" and d[\"after\"][\"n\"] == 0\nE       assert (0 == 1)\n\ntests/improve/test_verify.py:315: AssertionError\n_______________________ test_v2f_one_run_after_the_close _______________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3158/test_v2f_one_run_after_the_clo0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x108cb2950>\n\n    def test_v2f_one_run_after_the_close(tmp_path: Path, capsys) -> None:\n        rc, d, _, _ = v2(tmp_path, capsys, v2_events()[:4])\n>       assert rc == 1 and d[\"verdict\"] == \"not_enough_data\" and d[\"after\"][\"n\"] == 1\nE       assert (0 == 1)\n\ntests/improve/test_verify.py:321: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run\nFAILED tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run\nFAILED tests/improve/test_verify.py::test_v1d_closed_as_really_written_there_is_no_after_window\nFAILED tests/improve/test_verify.py::test_v2e_no_run_after_the_close - assert...\nFAILED tests/improve/test_verify.py::test_v2f_one_run_after_the_close - asser...\n5 failed, 185 passed in 65.83s (0:01:05)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run",
+     "tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run",
+     "tests/improve/test_verify.py::test_v2i_an_event_at_the_close_second_is_in_neither_window"
+    ],
+    "summary": "3 failed, 187 passed in 65.83s (0:01:05)",
+    "seconds": 66.1,
+    "tail": "-12T23:07:11Z\")\n>       assert rc == 1 and d[\"verdict\"] == \"not_enough_data\"\nE       assert (0 == 1)\n\ntests/improve/test_verify.py:147: AssertionError\n___________________ test_v1c_a_close_at_the_first_after_run ____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3157/test_v1c_a_close_at_the_first_0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10c9f9d50>\n\n    def test_v1c_a_close_at_the_first_after_run(tmp_path: Path, capsys) -> None:\n        rc, d = v1(tmp_path, capsys, \"2026-10-12T23:09:06Z\")\n        assert rc == 1 and d[\"verdict\"] == \"not_enough_data\"\n>       assert (d[\"before\"][\"n\"], d[\"after\"][\"n\"]) == (3, 2) and d[\"excluded\"][\"at_close\"] == 1\nE       assert ((4, 2) == (3, 2)\nE         \nE         At index 0 diff: 4 != 3\nE         Use -v to get more diff)\n\ntests/improve/test_verify.py:156: AssertionError\n__________ test_v2i_an_event_at_the_close_second_is_in_neither_window __________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3157/test_v2i_an_event_at_the_close0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10c93de50>\n\n    def test_v2i_an_event_at_the_close_second_is_in_neither_window(tmp_path: Path, capsys) -> None:\n        rc, d, _, _ = v2(tmp_path, capsys, [*v2_events(), gate(C, 1000.0, 5)])\n>       assert rc == 0 and d[\"verdict\"] == \"improved\" and d[\"excluded\"][\"at_close\"] == 1\nE       AssertionError: assert (0 == 0 and 'improved' == 'improved'\nE         \nE           improved and 0 == 1)\n\ntests/improve/test_verify.py:360: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run\nFAILED tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run\nFAILED tests/improve/test_verify.py::test_v2i_an_event_at_the_close_second_is_in_neither_window\n3 failed, 187 passed in 65.83s (0:01:05)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_draft.py::test_d1a_change_request_from_a_lint_proposal",
+     "tests/improve/test_draft.py::test_d1b_config_for_the_x_repeats_proposal",
+     "tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run",
+     "tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run",
+     "tests/improve/test_verify.py::test_v2d_prime_exposure_decides_improved_or_not_enough"
+    ],
+    "summary": "5 failed, 185 passed in 65.63s (0:01:05)",
+    "seconds": 65.9,
+    "tail": "ionError\n___________________ test_v1c_a_close_at_the_first_after_run ____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3179/test_v1c_a_close_at_the_first_0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10af938d0>\n\n    def test_v1c_a_close_at_the_first_after_run(tmp_path: Path, capsys) -> None:\n        rc, d = v1(tmp_path, capsys, \"2026-10-12T23:09:06Z\")\n>       assert rc == 1 and d[\"verdict\"] == \"not_enough_data\"\nE       assert (0 == 1)\n\ntests/improve/test_verify.py:155: AssertionError\n____________ test_v2d_prime_exposure_decides_improved_or_not_enough ____________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3179/test_v2d_prime_exposure_decide0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10afd22d0>\n\n    def test_v2d_prime_exposure_decides_improved_or_not_enough(tmp_path: Path, capsys) -> None:\n        three = [node(t, \"passed\") for t in AFTER_TS]\n        rc, d, _, _ = v2(sub(tmp_path, \"a\"), capsys, timeouts_before() + three, \"cause:timeout\")\n        assert rc == 0 and d[\"verdict\"] == \"improved\" and d[\"after\"][\"exposure\"] == 3\n        rc, d, _, _ = v2(sub(tmp_path, \"b\"), capsys, timeouts_before() + three[:2], \"cause:timeout\")\n>       assert rc == 1 and d[\"verdict\"] == \"not_enough_data\" and d[\"after\"][\"exposure\"] == 2\nE       assert (0 == 1)\n\ntests/improve/test_verify.py:310: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_draft.py::test_d1a_change_request_from_a_lint_proposal\nFAILED tests/improve/test_draft.py::test_d1b_config_for_the_x_repeats_proposal\nFAILED tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run\nFAILED tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run\nFAILED tests/improve/test_verify.py::test_v2d_prime_exposure_decides_improved_or_not_enough\n5 failed, 185 passed in 65.63s (0:01:05)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_verify.py::test_v2h_units_are_never_converted"
+    ],
+    "summary": "1 failed, 189 passed in 66.02s (0:01:06)",
+    "seconds": 66.3,
+    "tail": "........................................................................ [ 37%]\n........................................................................ [ 75%]\n..............F...............................                           [100%]\n=================================== FAILURES ===================================\n______________________ test_v2h_units_are_never_converted ______________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3181/test_v2h_units_are_never_conve0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10b3fa350>\n\n    def test_v2h_units_are_never_converted(tmp_path: Path, capsys) -> None:\n        # (ii) dollars only: the unit is usd, the after window has no value\n        before = [node(t, \"gave_up\", \"token_budget\", usd=0.5) for t in BEFORE_TS]\n        after = [node(t, \"passed\") for t in AFTER_TS]\n        rc, d, _, _ = v2(sub(tmp_path, \"a\"), capsys, before + after, \"cause:token_budget\")\n        assert rc == 0 and d[\"verdict\"] == \"improved\" and d[\"unit\"] == \"usd\"\n>       assert (d[\"before\"][\"cost_per\"], d[\"after\"][\"cost_per\"]) == (0.5, None)\nE       assert (1800.0, None) == (0.5, None)\nE         \nE         At index 0 diff: 1800.0 != 0.5\nE         Use -v to get more diff\n\ntests/improve/test_verify.py:343: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_verify.py::test_v2h_units_are_never_converted - ass...\n1 failed, 189 passed in 66.02s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM12": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_verify.py::test_v2c_worse"
+    ],
+    "summary": "1 failed, 189 passed in 66.02s (0:01:06)",
+    "seconds": 66.3,
+    "tail": "........................................................................ [ 37%]\n........................................................................ [ 75%]\n.......F......................................                           [100%]\n=================================== FAILURES ===================================\n________________________________ test_v2c_worse ________________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3180/test_v2c_worse0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10a2729d0>\n\n    def test_v2c_worse(tmp_path: Path, capsys) -> None:\n        rc, d, _, _ = v2(tmp_path, capsys, v2_events(after=(110, 111, 109)))\n        assert rc == 1 and d[\"verdict\"] == \"not_improved\" and d[\"reason\"] == \"cost rose\"\n        assert d[\"change\"][\"delta\"] == 10.0 and d[\"change\"][\"relative\"] == 0.1\n>       assert d[\"direction\"] == \"up\" and d[\"error\"] == 1.167  # both signed: |10 - (-60)| / 60\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert ('up' == 'up'\nE         \nE           up and 0.833 == 1.167)\n\ntests/improve/test_verify.py:268: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_verify.py::test_v2c_worse - AssertionError: assert ...\n1 failed, 189 passed in 66.02s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM13": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_verify.py::test_v2d_recurred",
+     "tests/improve/test_verify.py::test_v2h_units_are_never_converted"
+    ],
+    "summary": "2 failed, 188 passed in 65.38s (0:01:05)",
+    "seconds": 65.6,
+    "tail": " test_v2h_units_are_never_converted ______________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3182/test_v2h_units_are_never_conve0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10cffc6d0>\n\n    def test_v2h_units_are_never_converted(tmp_path: Path, capsys) -> None:\n        # (ii) dollars only: the unit is usd, the after window has no value\n        before = [node(t, \"gave_up\", \"token_budget\", usd=0.5) for t in BEFORE_TS]\n        after = [node(t, \"passed\") for t in AFTER_TS]\n        rc, d, _, _ = v2(sub(tmp_path, \"a\"), capsys, before + after, \"cause:token_budget\")\n        assert rc == 0 and d[\"verdict\"] == \"improved\" and d[\"unit\"] == \"usd\"\n        assert (d[\"before\"][\"cost_per\"], d[\"after\"][\"cost_per\"]) == (0.5, None)\n        # (iii) no cost at all: unit none\n        before = [ev(\"human\", t, what=\"resume\", actor=\"owner\") for t in BEFORE_TS]\n        after = [ev(\"plan_started\", t, plan=\"p\") for t in AFTER_TS]\n        rc, d, _, _ = v2(sub(tmp_path, \"b\"), capsys, before + after, \"human:resume\")\n        assert rc == 0 and d[\"verdict\"] == \"improved\" and d[\"unit\"] is None\n        assert d[\"before\"][\"cost_per\"] is None and d[\"after\"][\"exposure\"] == 3\n        # (iv) seconds before, dollars only after: unit s, the after cost is null, not converted\n        before = [node(t, \"gave_up\", \"timeout\", 600.0) for t in BEFORE_TS]\n        after = [node(\"2026-10-01T12:30:00Z\", \"gave_up\", \"timeout\", usd=0.5)]\n        rc, d, _, _ = v2(sub(tmp_path, \"c\"), capsys, before + after, \"cause:timeout\")\n>       assert rc == 1 and d[\"verdict\"] == \"recurred\" and d[\"unit\"] == \"s\"\nE       assert (0 == 1)\n\ntests/improve/test_verify.py:354: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_verify.py::test_v2d_recurred - assert (0 == 1)\nFAILED tests/improve/test_verify.py::test_v2h_units_are_never_converted - ass...\n2 failed, 188 passed in 65.38s (0:01:05)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM14": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_verify.py::test_other_closes_between_the_windows_are_listed",
+     "tests/improve/test_verify.py::test_v1a_text_output_names_every_part",
+     "tests/improve/test_verify.py::test_v1a_the_real_i3_data_reproduces_the_hand_numbers",
+     "tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run",
+     "tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run",
+     "tests/improve/test_verify.py::test_v1d_closed_as_really_written_there_is_no_after_window",
+     "tests/improve/test_verify.py::test_v1e_the_d_layer_is_the_control",
+     "tests/improve/test_verify.py::test_v1f_a_pattern_sums_the_keys_of_one_gate_run",
+     "tests/improve/test_verify.py::test_v1g_at_supplies_the_landing_time_of_the_real_ledger_line",
+     "tests/improve/test_verify.py::test_v2_no_such_signal_in_the_log_is_not_enough_data",
+     "tests/improve/test_verify.py::test_v2g_other_signals_interleaved_are_not_this_signal",
+     "tests/improve/test_verify.py::test_v3_an_imp_id_the_ledger_stores_is_found_by_the_ledger_id_first",
+     "tests/improve/test_verify.py::test_v3d_no_commit_is_verified_with_a_warning",
+     "tests/improve/test_verify.py::test_v3e_closed_twice_uses_the_earlier_close",
+     "tests/improve/test_verify.py::test_v3f_closed_without_a_ts"
+    ],
+    "summary": "15 failed, 175 passed in 66.23s (0:01:06)",
+    "seconds": 66.5,
+    "tail": "var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3183/test_other_closes_between_the_0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x1091d24d0>\n\n    def test_other_closes_between_the_windows_are_listed(tmp_path: Path, capsys) -> None:\n        other = entry(\"2026-10-12T23:05:00Z\", id=\"I-02\", signal=\"cause:timeout\")\n        project, state = make_env(tmp_path, ledger=[entry(), other])\n        rc, d = verify(capsys, project, state, \"I-01\")\n>       assert rc == 0\nE       assert 1 == 0\n\ntests/improve/test_verify.py:493: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_verify.py::test_v1a_the_real_i3_data_reproduces_the_hand_numbers\nFAILED tests/improve/test_verify.py::test_v1a_text_output_names_every_part - ...\nFAILED tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run\nFAILED tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run\nFAILED tests/improve/test_verify.py::test_v1d_closed_as_really_written_there_is_no_after_window\nFAILED tests/improve/test_verify.py::test_v1e_the_d_layer_is_the_control - As...\nFAILED tests/improve/test_verify.py::test_v1f_a_pattern_sums_the_keys_of_one_gate_run\nFAILED tests/improve/test_verify.py::test_v1g_at_supplies_the_landing_time_of_the_real_ledger_line\nFAILED tests/improve/test_verify.py::test_v2g_other_signals_interleaved_are_not_this_signal\nFAILED tests/improve/test_verify.py::test_v2_no_such_signal_in_the_log_is_not_enough_data\nFAILED tests/improve/test_verify.py::test_v3d_no_commit_is_verified_with_a_warning\nFAILED tests/improve/test_verify.py::test_v3e_closed_twice_uses_the_earlier_close\nFAILED tests/improve/test_verify.py::test_v3f_closed_without_a_ts - assert (1...\nFAILED tests/improve/test_verify.py::test_v3_an_imp_id_the_ledger_stores_is_found_by_the_ledger_id_first\nFAILED tests/improve/test_verify.py::test_other_closes_between_the_windows_are_listed\n15 failed, 175 passed in 66.23s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM15": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a7a_improved",
+     "tests/improve/test_apply.py::test_a7b_not_improved",
+     "tests/improve/test_verify.py::test_v1a_text_output_names_every_part",
+     "tests/improve/test_verify.py::test_v1a_the_real_i3_data_reproduces_the_hand_numbers",
+     "tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run",
+     "tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run",
+     "tests/improve/test_verify.py::test_v2_file_order_is_irrelevant",
+     "tests/improve/test_verify.py::test_v2a_improved",
+     "tests/improve/test_verify.py::test_v2b_no_change",
+     "tests/improve/test_verify.py::test_v2c_worse"
+    ],
+    "summary": "10 failed, 180 passed in 66.23s (0:01:06)",
+    "seconds": 66.5,
+    "tail": "change\"][\"relative\"] == 0.1\n>       assert d[\"direction\"] == \"up\" and d[\"error\"] == 1.167  # both signed: |10 - (-60)| / 60\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert ('up' == 'up'\nE         \nE           up and None == 1.167)\n\ntests/improve/test_verify.py:268: AssertionError\n_______________________ test_v2_file_order_is_irrelevant _______________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3184/test_v2_file_order_is_irreleva0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x108b7d0d0>\n\n    def test_v2_file_order_is_irrelevant(tmp_path: Path, capsys) -> None:\n        evs = v2_events()\n        rc, d, _, _ = v2(tmp_path, capsys, list(reversed(evs)))\n>       assert rc == 0 and d[\"change\"][\"delta\"] == -60.0 and d[\"predicted\"][\"delta\"] == -60.0\n                                                             ^^^^^^^^^^^^^^^^^^^^^^^\nE       TypeError: 'NoneType' object is not subscriptable\n\ntests/improve/test_verify.py:374: TypeError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a7a_improved - TypeError: 'NoneType'...\nFAILED tests/improve/test_apply.py::test_a7b_not_improved - AssertionError: a...\nFAILED tests/improve/test_verify.py::test_v1a_the_real_i3_data_reproduces_the_hand_numbers\nFAILED tests/improve/test_verify.py::test_v1a_text_output_names_every_part - ...\nFAILED tests/improve/test_verify.py::test_v1b_a_close_at_the_third_before_run\nFAILED tests/improve/test_verify.py::test_v1c_a_close_at_the_first_after_run\nFAILED tests/improve/test_verify.py::test_v2a_improved - TypeError: 'NoneType...\nFAILED tests/improve/test_verify.py::test_v2b_no_change - AssertionError: ass...\nFAILED tests/improve/test_verify.py::test_v2c_worse - AssertionError: assert ...\nFAILED tests/improve/test_verify.py::test_v2_file_order_is_irrelevant - TypeE...\n10 failed, 180 passed in 66.23s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM16": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_verify.py::test_v1e_the_d_layer_is_the_control",
+     "tests/improve/test_verify.py::test_v2d_recurred"
+    ],
+    "summary": "2 failed, 188 passed in 66.01s (0:01:06)",
+    "seconds": 66.2,
+    "tail": "on:D\")\n        assert rc == 1 and d[\"verdict\"] == \"not_improved\" and d[\"reason\"] == \"no material change\"\n        assert (d[\"before\"][\"n\"], d[\"after\"][\"n\"]) == (3, 3)\n        assert (d[\"before\"][\"cost_per\"], d[\"after\"][\"cost_per\"]) == (22.52, 22.31)\n        assert d[\"change\"] == {\"delta\": -0.21, \"relative\": -0.009, \"separated\": True}\n>       assert d[\"direction\"] == \"flat\" and d[\"predicted\"] is None and d[\"error\"] is None\nE       AssertionError: assert ('flat' == 'flat'\nE         \nE           flat and {'delta': -67.5, 'unit': 's', 'source': 'score', 'basis': 'score'} is None)\n\ntests/improve/test_verify.py:174: AssertionError\n______________________________ test_v2d_recurred _______________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3185/test_v2d_recurred0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10ac0e6d0>\n\n    def test_v2d_recurred(tmp_path: Path, capsys) -> None:\n        after = [node(t, \"passed\") for t in AFTER_TS] + [node(\"2026-10-01T13:40:00Z\", \"gave_up\",\n                                                             \"timeout\", 600.0)]  # fmt: skip\n        rc, d, project, state = v2(tmp_path, capsys, timeouts_before() + after, \"cause:timeout\")\n        assert rc == 1 and d[\"verdict\"] == \"recurred\" and d[\"family\"] == \"occurrence\"\n        assert (d[\"before\"][\"frequency\"], d[\"after\"][\"frequency\"]) == (3, 1)\n        assert (d[\"before\"][\"exposure\"], d[\"after\"][\"exposure\"]) == (5, 4)\n>       assert d[\"predicted\"] is None and d[\"error\"] is None\nE       AssertionError: assert ({'delta': -1800.0, 'unit': 's', 'source': 'score', 'basis': 'score'} is None)\n\ntests/improve/test_verify.py:301: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_verify.py::test_v1e_the_d_layer_is_the_control - As...\nFAILED tests/improve/test_verify.py::test_v2d_recurred - AssertionError: asse...\n2 failed, 188 passed in 66.01s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM18": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a7a_improved",
+     "tests/improve/test_draft.py::test_d3_no_project_or_state_file_changes_and_out_adds_one"
+    ],
+    "summary": "2 failed, 188 passed in 66.43s (0:01:06)",
+    "seconds": 66.7,
+    "tail": "t_d3_no_project_or_state_file_changes_and_out_adds_one ___________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3186/test_d3_no_project_or_state_fi0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10a754e50>\n\n    def test_d3_no_project_or_state_file_changes_and_out_adds_one(tmp_path: Path, capsys) -> None:\n        project, state = make_env(tmp_path, i3_lines()[:9], ledger=[entry(signal=\"cause:timeout\")],\n                                  toml=FIXTURE)  # fmt: skip\n        outd = sub(tmp_path, \"o\")\n        before = tree_hash(project, state)\n        calls = [\n            (\"draft\", \"imp-3e1cd7f9\"), (\"draft\", \"imp-7fad29b4\"), (\"draft\", \"imp-a8f0a344\"),\n            (\"draft\", \"imp-56861ff8\"), (\"draft\", \"imp-00000000\"), (\"draft\", \"imp-3e1cd7f9\", \"--json\"),\n            (\"verify\", \"I-01\"), (\"verify\", \"I-01\", \"--json\"), (\"verify\", \"imp-3e1cd7f9\"),\n            (\"verify\", \"I-99\"), (\"verify\", \"I-01\", \"--at\", \"bad\"),\n        ]  # fmt: skip\n        for call in calls:\n            run(capsys, project, state, *call)\n>           assert tree_hash(project, state) == before, call\nE           AssertionError: ('draft', 'imp-3e1cd7f9')\nE           assert {'/private/va...f321b0afed46'} == {'/private/va...f321b0afed46'}\nE             \nE             Omitting 3 identical items, use -vv to show\nE             Left contains 1 more item:\nE             {'/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3186/test_d3_no_project_or_state_fi0/proj/improve-draft.md': '4c4d6bd878d47f0d072cee81dbee2b51371b3021950d7ba989731114538d37e4'}\nE             Use -v to get more diff\n\ntests/improve/test_draft.py:271: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a7a_improved - assert (2 == 1)\nFAILED tests/improve/test_draft.py::test_d3_no_project_or_state_file_changes_and_out_adds_one\n2 failed, 188 passed in 66.43s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM17": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a0c_needs_owner",
+     "tests/improve/test_draft.py::test_d2_the_checker_is_never_drafted",
+     "tests/improve/test_draft.py::test_d2_the_spec_language_is_never_drafted"
+    ],
+    "summary": "3 failed, 187 passed in 66.44s (0:01:06)",
+    "seconds": 66.7,
+    "tail": " str):\n        rc, d, err = draft_json(capsys, project, state, ident, *extra)\n>       assert rc == 3 and d[\"refused\"] is True and d[\"command\"] == \"draft\" and d[\"format\"] == 1\nE       assert (0 == 3)\n\ntests/improve/test_draft.py:205: AssertionError\n__________________ test_d2_the_spec_language_is_never_drafted __________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3187/test_d2_the_spec_language_is_n0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10cf70ad0>\n\n    def test_d2_the_spec_language_is_never_drafted(tmp_path: Path, capsys) -> None:\n        project, state = make_env(tmp_path, i3_lines()[:9])\n>       d = refused(capsys, project, state, \"imp-adeea5ef\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/improve/test_draft.py:223: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncapsys = <_pytest.capture.CaptureFixture object at 0x10cf70ad0>\nproject = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3187/test_d2_the_spec_language_is_n0/proj')\nstate = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3187/test_d2_the_spec_language_is_n0/state')\nident = 'imp-adeea5ef', extra = ()\n\n    def refused(capsys, project: Path, state: Path, ident: str, *extra: str):\n        rc, d, err = draft_json(capsys, project, state, ident, *extra)\n>       assert rc == 3 and d[\"refused\"] is True and d[\"command\"] == \"draft\" and d[\"format\"] == 1\nE       assert (0 == 3)\n\ntests/improve/test_draft.py:205: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a0c_needs_owner - AssertionError: as...\nFAILED tests/improve/test_draft.py::test_d2_the_checker_is_never_drafted - as...\nFAILED tests/improve/test_draft.py::test_d2_the_spec_language_is_never_drafted\n3 failed, 187 passed in 66.44s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM19": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_verify.py::test_v3e_closed_twice_uses_the_earlier_close"
+    ],
+    "summary": "1 failed, 189 passed in 64.98s (0:01:04)",
+    "seconds": 65.2,
+    "tail": "........................................................................ [ 37%]\n........................................................................ [ 75%]\n.........................F....................                           [100%]\n=================================== FAILURES ===================================\n_________________ test_v3e_closed_twice_uses_the_earlier_close _________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3209/test_v3e_closed_twice_uses_the0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10a93d850>\n\n    def test_v3e_closed_twice_uses_the_earlier_close(tmp_path: Path, capsys) -> None:\n        project, state = make_env(tmp_path, ledger=[entry(), entry(\"2026-10-12T23:12:00Z\")])\n        rc, d = verify(capsys, project, state, \"I-01\")\n>       assert rc == 0 and d[\"closing_point\"][\"ts\"] == CLOSE\nE       assert (1 == 0)\n\ntests/improve/test_verify.py:448: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_verify.py::test_v3e_closed_twice_uses_the_earlier_close\n1 failed, 189 passed in 64.98s (0:01:04)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM20": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a6c_ten_fresh_repositories_give_one_record",
+     "tests/improve/test_draft.py::test_d1a_change_request_from_a_lint_proposal",
+     "tests/improve/test_draft.py::test_d1b_config_for_the_x_repeats_proposal",
+     "tests/improve/test_draft.py::test_d4_same_inputs_same_bytes_across_time_cwd_and_a_copy"
+    ],
+    "summary": "4 failed, 186 passed in 65.23s (0:01:05)",
+    "seconds": 65.5,
+    "tail": "ect, state, \"draft\", \"imp-3e1cd7f9\"))\n        run(capsys, project, state, \"draft\", \"imp-3e1cd7f9\", \"--out\", str(out1 / \"d.md\"))\n        time.sleep(1.1)  # a wall-clock time anywhere in an output would differ now\n        monkeypatch.chdir(other)\n        (state / \"improvements.jsonl\").write_text(json.dumps(entry()) + \"\\n\")\n        second = [run(capsys, project, state2, *c) for c in cases]\n        (state2 / \"improvements.jsonl\").unlink()\n        second.append(run(capsys, project, state2, \"draft\", \"imp-3e1cd7f9\"))\n        run(capsys, project, state2, \"draft\", \"imp-3e1cd7f9\", \"--out\", str(out2 / \"d.md\"))\n>       assert first == second\nE       assert [(0, 'Lattice...oject\\n', '')] == [(0, 'Lattice...oject\\n', '')]\nE         \nE         At index 4 diff: (0, '# Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]: pre-registration (stub)\\n\\nProposal imp-3e1cd7f9 (experiment), signal gate:level_regression:X; status open. As of 2026-10-15T08:06:14Z.\\n\\nNOT APPLIED: this draft changes nothing; the owner decides.\\n\\n## 1. Status\\n\\nwritten BEFORE any probe. As of 2026-10-12T23:11:50Z. Nothing of the change exists yet.\\n\\n## 2. Question\\n\\nFewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]\\n\\nWhy this is asked: layer X is the measure...\nE         \nE         ...Full output truncated (2 lines hidden), use '-vv' to show\n\n/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-imp-mutant-IM20-o9qew2kb/tests/improve/test_draft.py:347: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a6c_ten_fresh_repositories_give_one_record\nFAILED tests/improve/test_draft.py::test_d1a_change_request_from_a_lint_proposal\nFAILED tests/improve/test_draft.py::test_d1b_config_for_the_x_repeats_proposal\nFAILED tests/improve/test_draft.py::test_d4_same_inputs_same_bytes_across_time_cwd_and_a_copy\n4 failed, 186 passed in 65.23s (0:01:05)\n"
+   },
+   "verdict": "caught"
+  },
+  "IM21": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a7a_improved",
+     "tests/improve/test_apply.py::test_a7b_not_improved",
+     "tests/improve/test_verify.py::test_v1g_at_supplies_the_landing_time_of_the_real_ledger_line",
+     "tests/improve/test_verify.py::test_v3f_closed_without_a_ts"
+    ],
+    "summary": "4 failed, 186 passed in 65.23s (0:01:05)",
+    "seconds": 65.5,
+    "tail": "        - not_improved\nE         + not_enough_data)\n\ntests/improve/test_apply.py:964: AssertionError\n________ test_v1g_at_supplies_the_landing_time_of_the_real_ledger_line _________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3211/test_v1g_at_supplies_the_landi0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x108316bd0>\n\n    def test_v1g_at_supplies_the_landing_time_of_the_real_ledger_line(tmp_path: Path, capsys) -> None:\n        a_rc, a = v1(sub(tmp_path, \"a\"), capsys)\n        rc, g = v1(sub(tmp_path, \"g\"), capsys, \"2026-10-12T23:12:00Z\", X, \"--at\", CLOSE)\n>       assert rc == a_rc == 0 and g[\"verdict\"] == \"improved\"\nE       assert (1 == 0)\n\ntests/improve/test_verify.py:195: AssertionError\n_________________________ test_v3f_closed_without_a_ts _________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3211/test_v3f_closed_without_a_ts0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x1081e1d50>\n\n    def test_v3f_closed_without_a_ts(tmp_path: Path, capsys) -> None:\n        project, state = make_env(tmp_path, ledger=[entry(ts=None)])\n        rc, d = verify(capsys, project, state, \"I-01\")\n        assert rc == 3 and d[\"reason\"] == \"no_closing_point\"\n        rc, d = verify(capsys, project, state, \"I-01\", \"--at\", CLOSE)  # --at supplies it\n>       assert rc == 0 and d[\"closing_point\"][\"source\"] == \"--at\"\nE       assert (3 == 0)\n\ntests/improve/test_verify.py:457: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a7a_improved - assert (1 == 0)\nFAILED tests/improve/test_apply.py::test_a7b_not_improved - AssertionError: a...\nFAILED tests/improve/test_verify.py::test_v1g_at_supplies_the_landing_time_of_the_real_ledger_line\nFAILED tests/improve/test_verify.py::test_v3f_closed_without_a_ts - assert (3...\n4 failed, 186 passed in 65.23s (0:01:05)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a0g_knob_pending_names_the_unmerged_change",
+     "tests/improve/test_apply.py::test_a0j_untracked_files_are_ignored_and_untouched",
+     "tests/improve/test_apply.py::test_a3_a_git_shim_sees_no_merge_push_reset",
+     "tests/improve/test_apply.py::test_a3_the_default_state_dir_only_adds_the_exclude_line",
+     "tests/improve/test_apply.py::test_a3_the_owners_checkout_is_byte_identical",
+     "tests/improve/test_apply.py::test_a4e_no_studio_toml_creates_it",
+     "tests/improve/test_apply.py::test_a5_a_missing_worktree_dir_still_drops_the_branch",
+     "tests/improve/test_apply.py::test_a5_untracked_files_the_gates_left_do_not_block",
+     "tests/improve/test_apply.py::test_a5a_discard_removes_what_apply_made",
+     "tests/improve/test_apply.py::test_a5a_text_output",
+     "tests/improve/test_apply.py::test_a5e_worktree_dirty",
+     "tests/improve/test_apply.py::test_a6b_apply_discard_apply_is_the_same_change"
+    ],
+    "summary": "12 failed, 178 passed in 66.46s (0:01:06)",
+    "seconds": 66.7,
+    "tail": "tmp_path, '[\"echo hi > left.txt\"]')\n        rc, d, _ = env.apply(capsys)\n        assert rc == 0 and d[\"gates\"][\"untracked_after\"] == [\"left.txt\"]\n>       assert env.discard(capsys)[0] == 0\nE       assert 3 == 0\n\ntests/improve/test_apply.py:878: AssertionError\n_______________ test_a6b_apply_discard_apply_is_the_same_change ________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3212/test_a6b_apply_discard_apply_i0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10a5b69d0>\n\n    def test_a6b_apply_discard_apply_is_the_same_change(tmp_path: Path, capsys) -> None:\n        env = make_repo(tmp_path, DOGFOOD, rel=\"dogfood/studio\")\n        rc, a, _ = env.apply(capsys, ID, \"--no-gates\")\n>       assert env.discard(capsys)[0] == 0\nE       assert 3 == 0\n\ntests/improve/test_apply.py:887: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a0g_knob_pending_names_the_unmerged_change\nFAILED tests/improve/test_apply.py::test_a0j_untracked_files_are_ignored_and_untouched\nFAILED tests/improve/test_apply.py::test_a3_the_owners_checkout_is_byte_identical\nFAILED tests/improve/test_apply.py::test_a3_the_default_state_dir_only_adds_the_exclude_line\nFAILED tests/improve/test_apply.py::test_a3_a_git_shim_sees_no_merge_push_reset\nFAILED tests/improve/test_apply.py::test_a4e_no_studio_toml_creates_it - asse...\nFAILED tests/improve/test_apply.py::test_a5a_discard_removes_what_apply_made\nFAILED tests/improve/test_apply.py::test_a5a_text_output - assert (3 == 0)\nFAILED tests/improve/test_apply.py::test_a5e_worktree_dirty - AssertionError:...\nFAILED tests/improve/test_apply.py::test_a5_a_missing_worktree_dir_still_drops_the_branch\nFAILED tests/improve/test_apply.py::test_a5_untracked_files_the_gates_left_do_not_block\nFAILED tests/improve/test_apply.py::test_a6b_apply_discard_apply_is_the_same_change\n12 failed, 178 passed in 66.46s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a0g_knob_pending_names_the_unmerged_change",
+     "tests/improve/test_apply.py::test_a0j_untracked_files_are_ignored_and_untouched",
+     "tests/improve/test_apply.py::test_a3_the_default_state_dir_only_adds_the_exclude_line",
+     "tests/improve/test_apply.py::test_a3_the_owners_checkout_is_byte_identical",
+     "tests/improve/test_apply.py::test_a5a_discard_removes_what_apply_made",
+     "tests/improve/test_apply.py::test_a6b_apply_discard_apply_is_the_same_change",
+     "tests/improve/test_apply.py::test_a7a_improved",
+     "tests/improve/test_apply.py::test_a7b_not_improved",
+     "tests/improve/test_apply.py::test_a7c_apply_again_is_closed",
+     "tests/improve/test_apply.py::test_a7d_discard_after_merge"
+    ],
+    "summary": "10 failed, 180 passed in 66.58s (0:01:06)",
+    "seconds": 66.9,
+    "tail": "top, \"merge\", \"-q\", \"--ff-only\", \"improve/\" + ID)  # the owner merges\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncwd = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3214/test_a7d_discard_after_merge0/repo')\ncheck = True, args = ('merge', '-q', '--ff-only', 'improve/imp-3e1cd7f9')\n\n    def git(cwd: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:\n        r = subprocess.run([\"git\", \"-C\", str(cwd), *args], capture_output=True, text=True)\n        if check and r.returncode != 0:\n>           raise AssertionError(f\"git {args}: {r.stderr}\")\nE           AssertionError: git ('merge', '-q', '--ff-only', 'improve/imp-3e1cd7f9'): error: Your local changes to the following files would be overwritten by merge:\nE           \tstudio.toml\nE           Please commit your changes or stash them before you merge.\nE           Aborting\n\ntests/improve/test_apply.py:59: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a0g_knob_pending_names_the_unmerged_change\nFAILED tests/improve/test_apply.py::test_a0j_untracked_files_are_ignored_and_untouched\nFAILED tests/improve/test_apply.py::test_a3_the_owners_checkout_is_byte_identical\nFAILED tests/improve/test_apply.py::test_a3_the_default_state_dir_only_adds_the_exclude_line\nFAILED tests/improve/test_apply.py::test_a5a_discard_removes_what_apply_made\nFAILED tests/improve/test_apply.py::test_a6b_apply_discard_apply_is_the_same_change\nFAILED tests/improve/test_apply.py::test_a7a_improved - AssertionError: git (...\nFAILED tests/improve/test_apply.py::test_a7b_not_improved - AssertionError: g...\nFAILED tests/improve/test_apply.py::test_a7c_apply_again_is_closed - Assertio...\nFAILED tests/improve/test_apply.py::test_a7d_discard_after_merge - AssertionE...\n10 failed, 180 passed in 66.58s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a0f_a_second_apply_changes_nothing",
+     "tests/improve/test_apply.py::test_a2_gates_log_nothing",
+     "tests/improve/test_apply.py::test_a3_the_default_state_dir_only_adds_the_exclude_line",
+     "tests/improve/test_apply.py::test_a3_the_owners_checkout_is_byte_identical",
+     "tests/improve/test_apply.py::test_a6b_apply_discard_apply_is_the_same_change",
+     "tests/improve/test_apply.py::test_a7a_improved"
+    ],
+    "summary": "6 failed, 184 passed in 66.58s (0:01:06)",
+    "seconds": 66.9,
+    "tail": "]\nE       assert (3 == 0)\n\ntests/improve/test_apply.py:889: AssertionError\n______________________________ test_a7a_improved _______________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3213/test_a7a_improved0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x108e300d0>\n\n    def test_a7a_improved(tmp_path: Path, capsys) -> None:\n        env, d, rc, v = a7(tmp_path, capsys, (40, 41, 39))\n        assert rc == 0 and v[\"verdict\"] == \"improved\"\n        assert (v[\"before\"][\"cost_per\"], v[\"after\"][\"cost_per\"]) == (100.0, 40.0)\n        assert v[\"change\"][\"delta\"] == -60.0 and v[\"change\"][\"relative\"] == -0.6\n        assert v[\"predicted\"][\"delta\"] == -60.0 and v[\"error\"] == 0.0\n        assert v[\"entry\"][\"commit\"] == d[\"commit\"][\"sha\"]\n        # the apply wrote no ledger line: the only entry is the owner's close\n        lines = (env.state / \"improvements.jsonl\").read_text().splitlines()\n>       assert len(lines) == 1 and json.loads(lines[0])[\"status\"] == \"closed\"\nE       assert (2 == 1)\nE        +  where 2 = len(['{\"id\": \"imp-3e1cd7f9\", \"signal\": \"gate:level_regression:X\", \"status\": \"closed\", \"commit\": \"5085a83dc0460eb486f98aff0...egression:X\", \"status\": \"closed\", \"commit\": \"5085a83dc0460eb486f98aff0eababcef2d093f0\", \"ts\": \"2026-10-15T13:07:20Z\"}'])\n\ntests/improve/test_apply.py:959: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a0f_a_second_apply_changes_nothing\nFAILED tests/improve/test_apply.py::test_a2_gates_log_nothing - AssertionErro...\nFAILED tests/improve/test_apply.py::test_a3_the_owners_checkout_is_byte_identical\nFAILED tests/improve/test_apply.py::test_a3_the_default_state_dir_only_adds_the_exclude_line\nFAILED tests/improve/test_apply.py::test_a6b_apply_discard_apply_is_the_same_change\nFAILED tests/improve/test_apply.py::test_a7a_improved - assert (2 == 1)\n6 failed, 184 passed in 66.58s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a2_gates_log_nothing"
+    ],
+    "summary": "1 failed, 189 passed in 68.55s (0:01:08)",
+    "seconds": 68.8,
+    "tail": "...................................................F.................... [ 37%]\n........................................................................ [ 75%]\n..............................................                           [100%]\n=================================== FAILURES ===================================\n__________________________ test_a2_gates_log_nothing ___________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3217/test_a2_gates_log_nothing0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10c6fcdd0>\n\n    def test_a2_gates_log_nothing(tmp_path: Path, capsys) -> None:\n        env = gated(tmp_path, '[\"true\", \"false\"]')\n        before = fs_hash(env.state)\n        env.apply(capsys)\n        after = fs_hash(env.state)\n>       assert {k: v for k, v in after.items() if \"applies\" not in k} == before\nE       AssertionError: assert {'/private/va...c2f7924deb8f'} == {'/private/va...6a9283464a32'}\nE         \nE         Differing items:\nE         {'/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3217/test_a2_gates_log_nothing0/state/events.jsonl': '9f70103fabf70029dbd346b60e3b1a30d18f588687dc310a742fc2f7924deb8f'} != {'/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3217/test_a2_gates_log_nothing0/state/events.jsonl': '85d709e58b954a6dc73d9d0e82c5fd91fa5bc3d71c766e0a808d6a9283464a32'}\nE         Use -v to get more diff\n\ntests/improve/test_apply.py:537: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a2_gates_log_nothing - AssertionErro...\n1 failed, 189 passed in 68.55s (0:01:08)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a0d_not_config",
+     "tests/improve/test_apply.py::test_a0e_a_cause_knob_is_the_owners"
+    ],
+    "summary": "2 failed, 188 passed in 69.12s (0:01:09)",
+    "seconds": 69.4,
+    "tail": "00gn/T/pytest-of-vivekgade/pytest-3218/test_a0e_a_cause_knob_is_the_o0/repo')\nstate = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3218/test_a0e_a_cause_knob_is_the_o0/state')\ncreate_state = <function main.<locals>.<lambda> at 0x10c82c7d0>\nstate_flag = '/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3218/test_a0e_a_cause_knob_is_the_o0/state'\nident = 'imp-e5092d05', branch_arg = None, no_gates = False\n\n    def _apply(\n        project: Path,\n        state: Path,\n        create_state: Callable[[], Path],\n        state_flag: str | None,\n        ident: str,\n        branch_arg: str | None,\n        no_gates: bool,\n    ) -> tuple[int, dict[str, Any]]:\n        from lattice.studio.rebuild import RebuildConfig\n    \n        events, ledger, cfg = _read_inputs(project, state)\n        # (1) what `lattice improve draft ID` reads and refuses\n        code, doc = draft(events, ledger, ident, cfg)\n        if doc.get(\"refused\"):\n            raise _Refused(doc[\"reason\"], doc[\"detail\"])\n        # (2) only a literal [rebuild] setting is applied\n        if False:  # MUTANT IA5: not_config dropped\n            raise _Refused(\n                \"not_config\",\n                f\"{ident} drafts as a {doc['template']}, not a literal [rebuild] setting: the owner \"\n                \"decides it\",\n            )\n        p = doc[\"proposal\"]\n        key = p[\"signal_key\"]\n>       name, op, literal = _literal(key, p)  # type: ignore[misc]\n        ^^^^^^^^^^^^^^^^^\nE       TypeError: cannot unpack non-iterable NoneType object\n\n/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-imp-mutant-IA5-yac0cnm5/lattice/improve/apply.py:604: TypeError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a0d_not_config - TypeError: cannot u...\nFAILED tests/improve/test_apply.py::test_a0e_a_cause_knob_is_the_owners - Typ...\n2 failed, 188 passed in 69.12s (0:01:09)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a2b_a_failed_gate_exits_1_and_keeps_everything",
+     "tests/improve/test_apply.py::test_a2b_all_the_gates_run_after_a_failure",
+     "tests/improve/test_apply.py::test_a2c_a_timeout_terminates_the_gate"
+    ],
+    "summary": "3 failed, 187 passed in 69.12s (0:01:09)",
+    "seconds": 69.4,
+    "tail": "s_everything(tmp_path: Path, capsys) -> None:\n        env = gated(tmp_path, '[\"true\", \"false\"]')\n        rc, d, _ = env.apply(capsys)\n>       assert rc == 1 and d[\"gates\"][\"status\"] == \"failed\"\nE       assert (0 == 1)\n\ntests/improve/test_apply.py:456: AssertionError\n__________________ test_a2b_all_the_gates_run_after_a_failure __________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3219/test_a2b_all_the_gates_run_aft0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10cbee950>\n\n    def test_a2b_all_the_gates_run_after_a_failure(tmp_path: Path, capsys) -> None:\n        env = gated(tmp_path, '[\"false\", \"echo second\"]')\n        rc, d, _ = env.apply(capsys)\n>       assert rc == 1 and [r[\"exit_code\"] for r in d[\"gates\"][\"results\"]] == [1, 0]\nE       assert (0 == 1)\n\ntests/improve/test_apply.py:465: AssertionError\n____________________ test_a2c_a_timeout_terminates_the_gate ____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3219/test_a2c_a_timeout_terminates_0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10cab3c50>\n\n    def test_a2c_a_timeout_terminates_the_gate(tmp_path: Path, capsys) -> None:\n        env = gated(tmp_path, '[\"sleep 30\"]', \"gate_timeout = 2\\nstop_grace = 1\\n\")\n        t0 = time.monotonic()\n        rc, d, _ = env.apply(capsys)\n        r = d[\"gates\"][\"results\"][0]\n>       assert rc == 1 and r[\"exit_code\"] == 124 and r[\"timed_out\"] is True and r[\"passed\"] is False\nE       assert (0 == 1)\n\ntests/improve/test_apply.py:473: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a2b_a_failed_gate_exits_1_and_keeps_everything\nFAILED tests/improve/test_apply.py::test_a2b_all_the_gates_run_after_a_failure\nFAILED tests/improve/test_apply.py::test_a2c_a_timeout_terminates_the_gate - ...\n3 failed, 187 passed in 69.12s (0:01:09)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a1_the_i3_draft_on_the_dogfood_studio_toml",
+     "tests/improve/test_apply.py::test_a2a_passing_gates_run_from_the_worktree_root",
+     "tests/improve/test_apply.py::test_a4a_a_present_key_is_replaced_keeping_its_comment",
+     "tests/improve/test_apply.py::test_a4b_insert_after_a_commented_header",
+     "tests/improve/test_apply.py::test_a4d_no_rebuild_table_appends_one",
+     "tests/improve/test_apply.py::test_a4f_node_gate_extends_the_scoped_list",
+     "tests/improve/test_apply.py::test_a4i_crlf_file",
+     "tests/improve/test_apply.py::test_a4j_no_final_newline_stays_missing",
+     "tests/improve/test_apply.py::test_a6_the_blob_and_tree_are_functions_of_the_input"
+    ],
+    "summary": "9 failed, 181 passed in 64.78s (0:01:04)",
+    "seconds": 65.0,
+    "tail": " = 'c224506e086d188c0669efe0842d18f5e993fd4c\\n'.startswith\nE            +      where 'c224506e086d188c0669efe0842d18f5e993fd4c\\n' = CompletedProcess(args=['git', '-C', '/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pyte...mp-3e1cd7f9:dogfood/studio/studio.toml'], returncode=0, stdout='c224506e086d188c0669efe0842d18f5e993fd4c\\n', stderr='').stdout\nE            +        where CompletedProcess(args=['git', '-C', '/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pyte...mp-3e1cd7f9:dogfood/studio/studio.toml'], returncode=0, stdout='c224506e086d188c0669efe0842d18f5e993fd4c\\n', stderr='') = git(PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3223/test_a6_the_blob_and_tree_are_0/0/repo'), 'rev-parse', 'improve/imp-3e1cd7f9:dogfood/studio/studio.toml')\nE            +          where PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3223/test_a6_the_blob_and_tree_are_0/0/repo') = <improve.test_apply.Env object at 0x10a134d00>.top\n\ntests/improve/test_apply.py:922: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a1_the_i3_draft_on_the_dogfood_studio_toml\nFAILED tests/improve/test_apply.py::test_a2a_passing_gates_run_from_the_worktree_root\nFAILED tests/improve/test_apply.py::test_a4a_a_present_key_is_replaced_keeping_its_comment\nFAILED tests/improve/test_apply.py::test_a4b_insert_after_a_commented_header\nFAILED tests/improve/test_apply.py::test_a4d_no_rebuild_table_appends_one - a...\nFAILED tests/improve/test_apply.py::test_a4f_node_gate_extends_the_scoped_list\nFAILED tests/improve/test_apply.py::test_a4i_crlf_file - assert b'[project]\\r...\nFAILED tests/improve/test_apply.py::test_a4j_no_final_newline_stays_missing\nFAILED tests/improve/test_apply.py::test_a6_the_blob_and_tree_are_functions_of_the_input\n9 failed, 181 passed in 64.78s (0:01:04)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a5c_branch_moved"
+    ],
+    "summary": "1 failed, 189 passed in 66.57s (0:01:06)",
+    "seconds": 66.9,
+    "tail": "........................................................................ [ 37%]\n..F..................................................................... [ 75%]\n..............................................                           [100%]\n=================================== FAILURES ===================================\n____________________________ test_a5c_branch_moved _____________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3224/test_a5c_branch_moved0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10cf75bd0>\n\n    def test_a5c_branch_moved(tmp_path: Path, capsys) -> None:\n        env = make_repo(tmp_path)\n        env.apply(capsys, ID, \"--no-gates\")\n        (env.worktree / \"extra.txt\").write_text(\"x\\n\")\n        git(env.worktree, \"add\", \"extra.txt\")\n        git(env.worktree, \"-c\", \"user.name=O\", \"-c\", \"user.email=o@e\", \"commit\", \"-qm\", \"more\")\n        before = fs_hash(env.tmp)\n        rc, d, _ = env.discard(capsys)\n>       assert rc == 3 and d[\"reason\"] == \"branch_moved\" and fs_hash(env.tmp) == before\nE       assert (0 == 3)\n\ntests/improve/test_apply.py:838: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a5c_branch_moved - assert (0 == 3)\n1 failed, 189 passed in 66.57s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a4a_a_present_key_is_replaced_keeping_its_comment",
+     "tests/improve/test_apply.py::test_a4f_node_gate_extends_the_scoped_list"
+    ],
+    "summary": "2 failed, 188 passed in 66.57s (0:01:06)",
+    "seconds": 66.9,
+    "tail": "nmore = 1\\n'\n        )\n        env, rc, d, _ = edit_case(tmp_path, capsys, toml)\n        assert rc == 0 and d[\"edit\"][\"action\"] == \"replaced\" and d[\"edit\"][\"line_no\"] == 3\n>       assert toml_after(env, d).decode() == toml.replace('\"3\"]', '\"2\"]')\nE       assert '[rebuild]\\ng... \\nmore = 1\\n' == '[rebuild]\\ng...d\\nmore = 1\\n'\nE         \nE         Skipping 57 identical leading characters in diff, use -v to show\nE         - s\", \"2\"]  # tuned\nE         ?           -------\nE         + s\", \"2\"]  \nE           more = 1\n\ntests/improve/test_apply.py:672: AssertionError\n__________________ test_a4f_node_gate_extends_the_scoped_list __________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3225/test_a4f_node_gate_extends_the0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10d24e150>\n\n    def test_a4f_node_gate_extends_the_scoped_list(tmp_path: Path, capsys) -> None:\n        toml = '[rebuild]\\nscoped_gate_args = [\"--layers\", \"CD\"]  # node\\n'\n        ident = \"imp-\" + hashlib.sha1(b\"gate:node:X\").hexdigest()[:8]\n        env, rc, d, _ = edit_case(tmp_path, capsys, toml, gate_events(\"node\"), ident)\n        assert rc == 0 and d[\"edit\"][\"action\"] == \"replaced\" and d[\"edit\"][\"op\"] == \"+=\"\n>       assert toml_after(env, d).decode() == (\n            '[rebuild]\\nscoped_gate_args = [\"--layers\", \"CD\", \"--x-repeats\", \"1\"]  # node\\n'\n        )\nE       assert '[rebuild]\\ns...ts\", \"1\"]  \\n' == '[rebuild]\\ns...1\"]  # node\\n'\nE         \nE         Skipping 59 identical leading characters in diff, use -v to show\nE         - s\", \"1\"]  # node\nE         ?           ------\nE         + s\", \"1\"]\n\ntests/improve/test_apply.py:718: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a4a_a_present_key_is_replaced_keeping_its_comment\nFAILED tests/improve/test_apply.py::test_a4f_node_gate_extends_the_scoped_list\n2 failed, 188 passed in 66.57s (0:01:06)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a5d_merged",
+     "tests/improve/test_apply.py::test_a7d_discard_after_merge"
+    ],
+    "summary": "2 failed, 188 passed in 68.80s (0:01:08)",
+    "seconds": 69.0,
+    "tail": "........................................................................ [ 37%]\n...F.........F.......................................................... [ 75%]\n..............................................                           [100%]\n=================================== FAILURES ===================================\n_______________________________ test_a5d_merged ________________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3227/test_a5d_merged0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10d3d1050>\n\n    def test_a5d_merged(tmp_path: Path, capsys) -> None:\n        env = make_repo(tmp_path)\n        rc, doc, _ = env.apply(capsys, ID, \"--no-gates\")\n        git(env.top, \"branch\", \"keep\", doc[\"commit\"][\"sha\"])\n        before = fs_hash(env.tmp)\n        rc, d, _ = env.discard(capsys)\n>       assert rc == 3 and d[\"reason\"] == \"merged\" and \"keep\" in d[\"detail\"]\nE       assert (0 == 3)\n\ntests/improve/test_apply.py:847: AssertionError\n_________________________ test_a7d_discard_after_merge _________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3227/test_a7d_discard_after_merge0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10d392dd0>\n\n    def test_a7d_discard_after_merge(tmp_path: Path, capsys) -> None:\n        env, _, _, _ = a7(tmp_path, capsys, (40, 41, 39))\n        rc, d, _ = env.discard(capsys)\n>       assert rc == 3 and d[\"reason\"] == \"merged\"\nE       assert (0 == 3)\n\ntests/improve/test_apply.py:976: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a5d_merged - assert (0 == 3)\nFAILED tests/improve/test_apply.py::test_a7d_discard_after_merge - assert (0 ...\n2 failed, 188 passed in 68.80s (0:01:08)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA12": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a0g_knob_pending_names_the_unmerged_change",
+     "tests/improve/test_apply.py::test_a4h_already_set"
+    ],
+    "summary": "2 failed, 188 passed in 69.35s (0:01:09)",
+    "seconds": 69.6,
+    "tail": "s then already set)\n        git(env.top, \"merge\", \"-q\", \"--ff-only\", \"improve/\" + ID)\n>       refused(capsys, env, \"imp-50c7f46a\", 3, \"already_set\")\n\ntests/improve/test_apply.py:243: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncapsys = <_pytest.capture.CaptureFixture object at 0x10aaf39b0>\nenv = <improve.test_apply.Env object at 0x10c66d260>, ident = 'imp-50c7f46a'\nrc_want = 3, reason = 'already_set', extra = ()\n\n    def refused(capsys, env: Env, ident: str, rc_want: int, reason: str, *extra: str) -> dict[str, Any]:\n        before = fs_hash(env.tmp)\n        rc, doc, err = env.apply(capsys, ident, *extra)\n        assert rc == rc_want == 3, (rc, err)\n>       assert doc[\"refused\"] is True and doc[\"reason\"] == reason and doc[\"command\"] == \"apply\"\nE       AssertionError: assert (True is True and 'edit_check_failed' == 'already_set'\nE         \nE         - already_set\nE         + edit_check_failed)\n\ntests/improve/test_apply.py:190: AssertionError\n_____________________________ test_a4h_already_set _____________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3229/test_a4h_already_set0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10c213d50>\n\n    def test_a4h_already_set(tmp_path: Path, capsys) -> None:\n        toml = '[rebuild]\\nlevel_gate_args = [\"--x-repeats\", \"2\"]\\n'\n        _, rc, d, _ = edit_case(tmp_path, capsys, toml)\n>       assert rc == 3 and d[\"reason\"] == \"already_set\"\nE       AssertionError: assert (3 == 3 and 'edit_check_failed' == 'already_set'\nE         \nE         - already_set\nE         + edit_check_failed)\n\ntests/improve/test_apply.py:738: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a0g_knob_pending_names_the_unmerged_change\nFAILED tests/improve/test_apply.py::test_a4h_already_set - AssertionError: as...\n2 failed, 188 passed in 69.35s (0:01:09)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a3_static_imports_and_literals"
+    ],
+    "summary": "1 failed, 189 passed in 69.41s (0:01:09)",
+    "seconds": 69.7,
+    "tail": "................................... [ 75%]\n..............................................                           [100%]\n=================================== FAILURES ===================================\n_____________________ test_a3_static_imports_and_literals ______________________\n\n    def test_a3_static_imports_and_literals() -> None:\n        src = (IMPROVE / \"apply.py\").read_text()\n        tree = ast.parse(src)\n        top_level: list[str] = []\n        for n in tree.body:\n            if isinstance(n, ast.Import):\n                top_level += [a.name for a in n.names]\n            elif isinstance(n, ast.ImportFrom):\n                top_level.append(n.module or \"\")\n        for m in top_level:\n            root = m.split(\".\")[0]\n            assert root in sys.stdlib_module_names or m.startswith(\"lattice.improve\"), m\n        lazy = {\n            n.module\n            for f in ast.walk(tree) if isinstance(f, ast.FunctionDef)\n            for n in ast.walk(f) if isinstance(n, ast.ImportFrom)\n        }  # fmt: skip\n        assert lazy <= {\"lattice.studio.rebuild\", \"lattice.studio.state\"}, lazy\n        for word in (\"claude\", \"anthropic\", \"lattice.llm\"):\n>           assert word not in src, word\nE           AssertionError: claude\nE           assert 'claude' not in '\"\"\"``lattic...eturn code\\n'\nE             \nE             'claude' is contained here:\nE               ess.run([\"claude\", \"-p\", message], capture_output=True,\nE             ?           ++++++\nE                                                text=True).stdout\nE                   warnings = list(edit.warnings)\nE                   integration = rebuild.get(\"integration_branch\")...\nE             \nE             ...Full output truncated (355 lines hidden), use '-vv' to show\n\ntests/improve/test_apply.py:629: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a3_static_imports_and_literals - Ass...\n1 failed, 189 passed in 69.41s (0:01:09)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA13": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a0f_a_second_apply_changes_nothing"
+    ],
+    "summary": "1 failed, 189 passed in 69.29s (0:01:09)",
+    "seconds": 69.5,
+    "tail": "....................F............................................... [ 37%]\n........................................................................ [ 75%]\n..............................................                           [100%]\n=================================== FAILURES ===================================\n___________________ test_a0f_a_second_apply_changes_nothing ____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3231/test_a0f_a_second_apply_change0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10d2d6d50>\n\n    def test_a0f_a_second_apply_changes_nothing(tmp_path: Path, capsys) -> None:\n        env = make_repo(tmp_path)\n        rc, doc, _ = env.apply(capsys, ID, \"--no-gates\")\n        assert rc == 0\n        before = fs_hash(env.tmp)\n>       d = refused(capsys, env, ID, 3, \"already_applied\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/improve/test_apply.py:230: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncapsys = <_pytest.capture.CaptureFixture object at 0x10d2d6d50>\nenv = <improve.test_apply.Env object at 0x10b85f9b0>, ident = 'imp-3e1cd7f9'\nrc_want = 3, reason = 'already_applied', extra = ()\n\n    def refused(capsys, env: Env, ident: str, rc_want: int, reason: str, *extra: str) -> dict[str, Any]:\n        before = fs_hash(env.tmp)\n        rc, doc, err = env.apply(capsys, ident, *extra)\n        assert rc == rc_want == 3, (rc, err)\n>       assert doc[\"refused\"] is True and doc[\"reason\"] == reason and doc[\"command\"] == \"apply\"\nE       AssertionError: assert (True is True and 'knob_pending' == 'already_applied'\nE         \nE         - already_applied\nE         + knob_pending)\n\ntests/improve/test_apply.py:190: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a0f_a_second_apply_changes_nothing\n1 failed, 189 passed in 69.29s (0:01:09)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA15": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a0j_untracked_files_are_ignored_and_untouched",
+     "tests/improve/test_apply.py::test_a0lmn_branch_and_worktree_refusals",
+     "tests/improve/test_apply.py::test_a1_a_project_below_the_repository_top_and_a_custom_branch",
+     "tests/improve/test_apply.py::test_a1_the_i3_draft_on_the_dogfood_studio_toml",
+     "tests/improve/test_apply.py::test_a2a_passing_gates_run_from_the_worktree_root",
+     "tests/improve/test_apply.py::test_a2b_a_failed_gate_exits_1_and_keeps_everything",
+     "tests/improve/test_apply.py::test_a3_the_default_state_dir_only_adds_the_exclude_line",
+     "tests/improve/test_apply.py::test_a3_the_owners_checkout_is_byte_identical",
+     "tests/improve/test_apply.py::test_a4d_no_rebuild_table_appends_one",
+     "tests/improve/test_apply.py::test_a4i_crlf_file",
+     "tests/improve/test_apply.py::test_a5_a_missing_worktree_dir_still_drops_the_branch",
+     "tests/improve/test_apply.py::test_a5a_discard_removes_what_apply_made",
+     "tests/improve/test_apply.py::test_a5c_branch_moved",
+     "tests/improve/test_apply.py::test_a5d_merged",
+     "tests/improve/test_apply.py::test_a5e_worktree_dirty"
+    ],
+    "summary": "15 failed, 175 passed in 68.49s (0:01:08)",
+    "seconds": 68.8,
+    "tail": " To guard against symlink races, we use the standard\n            # lstat()/open()/fstat() trick.\n            assert func is os.lstat\n            if orig_entry is None:\n>               orig_st = os.lstat(name, dir_fd=dirfd)\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE               FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3233/test_a5_a_missing_worktree_dir0/repo.improve/imp-3e1cd7f9')\n\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/shutil.py:760: FileNotFoundError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a0j_untracked_files_are_ignored_and_untouched\nFAILED tests/improve/test_apply.py::test_a0lmn_branch_and_worktree_refusals\nFAILED tests/improve/test_apply.py::test_a1_the_i3_draft_on_the_dogfood_studio_toml\nFAILED tests/improve/test_apply.py::test_a1_a_project_below_the_repository_top_and_a_custom_branch\nFAILED tests/improve/test_apply.py::test_a2a_passing_gates_run_from_the_worktree_root\nFAILED tests/improve/test_apply.py::test_a2b_a_failed_gate_exits_1_and_keeps_everything\nFAILED tests/improve/test_apply.py::test_a3_the_owners_checkout_is_byte_identical\nFAILED tests/improve/test_apply.py::test_a3_the_default_state_dir_only_adds_the_exclude_line\nFAILED tests/improve/test_apply.py::test_a4d_no_rebuild_table_appends_one - F...\nFAILED tests/improve/test_apply.py::test_a4i_crlf_file - FileNotFoundError: [...\nFAILED tests/improve/test_apply.py::test_a5a_discard_removes_what_apply_made\nFAILED tests/improve/test_apply.py::test_a5c_branch_moved - FileNotFoundError...\nFAILED tests/improve/test_apply.py::test_a5d_merged - AssertionError: assert ...\nFAILED tests/improve/test_apply.py::test_a5e_worktree_dirty - FileNotFoundErr...\nFAILED tests/improve/test_apply.py::test_a5_a_missing_worktree_dir_still_drops_the_branch\n15 failed, 175 passed in 68.49s (0:01:08)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA14": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a4i_crlf_file"
+    ],
+    "summary": "1 failed, 189 passed in 69.11s (0:01:09)",
+    "seconds": 69.4,
+    "tail": ".................................................................F...... [ 37%]\n........................................................................ [ 75%]\n..............................................                           [100%]\n=================================== FAILURES ===================================\n______________________________ test_a4i_crlf_file ______________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3232/test_a4i_crlf_file0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10b56cad0>\n\n    def test_a4i_crlf_file(tmp_path: Path, capsys) -> None:\n        toml = b'[project]\\r\\nname = \"p\"\\r\\n\\r\\n[rebuild]\\r\\ngates = [\"true\"]\\r\\n'\n        env, rc, d, _ = edit_case(tmp_path, capsys, toml)\n        assert rc == 0 and d[\"edit\"][\"action\"] == \"inserted\"\n>       assert toml_after(env, d) == toml.replace(b\"[rebuild]\\r\\n\", b\"[rebuild]\\r\\n\" + LINE.encode()\n                                                  + b\"\\r\\n\")  # fmt: skip\nE       assert b'[project]\\r... [\"true\"]\\r\\n' == b'[project]\\r... [\"true\"]\\r\\n'\nE         \nE         At index 74 diff: b'\\n' != b'\\r'\nE         Use -v to get more diff\n\ntests/improve/test_apply.py:753: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a4i_crlf_file - assert b'[project]\\r...\n1 failed, 189 passed in 69.11s (0:01:09)\n"
+   },
+   "verdict": "caught"
+  },
+  "IA16": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_apply.py::test_a0i_dirty_checkout_modified_and_staged"
+    ],
+    "summary": "1 failed, 189 passed in 65.85s (0:01:05)",
+    "seconds": 66.1,
+    "tail": "...........................F............................................ [ 37%]\n........................................................................ [ 75%]\n..............................................                           [100%]\n=================================== FAILURES ===================================\n_________________ test_a0i_dirty_checkout_modified_and_staged __________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3236/test_a0i_dirty_checkout_modifi0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x10a70a350>\n\n    def test_a0i_dirty_checkout_modified_and_staged(tmp_path: Path, capsys) -> None:\n        env = make_repo(tmp_path)\n        (env.top / \"README\").write_text(\"changed\\n\")\n>       refused(capsys, env, ID, 3, \"dirty_checkout\")\n\ntests/improve/test_apply.py:255: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ncapsys = <_pytest.capture.CaptureFixture object at 0x10a70a350>\nenv = <improve.test_apply.Env object at 0x10a709f50>, ident = 'imp-3e1cd7f9'\nrc_want = 3, reason = 'dirty_checkout', extra = ()\n\n    def refused(capsys, env: Env, ident: str, rc_want: int, reason: str, *extra: str) -> dict[str, Any]:\n        before = fs_hash(env.tmp)\n        rc, doc, err = env.apply(capsys, ident, *extra)\n>       assert rc == rc_want == 3, (rc, err)\nE       AssertionError: (0, '')\nE       assert 0 == 3\n\ntests/improve/test_apply.py:189: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_apply.py::test_a0i_dirty_checkout_modified_and_staged\n1 failed, 189 passed in 65.85s (0:01:05)\n"
+   },
+   "verdict": "caught"
+  }
+ }
+}

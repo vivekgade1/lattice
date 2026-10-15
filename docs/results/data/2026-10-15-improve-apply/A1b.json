@@ -1,0 +1,101 @@
+{
+ "id": "A1b",
+ "predicted": "exit 0; main a0db033; inserted line 22; sha256 4c4d6bd878d47f0d; blob 12b2948 -> b8a7c2f; tree c585c3bd71872cd3; gates skipped; integration_branch warning",
+ "observed": "tree c585c3bd71872cd3; gates skipped; 0 problem(s) over 10 runs",
+ "pass": true,
+ "problems": [],
+ "digests": [
+  "306bfb45a3d9ce3d",
+  "306bfb45a3d9ce3d",
+  "306bfb45a3d9ce3d",
+  "306bfb45a3d9ce3d",
+  "306bfb45a3d9ce3d",
+  "306bfb45a3d9ce3d",
+  "306bfb45a3d9ce3d",
+  "306bfb45a3d9ce3d",
+  "306bfb45a3d9ce3d",
+  "306bfb45a3d9ce3d"
+ ],
+ "raw": {
+  "format": 1,
+  "command": "apply",
+  "proposal": {
+   "id": "imp-3e1cd7f9",
+   "kind": "change_set",
+   "signal_key": "gate:level_regression:X",
+   "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]"
+  },
+  "draft": {
+   "template": "config",
+   "as_of": "2026-10-12T23:07:11Z",
+   "toml": "[rebuild]\nlevel_gate_args = [\"--x-repeats\", \"2\"]",
+   "current": "current: not set",
+   "expected": "expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)",
+   "sha256": "4c4d6bd878d47f0d072cee81dbee2b51371b3021950d7ba989731114538d37e4"
+  },
+  "edit": {
+   "file": "studio.toml",
+   "table": "rebuild",
+   "key": "level_gate_args",
+   "op": "=",
+   "old": null,
+   "new": [
+    "--x-repeats",
+    "2"
+   ],
+   "line": "level_gate_args = [\"--x-repeats\", \"2\"]",
+   "line_no": 22,
+   "action": "inserted",
+   "diff": "diff --git a/studio.toml b/studio.toml\nindex 12b2948..b8a7c2f 100644\n--- a/studio.toml\n+++ b/studio.toml\n@@ -19,6 +19,7 @@ go_src = \"/Users/vivekgade/Documents/streak\"\n x_repeats = 5\n \n [rebuild]\n+level_gate_args = [\"--x-repeats\", \"2\"]\n repo = \".\"\n gates = [\"./check.sh\"]                          # writes metrics/last-check.json when Studio runs it\n findings_json = \"metrics/last-check.json\"       # findings by scenario/rule, so areas can be scoped\n"
+  },
+  "base": {
+   "branch": "main",
+   "sha": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662"
+  },
+  "branch": "improve/imp-3e1cd7f9",
+  "worktree": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/streak.improve/imp-3e1cd7f9",
+  "commit": {
+   "sha": "1319203d691d33e4a0b6607ffde15e6478234b7b",
+   "tree": "c585c3bd71872cd35f7099b3d3097a8d79370038",
+   "message": "improve: [rebuild] level_gate_args = [\"--x-repeats\", \"2\"]\n\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X.\nDraft as of 2026-10-12T23:07:11Z; current: not set.\nPredicted: expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\nApplied by `lattice improve apply`; not merged. The owner reviews and merges.\n\nLattice-Improve: imp-3e1cd7f9\n"
+  },
+  "applied_at": "2026-10-15T13:25:58Z",
+  "gates": {
+   "status": "skipped",
+   "timeout_s": 900.0,
+   "results": [],
+   "untracked_after": []
+  },
+  "integration_branch": "build/streak",
+  "next": [
+   {
+    "step": "review",
+    "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/streak diff a0db033af7c51d90fda4ff1d35e10d2f3aa90662 improve/imp-3e1cd7f9"
+   },
+   {
+    "step": "merge",
+    "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/streak merge improve/imp-3e1cd7f9"
+   },
+   {
+    "step": "close",
+    "command": "lattice improve ledger --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/streak --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/state --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit 1319203d691d33e4a0b6607ffde15e6478234b7b"
+   },
+   {
+    "step": "verify",
+    "command": "lattice improve verify imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/streak --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/state --at <YYYY-MM-DDTHH:MM:SSZ the merge landed>"
+   },
+   {
+    "step": "tidy",
+    "command": "git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/streak worktree remove /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/streak.improve/imp-3e1cd7f9 && git -C /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/streak branch -d improve/imp-3e1cd7f9"
+   },
+   {
+    "step": "drop",
+    "command": "lattice improve apply --discard imp-3e1cd7f9 --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/streak --state /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/apply/probes/A1b/state"
+   }
+  ],
+  "warnings": [
+   "[rebuild] integration_branch is build/streak; this change is based on main, the branch checked out (Studio reads studio.toml there)"
+  ]
+ },
+ "seconds": 5.7
+}

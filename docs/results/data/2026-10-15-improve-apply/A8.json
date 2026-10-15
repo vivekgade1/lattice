@@ -1,0 +1,168 @@
+{
+ "id": "A8",
+ "predicted": "tests/improve + tests/test_cli.py 0 failures; improve2 15 of 15; IM1-IM21 21 of 21; check.sh PASS 435 cases; the five older commands and their --help byte-identical to a4ab4a1; improve --help differs by the apply lines only",
+ "observed": "pytest `200 passed in 24.51s`; improve2 `probes: 15/15 pass`; IM {'killed': 21, 'total': 21}; identity 22/22; 0 problem(s)",
+ "pass": true,
+ "problems": [],
+ "raw": {
+  "pytest": {
+   "rc": 0,
+   "tail": "200 passed in 24.51s",
+   "seconds": 24.7
+  },
+  "improve2_probes": {
+   "rc": 0,
+   "tail": "probes: 15/15 pass",
+   "seconds": 56.3
+  },
+  "IM": {
+   "killed": 21,
+   "total": 21
+  },
+  "identity": {
+   "rows": [
+    {
+     "label": "report (I-3 9)",
+     "rc": 0,
+     "identical": true,
+     "digest": "096c5b190680c011"
+    },
+    {
+     "label": "report --json (I-3 9)",
+     "rc": 0,
+     "identical": true,
+     "digest": "95b6c922b9e4bed5"
+    },
+    {
+     "label": "draft D1b (I-3 9)",
+     "rc": 0,
+     "identical": true,
+     "digest": "4c4d6bd878d47f0d"
+    },
+    {
+     "label": "draft D1b --json (I-3 9)",
+     "rc": 0,
+     "identical": true,
+     "digest": "59d38a00064a6157"
+    },
+    {
+     "label": "draft refused (I-3 9)",
+     "rc": 3,
+     "identical": true,
+     "digest": "4051be1701f867e8"
+    },
+    {
+     "label": "draft unknown (I-3 9)",
+     "rc": 3,
+     "identical": true,
+     "digest": "a6fc32d928186a78"
+    },
+    {
+     "label": "verify V1a (I-3 18 + V1a)",
+     "rc": 0,
+     "identical": true,
+     "digest": "a9f212e1414952e3"
+    },
+    {
+     "label": "verify V1a --json (I-3 18 + V1a)",
+     "rc": 0,
+     "identical": true,
+     "digest": "c62a014d8a7b15ed"
+    },
+    {
+     "label": "report (I-3 18 + V1a)",
+     "rc": 0,
+     "identical": true,
+     "digest": "d1bb9445e4371c4d"
+    },
+    {
+     "label": "ledger (I-3 18 + V1a)",
+     "rc": 0,
+     "identical": true,
+     "digest": "720b6bd50309101f"
+    },
+    {
+     "label": "ledger --json (I-3 18 + V1a)",
+     "rc": 0,
+     "identical": true,
+     "digest": "35464478a1003040"
+    },
+    {
+     "label": "report (I-R)",
+     "rc": 0,
+     "identical": true,
+     "digest": "2a5fa9e3cc1393b4"
+    },
+    {
+     "label": "report --json (I-R)",
+     "rc": 0,
+     "identical": true,
+     "digest": "f5e77afc7b7d4401"
+    },
+    {
+     "label": "ledger (I-R)",
+     "rc": 0,
+     "identical": true,
+     "digest": "fcc0e8760d2e22e9"
+    },
+    {
+     "label": "ledger --json (I-R)",
+     "rc": 0,
+     "identical": true,
+     "digest": "68bd4e3c8e352217"
+    },
+    {
+     "label": "import-plan",
+     "rc": 0,
+     "identical": true,
+     "digest": "a8631b8fc5a289d3"
+    },
+    {
+     "label": "report --help",
+     "rc": 0,
+     "identical": true,
+     "digest": "9862c08da7c8ddd1"
+    },
+    {
+     "label": "import-plan --help",
+     "rc": 0,
+     "identical": true,
+     "digest": "d1359de1e246cd1c"
+    },
+    {
+     "label": "ledger --help",
+     "rc": 0,
+     "identical": true,
+     "digest": "ccf69d9eb52fb1c8"
+    },
+    {
+     "label": "verify --help",
+     "rc": 0,
+     "identical": true,
+     "digest": "63bbcbf6ee1b62c8"
+    },
+    {
+     "label": "draft --help",
+     "rc": 0,
+     "identical": true,
+     "digest": "766624f5cc1d10e4"
+    },
+    {
+     "label": "improve --help minus the apply lines",
+     "rc": 0,
+     "identical": true,
+     "digest": "03204c21fc214e57"
+    }
+   ],
+   "issues": [],
+   "equal": 22,
+   "total": 22
+  },
+  "check_sh": {
+   "rc": 0,
+   "tail": "  3.04s one_rebuild_at_a_time_and_stop (start 0.28, db 0.00, steps 2.71, 14 requests)",
+   "seconds": 56.9
+  }
+ },
+ "seconds": 139.9
+}

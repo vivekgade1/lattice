@@ -1,0 +1,266 @@
+{
+ "id": "A7",
+ "predicted": "a improved exit 0 100.00 -> 40.00, delta -60.00, rel -0.600, predicted -60.0, error 0.000, entry.commit = apply sha; b not_improved exit 1 error 1.000; c closed; d merged (4 of 4)",
+ "observed": "a improved -60.0; b not_improved; 0 problem(s)",
+ "pass": true,
+ "problems": [],
+ "digests": [
+  "421491f0c381d3d4",
+  "421491f0c381d3d4",
+  "421491f0c381d3d4",
+  "421491f0c381d3d4",
+  "421491f0c381d3d4",
+  "421491f0c381d3d4",
+  "421491f0c381d3d4",
+  "421491f0c381d3d4",
+  "421491f0c381d3d4",
+  "421491f0c381d3d4"
+ ],
+ "raw": {
+  "a": {
+   "format": 1,
+   "command": "verify",
+   "id": "imp-3e1cd7f9",
+   "entry": {
+    "id": "imp-3e1cd7f9",
+    "signal": "gate:level_regression:X",
+    "status": "closed",
+    "commit": "c13c07ce77ab082e7bd7b2f03f9c08a864a9fea5",
+    "ts": "2026-10-15T13:54:21Z"
+   },
+   "closing_point": {
+    "ts": "2026-10-01T12:00:00Z",
+    "source": "--at"
+   },
+   "keys": [
+    "gate:level_regression:X"
+   ],
+   "family": "cost",
+   "unit": "s",
+   "verdict": "improved",
+   "reason": "cost fell and every after value is below every before value",
+   "direction": "down",
+   "before": {
+    "n": 3,
+    "frequency": 3,
+    "cost_per": 100.0,
+    "min": 99.0,
+    "max": 101.0,
+    "first_ts": "2026-10-01T10:00:00Z",
+    "last_ts": "2026-10-01T11:00:00Z",
+    "exposure": null,
+    "evidence": [
+     "e-0000",
+     "e-0001",
+     "e-0002"
+    ]
+   },
+   "after": {
+    "n": 3,
+    "frequency": 3,
+    "cost_per": 40.0,
+    "min": 39.0,
+    "max": 41.0,
+    "first_ts": "2026-10-01T12:30:00Z",
+    "last_ts": "2026-10-01T13:30:00Z",
+    "exposure": null,
+    "evidence": [
+     "e-0010",
+     "e-0011",
+     "e-0012"
+    ]
+   },
+   "change": {
+    "delta": -60.0,
+    "relative": -0.6,
+    "separated": true
+   },
+   "predicted": {
+    "delta": -60.0,
+    "unit": "s",
+    "source": "the report's expected saving, rebuilt from the before window alone (none was recorded)",
+    "basis": "layer X seconds scale with tries per race (x_repeats); x_repeats 5 -> 2"
+   },
+   "prediction_note": "",
+   "error": 0.0,
+   "excluded": {
+    "at_close": 0,
+    "undated": 0
+   },
+   "context": {
+    "other_closes": [],
+    "per_window": {
+     "before": {
+      "x_repeats": [
+       5
+      ],
+      "selected": [],
+      "mode": [
+       "regression"
+      ],
+      "sha": []
+     },
+     "after": {
+      "x_repeats": [
+       2
+      ],
+      "selected": [],
+      "mode": [
+       "regression"
+      ],
+      "sha": []
+     }
+    }
+   },
+   "per_key": [
+    {
+     "key": "gate:level_regression:X",
+     "family": "cost",
+     "verdict": "improved",
+     "reason": "cost fell and every after value is below every before value",
+     "n_before": 3,
+     "n_after": 3,
+     "frequency_before": 3,
+     "frequency_after": 3,
+     "cost_per_before": 100.0,
+     "cost_per_after": 40.0,
+     "delta": -60.0
+    }
+   ],
+   "blind_spots": [
+    "confounders: everything else that changed between the two windows is credited to this change (a new model, a slower machine, a different plan)",
+    "small n: 3 against 3 is the floor; full separation of 3 against 3 is p = 0.05 one-sided, weak evidence, and it is one project's log",
+    "the prediction is a heuristic: only the layer X templates predict (X proportional to repeats); frequency x cost is the cost of a problem, not a predicted saving",
+    "Goodhart: hiding a signal (a renamed key, a gate that is not run) reads as improved; exposure catches 'not exercised', not 'not logged'",
+    "unseen: human time, coverage and risk (fewer repeats save seconds and look for fewer races)",
+    "timing: the close is when the owner ran the ledger (or the time given with --at), and a gate run is stamped when it ends"
+   ],
+   "warnings": [
+    "closing point overridden by --at (ledger ts 2026-10-15T13:54:21Z)"
+   ]
+  },
+  "b": {
+   "format": 1,
+   "command": "verify",
+   "id": "imp-3e1cd7f9",
+   "entry": {
+    "id": "imp-3e1cd7f9",
+    "signal": "gate:level_regression:X",
+    "status": "closed",
+    "commit": "5abee0159e64ebcf21c38ec30ded9e21e183cb19",
+    "ts": "2026-10-15T13:54:22Z"
+   },
+   "closing_point": {
+    "ts": "2026-10-01T12:00:00Z",
+    "source": "--at"
+   },
+   "keys": [
+    "gate:level_regression:X"
+   ],
+   "family": "cost",
+   "unit": "s",
+   "verdict": "not_improved",
+   "reason": "no material change",
+   "direction": "flat",
+   "before": {
+    "n": 3,
+    "frequency": 3,
+    "cost_per": 100.0,
+    "min": 99.0,
+    "max": 101.0,
+    "first_ts": "2026-10-01T10:00:00Z",
+    "last_ts": "2026-10-01T11:00:00Z",
+    "exposure": null,
+    "evidence": [
+     "e-0000",
+     "e-0001",
+     "e-0002"
+    ]
+   },
+   "after": {
+    "n": 3,
+    "frequency": 3,
+    "cost_per": 100.0,
+    "min": 99.0,
+    "max": 101.0,
+    "first_ts": "2026-10-01T12:30:00Z",
+    "last_ts": "2026-10-01T13:30:00Z",
+    "exposure": null,
+    "evidence": [
+     "e-0010",
+     "e-0011",
+     "e-0012"
+    ]
+   },
+   "change": {
+    "delta": 0.0,
+    "relative": 0.0,
+    "separated": false
+   },
+   "predicted": {
+    "delta": -60.0,
+    "unit": "s",
+    "source": "the report's expected saving, rebuilt from the before window alone (none was recorded)",
+    "basis": "layer X seconds scale with tries per race (x_repeats); x_repeats 5 -> 2"
+   },
+   "prediction_note": "",
+   "error": 1.0,
+   "excluded": {
+    "at_close": 0,
+    "undated": 0
+   },
+   "context": {
+    "other_closes": [],
+    "per_window": {
+     "before": {
+      "x_repeats": [
+       5
+      ],
+      "selected": [],
+      "mode": [
+       "regression"
+      ],
+      "sha": []
+     },
+     "after": {
+      "x_repeats": [
+       2
+      ],
+      "selected": [],
+      "mode": [
+       "regression"
+      ],
+      "sha": []
+     }
+    }
+   },
+   "per_key": [
+    {
+     "key": "gate:level_regression:X",
+     "family": "cost",
+     "verdict": "not_improved",
+     "reason": "no material change",
+     "n_before": 3,
+     "n_after": 3,
+     "frequency_before": 3,
+     "frequency_after": 3,
+     "cost_per_before": 100.0,
+     "cost_per_after": 100.0,
+     "delta": 0.0
+    }
+   ],
+   "blind_spots": [
+    "confounders: everything else that changed between the two windows is credited to this change (a new model, a slower machine, a different plan)",
+    "small n: 3 against 3 is the floor; full separation of 3 against 3 is p = 0.05 one-sided, weak evidence, and it is one project's log",
+    "the prediction is a heuristic: only the layer X templates predict (X proportional to repeats); frequency x cost is the cost of a problem, not a predicted saving",
+    "Goodhart: hiding a signal (a renamed key, a gate that is not run) reads as improved; exposure catches 'not exercised', not 'not logged'",
+    "unseen: human time, coverage and risk (fewer repeats save seconds and look for fewer races)",
+    "timing: the close is when the owner ran the ledger (or the time given with --at), and a gate run is stamped when it ends"
+   ],
+   "warnings": [
+    "closing point overridden by --at (ledger ts 2026-10-15T13:54:22Z)"
+   ]
+  }
+ },
+ "seconds": 9.8
+}
