@@ -1,0 +1,7 @@
+{
+ "id": "E-field-F6",
+ "predicted": "two gate commands, only the second rewrites the report: only its events; 10 runs identical (masked)",
+ "observed": "commands ['./gate.sh', './gate1.sh']; setup by command [('./gate.sh', False), ('./gate1.sh', True)]; identical True",
+ "pass": true,
+ "wall_s": 23.8
+}

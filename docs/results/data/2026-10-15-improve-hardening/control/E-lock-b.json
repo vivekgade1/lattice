@@ -1,0 +1,89 @@
+{
+ "id": "E-lock-b",
+ "predicted": "10/10: returns in 2.0-2.5 s, the 2.3 warning, line first",
+ "observed": "0/10 pass; elapsed 0.0-0.001 s; warnings [0]",
+ "pass": false,
+ "runs": [
+  {
+   "elapsed": 0.001,
+   "warnings": [],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/0041-lock/events.jsonl",
+   "pass": false
+  },
+  {
+   "elapsed": 0.001,
+   "warnings": [],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/0042-lock/events.jsonl",
+   "pass": false
+  },
+  {
+   "elapsed": 0.001,
+   "warnings": [],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/0043-lock/events.jsonl",
+   "pass": false
+  },
+  {
+   "elapsed": 0.0,
+   "warnings": [],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/0044-lock/events.jsonl",
+   "pass": false
+  },
+  {
+   "elapsed": 0.0,
+   "warnings": [],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/0045-lock/events.jsonl",
+   "pass": false
+  },
+  {
+   "elapsed": 0.0,
+   "warnings": [],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/0046-lock/events.jsonl",
+   "pass": false
+  },
+  {
+   "elapsed": 0.0,
+   "warnings": [],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/0047-lock/events.jsonl",
+   "pass": false
+  },
+  {
+   "elapsed": 0.001,
+   "warnings": [],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/0048-lock/events.jsonl",
+   "pass": false
+  },
+  {
+   "elapsed": 0.001,
+   "warnings": [],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/0049-lock/events.jsonl",
+   "pass": false
+  },
+  {
+   "elapsed": 0.0,
+   "warnings": [],
+   "holder_at": 1,
+   "mine_at": 0,
+   "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/improvehard/ihc/0050-lock/events.jsonl",
+   "pass": false
+  }
+ ],
+ "wall_s": 16.6
+}

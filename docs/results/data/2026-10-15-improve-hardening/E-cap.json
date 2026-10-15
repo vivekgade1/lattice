@@ -1,0 +1,59 @@
+{
+ "id": "E-cap",
+ "predicted": "10/10: 65536 written, 65537 dropped",
+ "observed": "10/10 pass; 1 passed, 23 deselected in 0.12s",
+ "pass": true,
+ "runs": [
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  }
+ ],
+ "wall_s": 3.5
+}

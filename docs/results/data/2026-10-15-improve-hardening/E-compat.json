@@ -1,0 +1,11 @@
+{
+ "id": "E-compat",
+ "predicted": "0 differing bytes between the two trees",
+ "observed": "0 differing bytes of 243013 over 149 comparisons (differing: []); 10 runs identical: True",
+ "pass": true,
+ "comparisons": 149,
+ "compared_bytes": 243013,
+ "differing_bytes": 0,
+ "differing": [],
+ "wall_s": 4.0
+}

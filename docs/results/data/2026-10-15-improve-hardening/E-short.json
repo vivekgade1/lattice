@@ -1,0 +1,59 @@
+{
+ "id": "E-short",
+ "predicted": "10/10: a <=7-byte write gives one whole line; an OSError on the 3rd call warns and the next append heals",
+ "observed": "10/10 pass; 1 passed, 23 deselected in 0.24s",
+ "pass": true,
+ "runs": [
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.24s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.22s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.21s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  },
+  {
+   "rc": 0,
+   "summary": "1 passed, 23 deselected in 0.12s",
+   "pass": true
+  }
+ ],
+ "wall_s": 3.8
+}

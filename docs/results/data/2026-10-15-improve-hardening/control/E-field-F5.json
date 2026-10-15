@@ -1,0 +1,7 @@
+{
+ "id": "E-field-F5",
+ "predicted": "only finite numbers: {'database_server_s': 2.5}; 10 runs identical (masked)",
+ "observed": "3 events; setup values ['<absent>', '<absent>', '<absent>']; identical True",
+ "pass": false,
+ "wall_s": 18.6
+}

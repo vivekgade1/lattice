@@ -1,0 +1,8 @@
+{
+ "id": "E-cap",
+ "predicted": "10/10: 65536 written, 65537 dropped",
+ "observed": "n/a in the control arm (the tests import the new API)",
+ "pass": true,
+ "skipped": true,
+ "wall_s": 0.0
+}

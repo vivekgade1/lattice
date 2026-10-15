@@ -1,0 +1,199 @@
+{
+ "id": "E-heal",
+ "predicted": "10/10: file = old + newline + line; 4 events, 1 warning; 2nd append no blank",
+ "observed": "10/10 pass; read 4 events, warnings ['events.jsonl line 4: not an event (skipped)']",
+ "pass": true,
+ "runs": [
+  {
+   "mid_tail": "\n{\"v\":1,\"ts\":\"2026-10-15T13:35:34Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-d15c037fd6d346b8\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:35:34Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-a480da8d26784437\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 4,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2",
+     "new"
+    ]
+   },
+   "bytes_ok": true,
+   "second_ok": true,
+   "pass": true
+  },
+  {
+   "mid_tail": "\n{\"v\":1,\"ts\":\"2026-10-15T13:35:34Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-1e8322f69cf4408f\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:35:34Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-8d0ea218dea5448b\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 4,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2",
+     "new"
+    ]
+   },
+   "bytes_ok": true,
+   "second_ok": true,
+   "pass": true
+  },
+  {
+   "mid_tail": "\n{\"v\":1,\"ts\":\"2026-10-15T13:35:34Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-9e5821138ce94208\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:35:34Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-3869f487cad44f3a\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 4,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2",
+     "new"
+    ]
+   },
+   "bytes_ok": true,
+   "second_ok": true,
+   "pass": true
+  },
+  {
+   "mid_tail": "\n{\"v\":1,\"ts\":\"2026-10-15T13:35:34Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-0818ae14fe6847d9\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:35:34Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-e1d5ab801bd043cf\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 4,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2",
+     "new"
+    ]
+   },
+   "bytes_ok": true,
+   "second_ok": true,
+   "pass": true
+  },
+  {
+   "mid_tail": "\n{\"v\":1,\"ts\":\"2026-10-15T13:35:34Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-b81af01d6c1949b5\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:35:34Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-3cd3dbbde7ae4aa5\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 4,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2",
+     "new"
+    ]
+   },
+   "bytes_ok": true,
+   "second_ok": true,
+   "pass": true
+  },
+  {
+   "mid_tail": "\n{\"v\":1,\"ts\":\"2026-10-15T13:35:35Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-5b7419ea6e4947e4\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:35:35Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-a8f7e019b8b44334\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 4,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2",
+     "new"
+    ]
+   },
+   "bytes_ok": true,
+   "second_ok": true,
+   "pass": true
+  },
+  {
+   "mid_tail": "\n{\"v\":1,\"ts\":\"2026-10-15T13:35:35Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-37c274ee8c6d4f69\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:35:35Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-b25e29d135ec471e\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 4,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2",
+     "new"
+    ]
+   },
+   "bytes_ok": true,
+   "second_ok": true,
+   "pass": true
+  },
+  {
+   "mid_tail": "\n{\"v\":1,\"ts\":\"2026-10-15T13:35:35Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-32a38292e13a4ea6\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:35:35Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-3743fd03c1854b27\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 4,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2",
+     "new"
+    ]
+   },
+   "bytes_ok": true,
+   "second_ok": true,
+   "pass": true
+  },
+  {
+   "mid_tail": "\n{\"v\":1,\"ts\":\"2026-10-15T13:35:35Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-410d0140dfaa4dd2\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:35:35Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-84dd6cc32b7d4134\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 4,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2",
+     "new"
+    ]
+   },
+   "bytes_ok": true,
+   "second_ok": true,
+   "pass": true
+  },
+  {
+   "mid_tail": "\n{\"v\":1,\"ts\":\"2026-10-15T13:35:35Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-c28f436692ca4828\",\"what\":\"new\",\"actor\":\"owner\"}\n",
+   "end_tail": "{\"v\":1,\"ts\":\"2026-10-15T13:35:35Z\",\"project\":\"notes\",\"kind\":\"human\",\"id\":\"e-ef07d7d8d18044b9\",\"what\":\"newer\",\"actor\":\"owner\"}\n",
+   "read": {
+    "n": 4,
+    "warnings": [
+     "events.jsonl line 4: not an event (skipped)"
+    ],
+    "whats": [
+     "w0",
+     "w1",
+     "w2",
+     "new"
+    ]
+   },
+   "bytes_ok": true,
+   "second_ok": true,
+   "pass": true
+  }
+ ],
+ "wall_s": 0.7
+}

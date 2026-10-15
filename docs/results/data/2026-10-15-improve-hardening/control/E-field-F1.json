@@ -1,0 +1,75 @@
+{
+ "id": "E-field-F1",
+ "predicted": "3 gate_run events (round 0 build_baseline, 1, 2) with setup = the report's, same order, db_clones an int; 10 runs identical (masked)",
+ "observed": "3 events; setup [False, False, False]; roles [('build_baseline', 0), ('build', 1), ('build', 2)]; identical True",
+ "pass": false,
+ "events": [
+  {
+   "v": 1,
+   "ts": "2026-10-15T13:39:20Z",
+   "project": "notes",
+   "kind": "gate_run",
+   "id": "e-16169205367f48ae",
+   "gate": "build_baseline",
+   "mode": "full",
+   "build": "b1",
+   "round": 0,
+   "command": "./gate.sh",
+   "exit_code": 1,
+   "seconds": 0.09,
+   "layer_seconds": {
+    "C": 0.1
+   },
+   "counts": {
+    "D": 1
+   },
+   "reused": false,
+   "line": 1
+  },
+  {
+   "v": 1,
+   "ts": "2026-10-15T13:39:20Z",
+   "project": "notes",
+   "kind": "gate_run",
+   "id": "e-1ef96bd78b4941cc",
+   "gate": "build",
+   "mode": "full",
+   "build": "b1",
+   "round": 1,
+   "command": "./gate.sh",
+   "exit_code": 1,
+   "seconds": 0.05,
+   "layer_seconds": {
+    "C": 0.1
+   },
+   "counts": {
+    "D": 1
+   },
+   "reused": false,
+   "line": 2
+  },
+  {
+   "v": 1,
+   "ts": "2026-10-15T13:39:20Z",
+   "project": "notes",
+   "kind": "gate_run",
+   "id": "e-e351a02e777841a5",
+   "gate": "build",
+   "mode": "full",
+   "build": "b1",
+   "round": 2,
+   "command": "./gate.sh",
+   "exit_code": 0,
+   "seconds": 0.05,
+   "layer_seconds": {
+    "C": 0.1
+   },
+   "counts": {
+    "D": 0
+   },
+   "reused": false,
+   "line": 3
+  }
+ ],
+ "wall_s": 18.6
+}

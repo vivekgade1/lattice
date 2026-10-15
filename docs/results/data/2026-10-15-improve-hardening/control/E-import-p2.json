@@ -1,0 +1,169 @@
+{
+ "id": "E-import-p2",
+ "predicted": "10/10: events.jsonl = one sequential import; stdout 1 x 'N written, 0 already there' + 3 x '0 written, N already there'",
+ "observed": "0/10 pass; 8 events; duplicates or a wrong count in 10 runs",
+ "pass": false,
+ "runs": [
+  {
+   "sha": "4237755b27c47acc",
+   "ref_sha": "d0e92cbe4bc0928e",
+   "same_as_sequential": false,
+   "stdout_first": 1,
+   "stdout_rest": 0,
+   "events": 23,
+   "unique_ids": 8,
+   "outs": [
+    "plan p2: 5 event(<log>)",
+    "plan p2: 7 event(<log>)",
+    "plan p2: 8 event(<log>)",
+    "plan p2: 3 event(<log>)"
+   ],
+   "pass": false
+  },
+  {
+   "sha": "fa512bfa70872591",
+   "ref_sha": "d0e92cbe4bc0928e",
+   "same_as_sequential": false,
+   "stdout_first": 1,
+   "stdout_rest": 0,
+   "events": 25,
+   "unique_ids": 8,
+   "outs": [
+    "plan p2: 6 event(<log>)",
+    "plan p2: 7 event(<log>)",
+    "plan p2: 8 event(<log>)",
+    "plan p2: 4 event(<log>)"
+   ],
+   "pass": false
+  },
+  {
+   "sha": "b0f9e609a4480101",
+   "ref_sha": "d0e92cbe4bc0928e",
+   "same_as_sequential": false,
+   "stdout_first": 2,
+   "stdout_rest": 0,
+   "events": 27,
+   "unique_ids": 8,
+   "outs": [
+    "plan p2: 5 event(<log>)",
+    "plan p2: 8 event(<log>)",
+    "plan p2: 8 event(<log>)",
+    "plan p2: 6 event(<log>)"
+   ],
+   "pass": false
+  },
+  {
+   "sha": "1721f5fa7ce3cf32",
+   "ref_sha": "d0e92cbe4bc0928e",
+   "same_as_sequential": false,
+   "stdout_first": 2,
+   "stdout_rest": 0,
+   "events": 30,
+   "unique_ids": 8,
+   "outs": [
+    "plan p2: 8 event(<log>)",
+    "plan p2: 7 event(<log>)",
+    "plan p2: 7 event(<log>)",
+    "plan p2: 8 event(<log>)"
+   ],
+   "pass": false
+  },
+  {
+   "sha": "6bf075830667b2bb",
+   "ref_sha": "d0e92cbe4bc0928e",
+   "same_as_sequential": false,
+   "stdout_first": 1,
+   "stdout_rest": 0,
+   "events": 22,
+   "unique_ids": 8,
+   "outs": [
+    "plan p2: 4 event(<log>)",
+    "plan p2: 4 event(<log>)",
+    "plan p2: 6 event(<log>)",
+    "plan p2: 8 event(<log>)"
+   ],
+   "pass": false
+  },
+  {
+   "sha": "fb90b662f626f065",
+   "ref_sha": "d0e92cbe4bc0928e",
+   "same_as_sequential": false,
+   "stdout_first": 2,
+   "stdout_rest": 0,
+   "events": 28,
+   "unique_ids": 8,
+   "outs": [
+    "plan p2: 8 event(<log>)",
+    "plan p2: 6 event(<log>)",
+    "plan p2: 6 event(<log>)",
+    "plan p2: 8 event(<log>)"
+   ],
+   "pass": false
+  },
+  {
+   "sha": "22fc6638a63dd20d",
+   "ref_sha": "d0e92cbe4bc0928e",
+   "same_as_sequential": false,
+   "stdout_first": 1,
+   "stdout_rest": 1,
+   "events": 20,
+   "unique_ids": 8,
+   "outs": [
+    "plan p2: 6 event(<log>)",
+    "plan p2: 0 event(<log>)",
+    "plan p2: 6 event(<log>)",
+    "plan p2: 8 event(<log>)"
+   ],
+   "pass": false
+  },
+  {
+   "sha": "fa38a3cf678d4eb6",
+   "ref_sha": "d0e92cbe4bc0928e",
+   "same_as_sequential": false,
+   "stdout_first": 3,
+   "stdout_rest": 0,
+   "events": 31,
+   "unique_ids": 8,
+   "outs": [
+    "plan p2: 7 event(<log>)",
+    "plan p2: 8 event(<log>)",
+    "plan p2: 8 event(<log>)",
+    "plan p2: 8 event(<log>)"
+   ],
+   "pass": false
+  },
+  {
+   "sha": "5b2a5fa980db24c5",
+   "ref_sha": "d0e92cbe4bc0928e",
+   "same_as_sequential": false,
+   "stdout_first": 1,
+   "stdout_rest": 0,
+   "events": 27,
+   "unique_ids": 8,
+   "outs": [
+    "plan p2: 8 event(<log>)",
+    "plan p2: 7 event(<log>)",
+    "plan p2: 6 event(<log>)",
+    "plan p2: 6 event(<log>)"
+   ],
+   "pass": false
+  },
+  {
+   "sha": "d86e4064099012b6",
+   "ref_sha": "d0e92cbe4bc0928e",
+   "same_as_sequential": false,
+   "stdout_first": 2,
+   "stdout_rest": 0,
+   "events": 24,
+   "unique_ids": 8,
+   "outs": [
+    "plan p2: 4 event(<log>)",
+    "plan p2: 4 event(<log>)",
+    "plan p2: 8 event(<log>)",
+    "plan p2: 8 event(<log>)"
+   ],
+   "pass": false
+  }
+ ],
+ "wall_s": 4.4
+}

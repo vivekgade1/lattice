@@ -1,0 +1,7 @@
+{
+ "id": "E-field-F2",
+ "predicted": "an empty timings.setup: no key; 10 runs identical (masked)",
+ "observed": "3 events; setup values ['<absent>', '<absent>', '<absent>']; identical True",
+ "pass": true,
+ "wall_s": 18.6
+}

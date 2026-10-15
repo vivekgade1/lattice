@@ -1,0 +1,79 @@
+{
+ "id": "E-ledger",
+ "predicted": "10/10: 1600 entries, 0 not JSON, 0 lost or duplicated (measured, not a rule)",
+ "observed": "10/10 as predicted; entries [1600], not JSON 0, lost 0, dup 0",
+ "pass": true,
+ "runs": [
+  {
+   "entries": 1600,
+   "not_json": 0,
+   "lost": 0,
+   "duplicated": 0,
+   "pass": true
+  },
+  {
+   "entries": 1600,
+   "not_json": 0,
+   "lost": 0,
+   "duplicated": 0,
+   "pass": true
+  },
+  {
+   "entries": 1600,
+   "not_json": 0,
+   "lost": 0,
+   "duplicated": 0,
+   "pass": true
+  },
+  {
+   "entries": 1600,
+   "not_json": 0,
+   "lost": 0,
+   "duplicated": 0,
+   "pass": true
+  },
+  {
+   "entries": 1600,
+   "not_json": 0,
+   "lost": 0,
+   "duplicated": 0,
+   "pass": true
+  },
+  {
+   "entries": 1600,
+   "not_json": 0,
+   "lost": 0,
+   "duplicated": 0,
+   "pass": true
+  },
+  {
+   "entries": 1600,
+   "not_json": 0,
+   "lost": 0,
+   "duplicated": 0,
+   "pass": true
+  },
+  {
+   "entries": 1600,
+   "not_json": 0,
+   "lost": 0,
+   "duplicated": 0,
+   "pass": true
+  },
+  {
+   "entries": 1600,
+   "not_json": 0,
+   "lost": 0,
+   "duplicated": 0,
+   "pass": true
+  },
+  {
+   "entries": 1600,
+   "not_json": 0,
+   "lost": 0,
+   "duplicated": 0,
+   "pass": true
+  }
+ ],
+ "wall_s": 3.3
+}

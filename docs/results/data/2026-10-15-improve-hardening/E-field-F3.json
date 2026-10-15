@@ -1,0 +1,7 @@
+{
+ "id": "E-field-F3",
+ "predicted": "no timings: no setup and no layer_seconds; 10 runs identical (masked)",
+ "observed": "3 events; keys setup/layer_seconds present: [(False, False), (False, False), (False, False)]; identical True",
+ "pass": true,
+ "wall_s": 23.8
+}

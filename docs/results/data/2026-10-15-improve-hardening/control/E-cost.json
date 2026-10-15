@@ -1,0 +1,69 @@
+{
+ "id": "E-cost",
+ "predicted": "median per append <= control + 1.0 ms (predicted < 0.1 ms: fsync dominates)",
+ "observed": "10/10 pass; delta of medians -0.005 to 0.005 ms (tested median 0.06 ms, control 0.059 ms)",
+ "pass": true,
+ "runs": [
+  {
+   "tested_median_ms": 0.059,
+   "control_median_ms": 0.06,
+   "delta_ms": -0.0,
+   "pass": true
+  },
+  {
+   "tested_median_ms": 0.06,
+   "control_median_ms": 0.059,
+   "delta_ms": 0.001,
+   "pass": true
+  },
+  {
+   "tested_median_ms": 0.06,
+   "control_median_ms": 0.065,
+   "delta_ms": -0.005,
+   "pass": true
+  },
+  {
+   "tested_median_ms": 0.06,
+   "control_median_ms": 0.058,
+   "delta_ms": 0.002,
+   "pass": true
+  },
+  {
+   "tested_median_ms": 0.059,
+   "control_median_ms": 0.058,
+   "delta_ms": 0.001,
+   "pass": true
+  },
+  {
+   "tested_median_ms": 0.058,
+   "control_median_ms": 0.059,
+   "delta_ms": -0.0,
+   "pass": true
+  },
+  {
+   "tested_median_ms": 0.06,
+   "control_median_ms": 0.061,
+   "delta_ms": -0.001,
+   "pass": true
+  },
+  {
+   "tested_median_ms": 0.062,
+   "control_median_ms": 0.057,
+   "delta_ms": 0.005,
+   "pass": true
+  },
+  {
+   "tested_median_ms": 0.059,
+   "control_median_ms": 0.059,
+   "delta_ms": 0.0,
+   "pass": true
+  },
+  {
+   "tested_median_ms": 0.061,
+   "control_median_ms": 0.062,
+   "delta_ms": -0.001,
+   "pass": true
+  }
+ ],
+ "wall_s": 2.8
+}

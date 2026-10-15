@@ -1,0 +1,200 @@
+{
+ "hashes": {
+  "lattice/improve/events.py": "48e181f356db15c9",
+  "lattice/studio/rebuild.py": "7e9e7bc15af6d2ae",
+  "lattice/improve/analyze.py": "fef7473447985799",
+  "dogfood/improve_hardening_probes.py": "3c8981ce55d2eef1",
+  "tests/improve/test_events.py": "6485145059a1f7ef"
+ },
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "129 passed in 15.43s",
+    "seconds": 15.7,
+    "tail": "........................................................................ [ 55%]\n.........................................................                [100%]\n129 passed in 15.43s\n"
+   },
+   "verdict": "PASS (control)"
+  },
+  "IH1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_a_filesystem_without_flock_appends_with_one_warning",
+     "tests/improve/test_events.py::test_e_lock_a_timeout_writes_without_the_lock_and_warns",
+     "tests/improve/test_events.py::test_e_lock_an_append_waits_for_the_holder_and_comes_after_it",
+     "tests/improve/test_events.py::test_e_lock_extend_on_a_timeout_writes_nothing_and_warns"
+    ],
+    "summary": "4 failed, 125 passed in 13.79s",
+    "seconds": 14.1,
+    "tail": "        n = log.extend([{\"kind\": \"human\", \"id\": event_id(\"i\", 1), \"what\": \"approve\"}])\n        assert time.monotonic() - t0 < 0.9\n        t.join(5)\n>       assert n == 0 and read_events(p).events == []\nE       assert (1 == 0)\n\ntests/improve/test_events.py:278: AssertionError\n___________ test_a_filesystem_without_flock_appends_with_one_warning ___________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3366/test_a_filesystem_without_floc0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10c90a050>\n\n    def test_a_filesystem_without_flock_appends_with_one_warning(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch\n    ) -> None:\n        def no_flock(fd: int, op: int) -> None:\n            raise OSError(errno.ENOTSUP, \"Operation not supported\")\n    \n        monkeypatch.setattr(events_mod.fcntl, \"flock\", no_flock)\n        t0 = time.monotonic()\n        log = EventLog(tmp_path / \"events.jsonl\", \"notes\")\n        assert log.append(\"human\", what=\"a\", actor=\"owner\") is not None\n        assert log.append(\"human\", what=\"b\", actor=\"owner\") is not None\n        assert time.monotonic() - t0 < 1.0, \"no polling for a lock that cannot be had\"\n>       assert len(log.warnings) == 1 and log.warnings[0].startswith(\"events: no file lock on \")\nE       assert (0 == 1)\nE        +  where 0 = len([])\nE        +    where [] = <lattice.improve.events.EventLog object at 0x10c23a510>.warnings\n\ntests/improve/test_events.py:294: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_e_lock_an_append_waits_for_the_holder_and_comes_after_it\nFAILED tests/improve/test_events.py::test_e_lock_a_timeout_writes_without_the_lock_and_warns\nFAILED tests/improve/test_events.py::test_e_lock_extend_on_a_timeout_writes_nothing_and_warns\nFAILED tests/improve/test_events.py::test_a_filesystem_without_flock_appends_with_one_warning\n4 failed, 125 passed in 13.79s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_e_import_concurrent_imports_write_each_event_once",
+     "tests/improve/test_events.py::test_e_import_extend_rereads_the_ids_under_the_lock"
+    ],
+    "summary": "2 failed, 127 passed in 15.40s",
+    "seconds": 15.7,
+    "tail": "nge(4)\n        ]\n        time.sleep(1.0)\n        go.write_text(\"go\")\n        written = [int(pr.communicate(timeout=60)[0].strip()) for pr in procs]\n        evs = read_events(p).events\n>       assert sorted(written) == [0, 0, 0, 60], written\nE       AssertionError: [60, 60, 60, 60]\nE       assert [60, 60, 60, 60] == [0, 0, 0, 60]\nE         \nE         At index 0 diff: 60 != 0\nE         Use -v to get more diff\n\ntests/improve/test_events.py:350: AssertionError\n_____________ test_e_import_extend_rereads_the_ids_under_the_lock ______________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3365/test_e_import_extend_rereads_t0')\n\n    def test_e_import_extend_rereads_the_ids_under_the_lock(tmp_path: Path) -> None:\n        p = tmp_path / \"events.jsonl\"\n        evs = [{\"kind\": \"human\", \"id\": event_id(\"import\", \"p2\", i), \"what\": \"approve\"} for i in (1, 2)]\n        assert EventLog(p, \"notes\").extend(evs) == 2\n        # another EventLog (another process, in effect) with an empty `known`: nothing is added\n>       assert EventLog(p, \"notes\").extend(evs) == 0\nE       AssertionError: assert 2 == 0\nE        +  where 2 = extend([{'kind': 'human', 'id': 'e-b3e904f3c6e79747', 'what': 'approve'}, {'kind': 'human', 'id': 'e-76685ec4a96c3263', 'what': 'approve'}])\nE        +    where extend = <lattice.improve.events.EventLog object at 0x108410730>.extend\nE        +      where <lattice.improve.events.EventLog object at 0x108410730> = EventLog(PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3365/test_e_import_extend_rereads_t0/events.jsonl'), 'notes')\n\ntests/improve/test_events.py:360: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_e_import_concurrent_imports_write_each_event_once\nFAILED tests/improve/test_events.py::test_e_import_extend_rereads_the_ids_under_the_lock\n2 failed, 127 passed in 15.40s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_append_lines_takes_lines_or_a_callable_and_heals",
+     "tests/improve/test_events.py::test_e_heal_a_torn_tail_does_not_swallow_the_next_event",
+     "tests/improve/test_events.py::test_e_short_a_short_write_is_completed_and_a_failure_heals"
+    ],
+    "summary": "3 failed, 126 passed in 15.57s",
+    "seconds": 15.9,
+    "tail": "None\n        assert log.warnings and \"could not append a human event\" in log.warnings[-1]\n        assert not _bytes(p).endswith(b\"\\n\")  # a fragment of the lost event\n        assert log.append(\"human\", what=\"kept\", actor=\"owner\") is not None\n        res = read_events(p)\n>       assert [e[\"what\"] for e in res.events] == [\"long\", \"kept\"]\nE       AssertionError: assert ['long'] == ['long', 'kept']\nE         \nE         Right contains one more item: 'kept'\nE         Use -v to get more diff\n\ntests/improve/test_events.py:209: AssertionError\n____________ test_append_lines_takes_lines_or_a_callable_and_heals _____________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3367/test_append_lines_takes_lines_0')\n\n    def test_append_lines_takes_lines_or_a_callable_and_heals(tmp_path: Path) -> None:\n        p = tmp_path / \"x\" / \"log.jsonl\"\n        assert append_lines(p, [\"a\", b\"b\\n\"]) == (2, [])\n        assert _bytes(p) == b\"a\\nb\\n\"\n        seen: list[Path] = []\n    \n        def pick(path: Path) -> list[str]:\n            seen.append(path)\n            return [\"c\"]\n    \n        assert append_lines(p, pick) == (1, [])\n        assert seen == [p] and _bytes(p) == b\"a\\nb\\nc\\n\"\n        with p.open(\"ab\") as f:\n            f.write(b\"torn\")\n        assert append_lines(p, [\"d\"]) == (1, [])\n>       assert _bytes(p) == b\"a\\nb\\nc\\ntorn\\nd\\n\"\nE       AssertionError: assert b'a\\nb\\nc\\ntornd\\n' == b'a\\nb\\nc\\ntorn\\nd\\n'\nE         \nE         At index 10 diff: b'd' != b'\\n'\nE         Use -v to get more diff\n\ntests/improve/test_events.py:313: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_e_heal_a_torn_tail_does_not_swallow_the_next_event\nFAILED tests/improve/test_events.py::test_e_short_a_short_write_is_completed_and_a_failure_heals\nFAILED tests/improve/test_events.py::test_append_lines_takes_lines_or_a_callable_and_heals\n3 failed, 126 passed in 15.57s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_e_short_a_short_write_is_completed_and_a_failure_heals"
+    ],
+    "summary": "1 failed, 128 passed in 15.69s",
+    "seconds": 16.0,
+    "tail": "......................................................F................. [ 55%]\n.........................................................                [100%]\n=================================== FAILURES ===================================\n_________ test_e_short_a_short_write_is_completed_and_a_failure_heals __________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3368/test_e_short_a_short_write_is_0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10c75b100>\n\n    def test_e_short_a_short_write_is_completed_and_a_failure_heals(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch\n    ) -> None:\n        p = tmp_path / \"events.jsonl\"\n        log = EventLog(p, \"notes\")\n        real = os.write\n        calls = {\"n\": 0}\n    \n        def short(fd: int, data: Any) -> int:\n            calls[\"n\"] += 1\n            return real(fd, bytes(data[:7]))\n    \n        with monkeypatch.context() as m:\n            m.setattr(os, \"write\", short)\n            ev = log.append(\"human\", what=\"long\", actor=\"owner\", note=\"x\" * 60)\n>       assert ev is not None and calls[\"n\"] > 5\nE       AssertionError: assert ({'v': 1, 'ts': '2026-10-15T13:40:19Z', 'project': 'notes', 'kind': 'human', ...} is not None and 1 > 5)\n\ntests/improve/test_events.py:189: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_e_short_a_short_write_is_completed_and_a_failure_heals\n1 failed, 128 passed in 15.69s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_e_lock_a_timeout_writes_without_the_lock_and_warns",
+     "tests/improve/test_events.py::test_e_lock_extend_on_a_timeout_writes_nothing_and_warns"
+    ],
+    "summary": "2 failed, 127 passed in 15.12s",
+    "seconds": 15.4,
+    "tail": "\", 0.2)\n        p = tmp_path / \"events.jsonl\"\n        holder = _line({\"v\": 1, \"kind\": \"human\", \"id\": \"e-holder\", \"what\": \"holder\"})\n        t = _hold(p, 1.5, holder)\n        seen: list[str] = []\n        log = EventLog(p, \"notes\", log=seen.append)\n        t0 = time.monotonic()\n        ev = log.append(\"human\", what=\"mine\", actor=\"owner\")\n        took = time.monotonic() - t0\n        assert ev is not None, \"a timeout never drops the event\"\n>       assert 0.15 < took < 1.0, f\"the append must not wait for the holder: {took}\"\nE       AssertionError: the append must not wait for the holder: 1.5167123330757022\nE       assert 1.5167123330757022 < 1.0\n\ntests/improve/test_events.py:260: AssertionError\n___________ test_e_lock_extend_on_a_timeout_writes_nothing_and_warns ___________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3369/test_e_lock_extend_on_a_timeou0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10a2c1550>\n\n    def test_e_lock_extend_on_a_timeout_writes_nothing_and_warns(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch\n    ) -> None:\n        monkeypatch.setattr(events_mod, \"LOCK_TIMEOUT_S\", 0.2)\n        p = tmp_path / \"events.jsonl\"\n        t = _hold(p, 1.0)\n        log = EventLog(p, \"notes\")\n        t0 = time.monotonic()\n        n = log.extend([{\"kind\": \"human\", \"id\": event_id(\"i\", 1), \"what\": \"approve\"}])\n>       assert time.monotonic() - t0 < 0.9\nE       assert (1535035.081635458 - 1535034.073656) < 0.9\nE        +  where 1535035.081635458 = <built-in function monotonic>()\nE        +    where <built-in function monotonic> = time.monotonic\n\ntests/improve/test_events.py:276: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_e_lock_a_timeout_writes_without_the_lock_and_warns\nFAILED tests/improve/test_events.py::test_e_lock_extend_on_a_timeout_writes_nothing_and_warns\n2 failed, 127 passed in 15.12s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_e_lock_a_timeout_writes_without_the_lock_and_warns"
+    ],
+    "summary": "1 failed, 128 passed in 13.68s",
+    "seconds": 14.0,
+    "tail": ".........................................................F.............. [ 55%]\n.........................................................                [100%]\n=================================== FAILURES ===================================\n___________ test_e_lock_a_timeout_writes_without_the_lock_and_warns ____________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3370/test_e_lock_a_timeout_writes_w0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10a283790>\n\n    def test_e_lock_a_timeout_writes_without_the_lock_and_warns(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch\n    ) -> None:\n        monkeypatch.setattr(events_mod, \"LOCK_TIMEOUT_S\", 0.2)\n        p = tmp_path / \"events.jsonl\"\n        holder = _line({\"v\": 1, \"kind\": \"human\", \"id\": \"e-holder\", \"what\": \"holder\"})\n        t = _hold(p, 1.5, holder)\n        seen: list[str] = []\n        log = EventLog(p, \"notes\", log=seen.append)\n        t0 = time.monotonic()\n        ev = log.append(\"human\", what=\"mine\", actor=\"owner\")\n        took = time.monotonic() - t0\n>       assert ev is not None, \"a timeout never drops the event\"\nE       AssertionError: a timeout never drops the event\nE       assert None is not None\n\ntests/improve/test_events.py:259: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_e_lock_a_timeout_writes_without_the_lock_and_warns\n1 failed, 128 passed in 13.68s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_e_cap_a_line_over_65536_bytes_is_dropped"
+    ],
+    "summary": "1 failed, 128 passed in 15.46s",
+    "seconds": 15.8,
+    "tail": ".......................................................F................ [ 55%]\n.........................................................                [100%]\n=================================== FAILURES ===================================\n________________ test_e_cap_a_line_over_65536_bytes_is_dropped _________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3371/test_e_cap_a_line_over_65536_b0')\n\n    def test_e_cap_a_line_over_65536_bytes_is_dropped(tmp_path: Path) -> None:\n        p = tmp_path / \"events.jsonl\"\n        log = EventLog(p, \"notes\")\n        fixed = {\"id\": \"e-cap\", \"ts\": \"2026-10-15T00:00:00Z\"}\n        base = log._line(\"human\", {**fixed, \"pad\": \"\"})[1]\n        assert base is not None\n    \n        def pad(total: int) -> dict[str, Any]:\n            return {**fixed, \"pad\": \"p\" * (total - len(base))}\n    \n>       assert log.append(\"human\", **pad(MAX_LINE_BYTES)) is not None\nE       AssertionError: assert None is not None\nE        +  where None = append('human', **{'id': 'e-cap', 'ts': '2026-10-15T00:00:00Z', 'pad': 'pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp...ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp'})\nE        +    where append = <lattice.improve.events.EventLog object at 0x10aefe6d0>.append\nE        +    and   {'id': 'e-cap', 'ts': '2026-10-15T00:00:00Z', 'pad': 'pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp...ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp'} = <function test_e_cap_a_line_over_65536_bytes_is_dropped.<locals>.pad at 0x10aed2400>(65536)\n\ntests/improve/test_events.py:223: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_e_cap_a_line_over_65536_bytes_is_dropped\n1 failed, 128 passed in 15.46s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_f1_setup_is_copied_in_order_to_every_gate_run_of_the_build",
+     "tests/improve/test_events.py::test_f2_an_empty_setup_is_left_out",
+     "tests/improve/test_events.py::test_f5_only_finite_numbers_are_kept"
+    ],
+    "summary": "3 failed, 126 passed in 15.43s",
+    "seconds": 15.7,
+    "tail": "s and all(\"setup\" not in e and e[\"layer_seconds\"] == {\"C\": 0.1} for e in evs)\nE       AssertionError: assert ([{'v': 1, 'ts': '2026-10-15T13:40:57Z', 'project': 'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-15T13:40...'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-15T13:40:57Z', 'project': 'notes', 'kind': 'gate_run', ...}] and False)\nE        +  where False = all(<generator object test_f2_an_empty_setup_is_left_out.<locals>.<genexpr> at 0x10aa302e0>)\n\ntests/improve/test_events.py:428: AssertionError\n_____________________ test_f5_only_finite_numbers_are_kept _____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3372/test_f5_only_finite_numbers_ar0')\n\n    def test_f5_only_finite_numbers_are_kept(tmp_path: Path) -> None:\n        bad = {\"database_server_s\": 2.5, \"flag\": True, \"note\": \"x\", \"big\": float(\"inf\"),\n               \"nan\": float(\"nan\"), \"none\": None, \"nested\": {\"a\": 1}}  # fmt: skip\n        _, evs = field_build(tmp_path, [({\"layers\": {\"C\": 0.1}, \"setup\": bad}, True)])\n>       assert evs and all(e[\"setup\"] == {\"database_server_s\": 2.5} for e in evs)\nE       AssertionError: assert ([{'v': 1, 'ts': '2026-10-15T13:41:00Z', 'project': 'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-15T13:41...'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-15T13:41:00Z', 'project': 'notes', 'kind': 'gate_run', ...}] and False)\nE        +  where False = all(<generator object test_f5_only_finite_numbers_are_kept.<locals>.<genexpr> at 0x10aa32a40>)\n\ntests/improve/test_events.py:443: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_f1_setup_is_copied_in_order_to_every_gate_run_of_the_build\nFAILED tests/improve/test_events.py::test_f2_an_empty_setup_is_left_out - Ass...\nFAILED tests/improve/test_events.py::test_f5_only_finite_numbers_are_kept - A...\n3 failed, 126 passed in 15.43s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_f2_an_empty_setup_is_left_out"
+    ],
+    "summary": "1 failed, 128 passed in 15.52s",
+    "seconds": 15.8,
+    "tail": ".................................................................F...... [ 55%]\n.........................................................                [100%]\n=================================== FAILURES ===================================\n______________________ test_f2_an_empty_setup_is_left_out ______________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3373/test_f2_an_empty_setup_is_left0')\n\n    def test_f2_an_empty_setup_is_left_out(tmp_path: Path) -> None:\n        _, evs = field_build(tmp_path, [({\"total_s\": 1.0, \"layers\": {\"C\": 0.1}, \"setup\": {}}, True)])\n>       assert evs and all(\"setup\" not in e and e[\"layer_seconds\"] == {\"C\": 0.1} for e in evs)\nE       AssertionError: assert ([{'v': 1, 'ts': '2026-10-15T13:41:14Z', 'project': 'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-15T13:41...'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-15T13:41:14Z', 'project': 'notes', 'kind': 'gate_run', ...}] and False)\nE        +  where False = all(<generator object test_f2_an_empty_setup_is_left_out.<locals>.<genexpr> at 0x1085eb5a0>)\n\ntests/improve/test_events.py:428: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_f2_an_empty_setup_is_left_out - Ass...\n1 failed, 128 passed in 15.52s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_f5_only_finite_numbers_are_kept"
+    ],
+    "summary": "1 failed, 128 passed in 15.49s",
+    "seconds": 15.8,
+    "tail": "...................................................................F.... [ 55%]\n.........................................................                [100%]\n=================================== FAILURES ===================================\n_____________________ test_f5_only_finite_numbers_are_kept _____________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3374/test_f5_only_finite_numbers_ar0')\n\n    def test_f5_only_finite_numbers_are_kept(tmp_path: Path) -> None:\n        bad = {\"database_server_s\": 2.5, \"flag\": True, \"note\": \"x\", \"big\": float(\"inf\"),\n               \"nan\": float(\"nan\"), \"none\": None, \"nested\": {\"a\": 1}}  # fmt: skip\n        _, evs = field_build(tmp_path, [({\"layers\": {\"C\": 0.1}, \"setup\": bad}, True)])\n>       assert evs and all(e[\"setup\"] == {\"database_server_s\": 2.5} for e in evs)\nE       AssertionError: assert ([{'v': 1, 'ts': '2026-10-15T13:41:17Z', 'project': 'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-15T13:41...'notes', 'kind': 'gate_run', ...}, {'v': 1, 'ts': '2026-10-15T13:41:17Z', 'project': 'notes', 'kind': 'gate_run', ...}] and False)\nE        +  where False = all(<generator object test_f5_only_finite_numbers_are_kept.<locals>.<genexpr> at 0x108d87ca0>)\n\ntests/improve/test_events.py:443: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_f5_only_finite_numbers_are_kept - A...\n1 failed, 128 passed in 15.49s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH12": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_the_ranker_ignores_setup_and_readers_are_unchanged"
+    ],
+    "summary": "1 failed, 128 passed in 15.49s",
+    "seconds": 15.8,
+    "tail": ".........................................................                [100%]\n=================================== FAILURES ===================================\n___________ test_the_ranker_ignores_setup_and_readers_are_unchanged ____________\n\n    def test_the_ranker_ignores_setup_and_readers_are_unchanged() -> None:\n        \"\"\"E-compat, forward: the spike-3 I-3 log with a `setup` on every gate run gives the\n        unmodified log's report, text and JSON.\"\"\"\n        from lattice.improve.analyze import analyze, report_text\n    \n        evs = read_events(SPIKE3 / \"i3-events.jsonl\").events\n        gates = [e for e in evs if e[\"kind\"] == \"gate_run\"]\n        assert gates\n        plus = [{**e, \"setup\": dict(SETUP)} if e[\"kind\"] == \"gate_run\" else dict(e) for e in evs]\n        for top in (5, 10):\n            a, b = analyze(evs, [], top), analyze(plus, [], top)\n>           assert json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)\nE           assert '{\"blind_spot...is reason\"}]}' == '{\"blind_spot...matically\"}]}'\nE             \nE             Skipping 969 identical leading characters in diff, use -v to show\nE             - ost_per\": 4.754700000000001, \"frequency\": 6, \"score\": 28.528200000000005, \"score_class\": \"A\", \"signal_key\": \"gate:level_regression:setup\", \"unit\": \"s\"}, {\"closed\": false, \"cost_per\": 0.37925000000000003, \"frequency\": 6, \"score\": 2.2755, \"score_class\": \"A\", \"signal_key\": \"gate:level_regression:C\", \"unit\": \"s\"}, {\"closed\": false, \"cost_per\": 0.02725, \"frequency\": 6, \"score\": 0.1635, \"score_class\": \"A\", \"signal_key\": \"gate:level_regression:A\", \"unit\": \"s\"}, {\"closed\": false, \"cost_per\": null, \"frequency\": 5...\nE             \nE             ...Full output truncated (4 lines hidden), use '-vv' to show\n\ntests/improve/test_events.py:477: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_the_ranker_ignores_setup_and_readers_are_unchanged\n1 failed, 128 passed in 15.49s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_f6_only_the_gate_that_wrote_the_report_carries_the_setup"
+    ],
+    "summary": "1 failed, 128 passed in 15.49s",
+    "seconds": 15.8,
+    "tail": "....................................................................F... [ 55%]\n.........................................................                [100%]\n=================================== FAILURES ===================================\n________ test_f6_only_the_gate_that_wrote_the_report_carries_the_setup _________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3376/test_f6_only_the_gate_that_wro0')\n\n    def test_f6_only_the_gate_that_wrote_the_report_carries_the_setup(tmp_path: Path) -> None:\n        timings = {\"layers\": {\"C\": 0.1}, \"setup\": SETUP}\n        _, evs = field_build(tmp_path, [(timings, False), (timings, True)])\n        assert {e[\"command\"] for e in evs} == {\"./gate.sh\", \"./gate1.sh\"}\n>       assert all((\"setup\" in e) == (e[\"command\"] == \"./gate1.sh\") for e in evs)\nE       assert False\nE        +  where False = all(<generator object test_f6_only_the_gate_that_wrote_the_report_carries_the_setup.<locals>.<genexpr> at 0x10c05ef80>)\n\ntests/improve/test_events.py:450: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_f6_only_the_gate_that_wrote_the_report_carries_the_setup\n1 failed, 128 passed in 15.49s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH13": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_f1_setup_is_copied_in_order_to_every_gate_run_of_the_build"
+    ],
+    "summary": "1 failed, 128 passed in 15.77s",
+    "seconds": 16.1,
+    "tail": "................................................................F....... [ 55%]\n.........................................................                [100%]\n=================================== FAILURES ===================================\n_______ test_f1_setup_is_copied_in_order_to_every_gate_run_of_the_build ________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3377/test_f1_setup_is_copied_in_ord0')\n\n    def test_f1_setup_is_copied_in_order_to_every_gate_run_of_the_build(tmp_path: Path) -> None:\n        timings = {\"total_s\": 1.0, \"layers\": {\"C\": 0.1}, \"setup\": SETUP}\n        rec, evs = field_build(tmp_path, [(timings, True)])\n        assert [(e[\"gate\"], e[\"round\"]) for e in evs] == [\n            (\"build_baseline\", 0),\n            (\"build\", 1),\n            (\"build\", 2),\n        ]\n        for e in evs:\n            assert e[\"setup\"] == SETUP and list(e[\"setup\"]) == list(SETUP)\n            assert type(e[\"setup\"][\"db_clones\"]) is int\n            assert e[\"layer_seconds\"] == {\"C\": 0.1}\n>       assert \"setup\" not in _keys(rec), \"F7: the build record does not carry it\"\nE       AssertionError: F7: the build record does not carry it\nE       assert 'setup' not in {'C', 'D', 'agent', 'agent_summary', 'at', 'attempts', ...}\nE        +  where {'C', 'D', 'agent', 'agent_summary', 'at', 'attempts', ...} = _keys({'id': 'b1', 'project': 'notes', 'changes': [], 'status': 'passed', ...})\n\ntests/improve/test_events.py:423: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_f1_setup_is_copied_in_order_to_every_gate_run_of_the_build\n1 failed, 128 passed in 15.77s\n"
+   },
+   "verdict": "caught"
+  },
+  "IH14": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/improve/test_events.py::test_append_and_read_round_trip",
+     "tests/improve/test_events.py::test_append_lines_takes_lines_or_a_callable_and_heals",
+     "tests/improve/test_events.py::test_e_heal_a_torn_tail_does_not_swallow_the_next_event"
+    ],
+    "summary": "3 failed, 126 passed in 15.77s",
+    "seconds": 16.1,
+    "tail": "+ b\"\\n\" + line\n        res = read_events(p)\n        assert [e[\"what\"] for e in res.events if e[\"kind\"] == \"human\"] == [\"a\", \"b\", \"c\", \"d\"]\n        assert len(res.events) == 4 and len(res.warnings) == 1\n>       assert res.warnings[0] == \"events.jsonl line 4: not an event (skipped)\"\nE       AssertionError: assert 'events.jsonl...ent (skipped)' == 'events.jsonl...ent (skipped)'\nE         \nE         - events.jsonl line 4: not an event (skipped)\nE         ?                   ^\nE         + events.jsonl line 6: not an event (skipped)\nE         ?                   ^\n\ntests/improve/test_events.py:164: AssertionError\n____________ test_append_lines_takes_lines_or_a_callable_and_heals _____________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3378/test_append_lines_takes_lines_0')\n\n    def test_append_lines_takes_lines_or_a_callable_and_heals(tmp_path: Path) -> None:\n        p = tmp_path / \"x\" / \"log.jsonl\"\n        assert append_lines(p, [\"a\", b\"b\\n\"]) == (2, [])\n        assert _bytes(p) == b\"a\\nb\\n\"\n        seen: list[Path] = []\n    \n        def pick(path: Path) -> list[str]:\n            seen.append(path)\n            return [\"c\"]\n    \n        assert append_lines(p, pick) == (1, [])\n>       assert seen == [p] and _bytes(p) == b\"a\\nb\\nc\\n\"\nE       AssertionError: assert ([PosixPath('/...x/log.jsonl')] == [PosixPath('/...x/log.jsonl')]\nE         \nE         Use -v to get more diff and b'a\\nb\\n\\nc\\n' == b'a\\nb\\nc\\n'\nE         \nE         At index 4 diff: b'\\n' != b'c'\nE         Use -v to get more diff)\n\ntests/improve/test_events.py:309: AssertionError\n=========================== short test summary info ============================\nFAILED tests/improve/test_events.py::test_append_and_read_round_trip - assert...\nFAILED tests/improve/test_events.py::test_e_heal_a_torn_tail_does_not_swallow_the_next_event\nFAILED tests/improve/test_events.py::test_append_lines_takes_lines_or_a_callable_and_heals\n3 failed, 126 passed in 15.77s\n"
+   },
+   "verdict": "caught"
+  }
+ }
+}

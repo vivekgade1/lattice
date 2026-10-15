@@ -1,0 +1,169 @@
+{
+ "arm": "control",
+ "runs": 10,
+ "base_ref": "a4ab4a1",
+ "table": [
+  {
+   "id": "E-stress",
+   "predicted": "10/10 runs: 4000 lines, 0 torn, 0 lost, 0 dup ids, order kept, 0 timeouts",
+   "observed": "10/10 runs pass; lines [4000], torn 0, lost 0, dup 0; wall 0.15-0.18 s",
+   "pass": true
+  },
+  {
+   "id": "E-kill",
+   "predicted": "10/10: 0 unparseable incl. tail; per writer 0..m-1, acked <= m <= acked+1",
+   "observed": "0/10 runs pass; every clause but 'killed m < 500' 10/10; killed writers cut short 12/40, wrote m = 225-500 events (of 500); unparseable 0",
+   "pass": false
+  },
+  {
+   "id": "E-holder-kill",
+   "predicted": "10/10: next append < 0.2 s (predicted ~0.01 s)",
+   "observed": "10/10 pass; append 0.0003-0.0005 s",
+   "pass": true
+  },
+  {
+   "id": "E-lock-a",
+   "predicted": "10/10: waits 0.35-0.8 s, line after the holder's, no warning",
+   "observed": "0/10 pass; elapsed 0.0-0.001 s",
+   "pass": false
+  },
+  {
+   "id": "E-lock-b",
+   "predicted": "10/10: returns in 2.0-2.5 s, the 2.3 warning, line first",
+   "observed": "0/10 pass; elapsed 0.0-0.001 s; warnings [0]",
+   "pass": false
+  },
+  {
+   "id": "E-import-p1",
+   "predicted": "10/10: events.jsonl = one sequential import; stdout 1 x 'N written, 0 already there' + 3 x '0 written, N already there'",
+   "observed": "2/10 pass; 1 events; duplicates or a wrong count in 8 runs",
+   "pass": false
+  },
+  {
+   "id": "E-import-p2",
+   "predicted": "10/10: events.jsonl = one sequential import; stdout 1 x 'N written, 0 already there' + 3 x '0 written, N already there'",
+   "observed": "0/10 pass; 8 events; duplicates or a wrong count in 10 runs",
+   "pass": false
+  },
+  {
+   "id": "E-import-p2-final",
+   "predicted": "10/10: events.jsonl = one sequential import; stdout 1 x 'N written, 0 already there' + 3 x '0 written, N already there'",
+   "observed": "0/10 pass; 27 events; duplicates or a wrong count in 10 runs",
+   "pass": false
+  },
+  {
+   "id": "E-import-p3",
+   "predicted": "10/10: events.jsonl = one sequential import; stdout 1 x 'N written, 0 already there' + 3 x '0 written, N already there'",
+   "observed": "1/10 pass; 5 events; duplicates or a wrong count in 9 runs",
+   "pass": false
+  },
+  {
+   "id": "E-heal",
+   "predicted": "10/10: file = old + newline + line; 4 events, 1 warning; 2nd append no blank",
+   "observed": "0/10 pass; read 3 events, warnings ['events.jsonl line 4: not an event (skipped)']",
+   "pass": false
+  },
+  {
+   "id": "E-short",
+   "predicted": "10/10: a <=7-byte write gives one whole line; an OSError on the 3rd call warns and the next append heals",
+   "observed": "n/a in the control arm (the tests import the new API)",
+   "pass": true
+  },
+  {
+   "id": "E-cap",
+   "predicted": "10/10: 65536 written, 65537 dropped",
+   "observed": "n/a in the control arm (the tests import the new API)",
+   "pass": true
+  },
+  {
+   "id": "E-field-F1",
+   "predicted": "3 gate_run events (round 0 build_baseline, 1, 2) with setup = the report's, same order, db_clones an int; 10 runs identical (masked)",
+   "observed": "3 events; setup [False, False, False]; roles [('build_baseline', 0), ('build', 1), ('build', 2)]; identical True",
+   "pass": false
+  },
+  {
+   "id": "E-field-F2",
+   "predicted": "an empty timings.setup: no key; 10 runs identical (masked)",
+   "observed": "3 events; setup values ['<absent>', '<absent>', '<absent>']; identical True",
+   "pass": true
+  },
+  {
+   "id": "E-field-F3",
+   "predicted": "no timings: no setup and no layer_seconds; 10 runs identical (masked)",
+   "observed": "3 events; keys setup/layer_seconds present: [(False, False), (False, False), (False, False)]; identical True",
+   "pass": true
+  },
+  {
+   "id": "E-field-F4",
+   "predicted": "report not rewritten during the gate: none; 10 runs identical (masked)",
+   "observed": "3 events; setup values ['<absent>', '<absent>', '<absent>']; identical True",
+   "pass": true
+  },
+  {
+   "id": "E-field-F5",
+   "predicted": "only finite numbers: {'database_server_s': 2.5}; 10 runs identical (masked)",
+   "observed": "3 events; setup values ['<absent>', '<absent>', '<absent>']; identical True",
+   "pass": false
+  },
+  {
+   "id": "E-field-F6",
+   "predicted": "two gate commands, only the second rewrites the report: only its events; 10 runs identical (masked)",
+   "observed": "commands ['./gate.sh', './gate1.sh']; setup by command [('./gate.sh', False), ('./gate1.sh', False)]; identical True",
+   "pass": false
+  },
+  {
+   "id": "E-field-F7",
+   "predicted": "the saved build record has no 'setup' and equals the a4ab4a1 record (masked); 10 runs identical (masked)",
+   "observed": "setup key anywhere: False; records equal: {'F1': True, 'F2': True, 'F3': True, 'F4': True, 'F5': True, 'F6': True}; identical True",
+   "pass": true
+  },
+  {
+   "id": "E-field-F8",
+   "predicted": "apart from setup, id, ts each event equals its a4ab4a1 counterpart; 10 runs identical (masked)",
+   "observed": "events equal by scenario: {'F1': True, 'F2': True, 'F3': True, 'F4': True, 'F5': True, 'F6': True}; identical True",
+   "pass": true
+  },
+  {
+   "id": "E-compat",
+   "predicted": "0 differing bytes",
+   "observed": "n/a in the control arm (compares the two trees)",
+   "pass": true
+  },
+  {
+   "id": "E-compat-forward",
+   "predicted": "0 differing bytes",
+   "observed": "n/a in the control arm (compares the two trees)",
+   "pass": true
+  },
+  {
+   "id": "E-i2-probes",
+   "predicted": "improve2_probes.py --runs N: 15/15 on both trees, per-probe sha256 lists equal",
+   "observed": "n/a in the control arm (compares the two trees)",
+   "pass": true
+  },
+  {
+   "id": "E-ledger",
+   "predicted": "10/10: 1600 entries, 0 not JSON, 0 lost or duplicated (measured, not a rule)",
+   "observed": "10/10 as predicted; entries [1600], not JSON 0, lost 0, dup 0",
+   "pass": true
+  },
+  {
+   "id": "E-cost",
+   "predicted": "median per append <= control + 1.0 ms (predicted < 0.1 ms: fsync dominates)",
+   "observed": "10/10 pass; delta of medians -0.005 to 0.005 ms (tested median 0.06 ms, control 0.059 ms)",
+   "pass": true
+  }
+ ],
+ "probes_passed": 14,
+ "probes_total": 25,
+ "elapsed_s": 57.0,
+ "findings": [],
+ "post_hoc_script_corrections": [],
+ "decisions": [
+  "append_lines gained the keyword `degrade` (True: write unlocked on a lock timeout; False: write nothing, extend's case) and `what` (the noun of the warning), and its `timeout` defaults to None meaning LOCK_TIMEOUT_S read at call time (so a test can patch it): the prereg fixed the name and the (written, warnings) result only.",
+  "report_setup sits beside report_layer_seconds in rebuild.py (prereg 2.9); it is the helper the prereg's E-regress diff line names.",
+  "A fsync failure after every line was written counts as a dropped event (as at a4ab4a1).",
+  "E-stress/E-kill workers are subprocesses released by a go-file after their imports (equivalent to a Barrier after import), not multiprocessing children.",
+  "The control tree is a shared clone of this repository checked out at a4ab4a1 in the scratch directory (improve2_probes.py needs a git repository)."
+ ]
+}

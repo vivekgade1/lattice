@@ -1,0 +1,7 @@
+{
+ "id": "E-field-F8",
+ "predicted": "apart from setup, id, ts each event equals its a4ab4a1 counterpart; 10 runs identical (masked)",
+ "observed": "events equal by scenario: {'F1': True, 'F2': True, 'F3': True, 'F4': True, 'F5': True, 'F6': True}; identical True",
+ "pass": true,
+ "wall_s": 18.6
+}
