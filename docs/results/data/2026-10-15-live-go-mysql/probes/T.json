@@ -1,0 +1,50 @@
+{
+ "id": "T",
+ "prediction": "G0 live CLI wall: median of 10 predicted 8 s, threshold <= 30 s, max <= 60 s; a-D7 <= 3 s; Streak static-only <= 1.5 s",
+ "observed": "G0 median 5.85 s, max 6.893; a-D7 walls [0.383, 0.38, 0.384, 0.375, 0.374, 0.373, 0.372, 0.373, 0.373, 0.374]; static-only [0.236, 0.228, 0.236, 0.24, 0.233]",
+ "pass": true,
+ "identical": true,
+ "n_runs": 0,
+ "checks": {
+  "g0_median_le_30": true,
+  "g0_max_le_60": true,
+  "d7a_le_3": true,
+  "static_only_le_1_5": true
+ },
+ "extra": {
+  "g0_walls": [
+   6.893,
+   5.894,
+   5.792,
+   6.624,
+   5.529,
+   5.842,
+   5.867,
+   5.627,
+   5.722,
+   6.517
+  ],
+  "d7a_walls": [
+   0.383,
+   0.38,
+   0.384,
+   0.375,
+   0.374,
+   0.373,
+   0.372,
+   0.373,
+   0.373,
+   0.374
+  ],
+  "static_only_walls": [
+   0.236,
+   0.228,
+   0.236,
+   0.24,
+   0.233
+  ],
+  "g0_median_8s_prediction_met": true,
+  "probe_wall_s": 2.4
+ },
+ "runs": []
+}

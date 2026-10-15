@@ -1,0 +1,34 @@
+hashes: {"lattice/contracts/check.py": "cb6833beb59f093d", "lattice/contracts/export.py": "7e644a855ae78a39", "lattice/contracts/impact.py": "17abca742f99d99b", "lattice/contracts/linked.py": "71e383d1bef6456d", "lattice/contracts/live.py": "9cfe4f53e9b33a4a", "lattice/mcp/projects.py": "8681060cd975b2e7", "lattice/studio/server.py": "e077d07b4ddc861b", "lattice/workspace.py": "704e677e2ebbcbf4"}
+control: PASS (control) (32 passed in 48.93s) 293.6s
+LG2: killed (1.8s, pytest failed 1: test_one_server_for_the_run_and_a_clone_per_replay)
+LG3: killed (2.5s, pytest failed 1: test_one_server_for_the_run_and_a_clone_per_replay)
+LG1: killed (2.5s, pytest failed 1: test_postgres_stays_unsupported_and_the_message_lists_the_supported_set)
+LG4: killed (1.3s, pytest failed 1: test_the_users_servers_are_dropped_from_the_environment_and_ignored)
+LG6: killed (1.4s, pytest failed 1: test_the_prechecks_run_in_order_at_the_first_replay)
+LG5: killed (1.4s, pytest failed 1: test_the_users_servers_are_dropped_from_the_environment_and_ignored)
+LG7: killed (1.3s, pytest failed 1: test_the_prechecks_run_in_order_at_the_first_replay)
+LG8: killed (1.4s, pytest failed 1: test_the_prechecks_run_in_order_at_the_first_replay)
+LG11: killed (1.1s, pytest failed 1: test_a_run_that_replays_nothing_starts_no_server)
+LG9: killed (4.9s, pytest failed 1: test_the_sweep_kills_recorded_apps_and_removes_the_labelled_containers)
+LG13: killed (2.7s, pytest failed 1: test_a_timeout_gives_the_child_sigterm_and_a_grace_before_the_kill)
+LG12: killed (5.5s, pytest failed 1: test_a_sqlite_result_has_no_database_key_and_leaves_nothing)
+LG10: killed (14.8s, pytest failed 1: test_the_sweep_kills_recorded_apps_and_removes_the_labelled_containers)
+
+id       verdict           sec  change                                                         killed by (first failing test)
+control  PASS (control)  293.6  unmutated copy                                                 32 passed in 48.93s
+LG1      killed            2.5  live go: LIVE_DATABASES back to sqlite only (mysql is unsuppor tests/contracts/test_live_server.py::test_postgres_stays_unsupported_and_the_message_lists_the_supported_set
+LG2      killed            1.8  live go: no shared server (databases not passed: a container p tests/contracts/test_live_server.py::test_one_server_for_the_run_and_a_clone_per_replay
+LG3      killed            2.5  live go: one clone reused for every replay                     tests/contracts/test_live_server.py::test_one_server_for_the_run_and_a_clone_per_replay
+LG4      killed            1.3  live go: LATTICE_<DIALECT>_URL kept in the child's environment tests/contracts/test_live_server.py::test_the_users_servers_are_dropped_from_the_environment_and_ignored
+LG5      killed            1.4  live go: the harness's database_url honoured                   tests/contracts/test_live_server.py::test_the_users_servers_are_dropped_from_the_environment_and_ignored
+LG6      killed            1.4  live go: the driver precheck removed                           tests/contracts/test_live_server.py::test_the_prechecks_run_in_order_at_the_first_replay
+LG7      killed            1.3  live go: the Docker precheck removed                           tests/contracts/test_live_server.py::test_the_prechecks_run_in_order_at_the_first_replay
+LG8      killed            1.4  live go: the image precheck removed                            tests/contracts/test_live_server.py::test_the_prechecks_run_in_order_at_the_first_replay
+LG9      killed            4.9  live go: the label sweep removed (a container of a killed chil tests/contracts/test_live_server.py::test_the_sweep_kills_recorded_apps_and_removes_the_labelled_containers
+LG10     killed           14.8  live go: the pid sweep removed (an app of a killed child is le tests/contracts/test_live_server.py::test_the_sweep_kills_recorded_apps_and_removes_the_labelled_containers
+LG11     killed            1.1  live go: the server opened eagerly, before the first replay    tests/contracts/test_live_server.py::test_a_run_that_replays_nothing_starts_no_server
+LG12     killed            5.5  live go: the database block also on a SQLite result            tests/contracts/test_live_server.py::test_a_sqlite_result_has_no_database_key_and_leaves_nothing
+LG13     killed            2.7  live go: SIGTERM grace removed (SIGKILL at once, as before)    tests/contracts/test_live_server.py::test_a_timeout_gives_the_child_sigterm_and_a_grace_before_the_kill
+total wall time: 312.8s
+mutants: 13/13 killed
+$PY dogfood/contracts_mutants.py LG1 LG2 LG3 LG4 LG5 LG6 LG7 LG8 LG9 LG10 LG1  243.18s user 44.27s system 91% cpu 5:13.29 total

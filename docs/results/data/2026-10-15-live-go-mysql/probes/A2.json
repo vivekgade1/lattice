@@ -1,0 +1,148 @@
+{
+ "id": "A2",
+ "prediction": "the Lattice venv (`uv run python -m lattice.contracts`, no PyMySQL): driver_missing naming lattice[db]; 0 Docker calls (a logging shim forwarding to the real CLI)",
+ "observed": "exit 2; error driver_missing: streak: the live check on mysql needs pymysql>=1.1 in /Users/vivekgade/Documents/lattice/.venv/bin/python3 (the Python that runs it): instal; wall [0.386, 0.397, 0.402]; created []",
+ "pass": true,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "identical": true,
+  "exit": true,
+  "error_code": true,
+  "findings_empty": true,
+  "no_streak_api_process": true,
+  "no_live_container": true,
+  "tmpdir_empty": true,
+  "wall_le_25s": true,
+  "zero_docker_calls": true,
+  "message_names_lattice_db": true
+ },
+ "extra": {
+  "error": {
+   "code": "driver_missing",
+   "message": "streak: the live check on mysql needs pymysql>=1.1 in /Users/vivekgade/Documents/lattice/.venv/bin/python3 (the Python that runs it): install lattice[db]"
+  },
+  "wall_s": [
+   0.386,
+   0.397,
+   0.402
+  ],
+  "probe_wall_s": 2.2
+ },
+ "runs": [
+  {
+   "rc": 2,
+   "wall_s": 0.386,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "driver_missing",
+    "message": "streak: the live check on mysql needs pymysql>=1.1 in /Users/vivekgade/Documents/lattice/.venv/bin/python3 (the Python that runs it): install lattice[db]"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A2",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [
+     "uv-f8c53dc5810f79d2.lock"
+    ],
+    "containers_created": [],
+    "wall_s": 0.386
+   },
+   "shim_log": [],
+   "child_python": null
+  },
+  {
+   "rc": 2,
+   "wall_s": 0.397,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "driver_missing",
+    "message": "streak: the live check on mysql needs pymysql>=1.1 in /Users/vivekgade/Documents/lattice/.venv/bin/python3 (the Python that runs it): install lattice[db]"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A2",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [
+     "uv-f8c53dc5810f79d2.lock"
+    ],
+    "containers_created": [],
+    "wall_s": 0.397
+   },
+   "shim_log": [],
+   "child_python": null
+  },
+  {
+   "rc": 2,
+   "wall_s": 0.402,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "driver_missing",
+    "message": "streak: the live check on mysql needs pymysql>=1.1 in /Users/vivekgade/Documents/lattice/.venv/bin/python3 (the Python that runs it): install lattice[db]"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A2",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [
+     "uv-f8c53dc5810f79d2.lock"
+    ],
+    "containers_created": [],
+    "wall_s": 0.402
+   },
+   "shim_log": [],
+   "child_python": null
+  }
+ ]
+}

@@ -1,0 +1,145 @@
+{
+ "id": "B1",
+ "prediction": "job-scheduler (ef17cf8 + ci-bot): L1-L5 and W3 through the CLI, --json and text, new code vs `git archive 30c9120 lattice`: canonical outputs byte-identical 10/10, a docker shim sees 0 calls; tests/contracts/test_live.py unchanged",
+ "observed": "13/18 case/format cells identical over 1 runs; docker calls 0; test_live.py diff empty",
+ "pass": false,
+ "identical": true,
+ "n_runs": 18,
+ "checks": {
+  "all_byte_identical": false,
+  "docker_calls_0": true,
+  "test_live_py_unchanged": true
+ },
+ "extra": {
+  "docker_calls": [],
+  "probe_wall_s": 30.9
+ },
+ "runs": [
+  {
+   "case": "L1",
+   "format": "json",
+   "identical_runs": 0,
+   "runs": 1,
+   "rc": 0
+  },
+  {
+   "case": "L1",
+   "format": "text",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 0
+  },
+  {
+   "case": "L2",
+   "format": "json",
+   "identical_runs": 0,
+   "runs": 1,
+   "rc": 1
+  },
+  {
+   "case": "L2",
+   "format": "text",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 1
+  },
+  {
+   "case": "L3",
+   "format": "json",
+   "identical_runs": 0,
+   "runs": 1,
+   "rc": 1
+  },
+  {
+   "case": "L3",
+   "format": "text",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 1
+  },
+  {
+   "case": "L4",
+   "format": "json",
+   "identical_runs": 0,
+   "runs": 1,
+   "rc": 1
+  },
+  {
+   "case": "L4",
+   "format": "text",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 1
+  },
+  {
+   "case": "W3",
+   "format": "json",
+   "identical_runs": 0,
+   "runs": 1,
+   "rc": 0
+  },
+  {
+   "case": "W3",
+   "format": "text",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 0
+  },
+  {
+   "case": "L5-0",
+   "format": "json",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 2
+  },
+  {
+   "case": "L5-0",
+   "format": "text",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 2
+  },
+  {
+   "case": "L5-1",
+   "format": "json",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 2
+  },
+  {
+   "case": "L5-1",
+   "format": "text",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 2
+  },
+  {
+   "case": "L5-2",
+   "format": "json",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 2
+  },
+  {
+   "case": "L5-2",
+   "format": "text",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 2
+  },
+  {
+   "case": "L5-3",
+   "format": "json",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 2
+  },
+  {
+   "case": "L5-3",
+   "format": "text",
+   "identical_runs": 1,
+   "runs": 1,
+   "rc": 2
+  }
+ ]
+}

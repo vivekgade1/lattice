@@ -1,0 +1,13 @@
+LG1: KILLED {'G0': ['answered_201_completions_200_others', 'database_block', 'exit_0', 'gaps_2', 'one_container_per_call', 'replayed_7', 'verified_live_access_token']}
+LG2: KILLED {'G0': ['one_container_per_call']}
+LG3: SURVIVED {}
+LG4: KILLED {'Z1': ['connections_plus_1', 'database_block_ignored_both', 'exit_0_replayed_7']}
+LG5: KILLED {'Z1': ['connections_plus_1', 'database_block_ignored_both', 'exit_0_replayed_7']}
+LG6: KILLED {'A2': ['error_code', 'message_names_lattice_db', 'zero_docker_calls']}
+LG7: KILLED {'A1': ['error_code', 'shim_log_is_info_only']}
+LG8: KILLED {'A3': ['error_code', 'log_is_info_then_image_inspect', 'no_run_no_pull']}
+LG9: KILLED {'K3a': ['no_container_left']}
+LG10: KILLED {'K3c': ['no_streak_api_left']}
+LG11: KILLED {'G-D7a': ['containers_as_predicted'], 'G-D7c': ['containers_as_predicted']}
+LG12: KILLED {'B1': ['all_byte_identical']}
+$PY dogfood/contracts/livego_probes.py --mutants  --streak-ref a0679e9  $S/mp  478.84s user 115.44s system 204% cpu 4:51.13 total

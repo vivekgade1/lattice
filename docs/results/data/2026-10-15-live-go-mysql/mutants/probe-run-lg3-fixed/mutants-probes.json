@@ -1,0 +1,23 @@
+[
+ {
+  "id": "LG3",
+  "probes": [
+   "P0",
+   "G0"
+  ],
+  "failed_checks": {
+   "G0": [
+    "answered_201_completions_200_others",
+    "replayed_7"
+   ]
+  },
+  "kill_evidence": {
+   "G0": [
+    "answered_201_completions_200_others",
+    "replayed_7"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ }
+]

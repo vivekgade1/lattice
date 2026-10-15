@@ -85,6 +85,12 @@ IMPORT_ENDPOINTS = [LOGIN, ME, HOME, HABITS, PROGRESS, COMPLETIONS, DISMISS]
 
 # Disclosed post hoc notes, written to summary.json (the orchestrator copies them to the results).
 POST_HOC_SCRIPT_CORRECTIONS: list[str] = [
+    "W3 expected error code (2026-10-15, post hoc, with the live check on a Go/MySQL provider, "
+    "docs/results/2026-10-15-live-contract-go-mysql-prereg.md section 6): `unsupported_database` "
+    "became `driver_missing`. Streak's harness says mysql, which the live check now supports; "
+    "this runner runs in the Lattice venv (no PyMySQL), so the child stops at the driver "
+    "precheck, before any Docker call. The check key was renamed to match; every other W3 "
+    "check is unchanged and still true (nothing started).",
     "W3 shims: in the first complete run (32/32 pass) the shim scripts and their log were put in "
     "the run's TMPDIR, which made leftover_tmp_entries non-empty (['shim.log', 'shims']): a "
     "script artefact, not a leftover of the check. They now live under the scratch root.",
@@ -1038,8 +1044,10 @@ def _tree(ctx: SCtx, clone: Path) -> str:
 def w3(ctx: SCtx) -> Any:
     pred = (
         "contract 'live' on Streak: check exit 2, link status error, error.code "
-        "unsupported_database, findings and gaps []; nothing started (no Docker, no Go build, "
-        "no provider process); --static-only exit 0 with live not_run/static-only; pin exit 0"
+        "driver_missing (POST HOC 2026-10-15: was unsupported_database before the live check "
+        "learned MySQL; this runner runs in the Lattice venv, which has no PyMySQL), findings "
+        "and gaps []; nothing started (no Docker, no Go build, no provider process); "
+        "--static-only exit 0 with live not_run/static-only; pin exit 0"
     )
     clone = ctx.clone("W3")
     m = ctx.workspace("W3", clone, contract="live")
@@ -1083,8 +1091,7 @@ def w3(ctx: SCtx) -> Any:
     checks = {
         "check_exit_2": r0["check"]["rc"] == 2,
         "link_status_error": lk["status"] == "error",
-        "error_code_unsupported_database": (lk["error"] or {}).get("code")
-        == "unsupported_database",
+        "error_code_driver_missing": (lk["error"] or {}).get("code") == "driver_missing",
         "findings_empty": lk["findings"] == [],
         "gaps_empty": lk["gaps"] == [],
         "no_docker_go_mysql_called": shim_calls == [],

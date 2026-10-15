@@ -1,0 +1,4130 @@
+{
+ "id": "G-D7a",
+ "prediction": "D7 mode a: static BROKEN [('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; live BROKEN none; not replayed 7 endpoint(s); class UNREPLAYED; exit 1; containers 0; access_token verified False",
+ "observed": "S [('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; L []; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/auth/login', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class UNREPLAYED; exit 1; containers [0, 0, 0]; replayed 0; answered {}; verified False",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "identical": true,
+  "S_as_predicted": true,
+  "L_as_predicted": true,
+  "N_as_predicted": true,
+  "class_as_predicted": true,
+  "exit_as_predicted": true,
+  "containers_as_predicted": true,
+  "verified_as_predicted": true,
+  "no_leaks": true,
+  "static_changed_as_committed": true
+ },
+ "extra": {
+  "drift": "D7",
+  "mode": "a",
+  "S": [
+   [
+    "endpoint_missing",
+    "GET /v1/habits",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "GET /v1/habits/{}/progress",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "GET /v1/home",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "GET /v1/me",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "POST /v1/auth/login",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "POST /v1/habits/{}/completions",
+    ""
+   ],
+   [
+    "endpoint_missing",
+    "POST /v1/nudges/{}/dismiss",
+    ""
+   ]
+  ],
+  "L": [],
+  "N": [
+   "GET /v1/habits",
+   "GET /v1/habits/{}/progress",
+   "GET /v1/home",
+   "GET /v1/me",
+   "POST /v1/auth/login",
+   "POST /v1/habits/{}/completions",
+   "POST /v1/nudges/{}/dismiss"
+  ],
+  "class": "UNREPLAYED",
+  "predicted_class": "UNREPLAYED",
+  "spec_edits": [
+   [
+    "spec.py",
+    "/v1/",
+    "/v2/",
+    144
+   ]
+  ],
+  "code_edits": [
+   [
+    "internal/httpapi/router.go",
+    "v1 := r.Group(\"/v1\",",
+    "v1 := r.Group(\"/v2\",",
+    1
+   ],
+   [
+    "harness.py",
+    "\"/v1/auth/login\"",
+    "\"/v2/auth/login\"",
+    1
+   ]
+  ],
+  "wall_s": [
+   0.383,
+   0.38,
+   0.384,
+   0.375,
+   0.374,
+   0.373,
+   0.372,
+   0.373,
+   0.373,
+   0.374
+  ],
+  "not_replayed_reasons": [
+   [
+    "GET /v1/habits",
+    "the endpoint is not in the provider's current spec"
+   ],
+   [
+    "GET /v1/habits/{}/progress",
+    "the endpoint is not in the provider's current spec"
+   ],
+   [
+    "GET /v1/home",
+    "the endpoint is not in the provider's current spec"
+   ],
+   [
+    "GET /v1/me",
+    "the endpoint is not in the provider's current spec"
+   ],
+   [
+    "POST /v1/auth/login",
+    "the endpoint is not in the provider's current spec"
+   ],
+   [
+    "POST /v1/habits/{}/completions",
+    "the endpoint is not in the provider's current spec"
+   ],
+   [
+    "POST /v1/nudges/{}/dismiss",
+    "the endpoint is not in the provider's current spec"
+   ]
+  ],
+  "probe_wall_s": 5.5
+ },
+ "runs": [
+  {
+   "rc": 1,
+   "wall_s": 0.383,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/habits",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/habits/{}/progress",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/me",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/auth/login",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/habits/{}/completions",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/nudges/{}/dismiss",
+     ""
+    ]
+   ],
+   "static_changed": [
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/progress",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/home",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PATCH /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/login",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/nudges/{}/dismiss",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PUT /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PATCH /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PUT /v1/me",
+     "",
+     false
+    ]
+   ],
+   "gaps": [],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 0,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/home",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/me",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/auth/login",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the endpoint is not in the provider's current spec"
+    ]
+   ],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.383
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 0.38,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/habits",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/habits/{}/progress",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/me",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/auth/login",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/habits/{}/completions",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/nudges/{}/dismiss",
+     ""
+    ]
+   ],
+   "static_changed": [
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/progress",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/home",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PATCH /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/login",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/nudges/{}/dismiss",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PUT /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PATCH /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PUT /v1/me",
+     "",
+     false
+    ]
+   ],
+   "gaps": [],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 0,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/home",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/me",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/auth/login",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the endpoint is not in the provider's current spec"
+    ]
+   ],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.38
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 0.384,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/habits",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/habits/{}/progress",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/me",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/auth/login",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/habits/{}/completions",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/nudges/{}/dismiss",
+     ""
+    ]
+   ],
+   "static_changed": [
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/progress",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/home",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PATCH /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/login",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/nudges/{}/dismiss",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PUT /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PATCH /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PUT /v1/me",
+     "",
+     false
+    ]
+   ],
+   "gaps": [],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 0,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/home",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/me",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/auth/login",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the endpoint is not in the provider's current spec"
+    ]
+   ],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.384
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 0.375,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/habits",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/habits/{}/progress",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/me",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/auth/login",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/habits/{}/completions",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/nudges/{}/dismiss",
+     ""
+    ]
+   ],
+   "static_changed": [
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/progress",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/home",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PATCH /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/login",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/nudges/{}/dismiss",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PUT /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PATCH /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PUT /v1/me",
+     "",
+     false
+    ]
+   ],
+   "gaps": [],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 0,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/home",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/me",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/auth/login",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the endpoint is not in the provider's current spec"
+    ]
+   ],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.375
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 0.374,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/habits",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/habits/{}/progress",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/me",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/auth/login",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/habits/{}/completions",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/nudges/{}/dismiss",
+     ""
+    ]
+   ],
+   "static_changed": [
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/progress",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/home",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PATCH /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/login",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/nudges/{}/dismiss",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PUT /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PATCH /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PUT /v1/me",
+     "",
+     false
+    ]
+   ],
+   "gaps": [],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 0,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/home",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/me",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/auth/login",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the endpoint is not in the provider's current spec"
+    ]
+   ],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.374
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 0.373,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/habits",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/habits/{}/progress",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/me",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/auth/login",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/habits/{}/completions",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/nudges/{}/dismiss",
+     ""
+    ]
+   ],
+   "static_changed": [
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/progress",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/home",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PATCH /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/login",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/nudges/{}/dismiss",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PUT /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PATCH /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PUT /v1/me",
+     "",
+     false
+    ]
+   ],
+   "gaps": [],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 0,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/home",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/me",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/auth/login",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the endpoint is not in the provider's current spec"
+    ]
+   ],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.373
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 0.372,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/habits",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/habits/{}/progress",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/me",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/auth/login",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/habits/{}/completions",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/nudges/{}/dismiss",
+     ""
+    ]
+   ],
+   "static_changed": [
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/progress",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/home",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PATCH /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/login",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/nudges/{}/dismiss",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PUT /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PATCH /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PUT /v1/me",
+     "",
+     false
+    ]
+   ],
+   "gaps": [],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 0,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/home",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/me",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/auth/login",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the endpoint is not in the provider's current spec"
+    ]
+   ],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.372
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 0.373,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/habits",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/habits/{}/progress",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/me",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/auth/login",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/habits/{}/completions",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/nudges/{}/dismiss",
+     ""
+    ]
+   ],
+   "static_changed": [
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/progress",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/home",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PATCH /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/login",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/nudges/{}/dismiss",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PUT /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PATCH /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PUT /v1/me",
+     "",
+     false
+    ]
+   ],
+   "gaps": [],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 0,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/home",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/me",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/auth/login",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the endpoint is not in the provider's current spec"
+    ]
+   ],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.373
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 0.373,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/habits",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/habits/{}/progress",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/me",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/auth/login",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/habits/{}/completions",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/nudges/{}/dismiss",
+     ""
+    ]
+   ],
+   "static_changed": [
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/progress",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/home",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PATCH /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/login",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/nudges/{}/dismiss",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PUT /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PATCH /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PUT /v1/me",
+     "",
+     false
+    ]
+   ],
+   "gaps": [],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 0,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/home",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/me",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/auth/login",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the endpoint is not in the provider's current spec"
+    ]
+   ],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.373
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 0.374,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/habits",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/habits/{}/progress",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "GET /v1/me",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/auth/login",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/habits/{}/completions",
+     ""
+    ],
+    [
+     "endpoint_missing",
+     "POST /v1/nudges/{}/dismiss",
+     ""
+    ]
+   ],
+   "static_changed": [
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "DELETE /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/habits/{}/progress",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/home",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "GET /v2/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PATCH /v2/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/login",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "POST /v2/nudges/{}/dismiss",
+     "",
+     false
+    ],
+    [
+     "endpoint_added",
+     "",
+     "PUT /v2/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/devices/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/habits/{}/completions/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "DELETE /v1/me",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/completions",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/habits/{}/history",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/nudges",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "GET /v1/sync",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PATCH /v1/habits/{}",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/logout",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/refresh",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/auth/register",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/completions/batch",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/devices",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "POST /v1/habits",
+     "",
+     false
+    ],
+    [
+     "endpoint_removed",
+     "",
+     "PUT /v1/me",
+     "",
+     false
+    ]
+   ],
+   "gaps": [],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 0,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/home",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "GET /v1/me",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/auth/login",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the endpoint is not in the provider's current spec"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the endpoint is not in the provider's current spec"
+    ]
+   ],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.374
+   }
+  }
+ ]
+}

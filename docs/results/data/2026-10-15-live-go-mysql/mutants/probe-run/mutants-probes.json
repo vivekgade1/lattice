@@ -1,0 +1,268 @@
+[
+ {
+  "id": "LG1",
+  "probes": [
+   "P0",
+   "G0"
+  ],
+  "failed_checks": {
+   "G0": [
+    "answered_201_completions_200_others",
+    "database_block",
+    "exit_0",
+    "gaps_2",
+    "one_container_per_call",
+    "replayed_7",
+    "verified_live_access_token"
+   ]
+  },
+  "kill_evidence": {
+   "G0": [
+    "answered_201_completions_200_others",
+    "database_block",
+    "exit_0",
+    "gaps_2",
+    "one_container_per_call",
+    "replayed_7",
+    "verified_live_access_token"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG2",
+  "probes": [
+   "P0",
+   "G0"
+  ],
+  "failed_checks": {
+   "G0": [
+    "one_container_per_call"
+   ]
+  },
+  "kill_evidence": {
+   "G0": [
+    "one_container_per_call"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG3",
+  "probes": [
+   "P0",
+   "G0"
+  ],
+  "failed_checks": {},
+  "kill_evidence": {},
+  "verdict": "SURVIVED",
+  "rc": 1
+ },
+ {
+  "id": "LG4",
+  "probes": [
+   "P0",
+   "Z1"
+  ],
+  "failed_checks": {
+   "Z1": [
+    "connections_plus_1",
+    "database_block_ignored_both",
+    "exit_0_replayed_7"
+   ]
+  },
+  "kill_evidence": {
+   "Z1": [
+    "connections_plus_1",
+    "database_block_ignored_both",
+    "exit_0_replayed_7"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG5",
+  "probes": [
+   "P0",
+   "Z1"
+  ],
+  "failed_checks": {
+   "Z1": [
+    "connections_plus_1",
+    "database_block_ignored_both",
+    "exit_0_replayed_7"
+   ]
+  },
+  "kill_evidence": {
+   "Z1": [
+    "connections_plus_1",
+    "database_block_ignored_both",
+    "exit_0_replayed_7"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG6",
+  "probes": [
+   "P0",
+   "A2"
+  ],
+  "failed_checks": {
+   "A2": [
+    "error_code",
+    "identical",
+    "message_names_lattice_db",
+    "zero_docker_calls"
+   ]
+  },
+  "kill_evidence": {
+   "A2": [
+    "error_code",
+    "message_names_lattice_db",
+    "zero_docker_calls"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG7",
+  "probes": [
+   "P0",
+   "A1"
+  ],
+  "failed_checks": {
+   "A1": [
+    "error_code",
+    "shim_log_is_info_only"
+   ]
+  },
+  "kill_evidence": {
+   "A1": [
+    "error_code",
+    "shim_log_is_info_only"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG8",
+  "probes": [
+   "P0",
+   "A3"
+  ],
+  "failed_checks": {
+   "A3": [
+    "error_code",
+    "identical",
+    "log_is_info_then_image_inspect",
+    "message_has_docker_pull",
+    "no_run_no_pull"
+   ]
+  },
+  "kill_evidence": {
+   "A3": [
+    "error_code",
+    "log_is_info_then_image_inspect",
+    "no_run_no_pull"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG9",
+  "probes": [
+   "P0",
+   "K3a"
+  ],
+  "failed_checks": {
+   "K3a": [
+    "no_container_left",
+    "no_streak_api_left"
+   ]
+  },
+  "kill_evidence": {
+   "K3a": [
+    "no_container_left"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG10",
+  "probes": [
+   "P0",
+   "K3a",
+   "K3c"
+  ],
+  "failed_checks": {
+   "K3c": [
+    "no_streak_api_left"
+   ]
+  },
+  "kill_evidence": {
+   "K3c": [
+    "no_streak_api_left"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG11",
+  "probes": [
+   "P0",
+   "G-D7a",
+   "G-D7c"
+  ],
+  "failed_checks": {
+   "G-D7a": [
+    "containers_as_predicted"
+   ],
+   "G-D7c": [
+    "containers_as_predicted"
+   ]
+  },
+  "kill_evidence": {
+   "G-D7a": [
+    "containers_as_predicted"
+   ],
+   "G-D7c": [
+    "containers_as_predicted"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG12",
+  "probes": [
+   "B1"
+  ],
+  "failed_checks": {
+   "B1": [
+    "all_byte_identical"
+   ]
+  },
+  "kill_evidence": {
+   "B1": [
+    "all_byte_identical"
+   ]
+  },
+  "verdict": "KILLED",
+  "rc": 1
+ },
+ {
+  "id": "LG13",
+  "probes": [],
+  "verdict": "NOT RUN (unit test only)"
+ }
+]

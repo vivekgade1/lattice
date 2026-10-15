@@ -1,0 +1,103 @@
+{
+ "id": "G0",
+ "prediction": "static exit 0, 0 findings, gaps 2 (request_field_unobserved cursor @ GET /v1/habits, response_field_unobserved access_token @ POST /v1/auth/login); live replayed 7, 201 on completions and 200 on the other 6, findings [], not_replayed [], verified_live = access_token, database block (ignored []); exactly 1 lattice-live- container created; exit 0; x10 identical",
+ "observed": "exit 0; static findings 0; replayed 7; live findings 0; verified ['access_token']; containers/call [1]; wall median 6.4 s (max 6.4)",
+ "pass": true,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "identical": true,
+  "exit_0": true,
+  "static_0_findings": true,
+  "gaps_2": true,
+  "replayed_7": true,
+  "answered_201_completions_200_others": true,
+  "live_findings_empty": true,
+  "verified_live_access_token": true,
+  "database_block": true,
+  "one_container_per_call": true,
+  "no_leaks": true
+ },
+ "extra": {
+  "wall_s": [
+   6.434
+  ],
+  "median_wall_s": 6.43,
+  "probe_wall_s": 7.4
+ },
+ "runs": [
+  {
+   "rc": 0,
+   "wall_s": 6.434,
+   "stderr": "",
+   "status": "ok",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": false,
+   "spec_hash_changed": false,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 7,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/home": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G0",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-f5eb2e24"
+    ],
+    "wall_s": 6.434
+   }
+  }
+ ]
+}

@@ -1,12 +1,17 @@
 """The live contract check (decision 11): replay the provider's own 2xx spec step for each import
 on a provider app that the check starts itself.
 
-The provider app is started by the check on a throwaway SQLite database (through
+The provider app is started by the check on a throwaway database (through
 ``start_target_harness``, in-process by default), never reached through a URL: a replay mutates
-data. A link's ``live_url`` is refused (:class:`LiveError`, code ``not_loopback`` for a
-non-loopback host, ``live_url_unsupported`` for a loopback one) before anything is started, so no
-request is sent. The provider's ``app``, ``db``, ``login``, ``src`` and ``env`` come from its
-``studio.toml`` when it has a usable one, else from the manifest's ``[[project]]`` keys
+data. The database is a SQLite file, or, for a provider whose harness says ``mysql``
+(:data:`LIVE_DATABASES`), a clone of its seed on one throwaway MySQL container that the check
+starts itself (``lattice-live-mysql-*``, the image already present, never pulled), shared by the
+replays of the run and removed at its end; a server the user named (``$LATTICE_MYSQL_URL``,
+``database_url``) is dropped from the child's environment and never used. A link's ``live_url``
+is refused (:class:`LiveError`, code ``not_loopback`` for a non-loopback host,
+``live_url_unsupported`` for a loopback one) before anything is started, so no request is sent.
+The provider's ``app``, ``db``, ``login``, ``src`` and ``env`` come from its ``studio.toml`` when
+it has a usable one, else from the manifest's ``[[project]]`` keys
 (:meth:`lattice.workspace.WsProject.settings`; ``env`` through
 :meth:`lattice.workspace.WsProject.expanded_env`).
 
@@ -32,8 +37,11 @@ Isolation. The replay runs in a child process (``python -m lattice.contracts.liv
 providers' packages are all named ``spec``, the app reads its environment and working directory,
 and a long-lived caller must not keep a provider's modules. The child runs with a private
 ``TMPDIR`` that is removed afterwards, so neither the throwaway database nor any other temporary
-file outlives the check. The provider's code is executed (its spec module, the app and, through
-the spec's steps, whatever the app does for them): use scratch clones, never a shared checkout.
+file outlives the check. On a timeout the child gets SIGTERM and :data:`TERM_GRACE_S` to unwind;
+after any child exit the parent removes only what the child's markers in that ``TMPDIR`` name (the
+containers carrying this run's ``lattice.owner`` label, the app process groups it recorded).
+The provider's code is executed (its spec module, the app and, through the spec's steps, whatever
+the app does for them): use scratch clones, never a shared checkout.
 """
 
 from __future__ import annotations
@@ -41,6 +49,8 @@ from __future__ import annotations
 import contextlib
 import json
 import os
+import re
+import secrets
 import shutil
 import signal
 import subprocess
@@ -58,6 +68,13 @@ if TYPE_CHECKING:
 LIVE_KINDS = ("status_not_observed", "auth_changed", "response_field_missing")
 NOT_CHECKED = ["request_fields"]
 TIMEOUT_S = 300.0
+TERM_GRACE_S = 15.0  # SIGTERM's grace before the child's group is killed (a timeout)
+LIVE_DATABASES = ("sqlite", "mysql")
+CONTAINER_PREFIX = "lattice-live-"  # the throwaway server of a live run: lattice-live-mysql-<hex>
+OWNER_ENV = "LATTICE_CONTAINER_OWNER"  # dbserver's label token: lattice.owner=<value>
+OWNER_RE = re.compile(r"live-[0-9a-f]{16}")
+SERVER_MARKER = "live-server.json"  # {"owner": ...}, written before `docker run`
+PID_MARKER = "live-pids"  # one pid per line, appended when an app process was spawned
 AUTH_REFUSALS = (401, 403)
 EXCLUDED_REASON = "excluded by the provider (exclude)"
 
@@ -162,6 +179,49 @@ def _verified(imp: Import, outcome: Mapping[str, Any], current: Mapping[str, Any
     return out
 
 
+def _stop_child(proc: subprocess.Popen[str]) -> None:
+    """End the child's process group after a timeout: SIGTERM (the child unwinds: its app, its
+    clone and its container go), then SIGKILL after :data:`TERM_GRACE_S`."""
+    with contextlib.suppress(OSError):
+        os.killpg(proc.pid, signal.SIGTERM)
+    try:
+        proc.communicate(timeout=TERM_GRACE_S)
+    except subprocess.TimeoutExpired:
+        with contextlib.suppress(OSError):
+            os.killpg(proc.pid, signal.SIGKILL)
+        proc.communicate()
+
+
+def _sweep(tmp: Path, owner: str) -> None:
+    """After a child's exit, whatever its markers in `tmp` name and is still alive: the app
+    process groups it recorded, then the containers labelled with this run's `owner`. No marker,
+    nothing is looked at and no ``docker`` is called."""
+    pids = tmp / PID_MARKER
+    if pids.is_file():
+        for pid in sorted({int(w) for w in pids.read_text().split() if w.isdigit()}):
+            with contextlib.suppress(OSError):  # gone, or not ours to signal
+                if os.getpgid(pid) == pid:  # the app's own session leader
+                    os.killpg(pid, signal.SIGKILL)
+    marker = tmp / SERVER_MARKER
+    if not marker.is_file() or not OWNER_RE.fullmatch(owner):
+        return
+    try:
+        named = json.loads(marker.read_text(encoding="utf-8")).get("owner")
+    except (OSError, ValueError, AttributeError):
+        return
+    if named != owner:
+        return
+    with contextlib.suppress(OSError, subprocess.SubprocessError):
+        listed = subprocess.run(  # noqa: S603
+            ["docker", "ps", "-aq", "--filter", f"label=lattice.owner={owner}"],  # noqa: S607
+            capture_output=True, text=True, timeout=60, check=False)  # fmt: skip
+        ids = listed.stdout.split()
+        if ids:
+            subprocess.run(  # noqa: S603
+                ["docker", "rm", "-f", "-v", *ids],  # noqa: S607
+                capture_output=True, text=True, timeout=120, check=False)  # fmt: skip
+
+
 def _spawn(job: Mapping[str, Any], project: Path, env: Mapping[str, str], tmp: Path
            ) -> dict[str, Any]:  # fmt: skip
     """Run the child on `job`; its result dict, or a :class:`LiveError`."""
@@ -178,9 +238,7 @@ def _spawn(job: Mapping[str, Any], project: Path, env: Mapping[str, str], tmp: P
     try:
         _stdout, stderr = proc.communicate(timeout=TIMEOUT_S)
     except subprocess.TimeoutExpired:
-        with contextlib.suppress(OSError):
-            os.killpg(proc.pid, signal.SIGKILL)
-        proc.communicate()
+        _stop_child(proc)
         raise LiveError("live_timeout", f"the live check of {project} took more than "
                         f"{TIMEOUT_S:g} s") from None  # fmt: skip
     finally:
@@ -234,7 +292,14 @@ def run_live(
             {"endpoint": "GET /x", "fields": ["id"], "reason": "the live answer is an empty list"},
           ],
           "not_checked": ["request_fields"],
+          "database": {"engine": "mysql", "image": "mysql:8.4", "throwaway": True,
+                       "ignored": ["LATTICE_MYSQL_URL", "database_url"]},  # server dialects only
         }
+
+    ``database`` is present only when the provider's harness uses a server dialect (never for
+    SQLite, whose result is exactly as before): ``ignored`` lists, sorted, which of the user's
+    own server settings (``$LATTICE_MYSQL_URL``, the harness's ``database_url``) were set and
+    were not used.
 
     `current_export` is the provider's current export (the ``export`` dict of
     :func:`lattice.contracts.export.compute_export`), from which the static gaps follow
@@ -246,7 +311,9 @@ def run_live(
     `clone_env` is extra environment for the provider app (it wins over the manifest's ``env``).
     Raises :class:`LiveError`: ``not_loopback`` / ``live_url_unsupported`` (a ``live_url``),
     ``no_harness`` (the provider has no usable app/db), ``provider_missing``, ``spec_failed``,
-    ``provider_start_failed``, ``unsupported_database``, ``live_timeout``, ``live_failed``.
+    ``provider_start_failed``, ``unsupported_database`` (a database not in
+    :data:`LIVE_DATABASES`), ``driver_missing``, ``docker_unavailable``, ``docker_image_missing``,
+    ``database_start_failed`` (a server dialect), ``live_timeout``, ``live_failed``.
     """
     _refuse_url(link)
     project = workspace.project(link.target)
@@ -264,6 +331,8 @@ def run_live(
         [root, *([os.environ["PYTHONPATH"]] if os.environ.get("PYTHONPATH") else [])]
     )
     env["PYTHONDONTWRITEBYTECODE"] = "1"
+    owner = f"live-{secrets.token_hex(8)}"
+    env[OWNER_ENV] = owner  # a throwaway container of this run carries lattice.owner=<owner>
     tmp = Path(tempfile.mkdtemp(prefix="lattice-live-"))
     env["TMPDIR"] = str(tmp)
     try:
@@ -277,6 +346,7 @@ def run_live(
         }
         got = _spawn(job, project.path, env, tmp)
     finally:
+        _sweep(tmp, owner)
         shutil.rmtree(tmp, ignore_errors=True)
 
     findings: dict[tuple[str, str, str, str], dict[str, Any]] = {}
@@ -305,7 +375,7 @@ def run_live(
             key = (imp.endpoint, tuple(imp.response_fields))
             unobservable[key] = {"endpoint": imp.endpoint, "fields": list(imp.response_fields),
                                  "reason": "the live answer is an empty list"}  # fmt: skip
-    return {
+    out: dict[str, Any] = {
         "status": "ok",
         "replayed": len(replays),
         "not_replayed": sorted(
@@ -326,6 +396,9 @@ def run_live(
         ),  # fmt: skip
         "not_checked": list(NOT_CHECKED),
     }
+    if got.get("database") is not None:  # a server dialect: the throwaway server's description
+        out["database"] = got["database"]
+    return out
 
 
 # ---- the child: load the provider, start its app, replay -------------------------------------
@@ -418,9 +491,12 @@ def _fields_of(body: Any) -> tuple[str, list[str]]:
     return OTHER, []
 
 
-def _replay_one(harness: Any, spec: Any, scenario: Any, index: int) -> dict[str, Any]:
+def _replay_one(harness: Any, spec: Any, scenario: Any, index: int,
+                databases: Any = None) -> dict[str, Any]:  # fmt: skip
     """One replay on a fresh seeded throwaway database: ``given``, the earlier steps (answers
-    ignored), then the target step. A result with ``reason`` when it could not be sent."""
+    ignored), then the target step. A result with ``reason`` when it could not be sent.
+    `databases`: the run's shared server's ``make_db`` (a server dialect): the replay's database
+    is a clone of its seed, dropped afterwards; ``None``: a SQLite file."""
     from lattice.security.schema import AttackRequest
     from lattice.security.target import start_target_harness
     from lattice.spec import Step
@@ -440,8 +516,9 @@ def _replay_one(harness: Any, spec: Any, scenario: Any, index: int) -> dict[str,
             st.method, st.path, as_user=st.user, json=st.json,
             params=dict(st.params) if st.params else None))  # fmt: skip
 
+    extra = {} if databases is None else {"databases": databases}
     skipped = 0
-    with start_target_harness(harness, seed) as target:
+    with start_target_harness(harness, seed, **extra) as target:
         if given_error:
             return {"reason": f"the scenario's given rows were refused ({given_error[0]})"}
         for st in scenario.steps[:index]:
@@ -464,7 +541,139 @@ def _replay_one(harness: Any, spec: Any, scenario: Any, index: int) -> dict[str,
     return out
 
 
-def _child(job: Mapping[str, Any]) -> list[dict[str, Any]]:
+def _missing_requirements(requires: Sequence[str]) -> list[str]:
+    """The pip requirements (``name`` or ``name>=x.y``) that the running interpreter lacks."""
+    from importlib import metadata
+
+    def numbers(text: str) -> tuple[int, ...]:
+        return tuple(int(n) for n in re.findall(r"\d+", text)[:4])
+
+    missing = []
+    for req in requires:
+        m = re.match(r"\s*([A-Za-z0-9_.-]+)\s*(?:(>=|==)\s*([0-9][0-9A-Za-z.]*))?", req)
+        if m is None:
+            continue
+        name, op, want = m.groups()
+        try:
+            have = metadata.version(name)
+        except metadata.PackageNotFoundError:
+            missing.append(req.strip())
+            continue
+        if want and (
+            numbers(have) < numbers(want) if op == ">=" else numbers(have) != numbers(want)
+        ):
+            missing.append(req.strip())
+    return missing
+
+
+def _image_present(image: str) -> bool:
+    """Whether the Docker image is already local (``docker image inspect``): never pulled."""
+    try:
+        out = subprocess.run(  # noqa: S603
+            ["docker", "image", "inspect", image],  # noqa: S607
+            capture_output=True, text=True, timeout=30, check=False)  # fmt: skip
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return out.returncode == 0
+
+
+class _ServerRun:
+    """The one throwaway server of a live run on a server dialect (L2-L5): opened at the first
+    replay that is sent (a run that replays nothing starts nothing), shared by every replay,
+    which gets a clone of the harness's seed; closed (clones, then the container) at the end.
+
+    The user's own servers are never used: every ``LATTICE_<DIALECT>_URL`` is removed from this
+    process's environment (the provider app inherits it) and the harness's ``database_url`` is
+    not read."""
+
+    def __init__(self, project: str, harness: Any, engine: str, tmp: Path) -> None:
+        from lattice.spec import engines
+        from lattice.spec.db import SERVER_DIALECTS
+
+        self.project, self.harness, self.engine, self.tmp = project, harness, engine, tmp
+        self.desc = engines.engine(engine)
+        var = f"LATTICE_{engine.upper()}_URL"
+        given = {var: os.environ.get(var), "database_url": getattr(harness, "database_url", None)}
+        self.ignored = sorted(k for k, v in given.items() if v)
+        for name in {*SERVER_DIALECTS, *engines.REGISTRY.names()}:
+            os.environ.pop(f"LATTICE_{name.upper()}_URL", None)
+        self._dbs: Any = None
+        self._server: Any = None
+
+    def describe(self) -> dict[str, Any]:
+        return {"engine": self.engine, "image": self.desc.server.image, "throwaway": True,
+                "ignored": self.ignored}  # fmt: skip
+
+    def databases(self) -> Any:
+        """The shared ``make_db`` (opening the server first, at its first use)."""
+        if self._dbs is None:
+            self._open()
+        return self._dbs
+
+    def _open(self) -> None:
+        from lattice.spec import dbserver
+
+        image = self.desc.server.image
+        missing = _missing_requirements(self.desc.requires)
+        if missing:
+            raise _Fatal("driver_missing", f"{self.project}: the live check on {self.engine} "
+                         f"needs {', '.join(missing)} in {sys.executable} (the Python that runs "
+                         "it): install lattice[db]")  # fmt: skip
+        if not dbserver.docker_available():
+            raise _Fatal("docker_unavailable", f"{self.project}: the live check on "
+                         f"{self.engine} starts a throwaway {image} container and Docker is "
+                         "not available (no docker CLI, or its daemon does not "
+                         "answer)")  # fmt: skip
+        if not _image_present(image):
+            raise _Fatal("docker_image_missing", f"{self.project}: the image {image} is not "
+                         "present locally and the live check never pulls: run "
+                         f"`docker pull {image}`")  # fmt: skip
+        owner = os.environ.get(OWNER_ENV, "")
+        (self.tmp / SERVER_MARKER).write_text(json.dumps({"owner": owner}), encoding="utf-8")
+        try:
+            server, owned = dbserver.server_for(self.engine, None, name_prefix=CONTAINER_PREFIX)
+        except Exception as e:  # noqa: BLE001 -- docker run / wait_ready / a driver error
+            raise _Fatal("database_start_failed", f"{self.project}: the throwaway {self.engine} "
+                         f"server did not start ({type(e).__name__}: {e})") from None  # fmt: skip
+        if not owned:  # never a server somebody else named
+            server.stop()
+            raise _Fatal("database_start_failed", f"{self.project}: refusing a {self.engine} "
+                         "server that the check did not start")  # fmt: skip
+        self._server = server
+        self._dbs = dbserver.ServerDatabases(server, self.harness.db_factory)
+
+    def close(self) -> None:
+        dbs, server = self._dbs, self._server
+        self._dbs = self._server = None
+        if dbs is not None:
+            with contextlib.suppress(Exception):
+                dbs.close()
+        if server is not None:
+            with contextlib.suppress(Exception):
+                server.stop()
+
+
+def _on_term(signum: int, _frame: Any) -> None:
+    sys.exit(128 + signum)  # unwind: `with`/`finally` stop the app, drop the clone, rm the server
+
+
+def _record_app_pids(path: Path) -> None:
+    """Append the pid of every process app this child spawns to `path` (the parent kills what is
+    still alive after the child's exit)."""
+    from lattice.spec import process
+
+    spawn = process.ProcessApp._spawn  # noqa: SLF001
+
+    def recording(self: Any) -> None:
+        spawn(self)
+        if self.pid is not None:
+            with path.open("a", encoding="utf-8") as f:
+                f.write(f"{self.pid}\n")
+
+    process.ProcessApp._spawn = recording  # type: ignore[method-assign]  # noqa: SLF001
+
+
+def _child(job: Mapping[str, Any]) -> dict[str, Any]:
     project = Path(job["project"]).resolve()
     settings = job["settings"]
     os.chdir(project)
@@ -477,28 +686,40 @@ def _child(job: Mapping[str, Any]) -> list[dict[str, Any]]:
         tail = f"{type(e).__name__}: {e}"
         raise _Fatal("spec_failed", f"cannot load {job['spec']} from {project}: {tail}") from None
     harness = _harness(project, settings)
-    if getattr(harness, "database", "sqlite") != "sqlite":
-        raise _Fatal("unsupported_database", f"{project.name}: the live check runs on a throwaway "
-                     f"SQLite database, not {harness.database}")  # fmt: skip
+    engine = getattr(harness, "database", "sqlite")
+    if engine not in LIVE_DATABASES:
+        raise _Fatal("unsupported_database", f"{project.name}: the live check runs on a "
+                     f"throwaway database of {', '.join(LIVE_DATABASES)}, not "
+                     f"{engine}")  # fmt: skip
+    server = None if engine == "sqlite" else _ServerRun(
+        project.name, harness, engine, Path(tempfile.gettempdir()))  # fmt: skip
     outcomes: list[dict[str, Any]] = []
     cache: dict[tuple[str, int], dict[str, Any]] = {}
-    for imp in job["imports"]:
-        picked = select_step(spec, imp["endpoint"], imp["auth"], imp.get("as_user"))
-        if isinstance(picked, str):
-            outcomes.append({"reason": picked})
-            continue
-        scenario, index = picked
-        key = (scenario.name, index)
-        if key not in cache:  # imports on one step share its replay (a fresh seed, run once)
-            try:
-                cache[key] = _replay_one(harness, spec, scenario, index)
-            except UnsafeTargetError as e:
-                raise _Fatal("not_loopback", str(e)) from None
-            except Exception as e:  # noqa: BLE001 -- the app did not start
-                raise _Fatal("provider_start_failed", f"{project.name}: the app did not start "
-                             f"({type(e).__name__}: {e})") from None  # fmt: skip
-        outcomes.append(cache[key])
-    return outcomes
+    try:
+        for imp in job["imports"]:
+            picked = select_step(spec, imp["endpoint"], imp["auth"], imp.get("as_user"))
+            if isinstance(picked, str):
+                outcomes.append({"reason": picked})
+                continue
+            scenario, index = picked
+            key = (scenario.name, index)
+            if key not in cache:  # imports on one step share its replay (a fresh seed, run once)
+                dbs = None if server is None else server.databases()
+                try:
+                    cache[key] = _replay_one(harness, spec, scenario, index, dbs)
+                except UnsafeTargetError as e:
+                    raise _Fatal("not_loopback", str(e)) from None
+                except Exception as e:  # noqa: BLE001 -- the app did not start
+                    raise _Fatal("provider_start_failed", f"{project.name}: the app did not "
+                                 f"start ({type(e).__name__}: {e})") from None  # fmt: skip
+            outcomes.append(cache[key])
+    finally:
+        if server is not None:
+            server.close()
+    result: dict[str, Any] = {"outcomes": outcomes}
+    if server is not None:
+        result["database"] = server.describe()
+    return result
 
 
 def _main(argv: Sequence[str]) -> int:
@@ -509,8 +730,10 @@ def _main(argv: Sequence[str]) -> int:
     ap.add_argument("--out", required=True)
     a = ap.parse_args(list(argv))
     job = json.loads(Path(a.job).read_text(encoding="utf-8"))
+    signal.signal(signal.SIGTERM, _on_term)
+    _record_app_pids(Path(tempfile.gettempdir()) / PID_MARKER)
     try:
-        result: dict[str, Any] = {"ok": True, "outcomes": _child(job)}
+        result: dict[str, Any] = {"ok": True, **_child(job)}
     except _Fatal as e:
         result = {"ok": False, "code": e.code, "message": e.message}
     except Exception as e:  # noqa: BLE001

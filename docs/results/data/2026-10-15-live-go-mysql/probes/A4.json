@@ -1,0 +1,143 @@
+{
+ "id": "A4",
+ "prediction": "a clone without bin/: provider_start_failed, the message names bin/streak-api, its container is removed; exit 2, wall <= 25 s (predicted <= 9 s)",
+ "observed": "exit 2; error provider_start_failed: streak: the app did not start (FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/claude-501/-Users-vivekgade-Documents-l; wall [5.933, 5.835, 5.86]; created ['lattice-live-mysql-29372a49']",
+ "pass": true,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "identical": true,
+  "exit": true,
+  "error_code": true,
+  "findings_empty": true,
+  "no_streak_api_process": true,
+  "no_live_container": true,
+  "tmpdir_empty": true,
+  "wall_le_25s": true,
+  "message_names_bin_streak_api": true,
+  "a_container_was_started_and_removed": true,
+  "wall_le_9s": true
+ },
+ "extra": {
+  "error": {
+   "code": "provider_start_failed",
+   "message": "streak: the app did not start (FileNotFoundError: [Errno 2] No such file or directory: '$WORK/w/A4/streak/bin/streak-api')"
+  },
+  "wall_s": [
+   5.933,
+   5.835,
+   5.86
+  ],
+  "probe_wall_s": 17.9
+ },
+ "runs": [
+  {
+   "rc": 2,
+   "wall_s": 5.933,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "provider_start_failed",
+    "message": "streak: the app did not start (FileNotFoundError: [Errno 2] No such file or directory: '$WORK/w/A4/streak/bin/streak-api')"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A4",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-29372a49"
+    ],
+    "wall_s": 5.933
+   }
+  },
+  {
+   "rc": 2,
+   "wall_s": 5.835,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "provider_start_failed",
+    "message": "streak: the app did not start (FileNotFoundError: [Errno 2] No such file or directory: '$WORK/w/A4/streak/bin/streak-api')"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A4",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-da79dfe5"
+    ],
+    "wall_s": 5.835
+   }
+  },
+  {
+   "rc": 2,
+   "wall_s": 5.86,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "provider_start_failed",
+    "message": "streak: the app did not start (FileNotFoundError: [Errno 2] No such file or directory: '$WORK/w/A4/streak/bin/streak-api')"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A4",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-35b02482"
+    ],
+    "wall_s": 5.86
+   }
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+{
+ "id": "K1",
+ "prediction": "after every live call (G, A, K, Z, T): 0 lattice-live- containers, 0 streak-api processes of a clone, 0 entries in the call's TMPDIR (K3b's tmp entries excepted, the known leak)",
+ "observed": "166 calls checked, 0 with a leak: []",
+ "pass": true,
+ "identical": true,
+ "n_runs": 0,
+ "checks": {
+  "calls_counted": true,
+  "zero_leaks": true
+ },
+ "extra": {
+  "calls": 166,
+  "bad": [],
+  "probe_wall_s": 0.0
+ },
+ "runs": []
+}

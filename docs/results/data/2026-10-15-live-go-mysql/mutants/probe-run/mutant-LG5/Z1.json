@@ -1,0 +1,264 @@
+{
+ "id": "Z1",
+ "prediction": "a decoy mysql (database streak_real, a sentinel row) named by LATTICE_MYSQL_URL, HABIT_DB_DSN, DATABASE_URL and [app] database_url: the live result = G0's but ignored [LATTICE_MYSQL_URL, database_url]; decoy Connections +1 (the runner's own second read); SHOW DATABASES, the sentinel checksum and GLOBAL sql_mode unchanged",
+ "observed": "exit 2; replayed None; ignored None; decoy connections 10 -> 12; databases ['information_schema', 'mysql', 'performance_schema', 'streak_real', 'sys']; sql_mode unchanged True",
+ "pass": false,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "exit_0_replayed_7": false,
+  "database_block_ignored_both": false,
+  "result_equals_g0": true,
+  "connections_plus_1": false,
+  "databases_unchanged": true,
+  "sentinel_unchanged": true,
+  "global_sql_mode_unchanged": true,
+  "no_lattice_database_on_decoy": true
+ },
+ "extra": {
+  "vs_g0_checked": false,
+  "probe_wall_s": 8.7
+ },
+ "runs": [
+  {
+   "rc": 2,
+   "wall_s": 0.873,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "database_start_failed",
+    "message": "streak: refusing a mysql server that the check did not start"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "Z1",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.873
+   },
+   "decoy_before": {
+    "connections": 10,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   },
+   "decoy_after": {
+    "connections": 12,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   }
+  },
+  {
+   "rc": 2,
+   "wall_s": 0.899,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "database_start_failed",
+    "message": "streak: refusing a mysql server that the check did not start"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "Z1",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.899
+   },
+   "decoy_before": {
+    "connections": 13,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   },
+   "decoy_after": {
+    "connections": 15,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   }
+  },
+  {
+   "rc": 2,
+   "wall_s": 0.879,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "database_start_failed",
+    "message": "streak: refusing a mysql server that the check did not start"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "Z1",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.879
+   },
+   "decoy_before": {
+    "connections": 16,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   },
+   "decoy_after": {
+    "connections": 18,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   }
+  }
+ ]
+}

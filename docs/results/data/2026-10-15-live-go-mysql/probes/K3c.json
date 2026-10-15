@@ -1,0 +1,97 @@
+{
+ "id": "K3c",
+ "prediction": "POST HOC supplement: SIGKILL of the child the moment its first app process is recorded (x3): live_failed, 0 containers and 0 streak-api after the parent returned (the case LG10 needs: an app of a killed child)",
+ "observed": "@4.78s live_failed containers [] apps 0; @5.66s live_failed containers [] apps 0; @5.65s live_failed containers [] apps 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "child_was_found_and_killed": true,
+  "live_failed": true,
+  "no_container_left": true,
+  "no_streak_api_left": true
+ },
+ "extra": {
+  "probe_wall_s": 18.1
+ },
+ "runs": [
+  {
+   "killed": {
+    "target": "child_app",
+    "at_s": 4.78,
+    "pid": 51233
+   },
+   "rc": 2,
+   "wall_s": 5.12,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3c/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3c@0",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-cb9bc309"
+    ],
+    "wall_s": 5.124
+   }
+  },
+  {
+   "killed": {
+    "target": "child_app",
+    "at_s": 5.66,
+    "pid": 52048
+   },
+   "rc": 2,
+   "wall_s": 5.97,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3c/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3c@0",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-83ac6452"
+    ],
+    "wall_s": 5.971
+   }
+  },
+  {
+   "killed": {
+    "target": "child_app",
+    "at_s": 5.65,
+    "pid": 52751
+   },
+   "rc": 2,
+   "wall_s": 5.94,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3c/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3c@0",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-81b0015a"
+    ],
+    "wall_s": 5.944
+   }
+  }
+ ]
+}

@@ -1,0 +1,208 @@
+{
+ "hashes": {
+  "lattice/contracts/check.py": "cb6833beb59f093d",
+  "lattice/contracts/export.py": "7e644a855ae78a39",
+  "lattice/contracts/impact.py": "17abca742f99d99b",
+  "lattice/contracts/linked.py": "71e383d1bef6456d",
+  "lattice/contracts/live.py": "9cfe4f53e9b33a4a",
+  "lattice/mcp/projects.py": "8681060cd975b2e7",
+  "lattice/studio/server.py": "e077d07b4ddc861b",
+  "lattice/workspace.py": "704e677e2ebbcbf4"
+ },
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "32 passed in 48.93s",
+    "seconds": 49.1,
+    "tail": "................................                                         [100%]\n32 passed in 48.93s\n",
+    "tests": "tests/studio/test_linked_api.py tests/mcp/test_linked_questions.py"
+   },
+   "verdict": "PASS (control)",
+   "seconds": 293.6
+  },
+  "LG2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_one_server_for_the_run_and_a_clone_per_replay"
+    ],
+    "summary": "1 failed, 1 passed in 0.94s",
+    "seconds": 1.2,
+    "tail": ".F\n=================================== FAILURES ===================================\n______________ test_one_server_for_the_run_and_a_clone_per_replay ______________\n\nrec = <contracts.test_live_server.Rec object at 0x1086bc050>\n\n    def test_one_server_for_the_run_and_a_clone_per_replay(rec: Rec) -> None:\n        rec.spec = _steps(\"/a\", \"/b\", \"/c\", given={\"notes\": [{\"id\": 1}]})\n        out = child(rec, \"GET /a\", \"GET /b\", \"GET /c\")\n        assert [o[\"answered\"] for o in out[\"outcomes\"]] == [200, 200, 200]\n        assert rec.server_for == [(\"mysql\", None, \"lattice-live-\")]  # once, never a given URL\n        assert len(rec.target_kw) == 3\n>       shared = rec.target_kw[0][\"databases\"]\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       KeyError: 'databases'\n\n/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/lattice-contracts-mutant-LG2-_2pdpllz/tests/contracts/test_live_server.py:202: KeyError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_one_server_for_the_run_and_a_clone_per_replay\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 1 passed in 0.94s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.8
+  },
+  "LG3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_one_server_for_the_run_and_a_clone_per_replay"
+    ],
+    "summary": "1 failed, 1 passed in 1.69s",
+    "seconds": 1.9,
+    "tail": ".F\n=================================== FAILURES ===================================\n______________ test_one_server_for_the_run_and_a_clone_per_replay ______________\n\nrec = <contracts.test_live_server.Rec object at 0x108154050>\n\n    def test_one_server_for_the_run_and_a_clone_per_replay(rec: Rec) -> None:\n        rec.spec = _steps(\"/a\", \"/b\", \"/c\", given={\"notes\": [{\"id\": 1}]})\n        out = child(rec, \"GET /a\", \"GET /b\", \"GET /c\")\n        assert [o[\"answered\"] for o in out[\"outcomes\"]] == [200, 200, 200]\n        assert rec.server_for == [(\"mysql\", None, \"lattice-live-\")]  # once, never a given URL\n        assert len(rec.target_kw) == 3\n        shared = rec.target_kw[0][\"databases\"]\n>       assert all(kw[\"databases\"] is shared for kw in rec.target_kw)  # the run's one make_db\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       assert False\nE        +  where False = all(<generator object test_one_server_for_the_run_and_a_clone_per_replay.<locals>.<genexpr> at 0x107e29380>)\n\n/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/lattice-contracts-mutant-LG3-o4o5bx2r/tests/contracts/test_live_server.py:203: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_one_server_for_the_run_and_a_clone_per_replay\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 1 passed in 1.69s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 2.5
+  },
+  "LG1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_postgres_stays_unsupported_and_the_message_lists_the_supported_set"
+    ],
+    "summary": "1 failed in 1.69s",
+    "seconds": 1.9,
+    "tail": "F\n=================================== FAILURES ===================================\n___ test_postgres_stays_unsupported_and_the_message_lists_the_supported_set ____\n\nrec = <contracts.test_live_server.Rec object at 0x10bbef770>\n\n    def test_postgres_stays_unsupported_and_the_message_lists_the_supported_set(rec: Rec) -> None:\n        rec.harness.database = \"postgres\"  # type: ignore[attr-defined]\n        e = fatal(rec, \"GET /a\")\n        assert e.code == \"unsupported_database\"\n>       assert \"sqlite, mysql\" in e.message and \"postgres\" in e.message\nE       AssertionError: assert ('sqlite, mysql' in 'test_postgres_stays_unsupporte0: the live check runs on a throwaway database of sqlite, not postgres')\nE        +  where 'test_postgres_stays_unsupporte0: the live check runs on a throwaway database of sqlite, not postgres' = _Fatal('test_postgres_stays_unsupporte0: the live check runs on a throwaway database of sqlite, not postgres').message\n\n/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/lattice-contracts-mutant-LG1-ueh0kqgg/tests/contracts/test_live_server.py:191: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_postgres_stays_unsupported_and_the_message_lists_the_supported_set\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 1.69s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 2.5
+  },
+  "LG4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_the_users_servers_are_dropped_from_the_environment_and_ignored"
+    ],
+    "summary": "1 failed, 5 passed in 0.68s",
+    "seconds": 0.9,
+    "tail": ".....F\n=================================== FAILURES ===================================\n_____ test_the_users_servers_are_dropped_from_the_environment_and_ignored ______\n\nrec = <contracts.test_live_server.Rec object at 0x107ecf410>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1082aa850>\n\n    def test_the_users_servers_are_dropped_from_the_environment_and_ignored(\n        rec: Rec, monkeypatch: pytest.MonkeyPatch\n    ) -> None:\n        monkeypatch.setenv(\"LATTICE_MYSQL_URL\", \"mysql://root:secret@10.1.1.1:3306/prod\")\n        monkeypatch.setenv(\"LATTICE_POSTGRES_URL\", \"postgresql://u:p@10.1.1.2/prod\")\n        rec.harness.database_url = \"mysql://root:secret@10.1.1.3:3306/staging\"  # type: ignore[attr-defined]\n        out = child(rec, \"GET /a\")\n        assert rec.server_for == [(\"mysql\", None, \"lattice-live-\")]  # the URL was never passed\n        seen = {k for k in rec.env_at_server_for if k.startswith(\"LATTICE_\") and k.endswith(\"_URL\")}\n>       assert seen == set()  # the Go app inherits this environment: no user URL in it\n        ^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert {'LATTICE_MYS...POSTGRES_URL'} == set()\nE         \nE         Extra items in the left set:\nE         'LATTICE_MYSQL_URL'\nE         'LATTICE_POSTGRES_URL'\nE         Use -v to get more diff\n\n/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/lattice-contracts-mutant-LG4-x4e25xih/tests/contracts/test_live_server.py:245: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_the_users_servers_are_dropped_from_the_environment_and_ignored\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 5 passed in 0.68s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.3
+  },
+  "LG6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_the_prechecks_run_in_order_at_the_first_replay"
+    ],
+    "summary": "1 failed, 4 passed in 0.71s",
+    "seconds": 1.0,
+    "tail": "....F\n=================================== FAILURES ===================================\n_____________ test_the_prechecks_run_in_order_at_the_first_replay ______________\n\nrec = <contracts.test_live_server.Rec object at 0x10ce19350>\n\n    def test_the_prechecks_run_in_order_at_the_first_replay(rec: Rec) -> None:\n        child(rec, \"GET /nowhere\", \"GET /a\")\n>       assert rec.events == [\"requirements:pymysql>=1.1\", \"docker_available\",\n                              \"image_present:mysql:8.4\", \"server_for\", \"dbs.close\",\n                              \"server.stop\"]  # fmt: skip\nE       AssertionError: assert ['docker_avai...'server.stop'] == ['requirement...'server.stop']\nE         \nE         At index 0 diff: 'docker_available' != 'requirements:pymysql>=1.1'\nE         Right contains one more item: 'server.stop'\nE         Use -v to get more diff\n\n/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/lattice-contracts-mutant-LG6-i2cktme6/tests/contracts/test_live_server.py:227: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_the_prechecks_run_in_order_at_the_first_replay\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 4 passed in 0.71s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.4
+  },
+  "LG5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_the_users_servers_are_dropped_from_the_environment_and_ignored"
+    ],
+    "summary": "1 failed, 5 passed, 1 warning in 0.71s",
+    "seconds": 1.0,
+    "tail": "RL\", \"postgresql://u:p@10.1.1.2/prod\")\n        rec.harness.database_url = \"mysql://root:secret@10.1.1.3:3306/staging\"  # type: ignore[attr-defined]\n        out = child(rec, \"GET /a\")\n>       assert rec.server_for == [(\"mysql\", None, \"lattice-live-\")]  # the URL was never passed\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert [('mysql', 'm...ttice-live-')] == [('mysql', No...ttice-live-')]\nE         \nE         At index 0 diff: ('mysql', 'mysql://root:secret@10.1.1.3:3306/staging', 'lattice-live-') != ('mysql', None, 'lattice-live-')\nE         Use -v to get more diff\n\n/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/lattice-contracts-mutant-LG5-e8tp263p/tests/contracts/test_live_server.py:243: AssertionError\n=============================== warnings summary ===============================\n../../../../../../../../../Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/_pytest/pathlib.py:95\n  /Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/pytest-of-vivekgade/garbage-708f2bdf-ed87-430d-a187-e0b187289b58\n  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/pytest-of-vivekgade/garbage-708f2bdf-ed87-430d-a187-e0b187289b58'\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_the_users_servers_are_dropped_from_the_environment_and_ignored\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 5 passed, 1 warning in 0.71s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.4
+  },
+  "LG7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_the_prechecks_run_in_order_at_the_first_replay"
+    ],
+    "summary": "1 failed, 4 passed in 0.70s",
+    "seconds": 1.0,
+    "tail": "....F\n=================================== FAILURES ===================================\n_____________ test_the_prechecks_run_in_order_at_the_first_replay ______________\n\nrec = <contracts.test_live_server.Rec object at 0x10ce39350>\n\n    def test_the_prechecks_run_in_order_at_the_first_replay(rec: Rec) -> None:\n        child(rec, \"GET /nowhere\", \"GET /a\")\n>       assert rec.events == [\"requirements:pymysql>=1.1\", \"docker_available\",\n                              \"image_present:mysql:8.4\", \"server_for\", \"dbs.close\",\n                              \"server.stop\"]  # fmt: skip\nE       AssertionError: assert ['requirement...'server.stop'] == ['requirement...'server.stop']\nE         \nE         At index 1 diff: 'image_present:mysql:8.4' != 'docker_available'\nE         Right contains one more item: 'server.stop'\nE         Use -v to get more diff\n\n/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/lattice-contracts-mutant-LG7-foosgq7l/tests/contracts/test_live_server.py:227: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_the_prechecks_run_in_order_at_the_first_replay\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 4 passed in 0.70s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.3
+  },
+  "LG8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_the_prechecks_run_in_order_at_the_first_replay"
+    ],
+    "summary": "1 failed, 4 passed in 0.70s",
+    "seconds": 0.9,
+    "tail": "....F\n=================================== FAILURES ===================================\n_____________ test_the_prechecks_run_in_order_at_the_first_replay ______________\n\nrec = <contracts.test_live_server.Rec object at 0x10836d350>\n\n    def test_the_prechecks_run_in_order_at_the_first_replay(rec: Rec) -> None:\n        child(rec, \"GET /nowhere\", \"GET /a\")\n>       assert rec.events == [\"requirements:pymysql>=1.1\", \"docker_available\",\n                              \"image_present:mysql:8.4\", \"server_for\", \"dbs.close\",\n                              \"server.stop\"]  # fmt: skip\nE       AssertionError: assert ['requirement...'server.stop'] == ['requirement...'server.stop']\nE         \nE         At index 2 diff: 'server_for' != 'image_present:mysql:8.4'\nE         Right contains one more item: 'server.stop'\nE         Use -v to get more diff\n\n/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/lattice-contracts-mutant-LG8-ow8knd3x/tests/contracts/test_live_server.py:227: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_the_prechecks_run_in_order_at_the_first_replay\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 4 passed in 0.70s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.4
+  },
+  "LG11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_a_run_that_replays_nothing_starts_no_server"
+    ],
+    "summary": "1 failed, 3 passed in 0.63s",
+    "seconds": 0.9,
+    "tail": "...F\n=================================== FAILURES ===================================\n_______________ test_a_run_that_replays_nothing_starts_no_server _______________\n\nrec = <contracts.test_live_server.Rec object at 0x109ed1940>\n\n    def test_a_run_that_replays_nothing_starts_no_server(rec: Rec) -> None:\n        out = child(rec, \"GET /nowhere\")\n        assert out[\"outcomes\"][0][\"reason\"] == \"the endpoint is not in the provider's current spec\"\n>       assert rec.events == []  # no precheck, no server, no clone: no Docker needed at all\n        ^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: assert ['requirement...'server.stop'] == []\nE         \nE         Left contains 6 more items, first extra item: 'requirements:pymysql>=1.1'\nE         Use -v to get more diff\n\n/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/lattice-contracts-mutant-LG11-r10e7ses/tests/contracts/test_live_server.py:221: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_a_run_that_replays_nothing_starts_no_server\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 3 passed in 0.63s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.1
+  },
+  "LG9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_the_sweep_kills_recorded_apps_and_removes_the_labelled_containers"
+    ],
+    "summary": "1 failed, 15 passed in 4.23s",
+    "seconds": 4.5,
+    "tail": "...............F\n=================================== FAILURES ===================================\n____ test_the_sweep_kills_recorded_apps_and_removes_the_labelled_containers ____\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/pytest-of-vivekgade/pytest-10/test_the_sweep_kills_recorded_0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10c183960>\n\n    def test_the_sweep_kills_recorded_apps_and_removes_the_labelled_containers(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch\n    ) -> None:\n        app = _sleeper()\n        (tmp_path / live.PID_MARKER).write_text(f\"{app.pid}\\n{app.pid}\\n999999999\\n\")\n        (tmp_path / live.SERVER_MARKER).write_text(json.dumps({\"owner\": OWNER}))\n        calls: list[list[str]] = []\n        monkeypatch.setattr(live.subprocess, \"run\", _fake_docker(calls))\n        live._sweep(tmp_path, OWNER)\n        assert app.wait(timeout=10) == -9  # its group was killed\n>       assert calls == [\n            [\"docker\", \"ps\", \"-aq\", \"--filter\", f\"label=lattice.owner={OWNER}\"],\n            [\"docker\", \"rm\", \"-f\", \"-v\", \"c1\", \"c2\"],\n        ]\nE       AssertionError: assert [] == [['docker', '..., 'c1', 'c2']]\nE         \nE         Right contains 2 more items, first extra item: ['docker', 'ps', '-aq', '--filter', 'label=lattice.owner=live-0123456789abcdef']\nE         Use -v to get more diff\n\ntests/contracts/test_live_server.py:426: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_the_sweep_kills_recorded_apps_and_removes_the_labelled_containers\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 15 passed in 4.23s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 4.9
+  },
+  "LG13": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_a_timeout_gives_the_child_sigterm_and_a_grace_before_the_kill"
+    ],
+    "summary": "1 failed, 13 passed in 2.16s",
+    "seconds": 2.4,
+    "tail": " \"term\"  # it was told to stop and unwound (SIGKILL cannot do this)\n               ^^^^^^^^^^^^^^^\n\ntests/contracts/test_live_server.py:375: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py:792: in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/pytest-of-vivekgade/pytest-14/test_a_timeout_gives_the_child0/term.txt')\nmode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None\n\n    def open(self, mode='r', buffering=-1, encoding=None,\n             errors=None, newline=None):\n        \"\"\"\n        Open the file pointed to by this path and return a file object, as\n        the built-in open() function does.\n        \"\"\"\n        if \"b\" not in mode:\n            encoding = io.text_encoding(encoding)\n>       return io.open(self, mode, buffering, encoding, errors, newline)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/pytest-of-vivekgade/pytest-14/test_a_timeout_gives_the_child0/term.txt'\n\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/pathlib/__init__.py:776: FileNotFoundError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_a_timeout_gives_the_child_sigterm_and_a_grace_before_the_kill\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 13 passed in 2.16s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 2.7
+  },
+  "LG12": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_a_sqlite_result_has_no_database_key_and_leaves_nothing"
+    ],
+    "summary": "1 failed, 19 passed in 5.05s",
+    "seconds": 5.3,
+    "tail": "...................F\n=================================== FAILURES ===================================\n_________ test_a_sqlite_result_has_no_database_key_and_leaves_nothing __________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/m-tmp/pytest-of-vivekgade/pytest-13/test_a_sqlite_result_has_no_da0')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1080aae70>\n\n    def test_a_sqlite_result_has_no_database_key_and_leaves_nothing(\n        tmp_path: Path, monkeypatch: pytest.MonkeyPatch\n    ) -> None:\n        scratch = tmp_path / \"scratch\"\n        scratch.mkdir()\n        monkeypatch.setattr(tempfile, \"tempdir\", str(scratch))\n        monkeypatch.setenv(\"TMPDIR\", str(scratch))\n        calls: list[list[str]] = []\n        monkeypatch.setattr(live.subprocess, \"run\", _fake_docker(calls))\n        res = Live(tmp_path / \"w\", imports=only(CLEAN_IMPORTS, \"GET /admin\")).run()\n>       assert list(res) == [\"status\", \"replayed\", \"not_replayed\", \"replays\", \"findings\",\n                             \"verified_live\", \"fields_unobservable\", \"not_checked\"]  # fmt: skip\nE       AssertionError: assert ['status', 'r...ed_live', ...] == ['status', 'r...ed_live', ...]\nE         \nE         Left contains one more item: 'database'\nE         Use -v to get more diff\n\ntests/contracts/test_live_server.py:474: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_a_sqlite_result_has_no_database_key_and_leaves_nothing\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 19 passed in 5.05s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 5.5
+  },
+  "LG10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_live_server.py::test_the_sweep_kills_recorded_apps_and_removes_the_labelled_containers"
+    ],
+    "summary": "1 failed, 15 passed in 14.25s",
+    "seconds": 14.5,
+    "tail": " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <Popen: returncode: None args: ['/private/tmp/claude-501/-Users-vivekgade-Do...>\ntimeout = 10\n\n    def _wait(self, timeout):\n        \"\"\"Internal implementation of wait() on POSIX.\"\"\"\n        if self.returncode is not None:\n            return self.returncode\n    \n        if timeout is not None:\n            endtime = _time() + timeout\n            # Enter a busy loop if we have a timeout.  This busy loop was\n            # cribbed from Lib/threading.py in Thread.wait() at r71065.\n            delay = 0.0005 # 500 us -> initial delay of 1 ms\n            while True:\n                if self._waitpid_lock.acquire(False):\n                    try:\n                        if self.returncode is not None:\n                            break  # Another thread waited.\n                        (pid, sts) = self._try_wait(os.WNOHANG)\n                        assert pid == self.pid or pid == 0\n                        if pid == self.pid:\n                            self._handle_exitstatus(sts)\n                            break\n                    finally:\n                        self._waitpid_lock.release()\n                remaining = self._remaining_time(endtime)\n                if remaining <= 0:\n>                   raise TimeoutExpired(self.args, timeout)\nE                   subprocess.TimeoutExpired: Command '['/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/perfvenv/bin/python', '-c', 'import time; time.sleep(60)']' timed out after 10 seconds\n\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:2056: TimeoutExpired\n=========================== short test summary info ============================\nFAILED tests/contracts/test_live_server.py::test_the_sweep_kills_recorded_apps_and_removes_the_labelled_containers\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 15 passed in 14.25s\n",
+    "tests": "tests/contracts/test_live_server.py"
+   },
+   "verdict": "killed",
+   "seconds": 14.8
+  }
+ }
+}

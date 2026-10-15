@@ -1,0 +1,134 @@
+{
+ "id": "A1p",
+ "prediction": "the real docker CLI with DOCKER_HOST=unix://<scratch>/none.sock: docker_unavailable; exit 2, wall <= 25 s",
+ "observed": "exit 2; error docker_unavailable: streak: the live check on mysql starts a throwaway mysql:8.4 container and Docker is not available (no docker CLI, or its daemon does not an; wall [0.434, 0.445, 0.444]; created []",
+ "pass": true,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "identical": true,
+  "exit": true,
+  "error_code": true,
+  "findings_empty": true,
+  "no_streak_api_process": true,
+  "no_live_container": true,
+  "tmpdir_empty": true,
+  "wall_le_25s": true
+ },
+ "extra": {
+  "error": {
+   "code": "docker_unavailable",
+   "message": "streak: the live check on mysql starts a throwaway mysql:8.4 container and Docker is not available (no docker CLI, or its daemon does not answer)"
+  },
+  "wall_s": [
+   0.434,
+   0.445,
+   0.444
+  ],
+  "probe_wall_s": 2.3
+ },
+ "runs": [
+  {
+   "rc": 2,
+   "wall_s": 0.434,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "docker_unavailable",
+    "message": "streak: the live check on mysql starts a throwaway mysql:8.4 container and Docker is not available (no docker CLI, or its daemon does not answer)"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A1p",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.434
+   }
+  },
+  {
+   "rc": 2,
+   "wall_s": 0.445,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "docker_unavailable",
+    "message": "streak: the live check on mysql starts a throwaway mysql:8.4 container and Docker is not available (no docker CLI, or its daemon does not answer)"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A1p",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.445
+   }
+  },
+  {
+   "rc": 2,
+   "wall_s": 0.444,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "docker_unavailable",
+    "message": "streak: the live check on mysql starts a throwaway mysql:8.4 container and Docker is not available (no docker CLI, or its daemon does not answer)"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A1p",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.444
+   }
+  }
+ ]
+}

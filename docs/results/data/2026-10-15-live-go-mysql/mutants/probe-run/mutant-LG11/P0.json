@@ -1,0 +1,30 @@
+{
+ "id": "P0",
+ "prediction": "the provider clone is build/streak a0679e9; spec.py, spec.trace.json, studio.toml, harness.py and check.sh equal main a0db033; the pin on the clean clone has golden-streak's export and spec_hash d44b738522ea; go builds the clone; mysql:8.4 is local",
+ "observed": "head a0679e9; diff vs main empty; spec_hash d44b738522ea; build 6.27 s; go version go1.26.2 darwin/arm64",
+ "pass": true,
+ "identical": true,
+ "n_runs": 0,
+ "checks": {
+  "clone_head_is_a0679e9": true,
+  "five_files_equal_main": true,
+  "pin_export_equals_golden": true,
+  "pin_spec_hash_d44b738522ea": true,
+  "go_build_ok": true,
+  "image_local": true
+ },
+ "extra": {
+  "streak_head": "a0679e9044486c98611febcd050a1fd23b6cd756",
+  "go_version": "go version go1.26.2 darwin/arm64",
+  "image_id": "sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242",
+  "builds": [
+   {
+    "clone": "P0",
+    "s": 6.27
+   }
+  ],
+  "diff_stat": "",
+  "probe_wall_s": 6.9
+ },
+ "runs": []
+}

@@ -1,0 +1,910 @@
+{
+ "id": "G-D1a",
+ "prediction": "D1 mode a: static BROKEN [('endpoint_missing', 'GET /v1/home', '')]; live BROKEN none; not replayed 1 endpoint(s); class UNREPLAYED; exit 1; containers 1; access_token verified True",
+ "observed": "S [('endpoint_missing', 'GET /v1/home', '')]; L []; N ['GET /v1/home']; class UNREPLAYED; exit 1; containers [1, 1, 1]; replayed 6; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "identical": true,
+  "S_as_predicted": true,
+  "L_as_predicted": true,
+  "N_as_predicted": true,
+  "class_as_predicted": true,
+  "exit_as_predicted": true,
+  "containers_as_predicted": true,
+  "verified_as_predicted": true,
+  "no_leaks": true,
+  "static_changed_as_committed": true
+ },
+ "extra": {
+  "drift": "D1",
+  "mode": "a",
+  "S": [
+   [
+    "endpoint_missing",
+    "GET /v1/home",
+    ""
+   ]
+  ],
+  "L": [],
+  "N": [
+   "GET /v1/home"
+  ],
+  "class": "UNREPLAYED",
+  "predicted_class": "UNREPLAYED",
+  "spec_edits": [
+   [
+    "spec.py",
+    "\"home\": (200, {\"today\": TODAY,",
+    "\"home\": (404, {\"today\": TODAY,",
+    2
+   ],
+   [
+    "spec.py",
+    "Step(\"GET\", \"/v1/home\", \"ann\", expect_status=200,",
+    "Step(\"GET\", \"/v1/home\", \"ann\", expect_status=404,",
+    2
+   ]
+  ],
+  "code_edits": [
+   [
+    "internal/home/routes.go",
+    "r.Member.GET(\"/home\", httpapi.Handle(h.home))",
+    "_ = h.home",
+    1
+   ]
+  ],
+  "wall_s": [
+   6.74,
+   5.962,
+   6.664,
+   7.851,
+   6.557,
+   6.661,
+   6.696,
+   5.395,
+   6.355,
+   6.346
+  ],
+  "not_replayed_reasons": [
+   [
+    "GET /v1/home",
+    "no 2xx step for as_user ann"
+   ]
+  ],
+  "probe_wall_s": 66.8
+ },
+ "runs": [
+  {
+   "rc": 1,
+   "wall_s": 6.74,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ]
+   ],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 6,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/home",
+     "no 2xx step for as_user ann"
+    ]
+   ],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-3b5b0901"
+    ],
+    "wall_s": 6.74
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 5.962,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ]
+   ],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 6,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/home",
+     "no 2xx step for as_user ann"
+    ]
+   ],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-e16e982d"
+    ],
+    "wall_s": 5.962
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 6.664,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ]
+   ],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 6,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/home",
+     "no 2xx step for as_user ann"
+    ]
+   ],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-4a478f54"
+    ],
+    "wall_s": 6.664
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 7.851,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ]
+   ],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 6,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/home",
+     "no 2xx step for as_user ann"
+    ]
+   ],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-6e73c03f"
+    ],
+    "wall_s": 7.851
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 6.557,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ]
+   ],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 6,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/home",
+     "no 2xx step for as_user ann"
+    ]
+   ],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-e187f3ce"
+    ],
+    "wall_s": 6.557
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 6.661,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ]
+   ],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 6,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/home",
+     "no 2xx step for as_user ann"
+    ]
+   ],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-8b82f89c"
+    ],
+    "wall_s": 6.661
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 6.696,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ]
+   ],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 6,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/home",
+     "no 2xx step for as_user ann"
+    ]
+   ],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-4d5c532c"
+    ],
+    "wall_s": 6.696
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 5.395,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ]
+   ],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 6,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/home",
+     "no 2xx step for as_user ann"
+    ]
+   ],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-a3ac748a"
+    ],
+    "wall_s": 5.395
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 6.355,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ]
+   ],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 6,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/home",
+     "no 2xx step for as_user ann"
+    ]
+   ],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-6f381f22"
+    ],
+    "wall_s": 6.355
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 6.346,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "endpoint_missing",
+     "GET /v1/home",
+     ""
+    ]
+   ],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 6,
+   "live_broken": [],
+   "not_replayed": [
+    [
+     "GET /v1/home",
+     "no 2xx step for as_user ann"
+    ]
+   ],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1a",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-29f885cf"
+    ],
+    "wall_s": 6.346
+   }
+  }
+ ]
+}

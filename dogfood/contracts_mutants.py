@@ -93,6 +93,30 @@ tests are ``tests/contracts/test_linked.py``, ``tests/studio/test_linked_api.py`
 
 LQ14 and LQ15 are probabilistic (races): a survivor is a finding, not a pass.
 
+The thirteen mutants of the live check on a Go + MySQL provider
+(``docs/results/2026-10-15-live-contract-go-mysql-prereg.md`` section 4; every patch is a change
+of ``lattice/contracts/live.py``, the tests are ``tests/contracts/test_live_server.py``, the probes
+named are in ``dogfood/contracts/livego_probes.py``, which also runs them on each mutated copy:
+``livego_probes.py --mutants LG1,...``):
+
+* LG1  ``LIVE_DATABASES`` back to sqlite only                              (G0)
+* LG2  no shared server: ``databases`` not passed (a container per replay) (G0: 7 containers)
+* LG3  one clone reused for every replay                                   (G0: given rows refused)
+* LG4  ``LATTICE_<DIALECT>_URL`` kept in the child's environment           (Z1)
+* LG5  the harness's ``database_url`` honoured                             (Z1)
+* LG6  driver precheck removed                                             (A2)
+* LG7  Docker precheck removed                                             (A1)
+* LG8  image precheck removed                                              (A3)
+* LG9  label sweep removed                                                 (K3a: container left)
+* LG10 pid sweep removed                                                   (K3a: streak-api left)
+* LG11 server opened eagerly (before the first replay)                     (G-D7a, G-D7c)
+* LG12 ``database`` block also on SQLite                                   (B1: byte diff)
+* LG13 SIGTERM grace removed (SIGKILL at once)                             (its unit test only)
+
+All thirteen are killed by ``tests/contracts/test_live_server.py`` (fakes for Docker, the server
+and the app; a real child for the SIGTERM grace and the sweep); the first stage of each is that
+file.
+
 Test selection: ``tests/contracts tests/workspace -q -x`` (about a minute); a mutant that
 touches only ``live.py`` runs ``tests/contracts/test_live.py`` first and the rest only when it
 survives that; an XM mutant runs ``tests/contracts/test_exclude.py`` first and the rest only when
@@ -133,6 +157,7 @@ LQ_CONTRACTS = ["tests/contracts/test_linked.py"]
 LQ_STUDIO = ["tests/studio/test_linked_api.py"]
 LQ_MCP = ["tests/mcp/test_linked_questions.py"]
 LQ_ALL = [*LQ_CONTRACTS, *LQ_STUDIO, *LQ_MCP]
+LIVE_SERVER_ONLY = ["tests/contracts/test_live_server.py"]
 CK, EX, LV, WS, IM = (
     "lattice/contracts/check.py",
     "lattice/contracts/export.py",
@@ -611,6 +636,109 @@ MUTANTS: dict[str, tuple[str, str, str, str, list[str] | None]] = {
         '        if doc is not None and doc.get("key") == key:  # MUTANT LQ18\n',
         LQ_CONTRACTS,
     ),
+    "LG1": (
+        "live go: LIVE_DATABASES back to sqlite only (mysql is unsupported_database)",
+        LV,
+        'LIVE_DATABASES = ("sqlite", "mysql")\n',
+        'LIVE_DATABASES = ("sqlite",)  # MUTANT LG1\n',
+        LIVE_SERVER_ONLY,
+    ),
+    "LG2": (
+        "live go: no shared server (databases not passed: a container per replay)",
+        LV,
+        '    extra = {} if databases is None else {"databases": databases}\n',
+        "    extra = {}  # MUTANT LG2: every replay opens its own server\n",
+        LIVE_SERVER_ONLY,
+    ),
+    "LG3": (
+        "live go: one clone reused for every replay",
+        LV,
+        "        return self._dbs\n",
+        "        dbs = self._dbs  # MUTANT LG3: the first clone for every replay\n"
+        "        first: list[Any] = self.__dict__.setdefault('_one', [])\n\n"
+        "        def make(variant: str, path: Any = None) -> Any:\n"
+        "            if not first:\n"
+        "                first.append(dbs(variant, path))\n"
+        "            return first[0]\n\n"
+        "        make.release = lambda ref: None  # type: ignore[attr-defined]\n"
+        "        return make\n",
+        LIVE_SERVER_ONLY,
+    ),
+    "LG4": (
+        "live go: LATTICE_<DIALECT>_URL kept in the child's environment",
+        LV,
+        '            os.environ.pop(f"LATTICE_{name.upper()}_URL", None)\n',
+        "            pass  # MUTANT LG4: the user's server stays in the environment\n",
+        LIVE_SERVER_ONLY,
+    ),
+    "LG5": (
+        "live go: the harness's database_url honoured",
+        LV,
+        "dbserver.server_for(self.engine, None, name_prefix=CONTAINER_PREFIX)",
+        "dbserver.server_for(self.engine, getattr(self.harness, 'database_url', None),"
+        " name_prefix=CONTAINER_PREFIX)  # MUTANT LG5",
+        LIVE_SERVER_ONLY,
+    ),
+    "LG6": (
+        "live go: the driver precheck removed",
+        LV,
+        "        missing = _missing_requirements(self.desc.requires)\n",
+        "        missing: list[str] = []  # MUTANT LG6\n",
+        LIVE_SERVER_ONLY,
+    ),
+    "LG7": (
+        "live go: the Docker precheck removed",
+        LV,
+        "        if not dbserver.docker_available():\n",
+        "        if False:  # MUTANT LG7\n",
+        LIVE_SERVER_ONLY,
+    ),
+    "LG8": (
+        "live go: the image precheck removed",
+        LV,
+        "        if not _image_present(image):\n",
+        "        if False:  # MUTANT LG8\n",
+        LIVE_SERVER_ONLY,
+    ),
+    "LG9": (
+        "live go: the label sweep removed (a container of a killed child is left)",
+        LV,
+        "    if not marker.is_file() or not OWNER_RE.fullmatch(owner):\n        return\n",
+        "    if True:  # MUTANT LG9: containers are never swept\n        return\n",
+        LIVE_SERVER_ONLY,
+    ),
+    "LG10": (
+        "live go: the pid sweep removed (an app of a killed child is left)",
+        LV,
+        "    if pids.is_file():\n",
+        "    if False:  # MUTANT LG10\n",
+        LIVE_SERVER_ONLY,
+    ),
+    "LG11": (
+        "live go: the server opened eagerly, before the first replay",
+        LV,
+        "    outcomes: list[dict[str, Any]] = []\n",
+        "    outcomes: list[dict[str, Any]] = []\n"
+        "    if server is not None:  # MUTANT LG11\n"
+        "        server.databases()\n",
+        LIVE_SERVER_ONLY,
+    ),
+    "LG12": (
+        "live go: the database block also on a SQLite result",
+        LV,
+        '    if got.get("database") is not None:  # a server dialect: the throwaway '
+        "server's description\n"
+        '        out["database"] = got["database"]\n',
+        '    out["database"] = got.get("database") or {"engine": "sqlite"}  # MUTANT LG12\n',
+        LIVE_SERVER_ONLY,
+    ),
+    "LG13": (
+        "live go: SIGTERM grace removed (SIGKILL at once, as before)",
+        LV,
+        "        os.killpg(proc.pid, signal.SIGTERM)\n",
+        "        os.killpg(proc.pid, signal.SIGKILL)  # MUTANT LG13\n",
+        LIVE_SERVER_ONLY,
+    ),
 }
 
 
@@ -727,7 +855,7 @@ def one(mid: str, all_failures: bool) -> dict[str, Any]:
 
 def _order(mid: str) -> tuple[int, int]:
     prefix = mid.rstrip("0123456789")
-    return (("CM", "XM", "IMP", "LQ").index(prefix), int(mid[len(prefix) :]))
+    return (("CM", "XM", "IMP", "LQ", "LG").index(prefix), int(mid[len(prefix) :]))
 
 
 def main(argv: list[str] | None = None) -> int:
