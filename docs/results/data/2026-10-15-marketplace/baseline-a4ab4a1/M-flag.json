@@ -1,0 +1,342 @@
+{
+ "group": "flag",
+ "runs": 3,
+ "rows": [
+  {
+   "id": "M-flag-F1-check",
+   "predicted": "--help lists {sqlite,postgres,mysql,clickhouse,mariadb}",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb']",
+   "rule_holds": true,
+   "runs": 3,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 0,
+    "stdout": "           (scenarios the trace links to the rule); repeatable\n  --only-file PATH      selectors as for --only: a JSON array of strings, or\n                        one per line\n  --trace PATH          the project trace rule:ID selectors read (default:\n                        <spec module>.trace.json next to the spec module)\n  --await-cap SECONDS   every Await step waits at most SECONDS (its within_s\n                        capped; a note in the report); an effect that does not\n                        show within the cap still fails the scenario\n  --json                print the report as JSON\n",
+    "stderr": ""
+   }
+  },
+  {
+   "id": "M-flag-F2-check",
+   "predicted": "parsed: database == mariadb, engine_file == [F]",
+   "observed": "exit 0; parsed {'database': 'mariadb', 'engine_file': ['/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/market/g3b/work/mflag/mariadb.toml']}",
+   "rule_holds": true,
+   "runs": 3,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 0,
+    "stdout": "{\"database\": \"mariadb\", \"engine_file\": [\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/market/g3b/work/mflag/mariadb.toml\"]}\n",
+    "stderr": ""
+   }
+  },
+  {
+   "id": "M-flag-F3-check",
+   "predicted": "exit 2, 'error: EngineError: ...' (unknown field), same first line in all three",
+   "observed": "exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "error: EngineError: engine file /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/market/g3b/work/mflag/bogus.toml: [server] unknown field 'bogus' (known: image, port, data_dir, admin_user, admin_db, env, args, docker_args, ready_sql)\n"
+   }
+  },
+  {
+   "id": "M-flag-F4-check",
+   "predicted": "exit 2, 'error: EngineError: ...' (missing file), same first line in all three",
+   "observed": "exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "error: EngineError: engine file /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/market/g3b/work/mflag/missing.toml: cannot read it (No such file or directory)\n"
+   }
+  },
+  {
+   "id": "M-flag-F5-check",
+   "predicted": "exit 2, 'error: EngineError: ...' (name mysql), same first line in all three",
+   "observed": "exit 2: error: EngineError: engine 'mysql' is built in; give the descriptor an; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "error: EngineError: engine 'mysql' is built in; give the descriptor another name\n"
+   }
+  },
+  {
+   "id": "M-flag-F6-check",
+   "predicted": "exit 2, 'error: ModuleError: ...' (tampered module), same first line in all three",
+   "observed": "exit 2: error: ModuleError: module 'm' (1) is changed: its tree hashes to 0f28; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "error: ModuleError: module 'm' (1) is changed: its tree hashes to 0f28856be20933e84971b8f61770b298cd5c03a7d91d733139607671df51f55a, the lock says aa059fa97968925b3c1994db5159148ee51d6707c374cc0b99fd7a862e22f9d8; it is refused (reinstall or uninstall it)\n"
+   }
+  },
+  {
+   "id": "M-flag-F7-check",
+   "predicted": "--engine-file=F form: --help lists mariadb",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb']",
+   "rule_holds": true,
+   "runs": 3,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 0,
+    "stdout": "           (scenarios the trace links to the rule); repeatable\n  --only-file PATH      selectors as for --only: a JSON array of strings, or\n                        one per line\n  --trace PATH          the project trace rule:ID selectors read (default:\n                        <spec module>.trace.json next to the spec module)\n  --await-cap SECONDS   every Await step waits at most SECONDS (its within_s\n                        capped; a note in the report); an effect that does not\n                        show within the cap still fails the scenario\n  --json                print the report as JSON\n",
+    "stderr": ""
+   }
+  },
+  {
+   "id": "M-flag-F8-check",
+   "predicted": "exit 2, invalid choice: 'mariadb'",
+   "observed": "exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse)",
+   "rule_holds": true,
+   "runs": 3,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "ntime RUNTIME] [--services SERVICES]\n                                    [--database {sqlite,postgres,mysql,clickhouse}]\n                                    [--engine-file FILE] [--modules DIR]\n                                    [--database-url DATABASE_URL]\n                                    [--only SELECTOR [SELECTOR ...]]\n                                    [--only-file PATH] [--trace PATH]\n                                    [--await-cap SECONDS] [--json]\npython -m lattice.spec check: error: argument --database: invalid choice: 'mariadb' (choose from sqlite, postgres, mysql, clickhouse)\n"
+   }
+  },
+  {
+   "id": "M-flag-F1-ask",
+   "predicted": "--help lists {sqlite,postgres,mysql,clickhouse,mariadb}",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse']",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 0,
+    "stdout": "t\n  --model MODEL         Claude model (alias or id)\n  --json                print the answer as JSON\n  --verify              check the answer against the app\n  --app APP             module:factory, (db_path) -> app\n  --db DB               module:build_db\n  --login LOGIN         module:fn, (client, handle) -> bearer token\n  --login-path LOGIN_PATH\n                        a form login route taking Spec.users' credentials\n  --runtime RUNTIME     module:RUNTIME, 'process' or 'go'\n  --services SERVICES   module:SERVICES\n  --database {sqlite,postgres,mysql,clickhouse}\n  --database-url DATABASE_URL\n",
+    "stderr": ""
+   }
+  },
+  {
+   "id": "M-flag-F2-ask",
+   "predicted": "parsed: database == mariadb, engine_file == [F]",
+   "observed": "exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "n] [--verify] [--app APP] [--db DB]\n                                  [--login LOGIN] [--login-path LOGIN_PATH]\n                                  [--runtime RUNTIME] [--services SERVICES]\n                                  [--database {sqlite,postgres,mysql,clickhouse,mariadb}]\n                                  [--database-url DATABASE_URL]\n                                  question\npython -m lattice.spec ask: error: unrecognized arguments: --engine-file /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/market/g3b/work/mflag/mariadb.toml\n"
+   }
+  },
+  {
+   "id": "M-flag-F3-ask",
+   "predicted": "exit 2, 'error: EngineError: ...' (unknown field), same first line in all three",
+   "observed": "exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "-spec SPEC [--trace TRACE]\n                                  [--selected SELECTED] [--model MODEL]\n                                  [--json] [--verify] [--app APP] [--db DB]\n                                  [--login LOGIN] [--login-path LOGIN_PATH]\n                                  [--runtime RUNTIME] [--services SERVICES]\n                                  [--database {sqlite,postgres,mysql,clickhouse}]\n                                  [--database-url DATABASE_URL]\n                                  question\npython -m lattice.spec ask: error: unrecognized arguments: --engine-file bogus.toml\n"
+   }
+  },
+  {
+   "id": "M-flag-F4-ask",
+   "predicted": "exit 2, 'error: EngineError: ...' (missing file), same first line in all three",
+   "observed": "exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "pec SPEC [--trace TRACE]\n                                  [--selected SELECTED] [--model MODEL]\n                                  [--json] [--verify] [--app APP] [--db DB]\n                                  [--login LOGIN] [--login-path LOGIN_PATH]\n                                  [--runtime RUNTIME] [--services SERVICES]\n                                  [--database {sqlite,postgres,mysql,clickhouse}]\n                                  [--database-url DATABASE_URL]\n                                  question\npython -m lattice.spec ask: error: unrecognized arguments: --engine-file missing.toml\n"
+   }
+  },
+  {
+   "id": "M-flag-F5-ask",
+   "predicted": "exit 2, 'error: EngineError: ...' (name mysql), same first line in all three",
+   "observed": "exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "-spec SPEC [--trace TRACE]\n                                  [--selected SELECTED] [--model MODEL]\n                                  [--json] [--verify] [--app APP] [--db DB]\n                                  [--login LOGIN] [--login-path LOGIN_PATH]\n                                  [--runtime RUNTIME] [--services SERVICES]\n                                  [--database {sqlite,postgres,mysql,clickhouse}]\n                                  [--database-url DATABASE_URL]\n                                  question\npython -m lattice.spec ask: error: unrecognized arguments: --engine-file mysql.toml\n"
+   }
+  },
+  {
+   "id": "M-flag-F6-ask",
+   "predicted": "exit 2, 'error: ModuleError: ...' (tampered module), same first line in all three",
+   "observed": "exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "              [--json] [--verify] [--app APP] [--db DB]\n                                  [--login LOGIN] [--login-path LOGIN_PATH]\n                                  [--runtime RUNTIME] [--services SERVICES]\n                                  [--database {sqlite,postgres,mysql,clickhouse}]\n                                  [--database-url DATABASE_URL]\n                                  question\npython -m lattice.spec ask: error: unrecognized arguments: --modules /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/market/g3b/work/mflag/proj\n"
+   }
+  },
+  {
+   "id": "M-flag-F7-ask",
+   "predicted": "--engine-file=F form: --help lists mariadb",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse']",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 0,
+    "stdout": "t\n  --model MODEL         Claude model (alias or id)\n  --json                print the answer as JSON\n  --verify              check the answer against the app\n  --app APP             module:factory, (db_path) -> app\n  --db DB               module:build_db\n  --login LOGIN         module:fn, (client, handle) -> bearer token\n  --login-path LOGIN_PATH\n                        a form login route taking Spec.users' credentials\n  --runtime RUNTIME     module:RUNTIME, 'process' or 'go'\n  --services SERVICES   module:SERVICES\n  --database {sqlite,postgres,mysql,clickhouse}\n  --database-url DATABASE_URL\n",
+    "stderr": ""
+   }
+  },
+  {
+   "id": "M-flag-F8-ask",
+   "predicted": "exit 2, invalid choice: 'mariadb'",
+   "observed": "exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse)",
+   "rule_holds": true,
+   "runs": 3,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "             [--selected SELECTED] [--model MODEL]\n                                  [--json] [--verify] [--app APP] [--db DB]\n                                  [--login LOGIN] [--login-path LOGIN_PATH]\n                                  [--runtime RUNTIME] [--services SERVICES]\n                                  [--database {sqlite,postgres,mysql,clickhouse}]\n                                  [--database-url DATABASE_URL]\n                                  question\npython -m lattice.spec ask: error: argument --database: invalid choice: 'mariadb' (choose from sqlite, postgres, mysql, clickhouse)\n"
+   }
+  },
+  {
+   "id": "M-flag-F1-draft",
+   "predicted": "--help lists {sqlite,postgres,mysql,clickhouse,mariadb}",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse']",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 0,
+    "stdout": "module (its trace beside it)\n  --impact              run the new spec on the app\n  --app APP             --impact: module:factory, (db_path) -> app\n  --db DB               --impact: module:build_db, (path) or (variant, path)\n  --login LOGIN         --impact: module:fn, (client, handle) -> token\n  --runtime RUNTIME     --impact: module:RUNTIME, 'process' or 'go'\n  --services SERVICES   --impact: module:SERVICES\n  --database {sqlite,postgres,mysql,clickhouse}\n  --database-url DATABASE_URL\n                        --impact: an existing database server\n  --race                --impact: layer X too\n",
+    "stderr": ""
+   }
+  },
+  {
+   "id": "M-flag-F2-draft",
+   "predicted": "parsed: database == mariadb, engine_file == [F]",
+   "observed": "exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "SE] [--impact] [--app APP]\n                                    [--db DB] [--login LOGIN]\n                                    [--runtime RUNTIME] [--services SERVICES]\n                                    [--database {sqlite,postgres,mysql,clickhouse,mariadb}]\n                                    [--database-url DATABASE_URL] [--race]\n                                    requirements\npython -m lattice.spec draft: error: unrecognized arguments: --engine-file /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/market/g3b/work/mflag/mariadb.toml\n"
+   }
+  },
+  {
+   "id": "M-flag-F3-draft",
+   "predicted": "exit 2, 'error: EngineError: ...' (unknown field), same first line in all three",
+   "observed": "exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "x-tokens MAX_TOKENS]\n                                    [--timeout TIMEOUT] [--since SINCE]\n                                    [--base BASE] [--impact] [--app APP]\n                                    [--db DB] [--login LOGIN]\n                                    [--runtime RUNTIME] [--services SERVICES]\n                                    [--database {sqlite,postgres,mysql,clickhouse}]\n                                    [--database-url DATABASE_URL] [--race]\n                                    requirements\npython -m lattice.spec draft: error: unrecognized arguments: --engine-file bogus.toml\n"
+   }
+  },
+  {
+   "id": "M-flag-F4-draft",
+   "predicted": "exit 2, 'error: EngineError: ...' (missing file), same first line in all three",
+   "observed": "exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "tokens MAX_TOKENS]\n                                    [--timeout TIMEOUT] [--since SINCE]\n                                    [--base BASE] [--impact] [--app APP]\n                                    [--db DB] [--login LOGIN]\n                                    [--runtime RUNTIME] [--services SERVICES]\n                                    [--database {sqlite,postgres,mysql,clickhouse}]\n                                    [--database-url DATABASE_URL] [--race]\n                                    requirements\npython -m lattice.spec draft: error: unrecognized arguments: --engine-file missing.toml\n"
+   }
+  },
+  {
+   "id": "M-flag-F5-draft",
+   "predicted": "exit 2, 'error: EngineError: ...' (name mysql), same first line in all three",
+   "observed": "exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "x-tokens MAX_TOKENS]\n                                    [--timeout TIMEOUT] [--since SINCE]\n                                    [--base BASE] [--impact] [--app APP]\n                                    [--db DB] [--login LOGIN]\n                                    [--runtime RUNTIME] [--services SERVICES]\n                                    [--database {sqlite,postgres,mysql,clickhouse}]\n                                    [--database-url DATABASE_URL] [--race]\n                                    requirements\npython -m lattice.spec draft: error: unrecognized arguments: --engine-file mysql.toml\n"
+   }
+  },
+  {
+   "id": "M-flag-F6-draft",
+   "predicted": "exit 2, 'error: ModuleError: ...' (tampered module), same first line in all three",
+   "observed": "exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: False",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "          [--base BASE] [--impact] [--app APP]\n                                    [--db DB] [--login LOGIN]\n                                    [--runtime RUNTIME] [--services SERVICES]\n                                    [--database {sqlite,postgres,mysql,clickhouse}]\n                                    [--database-url DATABASE_URL] [--race]\n                                    requirements\npython -m lattice.spec draft: error: unrecognized arguments: --modules /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/market/g3b/work/mflag/proj\n"
+   }
+  },
+  {
+   "id": "M-flag-F7-draft",
+   "predicted": "--engine-file=F form: --help lists mariadb",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse']",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "rc": 0,
+    "stdout": "module (its trace beside it)\n  --impact              run the new spec on the app\n  --app APP             --impact: module:factory, (db_path) -> app\n  --db DB               --impact: module:build_db, (path) or (variant, path)\n  --login LOGIN         --impact: module:fn, (client, handle) -> token\n  --runtime RUNTIME     --impact: module:RUNTIME, 'process' or 'go'\n  --services SERVICES   --impact: module:SERVICES\n  --database {sqlite,postgres,mysql,clickhouse}\n  --database-url DATABASE_URL\n                        --impact: an existing database server\n  --race                --impact: layer X too\n",
+    "stderr": ""
+   }
+  },
+  {
+   "id": "M-flag-F8-draft",
+   "predicted": "exit 2, invalid choice: 'mariadb'",
+   "observed": "exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse)",
+   "rule_holds": true,
+   "runs": 3,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "         [--timeout TIMEOUT] [--since SINCE]\n                                    [--base BASE] [--impact] [--app APP]\n                                    [--db DB] [--login LOGIN]\n                                    [--runtime RUNTIME] [--services SERVICES]\n                                    [--database {sqlite,postgres,mysql,clickhouse}]\n                                    [--database-url DATABASE_URL] [--race]\n                                    requirements\npython -m lattice.spec draft: error: argument --database: invalid choice: 'mariadb' (choose from sqlite, postgres, mysql, clickhouse)\n"
+   }
+  }
+ ]
+}

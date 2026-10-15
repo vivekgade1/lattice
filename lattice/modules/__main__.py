@@ -1,14 +1,17 @@
 """``python -m lattice.modules`` (``lattice module``): install, list, inspect and remove a
 project's modules (:mod:`lattice.modules`).
 
-    lattice module install SOURCE [--project DIR] [--index DIR] [--yes]
+    lattice module install SOURCE [SOURCE ...] [--project DIR] [--index DIR|URL]
+                           [--allow-remote] [--yes]
     lattice module list [--project DIR] [--json]
     lattice module info NAME [--project DIR] [--json]
     lattice module uninstall NAME [--project DIR]
 
-SOURCE: a module directory, a ``file://`` URL, or (with ``--index DIR``) a module name
-looked up as ``DIR/<NAME>.toml``. Git URLs are recognised but not implemented yet.
-``install`` prints the manifest and installs only with ``--yes`` or an interactive ``y``.
+SOURCE: a module directory, a ``file://`` URL, a git source pinned to a full commit sha
+(``git+file:///abs/path@<sha>``; ``git+https://host/path@<sha>`` with ``--allow-remote``), or
+(with ``--index``) a module name looked up as ``<index>/<NAME>.toml``; the index is a directory
+or a pinned git source. ``install`` prints each manifest and installs only with ``--yes`` or
+an interactive ``y``; several sources are installed together or not at all.
 Exit codes: 0 done (``list``: every module ok), 1 ``list``/``info`` found a module that is
 not ok, 2 refused or could not run.
 """
@@ -25,7 +28,7 @@ from lattice.modules import (
     LOCK,
     ModuleError,
     Refused,
-    install,
+    install_many,
     module_dir,
     read_lock,
     uninstall,
@@ -37,8 +40,21 @@ def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="lattice module", description="a project's modules")
     sub = p.add_subparsers(dest="command", required=True)
     i = sub.add_parser("install", help="install a module (prints its manifest, asks first)")
-    i.add_argument("source", help="a module directory, a file:// URL, or a name (--index)")
-    i.add_argument("--index", metavar="DIR", help="a directory of <name>.toml index entries")
+    i.add_argument(
+        "source",
+        nargs="+",
+        help="a module directory, a file:// URL, a pinned git+file:// or git+https:// "
+        "source, or a name (--index)",
+    )
+    i.add_argument(
+        "--index",
+        metavar="DIR|URL",
+        help="a directory (or a pinned git+file:// / git+https:// source) of <name>.toml "
+        "index entries",
+    )
+    i.add_argument(
+        "--allow-remote", action="store_true", help="allow git+https:// sources (network)"
+    )
     i.add_argument("--yes", action="store_true", help="install without asking")
     for name, text in (
         ("list", "the installed modules, each re-hashed"),
@@ -60,7 +76,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     project = Path(args.project).resolve()
     try:
         if args.command == "install":
-            install(project, args.source, index=args.index, yes=args.yes)
+            install_many(
+                project,
+                args.source,
+                index=args.index,
+                yes=args.yes,
+                allow_remote=args.allow_remote,
+            )
             return 0
         if args.command == "uninstall":
             e = uninstall(project, args.name)
@@ -102,6 +124,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         **s.to_dict(),
                         "kind": s.entry.kind,
                         "source": s.entry.source,
+                        **({"commit": s.entry.commit} if s.entry.commit is not None else {}),
                         "actual": s.actual,
                         "detail": s.detail,
                     }
@@ -113,6 +136,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             if s.actual and s.actual != s.entry.sha256:
                 print(f"  sha256 (now):    {s.actual}")
             print(f"  source:          {s.entry.source}")
+            if s.entry.commit is not None:
+                print(f"  commit:          {s.entry.commit}")
             print(f"  directory:       {module_dir(project, s.name)}")
             if s.detail:
                 print(f"  {s.detail}")

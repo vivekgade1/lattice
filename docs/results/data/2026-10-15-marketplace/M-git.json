@@ -1,0 +1,217 @@
+{
+ "group": "git",
+ "runs": 2,
+ "rows": [
+  {
+   "id": "M-git-a",
+   "predicted": "exit 0; 3 files = git show C1; sha256 = git archive dir install; lock exact (+commit); list ok; info commit; registers mariadb; uninstall clean; 7 hardened git calls, 0 clone/checkout/submodule/lfs, file:// only",
+   "observed": "all 12 checks hold",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "checks": {
+     "exit0": true,
+     "bytes_equal_git_show": true,
+     "sha_equals_archive_install": true,
+     "lock_exact": true,
+     "list_ok": true,
+     "info_commit": true,
+     "registers_mariadb": true,
+     "seven_calls": true,
+     "hardened": true,
+     "urls_file_only": true,
+     "uninstall_clean": true,
+     "no_leftover_tmp": true
+    },
+    "stdout": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@fc796e4cecb3ce9bc3a5bb277f07c0288e469212\n  commit:   fc796e4cecb3ce9bc3a5bb277f07c0288e469212 (fetched without hooks, filters, submodules, LFS; 3 files, 2156 bytes)\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---\ninstalled mariadb-engine 0.1.0 into .lattice/modules/mariadb-engine (sha256 0e7f3c6b14cb...; lattice.modules.lock)\n",
+    "stderr": "",
+    "lock": "{\n  \"version\": 1,\n  \"modules\": [\n    {\n      \"name\": \"mariadb-engine\",\n      \"version\": \"0.1.0\",\n      \"kind\": \"engine\",\n      \"sha256\": \"0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\",\n      \"source\": \"git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@fc796e4cecb3ce9bc3a5bb277f07c0288e469212\",\n      \"commit\": \"fc796e4cecb3ce9bc3a5bb277f07c0288e469212\"\n    }\n  ]\n}\n",
+    "sha256": "0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9",
+    "calls": [
+     "--version",
+     "init",
+     "fetch",
+     "count-objects",
+     "cat-file",
+     "ls-tree",
+     "cat-file"
+    ],
+    "harden_problems": [],
+    "list": "mariadb-engine  0.1.0      engine  ok       0e7f3c6b14cb  git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@fc796e4cecb3ce9bc3a5bb277f07c0288e469212\n",
+    "files": [
+     "README.md",
+     "engine.toml",
+     "lattice-module.toml"
+    ],
+    "info_head": [
+     "mariadb-engine 0.1.0 (engine): ok",
+     "  sha256 (locked): 0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9",
+     "  source:          git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+     "  commit:          fc796e4cecb3ce9bc3a5bb277f07c0288e469212"
+    ]
+   }
+  },
+  {
+   "id": "M-git-b",
+   "predicted": "@C2 into a second project: exit 0, version 0.2.0, commit C2",
+   "observed": "exit 0; lock version/commit exact",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "stdout": "module mariadb-engine 0.2.0 (engine)\n  MariaDB for the checker\n  source:   git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@1e5aac4cb54516a924db107748fa49a5c13c40e9\n  commit:   1e5aac4cb54516a924db107748fa49a5c13c40e9 (fetched without hooks, filters, submodules, LFS; 3 files, 2156 bytes)\n  sha256:   adff088ea99fdf0eacdfa647d44a64e5ba1c20504d3dfb7287948b427ce6e26b\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.2.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---\ninstalled mariadb-engine 0.2.0 into .lattice/modules/mariadb-engine (sha256 adff088ea99f...; lattice.modules.lock)\n",
+    "stderr": "",
+    "lock": "{\n  \"version\": 1,\n  \"modules\": [\n    {\n      \"name\": \"mariadb-engine\",\n      \"version\": \"0.2.0\",\n      \"kind\": \"engine\",\n      \"sha256\": \"adff088ea99fdf0eacdfa647d44a64e5ba1c20504d3dfb7287948b427ce6e26b\",\n      \"source\": \"git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@1e5aac4cb54516a924db107748fa49a5c13c40e9\",\n      \"commit\": \"1e5aac4cb54516a924db107748fa49a5c13c40e9\"\n    }\n  ]\n}\n",
+    "c1": "fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+    "c2": "1e5aac4cb54516a924db107748fa49a5c13c40e9"
+   }
+  },
+  {
+   "id": "M-git-c",
+   "predicted": "11 refusals: exit 2, 2.1's message each, 0 git calls, nothing written",
+   "observed": "11/11 refused with the 2.1 message, 0 git calls",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "cases": [
+     {
+      "case": "no @",
+      "source": "git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria",
+      "rc": 2,
+      "stderr": "error: pin a full lowercase commit sha (git+<url>@<40 or 64 hex>); branch and tag names are refused\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     },
+     {
+      "case": "@main",
+      "source": "git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@main",
+      "rc": 2,
+      "stderr": "error: pin a full lowercase commit sha (git+<url>@<40 or 64 hex>); branch and tag names are refused\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     },
+     {
+      "case": "@v0.1.0",
+      "source": "git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@v0.1.0",
+      "rc": 2,
+      "stderr": "error: pin a full lowercase commit sha (git+<url>@<40 or 64 hex>); branch and tag names are refused\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     },
+     {
+      "case": "abbreviated sha",
+      "source": "git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@fc796e4",
+      "rc": 2,
+      "stderr": "error: pin a full lowercase commit sha (git+<url>@<40 or 64 hex>); branch and tag names are refused\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     },
+     {
+      "case": "upper-case sha",
+      "source": "git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@FC796E4CECB3CE9BC3A5BB277F07C0288E469212",
+      "rc": 2,
+      "stderr": "error: pin a full lowercase commit sha (git+<url>@<40 or 64 hex>); branch and tag names are refused\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     },
+     {
+      "case": "git+ssh",
+      "source": "git+ssh://h/r@fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+      "rc": 2,
+      "stderr": "error: only git+file:// and git+https:// sources are installed\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     },
+     {
+      "case": "git@h:r",
+      "source": "git@h:r",
+      "rc": 2,
+      "stderr": "error: pin a full lowercase commit sha (git+<url>@<40 or 64 hex>); branch and tag names are refused\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     },
+     {
+      "case": "git+http",
+      "source": "git+http://h/r@fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+      "rc": 2,
+      "stderr": "error: only git+file:// and git+https:// sources are installed\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     },
+     {
+      "case": "userinfo",
+      "source": "git+https://user:pw@h/r@fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+      "rc": 2,
+      "stderr": "error: a git source must not carry credentials (user[:password]@host), a ?query or a #fragment\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     },
+     {
+      "case": "https without --allow-remote",
+      "source": "git+https://example.invalid/r@fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+      "rc": 2,
+      "stderr": "error: remote sources need --allow-remote\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     },
+     {
+      "case": "#fragment",
+      "source": "git+https://example.invalid/r@fc796e4cecb3ce9bc3a5bb277f07c0288e469212#x",
+      "rc": 2,
+      "stderr": "error: pin a full lowercase commit sha (git+<url>@<40 or 64 hex>); branch and tag names are refused\n",
+      "git_calls": 0,
+      "message_ok": true,
+      "ok": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "M-git-d",
+   "predicted": "git+https with --allow-remote: one fetch argv with https://, GIT_ALLOW_PROTOCOL=https; shim fails it: exit 2 'git fetch ... failed'",
+   "observed": "exit 2; fetch argv tail ['https://example.invalid/r', 'fc796e4cecb3ce9bc3a5bb277f07c0288e469212']; allow_protocol=https",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "stderr": "error: git fetch of git+https://example.invalid/r@fc796e4cecb3ce9bc3a5bb277f07c0288e469212 failed: fatal: shim refuses fetch\n",
+    "calls": [
+     "--version",
+     "init",
+     "fetch"
+    ],
+    "harden_problems": []
+   }
+  },
+  {
+   "id": "M-git-e",
+   "predicted": "a under sandbox-exec (deny network*): identical to a",
+   "observed": "identical to a",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 0,
+    "stderr": "",
+    "same_as_a": true
+   }
+  }
+ ]
+}

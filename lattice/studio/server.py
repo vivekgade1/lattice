@@ -979,8 +979,12 @@ class Studio:
             self.plans  # noqa: B018 -- builds the Rebuilder and the plans: both load and reconcile
             self._scan_worktrees()
         # the project's database engines (API v1.14): registered now so its checks can name
-        # them; problems are listed by GET /api/engines, never fatal
-        self.get_engines()
+        # them; problems are listed by GET /api/engines, never fatal. Scoped to a registry of
+        # its own, so constructing a Studio leaves the constructing thread's registry alone
+        from lattice.spec import engines as _eng
+
+        with _eng.using(_eng.project_registry()):
+            self.get_engines()
 
     # -- database engines and modules (lattice/spec/engines.py, lattice/modules; API v1.14)
     # -- improvement proposals (lattice/improve, spike 3; API v1.15)

@@ -1,0 +1,34 @@
+# group flag: 6/24 pass (22s)
+# group hub: 2/7 pass (13s)
+M-flag-F1-check | baseline: the rule holds | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb'] | PASS
+M-flag-F2-check | baseline: the rule holds | exit 0; parsed {'database': 'mariadb', 'engine_file': ['/private/tmp/claude-501/-Users-vivekgade-Doc | PASS
+M-flag-F3-check | baseline: the rule fails | exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: F | PASS
+M-flag-F4-check | baseline: the rule fails | exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: F | PASS
+M-flag-F5-check | baseline: the rule fails | exit 2: error: EngineError: engine 'mysql' is built in; give the descriptor an; same in all three: F | PASS
+M-flag-F6-check | baseline: the rule fails | exit 2: error: ModuleError: module 'm' (1) is changed: its tree hashes to 0f28; same in all three: F | PASS
+M-flag-F7-check | baseline: the rule holds | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb'] | PASS
+M-flag-F8-check | baseline: the rule holds | exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse) | PASS
+M-flag-F1-ask | baseline: the rule fails | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse'] | PASS
+M-flag-F2-ask | baseline: the rule fails | exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE] | PASS
+M-flag-F3-ask | baseline: the rule fails | exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False | PASS
+M-flag-F4-ask | baseline: the rule fails | exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False | PASS
+M-flag-F5-ask | baseline: the rule fails | exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False | PASS
+M-flag-F6-ask | baseline: the rule fails | exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False | PASS
+M-flag-F7-ask | baseline: the rule fails | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse'] | PASS
+M-flag-F8-ask | baseline: the rule holds | exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse) | PASS
+M-flag-F1-draft | baseline: the rule fails | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse'] | PASS
+M-flag-F2-draft | baseline: the rule fails | exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT | PASS
+M-flag-F3-draft | baseline: the rule fails | exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: F | PASS
+M-flag-F4-draft | baseline: the rule fails | exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: F | PASS
+M-flag-F5-draft | baseline: the rule fails | exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: F | PASS
+M-flag-F6-draft | baseline: the rule fails | exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: F | PASS
+M-flag-F7-draft | baseline: the rule fails | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse'] | PASS
+M-flag-F8-draft | baseline: the rule holds | exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse) | PASS
+M-hub-H1 | baseline: the rule fails | {"a_errors": [], "a_image": "mariadb:11", "a_names": ["sqlite", "postgres", "mysql", "clickhouse", " | PASS
+M-hub-H2 | baseline: the rule fails | {"a_image": "mariadb:11", "a_pga": true, "b_image": "mariadb:11", "b_pga": true, "b_pga_in_database_ | PASS
+M-hub-H3 | (no baseline prediction) | {"equal_to_h1": true, "mismatches": [], "requests": 200} | PASS
+M-hub-H4 | baseline: the rule fails | {"a_load_errors": [], "a_origin": "A", "b_error": null, "b_load_errors": [], "b_origin": "A"} | PASS
+M-hub-H5 | (no baseline prediction) | {"sites": [{"function": "check_kwargs", "load": 340, "lookups": [341], "ok": true}, {"function": "ve | PASS
+M-hub-M6 | (no baseline prediction) | {"note": "no scoped activation in this code"} | PASS
+M-hub-M6b | (no baseline prediction) | {"note": "no scoped activation in this code"} | PASS
+probes: 31/31 pass

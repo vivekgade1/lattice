@@ -28,7 +28,8 @@ the check creates are touched (``lattice.spec.dbserver``). ``--engine-file FILE`
 ``docs/examples/engines/mariadb.toml``) before ``--database`` is read, so its name is a
 ``--database`` value; ``--modules DIR`` loads the modules installed in project ``DIR``
 (``lattice module install``: ``DIR/lattice.modules.lock``), each tree re-hashed first, and
-refuses (exit 2) a module whose tree changed since it was installed. ``--only`` (repeatable, one
+refuses (exit 2) a module whose tree changed since it was installed (``ask --verify`` and
+``draft --impact`` take the same two flags). ``--only`` (repeatable, one
 or more selectors each) and ``--only-file`` (a JSON array of selectors, or one per line)
 restrict layers D and X to the scenarios the selectors name: ``scenario:NAME``, a bare
 ``NAME``, a glob on names (``auth_*``), or ``rule:ID`` (the scenarios the trace links to

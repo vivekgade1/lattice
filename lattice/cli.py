@@ -7,6 +7,8 @@
     lattice mcp   serve|guard ...                                         # lattice.mcp
     lattice perf  measure|check [--project DIR] ...                       # lattice.perf
     lattice module install|list|info|uninstall ...                        # lattice.modules
+        (install SOURCE [SOURCE ...] [--index DIR|URL] [--allow-remote] [--yes];
+         SOURCE: a directory, file://, or git+file://<abs path>@<commit sha>)
     lattice attack plan|run|report --project DIR ...                       # lattice.security
     lattice improve report|import-plan|ledger|verify|draft --project DIR ... # lattice.improve
     lattice workspace show|validate|impact NAME [--json]                  # lattice.workspace
@@ -46,7 +48,8 @@ commands:
             [--sizes 5,25] [--runs 10] [--json]    budgets in DIR/perf.budget.json
                                                    (not a build gate; exit 1 over budget)
   module    install|list|info|uninstall ...        a project's modules (installed into
-                                                   .lattice/modules, pinned by sha256)
+            [--index DIR|URL] [--allow-remote]     .lattice/modules, pinned by sha256; a git
+                                                   source is pinned to a commit sha)
   attack    plan|run|report --project DIR           spec-driven security attacks against the
             [--scope ...] [--classes ...]          app this starts on a loopback throwaway DB
                                                    (separate module; owner's own systems only)
