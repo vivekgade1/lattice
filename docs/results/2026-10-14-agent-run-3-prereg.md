@@ -305,3 +305,22 @@ git diff --exit-code <freeze commit> -- lattice/ tests/ dogfood/contracts/agent_
 
 Also checked: each `argv.json`/`mcp.json` equals round 2's for the same `sid` (scratch root replaced); no
 `env-keys.json` holds `ANTHROPIC*` or `CLAUDE_CODE_*`; each `system/init` lists round 2's 14 `mcp__lattice__*` tools.
+
+## Addendum 1: scorer freeze
+
+Written by the orchestrator on 2026-10-14, after the fixes F1-F5 and the round-3 scorer were built and
+validated and BEFORE any round-3 session ran. From this commit on, any edit to any of these four files
+invalidates the freeze (the runner refuses to start sessions when a hash does not match).
+`claude --version`: 2.1.299 (Claude Code). Gates passed before freezing, re-run independently by the
+orchestrator: 90/90 unit cases; V1 (17 round-1 transcripts) and V2 (16 round-2 transcripts) as the
+prereg fixes them (round 2 re-scored 11 of 12, a re-scoring and never a round-2 pass); byte-compat
+B1-B6 6/6; 1010 tests, dogfood 435 cases; layer-3 runners 35/35, 32/32, 12/12, impact 11/11 (I8
+skipped by flag), linked questions 9/9; the two stale runner references were fixed post hoc in a
+separate commit; ruff clean.
+
+```
+92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08  dogfood/contracts/agent_scorer.py
+e6bce4f1c738aff46430908b03d97427caf2c58b84689e1d3ef718b5480394ca  dogfood/contracts/agent_scorer_cases.json
+cdb61453a231f4c52db80a9a593744b809448913770ec5bf765a24aa8122da7a  dogfood/contracts/agent_scorer_check.py
+bbd1fed1e0631492e4636a1fab5d3e110b61cac3e52446dd01c0882194fa0509  dogfood/contracts/agent_probes.py
+```
