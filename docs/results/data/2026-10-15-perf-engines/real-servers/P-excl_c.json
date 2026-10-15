@@ -1,0 +1,34 @@
+{
+ "id": "P-excl(c)",
+ "status": "RAN",
+ "title": "the tool's statements are logged and filtered by {db}",
+ "predicted": ">= 1 row for the admin database on both engines",
+ "observed": "admin-database window returned >= 1 row on both engines: {'postgres': 2, 'clickhouse': 4}",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "23eeb14b0b08b5eb",
+  "23eeb14b0b08b5eb",
+  "23eeb14b0b08b5eb",
+  "23eeb14b0b08b5eb",
+  "23eeb14b0b08b5eb",
+  "23eeb14b0b08b5eb",
+  "23eeb14b0b08b5eb",
+  "23eeb14b0b08b5eb",
+  "23eeb14b0b08b5eb",
+  "23eeb14b0b08b5eb"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 18.0,
+ "error": null,
+ "facts": {
+  "hash": {
+   "postgres": true,
+   "clickhouse": true
+  },
+  "rows": {
+   "postgres": 2,
+   "clickhouse": 4
+  }
+ }
+}

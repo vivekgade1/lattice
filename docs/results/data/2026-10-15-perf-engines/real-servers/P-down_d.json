@@ -1,0 +1,35 @@
+{
+ "id": "P-down(d)",
+ "status": "RAN",
+ "title": "the container is docker-killed after the first size",
+ "predicted": "exit 2, 'lattice perf: error:', 0 containers left",
+ "observed": "exit 2; stderr 'lattice perf: error: DatabaseError: cannot connect to postgresql://lattice:***@1'; containers left 0",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "d9a2a1f75241dced",
+  "f4a0db8ee377972c",
+  "9c346b90161ac841",
+  "1343278225fa5e97",
+  "12b84e43380b3212",
+  "f340f157f59a557c",
+  "970ea22d857a76b6",
+  "6b41a55fda60de0e",
+  "c3ef41255c8fe7eb",
+  "8d432ec9b5ea59db"
+ ],
+ "distinct_hashes": 10,
+ "seconds": 14.2,
+ "error": null,
+ "facts": {
+  "hash": {
+   "rc": 2,
+   "stderr": [
+    "lattice perf: error: DatabaseError: cannot connect to postgresql://lattice:***@127.0.0.1:58641/postgres?sslmode=disable: connection failed: connection to server at \"127.0.0.1\", port 58641 failed: could not receive data from server: Connection refused"
+   ]
+  },
+  "rc": 2,
+  "stderr": "lattice perf: error: DatabaseError: cannot connect to postgresql://lattice:***@127.0.0.1:58641/postgres?sslmode=disable: connection failed: connection to server at \"127.0.0.1\", port 58641 failed: could not receive data from server: Connection refused",
+  "left": []
+ }
+}

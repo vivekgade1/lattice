@@ -1,0 +1,91 @@
+{
+ "id": "P-trust(b)-pg",
+ "status": "RAN",
+ "title": "postgres: only docker run/port/inspect/logs/rm, no exec",
+ "predicted": "verbs within the set, no exec, 1 run, image and args as the descriptor",
+ "observed": "verbs ['inspect', 'port', 'rm', 'run'] (no exec), 1 run, image postgres:16-alpine, args after image == descriptor",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "4bea651ff1313ef6",
+  "4bea651ff1313ef6",
+  "4bea651ff1313ef6",
+  "4bea651ff1313ef6",
+  "4bea651ff1313ef6",
+  "4bea651ff1313ef6",
+  "4bea651ff1313ef6",
+  "4bea651ff1313ef6",
+  "4bea651ff1313ef6",
+  "4bea651ff1313ef6"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 14.5,
+ "error": null,
+ "facts": {
+  "hash": {
+   "verbs": [
+    "run",
+    "port",
+    "inspect",
+    "rm"
+   ],
+   "rc": 0
+  },
+  "calls": [
+   [
+    "run",
+    "-d",
+    "--name",
+    "lattice-perf-postgres-16123160",
+    "--label",
+    "lattice.spec=throwaway",
+    "--label",
+    "lattice.owner=perf-probe-862687b9",
+    "-p",
+    "127.0.0.1::5432",
+    "--tmpfs",
+    "/var/lib/postgresql/data:rw",
+    "-e",
+    "POSTGRES_USER=lattice",
+    "-e",
+    "POSTGRES_PASSWORD=lattice",
+    "-e",
+    "POSTGRES_DB=postgres",
+    "postgres:16-alpine",
+    "-c",
+    "fsync=off",
+    "-c",
+    "synchronous_commit=off",
+    "-c",
+    "full_page_writes=off",
+    "-c",
+    "max_connections=300",
+    "-c",
+    "shared_preload_libraries=pg_stat_statements",
+    "-c",
+    "pg_stat_statements.track=top",
+    "-c",
+    "pg_stat_statements.track_utility=on"
+   ],
+   [
+    "port",
+    "lattice-perf-postgres-16123160",
+    "5432/tcp"
+   ],
+   [
+    "inspect",
+    "-f",
+    "{{.State.Running}}",
+    "lattice-perf-postgres-16123160"
+   ],
+   [
+    "rm",
+    "-f",
+    "-v",
+    "lattice-perf-postgres-16123160"
+   ]
+  ],
+  "rc": 0,
+  "non_docker": []
+ }
+}

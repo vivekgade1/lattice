@@ -1,0 +1,143 @@
+{
+ "environment": {
+  "docker": true,
+  "psycopg": true,
+  "clickhouse_connect": true,
+  "pymysql": true,
+  "streak": true
+ },
+ "runs": 10,
+ "measure_runs": 10,
+ "probes": [
+  {
+   "id": "P-regress(e)",
+   "status": "RAN",
+   "predicted": "1 distinct hash over 20, exit 0 x20, counts 11/31 and 4/4, fits 6+1N and 4+0N exact",
+   "observed": "1 distinct hash over 20; exit 0 in 20/20; counts and fits as predicted in 20/20 invocations",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 137.8
+  },
+  {
+   "id": "P-pg",
+   "status": "RAN",
+   "predicted": "counts 2/2, 5/9, 5/9, 0/0 in every run; fits 2+0N, 2+1N, 2+1N, 0+0N exact; verdicts pass, fail, pass, pass; exits check 1, measure 0; 1 distinct hash; 0 containers left",
+   "observed": "1600/1600 runs as predicted; exits check 1 / measure 0 in 20/20; 1 distinct canonical hash over 20; 0 container(s) left",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 155.4
+  },
+  {
+   "id": "P-ch",
+   "status": "RAN",
+   "predicted": "counts 2/2, 5/9, 5/9, 0/0 in every run; fits 2+0N, 2+1N, 2+1N, 0+0N exact; verdicts pass, fail, pass, pass; exits check 1, measure 0; 1 distinct hash; 0 containers left",
+   "observed": "1600/1600 runs as predicted; exits check 1 / measure 0 in 20/20; 1 distinct canonical hash over 20; 0 container(s) left",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 185.5
+  },
+  {
+   "id": "P-excl(a)",
+   "status": "RAN",
+   "predicted": "nodb = 0 in every run on both engines",
+   "observed": "nodb = 0 in 800/800 runs",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 71.7
+  },
+  {
+   "id": "P-excl(b)",
+   "status": "RAN",
+   "predicted": "GET /items = 2 in every run on both engines",
+   "observed": "GET /items = 2 in 400/400 runs (5 + 5 noise statements per window)",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 28.6
+  },
+  {
+   "id": "P-excl(c)",
+   "status": "RAN",
+   "predicted": ">= 1 row for the admin database on both engines",
+   "observed": "admin-database window returned >= 1 row on both engines: {'postgres': 2, 'clickhouse': 4}",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 18.0
+  },
+  {
+   "id": "P-down(b)",
+   "status": "RAN",
+   "predicted": "exit 2 within 40 s, stderr 'did not answer within 30s'",
+   "observed": "exit 2 in 30.47 s; stderr: ' failed: connection to server at \"127.0.0.1\", port 56919 failed: could not receive data from server: Connection refused)'",
+   "pass": true,
+   "distinct_hashes": 10,
+   "seconds": 303.1
+  },
+  {
+   "id": "P-down(c)",
+   "status": "RAN",
+   "predicted": "measure and check exit 2, all unmeasured with 'not available on this server' and pg_stat_statements, 0 pg_extension rows",
+   "observed": "measure exit 2, check exit 2, verdicts ['unmeasured'], pg_extension rows afterwards 0",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 17.8
+  },
+  {
+   "id": "P-down(d)",
+   "status": "RAN",
+   "predicted": "exit 2, 'lattice perf: error:', 0 containers left",
+   "observed": "exit 2; stderr 'lattice perf: error: DatabaseError: cannot connect to postgresql://lattice:***@1'; containers left 0",
+   "pass": true,
+   "distinct_hashes": 10,
+   "seconds": 14.2
+  },
+  {
+   "id": "P-down(e)",
+   "status": "RAN",
+   "predicted": "every budget unmeasured with the decision-8 note, exit 2, identical",
+   "observed": "every budget unmeasured with the liveness note on both engines (exit [2, 2]); 1 distinct hash over 10",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 23.0
+  },
+  {
+   "id": "P-trust(b)-pg",
+   "status": "RAN",
+   "predicted": "verbs within the set, no exec, 1 run, image and args as the descriptor",
+   "observed": "verbs ['inspect', 'port', 'rm', 'run'] (no exec), 1 run, image postgres:16-alpine, args after image == descriptor",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 14.5
+  },
+  {
+   "id": "P-trust(c)-pg",
+   "status": "RAN",
+   "predicted": "178 statements, all descriptor statements, every {db} a clone",
+   "observed": "178 statements sent (predicted 178 = setup 1 + check 1 + 88 windows x 2); every one a descriptor statement; every {db} a clone",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 22.0
+  },
+  {
+   "id": "P-trust(b)-ch",
+   "status": "RAN",
+   "predicted": "verbs within the set, no exec, 1 run, image and args as the descriptor",
+   "observed": "verbs ['port', 'rm', 'run'] (no exec), 1 run, image clickhouse/clickhouse-server:24.8-alpine, args after image == descriptor",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 12.7
+  },
+  {
+   "id": "P-trust(c)-ch",
+   "status": "RAN",
+   "predicted": "266 statements, all descriptor statements, every {db} a clone",
+   "observed": "266 statements sent (predicted 266 = setup 0 + check 2 + 88 windows x 3); every one a descriptor statement; every {db} a clone",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 23.7
+  }
+ ],
+ "passed": 14,
+ "failed": 0,
+ "not_run": 0,
+ "total": 14
+}

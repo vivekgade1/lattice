@@ -1,0 +1,1097 @@
+{
+ "id": "P-trust(c)-pg",
+ "status": "RAN",
+ "title": "postgres: every statement SqlCounter sends is the descriptor's",
+ "predicted": "178 statements, all descriptor statements, every {db} a clone",
+ "observed": "178 statements sent (predicted 178 = setup 1 + check 1 + 88 windows x 2); every one a descriptor statement; every {db} a clone",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "78b7bad165a951fd",
+  "78b7bad165a951fd",
+  "78b7bad165a951fd",
+  "78b7bad165a951fd",
+  "78b7bad165a951fd",
+  "78b7bad165a951fd",
+  "78b7bad165a951fd",
+  "78b7bad165a951fd",
+  "78b7bad165a951fd",
+  "78b7bad165a951fd"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 22.0,
+ "error": null,
+ "facts": {
+  "hash": {
+   "n": 178,
+   "rc": 1
+  },
+  "stmts": [
+   [
+    "CREATE EXTENSION IF NOT EXISTS pg_stat_statements",
+    []
+   ],
+   [
+    "SELECT count(*) FROM pg_stat_statements",
+    []
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c2"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c3"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c4"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c5"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c6"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c7"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c8"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = %s), 0::bigint)",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ],
+   [
+    "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = %s) AND toplevel ORDER BY query, queryid",
+    [
+     "lattice_754e8f71_c9"
+    ]
+   ]
+  ],
+  "rc": 1
+ }
+}
