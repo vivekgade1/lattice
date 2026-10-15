@@ -1,0 +1,9 @@
+{
+ "id": "P-down(e)",
+ "status": "NOT RUN",
+ "title": "an app that ignores its URL is unmeasured (liveness guard)",
+ "predicted": "every budget unmeasured with the decision-8 note, exit 2, identical",
+ "observed": "not run: needs a running Docker daemon, psycopg in the probe python, clickhouse-connect in the probe python",
+ "pass": null,
+ "reason": "needs a running Docker daemon, psycopg in the probe python, clickhouse-connect in the probe python"
+}

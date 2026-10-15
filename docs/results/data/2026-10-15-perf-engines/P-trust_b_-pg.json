@@ -1,0 +1,9 @@
+{
+ "id": "P-trust(b)-pg",
+ "status": "NOT RUN",
+ "title": "postgres: only docker run/port/inspect/logs/rm, no exec",
+ "predicted": "verbs within the set, no exec, 1 run, image and args as the descriptor",
+ "observed": "not run: needs a running Docker daemon, psycopg in the probe python",
+ "pass": null,
+ "reason": "needs a running Docker daemon, psycopg in the probe python"
+}

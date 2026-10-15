@@ -48,3 +48,16 @@ env = { POSTGRES_USER = "{user}", POSTGRES_PASSWORD = "{password}", POSTGRES_DB 
 # a throwaway database: durability off, connections for layer X's clients
 args = ["-c", "fsync=off", "-c", "synchronous_commit=off", "-c", "full_page_writes=off", "-c", "max_connections=300"]
 ready_sql = "SELECT 1"
+
+# lattice perf: statements are counted from pg_stat_statements, per measured database. The
+# extension is preloaded by the started container's arguments and created by setup; check
+# proves it answers; a window is a reset of the measured database's statistics and a read
+# (a backend updates the statistics before it answers, so no flush is needed).
+[perf]
+counter = "sql"
+source = "pg_stat_statements (top-level statement executions in the measured database)"
+server_args = ["-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=top", "-c", "pg_stat_statements.track_utility=on"]
+setup = ["CREATE EXTENSION IF NOT EXISTS pg_stat_statements"]
+check = ["SELECT count(*) FROM pg_stat_statements"]
+begin = ["SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = {db}), 0::bigint)"]
+read = "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = {db}) AND toplevel ORDER BY query, queryid"

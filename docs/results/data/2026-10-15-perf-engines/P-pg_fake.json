@@ -1,0 +1,710 @@
+{
+ "id": "P-pg/fake",
+ "status": "RAN",
+ "title": "postgres counted exactly on a simulated server (tool logic only)",
+ "predicted": "counts 2/2, 5/9, 5/9, 0/0 in every run; fits 2+0N, 2+1N, 2+1N, 0+0N exact; verdicts pass, fail, pass, pass; exits check 1, measure 0; 1 distinct hash; 0 containers left",
+ "observed": "800/800 runs as predicted; exits check 1 / measure 0 in 10/10; 1 distinct canonical hash over 10; 0 container(s) left",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "3958c3085db5238f",
+  "3958c3085db5238f",
+  "3958c3085db5238f",
+  "3958c3085db5238f",
+  "3958c3085db5238f",
+  "3958c3085db5238f",
+  "3958c3085db5238f",
+  "3958c3085db5238f",
+  "3958c3085db5238f",
+  "3958c3085db5238f"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 8.9,
+ "error": null,
+ "facts": {
+  "variants": {
+   "inproc": {
+    "check_rc": 1,
+    "measure_rc": 0,
+    "ok": 80,
+    "total": 80,
+    "problems": [],
+    "stderr": "",
+    "raw": {
+     "version": 1,
+     "command": "check",
+     "project": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/scF/project-23",
+     "budget_file": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/scF/project-23/perf.budget.json",
+     "verdict": "fail",
+     "reports": [
+      {
+       "budget_id": "items",
+       "endpoint": "GET /items",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+         ],
+         "latency_ms": {
+          "min": 0.354,
+          "median": 0.528,
+          "max": 0.721
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = $?"
+          }
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+         ],
+         "latency_ms": {
+          "min": 0.37,
+          "median": 0.482,
+          "max": 0.62
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = $?"
+          }
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 2,
+        "per_item": 0,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 2,
+         "per_item": 0
+        },
+        "latency_ms": null
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: postgres (container lattice-perf-postgres-b28d6d7c); statements from pg_stat_statements (top-level statement executions in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      },
+      {
+       "budget_id": "n1-tight",
+       "endpoint": "GET /items_n1",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+         ],
+         "latency_ms": {
+          "min": 0.358,
+          "median": 0.54,
+          "max": 0.694
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = $?"
+          },
+          {
+           "count": 3,
+           "sql": "SELECT name FROM users WHERE id = $?"
+          }
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9
+         ],
+         "latency_ms": {
+          "min": 0.483,
+          "median": 0.596,
+          "max": 0.681
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = $?"
+          },
+          {
+           "count": 7,
+           "sql": "SELECT name FROM users WHERE id = $?"
+          }
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 2,
+        "per_item": 1,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 2,
+         "per_item": 0
+        },
+        "latency_ms": null
+       },
+       "verdict": "fail",
+       "delta": {
+        "constant": 0,
+        "per_item": 1
+       },
+       "notes": [
+        "over budget: per_item 1 > budget 0",
+        "over budget: N=3: 5 statements > allowed 2",
+        "over budget: N=7: 9 statements > allowed 2",
+        "database: postgres (container lattice-perf-postgres-b28d6d7c); statements from pg_stat_statements (top-level statement executions in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      },
+      {
+       "budget_id": "n1",
+       "endpoint": "GET /items_n1",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+         ],
+         "latency_ms": {
+          "min": 0.39,
+          "median": 0.589,
+          "max": 0.753
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = $?"
+          },
+          {
+           "count": 3,
+           "sql": "SELECT name FROM users WHERE id = $?"
+          }
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9
+         ],
+         "latency_ms": {
+          "min": 0.444,
+          "median": 0.523,
+          "max": 0.813
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = $?"
+          },
+          {
+           "count": 7,
+           "sql": "SELECT name FROM users WHERE id = $?"
+          }
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 2,
+        "per_item": 1,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 2,
+         "per_item": 1
+        },
+        "latency_ms": null
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: postgres (container lattice-perf-postgres-b28d6d7c); statements from pg_stat_statements (top-level statement executions in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      },
+      {
+       "budget_id": "nodb",
+       "endpoint": "GET /nodb",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ],
+         "latency_ms": {
+          "min": 0.316,
+          "median": 0.433,
+          "max": 0.547
+         },
+         "shapes": []
+        },
+        {
+         "n": 7,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ],
+         "latency_ms": {
+          "min": 0.334,
+          "median": 0.464,
+          "max": 0.622
+         },
+         "shapes": []
+        }
+       ],
+       "fit": {
+        "constant": 0,
+        "per_item": 0,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 0,
+         "per_item": 0
+        },
+        "latency_ms": null
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: postgres (container lattice-perf-postgres-b28d6d7c); statements from pg_stat_statements (top-level statement executions in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "hash": {
+   "inproc": {
+    "version": 1,
+    "command": "check",
+    "verdict": "fail",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = $?"
+         }
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = $?"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: postgres (container <container>); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "n1-tight",
+      "endpoint": "GET /items_n1",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = $?"
+         },
+         {
+          "count": 3,
+          "sql": "SELECT name FROM users WHERE id = $?"
+         }
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = $?"
+         },
+         {
+          "count": 7,
+          "sql": "SELECT name FROM users WHERE id = $?"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 1,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "fail",
+      "delta": {
+       "constant": 0,
+       "per_item": 1
+      },
+      "notes": [
+       "over budget: per_item 1 > budget 0",
+       "over budget: N=3: 5 statements > allowed 2",
+       "over budget: N=7: 9 statements > allowed 2",
+       "database: postgres (container <container>); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "n1",
+      "endpoint": "GET /items_n1",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = $?"
+         },
+         {
+          "count": 3,
+          "sql": "SELECT name FROM users WHERE id = $?"
+         }
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = $? ORDER BY id"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = $?"
+         },
+         {
+          "count": 7,
+          "sql": "SELECT name FROM users WHERE id = $?"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 1,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 1
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: postgres (container <container>); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "nodb",
+      "endpoint": "GET /nodb",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "shapes": []
+       },
+       {
+        "n": 7,
+        "statements": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "shapes": []
+       }
+      ],
+      "fit": {
+       "constant": 0,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 0,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: postgres (container <container>); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     }
+    ]
+   }
+  },
+  "same_across_variants": true,
+  "left": []
+ }
+}

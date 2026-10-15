@@ -1,0 +1,1361 @@
+{
+ "id": "P-trust(c)-ch/fake",
+ "status": "RAN",
+ "title": "clickhouse: the same on a simulated server",
+ "predicted": "266 statements, all descriptor statements, every {db} a clone",
+ "observed": "266 statements sent (predicted 266 = setup 0 + check 2 + 88 windows x 3); every one a descriptor statement; every {db} a clone",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "5a3049af848756a8",
+  "5a3049af848756a8",
+  "5a3049af848756a8",
+  "5a3049af848756a8",
+  "5a3049af848756a8",
+  "5a3049af848756a8",
+  "5a3049af848756a8",
+  "5a3049af848756a8",
+  "5a3049af848756a8",
+  "5a3049af848756a8"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 4.6,
+ "error": null,
+ "facts": {
+  "hash": {
+   "n": 266,
+   "rc": 1
+  },
+  "stmts": [
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT count() FROM system.query_log WHERE 0",
+    []
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149717550
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149721594
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149722312
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149722857
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149723360
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149723986
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149724606
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149725184
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149725810
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149726284
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c2",
+     1792070149726881
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149731305
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149735985
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149736662
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149737156
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149737666
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149738180
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149738856
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149739659
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149740343
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149741094
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c3",
+     1792070149741900
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149746189
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149749085
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149749992
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149750603
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149751139
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149751986
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149752673
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149753351
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149754192
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149754897
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c4",
+     1792070149755463
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149759097
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149765560
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149766495
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149767097
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149767688
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149768436
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149769213
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149769869
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149770370
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149770840
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c5",
+     1792070149771625
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149775961
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149779252
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149780139
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149780742
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149781334
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149782121
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149782700
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149783537
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149784250
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149784912
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c6",
+     1792070149785671
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149789331
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149794545
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149795437
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149796286
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149797047
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149797772
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149798543
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149799146
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149799755
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149800504
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c7",
+     1792070149801176
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149805453
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149808250
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149808860
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149809381
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149810060
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149810581
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149811091
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149811651
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149812350
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149812872
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c8",
+     1792070149813400
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149817058
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149821603
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149822056
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149822448
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149822829
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149823207
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149823591
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149823997
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149824604
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149825333
+    ]
+   ],
+   [
+    "SELECT toUnixTimestamp64Micro(now64(6))",
+    []
+   ],
+   [
+    "SYSTEM FLUSH LOGS",
+    []
+   ],
+   [
+    "SELECT query, 1 FROM system.query_log WHERE current_database = %s AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= %s ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0",
+    [
+     "lattice_180f7d47_c9",
+     1792070149825834
+    ]
+   ]
+  ],
+  "rc": 1
+ }
+}

@@ -1,0 +1,38 @@
+{
+ "id": "P-regress(b)",
+ "status": "RAN",
+ "title": "existing tests/perf unchanged and passing",
+ "predicted": "0 changed test definitions, 68 passed, test_engines.py +1/-1 line",
+ "observed": "0 changed definitions of 64 in 4 files; pytest: 68 passed in 1.19s; tests/spec/test_engines.py: +1 -1 line(s)",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "6b48007b8014a058",
+  "6b48007b8014a058",
+  "6b48007b8014a058",
+  "6b48007b8014a058",
+  "6b48007b8014a058",
+  "6b48007b8014a058",
+  "6b48007b8014a058",
+  "6b48007b8014a058",
+  "6b48007b8014a058",
+  "6b48007b8014a058"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 11.1,
+ "error": null,
+ "facts": {
+  "hash": {
+   "diffs": [],
+   "pytest": "68 passed"
+  },
+  "diffs": [],
+  "defs": 64,
+  "pytest": "68 passed in 1.19s",
+  "rc": 0,
+  "engines_test_numstat": [
+   "1",
+   "1"
+  ]
+ }
+}

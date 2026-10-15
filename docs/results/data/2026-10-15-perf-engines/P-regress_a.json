@@ -1,0 +1,42 @@
+{
+ "id": "P-regress(a)",
+ "status": "RAN",
+ "title": "file and AST identity vs a4ab4a1",
+ "predicted": "0 differences: budget.py and __main__.py byte-identical, 10 definitions AST-identical",
+ "observed": "0 differences in 12 compared items (2 files byte-identical, 10 definitions AST-identical); changed elsewhere: __all__, _databases, measure, measure_size; new: SqlCounter, Unmeasured, _BIND, bind",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "1f369c945af994d3",
+  "1f369c945af994d3",
+  "1f369c945af994d3",
+  "1f369c945af994d3",
+  "1f369c945af994d3",
+  "1f369c945af994d3",
+  "1f369c945af994d3",
+  "1f369c945af994d3",
+  "1f369c945af994d3",
+  "1f369c945af994d3"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 0.4,
+ "error": null,
+ "facts": {
+  "hash": {
+   "diffs": []
+  },
+  "diffs": [],
+  "changed_elsewhere": [
+   "__all__",
+   "_databases",
+   "measure",
+   "measure_size"
+  ],
+  "added": [
+   "SqlCounter",
+   "Unmeasured",
+   "_BIND",
+   "bind"
+  ]
+ }
+}

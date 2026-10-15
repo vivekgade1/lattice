@@ -1,0 +1,9 @@
+{
+ "id": "P-down(b)",
+ "status": "NOT RUN",
+ "title": "a given URL at a closed port",
+ "predicted": "exit 2 within 40 s, stderr 'did not answer within 30s'",
+ "observed": "not run: needs psycopg in the probe python",
+ "pass": null,
+ "reason": "needs psycopg in the probe python"
+}

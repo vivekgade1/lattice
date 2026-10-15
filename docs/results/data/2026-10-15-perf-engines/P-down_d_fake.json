@@ -1,0 +1,35 @@
+{
+ "id": "P-down(d)/fake",
+ "status": "RAN",
+ "title": "the simulated server dies after the first size (tool logic only)",
+ "predicted": "exit 2, 'lattice perf: error:', the container removed",
+ "observed": "exit 2; stderr 'lattice perf: error: DatabaseError: cannot connect to postgresql://lattice:***@1'; containers left 0",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "1cf63b45c673210d",
+  "1cf63b45c673210d",
+  "1cf63b45c673210d",
+  "1cf63b45c673210d",
+  "1cf63b45c673210d",
+  "1cf63b45c673210d",
+  "1cf63b45c673210d",
+  "1cf63b45c673210d",
+  "1cf63b45c673210d",
+  "1cf63b45c673210d"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 3.5,
+ "error": null,
+ "facts": {
+  "hash": {
+   "rc": 2,
+   "stderr": [
+    "lattice perf: error: DatabaseError: cannot connect to postgresql://lattice:***@127.0.0.1:41001/postgres?sslmode=disable: connection to server at 127.0.0.1, port 41001 failed: Connection refused"
+   ]
+  },
+  "rc": 2,
+  "stderr": "lattice perf: error: DatabaseError: cannot connect to postgresql://lattice:***@127.0.0.1:41001/postgres?sslmode=disable: connection to server at 127.0.0.1, port 41001 failed: Connection refused",
+  "left": []
+ }
+}

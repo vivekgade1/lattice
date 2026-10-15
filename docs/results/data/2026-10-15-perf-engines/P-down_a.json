@@ -1,0 +1,59 @@
+{
+ "id": "P-down(a)",
+ "status": "RAN",
+ "title": "no docker on PATH",
+ "predicted": "exit 2, stderr 'needs Docker', 10 runs identical",
+ "observed": "exit [2, 2], stderr contains 'needs Docker' in 20/20; no docker CLI on PATH, so 0 containers can have started",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "e0e8d3c7d9b4a28d",
+  "e0e8d3c7d9b4a28d",
+  "e0e8d3c7d9b4a28d",
+  "e0e8d3c7d9b4a28d",
+  "e0e8d3c7d9b4a28d",
+  "e0e8d3c7d9b4a28d",
+  "e0e8d3c7d9b4a28d",
+  "e0e8d3c7d9b4a28d",
+  "e0e8d3c7d9b4a28d",
+  "e0e8d3c7d9b4a28d"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 6.0,
+ "error": null,
+ "facts": {
+  "hash": {
+   "postgres": {
+    "rc": 2,
+    "stderr": [
+     "lattice perf: --database postgres needs Docker (the docker CLI is not installed), or a server URL: --database-url or $LATTICE_POSTGRES_URL"
+    ]
+   },
+   "clickhouse": {
+    "rc": 2,
+    "stderr": [
+     "lattice perf: --database clickhouse needs Docker (the docker CLI is not installed), or a server URL: --database-url or $LATTICE_CLICKHOUSE_URL"
+    ]
+   }
+  },
+  "out": {
+   "postgres": {
+    "rc": 2,
+    "stderr": [
+     "lattice perf: --database postgres needs Docker (the docker CLI is not installed), or a server URL: --database-url or $LATTICE_POSTGRES_URL"
+    ]
+   },
+   "clickhouse": {
+    "rc": 2,
+    "stderr": [
+     "lattice perf: --database clickhouse needs Docker (the docker CLI is not installed), or a server URL: --database-url or $LATTICE_CLICKHOUSE_URL"
+    ]
+   }
+  },
+  "binaries_on_path": {
+   "docker": null,
+   "postgres": null,
+   "clickhouse": null
+  }
+ }
+}

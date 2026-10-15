@@ -1,0 +1,72 @@
+{
+ "id": "P-trust(b)-ch/fake",
+ "status": "RAN",
+ "title": "clickhouse: the same on the fake docker's argv",
+ "predicted": "verbs within the set, no exec, 1 run, image and args as the descriptor",
+ "observed": "verbs ['port', 'rm', 'run'] (no exec), 1 run, image clickhouse/clickhouse-server:24.8-alpine, args after image == descriptor; via the fake docker's recorded argv",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "3d1c8d5d1a6dfb6b",
+  "3d1c8d5d1a6dfb6b",
+  "3d1c8d5d1a6dfb6b",
+  "3d1c8d5d1a6dfb6b",
+  "3d1c8d5d1a6dfb6b",
+  "3d1c8d5d1a6dfb6b",
+  "3d1c8d5d1a6dfb6b",
+  "3d1c8d5d1a6dfb6b",
+  "3d1c8d5d1a6dfb6b",
+  "3d1c8d5d1a6dfb6b"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 3.4,
+ "error": null,
+ "facts": {
+  "hash": {
+   "verbs": [
+    "run",
+    "port",
+    "rm"
+   ],
+   "rc": 0
+  },
+  "calls": [
+   [
+    "run",
+    "-d",
+    "--name",
+    "lattice-perf-clickhouse-259a6d72",
+    "--label",
+    "lattice.spec=throwaway",
+    "--label",
+    "lattice.owner=perf-probe-89170856",
+    "-p",
+    "127.0.0.1::8123",
+    "--tmpfs",
+    "/var/lib/clickhouse:rw",
+    "-e",
+    "CLICKHOUSE_USER=lattice",
+    "-e",
+    "CLICKHOUSE_PASSWORD=lattice",
+    "-e",
+    "CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1",
+    "--ulimit",
+    "nofile=262144:262144",
+    "clickhouse/clickhouse-server:24.8-alpine"
+   ],
+   [
+    "port",
+    "lattice-perf-clickhouse-259a6d72",
+    "8123/tcp"
+   ],
+   [
+    "rm",
+    "-f",
+    "-v",
+    "lattice-perf-clickhouse-259a6d72"
+   ]
+  ],
+  "rc": 0,
+  "non_docker": []
+ }
+}

@@ -1,0 +1,186 @@
+{
+ "id": "P-regress(d)",
+ "status": "RAN",
+ "title": "process app on SQLite stays unmeasured",
+ "predicted": "same unmeasured note old and new, exit 2",
+ "observed": "exit [2, 2]; the unmeasured note is the same old and new (True); 1 distinct hash over 20",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "4dce2b5e162e4edc",
+  "4dce2b5e162e4edc",
+  "4dce2b5e162e4edc",
+  "4dce2b5e162e4edc",
+  "4dce2b5e162e4edc",
+  "4dce2b5e162e4edc",
+  "4dce2b5e162e4edc",
+  "4dce2b5e162e4edc",
+  "4dce2b5e162e4edc",
+  "4dce2b5e162e4edc"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 5.3,
+ "error": null,
+ "facts": {
+  "hash": {
+   "old": {
+    "version": 1,
+    "command": "measure",
+    "verdict": "unmeasured",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [],
+      "fit": null,
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "unmeasured",
+      "delta": null,
+      "notes": [
+       "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+      ]
+     },
+     {
+      "budget_id": "n1",
+      "endpoint": "GET /items_n1",
+      "sizes": [],
+      "fit": null,
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 1
+       }
+      },
+      "verdict": "unmeasured",
+      "delta": null,
+      "notes": [
+       "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+      ]
+     }
+    ]
+   },
+   "new": {
+    "version": 1,
+    "command": "measure",
+    "verdict": "unmeasured",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [],
+      "fit": null,
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "unmeasured",
+      "delta": null,
+      "notes": [
+       "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+      ]
+     },
+     {
+      "budget_id": "n1",
+      "endpoint": "GET /items_n1",
+      "sizes": [],
+      "fit": null,
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 1
+       }
+      },
+      "verdict": "unmeasured",
+      "delta": null,
+      "notes": [
+       "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+      ]
+     }
+    ]
+   },
+   "rc": [
+    2,
+    2
+   ]
+  },
+  "rc": [
+   2,
+   2
+  ],
+  "notes": {
+   "old": [
+    [
+     "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+    ],
+    [
+     "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+    ]
+   ],
+   "new": [
+    [
+     "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+    ],
+    [
+     "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+    ]
+   ]
+  },
+  "same": true,
+  "raw": {
+   "version": 1,
+   "command": "measure",
+   "project": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/scF/p-regress-d",
+   "budget_file": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/scF/p-regress-d/perf.budget.json",
+   "verdict": "unmeasured",
+   "reports": [
+    {
+     "budget_id": "items",
+     "endpoint": "GET /items",
+     "sizes": [],
+     "fit": null,
+     "budget": {
+      "queries": {
+       "constant": 2,
+       "per_item": 0
+      },
+      "latency_ms": null
+     },
+     "verdict": "unmeasured",
+     "delta": null,
+     "notes": [
+      "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+     ]
+    },
+    {
+     "budget_id": "n1",
+     "endpoint": "GET /items_n1",
+     "sizes": [],
+     "fit": null,
+     "budget": {
+      "queries": {
+       "constant": 2,
+       "per_item": 1
+      },
+      "latency_ms": null
+     },
+     "verdict": "unmeasured",
+     "delta": null,
+     "notes": [
+      "unmeasured: statement counting for a process app on SQLite is not supported (the app's SQLite library is in another process)"
+     ]
+    }
+   ]
+  },
+  "stderr": [
+   "",
+   ""
+  ]
+ }
+}

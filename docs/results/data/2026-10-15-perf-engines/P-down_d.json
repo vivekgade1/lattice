@@ -1,0 +1,9 @@
+{
+ "id": "P-down(d)",
+ "status": "NOT RUN",
+ "title": "the container is docker-killed after the first size",
+ "predicted": "exit 2, 'lattice perf: error:', 0 containers left",
+ "observed": "not run: needs a running Docker daemon, psycopg in the probe python",
+ "pass": null,
+ "reason": "needs a running Docker daemon, psycopg in the probe python"
+}

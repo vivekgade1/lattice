@@ -40,3 +40,7 @@ admin_db = "mysql"
 env = { MYSQL_ROOT_PASSWORD = "{password}" }
 args = ["--innodb-flush-log-at-trx-commit=0", "--skip-log-bin", "--sync-binlog=0", "--max-connections=300", "--innodb-doublewrite=OFF"]
 ready_sql = "SELECT 1"
+
+# lattice perf: statements are counted from the server's general log (built-in code)
+[perf]
+counter = "general_log"

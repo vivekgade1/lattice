@@ -17,10 +17,17 @@ has the tests it was predicted to be caught by (``PREDICTED``), reported next to
 did fail. The equivalent mutants PE1 and PE2 are not here: they survive by construction and are
 checked on the grid by ``dogfood/perf_rule_probes.py`` (J2e).
 
+PX1-PX11 (2026-10-15, ``docs/results/2026-10-15-perf-engines-prereg.md`` section 4) mutate the
+engine-agnostic counting (``SqlCounter``, the ``[perf]`` table's validation, the dispatch, the
+container's arguments). A mutant that no test without a server fails, whose predicted killers
+include a Docker-backed test that was skipped, is reported **pending a server** (never
+killed): ``tests/perf/test_counting_docker.py`` runs where Docker and the drivers exist.
+
 Usage: ``uv run python dogfood/perf_mutants.py [--out FILE] [--jobs N] [--streak DIR
-[--python PY]] [ID ...]`` (``--python``: an interpreter with PyMySQL for the Streak runs).
-Prints a table and ends ``mutants: N/N killed``; exit 0 when the control passes and every
-mutant is caught.
+[--python PY]] [ID ...]`` (``--python``: an interpreter with PyMySQL for the Streak runs; with
+the drivers installed it also runs the Docker tests). Prints a table and ends
+``mutants: K/N killed (M pending a server)``; exit 0 when the control passes and every
+mutant is caught, 3 when none survived but some are pending a server, 1 otherwise.
 """
 
 from __future__ import annotations
@@ -41,6 +48,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SUITE = ["tests/perf"]
 B, M, C = "lattice/perf/budget.py", "lattice/perf/measure.py", "lattice/perf/__main__.py"
+E = "lattice/spec/engines.py"
 FILES = [B, M, C, "tests/perf/test_budget.py", "tests/perf/test_measure.py",
          "dogfood/perf_mutants.py"]  # fmt: skip
 
@@ -135,6 +143,73 @@ MUTANTS: dict[str, tuple[str, str, str, str]] = {
         "        )\n",
         "        pass  # MUTANT PR9\n",
     ),
+    "PX1": (
+        "the begin statements are skipped (no pgss reset: the seed phase is counted)",
+        M,
+        "        for text in self.perf.begin:\n",
+        "        for text in ():  # MUTANT PX1\n",
+    ),
+    "PX2": (
+        "the flush statements are skipped (ClickHouse rows stay queued)",
+        M,
+        "        for text in self.perf.flush:\n",
+        "        for text in ():  # MUTANT PX2\n",
+    ),
+    "PX3": (
+        "calls is ignored (one statement per row)",
+        M,
+        "            out.extend([str(text)] * int(calls))\n",
+        "            out.extend([str(text)])  # MUTANT PX3\n",
+    ),
+    "PX4": (
+        "{db} is bound to the admin database",
+        M,
+        "        self.db = str(database_name(str(url)))\n",
+        "        self.db = str(database_name(self.server.url))  # MUTANT PX4\n",
+    ),
+    "PX5": (
+        "the liveness guard is removed",
+        M,
+        "        if not self.end():\n",
+        "        if False and not self.end():  # MUTANT PX5\n",
+    ),
+    "PX6": (
+        "setup is also run on a given server",
+        M,
+        "        for text in [*(self.perf.setup if owned else ()), *self.perf.check]:\n",
+        "        for text in [*self.perf.setup, *self.perf.check]:  # MUTANT PX6\n",
+    ),
+    "PX7": (
+        "extra_args are not passed to server_for",
+        M,
+        "extra_args=perf.server_args)  # fmt: skip\n",
+        "extra_args=())  # fmt: skip  MUTANT PX7\n",
+    ),
+    "PX8": (
+        "the server is not stopped when check fails",
+        M,
+        "                yield dbs, None, [str(err)]\n",
+        "                server.container = None  # MUTANT PX8\n"
+        "                yield dbs, None, [str(err)]\n",
+    ),
+    "PX9": (
+        "the validation accepts a read without {db}",
+        E,
+        '    if "db" not in used:\n',
+        "    if False:  # MUTANT PX9\n",
+    ),
+    "PX10": (
+        "the validation accepts any counter",
+        E,
+        "    if counter not in _PERF_COUNTERS:\n",
+        "    if False:  # MUTANT PX10\n",
+    ),
+    "PX11": (
+        "the dispatch keeps the a4ab4a1 rule (mysql only)",
+        M,
+        '    engine = None if h.database == "sqlite" else engines.find(h.database)\n',
+        '    engine = engines.find(h.database) if h.database == "mysql" else None  # MUTANT PX11\n',
+    ),
 }
 
 # the tests each PR mutant was predicted to be caught by (prereg section 4); PM1-PM4: none named
@@ -158,7 +233,30 @@ PREDICTED: dict[str, list[str]] = {
     "PR7": [_BOUNDARY, _FALLING],
     "PR8": [_LATENCY],
     "PR9": [_NO_TRADE],
+    # PX (prereg section 4); the *_docker names need a server and Docker
+    "PX1": ["test_sql_counter_sends_descriptor_statements_in_order", "test_pg_counts_exactly"],
+    "PX2": ["test_sql_counter_sends_descriptor_statements_in_order", "test_ch_counts_exactly"],
+    "PX3": ["test_sql_counter_expands_calls", "test_pg_counts_exactly"],
+    "PX4": [
+        "test_sql_counter_sends_descriptor_statements_in_order",
+        "test_pg_counts_exactly",
+        "test_ch_counts_exactly",
+    ],  # fmt: skip
+    "PX5": ["test_liveness_guard_marks_budget_unmeasured"],
+    "PX6": ["test_sql_counter_on_given_server_skips_setup"],
+    "PX7": ["test_extra_args_follow_server_args", "test_pg_counts_exactly"],
+    "PX8": ["test_check_failure_is_unmeasured_and_server_stopped"],
+    "PX9": ["test_perf_section_validation_messages"],
+    "PX10": ["test_perf_section_validation_messages"],
+    "PX11": [
+        "test_dispatch_by_descriptor_counter",
+        "test_pg_counts_exactly",
+        "test_ch_counts_exactly",
+    ],  # fmt: skip
 }
+# the Docker-backed tests among them (tests/perf/test_counting_docker.py): skipped without a server
+DOCKER_TESTS = {"test_pg_counts_exactly", "test_pg_process_app_counts_the_same",
+                "test_ch_counts_exactly", "test_no_perf_container_left"}  # fmt: skip
 
 SEED = {"items": "N", "steps": [{
     "method": "POST", "path": "/v1/habits", "user": "ann", "count": "N",
@@ -205,12 +303,15 @@ def _env(dst: Path) -> dict[str, str]:
     return env
 
 
-def run_pytest(dst: Path) -> dict[str, object]:
+def run_pytest(dst: Path, python: str | None = None) -> dict[str, object]:
+    """``tests/perf`` in the copy: with the project's ``uv`` environment, or with ``python``
+    (``--python``: an interpreter with the database drivers, so the Docker tests run)."""
     t0 = time.monotonic()
+    runner = ["uv", "run", "--project", str(ROOT), "pytest"] if python is None \
+        else [python, "-m", "pytest"]  # fmt: skip
     try:
         r = subprocess.run(
-            ["uv", "run", "--project", str(ROOT), "pytest", *SUITE, "-q", "-p",
-             "no:cacheprovider", "-rf", "--no-header"],
+            [*runner, *SUITE, "-q", "-p", "no:cacheprovider", "-rfs", "--no-header"],
             cwd=str(dst), env=_env(dst), capture_output=True, text=True, timeout=900,
         )  # fmt: skip
         out, rc = r.stdout + r.stderr, r.returncode
@@ -219,7 +320,10 @@ def run_pytest(dst: Path) -> dict[str, object]:
     failed = sorted({m.group(1) for m in re.finditer(r"^FAILED (\S+)", out, re.M)})
     summary = next((ln for ln in reversed(out.splitlines())
                     if re.search(r"\d+ (passed|failed)", ln)), "").strip()  # fmt: skip
-    return {"exit": rc, "failed": failed, "summary": summary,
+    docker_skipped = bool(
+        re.search(r"^SKIPPED \[\d+\] tests/perf/test_counting_docker\.py", out, re.M)
+    )
+    return {"exit": rc, "failed": failed, "summary": summary, "docker_skipped": docker_skipped,
             "seconds": round(time.monotonic() - t0, 1), "tail": out[-2500:]}  # fmt: skip
 
 
@@ -257,20 +361,26 @@ def run_streak(dst: Path, python: str, project: Path) -> dict[str, object]:
             "seconds": round(time.monotonic() - t0, 1)}  # fmt: skip
 
 
-def one(mid: str, streak: Path | None, python: str) -> dict[str, object]:
+def one(
+    mid: str, streak: Path | None, python: str, pytest_python: str | None = None
+) -> dict[str, object]:
     with tempfile.TemporaryDirectory(prefix=f"lattice-perf1a-mutant-{mid}-") as d:
         dst = Path(d)
         copy_tree(dst)
         if mid != "control":
             apply(dst, mid)
-        res: dict[str, object] = {"pytest": run_pytest(dst)}
+        res: dict[str, object] = {"pytest": run_pytest(dst, pytest_python)}
         if streak is not None:
             res["streak"] = run_streak(dst, python, streak)
     caught_by = [k for k, v in res.items() if v["exit"] != 0]  # type: ignore[index]
     if mid == "control":
         verdict = "PASS (control)" if not caught_by else "CONTROL FAILED"
+    elif caught_by:
+        verdict = "caught"
+    elif res["pytest"]["docker_skipped"] and DOCKER_TESTS & set(PREDICTED.get(mid, [])):  # type: ignore[index]
+        verdict = "pending a server"  # only a skipped Docker test was predicted to kill it
     else:
-        verdict = "caught" if caught_by else "SURVIVED"
+        verdict = "SURVIVED"
     return {**res, "caught_by": caught_by, "verdict": verdict}
 
 
@@ -287,8 +397,18 @@ def print_table(
             continue
         failed = [f.split("::")[-1] for f in res["pytest"]["failed"]]  # type: ignore[index]
         want = PREDICTED.get(mid, [])
-        missing = [t for t in want if t not in failed]
-        pred = "-" if not want else ("MISSING " + ", ".join(missing) if missing else "all present")
+        skipped = bool(res["pytest"].get("docker_skipped"))  # type: ignore[union-attr]
+        base = {f.split("[")[0] for f in failed}  # a parametrised test counts by its name
+        pending = [t for t in want if t not in base and t in DOCKER_TESTS and skipped]
+        missing = [t for t in want if t not in base and t not in pending]
+        parts = []
+        if missing:
+            parts.append("MISSING " + ", ".join(missing))
+        elif len(pending) < len(want):
+            parts.append("all present")
+        if pending:
+            parts.append("pending a server: " + ", ".join(pending))
+        pred = "; ".join(parts) or "-"
         print(f"{mid} | {MUTANTS[mid][0]} | {res['verdict']} | "
               f"{', '.join(res['caught_by']) or 'nothing'} | "
               f"{len(failed)}: {', '.join(failed)} | {pred}")  # fmt: skip
@@ -300,7 +420,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", type=Path, default=None, help="write the results JSON here")
     ap.add_argument("--jobs", type=int, default=2)
     ap.add_argument("--streak", type=Path, default=None, help="a Streak project to measure")
-    ap.add_argument("--python", default=sys.executable, help="interpreter for the Streak runs")
+    ap.add_argument(
+        "--python",
+        default=None,
+        help="interpreter for the Streak runs and for pytest (with the drivers, "
+        "the Docker tests run); default: the project's uv environment",
+    )
     args = ap.parse_args(argv)
     hashes = {f: sha(ROOT / f) for f in FILES}
     print("hashes:", json.dumps(hashes), flush=True)
@@ -312,13 +437,14 @@ def main(argv: list[str] | None = None) -> int:
             apply(Path(d), mid)
     streak = args.streak.resolve() if args.streak else None
     results: dict[str, object] = {"hashes": hashes, "streak": str(streak), "runs": {}}
-    control = one("control", streak, args.python)
+    python = args.python or sys.executable
+    control = one("control", streak, python, args.python)
     results["runs"]["control"] = control  # type: ignore[index]
     print(f"control: {control['verdict']}", flush=True)
     ok = control["verdict"] == "PASS (control)"
     rows: dict[str, dict[str, object]] = {}
     with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, args.jobs)) as ex:
-        futs = {ex.submit(one, mid, streak, args.python): mid for mid in args.ids}
+        futs = {ex.submit(one, mid, streak, python, args.python): mid for mid in args.ids}
         for fut in concurrent.futures.as_completed(futs):
             mid = futs[fut]
             res = fut.result()
@@ -327,14 +453,17 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{mid}: {res['verdict']} (by {', '.join(res['caught_by']) or 'nothing'}; "
                   f"pytest failed {len(failed)}: {', '.join(f.split('::')[-1] for f in failed)})",
                   flush=True)  # fmt: skip
-            ok = ok and res["verdict"] == "caught"
+            ok = ok and res["verdict"] in ("caught", "pending a server")
             rows[mid] = res
     if args.out:
         args.out.write_text(json.dumps(results, indent=1))
     print_table(control, rows, list(args.ids))
     killed = sum(1 for r in rows.values() if r["verdict"] == "caught")
-    print(f"mutants: {killed}/{len(args.ids)} killed", flush=True)
-    return 0 if ok else 1
+    pending = sum(1 for r in rows.values() if r["verdict"] == "pending a server")
+    print(f"mutants: {killed}/{len(args.ids)} killed ({pending} pending a server)", flush=True)
+    if not ok:
+        return 1
+    return 0 if not pending else 3
 
 
 if __name__ == "__main__":

@@ -1,0 +1,74 @@
+{
+ "id": "P-down(c)/fake",
+ "status": "RAN",
+ "title": "a given simulated Postgres without pgss (tool logic only)",
+ "predicted": "measure and check exit 2, all unmeasured with the note, no CREATE EXTENSION sent",
+ "observed": "measure exit 2, check exit 2, verdicts ['unmeasured'], pg_extension rows afterwards 0",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "5b098eda9b0586b3",
+  "5b098eda9b0586b3",
+  "5b098eda9b0586b3",
+  "5b098eda9b0586b3",
+  "5b098eda9b0586b3",
+  "5b098eda9b0586b3",
+  "5b098eda9b0586b3",
+  "5b098eda9b0586b3",
+  "5b098eda9b0586b3",
+  "5b098eda9b0586b3"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 6.0,
+ "error": null,
+ "facts": {
+  "hash": {
+   "measure": {
+    "rc": 2,
+    "verdicts": [
+     "unmeasured"
+    ],
+    "notes": [
+     [
+      "unmeasured: statement counting on PostgreSQL is not available on this server: 'SELECT count(*) FROM pg_stat_statements' failed: pg_stat_statements must be loaded via \"shared_preload_libraries\""
+     ]
+    ]
+   },
+   "check": {
+    "rc": 2,
+    "verdicts": [
+     "unmeasured"
+    ],
+    "notes": [
+     [
+      "unmeasured: statement counting on PostgreSQL is not available on this server: 'SELECT count(*) FROM pg_stat_statements' failed: pg_stat_statements must be loaded via \"shared_preload_libraries\""
+     ]
+    ]
+   },
+   "extension_rows": 0
+  },
+  "measure": {
+   "rc": 2,
+   "verdicts": [
+    "unmeasured"
+   ],
+   "notes": [
+    [
+     "unmeasured: statement counting on PostgreSQL is not available on this server: 'SELECT count(*) FROM pg_stat_statements' failed: pg_stat_statements must be loaded via \"shared_preload_libraries\""
+    ]
+   ]
+  },
+  "check": {
+   "rc": 2,
+   "verdicts": [
+    "unmeasured"
+   ],
+   "notes": [
+    [
+     "unmeasured: statement counting on PostgreSQL is not available on this server: 'SELECT count(*) FROM pg_stat_statements' failed: pg_stat_statements must be loaded via \"shared_preload_libraries\""
+    ]
+   ]
+  },
+  "extension_rows": 0
+ }
+}

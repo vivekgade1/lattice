@@ -68,6 +68,17 @@ A descriptor (every key; ``?`` = optional, with its default)::
     docker_args? = []                 # more ``docker run`` options (ClickHouse: --ulimit)
     ready_sql? = "SELECT 1"
 
+    [perf]?                           # statement counting for ``lattice perf`` (data only)
+    counter = "sql"                   # "general_log" (MySQL's, built in) or "sql"
+    source = "..."                    # sql: what the statements come from (a report note)
+    server_args? = []                 # sql: more server arguments of a started container
+    setup? = []                       # sql: run once on a container the tool started
+    check? = []                       # sql: run after setup (any failure: "unmeasured")
+    begin? = []                       # sql: opens a window; may use {db}
+    mark? = ""                        # sql: one value read at the window's start ({mark})
+    flush? = []                       # sql: run before read; may use {db}
+    read = "SELECT statement, calls"  # sql: rows (text, count); uses {db} (and {mark})
+
 Errors are :class:`EngineError` with exact messages (``tests/spec/test_engines.py``).
 """
 
@@ -179,6 +190,23 @@ class Server:
 
 
 @dataclass(frozen=True)
+class Perf:
+    """The optional ``[perf]`` table: how ``lattice perf`` counts an app's statements on
+    this engine. Data only: statements the engine itself runs (``counter = "sql"``) or the
+    built-in MySQL general-log counter (``"general_log"``); a descriptor names no code."""
+
+    counter: str
+    source: str = ""
+    server_args: tuple[str, ...] = ()
+    setup: tuple[str, ...] = ()
+    check: tuple[str, ...] = ()
+    begin: tuple[str, ...] = ()
+    mark: str = ""
+    flush: tuple[str, ...] = ()
+    read: str = ""
+
+
+@dataclass(frozen=True)
 class EngineDescriptor:
     """One server engine (see the module docstring for every field)."""
 
@@ -197,6 +225,7 @@ class EngineDescriptor:
     server: Server
     # where it was read from (for module:Class imports and messages); not compared
     base_dir: Path | None = field(default=None, compare=False)
+    perf: Perf | None = None
 
     # -- derived
 
@@ -259,7 +288,7 @@ class EngineDescriptor:
         server["env"] = dict(self.server.env)
         server["args"] = list(self.server.args)
         server["docker_args"] = list(self.server.docker_args)
-        return {
+        out: dict[str, Any] = {
             "name": self.name,
             "title": self.title,
             "aliases": list(self.aliases),
@@ -274,6 +303,25 @@ class EngineDescriptor:
             "capabilities": dict(self.capabilities),
             "server": server,
         }
+        if self.perf is not None:
+            out["perf"] = _perf_dict(self.perf)
+        return out
+
+
+def _perf_dict(p: Perf) -> dict[str, Any]:
+    if p.counter != "sql":  # "general_log" allows no other key
+        return {"counter": p.counter}
+    return {
+        "counter": p.counter,
+        "source": p.source,
+        "server_args": list(p.server_args),
+        "setup": list(p.setup),
+        "check": list(p.check),
+        "begin": list(p.begin),
+        "mark": p.mark,
+        "flush": list(p.flush),
+        "read": p.read,
+    }
 
 
 _TOP_FIELDS = (
@@ -290,6 +338,7 @@ _TOP_FIELDS = (
     "sql",
     "capabilities",
     "server",
+    "perf",
 )
 _TOP_REQUIRED = (
     "name",
@@ -338,6 +387,18 @@ _SERVER_FIELDS = (
 )
 _SERVER_REQUIRED = ("image", "data_dir", "admin_user", "admin_db")
 _DRIVER_FIELDS = ("template", "query_auth", "query_fixed", "query_url")
+_PERF_FIELDS = (
+    "counter",
+    "source",
+    "server_args",
+    "setup",
+    "check",
+    "begin",
+    "mark",
+    "flush",
+    "read",
+)
+_PERF_COUNTERS = ("general_log", "sql")
 
 
 # ---- parsing and validation -----------------------------------------------------------------
@@ -572,6 +633,7 @@ def parse_descriptor(
         raise v.err(
             f"must be an absolute path in the container, not {server.data_dir!r}", "data_dir"
         )
+    perf = _parse_perf(where, top.data["perf"]) if "perf" in top.data else None
     return EngineDescriptor(
         name,
         title,
@@ -587,7 +649,66 @@ def parse_descriptor(
         capabilities,
         server,
         base_dir,
+        perf,
     )
+
+
+def _perf_statements(r: _Reader, key: str, allowed: tuple[str, ...]) -> tuple[str, ...]:
+    """A list of non-empty statements, each using only the ``allowed`` placeholders."""
+    value = r.data.get(key, [])
+    if not isinstance(value, list) or not all(isinstance(v, str) and v.strip() for v in value):
+        raise r.err("must be a list of non-empty strings", key)
+    for text in value:
+        _perf_placeholders(r, key, text, allowed)
+    return tuple(value)
+
+
+def _perf_placeholders(r: _Reader, key: str, text: str, allowed: tuple[str, ...]) -> None:
+    for name in _PLACEHOLDER.findall(text):
+        if name not in allowed:
+            known = ", ".join("{" + a + "}" for a in allowed) or "none"
+            raise r.err(f"unknown placeholder {{{name}}} (known: {known})", key)
+
+
+def _parse_perf(where: str, data: Any) -> Perf:
+    """The ``[perf]`` table: validated, with exact messages (a descriptor names no code and
+    cannot add ``docker run`` options: unknown keys are refused)."""
+    r = _Reader(where, "perf", data)
+    r.check_keys(_PERF_FIELDS, ("counter",))
+    counter = r.str("counter")
+    if counter not in _PERF_COUNTERS:
+        raise r.err('must be "general_log" or "sql", not ' + repr(counter), "counter")
+    if counter == "general_log":
+        for key in _PERF_FIELDS[1:]:
+            if key in r.data:
+                raise r.err('only for counter = "sql"', key)
+        return Perf(counter)
+    for key in ("read", "source"):
+        if key not in r.data:
+            raise EngineError(f"{where}: [perf] missing required field {key!r}")
+    source = r.str("source")
+    server_args = r.strs("server_args", [])
+    if not all(a.strip() for a in server_args):
+        raise r.err("must be a list of non-empty strings", "server_args")
+    setup = _perf_statements(r, "setup", ())
+    check = _perf_statements(r, "check", ())
+    begin = _perf_statements(r, "begin", ("db",))
+    flush = _perf_statements(r, "flush", ("db",))
+    mark = r.str("mark", "", empty=True)  # "" = none (what to_dict writes)
+    _perf_placeholders(r, "mark", mark, ())
+    read = r.str("read")
+    _perf_placeholders(r, "read", read, ("db", "mark"))
+    used = set(_PLACEHOLDER.findall(read))
+    if "db" not in used:
+        raise r.err(
+            "must use {db} (the measured database; the tool's own statements are excluded by it)",
+            "read",
+        )
+    if mark and "mark" not in used:
+        raise r.err("must use {mark} when perf.mark is set", "read")
+    if "mark" in used and not mark:
+        raise r.err("{mark} needs perf.mark", "read")
+    return Perf(counter, source, server_args, setup, check, begin, mark, flush, read)
 
 
 def read_descriptor(path: Path | str) -> EngineDescriptor:
@@ -867,6 +988,7 @@ __all__ = [
     "EngineDescriptor",
     "EngineError",
     "EngineRegistry",
+    "Perf",
     "Registered",
     "accepts_url",
     "database_names",
