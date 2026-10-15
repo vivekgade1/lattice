@@ -1,0 +1,11 @@
+round-2 transcripts re-scored: 16 (source /Users/vivekgade/Documents/lattice-fixes/docs/results/data/2026-10-14-agent-run-2)
+round-2 items (R1, R1b, R2/R3/R4, R3b, R5, R6) equal to stored score.json: 16/16 
+R1b: 15/16; failing ['sonnet-break-1']
+R3 (information): 5/8; failing ['haiku-clean-1', 'haiku-regress-1', 'sonnet-clean-2']
+R3b: 8/8; failing []
+R3c: 8/8; failing []
+R6: 16/16; failing []
+R9 default calls: 0
+sonnet satisfying the round-3 rule (R3 excluded, R3c in): 11/12; failing ['sonnet-break-1']
+sonnet satisfying round 2's rule (R3 in, no R3c): 10/12; failing ['sonnet-break-1', 'sonnet-clean-2']
+EXPECTED RESULT MET (prereg 3.3 step 5; a re-scoring, never a round-2 pass)

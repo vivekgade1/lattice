@@ -1,0 +1,344 @@
+{
+ "old": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/fixes/old-2407eaf/lattice/__init__.py",
+ "new": "/Users/vivekgade/Documents/lattice-fixes/lattice/__init__.py",
+ "cases": [
+  {
+   "id": "B1",
+   "title": "one --project, no workspace: initialize and tools/list identical",
+   "ok": true,
+   "checks": [
+    {
+     "check": "writable: response id 0 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: response id 1 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: instructions are the base",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: response id 0 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: response id 1 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: instructions are the base",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "id": "B2",
+   "title": "a spec-less project without imports: also the model_get error identical",
+   "ok": true,
+   "checks": [
+    {
+     "check": "writable: response id 0 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: response id 1 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: response id 2 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: the error is the not-a-project text",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: response id 0 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: response id 1 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: response id 2 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: the error is the not-a-project text",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "id": "B3",
+   "title": "a spec-less contract consumer: error = old + F5's sentence",
+   "ok": true,
+   "checks": [
+    {
+     "check": "lattice.imports.toml: response id 0 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.imports.toml: response id 1 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.imports.toml: error = old + sentence",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.imports.toml: both are tool errors",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.contracts.lock.json: response id 0 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.contracts.lock.json: response id 1 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.contracts.lock.json: error = old + sentence",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.contracts.lock.json: both are tool errors",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.imports.toml and lattice.contracts.lock.json: response id 0 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.imports.toml and lattice.contracts.lock.json: response id 1 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.imports.toml and lattice.contracts.lock.json: error = old + sentence",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "lattice.imports.toml and lattice.contracts.lock.json: both are tool errors",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "id": "B4",
+   "title": "a one-project workspace: initialize identical, tools/list only the 3 differences",
+   "ok": true,
+   "checks": [
+    {
+     "check": "writable: response id 0 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: the workspace tools are listed",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: instructions are the base",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: same tool names, same order",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: same property names per tool",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: the only differences are the three allowed",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: contract_check description = old with only the consumer clause replaced",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: linked_question_list description = old with only the consumer clause replaced",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: linked_question_list required ['consumer'] -> []",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: response id 0 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: the workspace tools are listed",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: instructions are the base",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: same tool names, same order",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: same property names per tool",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: the only differences are the three allowed",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: contract_check description = old with only the consumer clause replaced",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: linked_question_list description = old with only the consumer clause replaced",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: linked_question_list required ['consumer'] -> []",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "id": "B5",
+   "title": "round-3 shape: provider + consumer, --project consumer, --readonly",
+   "ok": true,
+   "checks": [
+    {
+     "check": "old instructions end with the multi-project note",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "instructions = old + WORKSPACE_NOTE + READONLY_NOTE",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "initialize otherwise identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: same tool names, same order",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: same property names per tool",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: the only differences are the three allowed",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: contract_check description = old with only the consumer clause replaced",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: linked_question_list description = old with only the consumer clause replaced",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: linked_question_list required ['consumer'] -> []",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "the appended text names only listed tools",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  },
+  {
+   "id": "B6",
+   "title": "two --project, no workspace: identical (+ READONLY_NOTE with --readonly)",
+   "ok": true,
+   "checks": [
+    {
+     "check": "writable: response id 0 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "writable: response id 1 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: response id 1 byte-identical",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: instructions = old + READONLY_NOTE",
+     "ok": true,
+     "detail": null
+    },
+    {
+     "check": "readonly: initialize otherwise identical",
+     "ok": true,
+     "detail": null
+    }
+   ]
+  }
+ ],
+ "ok": true
+}

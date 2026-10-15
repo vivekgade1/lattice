@@ -141,10 +141,26 @@ class PendingBackend:
                     f"{self.root} is not a Lattice project yet (missing: {', '.join(miss)}). "
                     "Write REQUIREMENTS.md (the rules in plain language), then run "
                     "`lattice spec draft` in this directory to draft spec.py and spec.trace.json; "
-                    "after that these tools work without restarting."
+                    "after that these tools work without restarting." + self._consumer_note()
                 )
             self._real = LocalBackend(self.root, model=self._model)
         return self._real
+
+    def _consumer_note(self) -> str:
+        """One sentence for a contract consumer's directory (it holds an imports file and/or a
+        lock): its contracts need no spec. Empty for every other directory."""
+        from lattice.contracts.check import IMPORTS_FILE, LOCK_FILE
+
+        files = [n for n in (IMPORTS_FILE, LOCK_FILE) if (self.root / n).is_file()]
+        if not files:
+            return ""
+        return (
+            f" This directory is a contract consumer (it holds {' and '.join(files)}), which "
+            "needs no spec for its contracts: with a workspace, contract_check and "
+            "linked_question_list show what its providers changed and the notes they left "
+            "(otherwise `lattice contracts check` and `lattice contracts questions list` with "
+            "--workspace)."
+        )
 
     @property
     def configured(self) -> bool:

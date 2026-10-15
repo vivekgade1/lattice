@@ -1,0 +1,29 @@
+{
+ "streak": {
+  "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+  "status": [
+   " M studio.toml"
+  ]
+ },
+ "lattice_main": {
+  "head": "2407eaf289795eae82e0cb7ea83a2232c7f1dbe2",
+  "status": [
+   "?? .DS_Store",
+   "?? app.db",
+   "?? db.sqlite",
+   "?? docs/.DS_Store",
+   "?? docs/HANDOFF-2026-10-12.md",
+   "?? \"docs/LLM-Native Coding Language Feasibility v1.md\"",
+   "?? \"reports/Spec driven LLM code checkers.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/executable_spec_oracles.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/llm_verification_loops.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/rule_checkers_on_code.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/spec_driven_tools.md\"",
+   "?? \"research_notes/Spec driven LLM code checkers/verification_startups.md\""
+  ]
+ },
+ "worktree": {
+  "head": "c85eaaa205e4e65bb98e511add72a874d76508ac",
+  "status": []
+ }
+}

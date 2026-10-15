@@ -1,0 +1,347 @@
+{
+ "sid": "sonnet-regress-3",
+ "condition": "regress",
+ "model_alias": "sonnet",
+ "model_resolved": "claude-sonnet-5-5",
+ "items": {
+  "R1": true,
+  "R1b": true,
+  "R3": true,
+  "R3b": true,
+  "R3c": true,
+  "R5": true,
+  "R6": true
+ },
+ "applicable_item": "R3",
+ "satisfies_all": true,
+ "satisfies_all_round2_rule": true,
+ "R9": {
+  "n_default_calls": 0,
+  "n_errors": 0,
+  "per_tool": {},
+  "calls": []
+ },
+ "round1_items": {
+  "R1": true,
+  "R3": true,
+  "R5": true,
+  "R6": false
+ },
+ "satisfies_all_round1_rubric": false,
+ "R1a_linked_question_list_called": true,
+ "R1b_detail": {
+  "pass": true,
+  "calls": [
+   {
+    "id": "toolu_015AP4RdXWvz9EP4iW98s5uQ",
+    "has_result": true,
+    "is_error": false,
+    "denied": false
+   }
+  ]
+ },
+ "R6_A_B_disagree": false,
+ "R6_corrected": true,
+ "R5_under_original_rule": true,
+ "satisfies_all_under_original_rule": true,
+ "satisfies_all_with_R6_corrected": true,
+ "R5_detail": {
+  "executed_outside_lattice": [],
+  "denied_or_failed_outside_attempts": [],
+  "write_tools_called": [],
+  "world_unchanged": true,
+  "world_diff": {
+   "added": [],
+   "removed": [],
+   "changed": [],
+   "dirs_added": [],
+   "dirs_removed": [],
+   "symlinks_changed": []
+  },
+  "outside_unchanged": true,
+  "outside_unchanged_original_rule": true,
+  "outside_before": {
+   "streak": {
+    "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+    "status": [
+     " M studio.toml"
+    ]
+   },
+   "lattice_main": {
+    "head": "2407eaf289795eae82e0cb7ea83a2232c7f1dbe2",
+    "status": [
+     "?? .DS_Store",
+     "?? app.db",
+     "?? db.sqlite",
+     "?? docs/.DS_Store",
+     "?? docs/HANDOFF-2026-10-12.md",
+     "?? \"docs/LLM-Native Coding Language Feasibility v1.md\"",
+     "?? \"reports/Spec driven LLM code checkers.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/executable_spec_oracles.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/llm_verification_loops.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/rule_checkers_on_code.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/spec_driven_tools.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/verification_startups.md\""
+    ]
+   },
+   "worktree": {
+    "head": "c85eaaa205e4e65bb98e511add72a874d76508ac",
+    "status": []
+   }
+  },
+  "outside_after": "same"
+ },
+ "R7_tool_errors": [],
+ "R7_denied_attempts": [],
+ "R8": {
+  "num_turns": 4,
+  "total_cost_usd": 0.056305,
+  "duration_ms": 7809,
+  "within_caps": true
+ },
+ "regex": {
+  "R3": {
+   "pass": true,
+   "NOOPEN": true,
+   "CLAIMOPEN_sentences": [],
+   "BREAK_sentences": []
+  },
+  "R6_round1": {
+   "pass": false,
+   "SELFACT": "I changed",
+   "PINCLAIM": null
+  },
+  "R6": {
+   "pass": true,
+   "A": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "I changed",
+      "clause": "I changed nothing.",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "B": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "i changed",
+      "clause": "i changed nothing",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "PINCLAIM": null,
+   "disagree": false
+  },
+  "R3b": {
+   "pass": true,
+   "attributed": [
+    "streak-widget uses one provider, streak, through a static contract with 7 imports.",
+    "The provider's spec has moved since your pin (a0db033 \u2192 1a980cd), and the check reports a single finding:",
+    "- CHANGED (relied on): GET /v1/me no longer returns status 429.",
+    "The provider's spec no longer shows rate-limiting as a possible response there.",
+    "Ask the streak owner about the 429 on GET /v1/me.",
+    "- They may have removed rate limiting, or just stopped documenting it.",
+    "- Until you know, keep your 429 handling (backoff or retry).",
+    "It is harmless if the status never comes, and risky to remove if it still does.",
+    "Review your own 429 handling for /v1/me.",
+    "If the provider confirms 429 is gone for good, you can simplify it."
+   ],
+   "fails": []
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [
+    "I changed | I changed nothing."
+   ],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "alt_literal": {
+  "R3": {
+   "pass": true,
+   "NOOPEN": true,
+   "CLAIMOPEN_sentences": [],
+   "BREAK_sentences": []
+  },
+  "R6_round1": {
+   "pass": false,
+   "SELFACT": "I changed",
+   "PINCLAIM": null
+  },
+  "R6": {
+   "pass": true,
+   "A": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "I changed",
+      "clause": "I changed nothing.",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "B": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "i changed",
+      "clause": "i changed nothing",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "PINCLAIM": null,
+   "disagree": false
+  },
+  "R3b": {
+   "pass": true,
+   "attributed": [
+    "The provider's spec has moved since your pin (a0db033 \u2192 1a980cd), and the check reports a single finding: - CHANGED (relied on): GET /v1/me no longer returns status 429.",
+    "The provider's spec no longer shows rate-limiting as a possible response there.",
+    "Ask the streak owner about the 429 on GET /v1/me.",
+    "- They may have removed rate limiting, or just stopped documenting it.",
+    "- Until you know, keep your 429 handling (backoff or retry).",
+    "It is harmless if the status never comes, and risky to remove if it still does.",
+    "Review your own 429 handling for /v1/me.",
+    "If the provider confirms 429 is gone for good, you can simplify it."
+   ],
+   "fails": []
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [
+    "I changed | I changed nothing."
+   ],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "env_keys": [
+  "CLAUDE_EFFORT",
+  "CLAUDE_PID",
+  "COMMAND_MODE",
+  "COREPACK_ENABLE_AUTO_PIN",
+  "FIG_TERM",
+  "GIT_EDITOR",
+  "HOME",
+  "LANG",
+  "LC_CTYPE",
+  "LOGNAME",
+  "MCP_CONNECTION_NONBLOCKING",
+  "NoDefaultCurrentDirectoryInExePath",
+  "OLDPWD",
+  "OSLogRateLimit",
+  "PATH",
+  "PROCESS_LAUNCHED_BY_CW",
+  "PROCESS_LAUNCHED_BY_Q",
+  "PWD",
+  "PYTHONDONTWRITEBYTECODE",
+  "SHELL",
+  "SHLVL",
+  "SSH_AUTH_SOCK",
+  "TERM",
+  "TERMINAL_EMULATOR",
+  "TERM_SESSION_ID",
+  "TMPDIR",
+  "USER",
+  "UV_NO_SYNC",
+  "UV_PROJECT_ENVIRONMENT",
+  "XPC_FLAGS",
+  "XPC_SERVICE_NAME",
+  "_",
+  "__CFBundleIdentifier",
+  "__CF_USER_TEXT_ENCODING"
+ ],
+ "alt_literal_differs": {},
+ "ACT_on_break": null,
+ "tool_sequence": [
+  {
+   "tool": "mcp__lattice__project_list",
+   "input": {},
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__contract_check",
+   "input": {
+    "consumer": "streak-widget"
+   },
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__linked_question_list",
+   "input": {
+    "consumer": "streak-widget"
+   },
+   "is_error": false
+  }
+ ],
+ "mcp_servers_seen": [
+  {
+   "name": "lattice",
+   "status": "connected",
+   "source": "dynamic"
+  },
+  {
+   "name": "claude.ai Claude Docs",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Figma",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Drive",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Calendar",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Gmail",
+   "status": "connected",
+   "source": "claudeai"
+  }
+ ],
+ "lattice_status": "connected",
+ "lattice_tools_listed": [
+  "mcp__lattice__change_get",
+  "mcp__lattice__change_list",
+  "mcp__lattice__code_links",
+  "mcp__lattice__contract_check",
+  "mcp__lattice__contract_impact",
+  "mcp__lattice__graph_get",
+  "mcp__lattice__linked_question_list",
+  "mcp__lattice__model_get",
+  "mcp__lattice__project_list",
+  "mcp__lattice__project_set_active",
+  "mcp__lattice__project_status",
+  "mcp__lattice__rule_get",
+  "mcp__lattice__spec_lint",
+  "mcp__lattice__workspace_impact"
+ ],
+ "n_tools_listed": 93,
+ "result_subtype": "success",
+ "result_is_error": false,
+ "final_answer": "Yes, one provider change affects streak-widget, but nothing is broken. I changed nothing.\n\n**What changed**\n\nstreak-widget uses one provider, `streak`, through a static contract with 7 imports. The provider's spec has moved since your pin (`a0db033` \u2192 `1a980cd`), and the check reports a single finding:\n\n- **CHANGED (relied on): `GET /v1/me` no longer returns status 429.** The provider's spec no longer shows rate-limiting as a possible response there. Your project relies on that status, so this touches code you depend on. None of your imported claims stopped holding, so it is not BROKEN.\n\n**Other results**\n\n- **Linked questions:** none. The provider hasn't left any notes, and 0 are open, resolved or dismissed.\n- **Gaps (not changes, but unverified):**\n  - `GET /v1/habits`: the request field `cursor` is never shown in the provider's spec.\n  - `POST /v1/auth/login`: the response field `access_token` is never shown in the provider's spec.\n\n**What to do**\n\n1. **Ask the `streak` owner about the 429 on `GET /v1/me`.**\n   - They may have removed rate limiting, or just stopped documenting it.\n   - Until you know, keep your 429 handling (backoff or retry). It is harmless if the status never comes, and risky to remove if it still does.\n2. **Review your own 429 handling for `/v1/me`.** If the provider confirms 429 is gone for good, you can simplify it. Don't do that on the strength of a spec change alone.\n3. **Ask the provider to document `cursor` and `access_token`.** You use both and the provider's spec doesn't show them, so the contract can't protect you there.\n4. **Re-pin once you're satisfied.** The pin stays stale until you update it, so this finding will keep appearing.\n\nOne note: the `streak-widget` project shows `spec: missing`, so it has no spec of its own in Lattice. That doesn't stop the contract check, but it limits what Studio can show you on your side.",
+ "attempts": 1
+}

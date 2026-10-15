@@ -757,7 +757,7 @@ def test_the_list_body_filters_by_status_and_rejects_a_bad_one(tmp_path: Path) -
     assert [q["id"] for q in body["questions"]] == ["lq2"]
     assert body["counts"] == {"open": 1, "resolved": 1, "dismissed": 0, "superseded": 0}
     assert list(body) == ["format", "consumer", "state", "state_dir", "questions", "counts",
-                          "problems"]  # fmt: skip
+                          "problems", "legend"]  # fmt: skip
     with pytest.raises(linked.LinkedError) as e:
         linked.list_body("cons", "present", state, "bogus")
     assert (e.value.code, e.value.status) == ("bad_status", 422)

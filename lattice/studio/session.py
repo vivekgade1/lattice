@@ -23,6 +23,11 @@ change    ask's tools + change_propose/get/list            propose a spec change
 rebuild   (defined, 501 "not enabled yet")                 see POST /api/rebuild
 ========  ===============================================  ==========================
 
+ask, explain and change also allow the read-only multi-project tools (``project_list``,
+``workspace_impact``, ``contract_check``, ``contract_impact``, ``linked_question_list``; API.md
+v1.20): the session's server lists them only when it finds a workspace. ``project_set_active``
+and every write tool stay out.
+
 **Connected servers** (API.md v1.13). There is no ``--strict-mcp-config``: with
 ``--setting-sources ""`` a session also sees the claude.ai connectors of the owner's account
 (not their plugins, plugin servers, skills or hooks). In ask, explain and change the **read**
@@ -91,10 +96,24 @@ KILL_GRACE = 3.0  # seconds between SIGTERM and SIGKILL of an interrupted turn
 GUARD_MATCHER = "Edit|Write|MultiEdit|NotebookEdit|Bash"
 LATTICE_ROOT = Path(__file__).resolve().parents[2]  # the directory holding the package
 
+_SPEC_FILES = ("REQUIREMENTS.md", "spec.py", "spec.trace.json")
 _READ_TOOLS = ("Read", "Grep", "Glob")
 _MODEL_TOOLS = tuple(
     f"mcp__lattice__{n}"
     for n in ("model_get", "rule_get", "spec_ask", "code_links", "graph_get", "spec_lint")
+)
+# API v1.20: the read-only multi-project tools, listed by the session's server only when it finds
+# a workspace; not in _MODEL_TOOLS (rebuild's list), and no project_set_active (a chat works on
+# its one project) and no write tool
+_MULTI_TOOLS = tuple(
+    f"mcp__lattice__{n}"
+    for n in (
+        "project_list",
+        "workspace_impact",
+        "contract_check",
+        "contract_impact",
+        "linked_question_list",
+    )
 )
 _CHANGE_TOOLS = tuple(f"mcp__lattice__{n}" for n in ("change_propose", "change_get", "change_list"))
 _DENIED = ("Edit", "Write", "MultiEdit", "NotebookEdit", "Bash")
@@ -137,7 +156,7 @@ MODE_PROFILES: dict[str, ModeProfile] = {
     "ask": ModeProfile(
         "ask",
         _READ_TOOLS,
-        (*_READ_TOOLS, *_MODEL_TOOLS),
+        (*_READ_TOOLS, *_MODEL_TOOLS, *_MULTI_TOOLS),
         _DENIED,
         True,
         True,
@@ -146,7 +165,7 @@ MODE_PROFILES: dict[str, ModeProfile] = {
     "explain": ModeProfile(
         "explain",
         _READ_TOOLS,
-        (*_READ_TOOLS, *_MODEL_TOOLS),
+        (*_READ_TOOLS, *_MODEL_TOOLS, *_MULTI_TOOLS),
         _DENIED,
         True,
         True,
@@ -157,7 +176,7 @@ MODE_PROFILES: dict[str, ModeProfile] = {
     "change": ModeProfile(
         "change",
         _READ_TOOLS,
-        (*_READ_TOOLS, *_MODEL_TOOLS, *_CHANGE_TOOLS),
+        (*_READ_TOOLS, *_MODEL_TOOLS, *_MULTI_TOOLS, *_CHANGE_TOOLS),
         _DENIED,
         False,
         True,
@@ -559,6 +578,12 @@ def system_prompt(
         parts.append(
             "The owner has selected these targets in the Studio; the message is about them: "
             + ", ".join(selected)
+        )
+    missing = [n for n in _SPEC_FILES if not (project / n).is_file()]
+    if missing:  # API v1.20: a project known only by its studio.toml
+        parts.append(
+            f"This project has no Lattice spec yet (missing: {', '.join(missing)}): the spec "
+            "files named above do not exist; say so instead of answering from the spec."
         )
     return "\n\n".join(parts)
 

@@ -34,6 +34,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 import shutil
 import statistics
 import subprocess
@@ -1589,8 +1590,14 @@ def i8(h: H) -> Result:
             "first_line": first,
             "wall_s": round(time.time() - t0, 1),
         }
+        # post hoc 2026-10-14: the dogfood spec has grown since (R96, R97, ...); the claim is "PASS,
+        # 0 findings, at least R95's 422 cases", not the literal number
+        m_cases = re.search(r"(\d+) cases run", first)
         checks["studio_check_pass_422_cases"] = (
-            r.returncode == 0 and first.startswith("PASS: 0 findings") and "422 cases" in first
+            r.returncode == 0
+            and first.startswith("PASS: 0 findings")
+            and m_cases is not None
+            and int(m_cases.group(1)) >= 422
         )
         parts.append(f"check.sh {first}")
     return mk("I8", pred, "; ".join(parts), [extra["byte_comparison"]], True, checks, extra)

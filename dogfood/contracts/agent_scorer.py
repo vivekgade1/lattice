@@ -348,3 +348,43 @@ def r6(a: str, keep_newlines: bool = True) -> dict[str, Any]:
         "PINCLAIM": pm.group(0) if pm else None,
         "disagree": ra["pass"] != rb["pass"],
     }
+
+
+# ---- R9 (round 3, information): default calls ------------------------------------------------
+
+R9_TOOLS = {
+    "mcp__lattice__contract_check": "consumer",
+    "mcp__lattice__linked_question_list": "consumer",
+    "mcp__lattice__workspace_impact": "project",
+}
+
+
+def r9(trace: list[dict[str, Any]]) -> dict[str, Any]:
+    """Default calls (information, no pass rule; tests F3 of the round-3 pre-registration).
+
+    A default call is a tool_use of ``contract_check`` or ``linked_question_list`` whose input has
+    no non-empty string ``consumer``, or of ``workspace_impact`` with no non-empty string
+    ``project``. Per tool: the default calls and how many returned ``is_error`` true."""
+    per_tool: dict[str, dict[str, int]] = {}
+    calls: list[dict[str, Any]] = []
+    for t in trace:
+        name = t.get("name")
+        arg = R9_TOOLS.get(str(name))
+        if arg is None:
+            continue
+        inp = t.get("input")
+        val = inp.get(arg) if isinstance(inp, dict) else None
+        if isinstance(val, str) and val != "":
+            continue
+        short = str(name).removeprefix("mcp__lattice__")
+        row = per_tool.setdefault(short, {"default_calls": 0, "errors": 0})
+        row["default_calls"] += 1
+        err = bool(t.get("is_error"))
+        row["errors"] += int(err)
+        calls.append({"id": t.get("id"), "tool": short, "input": inp, "is_error": err})
+    return {
+        "n_default_calls": len(calls),
+        "n_errors": sum(r["errors"] for r in per_tool.values()),
+        "per_tool": per_tool,
+        "calls": calls,
+    }

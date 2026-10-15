@@ -51,6 +51,26 @@ OLD_CHECKOUT = Path("/Users/vivekgade/Documents/lattice")  # main checkout, next
 OLD_HEAD = "33d8de1"
 
 
+def old_code_root(scratch: Path) -> Path:
+    """`lattice/` at OLD_HEAD materialised from this repository's object database. Post hoc
+    (2026-10-14): Q4 and Q7 used to compare with the main checkout's HEAD, which stopped being
+    OLD_HEAD once next-phases moved on; a commit is a stable reference, a checkout is not."""
+    root = scratch / f"old-code-{OLD_HEAD}"
+    if not (root / "lattice" / "workspace.py").is_file():
+        shutil.rmtree(root, ignore_errors=True)
+        root.mkdir(parents=True)
+        arch = subprocess.run(
+            ["git", "-C", str(REPO), "archive", OLD_HEAD, "lattice"],
+            capture_output=True,
+            check=False,
+        )
+        if arch.returncode == 0:
+            subprocess.run(
+                ["tar", "-x", "-C", str(root)], input=arch.stdout, check=False, capture_output=True
+            )
+    return root
+
+
 def _load(name: str, path: Path) -> Any:
     spec = importlib.util.spec_from_file_location(name, path)
     assert spec is not None and spec.loader is not None
@@ -1607,25 +1627,14 @@ def q4(h: W) -> Result:
         "and a second accept during (iv) succeeds; linked_questions appears only in "
         "contracts/linked.py, contracts/__main__.py, mcp/projects.py, the new routes, docs, tests"
     )
-    head = subprocess.run(
-        ["git", "-C", str(OLD_CHECKOUT), "rev-parse", "HEAD"],
-        text=True,
-        capture_output=True,
-        check=False,
-    ).stdout.strip()
-    lat = subprocess.run(
-        ["git", "-C", str(OLD_CHECKOUT), "diff", "--stat", OLD_HEAD, "--", "lattice/"],
-        text=True,
-        capture_output=True,
-        check=False,
-    ).stdout.strip()
+    old_root = old_code_root(h.ns.scratch.resolve())
     d2e, d4e = h.sdrift["D2"]["edits"], h.sdrift["D4"]["edits"]
     results: dict[str, dict[str, list[dict[str, Any]]]] = {}
     runs_n = h.ns.runs
     for cond, hold in Q4_CONDS:
         results[cond] = {"new": [], "old": []}
         for i in range(runs_n):
-            for tag, root in (("new", REPO), ("old", OLD_CHECKOUT)):
+            for tag, root in (("new", REPO), ("old", old_root)):
                 a = streak_accept(
                     h,
                     f"Q4-{cond}-{tag}",
@@ -1714,8 +1723,7 @@ def q4(h: W) -> Result:
             f"{'ok' if checks[cond] else 'DIFF ' + str([k for k, v in eq.items() if not v])}"
             f" (median {mn:.2f} s new, {mo:.2f} s old)"
         )
-    checks["old_checkout_head_is_33d8de1"] = head.startswith(OLD_HEAD)
-    checks["old_checkout_lattice_equals_33d8de1"] = lat == ""
+    checks["old_code_materialised_from_33d8de1"] = (old_root / "lattice" / "workspace.py").is_file()
     # the static check
     grep = subprocess.run(
         [
@@ -1758,7 +1766,7 @@ def q4(h: W) -> Result:
         {
             "detail": detail,
             "static": rel,
-            "old_checkout": {"head": head, "lattice_diff_stat": lat},
+            "old_code": {"ref": OLD_HEAD, "root": f"scratch/old-code-{OLD_HEAD}"},
             "bodies": {c: results[c]["new"][0]["body"] for c in results},
         },
     )
@@ -2207,21 +2215,9 @@ def q7(h: W) -> Result:
     env = clean_env()
     checks: dict[str, Any] = {}
     extra: dict[str, Any] = {}
-    head = subprocess.run(
-        ["git", "-C", str(OLD_CHECKOUT), "rev-parse", "HEAD"],
-        text=True,
-        capture_output=True,
-        check=False,
-    ).stdout.strip()
-    diff = subprocess.run(
-        ["git", "-C", str(OLD_CHECKOUT), "diff", "--stat", OLD_HEAD, "--", "lattice/"],
-        text=True,
-        capture_output=True,
-        check=False,
-    ).stdout.strip()
-    checks["old_checkout_head_is_33d8de1"] = head.startswith(OLD_HEAD)
-    checks["old_checkout_lattice_equals_33d8de1"] = diff == ""
-    extra["old_checkout"] = {"head": head, "lattice_diff_stat": diff}
+    old_root = old_code_root(h.ns.scratch.resolve())
+    checks["old_code_materialised_from_33d8de1"] = (old_root / "lattice" / "workspace.py").is_file()
+    extra["old_code"] = {"ref": OLD_HEAD, "root": f"scratch/old-code-{OLD_HEAD}"}
     clone = ep.shared(jc)
     copies: dict[str, Path] = {}
     for tag in ("new", "old"):
@@ -2263,7 +2259,7 @@ def q7(h: W) -> Result:
     rows = []
     for argv in cmds:
         res = {}
-        for tag, root in (("new", REPO), ("old", OLD_CHECKOUT)):
+        for tag, root in (("new", REPO), ("old", old_root)):
             r = subprocess.run(
                 [sys.executable, *argv, "--workspace", str(copies["new"])],
                 cwd=jc.work,
@@ -2280,7 +2276,7 @@ def q7(h: W) -> Result:
             {"argv": " ".join(argv[1:]), "equal": res["new"] == res["old"], "rc": res["new"][0]}
         )
     pins = {}
-    for tag, root in (("new", REPO), ("old", OLD_CHECKOUT)):
+    for tag, root in (("new", REPO), ("old", old_root)):
         d = copies[tag].parent.parent
         (d / "ci-bot" / LOCK).unlink(missing_ok=True)
         r = subprocess.run(
@@ -2322,7 +2318,7 @@ def q7(h: W) -> Result:
         subprocess.run(["git", "-C", str(p), "init", "-q"], check=False)
         projects.append((str(p), name, st, rb))
     got = {}
-    for tag, root in (("new", REPO), ("old", OLD_CHECKOUT)):
+    for tag, root in (("new", REPO), ("old", old_root)):
         r = subprocess.run(
             [sys.executable, "-c", STATE_PATHS, json.dumps(projects)],
             cwd=jc.work,

@@ -1,20 +1,23 @@
 """Runner and scorer of the first real-agent exercise of the multi-project tools.
 
-Implements ``docs/results/2026-10-14-agent-run-prereg.md`` (decisions D1-D9; round 1) and
+Implements ``docs/results/2026-10-14-agent-run-prereg.md`` (decisions D1-D9; round 1),
 ``docs/results/2026-10-14-agent-run-2-prereg.md`` (round 2, corrected scorer in
-``agent_scorer.py``): 12 sonnet sessions (+4 haiku, secondary) of ``claude -p`` holding only
-Lattice's read-only MCP server over a consumer (`streak-widget`) whose provider (Streak) really
-accepted a change.
+``agent_scorer.py``) and ``docs/results/2026-10-14-agent-run-3-prereg.md`` (round 3: R3 out of
+the pass rule, R3c and R9 added, ``--validate-round2``): 12 sonnet sessions (+4 haiku,
+secondary) of ``claude -p`` holding only Lattice's read-only MCP server over a consumer
+(`streak-widget`) whose provider (Streak) really accepted a change.
 
     python dogfood/contracts/agent_probes.py --worlds-only --scratch DIR
     python dogfood/contracts/agent_probes.py --scratch DIR \
-        --out docs/results/data/2026-10-14-agent-run-2 [--secondary-haiku]
-    python dogfood/contracts/agent_probes.py score --out docs/results/data/2026-10-14-agent-run-2
+        --out docs/results/data/2026-10-14-agent-run-3 [--secondary-haiku]
+    python dogfood/contracts/agent_probes.py score --out docs/results/data/2026-10-14-agent-run-3
     python dogfood/contracts/agent_probes.py score --validate-round1 \
-        --out docs/results/data/2026-10-14-agent-run-2
+        --out docs/results/data/2026-10-14-agent-run-3
+    python dogfood/contracts/agent_probes.py score --validate-round2 \
+        --out docs/results/data/2026-10-14-agent-run-3
 
-A run refuses to start sessions unless the four frozen sha256 of the round-2 pre-registration's
-"Addendum 1: scorer freeze" match the files on disk.
+A run refuses to start sessions unless the four frozen sha256 of the round-3 pre-registration's
+"Addendum 1: scorer freeze (round 3)" match the files on disk.
 
 The worlds are built by ``linkedq_probes.streak_accept``, imported unchanged. The sessions run
 under the owner's Claude login through the ``claude`` CLI: no ``ANTHROPIC*`` variable is in the
@@ -44,9 +47,10 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
-DEFAULT_OUT = REPO / "docs" / "results" / "data" / "2026-10-14-agent-run-2"
+DEFAULT_OUT = REPO / "docs" / "results" / "data" / "2026-10-14-agent-run-3"
 ROUND1_DIR = REPO / "docs" / "results" / "data" / "2026-10-14-agent-run"
-PREREG2 = REPO / "docs" / "results" / "2026-10-14-agent-run-2-prereg.md"
+ROUND2_DIR = REPO / "docs" / "results" / "data" / "2026-10-14-agent-run-2"
+PREREG3 = REPO / "docs" / "results" / "2026-10-14-agent-run-3-prereg.md"
 FROZEN_FILES = (
     "agent_scorer.py",
     "agent_scorer_cases.json",
@@ -786,9 +790,13 @@ def score_session(sdir: Path) -> dict[str, Any]:
         "R1b": r1b["pass"],
         item: verdict[item]["pass"],
         **({"R3b": verdict["R3b"]["pass"]} if "R3b" in verdict else {}),
+        # round 3 (prereg 3.2): the CLAIMOPEN part of R3 stays in the pass rule as R3c
+        **({"R3c": not verdict["R3"]["CLAIMOPEN_sentences"]} if "R3" in verdict else {}),
         "R5": r5_ok,
         "R6": verdict["R6"]["pass"],
     }
+    items_r2 = {k: v for k, v in items.items() if k != "R3c"}  # round 2's applicable items
+    items_r3 = {k: v for k, v in items.items() if k != "R3"}  # round 3: R3 is information
     round1_items = {
         "R1": items["R1"],
         item: items[item],
@@ -806,7 +814,9 @@ def score_session(sdir: Path) -> dict[str, Any]:
         "model_resolved": (ini or {}).get("model"),
         "items": items,
         "applicable_item": item,
-        "satisfies_all": all(items.values()),
+        "satisfies_all": all(items_r3.values()),
+        "satisfies_all_round2_rule": all(items_r2.values()),
+        "R9": scorer.r9(trace),
         "round1_items": round1_items,
         "satisfies_all_round1_rubric": all(round1_items.values()),
         "R1a_linked_question_list_called": "mcp__lattice__linked_question_list" in names,
@@ -814,9 +824,9 @@ def score_session(sdir: Path) -> dict[str, Any]:
         "R6_A_B_disagree": verdict["R6"]["disagree"],
         "R6_corrected": verdict["R6_corrected"]["pass"],
         "R5_under_original_rule": r5_original,
-        "satisfies_all_under_original_rule": all({**items, "R5": r5_original}.values()),
+        "satisfies_all_under_original_rule": all({**items_r2, "R5": r5_original}.values()),
         "satisfies_all_with_R6_corrected": all(
-            {**items, "R6": verdict["R6_corrected"]["pass"]}.values()
+            {**items_r2, "R6": verdict["R6_corrected"]["pass"]}.values()
         ),
         "R5_detail": {
             "executed_outside_lattice": executed_outside,
@@ -999,7 +1009,8 @@ def diff_stat(a: dict[str, list[int]], b: dict[str, list[int]]) -> list[str]:
 
 
 MARK = {True: "ok", False: "FAIL", None: "-"}
-TABLE_COLS = ("R1", "R1b", "R2", "R3", "R3b", "R4", "R5", "R6", "R6r1", "R6c", "R7", "R8")
+TABLE_COLS = ("R1", "R1b", "R2", "R3", "R3b", "R3c", "R4", "R5", "R6", "R6r1", "R6c", "R7", "R8",
+              "R9")  # fmt: skip
 TABLE_HEAD = ["session", "condition", "model", *TABLE_COLS, "cost", "turns"]
 
 
@@ -1008,12 +1019,13 @@ def table_row(sc: dict[str, Any]) -> list[str]:
     cond = sc["condition"]
     cell = {
         k: MARK[it.get(k)] if k in it else "-"
-        for k in ("R1", "R1b", "R2", "R3", "R3b", "R4", "R5", "R6")
+        for k in ("R1", "R1b", "R2", "R3", "R3b", "R3c", "R4", "R5", "R6")
     }
     cell["R6r1"] = MARK[sc["round1_items"]["R6"]] if "round1_items" in sc else "-"
     cell["R6c"] = MARK[sc.get("R6_corrected")]
     cell["R7"] = str(len(sc["R7_tool_errors"]))
     cell["R8"] = MARK[sc["R8"]["within_caps"]]
+    cell["R9"] = str(sc["R9"]["n_default_calls"]) if "R9" in sc else "-"
     cost = sc["R8"]["total_cost_usd"]
     return [
         sc["sid"],
@@ -1034,7 +1046,8 @@ def render_table(scores: list[dict[str, Any]]) -> str:
 
 def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> tuple[str, bool]:
     sonnet = [s for s in scores if s["model_alias"] == "sonnet"]
-    ok_sonnet = sum(1 for s in sonnet if s["satisfies_all"])
+    ok_sonnet = sum(1 for s in sonnet if s["satisfies_all"])  # round 3: R3 excluded, R3c in
+    ok_sonnet_round2 = sum(1 for s in sonnet if s["satisfies_all_round2_rule"])  # with R3
     n_all = len(scores)
     r5_all = all(s["items"]["R5"] for s in scores)
     r6_sonnet = all(s["items"]["R6"] for s in sonnet)
@@ -1043,10 +1056,12 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
     r8_total = spent <= TOTAL_CAP
     complete = len(sonnet) == 12 and not extra.get("aborted")
     overall = ok_sonnet >= 11 and complete
-    exercise = overall and r5_all and r6_sonnet
+    r1b_sonnet = all(s["items"]["R1b"] for s in sonnet) and len(sonnet) == 12
+    # round 3 passes when the overall rule, R1b 12/12 (sonnet), R5 16/16 and R6 12/12 hold
+    exercise = overall and r1b_sonnet and r5_all and r6_sonnet
     table = render_table(scores)
     per_item: dict[str, str] = {}
-    for item in ("R1", "R1b", "R2", "R3", "R3b", "R4", "R5", "R6"):
+    for item in ("R1", "R1b", "R2", "R3", "R3b", "R3c", "R4", "R5", "R6"):
         rel = [s for s in sonnet if item in s["items"]]
         per_item[item] = f"{sum(1 for s in rel if s['items'][item])}/{len(rel)}"
     per_item["R6_round1_SELFACT_information"] = (
@@ -1065,7 +1080,7 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
             if not rel:
                 continue
             row = {}
-            for item in ("R1", "R1b", ITEM_OF[cond], "R3b", "R5", "R6"):
+            for item in ("R1", "R1b", ITEM_OF[cond], "R3b", "R3c", "R5", "R6"):
                 if item not in rel[0]["items"]:
                     continue
                 row[item] = f"{sum(1 for s in rel if s['items'][item])}/{len(rel)}"
@@ -1079,6 +1094,11 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
                 f"{sum(1 for s in rel if s['R7_tool_errors'])}/{len(rel)}"
             )
             row["satisfies_all"] = f"{sum(1 for s in rel if s['satisfies_all'])}/{len(rel)}"
+            row["satisfies_all_round2_rule"] = (
+                f"{sum(1 for s in rel if s['satisfies_all_round2_rule'])}/{len(rel)}"
+            )
+            row["R9_default_calls"] = [s["R9"]["n_default_calls"] for s in rel]
+            row["R9_default_call_errors"] = [s["R9"]["n_errors"] for s in rel]
             row["satisfies_all_round1_rubric"] = (
                 f"{sum(1 for s in rel if s['satisfies_all_round1_rubric'])}/{len(rel)}"
             )
@@ -1090,18 +1110,29 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
         json.loads(pilot_p.read_text())["R8"]["total_cost_usd"] if pilot_p.exists() else 0.0
     )
     summary = {
-        "experiment": "2026-10-14-agent-run-2",
-        "prereg": "docs/results/2026-10-14-agent-run-2-prereg.md",
+        "experiment": "2026-10-14-agent-run-3",
+        "prereg": "docs/results/2026-10-14-agent-run-3-prereg.md",
         "sessions_run": n_all,
         "sonnet_run": len(sonnet),
         "sonnet_satisfying_all": ok_sonnet,
+        "sonnet_satisfying_all_round2_rule_with_R3": ok_sonnet_round2,
         "overall_rule_met": overall,
+        "R3_information_sonnet": per_item["R3"],
+        "R3c_sonnet": per_item["R3c"],
+        "R9_sessions_with_default_call": [
+            s["sid"] for s in scores if s["R9"]["n_default_calls"] > 0
+        ],
+        "R9_sonnet_sessions_with_default_call": sum(
+            1 for s in sonnet if s["R9"]["n_default_calls"] > 0
+        ),
+        "R9_default_calls_total": sum(s["R9"]["n_default_calls"] for s in scores),
+        "R9_default_call_errors_total": sum(s["R9"]["n_errors"] for s in scores),
         "R5_all_sessions": r5_all,
         "R6_sonnet": r6_sonnet,
         "R8_all_within_caps": r8_all,
         "R8_total_within_cap": r8_total,
         "R1_sonnet_all": per_item["R1"] == "12/12",
-        "R1b_sonnet_all": per_item["R1b"] == "12/12",
+        "R1b_sonnet_all": r1b_sonnet,
         "R5_all_16": r5_all and n_all == 16,
         "exercise_pass": exercise,
         "per_item_sonnet": per_item,
@@ -1130,6 +1161,7 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
     for s in scores:
         r6 = s["regex"]["R6"]
         r3b = s["regex"].get("R3b")
+        r3 = s["regex"].get("R3")
         md += [
             f"## {s['sid']} ({CONDITION_NAME[s['condition']]}, {s['model_alias']}, "
             f"{s['model_resolved']})",
@@ -1154,7 +1186,13 @@ def finalize(out: Path, scores: list[dict[str, Any]], extra: dict[str, Any]) -> 
                 f"R3b attributed sentences: {json.dumps(r3b['attributed'])}",
                 f"R3b fails: {json.dumps(r3b['fails'])}",
             ]
-        md += [""]
+        if r3 is not None:  # information, except the CLAIMOPEN part (R3c)
+            md += [
+                f"R3 (information) pass: {r3['pass']}; NOOPEN: {r3['NOOPEN']}; "
+                f"BREAK sentences: {json.dumps(r3['BREAK_sentences'])}",
+                f"R3c CLAIMOPEN sentences: {json.dumps(r3['CLAIMOPEN_sentences'])}",
+            ]
+        md += [f"R9 default calls: {json.dumps(s['R9']['calls'])}", ""]
     (out / "answers.md").write_text("\n".join(md))
     final = (
         f"{table}\n\nper item (sonnet): {per_item}; total cost USD {spent:.3f}; "
@@ -1231,7 +1269,7 @@ def frozen_hashes(text: str) -> dict[str, str] | None:
     return out
 
 
-def verify_freeze(prereg: Path = PREREG2, root: Path = HERE) -> list[str]:
+def verify_freeze(prereg: Path = PREREG3, root: Path = HERE) -> list[str]:
     """Problems that forbid starting sessions (empty = the frozen files match the addendum)."""
     if not prereg.exists():
         return [f"pre-registration not found: {prereg}"]
@@ -1254,6 +1292,14 @@ VALIDATION_EXPECTED = {
     "R1b": "16/17, only sonnet-clean-3 fails",
     "R3b": "7/8, only haiku-regress-1 fails",
     "R1_R5_equal_to_stored": "17/17",
+}
+
+
+VALIDATION2_EXPECTED = {
+    "items_equal_to_stored": "16/16 (R1, R1b, R2/R3/R4, R3b, R5, R6)",
+    "R9_default_calls_total": "0",
+    "R3c": "CLAIMOPEN empty in every C-clean and C-regress session (8/8 with haiku)",
+    "sonnet_satisfying_round3_rule": "11/12, only sonnet-break-1 (R1b)",
 }
 
 
@@ -1300,6 +1346,10 @@ def validate_round1(src: Path, out: Path) -> tuple[dict[str, Any], str]:
                 "R3b": None if r3b is None else r3b["pass"],
                 "R3b_attributed": None if r3b is None else r3b["attributed"],
                 "R3b_fails": None if r3b is None else r3b["fails"],
+                "R3": sc["items"].get("R3"),  # information (round 3)
+                "R3c": sc["items"].get("R3c"),
+                "R3c_claimopen": (sc["regex"].get("R3") or {}).get("CLAIMOPEN_sentences"),
+                "R9": sc["R9"],
                 "tool_sequence": [
                     t["tool"].replace("mcp__lattice__", "") + ("!" if t["is_error"] else "")
                     for t in sc["tool_sequence"]
@@ -1326,6 +1376,13 @@ def validate_round1(src: Path, out: Path) -> tuple[dict[str, Any], str]:
         "R1b_failing": [r["sid"] for r in rows if not r["R1b"]],
         "R3b": f"{sum(bool(r['R3b']) for r in r3b_rows)}/{len(r3b_rows)}",
         "R3b_failing": [r["sid"] for r in r3b_rows if not r["R3b"]],
+        "R3c": f"{sum(bool(r['R3c']) for r in rows if r['R3c'] is not None)}/"
+        f"{sum(1 for r in rows if r['R3c'] is not None)}",
+        "R3c_failing": [r["sid"] for r in rows if r["R3c"] is False],
+        "R3_information": f"{sum(bool(r['R3']) for r in rows if r['R3'] is not None)}/"
+        f"{sum(1 for r in rows if r['R3'] is not None)}",
+        "R9_default_calls": {r["sid"]: r["R9"]["n_default_calls"] for r in rows},
+        "R9_default_call_errors": sum(r["R9"]["n_errors"] for r in rows),
         "R1_R5_equal_to_stored": f"{sum(not r['diff_vs_stored'] for r in rows)}/{n}",
         "R1_R5_differences": {r["sid"]: r["diff_vs_stored"] for r in rows if r["diff_vs_stored"]},
         "rows": rows,
@@ -1349,9 +1406,142 @@ def validate_round1(src: Path, out: Path) -> tuple[dict[str, Any], str]:
             f"R6 round-1 SELFACT (information): {result['R6_round1_SELFACT']}",
             f"R1b: {result['R1b']}; failing {result['R1b_failing']}",
             f"R3b: {result['R3b']}; failing {result['R3b_failing']}",
+            f"R3c (CLAIMOPEN empty in C-clean/C-regress): {result['R3c']}; "
+            f"failing {result['R3c_failing']}",
+            f"R3 (information): {result['R3_information']}",
+            f"R9 default calls: {sum(result['R9_default_calls'].values())} in "
+            f"{sum(1 for v in result['R9_default_calls'].values() if v)} sessions; "
+            f"errors {result['R9_default_call_errors']}",
             f"R1/R2-R4/R5 equal to stored score.json: {result['R1_R5_equal_to_stored']} "
             f"{result['R1_R5_differences'] or ''}",
             f"EXPECTED RESULT {'MET' if met else 'NOT MET'} (prereg 2.5)",
+        ]
+    )
+    return result, text
+
+
+ROUND2_ITEMS = ("R1", "R1b", "R2", "R3", "R3b", "R4", "R5", "R6")
+
+
+def tally(rows: list[dict[str, Any]], item: str) -> str:
+    """'passes/applicable' of a round-2 item over the re-scored rows."""
+    rel = [r["items_rescored"][item] for r in rows if item in r["items_rescored"]]
+    return f"{sum(bool(v) for v in rel)}/{len(rel)}"
+
+
+def validate_round2(src: Path, out: Path) -> tuple[dict[str, Any], str]:
+    """Re-score the stored round-2 transcripts under the round-3 scorer (prereg 3.3 step 5).
+
+    Per session: every round-2 item (R1, R1b, R2/R3/R4, R3b, R5, R6) must equal the stored
+    ``score.json``; R3c and R9 are new. Reads `src` only; the caller writes the result into `out`.
+    """
+    rows: list[dict[str, Any]] = []
+    for d in sorted(src.iterdir()):
+        if not (d.is_dir() and (d / "session.json").exists() and (d / "transcript.jsonl").exists()):
+            continue
+        if d.name.endswith("-failed") or "retry" in d.name:
+            continue
+        sc = score_session(d)
+        stored_p = d / "score.json"
+        stored = json.loads(stored_p.read_text()) if stored_p.exists() else None
+        diff: dict[str, Any] = {}
+        if stored is not None:
+            for k in ROUND2_ITEMS:
+                if stored["items"].get(k) != sc["items"].get(k):
+                    diff[k] = [stored["items"].get(k), sc["items"].get(k)]
+            if bool(stored.get("satisfies_all")) != sc["satisfies_all_round2_rule"]:
+                diff["satisfies_all_round2_rule"] = [
+                    stored.get("satisfies_all"),
+                    sc["satisfies_all_round2_rule"],
+                ]
+        rows.append(
+            {
+                "sid": sc["sid"],
+                "condition": sc["condition"],
+                "model": sc["model_alias"],
+                "items_rescored": {k: sc["items"][k] for k in ROUND2_ITEMS if k in sc["items"]},
+                "items_stored": stored["items"] if stored else None,
+                "R3c": sc["items"].get("R3c"),
+                "R3c_claimopen": (sc["regex"].get("R3") or {}).get("CLAIMOPEN_sentences"),
+                "R9": sc["R9"],
+                "satisfies_all_round3_rule": sc["satisfies_all"],
+                "satisfies_all_round2_rule": sc["satisfies_all_round2_rule"],
+                "diff_vs_stored": diff,
+                "tool_sequence": [
+                    t["tool"].replace("mcp__lattice__", "") + ("!" if t["is_error"] else "")
+                    for t in sc["tool_sequence"]
+                ],
+                "final_answer": sc["final_answer"],
+            }
+        )
+    n = len(rows)
+    sonnet = [r for r in rows if r["model"] == "sonnet"]
+    new_ok = [r for r in sonnet if r["satisfies_all_round3_rule"]]
+    old_ok = [r for r in sonnet if r["satisfies_all_round2_rule"]]
+    r3c_rows = [r for r in rows if r["R3c"] is not None]
+    result: dict[str, Any] = {
+        "source": str(src),
+        "expected": VALIDATION2_EXPECTED,
+        "n_sessions": n,
+        "items_equal_to_stored": f"{sum(not r['diff_vs_stored'] for r in rows)}/{n}",
+        "differences": {r["sid"]: r["diff_vs_stored"] for r in rows if r["diff_vs_stored"]},
+        "R1b": f"{sum(bool(r['items_rescored'].get('R1b')) for r in rows)}/{n}",
+        "R1b_failing": [r["sid"] for r in rows if not r["items_rescored"].get("R1b")],
+        "R3_information": tally(rows, "R3"),
+        "R3_failing_information": [
+            r["sid"] for r in rows if r["items_rescored"].get("R3") is False
+        ],
+        "R3b": tally(rows, "R3b"),
+        "R3b_failing": [r["sid"] for r in rows if r["items_rescored"].get("R3b") is False],
+        "R3c": f"{sum(bool(r['R3c']) for r in r3c_rows)}/{len(r3c_rows)}",
+        "R3c_failing": [r["sid"] for r in r3c_rows if not r["R3c"]],
+        "R6": f"{sum(bool(r['items_rescored']['R6']) for r in rows)}/{n}",
+        "R6_failing": [r["sid"] for r in rows if not r["items_rescored"]["R6"]],
+        "R9_default_calls_total": sum(r["R9"]["n_default_calls"] for r in rows),
+        "R9_default_calls": {r["sid"]: r["R9"]["n_default_calls"] for r in rows},
+        "sonnet_satisfying_round3_rule": f"{len(new_ok)}/{len(sonnet)}",
+        "sonnet_failing_round3_rule": [
+            r["sid"] for r in sonnet if not r["satisfies_all_round3_rule"]
+        ],
+        "sonnet_satisfying_round2_rule_with_R3": f"{len(old_ok)}/{len(sonnet)}",
+        "sonnet_failing_round2_rule_with_R3": [
+            r["sid"] for r in sonnet if not r["satisfies_all_round2_rule"]
+        ],
+        "note": "a re-scoring under the round-3 rule, never reported as a round-2 pass",
+        "rows": rows,
+    }
+    met = (
+        n == 16
+        and len(sonnet) == 12
+        and result["items_equal_to_stored"] == "16/16"
+        and result["R9_default_calls_total"] == 0
+        and not result["R3c_failing"]
+        and len(r3c_rows) == 8
+        and result["sonnet_satisfying_round3_rule"] == "11/12"
+        and result["sonnet_failing_round3_rule"] == ["sonnet-break-1"]
+        and result["R1b_failing"] == ["sonnet-break-1"]
+    )
+    result["expected_met"] = met
+    text = "\n".join(
+        [
+            f"round-2 transcripts re-scored: {n} (source {src})",
+            f"round-2 items (R1, R1b, R2/R3/R4, R3b, R5, R6) equal to stored score.json: "
+            f"{result['items_equal_to_stored']} {result['differences'] or ''}",
+            f"R1b: {result['R1b']}; failing {result['R1b_failing']}",
+            f"R3 (information): {result['R3_information']}; failing "
+            f"{result['R3_failing_information']}",
+            f"R3b: {result['R3b']}; failing {result['R3b_failing']}",
+            f"R3c: {result['R3c']}; failing {result['R3c_failing']}",
+            f"R6: {result['R6']}; failing {result['R6_failing']}",
+            f"R9 default calls: {result['R9_default_calls_total']}",
+            f"sonnet satisfying the round-3 rule (R3 excluded, R3c in): "
+            f"{result['sonnet_satisfying_round3_rule']}; failing "
+            f"{result['sonnet_failing_round3_rule']}",
+            f"sonnet satisfying round 2's rule (R3 in, no R3c): "
+            f"{result['sonnet_satisfying_round2_rule_with_R3']}; failing "
+            f"{result['sonnet_failing_round2_rule_with_R3']}",
+            f"EXPECTED RESULT {'MET' if met else 'NOT MET'} (prereg 3.3 step 5; a re-scoring, "
+            "never a round-2 pass)",
         ]
     )
     return result, text
@@ -1369,7 +1559,13 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="score: re-score the stored round-1 transcripts into <out>/validation-round1.json",
     )
+    ap.add_argument(
+        "--validate-round2",
+        action="store_true",
+        help="score: re-score the stored round-2 transcripts into <out>/validation-round2.json",
+    )
     ap.add_argument("--round1-dir", type=Path, default=ROUND1_DIR)
+    ap.add_argument("--round2-dir", type=Path, default=ROUND2_DIR)
     ap.add_argument("--secondary-haiku", action="store_true")
     ap.add_argument("--only", default="", help="comma-separated session ids (development)")
     ap.add_argument("--resume", action="store_true", help="skip sessions with a session.json")
@@ -1387,6 +1583,18 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(text)
         return 0 if result["expected_met"] else 1
+    if ns.cmd == "score" and ns.validate_round2:
+        src2 = ns.round2_dir.resolve()
+        if out == src2:
+            print("refusing: --out is the round-2 directory", file=sys.stderr)
+            return 2
+        result2, text2 = validate_round2(src2, out)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "validation-round2.json").write_text(
+            json.dumps(result2, indent=1, default=str) + "\n"
+        )
+        print(text2)
+        return 0 if result2["expected_met"] else 1
     if ns.cmd == "score":
         final, _ok = score_all(out)
         print(final)

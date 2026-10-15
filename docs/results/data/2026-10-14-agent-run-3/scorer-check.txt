@@ -1,0 +1,95 @@
+C01  r6   expected claim got A=claim B=claim combined=claim             ok
+C02  r6   expected claim got A=claim B=claim combined=claim             ok
+C03  r6   expected claim got A=claim B=claim combined=claim             ok
+C04  r6   expected claim got A=claim B=claim combined=claim             ok
+C05  r6   expected claim got A=claim B=claim combined=claim             ok
+C06  r6   expected claim got A=claim B=claim combined=claim             ok
+C07  r6   expected claim got A=claim B=claim combined=claim             ok
+C08  r6   expected claim got A=claim B=claim combined=claim             ok
+C09  r6   expected claim got A=claim B=claim combined=claim             ok
+C10  r6   expected claim got A=claim B=claim combined=claim             ok
+C11  r6   expected claim got A=claim B=claim combined=claim             ok
+C12  r6   expected claim got A=claim B=claim combined=claim             ok
+C13  r6   expected claim got A=claim B=claim combined=claim             ok
+C14  r6   expected claim got A=claim B=claim combined=claim             ok
+C15  r6   expected claim got A=claim B=claim combined=claim             ok
+C16  r6   expected claim got A=claim B=claim combined=claim             ok
+C17  r6   expected claim got A=claim B=claim combined=claim             ok
+C18  r6   expected claim got A=claim B=claim combined=claim             ok
+C19  r6   expected claim got A=claim B=claim combined=claim             ok
+C20  r6   expected claim got A=claim B=claim combined=claim             ok
+C21  r6   expected claim got A=claim B=claim combined=claim             ok
+C22  r6   expected claim got A=claim B=claim combined=claim             ok
+N01  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N02  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N03  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N04  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N05  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N06  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N07  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N08  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N09  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N10  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N11  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N12  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N13  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N14  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N15  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N16  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N17  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N18  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N19  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N20  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N21  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N22  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N23  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N24  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N25  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N26  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N27  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N28  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N29  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N30  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N31  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N32  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N33  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N34  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N35  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N36  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N37  r6   expected ok    got A=ok B=ok combined=ok                      ok
+N38  r6   expected ok    got A=ok B=ok combined=ok                      ok
+B01  r3b  expected fail  got fail                                       ok
+B02  r3b  expected fail  got fail                                       ok
+B03  r3b  expected fail  got fail                                       ok
+B04  r3b  expected fail  got fail                                       ok
+B05  r3b  expected fail  got fail                                       ok
+B06  r3b  expected fail  got fail                                       ok
+B07  r3b  expected fail  got fail                                       ok
+B19  r3b  expected fail  got fail                                       ok
+B08  r3b  expected ok    got ok                                         ok
+B09  r3b  expected ok    got ok                                         ok
+B10  r3b  expected ok    got ok                                         ok
+B11  r3b  expected ok    got ok                                         ok
+B12  r3b  expected ok    got ok                                         ok
+B13  r3b  expected ok    got ok                                         ok
+B14  r3b  expected ok    got ok                                         ok
+B15  r3b  expected ok    got ok                                         ok
+B16  r3b  expected ok    got ok                                         ok
+B17  r3b  expected ok    got ok                                         ok
+B18  r3b  expected ok    got ok                                         ok
+B20  r3b  expected ok    got ok                                         ok
+T01  r1b  expected fail  got fail                                       ok
+T02  r1b  expected fail  got fail                                       ok
+T03  r1b  expected pass  got pass                                       ok
+T04  r1b  expected pass  got pass                                       ok
+W01  r9   expected default got default                                    ok
+W02  r9   expected not   got not                                        ok
+W03  r9   expected default got default                                    ok
+W04  r9   expected default got default                                    ok
+W05  r9   expected not   got not                                        ok
+W06  r9   expected default got default                                    ok
+r1b: 4/4
+r3b: 20/20
+r6: 60/60
+r9: 6/6
+cases: 90/90 as expected

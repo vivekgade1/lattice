@@ -1,4 +1,5 @@
-"""Unit-test runner of the round-2 scorer (prereg section 2.3).
+"""Unit-test runner of the round-2 scorer (prereg section 2.3) and, from round 3, of R9
+(``docs/results/2026-10-14-agent-run-3-prereg.md`` section 3.2: cases W01-W06, 90 in all).
 
 Exits 0 only when every case gets its expected verdict.
 
@@ -54,6 +55,11 @@ def run_case(c: dict[str, Any]) -> tuple[bool, str, str]:
             )
         r = sc.r1b(trace, set())
         got = "pass" if r["pass"] else "fail"
+        return got == exp, exp, got
+    if kind == "r9":  # round 3: one tool_use of c["tool"] with c["input"]
+        trace = [{"name": PREFIX + c["tool"], "id": "t0", "input": c["input"], "is_error": False}]
+        r = sc.r9(trace)
+        got = "default" if r["n_default_calls"] == 1 else "not"
         return got == exp, exp, got
     raise AssertionError(f"unknown kind {kind}")
 

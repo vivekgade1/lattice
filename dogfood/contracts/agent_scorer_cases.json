@@ -1,5 +1,5 @@
 {
- "spec": "docs/results/2026-10-14-agent-run-2-prereg.md, Appendix (84 cases); r6 expected: claim|ok; r3b: fail|ok; r1b: pass|fail; a trailing ! in tools marks is_error true",
+ "spec": "docs/results/2026-10-14-agent-run-2-prereg.md, Appendix (84 cases); r6 expected: claim|ok; r3b: fail|ok; r1b: pass|fail; a trailing ! in tools marks is_error true; r9 (W01-W06, added by docs/results/2026-10-14-agent-run-3-prereg.md section 3.2, 90 cases in all): one tool_use of `tool` with `input`, expected default|not",
  "cases": [
   {
    "id": "C01",
@@ -559,6 +559,48 @@
     "linked_question_list"
    ],
    "expected": "pass"
+  },
+  {
+   "id": "W01",
+   "kind": "r9",
+   "tool": "contract_check",
+   "input": {},
+   "expected": "default"
+  },
+  {
+   "id": "W02",
+   "kind": "r9",
+   "tool": "contract_check",
+   "input": {"consumer": "streak-widget"},
+   "expected": "not"
+  },
+  {
+   "id": "W03",
+   "kind": "r9",
+   "tool": "linked_question_list",
+   "input": {"status": "open"},
+   "expected": "default"
+  },
+  {
+   "id": "W04",
+   "kind": "r9",
+   "tool": "workspace_impact",
+   "input": {},
+   "expected": "default"
+  },
+  {
+   "id": "W05",
+   "kind": "r9",
+   "tool": "workspace_impact",
+   "input": {"project": "streak-widget"},
+   "expected": "not"
+  },
+  {
+   "id": "W06",
+   "kind": "r9",
+   "tool": "contract_check",
+   "input": {"consumer": ""},
+   "expected": "default"
   }
  ]
 }

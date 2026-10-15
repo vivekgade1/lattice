@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.19)
+# Lattice Studio API contract (v1.20)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -217,7 +217,7 @@ Derived edges count in `focus`/`depth` traversal (so `focus=rule:R44&depth=1` re
 
 ## v1.5 additions (the chat runs on a Claude Code session)
 
-Each user message spawns one `claude -p --output-format stream-json` subprocess in the project directory with the `lattice` MCP server (tools: `model_get`, `rule_get`, `spec_ask`, `code_links`, `graph_get`, `spec_lint`; `change_propose|get|list` in mode `change`) and no edit or shell tools; the first turn's Claude session id is reused with `--resume`, so the owner can continue the same conversation in a terminal. API credentials are stripped from the child's environment. Nothing is spawned until a message is sent. The UI polls; there are no websockets. Errors use the usual `{"detail": ...}`: 404 unknown session, 409 a turn is running (message) or none is running (DELETE), 422 a bad body, 501 mode `rebuild`, 503 the `claude` binary is missing.
+Each user message spawns one `claude -p --output-format stream-json` subprocess in the project directory with the `lattice` MCP server (tools: `model_get`, `rule_get`, `spec_ask`, `code_links`, `graph_get`, `spec_lint`; `change_propose|get|list` in mode `change`; from v1.20 also `project_list`, `workspace_impact`, `contract_check`, `contract_impact` and `linked_question_list` in ask, explain and change, which the session's server lists only when it finds a workspace) and no edit or shell tools; the first turn's Claude session id is reused with `--resume`, so the owner can continue the same conversation in a terminal. API credentials are stripped from the child's environment. Nothing is spawned until a message is sent. The UI polls; there are no websockets. Errors use the usual `{"detail": ...}`: 404 unknown session, 409 a turn is running (message) or none is running (DELETE), 422 a bad body, 501 mode `rebuild`, 503 the `claude` binary is missing.
 
 ### `app.session` on GET /api/model
 `model.app.session` is `true` when the `claude` binary is found (so the session routes can work) and `false` otherwise; the UI then falls back to the one-shot `POST /api/ask` chat. The mock always says `true`.
@@ -1040,7 +1040,30 @@ The provider's side: this Studio's accept outcomes since it started, newest firs
 `lattice contracts notify PROVIDER --candidate REF|PATH [--workspace PATH] [--dry-run] [--json]`: exit 0, 1 a consumer undelivered or in error, 2 the impact could not run; `--dry-run` decides and writes nothing. `lattice contracts questions list CONSUMER [--status ...] [--json]` (exit 0, 2 unknown consumer or manifest error), `resolve|dismiss CONSUMER ID [--note T] [--json]` (0, 1 refused: `not_open`, `bad_note`; 2 cannot: `unknown_question`, `no_state`, `unknown_project`), `init CONSUMER` (creates the state directory through the real `state_dir_for`, `.git/info/exclude` included, and `linked_questions/`; idempotent).
 
 ### The MCP server
-With a workspace, `python -m lattice.mcp serve` also lists `linked_question_list {consumer, status?}` (`consumer` required): the same body as the CLI's `questions list CONSUMER --json` (the manifest re-read on each call). It is read-only, so `--readonly` lists it; without a workspace it is not listed. **No MCP tool resolves or dismisses**: a session can see the notes and tell the owner, only the CLI or the consumer's own Studio clears them. Errors are tool errors that begin with the code (`unknown_project`, `bad_status`, `manifest_error`).
+With a workspace, `python -m lattice.mcp serve` also lists `linked_question_list {consumer, status?}` (`consumer` defaults to the active project when it is a contract consumer, v1.20): the same body as the CLI's `questions list CONSUMER --json` (the manifest re-read on each call). It is read-only, so `--readonly` lists it; without a workspace it is not listed. **No MCP tool resolves or dismisses**: a session can see the notes and tell the owner, only the CLI or the consumer's own Studio clears them. Errors are tool errors that begin with the code (`unknown_project`, `bad_status`, `manifest_error`).
 
 ### The mock
 `owner-dev`: the consumer `scheduler-web` (a manifest project the mock does not serve; `/p/scheduler-web/api/linked-*` is answered specially) holds `lq1` open (v1.17's link findings) and `lq2` dismissed; `POST .../resolve|dismiss` answers in memory (`not_open`, `bad_note`, `unknown_question` as above). Every served project lists no question (`state: present`); `job-scheduler-studio` (the manifest's `scheduler`) holds one `done` notification.
+
+## v1.20 additions (first-contact fixes of the multi-project tools)
+
+Five small changes found by the first real-agent exercise of the multi-project tools (`docs/results/2026-10-14-agent-run-3-prereg.md`). No tool is added, removed or renamed and no argument is added or removed; the only schema change is that `linked_question_list.consumer` is no longer required. Nothing stored changes (`lq<N>.json` and its `text` are as they were).
+
+### The MCP server's instructions (F1)
+`initialize` answers, for **one** known project, the single-project server's instructions byte for byte (also with a workspace, also `--readonly`). For several known projects: the base text, the multi-project note, then, when a workspace is known, a note that names `project_list`, `contract_check`, `linked_question_list`, `workspace_impact` and `contract_impact` and says that the first two take `consumer` and default to the active project when it is a consumer, then, with `--readonly`, a note that the server has no tool that proposes a change or runs the checks. Code: `lattice/mcp/projects.py` (`WORKSPACE_NOTE`, `READONLY_NOTE`, `ProjectRouter.instructions`).
+
+### `consumer` defaults to the active project (F3)
+`contract_check` and `linked_question_list`: `consumer` absent, null or `""` is not given; a non-string is the tool error `argument 'consumer' must be a string`. When not given, the active project is the consumer if it is the `from` of at least one link with a `contract` key. Otherwise `contract_check` checks every opted-in consumer (as before) and `linked_question_list` answers the tool error `argument 'consumer' is required: the active project NAME is not a contract consumer of the workspace (consumers: A, B)`. An explicit value always wins. The result is the CLI's for that consumer; no field is added.
+
+### `legend` on every linked-question list (F4)
+`GET /api/linked-questions`, `lattice contracts questions list CONSUMER --json` and `linked_question_list` carry one more, last key, always present (also with no question or a `status` filter): `legend`, `{"CHANGED*": "...", "{}": "..."}`, what the two marks of a finding line mean (`CHANGED*`: a CHANGED finding on an endpoint the consumer imports, `relied: true`, none of whose imported claims stopped holding, which would be BROKEN; `{}`: a templated path parameter, any id or name). One source: `lattice/contracts/linked.py` (`LEGEND`, copied into every body; the mock imports it). The question, its `text`, `finding_line` and the CLI's human output are unchanged.
+```json
+{"format": 1, "consumer": "web-app", "state": "present", "state_dir": "...", "questions": [], "counts": {"open": 0, "resolved": 0, "dismissed": 0, "superseded": 0}, "problems": [],
+ "legend": {"CHANGED*": "CHANGED on an endpoint this consumer imports (...)", "{}": "a templated path parameter, any id or name: POST /invoices/{}/pay is the pay endpoint of every invoice"}}
+```
+
+### Chat sessions (F2)
+The ask, explain and change session profiles also allow `mcp__lattice__project_list`, `workspace_impact`, `contract_check`, `contract_impact` and `linked_question_list` (all read-only); `project_set_active` and every write tool stay out, and rebuild's list is unchanged. They are listed only when the session's `serve --project DIR` finds a workspace (walking up from the project, or `$LATTICE_WORKSPACE`). When one of `REQUIREMENTS.md`, `spec.py`, `spec.trace.json` is missing (a project known only by its `studio.toml`), the session's system prompt ends with one sentence saying so; with all three present the prompt is what it was.
+
+### A project without a spec (F5)
+The MCP spec tools' error on a directory without the spec files is unchanged, with one sentence appended when the directory holds `lattice.imports.toml` and/or `lattice.contracts.lock.json` (a contract consumer): it names `contract_check` and `linked_question_list`.

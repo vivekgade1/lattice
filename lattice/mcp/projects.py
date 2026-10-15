@@ -31,6 +31,17 @@ known, the two project tools are appended after the existing ones, and no result
 With several projects every result names the project it ran on in ``project`` (a result that
 already had a ``project`` key keeps that value under ``project_info``), and a tool error ends with
 ``(project: NAME)``.
+
+**Instructions** (API.md v1.20): one known project answers the base text unchanged; several
+answer ``base + MULTI_NOTE``, then ``WORKSPACE_NOTE`` when a workspace is known (it names the
+five tools that are then listed and the two-tool path for "has a provider's change affected this
+project?"), then ``READONLY_NOTE`` when the server is ``--readonly`` (the base cannot change, so
+a read-only single-project server still suggests ``change_propose``).
+
+**``consumer``** of ``contract_check`` and ``linked_question_list`` (API.md v1.20): absent, null or
+"" is not given; then the active project is the consumer when it is the ``from`` of a link with a
+``contract`` key. Otherwise ``contract_check`` checks every opted-in consumer and
+``linked_question_list`` is an error naming the consumers. An explicit value always wins.
 """
 
 from __future__ import annotations
@@ -59,6 +70,20 @@ MULTI_NOTE = (
     " Several projects are known: project_list lists them; every tool takes an optional "
     "`project` (a name or path from project_list; default: the active project, which "
     "project_set_active changes)."
+)
+WORKSPACE_NOTE = (
+    " A workspace manifest links these projects; project_list shows each one's role and links. "
+    'For "has anything a provider changed affected this project?": call project_list, then BOTH '
+    "contract_check and linked_question_list for the consumer: contract_check shows what changed "
+    "since its pin (BROKEN, CHANGED), linked_question_list the notes a provider left when an "
+    "accepted change broke it (open, resolved or dismissed). Both take `consumer` and default to "
+    "the active project when it is a consumer. workspace_impact lists who relies on a project; "
+    "contract_impact previews a provider's candidate version against its consumers. These five "
+    "tools are read-only."
+)
+READONLY_NOTE = (
+    " This server is read-only: it has no tool that proposes a spec change or runs the checks; "
+    "tell the owner what to change."
 )
 
 
@@ -178,7 +203,17 @@ class ProjectRouter:
 
     # -- the Toolbox interface
     def instructions(self, base: str) -> str:
-        return base + MULTI_NOTE if self.multi else base
+        """`base` unchanged for one known project (also with a workspace or ``--readonly``: a
+        link needs two projects); with several, `base` + MULTI_NOTE, then WORKSPACE_NOTE when a
+        workspace is known, then READONLY_NOTE when ``--readonly``."""
+        if not self.multi:
+            return base
+        out = base + MULTI_NOTE
+        if self.workspace is not None:
+            out += WORKSPACE_NOTE
+        if self.readonly:
+            out += READONLY_NOTE
+        return out
 
     def list_tools(self) -> list[dict[str, Any]]:
         defs = self._template.list_tools()
@@ -259,6 +294,25 @@ class ProjectRouter:
             row["role"] = p.role
             row["links"] = [lk.to_dict() for lk in self.workspace.links_of(wp.name)] if wp else []
         return row
+
+    @staticmethod
+    def _given_consumer(a: Mapping[str, Any]) -> str | None:
+        """The ``consumer`` argument: absent, null or "" is not given (None), as for `project`."""
+        consumer = a.get("consumer")
+        if consumer is None or consumer == "":
+            return None
+        if not isinstance(consumer, str):
+            raise ToolError("argument 'consumer' must be a string")
+        return consumer
+
+    def _active_consumer(self, ws: Any) -> str | None:
+        """The active project's manifest name when it is the ``from`` of a link with a
+        ``contract`` key (a consumer), else None; read from the manifest of this call."""
+        entry = self.projects[self.active]
+        wp = ws.by_path(entry.root) or ws.project(entry.name)
+        if wp is not None and wp.name in _consumers_of(ws):
+            return wp.name
+        return None
 
     def _build_own(self) -> None:
         def project_list(_a: Mapping[str, Any]) -> dict[str, Any]:
@@ -347,23 +401,24 @@ class ProjectRouter:
             from lattice import workspace as wsmod
             from lattice.contracts import check
 
-            consumer = a.get("consumer")
-            if consumer is not None and not isinstance(consumer, str):
-                raise ToolError("argument 'consumer' must be a string")
+            consumer = self._given_consumer(a)
             # the manifest is re-read on every call, so the answer is the CLI's at this moment
             ws, problems = wsmod.try_load(self.workspace.path)
             if ws is None:
-                return {"workspace": None, "consumer": consumer or None, "checked": 0,
+                return {"workspace": None, "consumer": consumer, "checked": 0,
                         "links": [], "problems": [p.to_dict() for p in problems],
                         "elapsed_s": 0.0}  # fmt: skip
-            return check.run_check(ws, consumer or None, static_only=True).to_dict()
+            if consumer is None:
+                consumer = self._active_consumer(ws)  # None: every opted-in consumer
+            return check.run_check(ws, consumer, static_only=True).to_dict()
 
         self._reg(
             "contract_check",
             "Check the contracts between the workspace's projects, statically: each consumer "
             "link that opted in (`contract` = static or live in lattice.workspace.toml) is "
             "compared, import by import, with the provider's pinned and current spec export. "
-            "`consumer`: a project name (default: every consumer with an opted-in link). "
+            "`consumer`: a project name (default: the active project when it is a consumer with an "
+            "opted-in link, else every consumer with one). "
             "Returns what `lattice contracts check --static-only --json` prints: per link the "
             "status (ok|changed|broken|error), BROKEN and CHANGED findings, gaps, and for a "
             "live link `live: not_run`. Read-only: nothing is written and no app is started; "
@@ -413,9 +468,7 @@ class ProjectRouter:
             from lattice import workspace as wsmod
             from lattice.contracts import linked
 
-            consumer, status = a.get("consumer"), a.get("status")
-            if not isinstance(consumer, str) or not consumer:
-                raise ToolError("argument 'consumer' is required (a non-empty string)")
+            consumer, status = self._given_consumer(a), a.get("status")
             if status is not None and not isinstance(status, str):
                 raise ToolError("argument 'status' must be a string")
             # the manifest is re-read on every call, so the answer is the CLI's at this moment
@@ -423,6 +476,14 @@ class ProjectRouter:
             if ws is None or ws.errors:
                 why = "; ".join(p.message for p in (problems if ws is None else ws.errors))
                 raise ToolError(f"manifest_error: {why or 'the workspace manifest has errors'}")
+            if consumer is None:
+                consumer = self._active_consumer(ws)
+                if consumer is None:
+                    names = ", ".join(_consumers_of(ws)) or "none"
+                    raise ToolError(
+                        f"argument 'consumer' is required: the active project {self.active} is "
+                        f"not a contract consumer of the workspace (consumers: {names})"
+                    )
             wp = ws.project(consumer)
             if wp is None:
                 raise ToolError(f"unknown_project: no project {consumer!r} in the workspace "
@@ -437,7 +498,8 @@ class ProjectRouter:
             "linked_question_list",
             "List the linked questions in a consumer project: the advisory notes other projects "
             "left in its own state when an accepted provider contract broke its pin (a "
-            "`contradiction` of `contract_impact`). `consumer`: a workspace project name; "
+            "`contradiction` of `contract_impact`). `consumer`: a workspace project name "
+            "(default: the active project when it is a consumer with an opted-in link); "
             "`status`: open, resolved, dismissed or all (default all). Returns what `lattice "
             "contracts questions list CONSUMER --json` prints: the questions with their "
             "findings, `superseded` (a newer question or a clean state replaced it) and "
@@ -451,8 +513,17 @@ class ProjectRouter:
                 },
             },
             linked_question_list,
-            required=("consumer",),
         )
+
+
+def _consumers_of(ws: Any) -> list[str]:
+    """The workspace's contract consumers: the ``from`` of every link with a ``contract`` key
+    (declared order, once each)."""
+    out: list[str] = []
+    for lk in ws.links:
+        if lk.contract is not None and lk.source not in out:
+            out.append(lk.source)
+    return out
 
 
 def _with_project(d: dict[str, Any]) -> dict[str, Any]:
