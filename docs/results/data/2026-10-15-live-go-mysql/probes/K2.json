@@ -1,0 +1,180 @@
+{
+ "id": "K2",
+ "prediction": "live.TIMEOUT_S = 2, 5, 8 s, run_check in-process (x3): 2 and 5 live_timeout, 8 recorded either way; return <= TIMEOUT_S + 20 s; 0 leaks 5 s after return",
+ "observed": "2 s -> ['live_timeout'] wall [2.47, 2.47, 2.5]; 5 s -> ['live_timeout'] wall [5.47, 5.41, 5.41]; 8 s -> ['ok'] wall [6.76, 5.36, 6.35]",
+ "pass": true,
+ "identical": true,
+ "n_runs": 9,
+ "checks": {
+  "2s_and_5s_live_timeout": true,
+  "return_le_timeout_plus_20": true,
+  "no_leaks_5s_after": true
+ },
+ "extra": {
+  "probe_wall_s": 88.9
+ },
+ "runs": [
+  {
+   "timeout_s": 2.0,
+   "wall_s": 2.47,
+   "status": "error",
+   "code": "live_timeout",
+   "live_status": null,
+   "leak": {
+    "call": "K2-2",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-0e415427"
+    ],
+    "wall_s": 2.472
+   }
+  },
+  {
+   "timeout_s": 2.0,
+   "wall_s": 2.47,
+   "status": "error",
+   "code": "live_timeout",
+   "live_status": null,
+   "leak": {
+    "call": "K2-2",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-26552ccc"
+    ],
+    "wall_s": 2.469
+   }
+  },
+  {
+   "timeout_s": 2.0,
+   "wall_s": 2.5,
+   "status": "error",
+   "code": "live_timeout",
+   "live_status": null,
+   "leak": {
+    "call": "K2-2",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-38d7591c"
+    ],
+    "wall_s": 2.504
+   }
+  },
+  {
+   "timeout_s": 5.0,
+   "wall_s": 5.47,
+   "status": "error",
+   "code": "live_timeout",
+   "live_status": null,
+   "leak": {
+    "call": "K2-5",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-38a94809"
+    ],
+    "wall_s": 5.466
+   }
+  },
+  {
+   "timeout_s": 5.0,
+   "wall_s": 5.41,
+   "status": "error",
+   "code": "live_timeout",
+   "live_status": null,
+   "leak": {
+    "call": "K2-5",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-4f0bd1c8"
+    ],
+    "wall_s": 5.41
+   }
+  },
+  {
+   "timeout_s": 5.0,
+   "wall_s": 5.41,
+   "status": "error",
+   "code": "live_timeout",
+   "live_status": null,
+   "leak": {
+    "call": "K2-5",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-37360cb9"
+    ],
+    "wall_s": 5.409
+   }
+  },
+  {
+   "timeout_s": 8.0,
+   "wall_s": 6.76,
+   "status": "ok",
+   "code": null,
+   "live_status": "ok",
+   "leak": {
+    "call": "K2-8",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-7e644f2c"
+    ],
+    "wall_s": 6.756
+   }
+  },
+  {
+   "timeout_s": 8.0,
+   "wall_s": 5.36,
+   "status": "ok",
+   "code": null,
+   "live_status": "ok",
+   "leak": {
+    "call": "K2-8",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-ef0e219d"
+    ],
+    "wall_s": 5.363
+   }
+  },
+  {
+   "timeout_s": 8.0,
+   "wall_s": 6.35,
+   "status": "ok",
+   "code": null,
+   "live_status": "ok",
+   "leak": {
+    "call": "K2-8",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-0e93e2e1"
+    ],
+    "wall_s": 6.355
+   }
+  }
+ ]
+}

@@ -1,0 +1,108 @@
+{
+ "id": "K3b",
+ "prediction": "SIGKILL of the parent at 4 s (x3): within 60 s 0 containers and 0 processes; 1 TMPDIR left per call (the known leak, reported)",
+ "observed": "rc [-9, -9, -9]; settled after [3.2, 3.1, 3.2] s; containers [[], [], []]; tmp entries left [['lattice-live-4z0tr0oa'], ['lattice-live-dw_jth3n'], ['lattice-live-xtfxj03q']] (predicted: 1 each, reported)",
+ "pass": true,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "parent_killed": true,
+  "no_container_within_60s": true,
+  "no_process_within_60s": true
+ },
+ "extra": {
+  "tmp_entries_left_per_call": [
+   [
+    "lattice-live-4z0tr0oa"
+   ],
+   [
+    "lattice-live-dw_jth3n"
+   ],
+   [
+    "lattice-live-xtfxj03q"
+   ]
+  ],
+  "tmp_prediction_1_each": true,
+  "probe_wall_s": 22.7
+ },
+ "runs": [
+  {
+   "killed": {
+    "target": "parent",
+    "at_s": 4.0,
+    "pid": 53369
+   },
+   "rc": -9,
+   "wall_s": 4.02,
+   "stderr": "",
+   "error": null,
+   "settled_after_s": 3.2,
+   "leak": {
+    "call": "K3b@4",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [
+     "lattice-live-4z0tr0oa"
+    ],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-b465218b"
+    ],
+    "wall_s": 4.02
+   },
+   "children_alive": []
+  },
+  {
+   "killed": {
+    "target": "parent",
+    "at_s": 4.0,
+    "pid": 54201
+   },
+   "rc": -9,
+   "wall_s": 4.01,
+   "stderr": "",
+   "error": null,
+   "settled_after_s": 3.1,
+   "leak": {
+    "call": "K3b@4",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [
+     "lattice-live-dw_jth3n"
+    ],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-577888d6"
+    ],
+    "wall_s": 4.013
+   },
+   "children_alive": []
+  },
+  {
+   "killed": {
+    "target": "parent",
+    "at_s": 4.0,
+    "pid": 54738
+   },
+   "rc": -9,
+   "wall_s": 4.03,
+   "stderr": "",
+   "error": null,
+   "settled_after_s": 3.2,
+   "leak": {
+    "call": "K3b@4",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [
+     "lattice-live-xtfxj03q"
+    ],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-1211aaed"
+    ],
+    "wall_s": 4.026
+   },
+   "children_alive": []
+  }
+ ]
+}

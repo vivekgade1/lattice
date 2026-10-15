@@ -1,0 +1,390 @@
+{
+ "id": "Z1",
+ "prediction": "a decoy mysql (database streak_real, a sentinel row) named by LATTICE_MYSQL_URL, HABIT_DB_DSN, DATABASE_URL and [app] database_url: the live result = G0's but ignored [LATTICE_MYSQL_URL, database_url]; decoy Connections +1 (the runner's own second read); SHOW DATABASES, the sentinel checksum and GLOBAL sql_mode unchanged",
+ "observed": "exit 0; replayed 7; ignored ['LATTICE_MYSQL_URL', 'database_url']; decoy connections 10 -> 11; databases ['information_schema', 'mysql', 'performance_schema', 'streak_real', 'sys']; sql_mode unchanged True",
+ "pass": true,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "exit_0_replayed_7": true,
+  "database_block_ignored_both": true,
+  "result_equals_g0": true,
+  "connections_plus_1": true,
+  "databases_unchanged": true,
+  "sentinel_unchanged": true,
+  "global_sql_mode_unchanged": true,
+  "no_lattice_database_on_decoy": true
+ },
+ "extra": {
+  "vs_g0_checked": true,
+  "probe_wall_s": 25.8
+ },
+ "runs": [
+  {
+   "rc": 0,
+   "wall_s": 6.577,
+   "stderr": "",
+   "status": "ok",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": false,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 7,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/home": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": [
+     "LATTICE_MYSQL_URL",
+     "database_url"
+    ]
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "Z1",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-74e4cda4"
+    ],
+    "wall_s": 6.577
+   },
+   "decoy_before": {
+    "connections": 10,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   },
+   "decoy_after": {
+    "connections": 11,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   }
+  },
+  {
+   "rc": 0,
+   "wall_s": 6.345,
+   "stderr": "",
+   "status": "ok",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": false,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 7,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/home": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": [
+     "LATTICE_MYSQL_URL",
+     "database_url"
+    ]
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "Z1",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-04221623"
+    ],
+    "wall_s": 6.345
+   },
+   "decoy_before": {
+    "connections": 12,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   },
+   "decoy_after": {
+    "connections": 13,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   }
+  },
+  {
+   "rc": 0,
+   "wall_s": 6.446,
+   "stderr": "",
+   "status": "ok",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": false,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 7,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/home": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": [
+     "LATTICE_MYSQL_URL",
+     "database_url"
+    ]
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "Z1",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-3830a130"
+    ],
+    "wall_s": 6.446
+   },
+   "decoy_before": {
+    "connections": 14,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   },
+   "decoy_after": {
+    "connections": 15,
+    "databases": [
+     "information_schema",
+     "mysql",
+     "performance_schema",
+     "streak_real",
+     "sys"
+    ],
+    "checksum": [
+     [
+      "streak_real.sentinel",
+      2036907808
+     ]
+    ],
+    "rows": [
+     [
+      1,
+      "DO-NOT-TOUCH"
+     ]
+    ],
+    "global_sql_mode": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+   }
+  }
+ ]
+}

@@ -1,0 +1,291 @@
+{
+ "id": "G-D1b",
+ "prediction": "D1 mode b: static BROKEN none; live BROKEN [('status_not_observed', 'GET /v1/home', '200')]; not replayed 0 endpoint(s); class LIVE-ONLY; exit 1; containers 1; access_token verified True",
+ "observed": "S []; L [('status_not_observed', 'GET /v1/home', '200')]; N []; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 404, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+ "pass": true,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "identical": true,
+  "S_as_predicted": true,
+  "L_as_predicted": true,
+  "N_as_predicted": true,
+  "class_as_predicted": true,
+  "exit_as_predicted": true,
+  "containers_as_predicted": true,
+  "verified_as_predicted": true,
+  "no_leaks": true,
+  "static_is_g0": true,
+  "version_changed_true_spec_hash_same": true
+ },
+ "extra": {
+  "drift": "D1",
+  "mode": "b",
+  "S": [],
+  "L": [
+   [
+    "status_not_observed",
+    "GET /v1/home",
+    "200"
+   ]
+  ],
+  "N": [],
+  "class": "LIVE-ONLY",
+  "predicted_class": "LIVE-ONLY",
+  "spec_edits": [],
+  "code_edits": [
+   [
+    "internal/home/routes.go",
+    "r.Member.GET(\"/home\", httpapi.Handle(h.home))",
+    "_ = h.home",
+    1
+   ]
+  ],
+  "wall_s": [
+   5.95,
+   5.699,
+   5.466
+  ],
+  "not_replayed_reasons": [],
+  "probe_wall_s": 18.2
+ },
+ "runs": [
+  {
+   "rc": 1,
+   "wall_s": 5.95,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": false,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 7,
+   "live_broken": [
+    [
+     "status_not_observed",
+     "GET /v1/home",
+     "200"
+    ]
+   ],
+   "not_replayed": [],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/home": 404,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1b",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-261c0f08"
+    ],
+    "wall_s": 5.95
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 5.699,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": false,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 7,
+   "live_broken": [
+    [
+     "status_not_observed",
+     "GET /v1/home",
+     "200"
+    ]
+   ],
+   "not_replayed": [],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/home": 404,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1b",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-bc0588fe"
+    ],
+    "wall_s": 5.699
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 5.466,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": false,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 7,
+   "live_broken": [
+    [
+     "status_not_observed",
+     "GET /v1/home",
+     "200"
+    ]
+   ],
+   "not_replayed": [],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/home": 404,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 200,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D1b",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-323aaaa6"
+    ],
+    "wall_s": 5.466
+   }
+  }
+ ]
+}

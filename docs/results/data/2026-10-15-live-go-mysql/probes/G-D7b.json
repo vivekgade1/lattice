@@ -1,0 +1,362 @@
+{
+ "id": "G-D7b",
+ "prediction": "D7 mode b: static BROKEN none; live BROKEN [('status_not_observed', 'POST /v1/auth/login', '200')]; not replayed 6 endpoint(s); class LIVE-ONLY; exit 1; containers 1; access_token verified False",
+ "observed": "S []; L [('status_not_observed', 'POST /v1/auth/login', '200')]; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 1; answered {'POST /v1/auth/login': 404}; verified False",
+ "pass": true,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "identical": true,
+  "S_as_predicted": true,
+  "L_as_predicted": true,
+  "N_as_predicted": true,
+  "class_as_predicted": true,
+  "exit_as_predicted": true,
+  "containers_as_predicted": true,
+  "verified_as_predicted": true,
+  "no_leaks": true,
+  "static_is_g0": true,
+  "version_changed_true_spec_hash_same": true
+ },
+ "extra": {
+  "drift": "D7",
+  "mode": "b",
+  "S": [],
+  "L": [
+   [
+    "status_not_observed",
+    "POST /v1/auth/login",
+    "200"
+   ]
+  ],
+  "N": [
+   "GET /v1/habits",
+   "GET /v1/habits/{}/progress",
+   "GET /v1/home",
+   "GET /v1/me",
+   "POST /v1/habits/{}/completions",
+   "POST /v1/nudges/{}/dismiss"
+  ],
+  "class": "LIVE-ONLY",
+  "predicted_class": "LIVE-ONLY",
+  "spec_edits": [],
+  "code_edits": [
+   [
+    "internal/httpapi/router.go",
+    "v1 := r.Group(\"/v1\",",
+    "v1 := r.Group(\"/v2\",",
+    1
+   ]
+  ],
+  "wall_s": [
+   6.671,
+   6.44,
+   6.322
+  ],
+  "not_replayed_reasons": [
+   [
+    "GET /v1/habits",
+    "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+   ],
+   [
+    "GET /v1/habits/{}/progress",
+    "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+   ],
+   [
+    "GET /v1/home",
+    "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+   ],
+   [
+    "GET /v1/me",
+    "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+   ],
+   [
+    "POST /v1/habits/{}/completions",
+    "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+   ],
+   [
+    "POST /v1/nudges/{}/dismiss",
+    "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+   ]
+  ],
+  "probe_wall_s": 20.5
+ },
+ "runs": [
+  {
+   "rc": 1,
+   "wall_s": 6.671,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": false,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 1,
+   "live_broken": [
+    [
+     "status_not_observed",
+     "POST /v1/auth/login",
+     "200"
+    ]
+   ],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "GET /v1/home",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "GET /v1/me",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ]
+   ],
+   "answered": {
+    "POST /v1/auth/login": 404
+   },
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7b",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-ceed119d"
+    ],
+    "wall_s": 6.671
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 6.44,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": false,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 1,
+   "live_broken": [
+    [
+     "status_not_observed",
+     "POST /v1/auth/login",
+     "200"
+    ]
+   ],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "GET /v1/home",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "GET /v1/me",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ]
+   ],
+   "answered": {
+    "POST /v1/auth/login": 404
+   },
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7b",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-67677df4"
+    ],
+    "wall_s": 6.44
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 6.322,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": false,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 1,
+   "live_broken": [
+    [
+     "status_not_observed",
+     "POST /v1/auth/login",
+     "200"
+    ]
+   ],
+   "not_replayed": [
+    [
+     "GET /v1/habits",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "GET /v1/habits/{}/progress",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "GET /v1/home",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "GET /v1/me",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "POST /v1/habits/{}/completions",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ],
+    [
+     "POST /v1/nudges/{}/dismiss",
+     "the request as ann could not be sent (RuntimeError: login as 'ann' failed: 404 {\"error\":{\"code\":\"not_found\",\"message\":\"not found\"}})"
+    ]
+   ],
+   "answered": {
+    "POST /v1/auth/login": 404
+   },
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D7b",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-596301e4"
+    ],
+    "wall_s": 6.322
+   }
+  }
+ ]
+}

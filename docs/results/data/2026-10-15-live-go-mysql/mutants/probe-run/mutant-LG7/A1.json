@@ -1,0 +1,144 @@
+{
+ "id": "A1",
+ "prediction": "a docker shim first on PATH that logs and exits 1: docker_unavailable, log = `info` only; exit 2, no streak-api, wall <= 25 s (predicted <= 3 s)",
+ "observed": "exit 2; error docker_image_missing: streak: the image mysql:8.4 is not present locally and the live check never pulls: run `docker pull mysql:8.4`; wall [0.84, 0.761, 0.759]; created []",
+ "pass": false,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "identical": true,
+  "exit": true,
+  "error_code": false,
+  "findings_empty": true,
+  "no_streak_api_process": true,
+  "no_live_container": true,
+  "tmpdir_empty": true,
+  "wall_le_25s": true,
+  "shim_log_is_info_only": false
+ },
+ "extra": {
+  "error": {
+   "code": "docker_image_missing",
+   "message": "streak: the image mysql:8.4 is not present locally and the live check never pulls: run `docker pull mysql:8.4`"
+  },
+  "wall_s": [
+   0.84,
+   0.761,
+   0.759
+  ],
+  "probe_wall_s": 3.5
+ },
+ "runs": [
+  {
+   "rc": 2,
+   "wall_s": 0.84,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "docker_image_missing",
+    "message": "streak: the image mysql:8.4 is not present locally and the live check never pulls: run `docker pull mysql:8.4`"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A1",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.84
+   },
+   "shim_log": [
+    "image inspect mysql:8.4"
+   ]
+  },
+  {
+   "rc": 2,
+   "wall_s": 0.761,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "docker_image_missing",
+    "message": "streak: the image mysql:8.4 is not present locally and the live check never pulls: run `docker pull mysql:8.4`"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A1",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.761
+   },
+   "shim_log": [
+    "image inspect mysql:8.4"
+   ]
+  },
+  {
+   "rc": 2,
+   "wall_s": 0.759,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "docker_image_missing",
+    "message": "streak: the image mysql:8.4 is not present locally and the live check never pulls: run `docker pull mysql:8.4`"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A1",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.759
+   },
+   "shim_log": [
+    "image inspect mysql:8.4"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,320 @@
+{
+ "id": "G-D4c",
+ "prediction": "D4 mode c: static BROKEN [('request_field_missing', 'POST /v1/auth/login', 'password')]; live BROKEN [('status_not_observed', 'POST /v1/auth/login', '200')]; not replayed 0 endpoint(s); class DISAGREE; exit 1; containers 1; access_token verified False",
+ "observed": "S [('request_field_missing', 'POST /v1/auth/login', 'password')]; L [('status_not_observed', 'POST /v1/auth/login', '200')]; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 422, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified False",
+ "pass": true,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "identical": true,
+  "S_as_predicted": true,
+  "L_as_predicted": true,
+  "N_as_predicted": true,
+  "class_as_predicted": true,
+  "exit_as_predicted": true,
+  "containers_as_predicted": true,
+  "verified_as_predicted": true,
+  "no_leaks": true,
+  "static_changed_as_committed": true
+ },
+ "extra": {
+  "drift": "D4",
+  "mode": "c",
+  "S": [
+   [
+    "request_field_missing",
+    "POST /v1/auth/login",
+    "password"
+   ]
+  ],
+  "L": [
+   [
+    "status_not_observed",
+    "POST /v1/auth/login",
+    "200"
+   ]
+  ],
+  "N": [],
+  "class": "DISAGREE",
+  "predicted_class": "DISAGREE",
+  "spec_edits": [
+   [
+    "spec.py",
+    "\"password\": \"password-ann\",",
+    "\"passphrase\": \"password-ann\",",
+    4
+   ]
+  ],
+  "code_edits": [],
+  "wall_s": [
+   6.567,
+   6.44,
+   6.443
+  ],
+  "not_replayed_reasons": [],
+  "probe_wall_s": 20.5
+ },
+ "runs": [
+  {
+   "rc": 1,
+   "wall_s": 6.567,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "request_field_missing",
+     "POST /v1/auth/login",
+     "password"
+    ]
+   ],
+   "static_changed": [
+    [
+     "field_added",
+     "request",
+     "POST /v1/auth/login",
+     "passphrase",
+     true
+    ]
+   ],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 7,
+   "live_broken": [
+    [
+     "status_not_observed",
+     "POST /v1/auth/login",
+     "200"
+    ]
+   ],
+   "not_replayed": [],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/home": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 422,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D4c",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-0f84a49f"
+    ],
+    "wall_s": 6.567
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 6.44,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "request_field_missing",
+     "POST /v1/auth/login",
+     "password"
+    ]
+   ],
+   "static_changed": [
+    [
+     "field_added",
+     "request",
+     "POST /v1/auth/login",
+     "passphrase",
+     true
+    ]
+   ],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 7,
+   "live_broken": [
+    [
+     "status_not_observed",
+     "POST /v1/auth/login",
+     "200"
+    ]
+   ],
+   "not_replayed": [],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/home": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 422,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D4c",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-f4ebd830"
+    ],
+    "wall_s": 6.44
+   }
+  },
+  {
+   "rc": 1,
+   "wall_s": 6.443,
+   "stderr": "",
+   "status": "broken",
+   "error": null,
+   "static_broken": [
+    [
+     "request_field_missing",
+     "POST /v1/auth/login",
+     "password"
+    ]
+   ],
+   "static_changed": [
+    [
+     "field_added",
+     "request",
+     "POST /v1/auth/login",
+     "passphrase",
+     true
+    ]
+   ],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": true,
+   "spec_hash_changed": true,
+   "live_status": "ok",
+   "live_reason": null,
+   "replayed": 7,
+   "live_broken": [
+    [
+     "status_not_observed",
+     "POST /v1/auth/login",
+     "200"
+    ]
+   ],
+   "not_replayed": [],
+   "answered": {
+    "GET /v1/habits": 200,
+    "GET /v1/habits/{}/progress": 200,
+    "GET /v1/home": 200,
+    "GET /v1/me": 200,
+    "POST /v1/auth/login": 422,
+    "POST /v1/habits/{}/completions": 201,
+    "POST /v1/nudges/{}/dismiss": 200
+   },
+   "verified_live": [],
+   "fields_unobservable": [],
+   "database": {
+    "engine": "mysql",
+    "image": "mysql:8.4",
+    "throwaway": true,
+    "ignored": []
+   },
+   "live_keys": [
+    "database",
+    "fields_unobservable",
+    "findings",
+    "not_checked",
+    "not_replayed",
+    "replayed",
+    "replays",
+    "status",
+    "verified_live"
+   ],
+   "leak": {
+    "call": "G-D4c",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-fef11fed"
+    ],
+    "wall_s": 6.443
+   }
+  }
+ ]
+}

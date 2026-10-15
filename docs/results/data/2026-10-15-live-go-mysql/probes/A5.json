@@ -1,0 +1,170 @@
+{
+ "id": "A5",
+ "prediction": "--static-only under A1's shim: exit 0, live not_run/static-only, the shim log empty; no streak-api; wall <= 25 s (static-only <= 1.5 s)",
+ "observed": "exit 0; error None: ; wall [0.21, 0.207, 0.209]; created []",
+ "pass": true,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "identical": true,
+  "exit": true,
+  "error_code": true,
+  "findings_empty": true,
+  "no_streak_api_process": true,
+  "no_live_container": true,
+  "tmpdir_empty": true,
+  "wall_le_25s": true,
+  "live_not_run_static_only": true,
+  "shim_log_empty": true,
+  "wall_le_1_5s": true
+ },
+ "extra": {
+  "error": null,
+  "wall_s": [
+   0.21,
+   0.207,
+   0.209
+  ],
+  "probe_wall_s": 1.6
+ },
+ "runs": [
+  {
+   "rc": 0,
+   "wall_s": 0.21,
+   "stderr": "",
+   "status": "ok",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": false,
+   "spec_hash_changed": false,
+   "live_status": "not_run",
+   "live_reason": "static-only",
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [
+    "reason",
+    "status"
+   ],
+   "leak": {
+    "call": "A5",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.21
+   },
+   "shim_log": []
+  },
+  {
+   "rc": 0,
+   "wall_s": 0.207,
+   "stderr": "",
+   "status": "ok",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": false,
+   "spec_hash_changed": false,
+   "live_status": "not_run",
+   "live_reason": "static-only",
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [
+    "reason",
+    "status"
+   ],
+   "leak": {
+    "call": "A5",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.207
+   },
+   "shim_log": []
+  },
+  {
+   "rc": 0,
+   "wall_s": 0.209,
+   "stderr": "",
+   "status": "ok",
+   "error": null,
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [
+    [
+     "request_field_unobserved",
+     "GET /v1/habits",
+     "cursor"
+    ],
+    [
+     "response_field_unobserved",
+     "POST /v1/auth/login",
+     "access_token"
+    ]
+   ],
+   "version_changed": false,
+   "spec_hash_changed": false,
+   "live_status": "not_run",
+   "live_reason": "static-only",
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [
+    "reason",
+    "status"
+   ],
+   "leak": {
+    "call": "A5",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.209
+   },
+   "shim_log": []
+  }
+ ]
+}

@@ -1,0 +1,595 @@
+{
+ "experiment": "2026-10-13-contracts",
+ "command": "python dogfood/contracts/probes.py --runs 1 --scratch /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/r-scratch --out /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/r-probes-data",
+ "runs": 1,
+ "code_root": "/Users/vivekgade/Documents/lattice-livego",
+ "code_head": "d014aa05712df2c735148555d34cbf2c96cb4bf1",
+ "wall_s": 23.8,
+ "probes": [
+  {
+   "id": "B0",
+   "prediction": "export 20 endpoints; auth public 1 / token 4 / unknown 15; error_body fastapi; statuses = R1; no 'detail'; pin exit 0; check exit 0, 0 findings, 1 gap (access_token @ login)",
+   "observed": "20 endpoints; auth public 1 token 4 unknown 15; error_body fastapi; statuses==R1 True; detail none; pin exit 0; check exit 0, 0 findings, gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "endpoints_20": true,
+    "auth_public_1_login": true,
+    "auth_token_4": true,
+    "auth_unknown_15": true,
+    "error_body_fastapi": true,
+    "statuses_equal_r1": true,
+    "no_detail_field": true,
+    "pin_exit_0": true,
+    "check_exit_0": true,
+    "check_0_findings": true,
+    "check_1_gap": true,
+    "export_exit_0": true
+   }
+  },
+  {
+   "id": "D1",
+   "prediction": "endpoint removed: BROKEN; BROKEN endpoint_missing GET /applications/{}/jobs/{}/runs; CHANGED none; version_changed true; gaps unchanged",
+   "observed": "BROKEN; BROKEN endpoint_missing GET /applications/{}/jobs/{}/runs; CHANGED none; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps_unchanged": true,
+    "spec_hash_equal_iff_no_diff": true
+   }
+  },
+  {
+   "id": "D2",
+   "prediction": "status 201->200: BROKEN; BROKEN status_not_observed POST /applications/{}/jobs/{}/runs 201; CHANGED status_added 200 @ POST /applications/{}/jobs/{}/runs; version_changed true; gaps unchanged",
+   "observed": "BROKEN; BROKEN status_not_observed POST /applications/{}/jobs/{}/runs 201; CHANGED status_added 200 @ POST /applications/{}/jobs/{}/runs relied; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps_unchanged": true,
+    "spec_hash_equal_iff_no_diff": true
+   }
+  },
+  {
+   "id": "D3",
+   "prediction": "response field renamed: BROKEN; BROKEN response_field_missing POST /applications/{}/runs/{}/cancel status; CHANGED field_added response state @ POST /applications/{}/runs/{}/cancel; version_changed true; gaps unchanged",
+   "observed": "BROKEN; BROKEN response_field_missing POST /applications/{}/runs/{}/cancel status; CHANGED field_added response state @ POST /applications/{}/runs/{}/cancel relied; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps_unchanged": true,
+    "spec_hash_equal_iff_no_diff": true
+   }
+  },
+  {
+   "id": "D4",
+   "prediction": "request field renamed: BROKEN; BROKEN request_field_missing POST /auth/login email; CHANGED field_added request username @ POST /auth/login; version_changed true; gaps unchanged",
+   "observed": "BROKEN; BROKEN request_field_missing POST /auth/login email; CHANGED field_added request username @ POST /auth/login relied; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps_unchanged": true,
+    "spec_hash_equal_iff_no_diff": true
+   }
+  },
+  {
+   "id": "D5",
+   "prediction": "role tightened: BROKEN; BROKEN auth_changed GET /applications/{}/runs/{} as_user eve; CHANGED status_added 403 @ GET /applications/{}/runs/{}; version_changed true; gaps unchanged",
+   "observed": "BROKEN; BROKEN auth_changed GET /applications/{}/runs/{} as_user eve; CHANGED status_added 403 @ GET /applications/{}/runs/{} relied; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps_unchanged": true,
+    "spec_hash_equal_iff_no_diff": true
+   }
+  },
+  {
+   "id": "D6",
+   "prediction": "endpoint added: CHANGED; BROKEN none; CHANGED endpoint_added @ GET /users/{} unrelied; version_changed true; gaps unchanged",
+   "observed": "CHANGED; BROKEN none; CHANGED endpoint_added @ GET /users/{} unrelied; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps_unchanged": true,
+    "spec_hash_equal_iff_no_diff": true
+   }
+  },
+  {
+   "id": "D7",
+   "prediction": "field type (MISS): MISS (0 findings, spec_hash equal, exit 0); BROKEN none; CHANGED none; version_changed true; gaps unchanged",
+   "observed": "none; BROKEN none; CHANGED none; exit 0; version_changed True; spec_hash_changed False; gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps_unchanged": true,
+    "spec_hash_equal_iff_no_diff": true,
+    "no_findings": true
+   }
+  },
+  {
+   "id": "D8",
+   "prediction": "required field added (under-classified): CHANGED; BROKEN none; CHANGED field_added request otp @ POST /auth/login relied; version_changed true; gaps unchanged",
+   "observed": "CHANGED; BROKEN none; CHANGED field_added request otp @ POST /auth/login relied; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps_unchanged": true,
+    "spec_hash_equal_iff_no_diff": true
+   }
+  },
+  {
+   "id": "D9",
+   "prediction": "status removed on a relied endpoint: CHANGED; BROKEN none; CHANGED status_removed 404 @ GET /applications/{}/jobs relied; version_changed true; gaps unchanged",
+   "observed": "CHANGED; BROKEN none; CHANGED status_removed 404 @ GET /applications/{}/jobs relied; exit 1; version_changed True; spec_hash_changed True; gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps_unchanged": true,
+    "spec_hash_equal_iff_no_diff": true
+   }
+  },
+  {
+   "id": "D10",
+   "prediction": "bound tightened (MISS): MISS (0 findings, spec_hash equal, exit 0); BROKEN none; CHANGED none; version_changed true; gaps unchanged",
+   "observed": "none; BROKEN none; CHANGED none; exit 0; version_changed True; spec_hash_changed False; gaps response_field_unobserved POST /auth/login access_token",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "worst_class": true,
+    "broken_set": true,
+    "changed_set": true,
+    "exit": true,
+    "version_changed": true,
+    "gaps_unchanged": true,
+    "spec_hash_equal_iff_no_diff": true,
+    "no_findings": true
+   }
+  },
+  {
+   "id": "C1",
+   "prediction": "exit 0, 0 findings, 1 gap, version_changed false",
+   "observed": "exit 0, 0 findings, 1 gap(s), version_changed False",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "exit_0": true,
+    "0_findings": true,
+    "1_gap": true,
+    "version_changed_false": true
+   }
+  },
+  {
+   "id": "C2",
+   "prediction": "tickets.py sha256 changes; spec_hash equal; exit 0, 0 findings; version_changed true",
+   "observed": "file sha256 changed True; spec_hash_changed False; exit 0, 0 findings; version_changed True",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "file_sha_changes": true,
+    "spec_hash_equal": true,
+    "exit_0": true,
+    "0_findings": true,
+    "version_changed_true": true
+   }
+  },
+  {
+   "id": "C3",
+   "prediction": "spec_hash equal; exit 0, 0 findings",
+   "observed": "spec_hash_changed False; exit 0, 0 findings",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "spec_hash_equal": true,
+    "exit_0": true,
+    "0_findings": true
+   }
+  },
+  {
+   "id": "C4",
+   "prediction": "exit 1; exactly 1 CHANGED field_added response created_by @ POST /applications, unrelied; 0 BROKEN",
+   "observed": "exit 1; CHANGED field_added response created_by @ POST /applications unrelied; BROKEN none",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "exit_1": true,
+    "changed_exactly": true,
+    "0_broken": true,
+    "findings_total_1": true
+   }
+  },
+  {
+   "id": "L1",
+   "prediction": "static 0 findings; live 0 findings, 7/7 imports replayed, access_token verified_live",
+   "observed": "static findings 0 (exit 0); live ok, replayed 7, findings none; answered 200; verified_live 1; full exit 0",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "static_0_findings": true,
+    "static_exit_0": true,
+    "live_ran": true,
+    "live_0_findings": true,
+    "replayed_7_of_7": true,
+    "access_token_verified_live": true,
+    "full_exit_0": true
+   }
+  },
+  {
+   "id": "L2",
+   "prediction": "static 0 findings, exit 0; live exactly 1 BROKEN status_not_observed 201 @ POST /applications/{}/jobs/{}/runs (answered 200)",
+   "observed": "static findings 0 (exit 0); live ok, replayed 7, findings status_not_observed POST /applications/{}/jobs/{}/runs 201; answered 200; verified_live 1; full exit 1",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "static_0_findings": true,
+    "static_exit_0": true,
+    "live_ran": true,
+    "live_exactly_1_broken": true,
+    "full_exit_1": true,
+    "answered": true
+   }
+  },
+  {
+   "id": "L3",
+   "prediction": "static 0 findings, exit 0; live exactly 1 BROKEN auth_changed as_user eve @ GET /applications/{}/runs/{} (answered 403)",
+   "observed": "static findings 0 (exit 0); live ok, replayed 7, findings auth_changed GET /applications/{}/runs/{} as_user eve; answered 403; verified_live 1; full exit 1",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "static_0_findings": true,
+    "static_exit_0": true,
+    "live_ran": true,
+    "live_exactly_1_broken": true,
+    "full_exit_1": true,
+    "answered": true
+   }
+  },
+  {
+   "id": "L4",
+   "prediction": "static 0 findings, exit 0; live exactly 1 BROKEN response_field_missing exit_code @ GET /applications/{}/runs/{}",
+   "observed": "static findings 0 (exit 0); live ok, replayed 7, findings response_field_missing GET /applications/{}/runs/{} exit_code; answered 200; verified_live 1; full exit 1",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "static_0_findings": true,
+    "static_exit_0": true,
+    "live_ran": true,
+    "live_exactly_1_broken": true,
+    "full_exit_1": true
+   }
+  },
+  {
+   "id": "L5",
+   "prediction": "exit 2 not_loopback for 10.0.0.1, example.com, 0.0.0.0; 127.0.0.1:8000 exit 2 live_url_unsupported; no request sent",
+   "observed": "http://10.0.0.1:8000 exit 2 not_loopback; http://example.com exit 2 not_loopback; http://0.0.0.0:8000 exit 2 not_loopback; http://127.0.0.1:8000 exit 2 live_url_unsupported; listener on, connections 0",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "four_of_four": true,
+    "no_connection_to_127.0.0.1:8000": true
+   }
+  },
+  {
+   "id": "V1",
+   "prediction": "README-only commit: exit 0, 0 findings, version_changed true, same spec_hash, different git_ref",
+   "observed": "exit 0, 0 findings, version_changed True, spec_hash_changed False, git_ref ef17cf88 -> 4e8dfb30",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "exit_0": true,
+    "0_findings": true,
+    "version_changed": true,
+    "same_spec_hash": true,
+    "different_git_ref": true
+   }
+  },
+  {
+   "id": "V2",
+   "prediction": "no lock, or a lock without this provider: exit 2, no_pin, message names the lock path and 'lattice contracts pin'",
+   "observed": "no_lock: exit 2 no_pin; lock_without_provider: exit 2 no_pin",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "no_lock_exit_2": true,
+    "no_lock_no_pin": true,
+    "no_lock_names_lock_path": true,
+    "no_lock_names_pin_command": true,
+    "lock_without_provider_exit_2": true,
+    "lock_without_provider_no_pin": true,
+    "lock_without_provider_names_lock_path": true,
+    "lock_without_provider_names_pin_command": true
+   }
+  },
+  {
+   "id": "V3",
+   "prediction": "10 pins: locks byte-identical to each other and to the golden; spec_hash == sha256 of the embedded export",
+   "observed": "1 distinct lock(s); equals golden True; spec_hash 9bcae0e24da9 == recomputed 9bcae0e24da9",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "all_pins_exit_0": true,
+    "locks_identical": true,
+    "equals_golden": true,
+    "spec_hash_recomputed": true
+   }
+  },
+  {
+   "id": "V4",
+   "prediction": "after D2: pin exit 1, lock bytes unchanged; pin --force writes; next check: 201 as gap status_unobserved, not BROKEN",
+   "observed": "pin exit 1, lock unchanged True; --force exit 0, wrote True; check exit 0, BROKEN none, gaps response_field_unobserved POST /auth/login access_token; status_unobserved POST /applications/{}/jobs/{}/runs 201",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "pin_exit_1": true,
+    "lock_unchanged": true,
+    "force_exit_0": true,
+    "force_wrote": true,
+    "gap_status_unobserved_201": true,
+    "no_broken": true
+   }
+  },
+  {
+   "id": "V5",
+   "prediction": "uncommitted export-neutral edit (C2's text): dirty true, version_changed true, exit 0",
+   "observed": "dirty True, version_changed True, exit 0, 0 findings",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "dirty_true": true,
+    "version_changed_true": true,
+    "exit_0": true,
+    "0_findings": true
+   }
+  },
+  {
+   "id": "V6",
+   "prediction": "one hex digit of spec_hash flipped: exit 2 bad_pin",
+   "observed": "exit 2 bad_pin; /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "exit_2": true,
+    "bad_pin": true
+   }
+  },
+  {
+   "id": "W1",
+   "prediction": "contract absent + spec raising: exit 0, 0 links checked; the same link 'static': exit 2 export_failed",
+   "observed": "absent: exit 0, checked 0; static: exit 2 export_failed",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "absent_exit_0": true,
+    "absent_0_links_checked": true,
+    "static_exit_2": true,
+    "static_export_failed": true
+   }
+  },
+  {
+   "id": "W2",
+   "prediction": "'static' link: live is null although the project has app, db and login",
+   "observed": "live None; project keys app/db/login set True",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "live_null": true,
+    "project_has_app_db_login": true,
+    "contract_static": true
+   }
+  },
+  {
+   "id": "W3",
+   "prediction": "'live' link: the static result and the live result are both present",
+   "observed": "static: pinned/current/findings/gaps present True; live ok, replayed 7; exit 0",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "static_part": true,
+    "live_part": true,
+    "contract_live": true
+   }
+  },
+  {
+   "id": "W4",
+   "prediction": "contract = 'yes' and = true: workspace validate exit 1 with bad_contract (each); contracts check exit 2",
+   "observed": "yes: validate exit 1 ['bad_contract'], check exit 2; true: validate exit 1 ['bad_contract'], check exit 2",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "yes_validate_exit_1": true,
+    "yes_bad_contract": true,
+    "yes_check_exit_2": true,
+    "true_validate_exit_1": true,
+    "true_bad_contract": true,
+    "true_check_exit_2": true
+   }
+  },
+  {
+   "id": "W5",
+   "prediction": "show, show --json, validate, validate --json, impact shared-auth (+ --json): byte-identical (6 of 6) to the old code (c0cdefc)",
+   "observed": "old_base: 6/6 byte-identical; exits 0,0,0,0,0,0",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "old_reference_usable": true,
+    "new_is_new": true,
+    "old_is_old": true,
+    "old_base_6_of_6_identical": true
+   }
+  },
+  {
+   "id": "W6",
+   "prediction": "(reported) the old code validates a manifest with contract keys: exit 0, no problems",
+   "observed": "base: exit 0, problems 0",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "old_reference_usable": true,
+    "old_is_old": true,
+    "base_exit_0": true,
+    "base_no_problems": true
+   }
+  },
+  {
+   "id": "A1",
+   "prediction": "on B0 and D2, MCP contract_check and GET /api/contracts == `contracts check --static-only --json` (4 of 4); mock has the same keys and types",
+   "observed": "B0: mcp==cli True, api==cli True, mock shape ok; D2: mcp==cli True, api==cli True, mock shape ok; live link reasons {'cli': {'status': 'not_run', 'reason': 'static-only'}, 'mcp': {'status': 'not_run', 'reason': 'static-only'}, 'api': {'status': 'not_run', 'reason': 'read-only'}}",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "B0_mcp_equals_cli": true,
+    "B0_api_equals_cli": true,
+    "B0_mock_same_keys_types": true,
+    "B0_mcp_lists_contract_check": true,
+    "D2_mcp_equals_cli": true,
+    "D2_api_equals_cli": true,
+    "D2_mock_same_keys_types": true,
+    "D2_mcp_lists_contract_check": true
+   }
+  },
+  {
+   "id": "S1",
+   "prediction": "job-scheduler HEAD ef17cf8 and ' M uv.lock' before and after the whole run; find -newer finds no file; Streak never opened",
+   "observed": "before ef17cf8 ' M uv.lock'; after ef17cf8 ' M uv.lock'; files newer than the start marker: 0 []",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "head_before": true,
+    "head_after": true,
+    "status_before": true,
+    "status_after": true,
+    "no_newer_file": true,
+    "identical": true
+   }
+  },
+  {
+   "id": "T1",
+   "prediction": "static check of one link: median <= 10 s (predicted <= 3 s); live (7 imports): median <= 60 s (predicted <= 15 s)",
+   "observed": "static median 0.23 s wall (0.19 s elapsed_s); live median 0.86 s wall (0.81 s elapsed_s)",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "static_median_le_10s": true,
+    "live_median_le_60s": true,
+    "static_prediction_le_3s": true,
+    "live_prediction_le_15s": true
+   }
+  }
+ ],
+ "totals": {
+  "pass": 35,
+  "total": 35
+ },
+ "d_series": {
+  "core_pass": 10,
+  "full_pass": 10
+ },
+ "s1": {
+  "before": {
+   "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+   "status": " M uv.lock"
+  }
+ },
+ "leftover_processes": [
+  "33502 /Library/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -m lattice.studio /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/lattice-check-d-sjq6t6zn/studio-up5dvcgl/notes --port 56113 --quiet --stub-llm --allow-apply"
+ ],
+ "leftover_tmp_entries": [],
+ "scratch_removed": true,
+ "post_hoc": {
+  "script_corrections": [],
+  "procedure": [
+   "W5 old code: the prereg names /Users/vivekgade/Documents/lattice; the orchestrator said that checkout has no workspace.py. At run time it is on next-phases at c0cdefc with lattice/workspace.py present and unmodified, so it is the primary reference (checked at run time); the detached worktree lattice-contracts-base is compared as well, both at c0cdefc.",
+   "Item notation: the prereg writes the auth item as 'as_user eve'; the code writes 'as_user:eve'. The comparison normalises ':' after as_user to a space, nothing else.",
+   "D1 item: the prereg gives no item for endpoint_missing; the expected item is the empty string (the claim 'endpoint' has none).",
+   "A CHANGED item's `relied` flag is compared only where the prereg states it (D6 false, D8 true, D9 true, C4 false); otherwise it is only recorded.",
+   "The scratch workspace manifests use absolute provider and consumer paths and sit in their own directory so one probe can hold several manifest variants over the same clones.",
+   "C2's extra blank line is placed right after the changed RUNS line (prereg: 'one extra blank line'); W1's clone gets the raise line appended and committed.",
+   "W and V probes that need a lock use the one pinned on the clean clone, as the D/C/V rule says; W1's static variant has it so that no_pin cannot mask export_failed.",
+   "A1 uses a minimal scratch project (REQUIREMENTS.md, spec.py, spec.trace.json) as the `--project` of the MCP server and Studio; the contract surfaces are workspace-level.",
+   "C3 is a slice swap at asserted line numbers (173-190 login, 191-201 me), not a str.replace; the whole-line deletes (D1, D9) assert the count of the quoted fragment, then delete the lines that hold it; L4 deletes the line including its newline.",
+   "T1 wall times are whole subprocess times (interpreter start included); the check's own elapsed_s is recorded beside them. T1 runs its own 10 static and 10 live checks.",
+   "S1's git calls use --no-optional-locks so that `git status` cannot refresh the real repository's index.",
+   "A1 reports one extra, non-counted comparison on a live link (CLI --static-only, MCP, API): the only difference allowed is the live reason.",
+   "W5 and W6 also record which lattice/workspace.py a child imports under each PYTHONPATH and that lattice.contracts is absent in the old code (a guard that the old run is old). This check was added after a first full run (35/35) and before the final run.",
+   "L5 'no request sent': a listener on 127.0.0.1:8000 (when bindable) counts connections; for hosts that cannot be observed the evidence is the exit code, the error code and the wall time (no connection attempt can complete in well under a second)."
+  ]
+ }
+}

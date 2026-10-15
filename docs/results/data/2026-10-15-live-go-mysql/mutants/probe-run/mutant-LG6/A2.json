@@ -1,0 +1,175 @@
+{
+ "id": "A2",
+ "prediction": "the Lattice venv (`uv run python -m lattice.contracts`, no PyMySQL): driver_missing naming lattice[db]; 0 Docker calls (a logging shim forwarding to the real CLI)",
+ "observed": "exit 2; error database_start_failed: streak: the throwaway mysql server did not start (ModuleNotFoundError: No module named 'pymysql'); wall [1.285, 1.314, 1.266]; created ['lattice-live-mysql-8513189c']",
+ "pass": false,
+ "identical": false,
+ "n_runs": 3,
+ "checks": {
+  "identical": false,
+  "exit": true,
+  "error_code": false,
+  "findings_empty": true,
+  "no_streak_api_process": true,
+  "no_live_container": true,
+  "tmpdir_empty": true,
+  "wall_le_25s": true,
+  "zero_docker_calls": false,
+  "message_names_lattice_db": false
+ },
+ "extra": {
+  "error": {
+   "code": "database_start_failed",
+   "message": "streak: the throwaway mysql server did not start (ModuleNotFoundError: No module named 'pymysql')"
+  },
+  "wall_s": [
+   1.285,
+   1.314,
+   1.266
+  ],
+  "probe_wall_s": 5.0
+ },
+ "runs": [
+  {
+   "rc": 2,
+   "wall_s": 1.285,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "database_start_failed",
+    "message": "streak: the throwaway mysql server did not start (ModuleNotFoundError: No module named 'pymysql')"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A2",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [
+     "uv-4ce74cf2864ca9cf.lock"
+    ],
+    "containers_created": [
+     "lattice-live-mysql-8513189c"
+    ],
+    "wall_s": 1.285
+   },
+   "shim_log": [
+    "info --format {{.ServerVersion}}",
+    "image inspect mysql:8.4",
+    "run -d --name lattice-live-mysql-8513189c --label lattice.spec=throwaway --label lattice.owner=live-156050ddf0a537c5 -p 127.0.0.1::3306 --tmpfs /var/lib/mysql:rw -e MYSQL_ROOT_PASSWORD=lattice mysql:8.4 --innodb-flush-log-at-trx-commit=0 --skip-log-bin --sync-binlog=0 --max-connections=300 --innodb-doublewrite=OFF",
+    "port lattice-live-mysql-8513189c 3306/tcp",
+    "rm -f -v lattice-live-mysql-8513189c",
+    "ps -aq --filter label=lattice.owner=live-156050ddf0a537c5"
+   ],
+   "child_python": null
+  },
+  {
+   "rc": 2,
+   "wall_s": 1.314,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "database_start_failed",
+    "message": "streak: the throwaway mysql server did not start (ModuleNotFoundError: No module named 'pymysql')"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A2",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [
+     "uv-4ce74cf2864ca9cf.lock"
+    ],
+    "containers_created": [
+     "lattice-live-mysql-45a2c5fe"
+    ],
+    "wall_s": 1.314
+   },
+   "shim_log": [
+    "info --format {{.ServerVersion}}",
+    "image inspect mysql:8.4",
+    "run -d --name lattice-live-mysql-45a2c5fe --label lattice.spec=throwaway --label lattice.owner=live-0488bf574b7da0df -p 127.0.0.1::3306 --tmpfs /var/lib/mysql:rw -e MYSQL_ROOT_PASSWORD=lattice mysql:8.4 --innodb-flush-log-at-trx-commit=0 --skip-log-bin --sync-binlog=0 --max-connections=300 --innodb-doublewrite=OFF",
+    "port lattice-live-mysql-45a2c5fe 3306/tcp",
+    "rm -f -v lattice-live-mysql-45a2c5fe",
+    "ps -aq --filter label=lattice.owner=live-0488bf574b7da0df"
+   ],
+   "child_python": null
+  },
+  {
+   "rc": 2,
+   "wall_s": 1.266,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "database_start_failed",
+    "message": "streak: the throwaway mysql server did not start (ModuleNotFoundError: No module named 'pymysql')"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A2",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [
+     "uv-4ce74cf2864ca9cf.lock"
+    ],
+    "containers_created": [
+     "lattice-live-mysql-27949737"
+    ],
+    "wall_s": 1.266
+   },
+   "shim_log": [
+    "info --format {{.ServerVersion}}",
+    "image inspect mysql:8.4",
+    "run -d --name lattice-live-mysql-27949737 --label lattice.spec=throwaway --label lattice.owner=live-f0d1f87f1e1148dc -p 127.0.0.1::3306 --tmpfs /var/lib/mysql:rw -e MYSQL_ROOT_PASSWORD=lattice mysql:8.4 --innodb-flush-log-at-trx-commit=0 --skip-log-bin --sync-binlog=0 --max-connections=300 --innodb-doublewrite=OFF",
+    "port lattice-live-mysql-27949737 3306/tcp",
+    "rm -f -v lattice-live-mysql-27949737",
+    "ps -aq --filter label=lattice.owner=live-f0d1f87f1e1148dc"
+   ],
+   "child_python": null
+  }
+ ]
+}

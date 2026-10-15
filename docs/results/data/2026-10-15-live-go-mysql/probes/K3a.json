@@ -1,0 +1,175 @@
+{
+ "id": "K3a",
+ "prediction": "SIGKILL of the child (lattice.contracts.live) at 3 s and 6 s (x3): live_failed, 0 containers and 0 streak-api after the parent returned",
+ "observed": "@3s live_failed containers [] apps 0; @3s live_failed containers [] apps 0; @3s live_failed containers [] apps 0; @6s live_failed containers [] apps 0; @6s live_failed containers [] apps 0; @6s live_failed containers [] apps 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 6,
+ "checks": {
+  "child_was_found_and_killed": true,
+  "live_failed": true,
+  "no_container_left": true,
+  "no_streak_api_left": true
+ },
+ "extra": {
+  "probe_wall_s": 30.2
+ },
+ "runs": [
+  {
+   "killed": {
+    "target": "child",
+    "at_s": 3.0,
+    "pid": 50138
+   },
+   "rc": 2,
+   "wall_s": 3.34,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3a/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3a@3",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-53441067"
+    ],
+    "wall_s": 3.341
+   }
+  },
+  {
+   "killed": {
+    "target": "child",
+    "at_s": 3.0,
+    "pid": 50172
+   },
+   "rc": 2,
+   "wall_s": 3.33,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3a/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3a@3",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-d14ef384"
+    ],
+    "wall_s": 3.331
+   }
+  },
+  {
+   "killed": {
+    "target": "child",
+    "at_s": 3.0,
+    "pid": 50252
+   },
+   "rc": 2,
+   "wall_s": 3.31,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3a/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3a@3",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-04cbc850"
+    ],
+    "wall_s": 3.312
+   }
+  },
+  {
+   "killed": {
+    "target": "child",
+    "at_s": 6.0,
+    "pid": 50404
+   },
+   "rc": 2,
+   "wall_s": 6.32,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3a/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3a@6",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-86698b94"
+    ],
+    "wall_s": 6.317
+   }
+  },
+  {
+   "killed": {
+    "target": "child",
+    "at_s": 6.0,
+    "pid": 50632
+   },
+   "rc": 2,
+   "wall_s": 6.33,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3a/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3a@6",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-5350ea07"
+    ],
+    "wall_s": 6.334
+   }
+  },
+  {
+   "killed": {
+    "target": "child",
+    "at_s": 6.0,
+    "pid": 50810
+   },
+   "rc": 2,
+   "wall_s": 6.34,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3a/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3a@6",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-587a13d2"
+    ],
+    "wall_s": 6.34
+   }
+  }
+ ]
+}

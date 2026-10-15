@@ -1,0 +1,106 @@
+{
+ "id": "K3c",
+ "prediction": "POST HOC supplement: SIGKILL of the child the moment its first app process is recorded (x3): live_failed, 0 containers and 0 streak-api after the parent returned (the case LG10 needs: an app of a killed child)",
+ "observed": "@5.15s live_failed containers [] apps 1; @5.98s live_failed containers [] apps 2; @5.96s live_failed containers [] apps 3",
+ "pass": false,
+ "identical": true,
+ "n_runs": 3,
+ "checks": {
+  "child_was_found_and_killed": true,
+  "live_failed": true,
+  "no_container_left": true,
+  "no_streak_api_left": false
+ },
+ "extra": {
+  "probe_wall_s": 19.1
+ },
+ "runs": [
+  {
+   "killed": {
+    "target": "child_app",
+    "at_s": 5.15,
+    "pid": 27025
+   },
+   "rc": 2,
+   "wall_s": 5.46,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3c/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3c@0",
+    "containers_alive": [],
+    "apps_alive": [
+     "27258 $WORK/w/K3c/streak/bin/streak-api"
+    ],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-5c28e902"
+    ],
+    "wall_s": 5.463
+   }
+  },
+  {
+   "killed": {
+    "target": "child_app",
+    "at_s": 5.98,
+    "pid": 27277
+   },
+   "rc": 2,
+   "wall_s": 6.3,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3c/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3c@0",
+    "containers_alive": [],
+    "apps_alive": [
+     "27258 $WORK/w/K3c/streak/bin/streak-api",
+     "27739 $WORK/w/K3c/streak/bin/streak-api"
+    ],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-1deffac5"
+    ],
+    "wall_s": 6.296
+   }
+  },
+  {
+   "killed": {
+    "target": "child_app",
+    "at_s": 5.96,
+    "pid": 27804
+   },
+   "rc": 2,
+   "wall_s": 6.21,
+   "stderr": "",
+   "error": {
+    "code": "live_failed",
+    "message": "the live check of $WORK/w/K3c/streak produced no result (no message)"
+   },
+   "status": "error",
+   "leak": {
+    "call": "K3c@0",
+    "containers_alive": [],
+    "apps_alive": [
+     "27258 $WORK/w/K3c/streak/bin/streak-api",
+     "27739 $WORK/w/K3c/streak/bin/streak-api",
+     "28487 $WORK/w/K3c/streak/bin/streak-api"
+    ],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [
+     "lattice-live-mysql-7477355d"
+    ],
+    "wall_s": 6.213
+   }
+  }
+ ]
+}

@@ -189,17 +189,31 @@ def _host_of(transport: Any) -> tuple[str, str]:
 
 @contextlib.contextmanager
 def start_target_harness(
-    h: Harness, seed_hook: Callable[[Any], None] | None = None
+    h: Harness,
+    seed_hook: Callable[[Any], None] | None = None,
+    *,
+    databases: Callable[..., Any] | None = None,
 ) -> Iterator[Target]:
     """Start the app of an already-resolved :class:`Harness` (what :func:`start_target`
     delegates to). Used directly by the tests against the in-repo app; the guardrail
     (:func:`ensure_safe_target`) applies here too. ``seed_hook(db_ref)`` runs after the
     throwaway database is built and before the app starts: the runner uses it to insert the
     spec scenarios' ``given`` rows (the resources attacks target), which the harness seed
-    alone may not contain."""
+    alone may not contain.
+
+    ``databases`` (keyword-only; ``None`` is the path above, unchanged): a ready ``make_db``
+    ``(variant, path) -> database`` with a ``release`` method, as :class:`ServerDatabases` is.
+    The caller owns its server: a run on it builds each database as a clone of the caller's
+    template and drops it again, and never starts or stops a server (the live contract check
+    shares one throwaway server between its replays)."""
     rt = h.runtime if h.runtime is not None else AppRuntime()
     with tempfile.TemporaryDirectory(prefix=CONTAINER_PREFIX) as d:
-        with _open_db(h, Path(d)) as (make_db, database, _owner):
+        opened = (
+            _open_db(h, Path(d))
+            if databases is None
+            else contextlib.nullcontext((databases, h.database, None))
+        )
+        with opened as (make_db, database, _owner):
             db = make_db("seed", Path(d) / "attack.db")
             from lattice.spec.check import release_db
 

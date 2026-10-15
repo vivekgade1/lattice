@@ -1,0 +1,95 @@
+{
+ "experiment": "2026-10-15-live-go-mysql",
+ "command": "python dogfood/contracts/livego_probes.py --runs 1 --streak-ref a0679e9 --scratch /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/mp/LG12 --out /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/mp-data/mutant-LG12 --code-root /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/mp-tmp/lattice-livego-LG12-g727vqbj --only B1",
+ "runs": 1,
+ "code_root": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/mp-tmp/lattice-livego-LG12-g727vqbj",
+ "streak_ref": "a0679e9",
+ "wall_s": 31.2,
+ "probes": [
+  {
+   "id": "B1",
+   "status": "RAN",
+   "prediction": "job-scheduler (ef17cf8 + ci-bot): L1-L5 and W3 through the CLI, --json and text, new code vs `git archive 30c9120 lattice`: canonical outputs byte-identical 10/10, a docker shim sees 0 calls; tests/contracts/test_live.py unchanged",
+   "observed": "13/18 case/format cells identical over 1 runs; docker calls 0; test_live.py diff empty",
+   "pass": false,
+   "runs": 18,
+   "identical": true,
+   "checks": {
+    "all_byte_identical": false,
+    "docker_calls_0": true,
+    "test_live_py_unchanged": true
+   },
+   "probe_wall_s": 30.9
+  }
+ ],
+ "not_run": [
+  "P0",
+  "G0",
+  "G-D1a",
+  "G-D1b",
+  "G-D1c",
+  "G-D2a",
+  "G-D2b",
+  "G-D2c",
+  "G-D3a",
+  "G-D3b",
+  "G-D3c",
+  "G-D4a",
+  "G-D4b",
+  "G-D4c",
+  "G-D6a",
+  "G-D6b",
+  "G-D6c",
+  "G-D7a",
+  "G-D7b",
+  "G-D7c",
+  "G-D9a",
+  "G-D9b",
+  "G-D9c",
+  "A1",
+  "A1p",
+  "A2",
+  "A3",
+  "A4",
+  "A5",
+  "Z1",
+  "K2",
+  "K3a",
+  "K3c",
+  "K3b",
+  "T",
+  "K1"
+ ],
+ "totals": {
+  "pass": 0,
+  "total": 1
+ },
+ "g_configurations": {
+  "pass": 0,
+  "total": 0,
+  "rows": []
+ },
+ "containers_created_by_checks": 0,
+ "live_calls": 0,
+ "builds": [],
+ "leftover_processes": [
+  "34440 /Library/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -m lattice.studio /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/lattice-check-d-aj33ldzw/studio-nj45eqf1/notes --port 50034 --quiet --stub-llm --allow-apply"
+ ],
+ "containers_removed_by_runner_at_end": [],
+ "leftover_tmp_entries": [],
+ "scratch_removed": true,
+ "post_hoc": {
+  "script_corrections": [
+   "classify(): in the --runs 1 dry run the six LIVE-ONLY cells (S empty, L non-empty) were classified SUPERSET, because the SUPERSET test (S strictly in L) ran before the LIVE-ONLY test and an empty set is a proper subset. A script bug: SUPERSET now needs a non-empty S (the LIVE-ONLY test runs first). The prediction table is untouched.",
+   "A2 and K1 TMPDIR check: `uv run` itself leaves `uv-<hash>.lock` in the call's TMPDIR (3 calls of A2 in the dry run); that file is uv's, not the check's. It is recorded under `uv_lock_entries` and excluded from `tmp_entries` (a script artefact, found in the dry run).",
+   "K3a offsets: registered as 3 s and 6 s (the prereg predicted an 8 s check). The check takes about 6.1 to 6.7 s here, so a SIGKILL at 6 s can find no child (dry run: 2 of 3). The registered probe is run unchanged and reports what it observes; K3c is a post hoc supplement that kills the child the moment its first app process has been recorded (`live-pids` non-empty), which is the case LG10 needs."
+  ],
+  "procedure": [
+   "Containers created by a call are counted from `docker events --since/--until` (create events whose `lattice.owner` label starts `live-`: every container of the live check, the throwaway server of a mutant that uses another prefix included), not from `docker ps` alone.",
+   "K1 'processes whose command starts with a clone's bin/streak-api' is a `ps -axo` scan for command lines holding '/bin/streak-api' under the scratch root, after each call.",
+   "Item notation: the code writes the auth item as 'as_user:ann'; comparisons normalise ':' after as_user to a space, nothing else.",
+   "The verified_live prediction is evaluated as the rule says (login answered 2xx), which is not the sentence's 'every a and c row but D7': c-D4 predicts login 422, so it is False.",
+   "Mode b static is compared with G0's (0 findings, version_changed true, spec_hash_changed false); modes a and c static BROKEN and CHANGED are compared with streak_probes.DRIFTS (the committed 2026-10-13 Dn.json sets)."
+  ]
+ }
+}

@@ -1,0 +1,304 @@
+{
+ "experiment": "2026-10-13-contracts-exclude",
+ "command": "python dogfood/contracts/exclude_probes.py --runs 1 --scratch $SCRATCH --out /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/r-exclude_probes-data",
+ "runs": 1,
+ "code_root": "/Users/vivekgade/Documents/lattice-livego",
+ "code_head": "d014aa05712df2c735148555d34cbf2c96cb4bf1",
+ "lattice_diff_stat_vs_7358be2": "lattice/cli.py                       |   26 +-\n lattice/contracts/__main__.py        |  251 +++++++-\n lattice/contracts/check.py           |   80 ++-\n lattice/contracts/export.py          |   77 ++-\n lattice/contracts/impact.py          |  431 ++++++++++++++\n lattice/contracts/linked.py          |  663 ++++++++++++++++++++++\n lattice/contracts/live.py            |  323 +++++++++--\n lattice/contracts/transitive.py      |  217 +++++++\n lattice/improve/__main__.py          |  133 ++++-\n lattice/improve/apply.py             | 1040 ++++++++++++++++++++++++++++++++++\n lattice/improve/draft.py             |  300 ++++++++++\n lattice/improve/events.py            |  234 ++++++--\n lattice/improve/verify.py            |  649 +++++++++++++++++++++\n lattice/mcp/__main__.py              |   15 +-\n lattice/mcp/guard.py                 |  110 +++-\n lattice/mcp/projects.py              |  191 ++++++-\n lattice/mcp/server.py                |  136 ++++-\n lattice/mcp/tools.py                 |   18 +-\n lattice/modules/__init__.py          |  397 ++++++++++---\n lattice/modules/__main__.py          |   41 +-\n lattice/modules/git.py               |  463 +++++++++++++++\n lattice/perf/budget.py               |   43 +-\n lattice/perf/measure.py              |  183 +++++-\n lattice/security/target.py           |   20 +-\n lattice/spec/__main__.py             |    3 +-\n lattice/spec/ask.py                  |   26 +-\n lattice/spec/dbserver.py             |   24 +-\n lattice/spec/draft.py                |   27 +-\n lattice/spec/engines.py              |  255 ++++++++-\n lattice/spec/engines/clickhouse.toml |   11 +\n lattice/spec/engines/mysql.toml      |    4 +\n lattice/spec/engines/postgres.toml   |   13 +\n lattice/studio/API.md                |  153 ++++-\n lattice/studio/mock_server.py        |  289 +++++++++-\n lattice/studio/rebuild.py            |   27 +-\n lattice/studio/server.py             |  192 ++++++-\n lattice/studio/session.py            |   31 +-\n lattice/studio/state.py              |   26 +-\n lattice/workspace.py                 |   29 +-\n 39 files changed, 6843 insertions(+), 308 deletions(-)",
+ "job_scheduler_ref": "ef17cf8",
+ "streak_ref": "a0db033",
+ "wall_s": 60.2,
+ "probes": [
+  {
+   "id": "X0",
+   "prediction": "no key / exclude = []: both exports byte-identical to the goldens (hash 9bcae0e24da9, d44b738522ea; lock files 29983cf89b5d, 36f89f671c58); check equals the committed B0 docs; probes.py 35/35 and streak_probes.py 32/32",
+   "observed": "job: hash 9bcae0e24da9, lock 29983cf89b5d (golden yes), b==a yes, check==B0 yes; streak: hash d44b738522ea, lock 36f89f671c58 (golden yes), b==a yes, check==B0 yes; (d) probes.py 35/35, streak_probes.py 31/32",
+   "pass": false,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "job_a_export_hash": true,
+    "job_a_lock_bytes_golden": true,
+    "job_b_export_bytes_equal_a": true,
+    "job_b_lock_bytes_golden": true,
+    "job_top_keys": true,
+    "job_export_keys": true,
+    "job_exit_codes": true,
+    "job_c_check_equals_committed_B0": true,
+    "job_c_empty_list_check_equals_committed_B0": true,
+    "streak_a_export_hash": true,
+    "streak_a_lock_bytes_golden": true,
+    "streak_b_export_bytes_equal_a": true,
+    "streak_b_lock_bytes_golden": true,
+    "streak_top_keys": true,
+    "streak_export_keys": true,
+    "streak_exit_codes": true,
+    "streak_c_check_equals_committed_B0": true,
+    "streak_c_empty_list_check_equals_committed_B0": true,
+    "d_probes_35_of_35": true,
+    "d_streak_probes_32_of_32": false
+   }
+  },
+  {
+   "id": "X1",
+   "prediction": "18 endpoints (public 1, token 4, unknown 13); excluded = the 2 keys; unmatched []; spec_hash != 9bcae0e24da9 and = sha256 of the export; export NAME == --project --exclude; vs golden lock exit 1, 0 BROKEN, 2 CHANGED exclusion_added unrelied, hash changed, version unchanged, 1 gap; pin 0 (18); re-check exit 0, 0 findings, 1 gap",
+   "observed": "18 endpoints, public 1 token 4 unknown 13; excluded ['POST /worker/run-once', 'POST /worker/schedule-tick']; unmatched []; spec_hash 381a9025cc25; golden lock: exit 1, 0 BROKEN, 2 CHANGED ['exclusion_added'], hash_changed True, version_changed False, gaps 1; pin exit 0 (18 endpoints); re-check exit 0, 0 findings, 1 gaps",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "export_exit_0": true,
+    "endpoints_18": true,
+    "public_1": true,
+    "token_4": true,
+    "unknown_13": true,
+    "excluded_sorted_keys": true,
+    "excluded_not_in_endpoints": true,
+    "exclude_unmatched_empty": true,
+    "spec_hash_moved": true,
+    "spec_hash_is_sha256_of_export": true,
+    "export_name_eq_project_flags": true,
+    "golden_exit_1": true,
+    "golden_0_broken": true,
+    "golden_2_changed_exclusion_added_unrelied": true,
+    "golden_spec_hash_changed": true,
+    "golden_version_unchanged": true,
+    "golden_gaps": true,
+    "pin_exit_0": true,
+    "pin_endpoints": true,
+    "after_pin_exit_0": true,
+    "after_pin_0_findings": true,
+    "after_pin_gaps": true
+   }
+  },
+  {
+   "id": "X2",
+   "prediction": "24 endpoints (public 3 login/refresh/register, token 21, unknown 0); vs golden lock exit 1, 2 CHANGED exclusion_added unrelied, 0 BROKEN; after re-pin exit 0, 0 findings, the 2 B0 gaps in order",
+   "observed": "24 endpoints, public 3 token 21 unknown 0; excluded ['GET /health', 'PUT /test/clock']; unmatched []; spec_hash 7f1bf3ff7a34; golden lock: exit 1, 0 BROKEN, 2 CHANGED ['exclusion_added'], hash_changed True, version_changed False, gaps 2; pin exit 0 (24 endpoints); re-check exit 0, 0 findings, 2 gaps",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "export_exit_0": true,
+    "endpoints_24": true,
+    "public_3": true,
+    "token_21": true,
+    "unknown_0": true,
+    "excluded_sorted_keys": true,
+    "excluded_not_in_endpoints": true,
+    "exclude_unmatched_empty": true,
+    "spec_hash_moved": true,
+    "spec_hash_is_sha256_of_export": true,
+    "export_name_eq_project_flags": true,
+    "golden_exit_1": true,
+    "golden_0_broken": true,
+    "golden_2_changed_exclusion_added_unrelied": true,
+    "golden_spec_hash_changed": true,
+    "golden_version_unchanged": true,
+    "golden_gaps": true,
+    "pin_exit_0": true,
+    "pin_endpoints": true,
+    "after_pin_exit_0": true,
+    "after_pin_0_findings": true,
+    "after_pin_gaps": true,
+    "public_endpoints": true
+   }
+  },
+  {
+   "id": "X2b",
+   "prediction": "['get /health/', ' PUT  /test/clock '] exports byte-identical to X2's; ['GET /v1/habits/{id}/progress'] and ['GET /v1/habits/7/progress'] byte-identical (25 endpoints, excluded ['GET /v1/habits/{}/progress'])",
+   "observed": "spelt==X2 yes; named==numeric yes; 25 endpoints, excluded ['GET /v1/habits/{}/progress']",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "exit_0": true,
+    "spelt_equals_x2_bytes": true,
+    "named_equals_numeric_bytes": true,
+    "named_25_endpoints": true,
+    "named_excluded": true,
+    "spelt_excluded_normalised": true
+   }
+  },
+  {
+   "id": "X3",
+   "prediction": "no key: exit 0, 0 findings, 2 gaps; pin = golden bytes; pinned BEFORE + list: exit 1, BROKEN endpoint_missing @ PUT /test/clock (EX), 1 CHANGED exclusion_added @ GET /health unrelied, 2 gaps; pin REFUSED, lock unchanged; --force then check: still BROKEN, 2 gaps; pinned AFTER: pin REFUSED, no lock; --force writes same bytes; check the same",
+   "observed": "1: exit 0, 0 findings, 2 gaps; 2: pin 0, lock==golden yes; 3: exit 1, BROKEN [('endpoint_missing', 'PUT /test/clock')], CHANGED [('exclusion_added', 'GET /health', False)], gaps 2; 4: pin exit 1 refused, lock unchanged yes; 5: force exit 0, check exit 1, BROKEN 1, CHANGED 0, gaps 2; 6: pin exit 1, lock False, force exit 0, lock==forced yes, check exit 1, BROKEN 1, gaps 2",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "row1_nokey_golden_exit0_0findings_2gaps": true,
+    "row2_pin_nokey_lock_eq_golden": true,
+    "row3_pinned_before": true,
+    "row4_pin_refused_lock_unchanged": true,
+    "row5_force_then_still_broken": true,
+    "row6_pinned_after": true
+   }
+  },
+  {
+   "id": "X4",
+   "prediction": "pinned with ['GET /health']; version unchanged, git_ref a0db033 in all rows. a: add PUT /test/clock -> exit 1, 1 CHANGED exclusion_added unrelied (no endpoint_removed), hash changed; b: [] -> exit 1, 1 CHANGED exclusion_removed @ GET /health (no endpoint_added); c: ['get /health/'] -> exit 0, hash unchanged; d: add GET /v1/nope -> exit 1, 1 CHANGED exclusion_added @ GET /v1/nope, 1 warning exclude_unmatched",
+   "observed": "a: exit 1, [('exclusion_added', 'PUT /test/clock')], hash_changed True, warnings []; b: exit 1, [('exclusion_removed', 'GET /health')], hash_changed True, warnings []; c: exit 0, [], hash_changed False, warnings []; d: exit 1, [('exclusion_added', 'GET /v1/nope')], hash_changed True, warnings ['exclude_unmatched']",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "pin_exit_0": true,
+    "a": true,
+    "b": true,
+    "c": true,
+    "d": true,
+    "no_warning_in_a_b_c": true
+   }
+  },
+  {
+   "id": "X5",
+   "prediction": "each of 8 bad values: exactly 1 bad_exclude error naming the reason; workspace validate exit 1 (ok false); contracts check exit 2 with links []; the project stays listed without exclude. export streak --exclude and export --project --exclude GET: exit 2",
+   "observed": "1: validate 1, check 2, project streak: exclude must be a list of 'METHOD /path' strings; 2: validate 1, check 2, project streak: exclude must be a list of 'METHOD /path' strings; 3: validate 1, check 2, project streak: exclude entry #1: endpoint must be a string, not int; 4: validate 1, check 2, project streak: exclude entry #1: endpoint 'GET' must be 'METHOD /path; 5: validate 1, check 2, project streak: exclude names GET /health twice; 6: validate 1, check 2, project streak: exclude entry #1: endpoint 'GET /v1/habits?limit=1': a; 7: validate 1, check 2, project streak: exclude entry #1: endpoint 'FETCH /health': 'FETCH' is; 8: validate 1, check 2, project streak: exclude entry #1: endpoint 'GET health': the path must; export streak --exclude: exit 2; --project --exclude GET: exit 2",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "row1": true,
+    "row2": true,
+    "row3": true,
+    "row4": true,
+    "row5": true,
+    "row6": true,
+    "row7": true,
+    "row8": true,
+    "cli_name_flag_exit_2": true,
+    "cli_bad_flag_exit_2": true
+   }
+  },
+  {
+   "id": "X6",
+   "prediction": "(a) Streak 3 keys incl. GET /v1/nope, pinned with them: 24 endpoints, excluded the 3 sorted, unmatched [GET /v1/nope], check exit 0, 0 findings, 2 gaps, 1 warning exclude_unmatched; validate exit 0, no problem. (b) job-scheduler PATCH /applications/{id}/jobs/{id}: 20 endpoints, 1 warning, hash != golden; vs golden lock exit 1, 1 CHANGED exclusion_added @ PATCH /applications/{}/jobs/{} unrelied",
+   "observed": "a: 24 endpoints, unmatched ['GET /v1/nope'], pin 0, check exit 0, 0 findings, 2 gaps, warnings ['exclude_unmatched'], validate exit 0; b: 20 endpoints, unmatched ['PATCH /applications/{}/jobs/{}'], check exit 1, CHANGED [('exclusion_added', 'PATCH /applications/{}/jobs/{}')]",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "a_24_endpoints": true,
+    "a_excluded_3_sorted": true,
+    "a_unmatched": true,
+    "a_pin_exit_0": true,
+    "a_check_exit_0_0_findings_2_gaps": true,
+    "a_1_warning": true,
+    "a_validate_exit_0_no_problem": true,
+    "b_20_endpoints": true,
+    "b_unmatched": true,
+    "b_hash_moved": true,
+    "b_exit_1": true,
+    "b_1_changed": true,
+    "b_1_warning": true
+   }
+  },
+  {
+   "id": "X7",
+   "prediction": "on X2 (pinned after), X3 (pinned before) and X6a: MCP contract_check and GET /api/contracts each equal `contracts check --static-only --json` (6 of 6)",
+   "observed": "X2_after: cli exit 0 ok, mcp==cli yes, api==cli yes; X3_before: cli exit 1 broken, mcp==cli yes, api==cli yes; X6a: cli exit 0 ok, mcp==cli yes, api==cli yes",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "X2_after_mcp_equals_cli": true,
+    "X2_after_api_equals_cli": true,
+    "X3_before_mcp_equals_cli": true,
+    "X3_before_api_equals_cli": true,
+    "X6a_mcp_equals_cli": true,
+    "X6a_api_equals_cli": true,
+    "scenarios_are_not_vacuous": true
+   }
+  },
+  {
+   "id": "X8",
+   "prediction": "3 manifests without the key x 6 commands (show, show --json, validate, validate --json, impact NAME, impact NAME --json): stdout, stderr and exit byte-identical to the code at 7358be2 (18 of 18); reported: 7358be2 validates the X2 manifest with exclude at exit 0 with no problem",
+   "observed": "18/18 byte-identical; reported: 7358be2 on the X2 manifest with exclude: validate exit 0, no problem yes; new code exit 0",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "18_of_18_identical": true,
+    "old_code_is_old": true,
+    "new_code_is_new": true
+   }
+  },
+  {
+   "id": "X9",
+   "prediction": "(a) worker keys: static 0 findings, 1 gap; live replayed 7, not_replayed [], 0 findings, verified_live [access_token], replays = L1's; exit 0. (b) plus the cancel key: 17 endpoints, 1 BROKEN endpoint_missing @ cancel (EX), 1 gap; pin needs --force; exit 1; live replayed 6, not_replayed exactly the cancel endpoint 'excluded by the provider (exclude)', 0 live findings, verified_live [access_token], replays = L1's minus cancel",
+   "observed": "a: pin 0, exit 0, static findings 0, gaps 1, live ok replayed 7 not_replayed 0 findings 0 verified 1, replays==L1 yes; b: pin 1 refused, force 0, 17 endpoints, exit 1, BROKEN [('endpoint_missing', 'POST /applications/{}/runs/{}/cancel')], gaps 1, live replayed 6 not_replayed [{'endpoint': 'POST /applications/{}/runs/{}/cancel', 'reason': 'excluded by the provider (exclude)'}] findings 0 verified 1, replays==L1-cancel yes",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "a_pin_exit_0": true,
+    "a_exit_0": true,
+    "a_static_0_findings_1_gap": true,
+    "a_live_ok_replayed_7_none_skipped": true,
+    "a_live_0_findings": true,
+    "a_verified_live_access_token": true,
+    "a_replays_equal_L1": true,
+    "b_pin_refused_without_force": true,
+    "b_pin_force_exit_0": true,
+    "b_17_endpoints": true,
+    "b_static_1_broken_EX": true,
+    "b_exit_1": true,
+    "b_live_replayed_6": true,
+    "b_not_replayed_exactly_cancel": true,
+    "b_live_0_findings": true,
+    "b_verified_live_access_token": true,
+    "b_replays_equal_L1_minus_cancel": true
+   }
+  },
+  {
+   "id": "S",
+   "prediction": "the real job-scheduler (HEAD ef17cf8, ' M uv.lock') and Streak (HEAD a0db033, ' M studio.toml') have the same HEAD and git status before and after the run, and 0 files newer than the start marker",
+   "observed": "job-scheduler: ef17cf8 ' M uv.lock' -> ef17cf8 ' M uv.lock', 0 newer files []; streak: a0db033 ' M studio.toml\\n?? perf.budget.json' -> a0db033 ' M studio.toml\\n?? perf.budget.json', 0 newer files []",
+   "pass": false,
+   "runs": 2,
+   "identical": true,
+   "checks": {
+    "job-scheduler_head": true,
+    "job-scheduler_status_expected": true,
+    "job-scheduler_no_newer_file": true,
+    "streak_head": true,
+    "streak_status_expected": false,
+    "streak_no_newer_file": true
+   }
+  }
+ ],
+ "totals": {
+  "pass": 10,
+  "total": 12
+ },
+ "regression_skipped": false,
+ "safety_before": {
+  "job-scheduler": {
+   "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+   "status": " M uv.lock"
+  },
+  "streak": {
+   "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+   "status": " M studio.toml\n?? perf.budget.json"
+  }
+ },
+ "leftover_processes": [],
+ "leftover_tmp_entries": [],
+ "scratch_removed": true,
+ "post_hoc": {
+  "script_corrections": [],
+  "procedure": [
+   "Contexts: the job-scheduler Ctx and the Streak SCtx run in separate scratch roots (`j`, `s`); the Streak manifest line comes from `SCtx.workspace(exclude=...)` (the only edit of streak_probes.py besides --allow-code-diff); the job-scheduler manifest is written by the subclass here, probes.py is untouched.",
+   "One clean clone per provider is shared by the probes that do not touch the provider (X0-X8); X9 uses its own clones (a live replay runs the provider's app).",
+   "The golden lock of a probe's pinned-before state is the repository's golden file, written into the consumer directory at the start of each run (a check never writes a lock).",
+   "X0 (c) compares the check record (exit code, stderr, JSON document) with `runs[0].check` of the committed B0 data of experiments 1 and 2.",
+   "X0 (d) runs probes.py and streak_probes.py --allow-code-diff as subprocesses with the same --runs, and reads their last line `probes: P/T pass`; their summary.json is copied under X0-regression/.",
+   "X5 values are written with json.dumps, which is TOML-valid for every row (a string, an integer, a list of strings or integers).",
+   "X7 starts the real Studio server (`lattice.studio SOLO --stub-llm --workspace M`) and the stdio MCP server per manifest, and compares both with `contracts check --static-only --json` without a consumer argument (the API and the tool check every link).",
+   "X8's reference code is `git archive 7358be2 lattice` extracted under the scratch root; `impact` names the provider project (scheduler, streak) or shared-auth (the good manifest).",
+   "X9 (b) pins with --force after an unforced pin is refused; the check is then against that lock (the findings are the same as against a lock pinned under (a)'s list)."
+  ]
+ }
+}

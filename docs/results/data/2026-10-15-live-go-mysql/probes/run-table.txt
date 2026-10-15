@@ -1,0 +1,77 @@
+... P0
+... G0
+... G-D1a
+... G-D1b
+... G-D1c
+... G-D2a
+... G-D2b
+... G-D2c
+... G-D3a
+... G-D3b
+... G-D3c
+... G-D4a
+... G-D4b
+... G-D4c
+... G-D6a
+... G-D6b
+... G-D6c
+... G-D7a
+... G-D7b
+... G-D7c
+... G-D9a
+... G-D9b
+... G-D9c
+... A1
+... A1p
+... A2
+... A3
+... A4
+... A5
+... Z1
+... K2
+... K3a
+... K3c
+... K3b
+... B1
+... T
+... K1
+id      | observed | pass
+P0      | head a0679e9; diff vs main empty; spec_hash d44b738522ea; build 6.2 s; go version go1.26.2 darwin/arm64 | PASS
+G0      | exit 0; static findings 0; replayed 7; live findings 0; verified ['access_token']; containers/call [1]; wall median 5.9 s (max 6.9) | PASS
+G-D1a   | S [('endpoint_missing', 'GET /v1/home', '')]; L []; N ['GET /v1/home']; class UNREPLAYED; exit 1; containers [1, 1, 1]; replayed 6; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D1b   | S []; L [('status_not_observed', 'GET /v1/home', '200')]; N []; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 404, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D1c   | S [('endpoint_missing', 'GET /v1/home', '')]; L []; N ['GET /v1/home']; class UNREPLAYED; exit 1; containers [1, 1, 1]; replayed 6; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D2a   | S [('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200')]; L [('response_field_missing', 'POST /v1/nudges/{}/dismiss', 'id'), ('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200')]; N []; class SUPERSET; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 204}; verified True | PASS
+G-D2b   | S []; L [('response_field_missing', 'POST /v1/nudges/{}/dismiss', 'id'), ('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200')]; N []; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 204}; verified True | PASS
+G-D2c   | S [('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200')]; L []; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D3a   | S [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; L [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; N []; class EXACT; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D3b   | S []; L [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; N []; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D3c   | S [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; L []; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D4a   | S [('request_field_missing', 'POST /v1/auth/login', 'password')]; L []; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D4b   | S []; L [('status_not_observed', 'POST /v1/auth/login', '200')]; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 1; answered {'POST /v1/auth/login': 422}; verified False | PASS
+G-D4c   | S [('request_field_missing', 'POST /v1/auth/login', 'password')]; L [('status_not_observed', 'POST /v1/auth/login', '200')]; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 422, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified False | PASS
+G-D6a   | S [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; L [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; N []; class EXACT; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D6b   | S []; L [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; N []; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D6c   | S [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; L []; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D7a   | S [('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; L []; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/auth/login', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class UNREPLAYED; exit 1; containers [0, 0, 0]; replayed 0; answered {}; verified False | PASS
+G-D7b   | S []; L [('status_not_observed', 'POST /v1/auth/login', '200')]; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 1; answered {'POST /v1/auth/login': 404}; verified False | PASS
+G-D7c   | S [('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; L []; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/auth/login', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class UNREPLAYED; exit 1; containers [0, 0, 0]; replayed 0; answered {}; verified False | PASS
+G-D9a   | S []; L []; N []; class EXACT; exit 0; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D9b   | S []; L []; N []; class EXACT; exit 0; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+G-D9c   | S []; L []; N []; class EXACT; exit 0; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True | PASS
+A1      | exit 2; error docker_unavailable: streak: the live check on mysql starts a throwaway mysql:8.4 container and Docker is not available (no docker CLI, or its daemon does not an; wall [0.435, 0.379, 0.382]; created [] | PASS
+A1p     | exit 2; error docker_unavailable: streak: the live check on mysql starts a throwaway mysql:8.4 container and Docker is not available (no docker CLI, or its daemon does not an; wall [0.434, 0.445, 0.444]; created [] | PASS
+A2      | exit 2; error driver_missing: streak: the live check on mysql needs pymysql>=1.1 in /Users/vivekgade/Documents/lattice/.venv/bin/python3 (the Python that runs it): instal; wall [0.386, 0.397, 0.402]; created [] | PASS
+A3      | exit 2; error docker_image_missing: streak: the image mysql:8.4 is not present locally and the live check never pulls: run `docker pull mysql:8.4`; wall [0.465, 0.407, 0.386]; created [] | PASS
+A4      | exit 2; error provider_start_failed: streak: the app did not start (FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/claude-501/-Users-vivekgade-Documents-l; wall [5.933, 5.835, 5.86]; created ['lattice-live-mysql-29372a49'] | PASS
+A5      | exit 0; error None: ; wall [0.21, 0.207, 0.209]; created [] | PASS
+Z1      | exit 0; replayed 7; ignored ['LATTICE_MYSQL_URL', 'database_url']; decoy connections 10 -> 11; databases ['information_schema', 'mysql', 'performance_schema', 'streak_real', 'sys']; sql_mode unchanged True | PASS
+K2      | 2 s -> ['live_timeout'] wall [2.47, 2.47, 2.5]; 5 s -> ['live_timeout'] wall [5.47, 5.41, 5.41]; 8 s -> ['ok'] wall [6.76, 5.36, 6.35] | PASS
+K3a     | @3s live_failed containers [] apps 0; @3s live_failed containers [] apps 0; @3s live_failed containers [] apps 0; @6s live_failed containers [] apps 0; @6s live_failed containers [] apps 0; @6s live_failed containers [] apps 0 | PASS
+K3c     | @4.78s live_failed containers [] apps 0; @5.66s live_failed containers [] apps 0; @5.65s live_failed containers [] apps 0 | PASS
+K3b     | rc [-9, -9, -9]; settled after [3.2, 3.1, 3.2] s; containers [[], [], []]; tmp entries left [['lattice-live-4z0tr0oa'], ['lattice-live-dw_jth3n'], ['lattice-live-xtfxj03q']] (predicted: 1 each, reported) | PASS
+B1      | 18/18 case/format cells identical over 10 runs; docker calls 0; test_live.py diff empty | PASS
+T       | G0 median 5.85 s, max 6.893; a-D7 walls [0.383, 0.38, 0.384, 0.375, 0.374, 0.373, 0.372, 0.373, 0.373, 0.374]; static-only [0.236, 0.228, 0.236, 0.24, 0.233] | PASS
+K1      | 166 calls checked, 0 with a leak: [] | PASS
+probes: 37/37 pass
+$PY dogfood/contracts/livego_probes.py --runs 10 --streak-ref a0679e9  $S/g    451.95s user 131.52s system 46% cpu 20:42.67 total

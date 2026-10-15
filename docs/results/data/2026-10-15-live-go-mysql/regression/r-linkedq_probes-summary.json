@@ -1,0 +1,269 @@
+{
+ "experiment": "2026-10-14-linked-questions",
+ "command": "python dogfood/contracts/linkedq_probes.py --runs 1 --scratch $SCRATCH --out /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/r-linkedq_probes-data",
+ "runs": 1,
+ "code_root": "/Users/vivekgade/Documents/lattice-livego",
+ "code_head": "d014aa05712df2c735148555d34cbf2c96cb4bf1",
+ "job_scheduler_ref": "ef17cf8",
+ "streak_ref": "a0db033",
+ "wall_s": 909.2,
+ "probes": [
+  {
+   "id": "Q0",
+   "prediction": "job D6, D7, D10, Streak D8, D9, D12 and the 11 unaffected controls: every row `action: none`, 0 files added or changed in the consumer's directory after init, linked_questions/ empty, exit 0; --dry-run on job D2: created, dry_run true, 0 files written. 18/18",
+   "observed": "18/18 rows as predicted; J-D6 none, J-D7 none, J-D10 none",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "J-D6": true,
+    "J-D7": true,
+    "J-D10": true,
+    "S-D8": true,
+    "S-D9": true,
+    "S-D12": true,
+    "J-C1": true,
+    "J-C2": true,
+    "J-C3": true,
+    "J-C4": true,
+    "S-C1": true,
+    "S-C2": true,
+    "S-C3": true,
+    "S-C4": true,
+    "S-C5": true,
+    "S-C6": true,
+    "I3x-a": true,
+    "dry-run J-D2": true,
+    "all_18": true
+   }
+  },
+  {
+   "id": "Q1",
+   "prediction": "job D1-D5 and Streak D1-D7: one question each (id lq1; findings = committed Dn minus unrelied CHANGED; D1 1 BROKEN; D2-D5 1+1; Streak D3 2, D6 4, D7 41 unrelied dropped; D7 7 endpoints); job D6-D10, Streak D8-D13: none; I3x-b 1 BROKEN endpoint_missing PUT /test/clock; I0c stale pin: K(I0c) == K(D2) and `existing`; I4 a c d f g h as in the table; keys distinct 5 and 7; Studio trigger D2 -> 1 question = the CLI's but `source`, D8 and D10 -> 0 (3/3)",
+   "observed": "job: 5 questions; D1 1+0 D2 1+1 D3 1+1 D4 1+1 D5 1+1 D6 none D7 none D8 none D9 none D10 none; streak: 7 questions; D1 1+0 D2 1+1 D3 1+1 D4 1+1 D5 1+1 D6 1+1 D7 7+0 D8 none D9 none D10 none D11 none D12 none D13 none; I3x-b yes; I0c yes; I4 a yes c yes d yes f yes g yes h yes; trigger yes",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "job-D1": true,
+    "job-D2": true,
+    "job-D3": true,
+    "job-D4": true,
+    "job-D5": true,
+    "job-D6": true,
+    "job-D7": true,
+    "job-D8": true,
+    "job-D9": true,
+    "job-D10": true,
+    "job-keys_distinct": true,
+    "streak-D1": true,
+    "streak-D2": true,
+    "streak-D3": true,
+    "streak-D4": true,
+    "streak-D5": true,
+    "streak-D6": true,
+    "streak-D7": true,
+    "streak-D8": true,
+    "streak-D9": true,
+    "streak-D10": true,
+    "streak-D11": true,
+    "streak-D12": true,
+    "streak-D13": true,
+    "streak-keys_distinct": true,
+    "totals_5_of_10_and_7_of_13": true,
+    "I3x-b": true,
+    "I0c": true,
+    "I4-a": true,
+    "I4-c": true,
+    "I4-d": true,
+    "I4-f": true,
+    "I4-g": true,
+    "I4-h": true,
+    "trigger_D2_equals_cli_but_source": true,
+    "trigger_D2_diff_keys": [
+     "source"
+    ],
+    "trigger_D8_none": true,
+    "trigger_D10_none": true,
+    "trigger_3_of_3": true
+   }
+  },
+  {
+   "id": "Q2",
+   "prediction": "s1 created lq1; s2 existing, 0 files changed; s3 the D2 sha and d2c4 existing, 0 files changed; s4 d3 -> lq2, lq1 open and superseded {by lq2, newer_question}, lq1.json byte-identical; s5 HEAD: nothing created, both superseded {by null, no_contradiction}; s6 d2 -> existing lq1, lq2 superseded by lq1; s7 dismiss lq1 then d2: existing, 0 question files changed, 2 questions; s8 HEAD: none, current null (link rewritten); s9 d2 -> NEW lq3 (same key as dismissed lq1), lq1 stays dismissed, 3 questions; s10 d8 (regression): 0 created, current null, lq2 open",
+   "observed": "10/10 steps; s1=created/lq1 s2=existing/lq1 s4=created/lq2 s5=none s6=existing/lq1 s7=existing/lq1 s8=none s9=created/lq3 s10=none",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "s1": true,
+    "s2": true,
+    "s3": true,
+    "s4": true,
+    "s5": true,
+    "s6": true,
+    "s7": true,
+    "s8": true,
+    "s9": true,
+    "s10": true,
+    "no_status_changed_by_a_notification": true,
+    "nothing_outside_linked_questions": true
+   }
+  },
+  {
+   "id": "Q3",
+   "prediction": "(a) outside linked_questions/ every consumer file byte- and mtime-identical, new files only at D3.3's paths (.git/info/exclude included); (b) a real StateStore dir's meta.json, plans/, builds/, changes/ byte-identical and the next allocate is c2; (c) a read-only state dir: undelivered consumer_state_unwritable, exit 1, others delivered; (d) missing: consumer_state_missing, nothing created; (e) [state] dir lands in st/, enabled = false is _disabled; (f) 0 parse errors and 0 partial objects under 200 notifications and 200 resolves; (g) ids unique and contiguous, no file overwritten over 50 rounds; (h) held lock: consumer_state_busy after <= 6 s",
+   "observed": "a outside 0 / changed 6; b identical yes next c2; c {'ci-bot': 'undelivered', 'ci-bot-2': 'created'}; d consumer_state_missing find []; e created/consumer_state_disabled; f 200 ids, reader {'seen': 94260, 'parse_errors': 0, 'partial': 0}; g 50/50 rounds clean, hammer ids 200; h consumer_state_busy elapsed 5.403 s (wall 5.46 s)",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "a_only_allowed_paths": true,
+    "b_statestore_untouched": true,
+    "c_readonly_undelivered_others_delivered": true,
+    "d_missing_nothing_created": true,
+    "e_state_dir_and_disabled": true,
+    "f_no_torn_reads": true,
+    "g_ids_unique_and_contiguous_50_rounds": true,
+    "g_hammer_200_ids_unique_and_contiguous": true,
+    "h_busy_within_6s": true
+   }
+  },
+  {
+   "id": "Q4",
+   "prediction": "the Streak D2 accept on this tree and on the main checkout at 33d8de1, each with the consumer (i) delivered, (ii) 0555, (iii) missing, (iv) its .lock held 30 s: the accept body byte-identical (same sha); spec files, commit tree and message identical; provider state dir: same file list, changes/c1.json equal but saved_at, events.jsonl equal but timestamps; median accept latency (10 runs) within 0.3 s of 33d8de1's, (iv) included and a second accept during (iv) succeeds; linked_questions appears only in contracts/linked.py, contracts/__main__.py, mcp/projects.py, the new routes, docs, tests",
+   "observed": "delivered: ok (median 0.05 s new, 0.04 s old); readonly: ok (median 0.05 s new, 0.05 s old); missing: ok (median 0.05 s new, 0.05 s old); lock: ok (median 0.05 s new, 0.05 s old); static ['contracts/__main__.py', 'contracts/linked.py', 'mcp/projects.py', 'studio/mock_server.py', 'studio/server.py']",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "delivered": true,
+    "readonly": true,
+    "missing": true,
+    "lock": true,
+    "old_code_materialised_from_33d8de1": true,
+    "static_linked_questions_only_where_allowed": true
+   }
+  },
+  {
+   "id": "Q5",
+   "prediction": "hub Studio with the workspace (names agree), state from Q2 s4: CLI --json, MCP (stdio, list only) and API list `all` and `open` bodies equal; CLI and API resolve lq1 (note adapted) and dismiss on a restored copy: equal bodies but via and at; unknown_question/404, not_open/409 with the stored note unchanged, bad_note/422, unknown_project (API 404), the provider's own store 404; MCP tools/list (also --readonly) holds linked_question_list and no resolve/dismiss tool. 11/11",
+   "observed": "12/12 checks; tools ['code_links', 'linked_question_list']",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "list_all_equal": true,
+    "list_open_equal": true,
+    "resolve_equal_but_via_at": true,
+    "dismiss_equal_but_via_at": true,
+    "via_resolve_cli_vs_studio": true,
+    "via_dismiss_cli_vs_studio": true,
+    "lq9_unknown_question_404": true,
+    "not_open_409_unchanged": true,
+    "bad_note_422": true,
+    "nobody_unknown_project": true,
+    "provider_store_404": true,
+    "tools_list_only": true
+   }
+  },
+  {
+   "id": "Q6",
+   "prediction": "hub Studio serving ci-bot; notify d1, d2, d3 (lq1-lq3, lq3 current); dismiss lq1 via API; SIGKILL; restart: GET /api/linked-questions byte-identical, order lq1, lq2, lq3; notify d2: existing. A writer SIGKILLed at 50 random points: every lq*.json parses, no temp file listed, the next write sweeps them. 3/3",
+   "observed": "restart identical yes order ['lq1', 'lq2', 'lq3'] d2 existing/lq2; 50 kills: parse errors 0, temp files left after a kill 0 (swept by the next write: yes), alive at kill 50/50",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "restart_list_byte_identical_in_order": true,
+    "restart_notify_d2_existing": true,
+    "kills_50_all_parse_no_temp_listed_next_write_sweeps": true
+   }
+  },
+  {
+   "id": "T",
+   "prediction": "median CLI notify, 10 runs, threshold <= 10 s, predicted <= 1.5 s",
+   "observed": "job-scheduler median 0.48 s, Streak median 0.46 s (impact alone 0.47 s)",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "job_scheduler_median_le_10s": true,
+    "streak_median_le_10s": true,
+    "job_scheduler_prediction_le_1.5s": true,
+    "streak_prediction_le_1.5s": true
+   }
+  },
+  {
+   "id": "Q7",
+   "prediction": "probes.py --runs 10 35/35, streak_probes.py --allow-code-diff 32/32, exclude_probes.py 12/12, impact_probes.py --runs 10 12/12; pytest tests/contracts tests/workspace tests/mcp tests/studio 0 failures; dogfood/studio/check.sh PASS (422 + R96/R97's steps); restart_drill.py A B C F; on the Q1 workspace workspace show|validate|impact, contracts export|check|impact (text, --json) and the pin lock byte-identical to 33d8de1; state_dir_for paths equal",
+   "observed": "byte-identical 12/12; state_dir_for equal yes; probes 35/35; streak_probes 31/32; exclude_probes 10/12; impact_probes 10/11; pytest 1130 passed, 2 skipped in 502.90s (0:08:22); check.sh PASS: 0 findings (D 0, X 0); 435 cases run; restart_drill rc 0",
+   "pass": false,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "old_code_materialised_from_33d8de1": true,
+    "bytes_identical_to_33d8de1": true,
+    "pin_lock_equals_golden": true,
+    "state_dir_for_paths_equal_33d8de1": true,
+    "probes_35_of_35": true,
+    "streak_probes_32_of_32": false,
+    "exclude_probes_12_of_12": false,
+    "impact_probes_11_of_11": false,
+    "pytest_0_failures": true,
+    "studio_check_pass": true,
+    "restart_drill_A_B_C_F": true
+   }
+  },
+  {
+   "id": "S",
+   "prediction": "the real job-scheduler (HEAD ef17cf8, ' M uv.lock') and Streak (HEAD a0db033, ' M studio.toml') have the same HEAD and git status before and after the run, and 0 files newer than the start marker",
+   "observed": "job-scheduler: ef17cf8 ' M uv.lock' -> ef17cf8 ' M uv.lock', 0 newer files []; streak: a0db033 ' M studio.toml\\n?? perf.budget.json' -> a0db033 ' M studio.toml\\n?? perf.budget.json', 0 newer files []",
+   "pass": false,
+   "runs": 2,
+   "identical": true,
+   "checks": {
+    "job-scheduler_head": true,
+    "job-scheduler_status_expected": true,
+    "job-scheduler_no_newer_file": true,
+    "streak_head": true,
+    "streak_status_expected": false,
+    "streak_no_newer_file": true
+   }
+  }
+ ],
+ "totals": {
+  "pass": 8,
+  "total": 10
+ },
+ "regression_skipped": false,
+ "merged_from_earlier_invocation": [],
+ "safety_before": {
+  "job-scheduler": {
+   "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+   "status": " M uv.lock"
+  },
+  "streak": {
+   "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+   "status": " M studio.toml\n?? perf.budget.json"
+  }
+ },
+ "leftover_processes": [],
+ "leftover_tmp_entries": [],
+ "post_hoc": {
+  "script_corrections": [
+   "Q1 (I4-g): a first full run stopped in its second run with FileNotFoundError: the probe deleted ci-bot-2's lock at every run and the file was already gone after the first. The unlink is now `missing_ok=True` (the lock stays deleted: `no_pin` every run). No pass rule or prediction changed; the first run's partial output was overwritten."
+  ],
+  "procedure": [
+   "Helpers: JCtx and SX (exclude_probes.py) and `H.ref`, `multi_a`, `multi_b` (impact_probes.py) are reused. A candidate ref dN is the committed edit list applied to a clone of the clean clone and fetched into the provider clone as refs/heads/dN, before the measured window. Each row of Q0-Q2 runs on a fresh consumer state: `questions init` after removing `.lattice/`.",
+   "Q0 counts 18 as the prereg does: the 6 unaffected D rows and 11 controls are 17 rows, plus the --dry-run of job D2. Q2's table lists 10 steps (s1..s9 and a second 's8', the d8 regression, here s10) under 'Pass: 8 of 8': every step is a check and all 10 are reported.",
+   "Q3 (c) and Q4 (ii) make the state directory read-only recursively (chmod -R 0555): a 0555 state directory whose `linked_questions/` was made earlier by `questions init` would still accept a write into that subdirectory. (f), (g), (h) and the 50 kills of Q6 are stress parts and run once; (a)-(e) run --runs times. (g) adds a hammer of 200 in-process delivers from two processes behind a start barrier next to the 50 rounds of two notify CLI processes. (h)'s 'after <= 6 s' is measured from the start of the notify (elapsed_s: the impact plus the 5 s wait), the wall time of the process is recorded beside it.",
+   "Q1's Studio trigger uses one scratch clone per run (the name carries `-r<run>`); the suffix is removed from the recorded strings before the 10 runs are compared (a first full run failed 'identical 10 of 10' on exactly those paths, nothing else differed).",
+   "Q1's Studio trigger and Q4 serve the Streak clone with `python -m lattice.studio DIR --stub-llm --workspace M` (one DIR: its name, from studio.toml, is the manifest name `streak`); the ready change is written to `<state dir>/changes/c1.json` with the same `StateStore.save` the Studio uses, its project_hash computed by `files_hash` of the clone, and the spec.py of the Dn edit. The accept is POST /p/streak/api/changes/c1/accept. Git identity and dates come from the server's environment (fixed), so the commit sha is reproducible and equal across the two code trees.",
+   "Q5: the MCP server has no per-id operation, so `unknown_question` is checked on the CLI and the API and `unknown_project` on all three (the MCP tool error names the code). The two `/p/<name>/` Studios are seed copies (`dogfood/studio/project_seed` files, a studio.toml naming the project), `ci-bot` at the consumer's directory and `scheduler` at a separate directory (its store is the provider's own, empty one).",
+   "Q7 and impact_probes.py: the prereg says 'impact_probes.py --runs 10 I0-I8 pass', but I8 of that runner compares with the main checkout at 67189af (its OLD_HEAD, written before 4a was merged) and the main checkout is now at 33d8de1, so its two head checks cannot hold. Q7 runs its other 11 probes (`--only I0a,I0b,I0c,I1,I2,I3,I4,I5,I7,T,I6`, --runs 10); the byte comparison against 33d8de1 that I8 stands for is Q7's own.",
+   "Two invocations: the first full run's Q7 started the nested impact_probes.py without --only, which also runs I8 and re-runs the three runners, pytest and check.sh inside it (over 40 minutes); it was stopped, Q7 was fixed (above) and re-run with `--only Q7 --merge`, which lists Q0-Q6, T and S from the first invocation's files in the table and the totals (`merged_from_earlier_invocation` in summary.json; summary-invocation-1.json is the first invocation's own summary). The code under test did not change between the two.",
+   "Q7: the byte comparison runs the same argv under PYTHONPATH=<this tree> and PYTHONPATH=<the main checkout at 33d8de1> on the Q1 workspace; `state_dir_for` paths are computed in a subprocess per tree for the drill project and the test projects."
+  ]
+ }
+}

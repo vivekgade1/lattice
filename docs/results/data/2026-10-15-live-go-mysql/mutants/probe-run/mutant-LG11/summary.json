@@ -1,0 +1,264 @@
+{
+ "experiment": "2026-10-15-live-go-mysql",
+ "command": "python dogfood/contracts/livego_probes.py --runs 1 --streak-ref a0679e9 --scratch /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/mp/LG11 --out /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/mp-data/mutant-LG11 --code-root /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/mp-tmp/lattice-livego-LG11-ms305y1k --only P0,G-D7a,G-D7c",
+ "runs": 1,
+ "code_root": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/mp-tmp/lattice-livego-LG11-ms305y1k",
+ "streak_ref": "a0679e9",
+ "wall_s": 20.7,
+ "probes": [
+  {
+   "id": "P0",
+   "status": "RAN",
+   "prediction": "the provider clone is build/streak a0679e9; spec.py, spec.trace.json, studio.toml, harness.py and check.sh equal main a0db033; the pin on the clean clone has golden-streak's export and spec_hash d44b738522ea; go builds the clone; mysql:8.4 is local",
+   "observed": "head a0679e9; diff vs main empty; spec_hash d44b738522ea; build 6.27 s; go version go1.26.2 darwin/arm64",
+   "pass": true,
+   "runs": 0,
+   "identical": true,
+   "checks": {
+    "clone_head_is_a0679e9": true,
+    "five_files_equal_main": true,
+    "pin_export_equals_golden": true,
+    "pin_spec_hash_d44b738522ea": true,
+    "go_build_ok": true,
+    "image_local": true
+   },
+   "probe_wall_s": 6.9
+  },
+  {
+   "id": "G-D7a",
+   "status": "RAN",
+   "prediction": "D7 mode a: static BROKEN [('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; live BROKEN none; not replayed 7 endpoint(s); class UNREPLAYED; exit 1; containers 0; access_token verified False",
+   "observed": "S [('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; L []; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/auth/login', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class UNREPLAYED; exit 1; containers [1]; replayed 0; answered {}; verified False",
+   "pass": false,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": false,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 6.5
+  },
+  {
+   "id": "G-D7c",
+   "status": "RAN",
+   "prediction": "D7 mode c: static BROKEN [('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; live BROKEN none; not replayed 7 endpoint(s); class UNREPLAYED; exit 1; containers 0; access_token verified False",
+   "observed": "S [('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; L []; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/auth/login', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class UNREPLAYED; exit 1; containers [1]; replayed 0; answered {}; verified False",
+   "pass": false,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": false,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 7.2
+  }
+ ],
+ "not_run": [
+  "G0",
+  "G-D1a",
+  "G-D1b",
+  "G-D1c",
+  "G-D2a",
+  "G-D2b",
+  "G-D2c",
+  "G-D3a",
+  "G-D3b",
+  "G-D3c",
+  "G-D4a",
+  "G-D4b",
+  "G-D4c",
+  "G-D6a",
+  "G-D6b",
+  "G-D6c",
+  "G-D7b",
+  "G-D9a",
+  "G-D9b",
+  "G-D9c",
+  "A1",
+  "A1p",
+  "A2",
+  "A3",
+  "A4",
+  "A5",
+  "Z1",
+  "K2",
+  "K3a",
+  "K3c",
+  "K3b",
+  "B1",
+  "T",
+  "K1"
+ ],
+ "totals": {
+  "pass": 1,
+  "total": 3
+ },
+ "g_configurations": {
+  "pass": 0,
+  "total": 2,
+  "rows": [
+   {
+    "id": "G-D7a",
+    "pass": false,
+    "class": "UNREPLAYED",
+    "predicted_class": "UNREPLAYED",
+    "S": [
+     [
+      "endpoint_missing",
+      "GET /v1/habits",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/habits/{}/progress",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/home",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/me",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/auth/login",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/habits/{}/completions",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/nudges/{}/dismiss",
+      ""
+     ]
+    ],
+    "L": [],
+    "N": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/progress",
+     "GET /v1/home",
+     "GET /v1/me",
+     "POST /v1/auth/login",
+     "POST /v1/habits/{}/completions",
+     "POST /v1/nudges/{}/dismiss"
+    ],
+    "checks_failed": [
+     "containers_as_predicted"
+    ]
+   },
+   {
+    "id": "G-D7c",
+    "pass": false,
+    "class": "UNREPLAYED",
+    "predicted_class": "UNREPLAYED",
+    "S": [
+     [
+      "endpoint_missing",
+      "GET /v1/habits",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/habits/{}/progress",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/home",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/me",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/auth/login",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/habits/{}/completions",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/nudges/{}/dismiss",
+      ""
+     ]
+    ],
+    "L": [],
+    "N": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/progress",
+     "GET /v1/home",
+     "GET /v1/me",
+     "POST /v1/auth/login",
+     "POST /v1/habits/{}/completions",
+     "POST /v1/nudges/{}/dismiss"
+    ],
+    "checks_failed": [
+     "containers_as_predicted"
+    ]
+   }
+  ]
+ },
+ "containers_created_by_checks": 2,
+ "live_calls": 2,
+ "builds": [
+  {
+   "clone": "P0",
+   "s": 6.27
+  },
+  {
+   "clone": "G-D7a",
+   "s": 0.8
+  },
+  {
+   "clone": "G-D7c",
+   "s": 0.82
+  }
+ ],
+ "leftover_processes": [],
+ "containers_removed_by_runner_at_end": [],
+ "leftover_tmp_entries": [],
+ "scratch_removed": true,
+ "post_hoc": {
+  "script_corrections": [
+   "classify(): in the --runs 1 dry run the six LIVE-ONLY cells (S empty, L non-empty) were classified SUPERSET, because the SUPERSET test (S strictly in L) ran before the LIVE-ONLY test and an empty set is a proper subset. A script bug: SUPERSET now needs a non-empty S (the LIVE-ONLY test runs first). The prediction table is untouched.",
+   "A2 and K1 TMPDIR check: `uv run` itself leaves `uv-<hash>.lock` in the call's TMPDIR (3 calls of A2 in the dry run); that file is uv's, not the check's. It is recorded under `uv_lock_entries` and excluded from `tmp_entries` (a script artefact, found in the dry run).",
+   "K3a offsets: registered as 3 s and 6 s (the prereg predicted an 8 s check). The check takes about 6.1 to 6.7 s here, so a SIGKILL at 6 s can find no child (dry run: 2 of 3). The registered probe is run unchanged and reports what it observes; K3c is a post hoc supplement that kills the child the moment its first app process has been recorded (`live-pids` non-empty), which is the case LG10 needs."
+  ],
+  "procedure": [
+   "Containers created by a call are counted from `docker events --since/--until` (create events whose `lattice.owner` label starts `live-`: every container of the live check, the throwaway server of a mutant that uses another prefix included), not from `docker ps` alone.",
+   "K1 'processes whose command starts with a clone's bin/streak-api' is a `ps -axo` scan for command lines holding '/bin/streak-api' under the scratch root, after each call.",
+   "Item notation: the code writes the auth item as 'as_user:ann'; comparisons normalise ':' after as_user to a space, nothing else.",
+   "The verified_live prediction is evaluated as the rule says (login answered 2xx), which is not the sentence's 'every a and c row but D7': c-D4 predicts login 422, so it is False.",
+   "Mode b static is compared with G0's (0 findings, version_changed true, spec_hash_changed false); modes a and c static BROKEN and CHANGED are compared with streak_probes.DRIFTS (the committed 2026-10-13 Dn.json sets)."
+  ]
+ }
+}

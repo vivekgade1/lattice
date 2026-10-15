@@ -1,0 +1,155 @@
+{
+ "id": "A3",
+ "prediction": "a shim answering `info` 0 and `image inspect` 1: docker_image_missing naming `docker pull mysql:8.4`; no `run` and no `pull` logged",
+ "observed": "exit 2; error database_start_failed: streak: the throwaway mysql server did not start (DbServerError: docker run mysql:8.4 failed: ); wall [0.815, 0.799, 0.775]; created []",
+ "pass": false,
+ "identical": false,
+ "n_runs": 3,
+ "checks": {
+  "identical": false,
+  "exit": true,
+  "error_code": false,
+  "findings_empty": true,
+  "no_streak_api_process": true,
+  "no_live_container": true,
+  "tmpdir_empty": true,
+  "wall_le_25s": true,
+  "no_run_no_pull": false,
+  "log_is_info_then_image_inspect": false,
+  "message_has_docker_pull": false
+ },
+ "extra": {
+  "error": {
+   "code": "database_start_failed",
+   "message": "streak: the throwaway mysql server did not start (DbServerError: docker run mysql:8.4 failed: )"
+  },
+  "wall_s": [
+   0.815,
+   0.799,
+   0.775
+  ],
+  "probe_wall_s": 3.5
+ },
+ "runs": [
+  {
+   "rc": 2,
+   "wall_s": 0.815,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "database_start_failed",
+    "message": "streak: the throwaway mysql server did not start (DbServerError: docker run mysql:8.4 failed: )"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A3",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.815
+   },
+   "shim_log": [
+    "info --format {{.ServerVersion}}",
+    "run -d --name lattice-live-mysql-5555673e --label lattice.spec=throwaway --label lattice.owner=live-3b7321109531d030 -p 127.0.0.1::3306 --tmpfs /var/lib/mysql:rw -e MYSQL_ROOT_PASSWORD=lattice mysql:8.4 --innodb-flush-log-at-trx-commit=0 --skip-log-bin --sync-binlog=0 --max-connections=300 --innodb-doublewrite=OFF",
+    "rm -f -v lattice-live-mysql-5555673e",
+    "ps -aq --filter label=lattice.owner=live-3b7321109531d030"
+   ]
+  },
+  {
+   "rc": 2,
+   "wall_s": 0.799,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "database_start_failed",
+    "message": "streak: the throwaway mysql server did not start (DbServerError: docker run mysql:8.4 failed: )"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A3",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.799
+   },
+   "shim_log": [
+    "info --format {{.ServerVersion}}",
+    "run -d --name lattice-live-mysql-5bb18293 --label lattice.spec=throwaway --label lattice.owner=live-400c72d782ef1cc8 -p 127.0.0.1::3306 --tmpfs /var/lib/mysql:rw -e MYSQL_ROOT_PASSWORD=lattice mysql:8.4 --innodb-flush-log-at-trx-commit=0 --skip-log-bin --sync-binlog=0 --max-connections=300 --innodb-doublewrite=OFF",
+    "rm -f -v lattice-live-mysql-5bb18293",
+    "ps -aq --filter label=lattice.owner=live-400c72d782ef1cc8"
+   ]
+  },
+  {
+   "rc": 2,
+   "wall_s": 0.775,
+   "stderr": "",
+   "status": "error",
+   "error": {
+    "code": "database_start_failed",
+    "message": "streak: the throwaway mysql server did not start (DbServerError: docker run mysql:8.4 failed: )"
+   },
+   "static_broken": [],
+   "static_changed": [],
+   "gaps": [],
+   "version_changed": null,
+   "spec_hash_changed": null,
+   "live_status": null,
+   "live_reason": null,
+   "replayed": null,
+   "live_broken": [],
+   "not_replayed": [],
+   "answered": {},
+   "verified_live": [],
+   "fields_unobservable": null,
+   "database": null,
+   "live_keys": [],
+   "leak": {
+    "call": "A3",
+    "containers_alive": [],
+    "apps_alive": [],
+    "tmp_entries": [],
+    "uv_lock_entries": [],
+    "containers_created": [],
+    "wall_s": 0.775
+   },
+   "shim_log": [
+    "info --format {{.ServerVersion}}",
+    "run -d --name lattice-live-mysql-ea7055a1 --label lattice.spec=throwaway --label lattice.owner=live-634ebed4ba0d632b -p 127.0.0.1::3306 --tmpfs /var/lib/mysql:rw -e MYSQL_ROOT_PASSWORD=lattice mysql:8.4 --innodb-flush-log-at-trx-commit=0 --skip-log-bin --sync-binlog=0 --max-connections=300 --innodb-doublewrite=OFF",
+    "rm -f -v lattice-live-mysql-ea7055a1",
+    "ps -aq --filter label=lattice.owner=live-634ebed4ba0d632b"
+   ]
+  }
+ ]
+}

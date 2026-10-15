@@ -1,0 +1,1396 @@
+{
+ "experiment": "2026-10-15-live-go-mysql",
+ "command": "python dogfood/contracts/livego_probes.py --runs 10 --streak-ref a0679e9 --scratch /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/g --out /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/livego/g-data",
+ "runs": 10,
+ "code_root": "/Users/vivekgade/Documents/lattice-livego",
+ "streak_ref": "a0679e9",
+ "wall_s": 1242.6,
+ "probes": [
+  {
+   "id": "P0",
+   "status": "RAN",
+   "prediction": "the provider clone is build/streak a0679e9; spec.py, spec.trace.json, studio.toml, harness.py and check.sh equal main a0db033; the pin on the clean clone has golden-streak's export and spec_hash d44b738522ea; go builds the clone; mysql:8.4 is local",
+   "observed": "head a0679e9; diff vs main empty; spec_hash d44b738522ea; build 6.2 s; go version go1.26.2 darwin/arm64",
+   "pass": true,
+   "runs": 0,
+   "identical": true,
+   "checks": {
+    "clone_head_is_a0679e9": true,
+    "five_files_equal_main": true,
+    "pin_export_equals_golden": true,
+    "pin_spec_hash_d44b738522ea": true,
+    "go_build_ok": true,
+    "image_local": true
+   },
+   "probe_wall_s": 6.6
+  },
+  {
+   "id": "G0",
+   "status": "RAN",
+   "prediction": "static exit 0, 0 findings, gaps 2 (request_field_unobserved cursor @ GET /v1/habits, response_field_unobserved access_token @ POST /v1/auth/login); live replayed 7, 201 on completions and 200 on the other 6, findings [], not_replayed [], verified_live = access_token, database block (ignored []); exactly 1 lattice-live- container created; exit 0; x10 identical",
+   "observed": "exit 0; static findings 0; replayed 7; live findings 0; verified ['access_token']; containers/call [1]; wall median 5.9 s (max 6.9)",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "exit_0": true,
+    "static_0_findings": true,
+    "gaps_2": true,
+    "replayed_7": true,
+    "answered_201_completions_200_others": true,
+    "live_findings_empty": true,
+    "verified_live_access_token": true,
+    "database_block": true,
+    "one_container_per_call": true,
+    "no_leaks": true
+   },
+   "probe_wall_s": 61.7
+  },
+  {
+   "id": "G-D1a",
+   "status": "RAN",
+   "prediction": "D1 mode a: static BROKEN [('endpoint_missing', 'GET /v1/home', '')]; live BROKEN none; not replayed 1 endpoint(s); class UNREPLAYED; exit 1; containers 1; access_token verified True",
+   "observed": "S [('endpoint_missing', 'GET /v1/home', '')]; L []; N ['GET /v1/home']; class UNREPLAYED; exit 1; containers [1, 1, 1]; replayed 6; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 66.8
+  },
+  {
+   "id": "G-D1b",
+   "status": "RAN",
+   "prediction": "D1 mode b: static BROKEN none; live BROKEN [('status_not_observed', 'GET /v1/home', '200')]; not replayed 0 endpoint(s); class LIVE-ONLY; exit 1; containers 1; access_token verified True",
+   "observed": "S []; L [('status_not_observed', 'GET /v1/home', '200')]; N []; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 404, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_is_g0": true,
+    "version_changed_true_spec_hash_same": true
+   },
+   "probe_wall_s": 18.2
+  },
+  {
+   "id": "G-D1c",
+   "status": "RAN",
+   "prediction": "D1 mode c: static BROKEN [('endpoint_missing', 'GET /v1/home', '')]; live BROKEN none; not replayed 1 endpoint(s); class UNREPLAYED; exit 1; containers 1; access_token verified True",
+   "observed": "S [('endpoint_missing', 'GET /v1/home', '')]; L []; N ['GET /v1/home']; class UNREPLAYED; exit 1; containers [1, 1, 1]; replayed 6; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 19.4
+  },
+  {
+   "id": "G-D2a",
+   "status": "RAN",
+   "prediction": "D2 mode a: static BROKEN [('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200')]; live BROKEN [('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200'), ('response_field_missing', 'POST /v1/nudges/{}/dismiss', 'id')]; not replayed 0 endpoint(s); class SUPERSET; exit 1; containers 1; access_token verified True",
+   "observed": "S [('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200')]; L [('response_field_missing', 'POST /v1/nudges/{}/dismiss', 'id'), ('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200')]; N []; class SUPERSET; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 204}; verified True",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 65.9
+  },
+  {
+   "id": "G-D2b",
+   "status": "RAN",
+   "prediction": "D2 mode b: static BROKEN none; live BROKEN [('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200'), ('response_field_missing', 'POST /v1/nudges/{}/dismiss', 'id')]; not replayed 0 endpoint(s); class LIVE-ONLY; exit 1; containers 1; access_token verified True",
+   "observed": "S []; L [('response_field_missing', 'POST /v1/nudges/{}/dismiss', 'id'), ('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200')]; N []; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 204}; verified True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_is_g0": true,
+    "version_changed_true_spec_hash_same": true
+   },
+   "probe_wall_s": 20.8
+  },
+  {
+   "id": "G-D2c",
+   "status": "RAN",
+   "prediction": "D2 mode c: static BROKEN [('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200')]; live BROKEN none; not replayed 0 endpoint(s); class DISAGREE; exit 1; containers 1; access_token verified True",
+   "observed": "S [('status_not_observed', 'POST /v1/nudges/{}/dismiss', '200')]; L []; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 18.6
+  },
+  {
+   "id": "G-D3a",
+   "status": "RAN",
+   "prediction": "D3 mode a: static BROKEN [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; live BROKEN [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; not replayed 0 endpoint(s); class EXACT; exit 1; containers 1; access_token verified True",
+   "observed": "S [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; L [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; N []; class EXACT; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 65.9
+  },
+  {
+   "id": "G-D3b",
+   "status": "RAN",
+   "prediction": "D3 mode b: static BROKEN none; live BROKEN [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; not replayed 0 endpoint(s); class LIVE-ONLY; exit 1; containers 1; access_token verified True",
+   "observed": "S []; L [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; N []; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_is_g0": true,
+    "version_changed_true_spec_hash_same": true
+   },
+   "probe_wall_s": 20.6
+  },
+  {
+   "id": "G-D3c",
+   "status": "RAN",
+   "prediction": "D3 mode c: static BROKEN [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; live BROKEN none; not replayed 0 endpoint(s); class DISAGREE; exit 1; containers 1; access_token verified True",
+   "observed": "S [('response_field_missing', 'POST /v1/auth/login', 'expires_in')]; L []; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 20.5
+  },
+  {
+   "id": "G-D4a",
+   "status": "RAN",
+   "prediction": "D4 mode a: static BROKEN [('request_field_missing', 'POST /v1/auth/login', 'password')]; live BROKEN none; not replayed 0 endpoint(s); class DISAGREE; exit 1; containers 1; access_token verified True",
+   "observed": "S [('request_field_missing', 'POST /v1/auth/login', 'password')]; L []; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 65.8
+  },
+  {
+   "id": "G-D4b",
+   "status": "RAN",
+   "prediction": "D4 mode b: static BROKEN none; live BROKEN [('status_not_observed', 'POST /v1/auth/login', '200')]; not replayed 6 endpoint(s); class LIVE-ONLY; exit 1; containers 1; access_token verified False",
+   "observed": "S []; L [('status_not_observed', 'POST /v1/auth/login', '200')]; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 1; answered {'POST /v1/auth/login': 422}; verified False",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_is_g0": true,
+    "version_changed_true_spec_hash_same": true
+   },
+   "probe_wall_s": 20.3
+  },
+  {
+   "id": "G-D4c",
+   "status": "RAN",
+   "prediction": "D4 mode c: static BROKEN [('request_field_missing', 'POST /v1/auth/login', 'password')]; live BROKEN [('status_not_observed', 'POST /v1/auth/login', '200')]; not replayed 0 endpoint(s); class DISAGREE; exit 1; containers 1; access_token verified False",
+   "observed": "S [('request_field_missing', 'POST /v1/auth/login', 'password')]; L [('status_not_observed', 'POST /v1/auth/login', '200')]; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 422, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified False",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 20.5
+  },
+  {
+   "id": "G-D6a",
+   "status": "RAN",
+   "prediction": "D6 mode a: static BROKEN [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; live BROKEN [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; not replayed 0 endpoint(s); class EXACT; exit 1; containers 1; access_token verified True",
+   "observed": "S [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; L [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; N []; class EXACT; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 64.7
+  },
+  {
+   "id": "G-D6b",
+   "status": "RAN",
+   "prediction": "D6 mode b: static BROKEN none; live BROKEN [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; not replayed 0 endpoint(s); class LIVE-ONLY; exit 1; containers 1; access_token verified True",
+   "observed": "S []; L [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; N []; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_is_g0": true,
+    "version_changed_true_spec_hash_same": true
+   },
+   "probe_wall_s": 20.8
+  },
+  {
+   "id": "G-D6c",
+   "status": "RAN",
+   "prediction": "D6 mode c: static BROKEN [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; live BROKEN none; not replayed 0 endpoint(s); class DISAGREE; exit 1; containers 1; access_token verified True",
+   "observed": "S [('response_field_missing', 'GET /v1/habits', 'next_cursor')]; L []; N []; class DISAGREE; exit 1; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 20.4
+  },
+  {
+   "id": "G-D7a",
+   "status": "RAN",
+   "prediction": "D7 mode a: static BROKEN [('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; live BROKEN none; not replayed 7 endpoint(s); class UNREPLAYED; exit 1; containers 0; access_token verified False",
+   "observed": "S [('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; L []; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/auth/login', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class UNREPLAYED; exit 1; containers [0, 0, 0]; replayed 0; answered {}; verified False",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 5.5
+  },
+  {
+   "id": "G-D7b",
+   "status": "RAN",
+   "prediction": "D7 mode b: static BROKEN none; live BROKEN [('status_not_observed', 'POST /v1/auth/login', '200')]; not replayed 6 endpoint(s); class LIVE-ONLY; exit 1; containers 1; access_token verified False",
+   "observed": "S []; L [('status_not_observed', 'POST /v1/auth/login', '200')]; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class LIVE-ONLY; exit 1; containers [1, 1, 1]; replayed 1; answered {'POST /v1/auth/login': 404}; verified False",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_is_g0": true,
+    "version_changed_true_spec_hash_same": true
+   },
+   "probe_wall_s": 20.5
+  },
+  {
+   "id": "G-D7c",
+   "status": "RAN",
+   "prediction": "D7 mode c: static BROKEN [('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; live BROKEN none; not replayed 7 endpoint(s); class UNREPLAYED; exit 1; containers 0; access_token verified False",
+   "observed": "S [('endpoint_missing', 'GET /v1/habits', ''), ('endpoint_missing', 'GET /v1/habits/{}/progress', ''), ('endpoint_missing', 'GET /v1/home', ''), ('endpoint_missing', 'GET /v1/me', ''), ('endpoint_missing', 'POST /v1/auth/login', ''), ('endpoint_missing', 'POST /v1/habits/{}/completions', ''), ('endpoint_missing', 'POST /v1/nudges/{}/dismiss', '')]; L []; N ['GET /v1/habits', 'GET /v1/habits/{}/progress', 'GET /v1/home', 'GET /v1/me', 'POST /v1/auth/login', 'POST /v1/habits/{}/completions', 'POST /v1/nudges/{}/dismiss']; class UNREPLAYED; exit 1; containers [0, 0, 0]; replayed 0; answered {}; verified False",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 2.3
+  },
+  {
+   "id": "G-D9a",
+   "status": "RAN",
+   "prediction": "D9 mode a: static BROKEN none; live BROKEN none; not replayed 0 endpoint(s); class EXACT; exit 0; containers 1; access_token verified True",
+   "observed": "S []; L []; N []; class EXACT; exit 0; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 64.6
+  },
+  {
+   "id": "G-D9b",
+   "status": "RAN",
+   "prediction": "D9 mode b: static BROKEN none; live BROKEN none; not replayed 0 endpoint(s); class EXACT; exit 0; containers 1; access_token verified True",
+   "observed": "S []; L []; N []; class EXACT; exit 0; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_is_g0": true,
+    "version_changed_true_spec_hash_same": true
+   },
+   "probe_wall_s": 20.6
+  },
+  {
+   "id": "G-D9c",
+   "status": "RAN",
+   "prediction": "D9 mode c: static BROKEN none; live BROKEN none; not replayed 0 endpoint(s); class EXACT; exit 0; containers 1; access_token verified True",
+   "observed": "S []; L []; N []; class EXACT; exit 0; containers [1, 1, 1]; replayed 7; answered {'GET /v1/habits': 200, 'GET /v1/habits/{}/progress': 200, 'GET /v1/home': 200, 'GET /v1/me': 200, 'POST /v1/auth/login': 200, 'POST /v1/habits/{}/completions': 201, 'POST /v1/nudges/{}/dismiss': 200}; verified True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "S_as_predicted": true,
+    "L_as_predicted": true,
+    "N_as_predicted": true,
+    "class_as_predicted": true,
+    "exit_as_predicted": true,
+    "containers_as_predicted": true,
+    "verified_as_predicted": true,
+    "no_leaks": true,
+    "static_changed_as_committed": true
+   },
+   "probe_wall_s": 20.6
+  },
+  {
+   "id": "A1",
+   "status": "RAN",
+   "prediction": "a docker shim first on PATH that logs and exits 1: docker_unavailable, log = `info` only; exit 2, no streak-api, wall <= 25 s (predicted <= 3 s)",
+   "observed": "exit 2; error docker_unavailable: streak: the live check on mysql starts a throwaway mysql:8.4 container and Docker is not available (no docker CLI, or its daemon does not an; wall [0.435, 0.379, 0.382]; created []",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "exit": true,
+    "error_code": true,
+    "findings_empty": true,
+    "no_streak_api_process": true,
+    "no_live_container": true,
+    "tmpdir_empty": true,
+    "wall_le_25s": true,
+    "shim_log_is_info_only": true
+   },
+   "probe_wall_s": 2.2
+  },
+  {
+   "id": "A1p",
+   "status": "RAN",
+   "prediction": "the real docker CLI with DOCKER_HOST=unix://<scratch>/none.sock: docker_unavailable; exit 2, wall <= 25 s",
+   "observed": "exit 2; error docker_unavailable: streak: the live check on mysql starts a throwaway mysql:8.4 container and Docker is not available (no docker CLI, or its daemon does not an; wall [0.434, 0.445, 0.444]; created []",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "exit": true,
+    "error_code": true,
+    "findings_empty": true,
+    "no_streak_api_process": true,
+    "no_live_container": true,
+    "tmpdir_empty": true,
+    "wall_le_25s": true
+   },
+   "probe_wall_s": 2.3
+  },
+  {
+   "id": "A2",
+   "status": "RAN",
+   "prediction": "the Lattice venv (`uv run python -m lattice.contracts`, no PyMySQL): driver_missing naming lattice[db]; 0 Docker calls (a logging shim forwarding to the real CLI)",
+   "observed": "exit 2; error driver_missing: streak: the live check on mysql needs pymysql>=1.1 in /Users/vivekgade/Documents/lattice/.venv/bin/python3 (the Python that runs it): instal; wall [0.386, 0.397, 0.402]; created []",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "exit": true,
+    "error_code": true,
+    "findings_empty": true,
+    "no_streak_api_process": true,
+    "no_live_container": true,
+    "tmpdir_empty": true,
+    "wall_le_25s": true,
+    "zero_docker_calls": true,
+    "message_names_lattice_db": true
+   },
+   "probe_wall_s": 2.2
+  },
+  {
+   "id": "A3",
+   "status": "RAN",
+   "prediction": "a shim answering `info` 0 and `image inspect` 1: docker_image_missing naming `docker pull mysql:8.4`; no `run` and no `pull` logged",
+   "observed": "exit 2; error docker_image_missing: streak: the image mysql:8.4 is not present locally and the live check never pulls: run `docker pull mysql:8.4`; wall [0.465, 0.407, 0.386]; created []",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "exit": true,
+    "error_code": true,
+    "findings_empty": true,
+    "no_streak_api_process": true,
+    "no_live_container": true,
+    "tmpdir_empty": true,
+    "wall_le_25s": true,
+    "no_run_no_pull": true,
+    "log_is_info_then_image_inspect": true,
+    "message_has_docker_pull": true
+   },
+   "probe_wall_s": 2.3
+  },
+  {
+   "id": "A4",
+   "status": "RAN",
+   "prediction": "a clone without bin/: provider_start_failed, the message names bin/streak-api, its container is removed; exit 2, wall <= 25 s (predicted <= 9 s)",
+   "observed": "exit 2; error provider_start_failed: streak: the app did not start (FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/claude-501/-Users-vivekgade-Documents-l; wall [5.933, 5.835, 5.86]; created ['lattice-live-mysql-29372a49']",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "exit": true,
+    "error_code": true,
+    "findings_empty": true,
+    "no_streak_api_process": true,
+    "no_live_container": true,
+    "tmpdir_empty": true,
+    "wall_le_25s": true,
+    "message_names_bin_streak_api": true,
+    "a_container_was_started_and_removed": true,
+    "wall_le_9s": true
+   },
+   "probe_wall_s": 17.9
+  },
+  {
+   "id": "A5",
+   "status": "RAN",
+   "prediction": "--static-only under A1's shim: exit 0, live not_run/static-only, the shim log empty; no streak-api; wall <= 25 s (static-only <= 1.5 s)",
+   "observed": "exit 0; error None: ; wall [0.21, 0.207, 0.209]; created []",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "identical": true,
+    "exit": true,
+    "error_code": true,
+    "findings_empty": true,
+    "no_streak_api_process": true,
+    "no_live_container": true,
+    "tmpdir_empty": true,
+    "wall_le_25s": true,
+    "live_not_run_static_only": true,
+    "shim_log_empty": true,
+    "wall_le_1_5s": true
+   },
+   "probe_wall_s": 1.6
+  },
+  {
+   "id": "Z1",
+   "status": "RAN",
+   "prediction": "a decoy mysql (database streak_real, a sentinel row) named by LATTICE_MYSQL_URL, HABIT_DB_DSN, DATABASE_URL and [app] database_url: the live result = G0's but ignored [LATTICE_MYSQL_URL, database_url]; decoy Connections +1 (the runner's own second read); SHOW DATABASES, the sentinel checksum and GLOBAL sql_mode unchanged",
+   "observed": "exit 0; replayed 7; ignored ['LATTICE_MYSQL_URL', 'database_url']; decoy connections 10 -> 11; databases ['information_schema', 'mysql', 'performance_schema', 'streak_real', 'sys']; sql_mode unchanged True",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "exit_0_replayed_7": true,
+    "database_block_ignored_both": true,
+    "result_equals_g0": true,
+    "connections_plus_1": true,
+    "databases_unchanged": true,
+    "sentinel_unchanged": true,
+    "global_sql_mode_unchanged": true,
+    "no_lattice_database_on_decoy": true
+   },
+   "probe_wall_s": 25.8
+  },
+  {
+   "id": "K2",
+   "status": "RAN",
+   "prediction": "live.TIMEOUT_S = 2, 5, 8 s, run_check in-process (x3): 2 and 5 live_timeout, 8 recorded either way; return <= TIMEOUT_S + 20 s; 0 leaks 5 s after return",
+   "observed": "2 s -> ['live_timeout'] wall [2.47, 2.47, 2.5]; 5 s -> ['live_timeout'] wall [5.47, 5.41, 5.41]; 8 s -> ['ok'] wall [6.76, 5.36, 6.35]",
+   "pass": true,
+   "runs": 9,
+   "identical": true,
+   "checks": {
+    "2s_and_5s_live_timeout": true,
+    "return_le_timeout_plus_20": true,
+    "no_leaks_5s_after": true
+   },
+   "probe_wall_s": 88.9
+  },
+  {
+   "id": "K3a",
+   "status": "RAN",
+   "prediction": "SIGKILL of the child (lattice.contracts.live) at 3 s and 6 s (x3): live_failed, 0 containers and 0 streak-api after the parent returned",
+   "observed": "@3s live_failed containers [] apps 0; @3s live_failed containers [] apps 0; @3s live_failed containers [] apps 0; @6s live_failed containers [] apps 0; @6s live_failed containers [] apps 0; @6s live_failed containers [] apps 0",
+   "pass": true,
+   "runs": 6,
+   "identical": true,
+   "checks": {
+    "child_was_found_and_killed": true,
+    "live_failed": true,
+    "no_container_left": true,
+    "no_streak_api_left": true
+   },
+   "probe_wall_s": 30.2
+  },
+  {
+   "id": "K3c",
+   "status": "RAN",
+   "prediction": "POST HOC supplement: SIGKILL of the child the moment its first app process is recorded (x3): live_failed, 0 containers and 0 streak-api after the parent returned (the case LG10 needs: an app of a killed child)",
+   "observed": "@4.78s live_failed containers [] apps 0; @5.66s live_failed containers [] apps 0; @5.65s live_failed containers [] apps 0",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "child_was_found_and_killed": true,
+    "live_failed": true,
+    "no_container_left": true,
+    "no_streak_api_left": true
+   },
+   "probe_wall_s": 18.1
+  },
+  {
+   "id": "K3b",
+   "status": "RAN",
+   "prediction": "SIGKILL of the parent at 4 s (x3): within 60 s 0 containers and 0 processes; 1 TMPDIR left per call (the known leak, reported)",
+   "observed": "rc [-9, -9, -9]; settled after [3.2, 3.1, 3.2] s; containers [[], [], []]; tmp entries left [['lattice-live-4z0tr0oa'], ['lattice-live-dw_jth3n'], ['lattice-live-xtfxj03q']] (predicted: 1 each, reported)",
+   "pass": true,
+   "runs": 3,
+   "identical": true,
+   "checks": {
+    "parent_killed": true,
+    "no_container_within_60s": true,
+    "no_process_within_60s": true
+   },
+   "probe_wall_s": 22.7
+  },
+  {
+   "id": "B1",
+   "status": "RAN",
+   "prediction": "job-scheduler (ef17cf8 + ci-bot): L1-L5 and W3 through the CLI, --json and text, new code vs `git archive 30c9120 lattice`: canonical outputs byte-identical 10/10, a docker shim sees 0 calls; tests/contracts/test_live.py unchanged",
+   "observed": "18/18 case/format cells identical over 10 runs; docker calls 0; test_live.py diff empty",
+   "pass": true,
+   "runs": 18,
+   "identical": true,
+   "checks": {
+    "all_byte_identical": true,
+    "docker_calls_0": true,
+    "test_live_py_unchanged": true
+   },
+   "probe_wall_s": 293.1
+  },
+  {
+   "id": "T",
+   "status": "RAN",
+   "prediction": "G0 live CLI wall: median of 10 predicted 8 s, threshold <= 30 s, max <= 60 s; a-D7 <= 3 s; Streak static-only <= 1.5 s",
+   "observed": "G0 median 5.85 s, max 6.893; a-D7 walls [0.383, 0.38, 0.384, 0.375, 0.374, 0.373, 0.372, 0.373, 0.373, 0.374]; static-only [0.236, 0.228, 0.236, 0.24, 0.233]",
+   "pass": true,
+   "runs": 0,
+   "identical": true,
+   "checks": {
+    "g0_median_le_30": true,
+    "g0_max_le_60": true,
+    "d7a_le_3": true,
+    "static_only_le_1_5": true
+   },
+   "probe_wall_s": 2.4
+  },
+  {
+   "id": "K1",
+   "status": "RAN",
+   "prediction": "after every live call (G, A, K, Z, T): 0 lattice-live- containers, 0 streak-api processes of a clone, 0 entries in the call's TMPDIR (K3b's tmp entries excepted, the known leak)",
+   "observed": "166 calls checked, 0 with a leak: []",
+   "pass": true,
+   "runs": 0,
+   "identical": true,
+   "checks": {
+    "calls_counted": true,
+    "zero_leaks": true
+   },
+   "probe_wall_s": 0.0
+  }
+ ],
+ "not_run": [],
+ "totals": {
+  "pass": 37,
+  "total": 37
+ },
+ "g_configurations": {
+  "pass": 22,
+  "total": 22,
+  "rows": [
+   {
+    "id": "G-D1a",
+    "pass": true,
+    "class": "UNREPLAYED",
+    "predicted_class": "UNREPLAYED",
+    "S": [
+     [
+      "endpoint_missing",
+      "GET /v1/home",
+      ""
+     ]
+    ],
+    "L": [],
+    "N": [
+     "GET /v1/home"
+    ],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D1b",
+    "pass": true,
+    "class": "LIVE-ONLY",
+    "predicted_class": "LIVE-ONLY",
+    "S": [],
+    "L": [
+     [
+      "status_not_observed",
+      "GET /v1/home",
+      "200"
+     ]
+    ],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D1c",
+    "pass": true,
+    "class": "UNREPLAYED",
+    "predicted_class": "UNREPLAYED",
+    "S": [
+     [
+      "endpoint_missing",
+      "GET /v1/home",
+      ""
+     ]
+    ],
+    "L": [],
+    "N": [
+     "GET /v1/home"
+    ],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D2a",
+    "pass": true,
+    "class": "SUPERSET",
+    "predicted_class": "SUPERSET",
+    "S": [
+     [
+      "status_not_observed",
+      "POST /v1/nudges/{}/dismiss",
+      "200"
+     ]
+    ],
+    "L": [
+     [
+      "response_field_missing",
+      "POST /v1/nudges/{}/dismiss",
+      "id"
+     ],
+     [
+      "status_not_observed",
+      "POST /v1/nudges/{}/dismiss",
+      "200"
+     ]
+    ],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D2b",
+    "pass": true,
+    "class": "LIVE-ONLY",
+    "predicted_class": "LIVE-ONLY",
+    "S": [],
+    "L": [
+     [
+      "response_field_missing",
+      "POST /v1/nudges/{}/dismiss",
+      "id"
+     ],
+     [
+      "status_not_observed",
+      "POST /v1/nudges/{}/dismiss",
+      "200"
+     ]
+    ],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D2c",
+    "pass": true,
+    "class": "DISAGREE",
+    "predicted_class": "DISAGREE",
+    "S": [
+     [
+      "status_not_observed",
+      "POST /v1/nudges/{}/dismiss",
+      "200"
+     ]
+    ],
+    "L": [],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D3a",
+    "pass": true,
+    "class": "EXACT",
+    "predicted_class": "EXACT",
+    "S": [
+     [
+      "response_field_missing",
+      "POST /v1/auth/login",
+      "expires_in"
+     ]
+    ],
+    "L": [
+     [
+      "response_field_missing",
+      "POST /v1/auth/login",
+      "expires_in"
+     ]
+    ],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D3b",
+    "pass": true,
+    "class": "LIVE-ONLY",
+    "predicted_class": "LIVE-ONLY",
+    "S": [],
+    "L": [
+     [
+      "response_field_missing",
+      "POST /v1/auth/login",
+      "expires_in"
+     ]
+    ],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D3c",
+    "pass": true,
+    "class": "DISAGREE",
+    "predicted_class": "DISAGREE",
+    "S": [
+     [
+      "response_field_missing",
+      "POST /v1/auth/login",
+      "expires_in"
+     ]
+    ],
+    "L": [],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D4a",
+    "pass": true,
+    "class": "DISAGREE",
+    "predicted_class": "DISAGREE",
+    "S": [
+     [
+      "request_field_missing",
+      "POST /v1/auth/login",
+      "password"
+     ]
+    ],
+    "L": [],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D4b",
+    "pass": true,
+    "class": "LIVE-ONLY",
+    "predicted_class": "LIVE-ONLY",
+    "S": [],
+    "L": [
+     [
+      "status_not_observed",
+      "POST /v1/auth/login",
+      "200"
+     ]
+    ],
+    "N": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/progress",
+     "GET /v1/home",
+     "GET /v1/me",
+     "POST /v1/habits/{}/completions",
+     "POST /v1/nudges/{}/dismiss"
+    ],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D4c",
+    "pass": true,
+    "class": "DISAGREE",
+    "predicted_class": "DISAGREE",
+    "S": [
+     [
+      "request_field_missing",
+      "POST /v1/auth/login",
+      "password"
+     ]
+    ],
+    "L": [
+     [
+      "status_not_observed",
+      "POST /v1/auth/login",
+      "200"
+     ]
+    ],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D6a",
+    "pass": true,
+    "class": "EXACT",
+    "predicted_class": "EXACT",
+    "S": [
+     [
+      "response_field_missing",
+      "GET /v1/habits",
+      "next_cursor"
+     ]
+    ],
+    "L": [
+     [
+      "response_field_missing",
+      "GET /v1/habits",
+      "next_cursor"
+     ]
+    ],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D6b",
+    "pass": true,
+    "class": "LIVE-ONLY",
+    "predicted_class": "LIVE-ONLY",
+    "S": [],
+    "L": [
+     [
+      "response_field_missing",
+      "GET /v1/habits",
+      "next_cursor"
+     ]
+    ],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D6c",
+    "pass": true,
+    "class": "DISAGREE",
+    "predicted_class": "DISAGREE",
+    "S": [
+     [
+      "response_field_missing",
+      "GET /v1/habits",
+      "next_cursor"
+     ]
+    ],
+    "L": [],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D7a",
+    "pass": true,
+    "class": "UNREPLAYED",
+    "predicted_class": "UNREPLAYED",
+    "S": [
+     [
+      "endpoint_missing",
+      "GET /v1/habits",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/habits/{}/progress",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/home",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/me",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/auth/login",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/habits/{}/completions",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/nudges/{}/dismiss",
+      ""
+     ]
+    ],
+    "L": [],
+    "N": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/progress",
+     "GET /v1/home",
+     "GET /v1/me",
+     "POST /v1/auth/login",
+     "POST /v1/habits/{}/completions",
+     "POST /v1/nudges/{}/dismiss"
+    ],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D7b",
+    "pass": true,
+    "class": "LIVE-ONLY",
+    "predicted_class": "LIVE-ONLY",
+    "S": [],
+    "L": [
+     [
+      "status_not_observed",
+      "POST /v1/auth/login",
+      "200"
+     ]
+    ],
+    "N": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/progress",
+     "GET /v1/home",
+     "GET /v1/me",
+     "POST /v1/habits/{}/completions",
+     "POST /v1/nudges/{}/dismiss"
+    ],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D7c",
+    "pass": true,
+    "class": "UNREPLAYED",
+    "predicted_class": "UNREPLAYED",
+    "S": [
+     [
+      "endpoint_missing",
+      "GET /v1/habits",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/habits/{}/progress",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/home",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "GET /v1/me",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/auth/login",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/habits/{}/completions",
+      ""
+     ],
+     [
+      "endpoint_missing",
+      "POST /v1/nudges/{}/dismiss",
+      ""
+     ]
+    ],
+    "L": [],
+    "N": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/progress",
+     "GET /v1/home",
+     "GET /v1/me",
+     "POST /v1/auth/login",
+     "POST /v1/habits/{}/completions",
+     "POST /v1/nudges/{}/dismiss"
+    ],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D9a",
+    "pass": true,
+    "class": "EXACT",
+    "predicted_class": "EXACT",
+    "S": [],
+    "L": [],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D9b",
+    "pass": true,
+    "class": "EXACT",
+    "predicted_class": "EXACT",
+    "S": [],
+    "L": [],
+    "N": [],
+    "checks_failed": []
+   },
+   {
+    "id": "G-D9c",
+    "pass": true,
+    "class": "EXACT",
+    "predicted_class": "EXACT",
+    "S": [],
+    "L": [],
+    "N": [],
+    "checks_failed": []
+   }
+  ]
+ },
+ "containers_created_by_checks": 136,
+ "live_calls": 169,
+ "builds": [
+  {
+   "clone": "P0",
+   "s": 6.2
+  },
+  {
+   "clone": "G0",
+   "s": 0.77
+  },
+  {
+   "clone": "G-D1a",
+   "s": 0.85
+  },
+  {
+   "clone": "G-D1b",
+   "s": 0.81
+  },
+  {
+   "clone": "G-D1c",
+   "s": 0.86
+  },
+  {
+   "clone": "G-D2a",
+   "s": 0.82
+  },
+  {
+   "clone": "G-D2b",
+   "s": 0.8
+  },
+  {
+   "clone": "G-D2c",
+   "s": 0.8
+  },
+  {
+   "clone": "G-D3a",
+   "s": 0.81
+  },
+  {
+   "clone": "G-D3b",
+   "s": 0.81
+  },
+  {
+   "clone": "G-D3c",
+   "s": 0.81
+  },
+  {
+   "clone": "G-D4a",
+   "s": 0.79
+  },
+  {
+   "clone": "G-D4b",
+   "s": 0.8
+  },
+  {
+   "clone": "G-D4c",
+   "s": 0.81
+  },
+  {
+   "clone": "G-D6a",
+   "s": 0.81
+  },
+  {
+   "clone": "G-D6b",
+   "s": 0.79
+  },
+  {
+   "clone": "G-D6c",
+   "s": 0.79
+  },
+  {
+   "clone": "G-D7a",
+   "s": 0.79
+  },
+  {
+   "clone": "G-D7b",
+   "s": 0.78
+  },
+  {
+   "clone": "G-D7c",
+   "s": 0.83
+  },
+  {
+   "clone": "G-D9a",
+   "s": 0.81
+  },
+  {
+   "clone": "G-D9b",
+   "s": 0.83
+  },
+  {
+   "clone": "G-D9c",
+   "s": 0.8
+  },
+  {
+   "clone": "A1",
+   "s": 0.8
+  },
+  {
+   "clone": "A1p",
+   "s": 0.79
+  },
+  {
+   "clone": "A2",
+   "s": 0.8
+  },
+  {
+   "clone": "A3",
+   "s": 0.8
+  },
+  {
+   "clone": "A5",
+   "s": 0.78
+  },
+  {
+   "clone": "Z1",
+   "s": 0.79
+  },
+  {
+   "clone": "K2",
+   "s": 0.8
+  },
+  {
+   "clone": "K3a",
+   "s": 0.82
+  },
+  {
+   "clone": "K3c",
+   "s": 0.81
+  },
+  {
+   "clone": "K3b",
+   "s": 0.8
+  },
+  {
+   "clone": "T",
+   "s": 0.85
+  }
+ ],
+ "leftover_processes": [
+  "77096 /Library/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python -m lattice.studio /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/lattice-ui-mutant-U8-bziwjxdk/work/scratch-P3/p3c-0/repo --port 52171 --quiet --stub-llm --allow-apply"
+ ],
+ "containers_removed_by_runner_at_end": [],
+ "leftover_tmp_entries": [],
+ "scratch_removed": true,
+ "post_hoc": {
+  "script_corrections": [
+   "classify(): in the --runs 1 dry run the six LIVE-ONLY cells (S empty, L non-empty) were classified SUPERSET, because the SUPERSET test (S strictly in L) ran before the LIVE-ONLY test and an empty set is a proper subset. A script bug: SUPERSET now needs a non-empty S (the LIVE-ONLY test runs first). The prediction table is untouched.",
+   "A2 and K1 TMPDIR check: `uv run` itself leaves `uv-<hash>.lock` in the call's TMPDIR (3 calls of A2 in the dry run); that file is uv's, not the check's. It is recorded under `uv_lock_entries` and excluded from `tmp_entries` (a script artefact, found in the dry run).",
+   "K3a offsets: registered as 3 s and 6 s (the prereg predicted an 8 s check). The check takes about 6.1 to 6.7 s here, so a SIGKILL at 6 s can find no child (dry run: 2 of 3). The registered probe is run unchanged and reports what it observes; K3c is a post hoc supplement that kills the child the moment its first app process has been recorded (`live-pids` non-empty), which is the case LG10 needs."
+  ],
+  "procedure": [
+   "Containers created by a call are counted from `docker events --since/--until` (create events whose `lattice.owner` label starts `live-`: every container of the live check, the throwaway server of a mutant that uses another prefix included), not from `docker ps` alone.",
+   "K1 'processes whose command starts with a clone's bin/streak-api' is a `ps -axo` scan for command lines holding '/bin/streak-api' under the scratch root, after each call.",
+   "Item notation: the code writes the auth item as 'as_user:ann'; comparisons normalise ':' after as_user to a space, nothing else.",
+   "The verified_live prediction is evaluated as the rule says (login answered 2xx), which is not the sentence's 'every a and c row but D7': c-D4 predicts login 422, so it is False.",
+   "Mode b static is compared with G0's (0 findings, version_changed true, spec_hash_changed false); modes a and c static BROKEN and CHANGED are compared with streak_probes.DRIFTS (the committed 2026-10-13 Dn.json sets)."
+  ]
+ }
+}
