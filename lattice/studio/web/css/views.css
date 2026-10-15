@@ -218,3 +218,71 @@
   .view-access .matrix-endpoint { min-width: 200px; }
   .view-access .matrix-endpoint .path { overflow-wrap: normal; word-break: normal; white-space: nowrap; }
 }
+
+/* ---- improve and contracts (API v1.21): tokens only ---- */
+
+.view-improve, .view-contracts { max-width: 1100px; }
+.view-improve .imp-section, .view-contracts .ctr-section { margin-top: var(--space-8); }
+.view-improve .imp-section h2, .view-contracts .ctr-section h2 { font-size: var(--fs-16); margin-bottom: var(--space-2); }
+.view-improve .imp-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.view .imp-card {
+  padding: var(--space-3) var(--space-4); border: 1px solid var(--hairline);
+  border-radius: var(--radius-surface); background: var(--raised);
+}
+.view .imp-card.is-open { border-color: var(--accent); }
+.view .imp-card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-2); }
+.view .imp-title { font-weight: var(--fw-medium); }
+.view .imp-id { font-family: var(--font-mono); font-size: var(--fs-12); color: var(--ink-2); }
+.view .imp-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); }
+.view .imp-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.view .imp-panel { margin-top: var(--space-4); padding: var(--space-4); border: 1px solid var(--hairline); border-radius: var(--radius-surface); }
+.view .imp-panel h3 { font-size: var(--fs-14); margin: 0 0 var(--space-2); }
+.view .imp-sec { margin-top: var(--space-3); }
+.view .imp-sec h4 { margin: 0 0 var(--space-1); font-size: var(--fs-13); color: var(--ink-2); }
+.view .imp-pre {
+  margin: 0 0 var(--space-2); padding: var(--space-2) var(--space-3); overflow-x: auto;
+  background: var(--surface); border-radius: var(--radius-control);
+  font-family: var(--font-mono); font-size: var(--fs-12); white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.view .imp-diff { white-space: pre; overflow-wrap: normal; }
+.view .imp-line { display: block; }
+.view .imp-add { background: var(--added-soft); color: var(--ok-text); }
+.view .imp-del { background: var(--removed-soft); color: var(--bad-text); }
+.view .imp-hunk { color: var(--ink-2); }
+.view .imp-err { color: var(--bad-text); max-width: var(--measure); }
+.view .imp-note { color: var(--pending-text); background: var(--pending-soft); padding: var(--space-2) var(--space-3); border-radius: var(--radius-control); max-width: var(--measure); }
+.view .imp-banner {
+  display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: baseline;
+  padding: var(--space-2) var(--space-3); border-left: 3px solid var(--warn);
+  background: var(--warn-soft); color: var(--warn-text); border-radius: var(--radius-control);
+}
+.view .imp-warn { margin: var(--space-2) 0; padding-left: var(--space-5); color: var(--warn-text); }
+.view .imp-next { margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-2); }
+.view .imp-step { font-weight: var(--fw-medium); }
+.view .imp-cmd { font-family: var(--font-mono); font-size: var(--fs-12); overflow-wrap: anywhere; }
+.view .imp-gates { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); }
+.view .imp-facts { margin: var(--space-2) 0 0; padding-left: var(--space-5); }
+.view .imp-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-2); }
+.view .imp-input {
+  min-height: 32px; min-width: 220px; padding: 0 var(--space-2); border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-control); background: var(--paper); color: var(--ink); font-family: var(--font-mono);
+}
+.view .imp-check { display: inline-flex; align-items: center; gap: var(--space-2); }
+.view .imp-scrim {
+  position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: var(--space-4);
+  background: color-mix(in srgb, var(--ink) 40%, transparent);
+}
+.view .imp-dialog {
+  width: min(520px, 100%); max-height: 90vh; overflow: auto; padding: var(--space-5);
+  background: var(--raised); color: var(--ink); border: 1px solid var(--hairline-strong); border-radius: var(--radius-surface);
+}
+.view .imp-dialog h2 { margin-top: 0; font-size: var(--fs-16); }
+.view .ctr-link { margin-top: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--hairline); border-radius: var(--radius-surface); }
+.view .ctr-link h3 { font-size: var(--fs-14); margin: 0 0 var(--space-1); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.view .ctr-links, .view .ctr-problems, .view .ctr-findings { margin: var(--space-1) 0; padding-left: var(--space-5); }
+.view .ctr-findings { font-family: var(--font-mono); font-size: var(--fs-12); overflow-wrap: anywhere; }
+.view .ctr-legend { margin: var(--space-2) 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-1) var(--space-3); }
+.view .ctr-legend dd { margin: 0; color: var(--ink-2); }
+@media (max-width: 760px) {
+  .view .imp-input { min-width: 0; width: 100%; }
+}

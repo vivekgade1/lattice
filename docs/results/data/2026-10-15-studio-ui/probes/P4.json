@@ -1,0 +1,95 @@
+{
+ "id": "P4",
+ "title": "discard",
+ "predicted": "200 exit 0, branch and worktree gone, record renamed <id>.discarded-1.json byte-identical, route 3 applies [], route 4 404; again: exit 3 not_applied; after git branch keep <commit>: exit 3 merged. 3 of 3",
+ "observed": "{\"p4a\": {\"branch_gone\": true, \"exit\": 0, \"live_record_gone\": true, \"record_renamed_identical\": true, \"route3_empty\": true, \"route4\": 404, \"status\": 200, \"worktree_gone\": true}, \"p4b\": {\"exit\": 3, \"reason\": \"not_applied\", \"status\": 200}, \"p4c\": {\"exit\": 3, \"reason\": \"merged\", \"status\": 200}}",
+ "pass": true,
+ "obs": {
+  "p4a": {
+   "status": 200,
+   "exit": 0,
+   "branch_gone": true,
+   "worktree_gone": true,
+   "record_renamed_identical": true,
+   "live_record_gone": true,
+   "route3_empty": true,
+   "route4": 404
+  },
+  "p4b": {
+   "status": 200,
+   "exit": 3,
+   "reason": "not_applied"
+  },
+  "p4c": {
+   "status": 200,
+   "exit": 3,
+   "reason": "merged"
+  }
+ },
+ "problems": [],
+ "digests": [
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a"
+ ],
+ "runs": 10,
+ "raw": {
+  "apply_exit": 0,
+  "p5_apply": {
+   "git_files_unchanged": true,
+   "tree_unchanged": true,
+   "events_unchanged": true,
+   "no_ledger": true,
+   "only_new_ref": true
+  },
+  "p4a": {
+   "status": 200,
+   "exit": 0,
+   "branch_gone": true,
+   "worktree_gone": true,
+   "record_renamed_identical": true,
+   "live_record_gone": true,
+   "route3_empty": true,
+   "route4": 404
+  },
+  "p4b": {
+   "status": 200,
+   "exit": 3,
+   "reason": "not_applied"
+  },
+  "p4c": {
+   "status": 200,
+   "exit": 3,
+   "reason": "merged"
+  },
+  "improve_identical": true,
+  "events_identical": true,
+  "git_calls_logged": true,
+  "forbidden_argv": 0,
+  "forbidden": [],
+  "git_subcommands": [
+   "add",
+   "branch",
+   "cat-file",
+   "check-ref-format",
+   "commit",
+   "config",
+   "diff",
+   "for-each-ref",
+   "rev-parse",
+   "show-ref",
+   "status",
+   "symbolic-ref",
+   "worktree"
+  ]
+ },
+ "status": "RAN",
+ "seconds": 11.1
+}

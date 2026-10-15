@@ -1,0 +1,30 @@
+hashes: {"lattice/studio/rebuild.py": "7e9e7bc15af6d2ae", "lattice/studio/plan.py": "ef6520932f25fe0b", "lattice/studio/server.py": "01eab4573e4b5afb", "lattice/studio/mock_server.py": "e0d19dadf5e683e8", "dogfood/studio/spec.py": "04e57c878978831c", "dogfood/studio/project_seed/studio.toml": "a696c01e006a21d1", "tests/studio/test_spec_sync.py": "76ca87398a155722", "dogfood/studio/sync_mutants.py": "cad98bf0a038188b"}
+control: PASS (control)
+SY-M3: caught by ['pytest', 'dogfood']; pytest exit 1 (6 failed, 7 passed in 10.29s; 10.5s); dogfood exit 1 (FAIL: 2 findings (D 2, X 0); 474 cases run; 75.5s)
+    FAILED tests/studio/test_spec_sync.py::test_a_plan_carries_spec_drift_and_a_warning
+    FAILED tests/studio/test_spec_sync.py::test_auto_syncs_before_the_start_baseline
+    FAILED tests/studio/test_spec_sync.py::test_each_refusal_changes_nothing
+    FAILED tests/studio/test_spec_sync.py::test_mcp_protected_files_and_a_file_absent_on_one_side
+    FAILED tests/studio/test_spec_sync.py::test_the_routes
+    FAILED tests/studio/test_spec_sync.py::test_the_sync_is_one_commit_of_the_committed_spec_files_only
+    dogfood: the_committed_spec_is_synced_onto_the_target_branch / step 9
+    dogfood: a_plan_run_syncs_the_spec_first_when_configured / step 10
+SY-M2: caught by ['pytest', 'dogfood']; pytest exit 1 (2 failed, 11 passed in 11.19s; 11.4s); dogfood exit 1 (FAIL: 1 finding (D 1, X 0); 474 cases run; 75.6s)
+    FAILED tests/studio/test_spec_sync.py::test_each_refusal_changes_nothing
+    FAILED tests/studio/test_spec_sync.py::test_the_routes
+    dogfood: spec_sync_refusals / step 1
+SY-M1: caught by ['pytest']; pytest exit 1 (1 failed, 12 passed in 11.40s; 11.6s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 481 cases run; 75.6s)
+    FAILED tests/studio/test_spec_sync.py::test_the_sync_is_one_commit_of_the_committed_spec_files_only
+SY-M4: caught by ['pytest', 'dogfood']; pytest exit 1 (2 failed, 11 passed in 10.93s; 11.1s); dogfood exit 1 (FAIL: 1 finding (D 1, X 0); 477 cases run; 78.2s)
+    FAILED tests/studio/test_spec_sync.py::test_a_running_plan_holds_the_slot
+    FAILED tests/studio/test_spec_sync.py::test_each_refusal_changes_nothing
+    dogfood: spec_sync_is_refused_while_a_plan_runs / step 7
+SY-M5: caught by ['pytest', 'dogfood']; pytest exit 1 (2 failed, 11 passed in 10.84s; 11.0s); dogfood exit 1 (FAIL: 1 finding (D 1, X 0); 479 cases run; 78.4s)
+    FAILED tests/studio/test_spec_sync.py::test_an_auto_sync_refusal_is_the_runs_409
+    FAILED tests/studio/test_spec_sync.py::test_auto_syncs_before_the_start_baseline
+    dogfood: a_plan_run_syncs_the_spec_first_when_configured / step 10
+SY-M6: caught by ['pytest', 'dogfood']; pytest exit 1 (2 failed, 11 passed in 10.96s; 11.2s); dogfood exit 1 (FAIL: 2 findings (D 2, X 0); 477 cases run; 78.3s)
+    FAILED tests/studio/test_spec_sync.py::test_each_refusal_changes_nothing
+    FAILED tests/studio/test_spec_sync.py::test_the_routes
+    dogfood: the_committed_spec_is_synced_onto_the_target_branch / step 12
+    dogfood: spec_sync_is_refused_while_a_plan_runs / step 9

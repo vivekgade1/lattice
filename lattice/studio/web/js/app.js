@@ -42,6 +42,8 @@ import * as checks from "./views/checks.js";
 import * as rebuilds from "./views/rebuilds.js";
 import * as areas from "./views/areas.js";
 import * as plans from "./views/plan.js";
+import * as improve from "./views/improve.js";
+import * as contracts from "./views/contracts.js";
 
 // Grouped navigator. `attn(m)` returns a short reason when the item needs attention (it
 // draws the dot); `count(m)` shows a number only where it helps.
@@ -65,6 +67,10 @@ const GROUPS = [
     { id: "checks", label: "Checks", mod: checks, attn: (m) => (m.app?.last_check?.verdict === "fail" ? "the last check failed" : null) },
     { id: "build", label: "Build", mod: areas, attn: () => (buildLive() ? "a build is running" : null) },
     { id: "rebuilds", label: "Rebuilds", mod: rebuilds, attn: (m) => (notBuilt(m).length ? `${notBuilt(m).length} accepted, not built` : null) },
+    { id: "improve", label: "Improve", mod: improve },
+    // v1.21: listed only when GET /api/workspace names a workspace this project is part of
+    { id: "contracts", label: "Contracts", mod: contracts, when: () => !!state.workspace,
+      count: () => contracts.openCount() || null, attn: () => (contracts.openCount() ? `${contracts.openCount()} open` : null) },
   ] },
 ];
 const VIEWS = GROUPS.flatMap((g) => g.views.map((v) => ({ ...v, group: g.id, lens: !!g.lens, groupTitle: g.title })));
@@ -259,7 +265,7 @@ function renderNav() {
   const m = state.model;
   add($nav, GROUPS.map((g) => h("section", { class: "nav-group", "aria-labelledby": `ng-${g.id}` },
     h("h2", { class: "nav-group-title", id: `ng-${g.id}` }, g.title),
-    h("ul", {}, g.views.map((v) => {
+    h("ul", {}, g.views.filter((v) => !v.when || v.when(m)).map((v) => {
       const n = m && v.count ? v.count(m) : null;
       const why = m && v.attn ? v.attn(m) : null;
       const current = state.view === v.id;
@@ -568,6 +574,7 @@ function startPollers() {
   pollBuilding(ep);
   areas.watchBuilds(ep);
   plans.watchPlans(ep);
+  contracts.loadAttention(ep, renderNav); // v1.21: one ?status=open read per project load
 }
 
 async function boot() {
@@ -604,7 +611,7 @@ window.addEventListener("studio:run-check", () => {
 subscribe((st, patch) => {
   const keys = Object.keys(patch);
   if (keys.some((k) => ["model", "connected", "checkRunning", "overlay", "loadError", "projects", "project", "workspace"].includes(k))) renderTopbar();
-  if (keys.some((k) => ["model", "view"].includes(k)) || (("buildRun" in patch || "planActive" in patch) && buildLive() !== navBuildLive)) {
+  if (keys.some((k) => ["model", "view", "workspace"].includes(k)) || (("buildRun" in patch || "planActive" in patch) && buildLive() !== navBuildLive)) {
     navBuildLive = buildLive();
     renderNav();
   }

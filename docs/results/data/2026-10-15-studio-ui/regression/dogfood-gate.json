@@ -1,0 +1,10 @@
+{
+ "verdict": "pass",
+ "cases": 481,
+ "scenarios": 57,
+ "findings": 0,
+ "counts": {
+  "D": 0,
+  "X": 0
+ }
+}

@@ -1,0 +1,8 @@
+id | predicted | observed | pass
+A0 | 18 of 18 rows (a-r, 24 cases) exact; hashes unchanged on every exit-2/3 row | 18 rows, 24 cases; 0 problem(s) | pass
+A1a | exit 0; improve/imp-3e1cd7f9 off next-phases a4ab4a1; inserted line 22; sha256 c516bc836f33cdc8; blob 642c32d -> 3def11c; tree ce7f02cf0d0b1156; 1 + line, 0 - lines; no warning | tree ce7f02cf0d0b1156; 0 problem(s) over 2 runs | pass
+A1b | exit 0; main a0db033; inserted line 22; sha256 4c4d6bd878d47f0d; blob 12b2948 -> b8a7c2f; tree c585c3bd71872cd3; gates skipped; integration_branch warning | tree c585c3bd71872cd3; gates skipped; 0 problem(s) over 2 runs | pass
+A4 | 13 of 13 rows (a-m); on each exit-0 row new parse = old + the one key and every other byte identical | 14 cases; 0 problem(s) | pass
+A5 | a -> 0 (worktree, branch gone; record renamed byte-identical; hashes = before apply); b not_applied; c branch_moved; d merged; e worktree_dirty; b-e remove nothing (5 of 5) | 5 rows; 0 problem(s) | pass
+A7 | a improved exit 0 100.00 -> 40.00, delta -60.00, rel -0.600, predicted -60.0, error 0.000, entry.commit = apply sha; b not_improved exit 1 error 1.000; c closed; d merged (4 of 4) | a improved -60.0; b not_improved; 0 problem(s) | pass
+probes: 6/6 pass

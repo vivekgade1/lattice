@@ -297,9 +297,13 @@ def _check_edit(
 class _Interrupt:
     """SIGINT and SIGTERM set a flag while the gates run (main thread only)."""
 
-    def __init__(self) -> None:
-        self.hit = False
+    def __init__(self, stop: threading.Event | None = None) -> None:
+        self._hit, self._stop = False, stop
         self._old: dict[int, Any] = {}
+
+    @property
+    def hit(self) -> bool:  # `stop`: Studio's worker thread, which has no handler
+        return self._hit or (self._stop is not None and self._stop.is_set())
 
     def __enter__(self) -> _Interrupt:
         if threading.current_thread() is threading.main_thread():
@@ -312,7 +316,7 @@ class _Interrupt:
             signal.signal(sig, old)
 
     def _handler(self, signum: int, frame: Any) -> None:
-        self.hit = True
+        self._hit = True
 
 
 def _run_gate(
@@ -414,6 +418,7 @@ def _run_gates(
     project_rel: str,
     cfg: Mapping[str, Any],
     rebuild_cfg: Any,
+    stop: threading.Event | None = None,
 ) -> tuple[str, list[dict[str, Any]]]:
     """(status, results): all the gates, in order, from the worktree root."""
     from lattice.studio.rebuild import gate_env
@@ -427,7 +432,7 @@ def _run_gates(
         sys_path=[str(p) for p in app.get("sys_path") or []],
     )
     results: list[dict[str, Any]] = []
-    with _Interrupt() as interrupt:
+    with _Interrupt(stop) as interrupt:
         for cmd in cmds:
             if interrupt.hit:
                 break
@@ -584,6 +589,7 @@ def _apply(
     ident: str,
     branch_arg: str | None,
     no_gates: bool,
+    stop: threading.Event | None = None,
 ) -> tuple[int, dict[str, Any]]:
     from lattice.studio.rebuild import RebuildConfig
 
@@ -805,7 +811,7 @@ def _apply(
         status_, results = "none_configured", []
         warnings.append("no gate ran: no [rebuild] gates and no check.sh in the project")
     else:
-        status_, results = _run_gates(gates, worktree, top, project_rel, cfg, rcfg)
+        status_, results = _run_gates(gates, worktree, top, project_rel, cfg, rcfg, stop)
     rec["gates"] = {
         "status": status_,
         "timeout_s": rcfg.gate_timeout,
@@ -838,13 +844,14 @@ def apply(
     branch: str | None = None,
     no_gates: bool = False,
     state_flag: str | None = None,
+    stop: threading.Event | None = None,
 ) -> tuple[int, dict[str, Any]]:
     """Apply proposal `ident`: ``(exit code, document)``. 0 applied, 1 a gate failed, 2 could
     not run (the document has ``error``; or ``gates.status == "interrupted"``), 3 refused.
     `state` is the state directory (never created here; `create_state` makes it at the first
     write)."""
     try:
-        return _apply(project, state, create_state, state_flag, ident, branch, no_gates)
+        return _apply(project, state, create_state, state_flag, ident, branch, no_gates, stop)
     except _Refused as r:
         return 3, _refusal("apply", ident, r)
     except _Failed as exc:

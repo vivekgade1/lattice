@@ -1,0 +1,277 @@
+{
+ "id": "A0",
+ "predicted": "18 of 18 rows (a-r, 24 cases) exact; hashes unchanged on every exit-2/3 row",
+ "observed": "18 rows, 24 cases; 0 problem(s)",
+ "pass": true,
+ "problems": [],
+ "digests": [
+  "bdcbbe2aadd0c484",
+  "bdcbbe2aadd0c484"
+ ],
+ "raw": {
+  "rows": {
+   "a": [
+    {
+     "label": "unknown id",
+     "rc": 3,
+     "reason": "unknown_id",
+     "detail": "no proposal imp-00000000 in the log",
+     "err": "lattice improve: refused: no proposal imp-00000000 in the log",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "b": [
+    {
+     "label": "closed",
+     "rc": 3,
+     "reason": "closed",
+     "detail": "closed by I-01 at 2026-10-12T23:08:00Z",
+     "err": "lattice improve: refused: closed by I-01 at 2026-10-12T23:08:00Z",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "c": [
+    {
+     "label": "needs_owner",
+     "rc": 3,
+     "reason": "needs_owner",
+     "detail": "no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; never drafted automatically",
+     "err": "lattice improve: refused: no configuration knob exists for layer C; making it faster means changing the checker -- touches lattice/spec/check.py (the checker or the spec language): the owner decides; ",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "d": [
+    {
+     "label": "module",
+     "rc": 3,
+     "reason": "not_config",
+     "detail": "imp-7fad29b4 drafts as a module, not a literal [rebuild] setting: the owner decides it",
+     "err": "lattice improve: refused: imp-7fad29b4 drafts as a module, not a literal [rebuild] setting: the owner decides it",
+     "unchanged": true,
+     "problems": []
+    },
+    {
+     "label": "prereg 1",
+     "rc": 3,
+     "reason": "not_config",
+     "detail": "imp-a8f0a344 drafts as a prereg, not a literal [rebuild] setting: the owner decides it",
+     "err": "lattice improve: refused: imp-a8f0a344 drafts as a prereg, not a literal [rebuild] setting: the owner decides it",
+     "unchanged": true,
+     "problems": []
+    },
+    {
+     "label": "prereg (I-3 18)",
+     "rc": 3,
+     "reason": "not_config",
+     "detail": "imp-3e1cd7f9 drafts as a prereg, not a literal [rebuild] setting: the owner decides it",
+     "err": "lattice improve: refused: imp-3e1cd7f9 drafts as a prereg, not a literal [rebuild] setting: the owner decides it",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "e": [
+    {
+     "label": "cause:timeout",
+     "rc": 3,
+     "reason": "not_config",
+     "detail": "imp-e5092d05 drafts as a change_request, not a literal [rebuild] setting: the owner decides it",
+     "err": "lattice improve: refused: imp-e5092d05 drafts as a change_request, not a literal [rebuild] setting: the owner decides it",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "f": [
+    {
+     "label": "second apply",
+     "rc": 3,
+     "reason": "already_applied",
+     "detail": "imp-3e1cd7f9 was already applied (record in /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/ap/A0/c08/state/applies)",
+     "err": "lattice improve: refused: imp-3e1cd7f9 was already applied (record in /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/ap/A0/c08/stat",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "g": [
+    {
+     "label": "knob pending",
+     "rc": 3,
+     "reason": "knob_pending",
+     "detail": "imp-3e1cd7f9 (branch improve/imp-3e1cd7f9, commit 0eee905) already edits [rebuild] level_gate_args and is not merged into the base",
+     "err": "lattice improve: refused: imp-3e1cd7f9 (branch improve/imp-3e1cd7f9, commit 0eee905) already edits [rebuild] level_gate_args and is not merged into the base",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "h": [
+    {
+     "label": "detached HEAD",
+     "rc": 3,
+     "reason": "detached_head",
+     "detail": "HEAD is detached: apply needs a branch to base on",
+     "err": "lattice improve: refused: HEAD is detached: apply needs a branch to base on",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "i": [
+    {
+     "label": "tracked file modified",
+     "rc": 3,
+     "reason": "dirty_checkout",
+     "detail": "the checkout has uncommitted changes to tracked files",
+     "err": "lattice improve: refused: the checkout has uncommitted changes to tracked files",
+     "unchanged": true,
+     "problems": []
+    },
+    {
+     "label": "staged only",
+     "rc": 3,
+     "reason": "dirty_checkout",
+     "detail": "the checkout has uncommitted changes to tracked files",
+     "err": "lattice improve: refused: the checkout has uncommitted changes to tracked files",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "j": [
+    {
+     "label": "untracked private files",
+     "rc": 0,
+     "reason": null,
+     "detail": null,
+     "err": "",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "k": [
+    {
+     "label": "studio.toml untracked",
+     "rc": 3,
+     "reason": "studio_toml_untracked",
+     "detail": "studio.toml is not committed in HEAD",
+     "err": "lattice improve: refused: studio.toml is not committed in HEAD",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "l": [
+    {
+     "label": "bad..name",
+     "rc": 3,
+     "reason": "bad_branch",
+     "detail": "'bad..name' is not a valid branch name",
+     "err": "lattice improve: refused: 'bad..name' is not a valid branch name",
+     "unchanged": true,
+     "problems": []
+    },
+    {
+     "label": "master (protected)",
+     "rc": 3,
+     "reason": "bad_branch",
+     "detail": "'master' is protected",
+     "err": "lattice improve: refused: 'master' is protected",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "m": [
+    {
+     "label": "main pre-created",
+     "rc": 3,
+     "reason": "branch_exists",
+     "detail": "branch main already exists",
+     "err": "lattice improve: refused: branch main already exists",
+     "unchanged": true,
+     "problems": []
+    },
+    {
+     "label": "improve/<id> pre-created",
+     "rc": 3,
+     "reason": "branch_exists",
+     "detail": "branch improve/imp-3e1cd7f9 already exists",
+     "err": "lattice improve: refused: branch improve/imp-3e1cd7f9 already exists",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "n": [
+    {
+     "label": "worktree path pre-created",
+     "rc": 3,
+     "reason": "worktree_exists",
+     "detail": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/ap/A0/c19/repo.improve/imp-3e1cd7f9 already exists",
+     "err": "lattice improve: refused: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/ap/A0/c19/repo.improve/imp-3e1cd7f9 already exists",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "o": [
+    {
+     "label": "no repository",
+     "rc": 2,
+     "reason": null,
+     "detail": null,
+     "err": "lattice improve: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/ap/A0/c20/proj is not a git repository",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "p": [
+    {
+     "label": "no commits",
+     "rc": 2,
+     "reason": null,
+     "detail": null,
+     "err": "lattice improve: the repository has no commit yet",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "q": [
+    {
+     "label": "no identity",
+     "rc": 2,
+     "reason": null,
+     "detail": null,
+     "err": "lattice improve: no git identity configured (user.name and user.email)",
+     "unchanged": true,
+     "problems": []
+    }
+   ],
+   "r": [
+    {
+     "label": "unparseable studio.toml",
+     "rc": 2,
+     "reason": null,
+     "detail": null,
+     "err": "lattice improve: cannot read /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/ap/A0/c23/repo/studio.toml: Expected ']' at the end of ",
+     "unchanged": true,
+     "problems": []
+    },
+    {
+     "label": "--discard --no-gates",
+     "rc": 2,
+     "reason": null,
+     "detail": null,
+     "err": "lattice improve: --discard takes only its ID (not another ID, --branch or --no-gates)",
+     "unchanged": true,
+     "problems": []
+    }
+   ]
+  },
+  "extra": {
+   "label": "main protected by default and existing",
+   "rc": 3,
+   "reason": "bad_branch",
+   "detail": "'main' is protected",
+   "err": "lattice improve: refused: 'main' is protected",
+   "unchanged": true,
+   "problems": []
+  }
+ },
+ "seconds": 8.7
+}

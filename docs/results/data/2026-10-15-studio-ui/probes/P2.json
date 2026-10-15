@@ -1,0 +1,226 @@
+{
+ "id": "P2",
+ "title": "apply equals the CLI's apply",
+ "predicted": "exit 0 both; masked records equal; tree id equal; edit.action inserted, edit.line level_gate_args = [\"--x-repeats\", \"2\"]; route 4 ?wait=30 within 30 s; route 3 lists it. P2c: next holds --state <store root> and next.close verbatim writes <store root>/improvements.jsonl",
+ "observed": "P2: {'exit': [0, 0], 'masked_equal': True, 'tree_equal': True, 'action': 'inserted', 'line': 'level_gate_args = [\"--x-repeats\", \"2\"]', 'listed': ['imp-3e1cd7f9'], 'source': 'job', 'next_has_state': False}; P2c: {'close_has_state': True, 'close_rc': 0, 'wrote': True, 'entry_signal': 'gate:level_regression:X'}",
+ "pass": true,
+ "obs": {
+  "p2": {
+   "exit": [
+    0,
+    0
+   ],
+   "masked_equal": true,
+   "tree_equal": true,
+   "action": "inserted",
+   "line": "level_gate_args = [\"--x-repeats\", \"2\"]",
+   "listed": [
+    "imp-3e1cd7f9"
+   ],
+   "source": "job",
+   "next_has_state": false
+  },
+  "p2c": {
+   "close_has_state": true,
+   "close_rc": 0,
+   "wrote": true,
+   "entry_signal": "gate:level_regression:X"
+  }
+ },
+ "raw": {
+  "p2": {
+   "server_record_masked": {
+    "applied_at": "<ts>",
+    "base": {
+     "branch": "main",
+     "sha": "418090d5b7bd02d3ee9bf40c8e55d2949605a7c9"
+    },
+    "branch": "improve/imp-3e1cd7f9",
+    "command": "apply",
+    "commit": {
+     "message": "improve: [rebuild] level_gate_args = [\"--x-repeats\", \"2\"]\n\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X.\nDraft as of 2026-10-12T23:07:11Z; current: not set.\nPredicted: expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\nApplied by `lattice improve apply`; not merged. The owner reviews and merges.\n\nLattice-Improve: imp-3e1cd7f9\n",
+     "sha": "<commit>",
+     "tree": "1b6a27c2875fb1e172e58056e8ffc97b1a7d47de"
+    },
+    "draft": {
+     "as_of": "2026-10-12T23:07:11Z",
+     "current": "current: not set",
+     "expected": "expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)",
+     "sha256": "50fb1e972b9056543f7326c830411d59f5331e6c2ffd30d00e9f8bedbd6fa517",
+     "template": "config",
+     "toml": "[rebuild]\nlevel_gate_args = [\"--x-repeats\", \"2\"]"
+    },
+    "edit": {
+     "action": "inserted",
+     "diff": "diff --git a/studio.toml b/studio.toml\nindex bec46a4..96a9a0c 100644\n--- a/studio.toml\n+++ b/studio.toml\n@@ -1,4 +1,5 @@\n [rebuild]\n+level_gate_args = [\"--x-repeats\", \"2\"]\n gates = [\"true\"]\n \n [state]\n",
+     "file": "studio.toml",
+     "key": "level_gate_args",
+     "line": "level_gate_args = [\"--x-repeats\", \"2\"]",
+     "line_no": 2,
+     "new": [
+      "--x-repeats",
+      "2"
+     ],
+     "old": null,
+     "op": "=",
+     "table": "rebuild"
+    },
+    "format": 1,
+    "gates": {
+     "results": [],
+     "status": "skipped",
+     "timeout_s": 900.0,
+     "untracked_after": []
+    },
+    "integration_branch": null,
+    "next": [
+     {
+      "command": "git -C <root>/repo diff 418090d5b7bd02d3ee9bf40c8e55d2949605a7c9 improve/imp-3e1cd7f9",
+      "step": "review"
+     },
+     {
+      "command": "git -C <root>/repo merge improve/imp-3e1cd7f9",
+      "step": "merge"
+     },
+     {
+      "command": "lattice improve ledger --project <root>/repo --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit <commit>",
+      "step": "close"
+     },
+     {
+      "command": "lattice improve verify imp-3e1cd7f9 --project <root>/repo --at <YYYY-MM-DDTHH:MM:SSZ the merge landed>",
+      "step": "verify"
+     },
+     {
+      "command": "git -C <root>/repo worktree remove <root>/repo.improve/imp-3e1cd7f9 && git -C <root>/repo branch -d improve/imp-3e1cd7f9",
+      "step": "tidy"
+     },
+     {
+      "command": "lattice improve apply --discard imp-3e1cd7f9 --project <root>/repo",
+      "step": "drop"
+     }
+    ],
+    "proposal": {
+     "id": "imp-3e1cd7f9",
+     "kind": "change_set",
+     "signal_key": "gate:level_regression:X",
+     "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]"
+    },
+    "warnings": [],
+    "worktree": "<root>/repo.improve/imp-3e1cd7f9"
+   },
+   "cli_record_masked": {
+    "applied_at": "<ts>",
+    "base": {
+     "branch": "main",
+     "sha": "418090d5b7bd02d3ee9bf40c8e55d2949605a7c9"
+    },
+    "branch": "improve/imp-3e1cd7f9",
+    "command": "apply",
+    "commit": {
+     "message": "improve: [rebuild] level_gate_args = [\"--x-repeats\", \"2\"]\n\nProposal imp-3e1cd7f9 (change_set), signal gate:level_regression:X.\nDraft as of 2026-10-12T23:07:11Z; current: not set.\nPredicted: expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)\nApplied by `lattice improve apply`; not merged. The owner reviews and merges.\n\nLattice-Improve: imp-3e1cd7f9\n",
+     "sha": "<commit>",
+     "tree": "1b6a27c2875fb1e172e58056e8ffc97b1a7d47de"
+    },
+    "draft": {
+     "as_of": "2026-10-12T23:07:11Z",
+     "current": "current: not set",
+     "expected": "expected: X 119.5 s -> saving 71.7 s a gate (60%; x_repeats 5 -> 2)",
+     "sha256": "50fb1e972b9056543f7326c830411d59f5331e6c2ffd30d00e9f8bedbd6fa517",
+     "template": "config",
+     "toml": "[rebuild]\nlevel_gate_args = [\"--x-repeats\", \"2\"]"
+    },
+    "edit": {
+     "action": "inserted",
+     "diff": "diff --git a/studio.toml b/studio.toml\nindex bec46a4..96a9a0c 100644\n--- a/studio.toml\n+++ b/studio.toml\n@@ -1,4 +1,5 @@\n [rebuild]\n+level_gate_args = [\"--x-repeats\", \"2\"]\n gates = [\"true\"]\n \n [state]\n",
+     "file": "studio.toml",
+     "key": "level_gate_args",
+     "line": "level_gate_args = [\"--x-repeats\", \"2\"]",
+     "line_no": 2,
+     "new": [
+      "--x-repeats",
+      "2"
+     ],
+     "old": null,
+     "op": "=",
+     "table": "rebuild"
+    },
+    "format": 1,
+    "gates": {
+     "results": [],
+     "status": "skipped",
+     "timeout_s": 900.0,
+     "untracked_after": []
+    },
+    "integration_branch": null,
+    "next": [
+     {
+      "command": "git -C <root>/repo diff 418090d5b7bd02d3ee9bf40c8e55d2949605a7c9 improve/imp-3e1cd7f9",
+      "step": "review"
+     },
+     {
+      "command": "git -C <root>/repo merge improve/imp-3e1cd7f9",
+      "step": "merge"
+     },
+     {
+      "command": "lattice improve ledger --project <root>/repo --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit <commit>",
+      "step": "close"
+     },
+     {
+      "command": "lattice improve verify imp-3e1cd7f9 --project <root>/repo --at <YYYY-MM-DDTHH:MM:SSZ the merge landed>",
+      "step": "verify"
+     },
+     {
+      "command": "git -C <root>/repo worktree remove <root>/repo.improve/imp-3e1cd7f9 && git -C <root>/repo branch -d improve/imp-3e1cd7f9",
+      "step": "tidy"
+     },
+     {
+      "command": "lattice improve apply --discard imp-3e1cd7f9 --project <root>/repo",
+      "step": "drop"
+     }
+    ],
+    "proposal": {
+     "id": "imp-3e1cd7f9",
+     "kind": "change_set",
+     "signal_key": "gate:level_regression:X",
+     "title": "Fewer layer X repeats at level gates (regression): level_gate_args = [\"--x-repeats\", \"2\"]"
+    },
+    "warnings": [],
+    "worktree": "<root>/repo.improve/imp-3e1cd7f9"
+   },
+   "waited_s": 0.18
+  },
+  "p2c": {
+   "cmd": "lattice improve ledger --project <root>/dirname --state <root>/dirname/.lattice/state/hubname --signal gate:level_regression:X --status closed --id imp-3e1cd7f9 --commit 945be3b20489d2681eb5f36a347904e07a6151ce"
+  }
+ },
+ "problems": [],
+ "digests": [
+  [
+   "e5fb60d820e782ff",
+   "e5fb60d820e782ff",
+   "e5fb60d820e782ff",
+   "e5fb60d820e782ff",
+   "e5fb60d820e782ff",
+   "e5fb60d820e782ff",
+   "e5fb60d820e782ff",
+   "e5fb60d820e782ff",
+   "e5fb60d820e782ff",
+   "e5fb60d820e782ff"
+  ],
+  [
+   "5a464a8d45f6bb4d",
+   "5a464a8d45f6bb4d",
+   "5a464a8d45f6bb4d",
+   "5a464a8d45f6bb4d",
+   "5a464a8d45f6bb4d",
+   "5a464a8d45f6bb4d",
+   "5a464a8d45f6bb4d",
+   "5a464a8d45f6bb4d",
+   "5a464a8d45f6bb4d",
+   "5a464a8d45f6bb4d"
+  ]
+ ],
+ "runs": 10,
+ "status": "RAN",
+ "seconds": 18.1
+}

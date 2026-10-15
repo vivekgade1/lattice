@@ -57,7 +57,7 @@ GIT_ENV = {
     "GIT_CONFIG_GLOBAL": os.devnull,
     "GIT_CONFIG_NOSYSTEM": "1",
 }
-SERVE = 'exec "$0" -m lattice.studio "$1" --port "$PORT" --quiet --stub-llm'
+SERVE = 'exec "$0" -m lattice.studio "$1" --port "$PORT" --quiet --stub-llm --allow-apply'
 
 RUNTIME = process_runtime(framework="studio")  # not a Python web framework: no layer A
 

@@ -1,0 +1,104 @@
+{
+ "id": "P5",
+ "title": "safety",
+ "predicted": "0 changes to the owner's .git/{index,HEAD,config,packed-refs}, every ref but the new one, every working-tree file, events.jsonl, improvements.jsonl; 0 merge|push|reset|checkout|stash|update-ref argv; GET /api/improve byte-identical; static: 0 subprocess/git calls and 0 claude/anthropic/lattice.llm in the new code",
+ "observed": "{\"dynamic\": {\"apply_exit\": 0, \"events_identical\": true, \"forbidden_argv\": 0, \"git_calls_logged\": true, \"improve_identical\": true, \"p5_apply\": {\"events_unchanged\": true, \"git_files_unchanged\": true, \"no_ledger\": true, \"only_new_ref\": true, \"tree_unchanged\": true}}, \"static\": {\"added_lines\": {\"lattice/improve/apply.py\": 13, \"lattice/studio/mock_server.py\": 403, \"lattice/studio/server.py\": 422, \"lattice/studio/web/js/api.js\": 25, \"lattice/studio/web/js/views/contracts.js\": 324, \"lattice/studio/web/js/views/improve.js\": 598}, \"hits\": {\"git_call\": [], \"llm\": [], \"subprocess\": []}}}",
+ "pass": true,
+ "obs": {
+  "dynamic": {
+   "apply_exit": 0,
+   "p5_apply": {
+    "git_files_unchanged": true,
+    "tree_unchanged": true,
+    "events_unchanged": true,
+    "no_ledger": true,
+    "only_new_ref": true
+   },
+   "improve_identical": true,
+   "events_identical": true,
+   "git_calls_logged": true,
+   "forbidden_argv": 0
+  },
+  "static": {
+   "added_lines": {
+    "lattice/studio/server.py": 422,
+    "lattice/studio/mock_server.py": 403,
+    "lattice/studio/web/js/api.js": 25,
+    "lattice/improve/apply.py": 13,
+    "lattice/studio/web/js/views/improve.js": 598,
+    "lattice/studio/web/js/views/contracts.js": 324
+   },
+   "hits": {
+    "subprocess": [],
+    "git_call": [],
+    "llm": []
+   }
+  }
+ },
+ "problems": [],
+ "digests": [
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a",
+  "7659db717397b40a"
+ ],
+ "runs": 10,
+ "raw": {
+  "apply_exit": 0,
+  "p5_apply": {
+   "git_files_unchanged": true,
+   "tree_unchanged": true,
+   "events_unchanged": true,
+   "no_ledger": true,
+   "only_new_ref": true
+  },
+  "p4a": {
+   "status": 200,
+   "exit": 0,
+   "branch_gone": true,
+   "worktree_gone": true,
+   "record_renamed_identical": true,
+   "live_record_gone": true,
+   "route3_empty": true,
+   "route4": 404
+  },
+  "p4b": {
+   "status": 200,
+   "exit": 3,
+   "reason": "not_applied"
+  },
+  "p4c": {
+   "status": 200,
+   "exit": 3,
+   "reason": "merged"
+  },
+  "improve_identical": true,
+  "events_identical": true,
+  "git_calls_logged": true,
+  "forbidden_argv": 0,
+  "forbidden": [],
+  "git_subcommands": [
+   "add",
+   "branch",
+   "cat-file",
+   "check-ref-format",
+   "commit",
+   "config",
+   "diff",
+   "for-each-ref",
+   "rev-parse",
+   "show-ref",
+   "status",
+   "symbolic-ref",
+   "worktree"
+  ]
+ },
+ "status": "RAN",
+ "seconds": 11.1
+}

@@ -1,0 +1,112 @@
+{
+ "runs": 10,
+ "table": [
+  {
+   "id": "P0",
+   "title": "guard ladder",
+   "status": "RAN",
+   "predicted": "14 of 14 exact status and code; after every non-2xx row the state dir, .git refs and working-tree hashes are unchanged",
+   "observed": "14 of 14 rows exact (rows ok: a, b, c, d, e, f, g, h, i, j, k, l, m, n)",
+   "pass": true,
+   "seconds": 68.3,
+   "runs": 10
+  },
+  {
+   "id": "P1",
+   "title": "read routes equal the CLI",
+   "status": "RAN",
+   "predicted": "12 of 12 parsed-JSON equal (bare), the same under /p/<name>/, state dir bytes unchanged (and nothing created for a project without state)",
+   "observed": "12 of 12 equal bare; 12 equal under /p/<name>/",
+   "pass": true,
+   "seconds": 20.3,
+   "runs": 10
+  },
+  {
+   "id": "P2",
+   "title": "apply equals the CLI's apply",
+   "status": "RAN",
+   "predicted": "exit 0 both; masked records equal; tree id equal; edit.action inserted, edit.line level_gate_args = [\"--x-repeats\", \"2\"]; route 4 ?wait=30 within 30 s; route 3 lists it. P2c: next holds --state <store root> and next.close verbatim writes <store root>/improvements.jsonl",
+   "observed": "P2: {'exit': [0, 0], 'masked_equal': True, 'tree_equal': True, 'action': 'inserted', 'line': 'level_gate_args = [\"--x-repeats\", \"2\"]', 'listed': ['imp-3e1cd7f9'], 'source': 'job', 'next_has_state': False}; P2c: {'close_has_state': True, 'close_rc': 0, 'wrote': True, 'entry_signal': 'gate:level_regression:X'}",
+   "pass": true,
+   "seconds": 18.1,
+   "runs": 10
+  },
+  {
+   "id": "P3",
+   "title": "gates and close",
+   "status": "RAN",
+   "predicted": "a: exit 1, failed, 2 results, branch kept; b: exit 1, 124, timed_out, secs in [2, 9]; c: the server exits within stop_grace + 10 s, record interrupted, 0 sleep 30 left; d: source record, stale false; a record hand-set to running: stale true. 4 of 4",
+   "observed": "{\"a\": {\"branch_kept\": true, \"exit\": 1, \"n_results\": 2, \"status\": \"failed\"}, \"b\": {\"exit\": 1, \"rc\": 124, \"seconds_in_2_9\": true, \"status\": \"failed\", \"timed_out\": true}, \"c\": {\"branch_kept\": true, \"exited_in_bound\": true, \"left\": 0, \"status\": \"interrupted\"}, \"d\": {\"hand_set_running_stale\": true, \"restart\": {\"exit_code\": null, \"source\": \"record\", \"stale\": false, \"status\": \"done\"}, \"source\": \"record\"}}",
+   "pass": true,
+   "seconds": 70.7,
+   "runs": 10
+  },
+  {
+   "id": "P4",
+   "title": "discard",
+   "status": "RAN",
+   "predicted": "200 exit 0, branch and worktree gone, record renamed <id>.discarded-1.json byte-identical, route 3 applies [], route 4 404; again: exit 3 not_applied; after git branch keep <commit>: exit 3 merged. 3 of 3",
+   "observed": "{\"p4a\": {\"branch_gone\": true, \"exit\": 0, \"live_record_gone\": true, \"record_renamed_identical\": true, \"route3_empty\": true, \"route4\": 404, \"status\": 200, \"worktree_gone\": true}, \"p4b\": {\"exit\": 3, \"reason\": \"not_applied\", \"status\": 200}, \"p4c\": {\"exit\": 3, \"reason\": \"merged\", \"status\": 200}}",
+   "pass": true,
+   "seconds": 11.1,
+   "runs": 10
+  },
+  {
+   "id": "P5",
+   "title": "safety",
+   "status": "RAN",
+   "predicted": "0 changes to the owner's .git/{index,HEAD,config,packed-refs}, every ref but the new one, every working-tree file, events.jsonl, improvements.jsonl; 0 merge|push|reset|checkout|stash|update-ref argv; GET /api/improve byte-identical; static: 0 subprocess/git calls and 0 claude/anthropic/lattice.llm in the new code",
+   "observed": "{\"dynamic\": {\"apply_exit\": 0, \"events_identical\": true, \"forbidden_argv\": 0, \"git_calls_logged\": true, \"improve_identical\": true, \"p5_apply\": {\"events_unchanged\": true, \"git_files_unchanged\": true, \"no_ledger\": true, \"only_new_ref\": true, \"tree_unchanged\": true}}, \"static\": {\"added_lines\": {\"lattice/improve/apply.py\": 13, \"lattice/studio/mock_server.py\": 403, \"lattice/studio/server.py\": 422, \"lattice/studio/web/js/api.js\": 25, \"lattice/studio/web/js/views/contracts.js\": 324, \"lattice/studio/web/js/views/improve.js\": 598}, \"hits\": {\"git_call\": [], \"llm\": [], \"subprocess\": []}}}",
+   "pass": true,
+   "seconds": 11.1,
+   "runs": 10
+  },
+  {
+   "id": "P6",
+   "title": "hub routing",
+   "status": "RAN",
+   "predicted": "/p/B/... writes only B's repo and state, A's hashes unchanged, route 3 of A empty, /p/nobody 404; same-repo hub: concurrent POST 5 gives one 202 and one 409 apply_running. 3 of 3",
+   "observed": "{\"a_branch\": false, \"a_route3_applies\": [], \"a_unchanged\": true, \"b_branch\": true, \"b_exit\": 0, \"b_record\": true, \"b_route3_ids\": [\"imp-3e1cd7f9\"], \"nobody\": [404, {\"detail\": \"no such project\"}], \"row_nobody_404\": true, \"row_separate\": true, \"same_repo\": {\"busy_codes\": [\"apply_running\"], \"statuses\": [202, 409]}}",
+   "pass": true,
+   "seconds": 45.4,
+   "runs": 10
+  },
+  {
+   "id": "P7",
+   "title": "byte compatibility",
+   "status": "RAN",
+   "predicted": "15 of 15 byte-identical bodies and statuses (base vs new, the new one with and without --allow-apply); every web file but js/app.js, js/api.js, css/views.css and the two new views equals the base's; --help differs only by --allow-apply",
+   "observed": "{\"help_ok\": true, \"removed_lines\": {\"lattice/studio/mock_server.py\": 2, \"lattice/studio/server.py\": 3}, \"routes_identical\": 15, \"stray_removed\": [], \"web_added\": [\"js/views/contracts.js\", \"js/views/improve.js\"], \"web_changed\": [\"css/views.css\", \"js/api.js\", \"js/app.js\"], \"web_removed\": []}",
+   "pass": true,
+   "seconds": 25.9,
+   "runs": 10
+  },
+  {
+   "id": "P8",
+   "title": "mock parity",
+   "status": "RAN",
+   "predicted": "17 of 17: the same key tree and JSON types for draft config and refused, verify refused, applies (empty, one, disabled), job running, done, refused, discard 0 and 3; the same status for P0 rows a, e, f, g, i, m",
+   "observed": "17 of 17 (none differ)",
+   "pass": true,
+   "seconds": 28.8,
+   "runs": 10
+  }
+ ],
+ "not_run": {
+  "P9": "the dogfood gate: dogfood/studio/check.sh (run separately, data in regression/)",
+  "P10": "tests/studio/test_studio_ui.py (run with pytest; data in regression/)",
+  "browser walk": "NOT RUN by this script (Amendment D)"
+ },
+ "findings": [],
+ "decisions": [
+  "The synthetic repositories also commit the three spec files (REQUIREMENTS.md, spec.py, spec.trace.json), which the prereg's list omits: `python -m lattice.studio DIR` refuses a directory without them (hubs do not need them).",
+  "Every synthetic repository's first commit has fixed author and committer dates, so the twin repositories of P2 have the same base sha; the apply commit's date is its own applied_at (a masked field), so its sha is masked.",
+  "P0 uses one project with `gates = [\"sleep 5\"]` for the control (row d) so that row l's second POST arrives while the first runs; every other row is checked before the control.",
+  "P1's `state dir not created when absent` is measured after server start: Studio's own StateStore creates the directory when it loads the project (API v1.10, not a route); the routes add nothing to it. A project with `[state] enabled = false` has no directory at all before or after.",
+  "The deterministic probes run RUNS times (the orchestrator's 10), not the prereg's 3."
+ ],
+ "post_hoc_corrections": [
+  "P5, P8 (first development run, 1 run each, before any reported run): (1) P5's static scan applied the subprocess/git patterns to the JavaScript too and matched the word \"subprocesses\" in a comment of contracts.js; the rule is a Python-side one (server.py, mock_server.py) and the llm words are scanned in every new file: scope fixed. (2) P8 counted its own sanity check (both POSTs answer 202) as an 18th item; the prereg's 17 are the key trees of 11 answers and the statuses of 6 rows: the check is a problem line now, not an item."
+ ],
+ "wall_s": 288.6
+}

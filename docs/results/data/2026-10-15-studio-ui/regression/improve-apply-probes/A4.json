@@ -1,0 +1,90 @@
+{
+ "id": "A4",
+ "predicted": "13 of 13 rows (a-m); on each exit-0 row new parse = old + the one key and every other byte identical",
+ "observed": "14 cases; 0 problem(s)",
+ "pass": true,
+ "problems": [],
+ "digests": [
+  "b3d90dcfef4ffff4",
+  "b3d90dcfef4ffff4"
+ ],
+ "raw": {
+  "a1": {
+   "rc": 0,
+   "action": "replaced",
+   "line_no": 3,
+   "warnings": []
+  },
+  "b2": {
+   "rc": 0,
+   "action": "inserted",
+   "line_no": 5,
+   "warnings": []
+  },
+  "c3": {
+   "rc": 0,
+   "action": "inserted",
+   "line_no": 5,
+   "warnings": [
+    "level_gate_args is also set in [check]; the rebuild loop reads [rebuild] only"
+   ]
+  },
+  "d4": {
+   "rc": 0,
+   "action": "created_table",
+   "line_no": 5,
+   "warnings": []
+  },
+  "e5": {
+   "rc": 0,
+   "action": "created_file",
+   "line_no": 2,
+   "warnings": []
+  },
+  "f6": {
+   "rc": 0,
+   "action": "replaced",
+   "line_no": 2,
+   "warnings": []
+  },
+  "g7": {
+   "rc": 0,
+   "action": "inserted",
+   "line_no": 5,
+   "warnings": []
+  },
+  "h8": {
+   "rc": 3,
+   "reason": "already_set"
+  },
+  "h9": {
+   "rc": 3,
+   "reason": "already_set"
+  },
+  "i10": {
+   "rc": 0,
+   "action": "inserted",
+   "line_no": 5,
+   "warnings": []
+  },
+  "j11": {
+   "rc": 0,
+   "action": "inserted",
+   "line_no": 2,
+   "warnings": []
+  },
+  "k12": {
+   "rc": 3,
+   "reason": "unsupported_layout"
+  },
+  "l13": {
+   "rc": 3,
+   "reason": "unsupported_layout"
+  },
+  "m14": {
+   "rc": 3,
+   "reason": "edit_check_failed"
+  }
+ },
+ "seconds": 9.1
+}

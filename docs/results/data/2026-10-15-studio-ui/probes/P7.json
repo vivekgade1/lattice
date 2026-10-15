@@ -1,0 +1,62 @@
+{
+ "id": "P7",
+ "title": "byte compatibility",
+ "predicted": "15 of 15 byte-identical bodies and statuses (base vs new, the new one with and without --allow-apply); every web file but js/app.js, js/api.js, css/views.css and the two new views equals the base's; --help differs only by --allow-apply",
+ "observed": "{\"help_ok\": true, \"removed_lines\": {\"lattice/studio/mock_server.py\": 2, \"lattice/studio/server.py\": 3}, \"routes_identical\": 15, \"stray_removed\": [], \"web_added\": [\"js/views/contracts.js\", \"js/views/improve.js\"], \"web_changed\": [\"css/views.css\", \"js/api.js\", \"js/app.js\"], \"web_removed\": []}",
+ "pass": true,
+ "obs": {
+  "routes_identical": 15,
+  "web_changed": [
+   "css/views.css",
+   "js/api.js",
+   "js/app.js"
+  ],
+  "web_added": [
+   "js/views/contracts.js",
+   "js/views/improve.js"
+  ],
+  "web_removed": [],
+  "removed_lines": {
+   "lattice/studio/server.py": 3,
+   "lattice/studio/mock_server.py": 2
+  },
+  "stray_removed": [],
+  "help_ok": true
+ },
+ "raw": {
+  "routes_identical": 15,
+  "web_changed": [
+   "css/views.css",
+   "js/api.js",
+   "js/app.js"
+  ],
+  "web_added": [
+   "js/views/contracts.js",
+   "js/views/improve.js"
+  ],
+  "web_removed": [],
+  "removed_lines": {
+   "lattice/studio/server.py": 3,
+   "lattice/studio/mock_server.py": 2
+  },
+  "stray_removed": [],
+  "help_ok": true,
+  "diffs": []
+ },
+ "problems": [],
+ "digests": [
+  "37955585e57653b9",
+  "37955585e57653b9",
+  "37955585e57653b9",
+  "37955585e57653b9",
+  "37955585e57653b9",
+  "37955585e57653b9",
+  "37955585e57653b9",
+  "37955585e57653b9",
+  "37955585e57653b9",
+  "37955585e57653b9"
+ ],
+ "runs": 10,
+ "status": "RAN",
+ "seconds": 25.9
+}

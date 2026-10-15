@@ -147,6 +147,31 @@ export const api = {
   sessionEvents: (id, after = 0) =>
     call("GET", `/api/session/${encodeURIComponent(id)}/events?after=${Number(after) || 0}`),
   sessionStop: (id) => call("DELETE", `/api/session/${encodeURIComponent(id)}`),
+
+  // v1.21: the improvement loop. Draft and verify read; applyProposal and discardApply are the
+  // only writes (403 apply_disabled unless the server runs with --allow-apply). `wait` holds
+  // the apply job's GET up to that many seconds (0 to 60).
+  improve: () => call("GET", "/api/improve"),
+  improveDraft: (id) => call("GET", `/api/improve/${encodeURIComponent(id)}/draft`),
+  improveVerify: (id, at = "") =>
+    call("GET", `/api/improve/${encodeURIComponent(id)}/verify${at ? `?at=${encodeURIComponent(at)}` : ""}`),
+  improveApplies: () => call("GET", "/api/improve/applies"),
+  improveApply: (id, wait = 0) =>
+    call("GET", `/api/improve/${encodeURIComponent(id)}/apply${wait ? `?wait=${Number(wait)}` : ""}`),
+  applyProposal: (id, draftSha256, gates = true, branch = null) =>
+    call("POST", `/api/improve/${encodeURIComponent(id)}/apply`, { draft_sha256: draftSha256, gates, branch }),
+  discardApply: (id) => call("POST", `/api/improve/${encodeURIComponent(id)}/discard`, {}),
+
+  // v1.17-v1.19, read by the Contracts view: the static check, the impact preview, the notes
+  // other projects left here (clear with a note) and what this project's accepts delivered.
+  contracts: (consumer = "") => call("GET", `/api/contracts${consumer ? `?consumer=${encodeURIComponent(consumer)}` : ""}`),
+  contractsImpact: (provider, candidate = "HEAD") =>
+    call("GET", `/api/contracts/impact?provider=${encodeURIComponent(provider)}&candidate=${encodeURIComponent(candidate)}`),
+  linkedQuestions: (status = "") =>
+    call("GET", `/api/linked-questions${status ? `?status=${encodeURIComponent(status)}` : ""}`),
+  linkedQuestionClear: (id, verb, note = "") =>
+    call("POST", `/api/linked-questions/${encodeURIComponent(id)}/${verb === "dismiss" ? "dismiss" : "resolve"}`, note ? { note } : {}),
+  linkedNotifications: () => call("GET", "/api/linked-notifications"),
 };
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

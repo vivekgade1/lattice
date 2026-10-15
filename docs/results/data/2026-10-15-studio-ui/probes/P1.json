@@ -1,0 +1,458 @@
+{
+ "id": "P1",
+ "title": "read routes equal the CLI",
+ "predicted": "12 of 12 parsed-JSON equal (bare), the same under /p/<name>/, state dir bytes unchanged (and nothing created for a project without state)",
+ "observed": "12 of 12 equal bare; 12 equal under /p/<name>/",
+ "pass": true,
+ "obs": {
+  "cases": [
+   {
+    "state": "open",
+    "route": 1,
+    "id": "imp-3e1cd7f9",
+    "prefix": "",
+    "ok": true,
+    "refused": false
+   },
+   {
+    "state": "open",
+    "route": 1,
+    "id": "imp-3e1cd7f9",
+    "prefix": "/p/open",
+    "ok": true,
+    "refused": false
+   },
+   {
+    "state": "open",
+    "route": 2,
+    "id": "imp-3e1cd7f9",
+    "at": null,
+    "prefix": "",
+    "ok": true,
+    "verdict": "not_closed"
+   },
+   {
+    "state": "open",
+    "route": 2,
+    "id": "imp-3e1cd7f9",
+    "at": null,
+    "prefix": "/p/open",
+    "ok": true,
+    "verdict": "not_closed"
+   },
+   {
+    "state": "open",
+    "route": 2,
+    "id": "imp-3e1cd7f9",
+    "at": "2026-10-01T12:00:00Z",
+    "prefix": "",
+    "ok": true,
+    "verdict": "not_closed"
+   },
+   {
+    "state": "open",
+    "route": 2,
+    "id": "imp-3e1cd7f9",
+    "at": "2026-10-01T12:00:00Z",
+    "prefix": "/p/open",
+    "ok": true,
+    "verdict": "not_closed"
+   },
+   {
+    "state": "open",
+    "route": 1,
+    "id": "imp-00000000",
+    "prefix": "",
+    "ok": true,
+    "refused": true
+   },
+   {
+    "state": "open",
+    "route": 1,
+    "id": "imp-00000000",
+    "prefix": "/p/open",
+    "ok": true,
+    "refused": true
+   },
+   {
+    "state": "open",
+    "route": 2,
+    "id": "imp-00000000",
+    "at": null,
+    "prefix": "",
+    "ok": true,
+    "verdict": "unknown_id"
+   },
+   {
+    "state": "open",
+    "route": 2,
+    "id": "imp-00000000",
+    "at": null,
+    "prefix": "/p/open",
+    "ok": true,
+    "verdict": "unknown_id"
+   },
+   {
+    "state": "open",
+    "route": 2,
+    "id": "imp-00000000",
+    "at": "2026-10-01T12:00:00Z",
+    "prefix": "",
+    "ok": true,
+    "verdict": "unknown_id"
+   },
+   {
+    "state": "open",
+    "route": 2,
+    "id": "imp-00000000",
+    "at": "2026-10-01T12:00:00Z",
+    "prefix": "/p/open",
+    "ok": true,
+    "verdict": "unknown_id"
+   },
+   {
+    "state": "closed",
+    "route": 1,
+    "id": "imp-3e1cd7f9",
+    "prefix": "",
+    "ok": true,
+    "refused": true
+   },
+   {
+    "state": "closed",
+    "route": 1,
+    "id": "imp-3e1cd7f9",
+    "prefix": "/p/closed",
+    "ok": true,
+    "refused": true
+   },
+   {
+    "state": "closed",
+    "route": 2,
+    "id": "imp-3e1cd7f9",
+    "at": null,
+    "prefix": "",
+    "ok": true,
+    "verdict": "not_enough_data"
+   },
+   {
+    "state": "closed",
+    "route": 2,
+    "id": "imp-3e1cd7f9",
+    "at": null,
+    "prefix": "/p/closed",
+    "ok": true,
+    "verdict": "not_enough_data"
+   },
+   {
+    "state": "closed",
+    "route": 2,
+    "id": "imp-3e1cd7f9",
+    "at": "2026-10-01T12:00:00Z",
+    "prefix": "",
+    "ok": true,
+    "verdict": "not_enough_data"
+   },
+   {
+    "state": "closed",
+    "route": 2,
+    "id": "imp-3e1cd7f9",
+    "at": "2026-10-01T12:00:00Z",
+    "prefix": "/p/closed",
+    "ok": true,
+    "verdict": "not_enough_data"
+   },
+   {
+    "state": "closed",
+    "route": 1,
+    "id": "imp-00000000",
+    "prefix": "",
+    "ok": true,
+    "refused": true
+   },
+   {
+    "state": "closed",
+    "route": 1,
+    "id": "imp-00000000",
+    "prefix": "/p/closed",
+    "ok": true,
+    "refused": true
+   },
+   {
+    "state": "closed",
+    "route": 2,
+    "id": "imp-00000000",
+    "at": null,
+    "prefix": "",
+    "ok": true,
+    "verdict": "unknown_id"
+   },
+   {
+    "state": "closed",
+    "route": 2,
+    "id": "imp-00000000",
+    "at": null,
+    "prefix": "/p/closed",
+    "ok": true,
+    "verdict": "unknown_id"
+   },
+   {
+    "state": "closed",
+    "route": 2,
+    "id": "imp-00000000",
+    "at": "2026-10-01T12:00:00Z",
+    "prefix": "",
+    "ok": true,
+    "verdict": "unknown_id"
+   },
+   {
+    "state": "closed",
+    "route": 2,
+    "id": "imp-00000000",
+    "at": "2026-10-01T12:00:00Z",
+    "prefix": "/p/closed",
+    "ok": true,
+    "verdict": "unknown_id"
+   },
+   {
+    "state": "nostate",
+    "route": 1,
+    "refused": "unknown_id"
+   }
+  ],
+  "bare_ok": 12,
+  "bare_total": 12,
+  "prefixed_ok": 12
+ },
+ "raw": [
+  {
+   "state": "open",
+   "route": 1,
+   "id": "imp-3e1cd7f9",
+   "prefix": "",
+   "ok": true,
+   "refused": false
+  },
+  {
+   "state": "open",
+   "route": 1,
+   "id": "imp-3e1cd7f9",
+   "prefix": "/p/open",
+   "ok": true,
+   "refused": false
+  },
+  {
+   "state": "open",
+   "route": 2,
+   "id": "imp-3e1cd7f9",
+   "at": null,
+   "prefix": "",
+   "ok": true,
+   "verdict": "not_closed"
+  },
+  {
+   "state": "open",
+   "route": 2,
+   "id": "imp-3e1cd7f9",
+   "at": null,
+   "prefix": "/p/open",
+   "ok": true,
+   "verdict": "not_closed"
+  },
+  {
+   "state": "open",
+   "route": 2,
+   "id": "imp-3e1cd7f9",
+   "at": "2026-10-01T12:00:00Z",
+   "prefix": "",
+   "ok": true,
+   "verdict": "not_closed"
+  },
+  {
+   "state": "open",
+   "route": 2,
+   "id": "imp-3e1cd7f9",
+   "at": "2026-10-01T12:00:00Z",
+   "prefix": "/p/open",
+   "ok": true,
+   "verdict": "not_closed"
+  },
+  {
+   "state": "open",
+   "route": 1,
+   "id": "imp-00000000",
+   "prefix": "",
+   "ok": true,
+   "refused": true
+  },
+  {
+   "state": "open",
+   "route": 1,
+   "id": "imp-00000000",
+   "prefix": "/p/open",
+   "ok": true,
+   "refused": true
+  },
+  {
+   "state": "open",
+   "route": 2,
+   "id": "imp-00000000",
+   "at": null,
+   "prefix": "",
+   "ok": true,
+   "verdict": "unknown_id"
+  },
+  {
+   "state": "open",
+   "route": 2,
+   "id": "imp-00000000",
+   "at": null,
+   "prefix": "/p/open",
+   "ok": true,
+   "verdict": "unknown_id"
+  },
+  {
+   "state": "open",
+   "route": 2,
+   "id": "imp-00000000",
+   "at": "2026-10-01T12:00:00Z",
+   "prefix": "",
+   "ok": true,
+   "verdict": "unknown_id"
+  },
+  {
+   "state": "open",
+   "route": 2,
+   "id": "imp-00000000",
+   "at": "2026-10-01T12:00:00Z",
+   "prefix": "/p/open",
+   "ok": true,
+   "verdict": "unknown_id"
+  },
+  {
+   "state": "closed",
+   "route": 1,
+   "id": "imp-3e1cd7f9",
+   "prefix": "",
+   "ok": true,
+   "refused": true
+  },
+  {
+   "state": "closed",
+   "route": 1,
+   "id": "imp-3e1cd7f9",
+   "prefix": "/p/closed",
+   "ok": true,
+   "refused": true
+  },
+  {
+   "state": "closed",
+   "route": 2,
+   "id": "imp-3e1cd7f9",
+   "at": null,
+   "prefix": "",
+   "ok": true,
+   "verdict": "not_enough_data"
+  },
+  {
+   "state": "closed",
+   "route": 2,
+   "id": "imp-3e1cd7f9",
+   "at": null,
+   "prefix": "/p/closed",
+   "ok": true,
+   "verdict": "not_enough_data"
+  },
+  {
+   "state": "closed",
+   "route": 2,
+   "id": "imp-3e1cd7f9",
+   "at": "2026-10-01T12:00:00Z",
+   "prefix": "",
+   "ok": true,
+   "verdict": "not_enough_data"
+  },
+  {
+   "state": "closed",
+   "route": 2,
+   "id": "imp-3e1cd7f9",
+   "at": "2026-10-01T12:00:00Z",
+   "prefix": "/p/closed",
+   "ok": true,
+   "verdict": "not_enough_data"
+  },
+  {
+   "state": "closed",
+   "route": 1,
+   "id": "imp-00000000",
+   "prefix": "",
+   "ok": true,
+   "refused": true
+  },
+  {
+   "state": "closed",
+   "route": 1,
+   "id": "imp-00000000",
+   "prefix": "/p/closed",
+   "ok": true,
+   "refused": true
+  },
+  {
+   "state": "closed",
+   "route": 2,
+   "id": "imp-00000000",
+   "at": null,
+   "prefix": "",
+   "ok": true,
+   "verdict": "unknown_id"
+  },
+  {
+   "state": "closed",
+   "route": 2,
+   "id": "imp-00000000",
+   "at": null,
+   "prefix": "/p/closed",
+   "ok": true,
+   "verdict": "unknown_id"
+  },
+  {
+   "state": "closed",
+   "route": 2,
+   "id": "imp-00000000",
+   "at": "2026-10-01T12:00:00Z",
+   "prefix": "",
+   "ok": true,
+   "verdict": "unknown_id"
+  },
+  {
+   "state": "closed",
+   "route": 2,
+   "id": "imp-00000000",
+   "at": "2026-10-01T12:00:00Z",
+   "prefix": "/p/closed",
+   "ok": true,
+   "verdict": "unknown_id"
+  },
+  {
+   "state": "nostate",
+   "route": 1,
+   "refused": "unknown_id"
+  }
+ ],
+ "problems": [],
+ "digests": [
+  "054551965e0a7b29",
+  "054551965e0a7b29",
+  "054551965e0a7b29",
+  "054551965e0a7b29",
+  "054551965e0a7b29",
+  "054551965e0a7b29",
+  "054551965e0a7b29",
+  "054551965e0a7b29",
+  "054551965e0a7b29",
+  "054551965e0a7b29"
+ ],
+ "runs": 10,
+ "status": "RAN",
+ "seconds": 20.3
+}

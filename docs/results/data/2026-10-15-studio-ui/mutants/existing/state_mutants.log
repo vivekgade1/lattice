@@ -1,0 +1,17 @@
+hashes: {"lattice/studio/state.py": "428d8d2321afb902", "lattice/studio/plan.py": "ef6520932f25fe0b", "lattice/studio/rebuild.py": "7e9e7bc15af6d2ae", "lattice/studio/server.py": "01eab4573e4b5afb", "tests/studio/test_state_store.py": "38945a28afb4f608", "tests/studio/test_resume.py": "8b2d80b556716169"}
+control: PASS (control); exit 0; 19 passed in 32.36s; 32.5s
+S-M1: caught; exit 1; 2 failed, 17 passed in 32.11s; 32.3s
+    FAILED tests/studio/test_state_store.py::test_a_write_killed_midway_leaves_the_old_file_valid
+    FAILED tests/studio/test_state_store.py::test_builds_and_plans_round_trip_through_a_restart
+S-M2: caught; exit 1; 2 failed, 17 passed in 25.66s; 25.8s
+    FAILED tests/studio/test_resume.py::test_a_running_plan_and_its_orphans_are_reconciled_on_load
+    FAILED tests/studio/test_resume.py::test_a_studio_killed_mid_plan_resumes_without_rerunning_passed_nodes
+S-M3: caught; exit 1; 1 failed, 18 passed in 33.01s; 33.2s
+    FAILED tests/studio/test_resume.py::test_a_studio_killed_mid_plan_resumes_without_rerunning_passed_nodes
+S-M4: caught; exit 1; 1 failed, 18 passed in 31.52s; 31.7s
+    FAILED tests/studio/test_resume.py::test_a_gated_level_that_could_not_land_is_landed_without_any_agent
+S-M5: caught; exit 1; 2 failed, 17 passed in 32.66s; 32.8s
+    FAILED tests/studio/test_state_store.py::test_a_corrupt_file_is_quarantined_and_loading_goes_on
+    FAILED tests/studio/test_state_store.py::test_corrupt_state_does_not_crash_startup
+S-M6: caught; exit 1; 1 failed, 18 passed in 36.25s; 36.4s
+    FAILED tests/studio/test_resume.py::test_a_running_plan_and_its_orphans_are_reconciled_on_load

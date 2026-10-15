@@ -1,0 +1,35 @@
+{
+ "id": "A5",
+ "predicted": "a -> 0 (worktree, branch gone; record renamed byte-identical; hashes = before apply); b not_applied; c branch_moved; d merged; e worktree_dirty; b-e remove nothing (5 of 5)",
+ "observed": "5 rows; 0 problem(s)",
+ "pass": true,
+ "problems": [],
+ "digests": [
+  "53a7ee744c415ae3",
+  "53a7ee744c415ae3"
+ ],
+ "raw": {
+  "a": {
+   "rc": 0,
+   "renamed": true,
+   "hashes_equal": true
+  },
+  "b": {
+   "rc": 3,
+   "reason": "not_applied"
+  },
+  "c": {
+   "rc": 3,
+   "reason": "branch_moved"
+  },
+  "d": {
+   "rc": 3,
+   "reason": "merged"
+  },
+  "e": {
+   "rc": 3,
+   "reason": "worktree_dirty"
+  }
+ },
+ "seconds": 4.3
+}

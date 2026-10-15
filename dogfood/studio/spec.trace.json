@@ -588,6 +588,36 @@
       "text": "POST /api/session with `mode` ask, explain or change answers 201 with an idle session (`turns` 0, `claude_session_id` and `resume_command` null) and starts no process; `rebuild` answers 501, any other mode and a `change` that is not a change id answer 422; GET /api/session lists the sessions in the order they were created; a message with no text answers 422 before the session is looked up, a message to, the events of or a DELETE of a session that does not exist answer 404, and an `after` that is not an integer >= 0 answers 422.",
       "section": "Lattice Studio server: requirements > Chat sessions",
       "line": 157
+    },
+    {
+      "id": "R99",
+      "text": "GET /api/improve/{id}/draft answers `lattice improve draft ID --json` for this project with HTTP 200, a refusal included (`refused` true with a `reason` and a `detail`: `unknown_id` for an id that is not in the log), and a rejected change set drafts as `template` `prereg` with `toml` null; GET /api/improve/{id}/verify answers `lattice improve verify ID --json` the same way, with `?at=TS` passed through (`not_closed` is refused for an open proposal, with or without `at`); both answer the same under `/p/<name>/api/improve/...`, POST to either answers 404, and nothing is written: GET /api/improve still counts the same events.",
+      "section": "Lattice Studio server: requirements > Improvement drafts and applies",
+      "line": 161
+    },
+    {
+      "id": "R100",
+      "text": "GET /api/improve/applies answers `format` 1, `enabled`, `why_disabled`, `applies`, `running` and `problems` (no apply yet: `applies` empty, `running` null, and `enabled` true when the server was started with `--allow-apply`); POST /api/improve/{id}/apply with a `draft_sha256` that is not the sha256 of the current draft's text answers 409 with the code `draft_changed` and the current `draft_sha256` (null when the draft is refused), and a body without a 64 hex digit `draft_sha256` answers 422 with the code `bad_body`; POST /api/improve/{id}/discard of an id that was never applied answers 200 with `exit_code` 3 and the result's `reason` `not_applied`, GET /api/improve/{id}/apply of it answers 404 with the code `not_applied`, POST /api/improve/applies answers 404, the same lists answer the same under `/p/<name>/api/improve/applies`, and none of these writes anything or logs an event.",
+      "section": "Lattice Studio server: requirements > Improvement drafts and applies",
+      "line": 162
+    },
+    {
+      "id": "R101",
+      "text": "An `{id}` of the improve routes that does not match `[A-Za-z0-9][A-Za-z0-9._-]{0,63}` after unquoting answers 422 with the code `bad_id` on draft, verify and apply; a `gates` that is not a boolean and a `branch` that is neither null nor a string of 1 to 200 characters answer 422 with the code `bad_body`; a `wait` of GET /api/improve/{id}/apply outside 0 to 60 answers 422; nothing changes.",
+      "section": "Lattice Studio server: requirements > Improvement drafts and applies",
+      "line": 163
+    },
+    {
+      "id": "R102",
+      "text": "POST /api/improve/{id}/apply and /discard are off unless the server was started with `--allow-apply` (403 `apply_disabled`; `enabled` false in GET /api/improve/applies), and then refuse in this order: a `Host` other than 127.0.0.1:port or localhost:port, or an `Origin` that is not that host (403 `bad_origin`), a `Content-Type` other than application/json (415 `json_required`), a body that is not a JSON object (400), a bad id (422 `bad_id`), a bad body (422 `bad_body`, apply only), a project with no durable state (409 `no_state`), a second apply or discard while one runs (409 `apply_running`, one per server) and, for apply, a draft that is not the one the owner read (409 `draft_changed`); an accepted apply answers 202 with a running job, commits the draft's one line on a branch of its own in a worktree beside the checkout, runs the gates there, and never merges, pushes, closes the ledger or logs an event.",
+      "section": "Lattice Studio server: requirements > Improvement drafts and applies",
+      "line": 164
+    },
+    {
+      "id": "R103",
+      "text": "The web UI has an Improve view (the proposals, the applies, Draft, Verify, and, for a config draft with apply enabled and no live record, \"Apply on a branch...\" behind a confirmation, then the record with a NOT MERGED banner, the six commands to copy and \"Discard...\") and, when the workspace manifest names one, a Contracts view (the links, \"Check contracts\" and \"Preview impact\" only on demand, the linked questions with Resolve and Dismiss with a note, and the deliveries); every call goes through api.js, and no route of the UI merges, pushes or closes a ledger entry.",
+      "section": "Lattice Studio server: requirements > Improvement drafts and applies",
+      "line": 165
     }
   ],
   "links": {
@@ -876,6 +906,15 @@
     ],
     "R98": [
       "scenario:chat_sessions_start_idle_and_refuse_bad_requests"
+    ],
+    "R99": [
+      "scenario:improvement_drafts_and_verdicts_are_read_only"
+    ],
+    "R100": [
+      "scenario:apply_and_discard_refuse_without_writing"
+    ],
+    "R101": [
+      "scenario:improve_ids_and_waits_are_validated"
     ]
   },
   "unchecked": {
@@ -894,7 +933,9 @@
     "R84": "a project with its own engines and modules is not in the seed; tests/studio/test_engines_api.py covers the registration, the re-hash on every read and the refusal of a changed module, tests/modules/test_modules.py the install, the lock and the checker's refusal",
     "R88": "the log's contents need a build with a JSON-writing gate, a give-up and a stop; tests/studio/test_events.py checks each field (layer_seconds, cause, actor, the ledger's own wall time, signal_key) on a stub plan of this seed whose gate writes a check-shaped report",
     "R89": "the seed's log never holds a checker-targeted or closed cluster; tests/improve/test_analyze.py checks the arithmetic, the class order (no conversion), the ledger and the needs_owner refusal, tests/improve/test_cli.py the CLI run",
-    "R93": "the harness puts every scenario's project under one valid workspace manifest, so no scenario sees no manifest or an invalid one; tests/workspace/test_studio_api.py checks both on the real server and the mock, tests/workspace/test_workspace.py each error class, and docs/results/2026-10-12-multi-results.md (MP-3) records a real-server run with and without a manifest"
+    "R93": "the harness puts every scenario's project under one valid workspace manifest, so no scenario sees no manifest or an invalid one; tests/workspace/test_studio_api.py checks both on the real server and the mock, tests/workspace/test_workspace.py each error class, and docs/results/2026-10-12-multi-results.md (MP-3) records a real-server run with and without a manifest",
+    "R102": "the guards are checked on a real server over a synthetic repository, not in the seed: the gate has no gate that runs for minutes, and a wrong Host or Origin needs a raw client; tests/studio/test_improve_api.py checks the whole ladder, the lock, the job, the interrupt on close and discard on the real server and the mock, and dogfood/studio_ui_probes.py (P0, P2-P6) checks it against the CLI and the owner's checkout (docs/results/2026-10-15-studio-ui-results.md)",
+    "R103": "rendering is browser-only; tests/studio/test_studio_ui.py checks the navigator entries, the route strings, the words, node --check and the pure functions, and docs/results/2026-10-15-studio-ui-results.md records whether a browser walk on the mock was done"
   },
   "context": [
     "R1"

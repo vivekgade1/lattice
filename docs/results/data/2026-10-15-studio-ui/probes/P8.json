@@ -1,0 +1,74 @@
+{
+ "id": "P8",
+ "title": "mock parity",
+ "predicted": "17 of 17: the same key tree and JSON types for draft config and refused, verify refused, applies (empty, one, disabled), job running, done, refused, discard 0 and 3; the same status for P0 rows a, e, f, g, i, m",
+ "observed": "17 of 17 (none differ)",
+ "pass": true,
+ "obs": {
+  "items": {
+   "draft config": true,
+   "draft refused": true,
+   "verify refused": true,
+   "applies empty": true,
+   "applies disabled": true,
+   "job running": true,
+   "job done exit 0": true,
+   "applies one": true,
+   "job refused": true,
+   "discard 0": true,
+   "discard 3": true,
+   "status a": true,
+   "status e": true,
+   "status f": true,
+   "status g": true,
+   "status i": true,
+   "status m": true
+  },
+  "ok": 17,
+  "total": 17
+ },
+ "raw": {
+  "status_rows": {
+   "a": [
+    403,
+    403
+   ],
+   "e": [
+    415,
+    415
+   ],
+   "f": [
+    400,
+    400
+   ],
+   "g": [
+    422,
+    422
+   ],
+   "i": [
+    422,
+    422
+   ],
+   "m": [
+    409,
+    409
+   ]
+  }
+ },
+ "problems": [],
+ "digests": [
+  "505d6e565d48d6ee",
+  "505d6e565d48d6ee",
+  "505d6e565d48d6ee",
+  "505d6e565d48d6ee",
+  "505d6e565d48d6ee",
+  "505d6e565d48d6ee",
+  "505d6e565d48d6ee",
+  "505d6e565d48d6ee",
+  "505d6e565d48d6ee",
+  "505d6e565d48d6ee"
+ ],
+ "runs": 10,
+ "status": "RAN",
+ "seconds": 28.8
+}

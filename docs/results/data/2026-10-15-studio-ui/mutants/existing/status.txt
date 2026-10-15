@@ -1,0 +1,6 @@
+perf_mutants rc=0 wall=627s
+state_mutants rc=2 wall=0s
+sync_mutants rc=0 wall=264s
+mcp_mutants rc=0 wall=240s
+improve_mutants rc=0 wall=1054s
+done

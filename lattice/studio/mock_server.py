@@ -115,6 +115,15 @@ baseline that re-ran an already-gated tip, a node that gave up on an unsatisfiab
 owner's resume) and a fixture ledger that closes the unsatisfiable-check cause. Read only (no
 POST); no web UI in this version.
 
+API v1.21 (the improvement loop in the web UI): ``GET /api/improve/{id}/draft`` and
+``/verify[?at=]`` answer ``lattice.improve`` itself over that fixture log and ledger, ``GET
+/api/improve/applies``, ``GET|POST /api/improve/{id}/apply`` and ``POST /api/improve/{id}/discard``
+the real server's shapes and refusals (the same guard ladder: 403 ``apply_disabled`` /
+``bad_origin``, 415 ``json_required``, 400, 422 ``bad_id`` / ``bad_body``, 409 ``apply_running`` /
+``draft_changed``). The default project is ``enabled: true``: an apply of ``imp-3e1cd7f9`` runs
+``MOCK_APPLY_SECONDS`` in memory (no git), then holds a fixture record with the real record's key
+tree (the gates ``passed``) and a discard removes it; the second project is ``enabled: false``.
+
 API v1.16 (workspace manifest, multi-project layer 2): ``GET /api/workspace`` answers the real
 server's shape for a fixture manifest (``MOCK_WORKSPACE_*``): its two projects are the mock's two
 (``in_hub``, ``hub_name`` computed from them), a third (``scheduler-web``, a consumer) is not
@@ -164,6 +173,7 @@ import json
 import mimetypes
 import re
 import threading
+import time
 from datetime import UTC, datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -1099,6 +1109,16 @@ class MockSessions:
             return {"id": sid, "state": "interrupted"}
 
 
+# API v1.21: how long a mock apply runs (in memory, no git) before its gates are `passed`, when
+# its record first shows (gates `running`), and how long a refused apply takes to answer
+MOCK_APPLY_SECONDS = 1.5
+MOCK_APPLY_RECORD_AT = 0.4
+MOCK_APPLY_REFUSED_AT = 0.2
+APPLY_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+SHA256_HEX = re.compile(r"[0-9a-f]{64}")
+APPLY_OFF = "start Studio with --allow-apply"
+
+
 class MockRefusal(Exception):
     """A refused mock request: answered as ``{"detail", "code"?}`` with `status`."""
 
@@ -1108,6 +1128,25 @@ class MockRefusal(Exception):
 
     def body(self) -> dict[str, str]:
         return {"detail": self.detail, **({"code": self.code} if self.code else {})}
+
+
+class DraftChanged(MockRefusal):
+    """409 ``draft_changed``: carries the current draft's sha256 (or None)."""
+
+    def __init__(self, sha: str | None) -> None:
+        super().__init__(
+            409,
+            "the draft is not the one you read (it changed, or it is refused now): read it again",
+            "draft_changed",
+        )
+        self.sha = sha
+
+    def body(self) -> dict[str, Any]:  # type: ignore[override]
+        return {**super().body(), "draft_sha256": self.sha}
+
+
+def now_iso_mock() -> str:
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 class MockState:
@@ -1155,6 +1194,11 @@ class MockState:
         self.sessions = MockSessions(fixture_dir)
         self.plans = MockPlans(self)
         self.mcp_refreshed: str | None = None
+        # API v1.21: apply jobs and live records, in memory; `apply_enabled` is a fixture choice
+        # per project (the real opt-in is server-wide)
+        self.apply_enabled = True
+        self.apply_jobs: dict[str, dict[str, Any]] = {}
+        self.apply_records: dict[str, dict[str, Any]] = {}
         if seed_change:
             self._seed_initial_change()
 
@@ -1203,6 +1247,285 @@ class MockState:
         rep = analyze([dict(e) for e in MOCK_IMPROVE_EVENTS],
                       [dict(e) for e in MOCK_IMPROVE_LEDGER])  # fmt: skip
         return {k: rep[k] for k in ("proposals", "events", "method", "blind_spots")}
+
+    # API v1.21: draft, verify and the apply job over the same fixture log and ledger
+    def _improve_inputs(self) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+        return [dict(e) for e in MOCK_IMPROVE_EVENTS], [dict(e) for e in MOCK_IMPROVE_LEDGER]
+
+    def improve_draft(self, ident: str) -> dict[str, Any]:
+        """``GET /api/improve/{id}/draft``: ``lattice.improve.draft`` itself."""
+        from lattice.improve.draft import draft
+
+        events, ledger = self._improve_inputs()
+        return draft(events, ledger, ident, {})[1]
+
+    def improve_verify(self, ident: str, at: str | None) -> dict[str, Any]:
+        """``GET /api/improve/{id}/verify[?at=]``: ``lattice.improve.verify`` itself."""
+        from lattice.improve.verify import verify
+
+        events, ledger = self._improve_inputs()
+        return verify(events, ledger, ident, at=at)[1]
+
+    def draft_sha(self, ident: str) -> str | None:
+        doc = self.improve_draft(ident)
+        if doc.get("refused") or not isinstance(doc.get("text"), str):
+            return None
+        return hashlib.sha256(doc["text"].encode("utf-8")).hexdigest()
+
+    def _apply_record(
+        self,
+        ident: str,
+        doc: dict[str, Any],
+        branch: str | None,
+        started_at: str,
+        gates_status: str,
+        gates: bool,
+    ) -> dict[str, Any]:
+        """A fixture record with the real record's key tree (lattice.improve.apply)."""
+        from lattice.improve.draft import _literal
+
+        p = doc["proposal"]
+        name, op, literal = _literal(p["signal_key"], p)  # type: ignore[misc]
+        line = doc["toml"].split("\n")[1]
+        sections = {x["heading"]: x["body"] for x in doc["sections"]}
+        current = next(
+            (ln for ln in sections["What to change"].split("\n") if ln.startswith("current:")), ""
+        )
+        branch = branch or f"improve/{ident}"
+        root = str(self.model["project"]["root"])
+        sha = hashlib.sha1(f"{ident}:{branch}".encode()).hexdigest()  # noqa: S324
+        results = (
+            [
+                {
+                    "command": c,
+                    "exit_code": 0,
+                    "passed": True,
+                    "timed_out": False,
+                    "seconds": s,
+                    "output_tail": f"{c}\nPASS\n",
+                }
+                for c, s in (
+                    ("dogfood/studio/check.sh", 0.7),
+                    ("uv run pytest tests/studio -q", 0.4),
+                )
+            ]
+            if gates_status == "passed" and gates
+            else []
+        )
+        diff = (
+            f'@@ -1,3 +1,4 @@\n [rebuild]\n+{line}\n repo = "."\n'
+            "--- a/studio.toml\n+++ b/studio.toml\n"
+        )
+        return {
+            "format": 1, "command": "apply",
+            "proposal": {"id": ident, "kind": p["kind"], "signal_key": p["signal_key"],
+                         "title": p["title"]},
+            "draft": {"template": doc["template"], "as_of": doc["as_of"], "toml": doc["toml"],
+                      "current": current, "expected": sections.get("Expected"),
+                      "sha256": hashlib.sha256(doc["text"].encode("utf-8")).hexdigest()},
+            "edit": {"file": "studio.toml", "table": "rebuild", "key": name, "op": op,
+                     "old": None, "new": literal, "line": line, "line_no": 3,
+                     "action": "inserted", "diff": diff},
+            "base": {"branch": "main", "sha": self.model["project"]["git_head"]},
+            "branch": branch,
+            "worktree": f"{root}.improve/{ident}",
+            "commit": {"sha": sha, "tree": sha[::-1],
+                       "message": f"improve: [rebuild] {line}\n\nProposal {ident}.\n"},
+            "applied_at": started_at,
+            "gates": {"status": gates_status, "timeout_s": 900.0, "results": results,
+                      "untracked_after": []},
+            "integration_branch": None,
+            "next": [
+                {"step": "review", "command": f"git -C {root} diff main {branch}"},
+                {"step": "merge", "command": f"git -C {root} merge {branch}"},
+                {"step": "close", "command": f"lattice improve ledger --project {root} --signal "
+                 f"{p['signal_key']} --status closed --id {ident} --commit {sha}"},
+                {"step": "verify", "command": f"lattice improve verify {ident} --project {root} "
+                 "--at <YYYY-MM-DDTHH:MM:SSZ the merge landed>"},
+                {"step": "tidy", "command": f"git -C {root} worktree remove {root}.improve/{ident}"
+                 f" && git -C {root} branch -d {branch}"},
+                {"step": "drop", "command": f"lattice improve apply --discard {ident} "
+                 f"--project {root}"},
+            ],
+            "warnings": [],
+        }  # fmt: skip
+
+    @staticmethod
+    def apply_check_body(body: dict[str, Any]) -> None:
+        """Guard (g): a MockRefusal 422 ``bad_body`` unless the body is well formed."""
+        sha, gates, branch = body.get("draft_sha256"), body.get("gates", True), body.get("branch")
+        if not (isinstance(sha, str) and SHA256_HEX.fullmatch(sha)):
+            raise MockRefusal(
+                422,
+                "draft_sha256 must be the sha256 (64 lowercase hex digits) of "
+                "the draft text you read",
+                "bad_body",
+            )
+        if not isinstance(gates, bool):
+            raise MockRefusal(422, "gates must be true or false", "bad_body")
+        if branch is not None and not (isinstance(branch, str) and 1 <= len(branch) <= 200):
+            raise MockRefusal(
+                422, "branch must be null or a name of 1 to 200 characters", "bad_body"
+            )
+
+    def apply_start(self, ident: str, body: dict[str, Any]) -> dict[str, Any]:
+        """Guard (j), then the job (a MockRefusal otherwise); the server holds (i)."""
+        sha, gates, branch = body["draft_sha256"], body.get("gates", True), body.get("branch")
+        current = self.draft_sha(ident)
+        if current != sha:
+            raise DraftChanged(current)
+        doc = self.improve_draft(ident)
+        refusal = None
+        if doc["template"] != "config":
+            refusal = (
+                "not_config",
+                f"{ident} drafts as a {doc['template']}, not a literal "
+                "[rebuild] setting: the owner decides it",
+            )
+        elif ident in self.apply_records:
+            refusal = (
+                "already_applied",
+                f"{ident} was already applied (record in the state directory)",
+            )
+        now = time.monotonic()
+        job = {
+            "id": ident,
+            "started": now,
+            "started_at": now_iso_mock(),
+            "gates": gates,
+            "branch": branch,
+            "doc": doc,
+            "refusal": refusal,
+        }
+        with self.lock:
+            self.apply_jobs[ident] = job
+            if refusal is None:
+                self.apply_records[ident] = job
+        return self.apply_view(ident)
+
+    def apply_busy(self) -> bool:
+        with self.lock:
+            return any(self._job_status(j) == "running" for j in self.apply_jobs.values())
+
+    @staticmethod
+    def _job_status(job: dict[str, Any]) -> str:
+        span = (
+            MOCK_APPLY_REFUSED_AT
+            if job["refusal"]
+            else (MOCK_APPLY_SECONDS if job["gates"] else MOCK_APPLY_RECORD_AT + 0.1)
+        )
+        return "done" if time.monotonic() - job["started"] >= span else "running"
+
+    def _job_record(self, job: dict[str, Any]) -> dict[str, Any] | None:
+        if job["refusal"]:
+            return None
+        elapsed = time.monotonic() - job["started"]
+        if self._job_status(job) == "done":
+            status = "passed" if job["gates"] else "skipped"
+        elif elapsed >= MOCK_APPLY_RECORD_AT:
+            status = "running" if job["gates"] else "skipped"
+        else:
+            return None
+        return self._apply_record(
+            job["id"], job["doc"], job["branch"], job["started_at"], status, job["gates"]
+        )
+
+    def apply_view(self, ident: str, wait: float = 0.0) -> dict[str, Any]:
+        """``GET|POST /api/improve/{id}/apply``: the job in the real server's shape."""
+        with self.lock:
+            job = self.apply_jobs.get(ident)
+        if job is None:
+            raise MockRefusal(404, f"no apply of {ident}", "not_applied")
+        deadline = time.monotonic() + min(wait, 60.0)
+        while wait > 0 and self._job_status(job) == "running" and time.monotonic() < deadline:
+            time.sleep(0.05)
+        done = self._job_status(job) == "done"
+        rec = self._job_record(job)
+        if job["refusal"]:
+            reason, detail = job["refusal"]
+            result: dict[str, Any] | None = None
+            if done:
+                result = {
+                    "format": 1,
+                    "command": "apply",
+                    "id": ident,
+                    "refused": True,
+                    "reason": reason,
+                    "detail": detail,
+                }
+        else:
+            result = rec if done else None
+        return {
+            "id": ident, "command": "apply", "status": "done" if done else "running",
+            "source": "job", "started_at": job["started_at"],
+            "finished_at": now_iso_mock() if done else None,
+            "options": {"gates": job["gates"], "branch": job["branch"]},
+            "exit_code": (3 if job["refusal"] else 0) if done else None,
+            "result": result, "record": rec, "stale": False,
+        }  # fmt: skip
+
+    def applies_list(self, enabled: bool) -> dict[str, Any]:
+        with self.lock:
+            records = list(self.apply_records.values())
+            running = next(
+                (
+                    {"id": j["id"], "started_at": j["started_at"]}
+                    for j in self.apply_jobs.values()
+                    if self._job_status(j) == "running"
+                ),
+                None,
+            )
+        applies = []
+        for job in records:
+            rec = self._job_record(job)
+            if rec is None:
+                continue
+            applies.append({
+                "id": job["id"], "title": rec["proposal"]["title"],
+                "signal_key": rec["proposal"]["signal_key"], "branch": rec["branch"],
+                "worktree": rec["worktree"], "commit": rec["commit"]["sha"],
+                "base": {"branch": rec["base"]["branch"], "sha": rec["base"]["sha"]},
+                "applied_at": rec["applied_at"], "line": rec["edit"]["line"],
+                "gates": rec["gates"]["status"], "stale": False,
+            })  # fmt: skip
+        applies.sort(key=lambda a: (a["applied_at"], a["id"]))
+        return {
+            "format": 1,
+            "enabled": enabled,
+            "why_disabled": None if enabled else APPLY_OFF,
+            "applies": applies,
+            "running": running,
+            "problems": [],
+        }
+
+    def apply_discard(self, ident: str) -> dict[str, Any]:
+        """``POST /api/improve/{id}/discard`` (exit 0 when a record is held, else 3)."""
+        with self.lock:
+            job = self.apply_records.pop(ident, None)
+            if job is not None:
+                self.apply_jobs.pop(ident, None)
+        if job is None:
+            return {
+                "id": ident,
+                "command": "discard",
+                "exit_code": 3,
+                "result": {
+                    "format": 1,
+                    "command": "discard",
+                    "id": ident,
+                    "refused": True,
+                    "reason": "not_applied",
+                    "detail": f"no apply record for {ident}: not a branch apply made",
+                },
+            }
+        rec = self._apply_record(
+            ident, job["doc"], job["branch"], job["started_at"], "passed", job["gates"]
+        )
+        return {"id": ident, "command": "discard", "exit_code": 0, "result": {
+            "format": 1, "command": "discard", "id": ident, "branch": rec["branch"],
+            "worktree": rec["worktree"], "commit": rec["commit"]["sha"],
+            "record": f"<state>/applies/{ident}.discarded-1.json",
+            "removed": {"worktree": True, "branch": True}, "warnings": []}}  # fmt: skip
 
     # GET /api/mcp (v1.13): the fixture discovery, classified by mcp_intake itself
     def mcp(self, refresh: bool = False) -> dict[str, Any]:
@@ -2980,9 +3303,9 @@ class Handler(BaseHTTPRequestHandler):
             return DEFAULT_PROJECT
         return unquote(path.removeprefix("/p/").partition("/")[0])
 
-    def _refusal(self, fn: Any) -> None:
+    def _refusal(self, fn: Any, status: int = 200) -> None:
         try:
-            self._json(fn())
+            self._json(fn(), status)
         except MockRefusal as e:
             self._json(e.body(), e.status)
 
@@ -3024,6 +3347,27 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(self.server.linked_notifications(self._owner()))
         if path == "/api/improve":
             return self._json(state.improve())
+        if path == "/api/improve/applies":
+            return self._json(state.applies_list(state.apply_enabled))
+        if path.startswith("/api/improve/"):
+            parts = path.removeprefix("/api/improve/").split("/")
+            if len(parts) == 2 and parts[1] in ("draft", "verify", "apply"):
+                ident = unquote(parts[0])
+                if not APPLY_ID.match(ident):
+                    return self._json({"detail": f"bad id {ident!r}", "code": "bad_id"}, 422)
+                if parts[1] == "draft":
+                    return self._json(state.improve_draft(ident))
+                if parts[1] == "verify":
+                    return self._json(state.improve_verify(ident, query.get("at")))
+                try:
+                    wait = float(query.get("wait", "0"))
+                except ValueError:
+                    wait = -1.0
+                if not 0 <= wait <= 60:
+                    return self._error(
+                        HTTPStatus.UNPROCESSABLE_ENTITY, "wait must be a number of seconds, 0 to 60"
+                    )
+                return self._refusal(lambda: state.apply_view(ident, wait))
         if path == "/api/mcp":
             raw = str(query.get("refresh", "0")).lower()
             if raw not in ("0", "1", "true", "false", ""):
@@ -3117,6 +3461,10 @@ class Handler(BaseHTTPRequestHandler):
         if split is None:
             return None
         path, state = split
+        if path.startswith("/api/improve/"):  # API v1.21: the two writes, guarded before the body
+            parts = path.removeprefix("/api/improve/").split("/")
+            if len(parts) == 2 and parts[1] in ("apply", "discard"):
+                return self._improve_write(state, parts[0], parts[1])
         body = self._body()
         if body is None:
             return self._error(HTTPStatus.BAD_REQUEST, "the body must be a JSON object")
@@ -3212,6 +3560,57 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(out)
         return self._error(HTTPStatus.NOT_FOUND, "no such route")
 
+    def _improve_write(self, state: MockState, raw_id: str, verb: str) -> None:
+        """The real server's guard ladder (b)-(j) of API.md v1.21, in order."""
+        if not state.apply_enabled:  # (b)
+            return self._json(
+                {"detail": f"apply is off for this Studio: {APPLY_OFF}", "code": "apply_disabled"},
+                403,
+            )
+        host = self.headers.get("Host") or ""  # (c)
+        port = self.server.server_address[1]
+        origin = self.headers.get("Origin")
+        if host not in (f"127.0.0.1:{port}", f"localhost:{port}") or (
+            origin is not None and origin != f"http://{host}"
+        ):
+            return self._json(
+                {
+                    "detail": "this request did not come from this Studio's own page "
+                    "(Host or Origin)",
+                    "code": "bad_origin",
+                },
+                403,
+            )
+        ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+        if ctype != "application/json":  # (d)
+            return self._json(
+                {"detail": "send the body as application/json", "code": "json_required"}, 415
+            )
+        body = self._body()  # (e)
+        if body is None:
+            return self._error(HTTPStatus.BAD_REQUEST, "the body must be a JSON object")
+        ident = unquote(raw_id)
+        if not APPLY_ID.match(ident):  # (f)
+            return self._json({"detail": f"bad id {ident!r}", "code": "bad_id"}, 422)
+        if verb == "apply":  # (g)
+            try:
+                state.apply_check_body(body)
+            except MockRefusal as e:
+                return self._json(e.body(), e.status)
+        with self.server.apply_lock:  # (i): one apply or discard at a time, per server
+            if any(s.apply_busy() for s in self.server.states.values()):
+                return self._json(
+                    {
+                        "detail": "another apply or discard is running on this "
+                        "Studio; wait for it to finish",
+                        "code": "apply_running",
+                    },
+                    409,
+                )
+            if verb == "apply":
+                return self._refusal(lambda: state.apply_start(ident, body), 202)
+            return self._json(state.apply_discard(ident))
+
     def do_DELETE(self) -> None:  # noqa: N802
         split = self._split()
         if split is None:
@@ -3305,6 +3704,8 @@ class MockServer(ThreadingHTTPServer):
         self.state = self.states[DEFAULT_PROJECT]
         self.states[SECOND_PROJECT].plans.seed_fixtures()  # API v1.10: resume fixtures
         self.verbose = verbose
+        self.apply_lock = threading.Lock()  # API v1.21: guards the check-and-start of an apply
+        self.states[SECOND_PROJECT].apply_enabled = False  # a fixture choice: both UI states
         self.workspace_enabled = True  # API v1.16: False answers the no-manifest shape
         # API v1.19: the fixture consumer's linked questions, cleared in memory
         self.linked: list[dict[str, Any]] = [copy.deepcopy(q) for q in MOCK_LINKED_QUESTIONS]

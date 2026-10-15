@@ -1,0 +1,70 @@
+hashes: {"lattice/studio/plan.py": "ef6520932f25fe0b", "lattice/studio/rebuild.py": "7e9e7bc15af6d2ae", "lattice/studio/state.py": "428d8d2321afb902", "lattice/studio/areas.py": "e4b11ec2d0a3082f", "lattice/studio/hub.py": "03c463a02e1c7a02", "lattice/studio/server.py": "01eab4573e4b5afb", "dogfood/studio/spec.py": "04e57c878978831c", "tests/studio/test_scoped_gates.py": "c93a969ed549c2a1", "tests/studio/test_level_repair.py": "51eb668eb6d68086", "tests/studio/test_stop_cleanup.py": "e9623a082f0514ef"}
+control: PASS (control)
+P-M3: caught by ['pytest', 'dogfood']; pytest exit 1 (3 failed, 26 passed in 59.80s; 60.0s); dogfood exit 1 (FAIL: 2 findings (D 2, X 0); 473 cases run; 76.4s)
+    FAILED tests/studio/test_scoped_gates.py::test_the_integration_node_and_a_full_level_gate_are_unscoped
+    FAILED tests/studio/test_scoped_gates.py::test_the_regression_set_catches_a_regression_in_the_node_gate
+    FAILED tests/studio/test_scoped_gates.py::test_the_selection_is_the_scope_plus_the_regression_set
+    dogfood: a_plan_runs_level_by_level / step 7
+    dogfood: a_level_gate_failure_is_repaired_and_lands / step 7
+P-M1: caught by ['pytest', 'dogfood']; pytest exit 1 (8 failed, 21 passed in 62.19s (0:01:02); 62.4s); dogfood exit 1 (FAIL: 1 finding (D 1, X 0); 476 cases run; 77.7s)
+    FAILED tests/studio/test_level_repair.py::test_a_failure_no_node_owns_gets_a_repair_node
+    FAILED tests/studio/test_level_repair.py::test_a_race_only_and_a_cross_area_failure_are_repaired_and_land
+    FAILED tests/studio/test_level_repair.py::test_one_attempt_cap_is_exactly_one
+    FAILED tests/studio/test_level_repair.py::test_repairs_are_capped_then_partial_and_resume_repairs_again
+    FAILED tests/studio/test_level_repair.py::test_without_the_repair_loop_a_level_failure_stops_the_plan
+    FAILED tests/studio/test_scoped_gates.py::test_level_gate_args_apply_to_the_regression_level_gate_only
+    FAILED tests/studio/test_scoped_gates.py::test_without_level_gate_args_the_level_gate_is_unchanged
+    FAILED tests/studio/test_scoped_gates.py::test_without_scoped_args_nothing_changes
+    dogfood: a_level_gate_failure_is_repaired_and_lands / step 5
+P-M2: caught by ['pytest', 'dogfood']; pytest exit 1 (5 failed, 24 passed in 66.30s (0:01:06); 66.5s); dogfood exit 1 (FAIL: 1 finding (D 1, X 0); 476 cases run; 78.5s)
+    FAILED tests/studio/test_level_repair.py::test_a_failure_no_node_owns_gets_a_repair_node
+    FAILED tests/studio/test_level_repair.py::test_a_race_only_and_a_cross_area_failure_are_repaired_and_land
+    FAILED tests/studio/test_level_repair.py::test_one_attempt_cap_is_exactly_one
+    FAILED tests/studio/test_level_repair.py::test_repairs_are_capped_then_partial_and_resume_repairs_again
+    FAILED tests/studio/test_level_repair.py::test_without_the_repair_loop_a_level_failure_stops_the_plan
+    dogfood: a_level_gate_failure_is_repaired_and_lands / step 5
+P-M5: caught by ['pytest']; pytest exit 1 (2 failed, 27 passed in 59.57s; 59.8s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 481 cases run; 74.1s)
+    FAILED tests/studio/test_level_repair.py::test_one_attempt_cap_is_exactly_one
+    FAILED tests/studio/test_level_repair.py::test_repairs_are_capped_then_partial_and_resume_repairs_again
+P-M4: caught by ['pytest', 'dogfood']; pytest exit 1 (5 failed, 24 passed in 65.54s (0:01:05); 65.7s); dogfood exit 1 (FAIL: 1 finding (D 1, X 0); 476 cases run; 76.3s)
+    FAILED tests/studio/test_level_repair.py::test_a_failure_no_node_owns_gets_a_repair_node
+    FAILED tests/studio/test_level_repair.py::test_a_race_only_and_a_cross_area_failure_are_repaired_and_land
+    FAILED tests/studio/test_level_repair.py::test_one_attempt_cap_is_exactly_one
+    FAILED tests/studio/test_level_repair.py::test_repairs_are_capped_then_partial_and_resume_repairs_again
+    FAILED tests/studio/test_level_repair.py::test_without_the_repair_loop_a_level_failure_stops_the_plan
+    dogfood: a_level_gate_failure_is_repaired_and_lands / step 5
+P-M6: caught by ['pytest']; pytest exit 1 (3 failed, 26 passed in 117.20s (0:01:57); 117.4s); dogfood exit 0 (PASS: 0 findings (D 0, X 0); 481 cases run; 76.4s)
+    FAILED tests/studio/test_stop_cleanup.py::test_a_gate_timeout_kills_the_tree_too
+    FAILED tests/studio/test_stop_cleanup.py::test_a_plan_stop_during_a_gate_kills_its_tree
+    FAILED tests/studio/test_stop_cleanup.py::test_stop_kills_the_gates_whole_tree_and_its_containers
+B-M1: caught by ['dogfood']; dogfood exit 1 (FAIL: 7 findings (D 7, X 0); 424 cases run; 72.3s)
+    dogfood: scoped_builds_accumulate_on_the_integration_branch / step 2
+    dogfood: a_named_target_branch_is_created_once / step 2
+    dogfood: a_failed_node_blocks_its_dependents_not_its_siblings / step 5
+    dogfood: a_partial_plan_retries_up_to_the_cap / step 5
+    dogfood: the_committed_spec_is_synced_onto_the_target_branch / step 2
+    dogfood: spec_sync_is_refused_while_a_plan_runs / step 2
+    dogfood: a_plan_run_syncs_the_spec_first_when_configured / step 2
+B-M2: caught by ['dogfood']; dogfood exit 1 (FAIL: 2 findings (D 2, X 0); 473 cases run; 76.1s)
+    dogfood: scoped_builds_accumulate_on_the_integration_branch / step 7
+    dogfood: a_named_target_branch_is_created_once / step 6
+B-M5: caught by ['dogfood']; dogfood exit 1 (FAIL: 2 findings (D 2, X 0); 467 cases run; 75.7s)
+    dogfood: scoped_build_refusals / step 5
+    dogfood: plan_refusals / step 7
+R-M2: caught by ['dogfood']; dogfood exit 1 (FAIL: 13 findings (D 13, X 0); 438 cases run; 72.4s)
+    dogfood: a_rebuild_passes_in_round_2_on_its_own_branch / step 8
+    dogfood: a_rebuild_gives_up_at_max_rounds_and_can_run_again / step 9
+    dogfood: scoped_builds_accumulate_on_the_integration_branch / step 4
+    dogfood: a_named_target_branch_is_created_once / step 4
+    dogfood: a_plan_runs_level_by_level / step 8
+    dogfood: a_level_gate_failure_is_repaired_and_lands / step 5
+    dogfood: a_failed_node_blocks_its_dependents_not_its_siblings / step 8
+    dogfood: land_is_409_when_nothing_waits / step 11
+    dogfood: forget_drops_a_plan_and_its_anchors / step 13
+    dogfood: a_partial_plan_retries_up_to_the_cap / step 11
+    dogfood: the_committed_spec_is_synced_onto_the_target_branch / step 5
+    dogfood: spec_sync_is_refused_while_a_plan_runs / step 11
+BG-P-M3: caught by ['dogfood']; dogfood exit 1 (FAIL: 1 finding (D 1, X 0); 476 cases run; 76.9s)
+    dogfood: a_level_gate_failure_is_repaired_and_lands / step 5
+BG-P-M6: caught by ['dogfood']; dogfood exit 1 (FAIL: 1 finding (D 1, X 0); 476 cases run; 75.1s)
+    dogfood: a_level_gate_failure_is_repaired_and_lands / step 5

@@ -1,6 +1,6 @@
-# Lattice Studio API contract (v1.20)
+# Lattice Studio API contract (v1.21)
 
-`lattice studio [DIR ...] [--default NAME] [--port N] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
+`lattice studio [DIR ...] [--default NAME] [--port N] [--allow-apply] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
 **A project directory** holds:
 - `REQUIREMENTS.md`: the owner's text;
@@ -1067,3 +1067,39 @@ The ask, explain and change session profiles also allow `mcp__lattice__project_l
 
 ### A project without a spec (F5)
 The MCP spec tools' error on a directory without the spec files is unchanged, with one sentence appended when the directory holds `lattice.imports.toml` and/or `lattice.contracts.lock.json` (a contract consumer): it names `contract_check` and `linked_question_list`.
+
+## v1.21 additions (the improvement loop and contracts in the web UI)
+
+Contracts need **UI only, zero routes** (`/api/workspace`, `/api/contracts`, `/api/contracts/impact`, `/api/linked-questions`, `/api/linked-notifications` stand as they are). The improvement loop (`lattice improve draft|verify|apply|apply --discard`, until now CLI only) gets six routes, of which the last two are the only writes. `GET /api/improve`, `/api/projects` and `/api/model` gain no key. Every route is project-scoped like `/api/improve` (bare = the default project, `/p/<name>/api/...`; an unknown name answers 404 `no such project`). Every other method on these paths, and `POST /api/improve`, answers 404 `no such route`.
+
+`{id}` must match `^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$` after unquoting, else 422 `{"detail", "code": "bad_id"}` (`..`, `/` and `%2F` never reach a path under the state directory).
+
+### GET /api/improve/{id}/draft
+`lattice improve draft ID --json` for this project, key for key: the draft (`template`, `sections`, `toml`, `text`, ...) or a refusal (`refused: true`, `reason`, `detail`), HTTP 200 either way. Reads the project's state directory and `studio.toml` from disk (as the CLI does, not Studio's loaded config); writes nothing. A log, ledger or `studio.toml` that cannot be read answers 200 `{"error": "..."}` (the CLI's exit 2).
+
+### GET /api/improve/{id}/verify[?at=TS]
+`lattice improve verify ID [--at TS] --json`, key for key: the verdict or a refusal; `at` is passed through (the CLI's validation applies). Read only.
+
+### GET /api/improve/applies
+`{"format": 1, "enabled", "why_disabled", "applies", "running", "problems"}`. `enabled` is false (with `why_disabled`: `start Studio with --allow-apply`, or no durable state) when POST apply/discard would be refused. `applies`: the live `<state>/applies/*.json` records of this project (never `*.discarded-N.json`) by `applied_at` then id, each `{id, title, signal_key, branch, worktree, commit, base: {branch, sha}, applied_at, line, gates, stale}` (`gates` is the record's `gates.status`; `stale`: it says `running` and no job of this Studio is running it). `running`: `{id, started_at}` of this project's running apply, else null. `problems`: `{file, detail}` for a record that could not be read.
+
+### GET /api/improve/{id}/apply[?wait=S]
+The apply job: `{id, command: "apply", status: "running"|"done", source: "job"|"record", started_at, finished_at, options: {gates, branch}, exit_code, result, record, stale}`. `exit_code` is null while running, then the CLI's 0 applied, 1 a gate failed, 2 could not run or interrupted, 3 refused; `result` is null, then the CLI's `--json` record, the refusal (`refused`, `reason`, `detail`) or `{"error"}`; `record` is the on-disk record (while running: once written, `gates.status: "running"`, so branch and commit show before the gates end). After a restart there is no job: a live record answers `source: "record"`, `status: "done"`, `exit_code` null, `result` null and `stale` = (`gates.status == "running"`). `?wait=S` holds until `done` or S seconds (0 to 60, else 422 with the same text as `/api/changes/{id}?wait=`). 404 `not_applied` when there is neither a job nor a record.
+
+### POST /api/improve/{id}/apply
+Body `{"draft_sha256": 64 lowercase hex (required), "gates": bool = true, "branch": null | 1-200 chars}`. 202 with the job (`status: "running"`); one worker thread calls `lattice.improve.apply.apply` with `no_gates = not gates`. The job is bounded by the gates' own `[rebuild] gate_timeout` (default 900 s) and `stop_grace` per gate (Studio adds no timer); `gates: false` skips them. Closing the server sets the `stop` event and joins the worker for at most `stop_grace + 10` s: the gate tree is terminated by apply's own path, the record says `interrupted` (exit 2) and the branch, worktree and record stay. A `--state` for the `next` commands is the Studio's store root only when it differs from the CLI's default for the project. Studio runs no git of its own and logs nothing (no event of either kind, so `GET /api/improve` never changes): no merge, push, reset, checkout, stash, update-ref; no route closes the ledger; `next.merge` and `next.close` are text to copy.
+
+### POST /api/improve/{id}/discard
+`lattice improve apply --discard ID`, synchronous: 200 `{id, command: "discard", exit_code, result}` (exit 0 done, 2 could not, 3 refused: `not_applied`, `branch_moved`, `merged`, `worktree_dirty`). Body: any JSON object.
+
+### Guards of the two POSTs, in order, first hit wins
+`{"detail", "code"}` bodies: (a) unknown project 404; (b) 403 `apply_disabled`: the server was not started with `--allow-apply` (server-wide, default off); (c) 403 `bad_origin`: `Host` is not `127.0.0.1:<port>` or `localhost:<port>` (DNS rebinding), or an `Origin` header is present and is not `http://` + that host (a request without `Origin`, e.g. curl, passes); (d) 415 `json_required`: `Content-Type` is not `application/json`; (e) 400 `the body must be a JSON object`; (f) 422 `bad_id`; (g) 422 `bad_body` (apply only: `draft_sha256` missing or not 64 hex, `gates` not a bool, `branch` not null or a 1-200 character string); (h) 409 `no_state` (`[state] enabled = false`); (i) 409 `apply_running`: one apply or discard at a time **per server**, not per project; (j) apply only: 409 `draft_changed` with the current `draft_sha256` (or null) when the draft is refused now or its text hashes differently from the body's: the owner applies exactly the draft they read, and the record stores the same hash. Guards (b)-(d) apply to these two routes only; existing write routes are unchanged. Loopback is the only authentication: (b)-(d) are defence in depth against a browser, not authorisation.
+
+### Edge cases
+A double click: the second POST apply is 409 `apply_running`; re-apply after done: exit 3 `already_applied`; discard twice: exit 3 `not_applied`; a discard during an apply: 409. A restart mid-gates loses the job (`stale` in the record answer); the owner discards or re-runs. Two projects of one repository: the second gets apply's `branch_exists` / `worktree_exists`.
+
+### Studio UI
+Evidence group: **Improve** (always listed: proposals, applies, Draft, Verify with an optional `at`, and, when the draft's `template` is `config`, `enabled` and no live record, **Apply on a branch...** with a confirm dialog, then the record with a **NOT MERGED** banner, the six `next` commands and **Discard...**) and **Contracts** (listed only when `GET /api/workspace` names a workspace and the current project is in it; **Check contracts** and **Preview impact** run on demand only, never on load). Nothing but `api.js` calls the server.
+
+### The mock
+Serves all six routes with the real shapes (`lattice.improve` itself computes draft and verify from the fixture log and ledger) and the same guard ladder. The default project is `enabled: true`: an apply of `imp-3e1cd7f9` runs 1.5 s in memory (no git), then holds a fixture record with the real record's key tree (gates `passed`), and a discard removes it; the second project is `enabled: false` (403), so both UI states show.

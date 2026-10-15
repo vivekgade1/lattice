@@ -1,0 +1,86 @@
+{
+ "id": "P3",
+ "title": "gates and close",
+ "predicted": "a: exit 1, failed, 2 results, branch kept; b: exit 1, 124, timed_out, secs in [2, 9]; c: the server exits within stop_grace + 10 s, record interrupted, 0 sleep 30 left; d: source record, stale false; a record hand-set to running: stale true. 4 of 4",
+ "observed": "{\"a\": {\"branch_kept\": true, \"exit\": 1, \"n_results\": 2, \"status\": \"failed\"}, \"b\": {\"exit\": 1, \"rc\": 124, \"seconds_in_2_9\": true, \"status\": \"failed\", \"timed_out\": true}, \"c\": {\"branch_kept\": true, \"exited_in_bound\": true, \"left\": 0, \"status\": \"interrupted\"}, \"d\": {\"hand_set_running_stale\": true, \"restart\": {\"exit_code\": null, \"source\": \"record\", \"stale\": false, \"status\": \"done\"}, \"source\": \"record\"}}",
+ "pass": true,
+ "obs": {
+  "a": {
+   "exit": 1,
+   "status": "failed",
+   "n_results": 2,
+   "branch_kept": true
+  },
+  "b": {
+   "exit": 1,
+   "rc": 124,
+   "timed_out": true,
+   "seconds_in_2_9": true,
+   "status": "failed"
+  },
+  "c": {
+   "exited_in_bound": true,
+   "status": "interrupted",
+   "left": 0,
+   "branch_kept": true
+  },
+  "d": {
+   "restart": {
+    "source": "record",
+    "stale": false,
+    "status": "done",
+    "exit_code": null
+   },
+   "hand_set_running_stale": true,
+   "source": "record"
+  }
+ },
+ "raw": {
+  "a": {
+   "exit": 1,
+   "status": "failed",
+   "n_results": 2,
+   "branch_kept": true
+  },
+  "b": {
+   "exit": 1,
+   "rc": 124,
+   "timed_out": true,
+   "seconds_in_2_9": true,
+   "status": "failed"
+  },
+  "c": {
+   "exited_in_bound": true,
+   "status": "interrupted",
+   "left": 0,
+   "branch_kept": true
+  },
+  "d": {
+   "restart": {
+    "source": "record",
+    "stale": false,
+    "status": "done",
+    "exit_code": null
+   },
+   "hand_set_running_stale": true,
+   "source": "record"
+  },
+  "c_took_s": 0.3
+ },
+ "problems": [],
+ "digests": [
+  "02bd4cb7b35ae20d",
+  "02bd4cb7b35ae20d",
+  "02bd4cb7b35ae20d",
+  "02bd4cb7b35ae20d",
+  "02bd4cb7b35ae20d",
+  "02bd4cb7b35ae20d",
+  "02bd4cb7b35ae20d",
+  "02bd4cb7b35ae20d",
+  "02bd4cb7b35ae20d",
+  "02bd4cb7b35ae20d"
+ ],
+ "runs": 10,
+ "status": "RAN",
+ "seconds": 70.7
+}

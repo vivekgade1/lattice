@@ -235,6 +235,51 @@ REJECTED_PROPOSAL = {"signal_key": "change:rejected", "kind": "experiment", "sta
                      "cost_per": None, "target_paths": ["lattice/spec/draft.py"],
                      "title": "1 change set(s) rejected"}  # fmt: skip
 
+# ---- improvement drafts, verdicts and applies (API.md v1.21) ----------------------------------
+# a rejected change set is the cluster `change:rejected`; its proposal id is sha1(key)[:8]. The
+# harness serves with --allow-apply, and the seed has durable state: `enabled` is true.
+REJECTED_ID = "imp-9bade1d1"
+DRAFT_UNKNOWN = {
+    "format": 1,
+    "command": "draft",
+    "id": REJECTED_ID,
+    "refused": True,
+    "reason": "unknown_id",
+    "detail": f"no proposal {REJECTED_ID} in the log",
+}
+DRAFT_PREREG = {
+    "format": 1,
+    "command": "draft",
+    "template": "prereg",
+    "toml": None,
+    "proposal": {"id": REJECTED_ID, "signal_key": "change:rejected"},
+}
+VERIFY_NOT_CLOSED = {
+    "format": 1,
+    "command": "verify",
+    "id": REJECTED_ID,
+    "refused": True,
+    "reason": "not_closed",
+    "detail": "no closed ledger entry matches signal change:rejected",
+}
+APPLIES_EMPTY = {
+    "format": 1,
+    "enabled": True,
+    "why_disabled": None,
+    "applies": [],
+    "running": None,
+    "problems": [],
+}
+SHA_ZEROS = "0" * 64
+DRAFT_CHANGED = (
+    "the draft is not the one you read (it changed, or it is refused now): read it again"
+)
+
+
+def bad_id(path, method="GET", **kw):
+    return Step(method, path, expect_status=422, expect_body={"code": "bad_id"}, **kw)
+
+
 # ---- the workspace manifest (API.md v1.16, multi-project layer 2) ------------------------------
 # harness.WORKSPACE_TOML, written next to each scenario's project; paths are per-run temp dirs
 WORKSPACE = {
@@ -1373,6 +1418,60 @@ SCENARIOS = (
         refused("DELETE", f"/api/session/{NO_SESSION}", 404, f"no session {NO_SESSION}"),
         UNCHANGED,
     )),
+    Scenario("improvement_drafts_and_verdicts_are_read_only", steps=(
+        Step("GET", f"/api/improve/{REJECTED_ID}/draft", expect_body=DRAFT_UNKNOWN),
+        post_change(STARRED),
+        READY_STARRED,
+        Step("POST", "/api/changes/c1/reject", expect_body={"ok": True}),
+        # the rejected change set is a class-C proposal of the owner's: a pre-registration stub
+        Step("GET", f"/api/improve/{REJECTED_ID}/draft", expect_body=DRAFT_PREREG),
+        Step("GET", f"/p/notes/api/improve/{REJECTED_ID}/draft", expect_body=DRAFT_PREREG),
+        Step("GET", f"/api/improve/{REJECTED_ID}/verify", expect_body=VERIFY_NOT_CLOSED),
+        Step("GET", f"/api/improve/{REJECTED_ID}/verify", params={"at": "2026-10-01T12:00:00Z"},
+             expect_body=VERIFY_NOT_CLOSED),
+        refused("POST", f"/api/improve/{REJECTED_ID}/draft", 404, "no such route", json={}),
+        # reading wrote no event: the reject's two events are all there are
+        Step("GET", "/api/improve", expect_body={"events": 2, "proposals": [REJECTED_PROPOSAL]}),
+        UNCHANGED,
+    )),
+    Scenario("apply_and_discard_refuse_without_writing", steps=(
+        Step("GET", "/api/improve/applies", expect_body=APPLIES_EMPTY),
+        Step("POST", f"/api/improve/{REJECTED_ID}/apply", json={"draft_sha256": SHA_ZEROS},
+             expect_status=409,
+             expect_body={"detail": DRAFT_CHANGED, "code": "draft_changed", "draft_sha256": None}),
+        Step("POST", f"/api/improve/{REJECTED_ID}/apply", json={}, expect_status=422,
+             expect_body={"code": "bad_body"}),
+        post_change(STARRED),
+        READY_STARRED,
+        Step("POST", "/api/changes/c1/reject", expect_body={"ok": True}),
+        # the draft exists now (a pre-registration stub), and zeros are not its hash
+        Step("POST", f"/api/improve/{REJECTED_ID}/apply", json={"draft_sha256": SHA_ZEROS},
+             expect_status=409, expect_body={"detail": DRAFT_CHANGED, "code": "draft_changed"}),
+        Step("POST", f"/api/improve/{REJECTED_ID}/discard", json={},
+             expect_body={"id": REJECTED_ID, "command": "discard", "exit_code": 3,
+                          "result": {"refused": True, "reason": "not_applied"}}),
+        Step("GET", f"/api/improve/{REJECTED_ID}/apply", expect_status=404,
+             expect_body={"code": "not_applied"}),
+        Step("GET", "/api/improve/applies", expect_body=APPLIES_EMPTY),
+        Step("GET", "/p/notes/api/improve/applies", expect_body=APPLIES_EMPTY),
+        refused("POST", "/api/improve/applies", 404, "no such route", json={}),
+        Step("GET", "/api/improve", expect_body={"events": 2, "proposals": [REJECTED_PROPOSAL]}),
+        UNCHANGED,
+    )),
+    Scenario("improve_ids_and_waits_are_validated", steps=(
+        bad_id("/api/improve/a%20b/draft"),
+        bad_id("/api/improve/a%20b/verify"),
+        bad_id("/api/improve/a%20b/apply", "POST", json={"draft_sha256": SHA_ZEROS}),
+        Step("POST", f"/api/improve/{REJECTED_ID}/apply",
+             json={"draft_sha256": SHA_ZEROS, "gates": "yes"}, expect_status=422,
+             expect_body={"code": "bad_body"}),
+        Step("POST", f"/api/improve/{REJECTED_ID}/apply",
+             json={"draft_sha256": SHA_ZEROS, "branch": ""}, expect_status=422,
+             expect_body={"code": "bad_body"}),
+        refused("GET", f"/api/improve/{REJECTED_ID}/apply", 422,
+                "wait must be a number of seconds, 0 to 60", params={"wait": "99"}),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1569,6 +1668,19 @@ UNCHECKED = (
               "tool lists); a session's turns, events, interrupt and the allowlist are in "
               "tests/studio/test_session.py and tests/studio/test_mcp_intake_http.py, and the "
               "state of a running session cannot be polled to its end in a scenario."),
+    Unchecked("R102 (the apply and discard guards) is checked here only through their outcomes on "
+              "a seed that holds no config proposal and no repository state the apply could use: "
+              "a wrong Host or Origin needs a raw client, a running apply needs a gate that takes "
+              "seconds, and a restart or a close mid-gates is not expressible in a scenario. "
+              "tests/studio/test_improve_api.py checks the whole ladder, the lock, the job, the "
+              "interrupt on close and discard on the real server and the mock, "
+              "dogfood/studio_ui_probes.py (P0, P2-P6) against the CLI, the owner's checkout and a "
+              "hub, and dogfood/studio_ui_mutants.py (U1-U17) that each guard is load-bearing."),
+    Unchecked("R103 (the Improve and Contracts views) is web UI, not observable over HTTP: "
+              "tests/studio/test_studio_ui.py checks the navigator entries, the route strings, the "
+              "words, node --check and the pure decision functions, and "
+              "docs/results/2026-10-15-studio-ui-results.md says whether the browser walk on the "
+              "mock was done; layout, focus and the polling feel are not checked blind."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

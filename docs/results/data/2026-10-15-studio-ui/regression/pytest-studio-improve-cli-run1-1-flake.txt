@@ -1,0 +1,40 @@
+........................................................................ [  9%]
+........................................................................ [ 18%]
+........................................................................ [ 28%]
+........................................................................ [ 37%]
+...................................................F.................... [ 47%]
+.............................................................s.......... [ 56%]
+........................................................................ [ 66%]
+........................................................................ [ 75%]
+........................................................................ [ 85%]
+........................................................................ [ 94%]
+..........................................                               [100%]
+=================================== FAILURES ===================================
+___________________ test_prefix_routing_and_the_bare_default ___________________
+
+two = ('http://127.0.0.1:51339', <lattice.studio.server.StudioServer object at 0x10cf337d0>, PosixPath('/private/tmp/claude-...b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/pytest-of-vivekgade/pytest-3/test_prefix_routing_and_the_ba0/b'))
+
+    def test_prefix_routing_and_the_bare_default(two) -> None:
+        base, srv, a, _b = two
+        status, m_bare = request("GET", base + "/api/model")
+        status2, m_a = request("GET", base + "/p/a/api/model")
+        assert status == status2 == 200
+        assert m_bare == m_a and m_a["project"]["name"] == "a"
+        assert srv.hub.loaded("b") is None, "only the touched project is built"
+        _, m_b = request("GET", base + "/p/b/api/model")
+>       assert m_b["project"] == {**m_a["project"], "name": "b", "root": m_b["project"]["root"]}
+E       AssertionError: assert {'name': 'b',...d': 'b46b4be'} == {'name': 'b',...d': '2d52be1'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'git_head': 'b46b4be'} != {'git_head': '2d52be1'}
+E         Use -v to get more diff
+
+tests/studio/test_projects.py:234: AssertionError
+----------------------------- Captured stderr call -----------------------------
+[studio 16:42:10] model built in 0.01s
+[studio 16:42:10] model built in 0.01s
+=========================== short test summary info ============================
+FAILED tests/studio/test_projects.py::test_prefix_routing_and_the_bare_default
+1 failed, 760 passed, 1 skipped in 429.11s (0:07:09)
+rc=1

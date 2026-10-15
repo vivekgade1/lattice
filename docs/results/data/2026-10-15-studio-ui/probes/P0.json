@@ -1,0 +1,341 @@
+{
+ "id": "P0",
+ "title": "guard ladder",
+ "predicted": "14 of 14 exact status and code; after every non-2xx row the state dir, .git refs and working-tree hashes are unchanged",
+ "observed": "14 of 14 rows exact (rows ok: a, b, c, d, e, f, g, h, i, j, k, l, m, n)",
+ "pass": true,
+ "obs": {
+  "rows": {
+   "a": {
+    "status": 403,
+    "code": "apply_disabled",
+    "want": [
+     403,
+     "apply_disabled"
+    ],
+    "ok": true,
+    "detail": "apply is off for this Studio: start Studio with --allow-apply"
+   },
+   "a_route3": {
+    "enabled": false,
+    "why": "start Studio with --allow-apply"
+   },
+   "n": {
+    "status": 403,
+    "code": "apply_disabled",
+    "want": [
+     403,
+     "apply_disabled"
+    ],
+    "ok": true,
+    "detail": "apply is off for this Studio: start Studio with --allow-apply"
+   },
+   "b": {
+    "status": 403,
+    "code": "bad_origin",
+    "want": [
+     403,
+     "bad_origin"
+    ],
+    "ok": true,
+    "detail": "this request did not come from this Studio's own page (Host or Origin)"
+   },
+   "c": {
+    "status": 403,
+    "code": "bad_origin",
+    "want": [
+     403,
+     "bad_origin"
+    ],
+    "ok": true,
+    "detail": "this request did not come from this Studio's own page (Host or Origin)"
+   },
+   "e": {
+    "status": 415,
+    "code": "json_required",
+    "want": [
+     415,
+     "json_required"
+    ],
+    "ok": true,
+    "detail": "send the body as application/json"
+   },
+   "f": {
+    "status": 400,
+    "code": null,
+    "want": [
+     400,
+     null
+    ],
+    "ok": true,
+    "detail": "the body must be a JSON object"
+   },
+   "g": {
+    "status": 422,
+    "code": "bad_id",
+    "want": [
+     422,
+     "bad_id"
+    ],
+    "ok": true,
+    "detail": "bad id '..'"
+   },
+   "h": {
+    "status": 422,
+    "code": "bad_id",
+    "want": [
+     422,
+     "bad_id"
+    ],
+    "ok": true,
+    "detail": "bad id 'a/b'"
+   },
+   "i": {
+    "status": 422,
+    "code": "bad_body",
+    "want": [
+     422,
+     "bad_body"
+    ],
+    "ok": true,
+    "detail": "draft_sha256 must be the sha256 (64 lowercase hex digits) of the draft text you read"
+   },
+   "j": {
+    "status": 422,
+    "code": "bad_body",
+    "want": [
+     422,
+     "bad_body"
+    ],
+    "ok": true,
+    "detail": "gates must be true or false"
+   },
+   "m": {
+    "status": 409,
+    "code": "draft_changed",
+    "want": [
+     409,
+     "draft_changed"
+    ],
+    "ok": true,
+    "detail": "the draft is not the one you read (it changed, or it is refused now): read it again"
+   },
+   "d": {
+    "status": 202,
+    "code": null,
+    "want": [
+     202,
+     null
+    ],
+    "ok": true,
+    "detail": null
+   },
+   "l": {
+    "status": 409,
+    "code": "apply_running",
+    "want": [
+     409,
+     "apply_running"
+    ],
+    "ok": true,
+    "detail": "another apply or discard is running on this Studio; wait for it to finish"
+   },
+   "d_done": {
+    "exit_code": 0,
+    "gates": "passed"
+   },
+   "k": {
+    "status": 409,
+    "code": "no_state",
+    "want": [
+     409,
+     "no_state"
+    ],
+    "ok": true,
+    "detail": "this project keeps no durable state ([state] enabled = false), so there is nowhere to record an apply"
+   }
+  },
+  "ok_rows": [
+   "a",
+   "b",
+   "c",
+   "d",
+   "e",
+   "f",
+   "g",
+   "h",
+   "i",
+   "j",
+   "k",
+   "l",
+   "m",
+   "n"
+  ]
+ },
+ "raw": {
+  "a": {
+   "status": 403,
+   "code": "apply_disabled",
+   "want": [
+    403,
+    "apply_disabled"
+   ],
+   "ok": true,
+   "detail": "apply is off for this Studio: start Studio with --allow-apply"
+  },
+  "a_route3": {
+   "enabled": false,
+   "why": "start Studio with --allow-apply"
+  },
+  "n": {
+   "status": 403,
+   "code": "apply_disabled",
+   "want": [
+    403,
+    "apply_disabled"
+   ],
+   "ok": true,
+   "detail": "apply is off for this Studio: start Studio with --allow-apply"
+  },
+  "b": {
+   "status": 403,
+   "code": "bad_origin",
+   "want": [
+    403,
+    "bad_origin"
+   ],
+   "ok": true,
+   "detail": "this request did not come from this Studio's own page (Host or Origin)"
+  },
+  "c": {
+   "status": 403,
+   "code": "bad_origin",
+   "want": [
+    403,
+    "bad_origin"
+   ],
+   "ok": true,
+   "detail": "this request did not come from this Studio's own page (Host or Origin)"
+  },
+  "e": {
+   "status": 415,
+   "code": "json_required",
+   "want": [
+    415,
+    "json_required"
+   ],
+   "ok": true,
+   "detail": "send the body as application/json"
+  },
+  "f": {
+   "status": 400,
+   "code": null,
+   "want": [
+    400,
+    null
+   ],
+   "ok": true,
+   "detail": "the body must be a JSON object"
+  },
+  "g": {
+   "status": 422,
+   "code": "bad_id",
+   "want": [
+    422,
+    "bad_id"
+   ],
+   "ok": true,
+   "detail": "bad id '..'"
+  },
+  "h": {
+   "status": 422,
+   "code": "bad_id",
+   "want": [
+    422,
+    "bad_id"
+   ],
+   "ok": true,
+   "detail": "bad id 'a/b'"
+  },
+  "i": {
+   "status": 422,
+   "code": "bad_body",
+   "want": [
+    422,
+    "bad_body"
+   ],
+   "ok": true,
+   "detail": "draft_sha256 must be the sha256 (64 lowercase hex digits) of the draft text you read"
+  },
+  "j": {
+   "status": 422,
+   "code": "bad_body",
+   "want": [
+    422,
+    "bad_body"
+   ],
+   "ok": true,
+   "detail": "gates must be true or false"
+  },
+  "m": {
+   "status": 409,
+   "code": "draft_changed",
+   "want": [
+    409,
+    "draft_changed"
+   ],
+   "ok": true,
+   "detail": "the draft is not the one you read (it changed, or it is refused now): read it again"
+  },
+  "d": {
+   "status": 202,
+   "code": null,
+   "want": [
+    202,
+    null
+   ],
+   "ok": true,
+   "detail": null
+  },
+  "l": {
+   "status": 409,
+   "code": "apply_running",
+   "want": [
+    409,
+    "apply_running"
+   ],
+   "ok": true,
+   "detail": "another apply or discard is running on this Studio; wait for it to finish"
+  },
+  "d_done": {
+   "exit_code": 0,
+   "gates": "passed"
+  },
+  "k": {
+   "status": 409,
+   "code": "no_state",
+   "want": [
+    409,
+    "no_state"
+   ],
+   "ok": true,
+   "detail": "this project keeps no durable state ([state] enabled = false), so there is nowhere to record an apply"
+  }
+ },
+ "problems": [],
+ "digests": [
+  "0557056ed13e429e",
+  "0557056ed13e429e",
+  "0557056ed13e429e",
+  "0557056ed13e429e",
+  "0557056ed13e429e",
+  "0557056ed13e429e",
+  "0557056ed13e429e",
+  "0557056ed13e429e",
+  "0557056ed13e429e",
+  "0557056ed13e429e"
+ ],
+ "runs": 10,
+ "status": "RAN",
+ "seconds": 68.3
+}

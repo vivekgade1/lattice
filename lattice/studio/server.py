@@ -17,6 +17,11 @@ THIS project's state directory when their contracts broke this project's pins (r
 dismissed here, by this project's owner only); ``GET /api/linked-notifications`` is the other
 side: what this Studio's accepts delivered. A delivery runs on a background worker and never
 blocks, delays or alters an accept (lattice/contracts/linked.py).
+``GET /api/improve/{id}/draft|verify``, ``GET /api/improve/applies``, ``GET|POST
+/api/improve/{id}/apply`` and ``POST /api/improve/{id}/discard`` (API.md v1.21) are the
+``lattice improve draft|verify|apply|apply --discard`` of this project; the two POSTs are the
+only writes, are off unless the server was started with ``--allow-apply`` and never merge, push
+or close a ledger entry (lattice/improve/apply.py).
 
 **The project directory** holds ``REQUIREMENTS.md``, ``spec.py`` (defines ``SPEC``),
 ``spec.trace.json`` and, optionally, ``studio.toml``::
@@ -175,6 +180,10 @@ COMMIT_TRAILER = (
 LIVE_STATUSES = ("drafting", "checking")
 MAX_WAIT = 60.0  # seconds GET /api/changes/{id}?wait= may hold a request
 LINKED_LOG_MAX = 20  # delivery outcomes kept in memory (API v1.19)
+APPLY_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")  # API v1.21: an improve id in a path
+SHA256_HEX = re.compile(r"[0-9a-f]{64}")
+DISCARDED_RECORD = re.compile(r"\.discarded-\d+\.json$")
+APPLY_OFF = "start Studio with --allow-apply"
 
 
 def log(msg: str) -> None:
@@ -201,6 +210,35 @@ class ApiError(Exception):
 def _linked_api_error(e: Any) -> ApiError:
     """A :class:`lattice.contracts.linked.LinkedError` as the API's refusal (its ``code``)."""
     return ApiError(HTTPStatus(e.status), e.message, e.code)
+
+
+class ApplyRefused(ApiError):
+    """A refusal of POST /api/improve/{id}/apply that carries one more key (API v1.21)."""
+
+    def __init__(self, status: HTTPStatus, detail: str, code: str, **extra: Any) -> None:
+        super().__init__(status, detail, code)
+        self.extra = extra
+
+    def body(self) -> dict[str, Any]:  # type: ignore[override]
+        return {**super().body(), **self.extra}
+
+
+class ApplyGate:
+    """What is shared by every project of one server for the improve writes (API v1.21): the
+    ``--allow-apply`` opt-in, the one-apply-or-discard-at-a-time lock, and the event that
+    interrupts a running apply's gates when the server closes."""
+
+    def __init__(self, allow: bool = False) -> None:
+        self.allow = allow
+        self.lock = threading.Lock()
+        self.stop = threading.Event()
+        self.workers: list[tuple[threading.Thread, float]] = []
+
+    def shutdown(self) -> None:
+        """Set `stop` and wait for each worker at most its stop_grace + 10 s."""
+        self.stop.set()
+        for t, grace in list(self.workers):
+            t.join(grace + 10)
 
 
 # ---- studio.toml ----------------------------------------------------------------------------
@@ -948,6 +986,8 @@ class Studio:
         self._mcp: McpIntake | None = None
         self._rebuilder: Rebuilder | None = None
         self._plans: PlanManager | None = None
+        self._apply_jobs: dict[str, dict[str, Any]] = {}  # API v1.21: improve applies, by id
+        self._apply_lock = threading.Lock()
         self.base_url: str | None = None  # set by StudioServer once it is bound
         # API v1.19: the manifest an accept notifies the consumers of (None: no trigger), the
         # worker that delivers, and this Studio's delivery outcomes (memory only, newest last)
@@ -1001,6 +1041,307 @@ class Studio:
             ledger, _ = read_ledger(self.store.root / "improvements.jsonl")
         rep = analyze(events, ledger)
         return {k: rep[k] for k in ("proposals", "events", "method", "blind_spots")}
+
+    # -- improvement drafts, verdicts and applies (lattice/improve; API v1.21)
+    def _improve_inputs(
+        self,
+    ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str], str | None]:
+        """(events, ledger, warnings, error) as ``lattice improve draft|verify`` reads them: this
+        project's state directory; the error is the CLI's "cannot read" (exit 2)."""
+        from lattice.improve.analyze import read_ledger
+        from lattice.improve.events import read_events
+
+        if self.store is None:
+            return [], [], [], None
+        d = self.store.root
+        for p in (d / "events.jsonl", d / "improvements.jsonl"):
+            if p.exists() and not p.is_file():
+                return [], [], [], f"cannot read {p}"
+            try:
+                if p.exists():
+                    p.open("rb").close()
+            except OSError as exc:
+                return [], [], [], f"cannot read {p}: {exc}"
+        res = read_events(d / "events.jsonl")
+        ledger, lw = read_ledger(d / "improvements.jsonl")
+        return res.events, ledger, [*res.warnings, *lw], None
+
+    def get_improve_draft(self, ident: str) -> dict[str, Any]:
+        """``GET /api/improve/{id}/draft``: ``lattice improve draft ID --json`` (read only;
+        ``studio.toml`` is read from disk, as the CLI does)."""
+        from lattice.improve.draft import draft
+
+        events, ledger, _warn, err = self._improve_inputs()
+        if err is not None:
+            return {"error": err}
+        cfg: dict[str, Any] = {}
+        toml = self.root / CONFIG_FILE
+        if toml.is_file():
+            try:
+                cfg = tomllib.loads(toml.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError, tomllib.TOMLDecodeError) as exc:
+                return {"error": f"cannot read {toml}: {exc}"}
+        return draft(events, ledger, ident, cfg)[1]
+
+    def get_improve_verify(self, ident: str, at: str | None) -> dict[str, Any]:
+        """``GET /api/improve/{id}/verify[?at=TS]``: ``lattice improve verify ID [--at TS]
+        --json`` (read only)."""
+        from lattice.improve.verify import verify
+
+        events, ledger, warnings, err = self._improve_inputs()
+        if err is not None:
+            return {"error": err}
+        return verify(events, ledger, ident, at=at, warnings=warnings)[1]
+
+    def _apply_enabled(self, gate: ApplyGate) -> tuple[bool, str | None]:
+        if not gate.allow:
+            return False, APPLY_OFF
+        if self.store is None:
+            return False, "this project has no durable state ([state] enabled = false)"
+        return True, None
+
+    def _read_apply_record(self, ident: str) -> tuple[dict[str, Any] | None, str | None]:
+        """(the live record of `ident`, an error): the record is None when there is none."""
+        if self.store is None:
+            return None, None
+        path = self.store.root / "applies" / f"{ident}.json"
+        if not path.is_file():
+            return None, None
+        try:
+            rec = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            return None, f"cannot read {path}: {exc}"
+        return (rec, None) if isinstance(rec, dict) else (None, f"{path} is not a record")
+
+    def get_improve_applies(self, gate: ApplyGate) -> dict[str, Any]:
+        """``GET /api/improve/applies``: the live apply records of this project (never a
+        discarded one), by ``applied_at`` then id; unreadable files are ``problems``."""
+        enabled, why = self._apply_enabled(gate)
+        with self._apply_lock:
+            running = next(
+                (
+                    {"id": i, "started_at": j["started_at"]}
+                    for i, j in self._apply_jobs.items()
+                    if j["status"] == "running"
+                ),
+                None,
+            )
+        applies: list[dict[str, Any]] = []
+        problems: list[dict[str, str]] = []
+        d = self.store.root / "applies" if self.store is not None else None
+        for p in sorted(d.glob("*.json")) if d is not None and d.is_dir() else []:
+            if DISCARDED_RECORD.search(p.name):
+                continue
+            try:
+                rec = json.loads(p.read_text(encoding="utf-8"))
+                prop, edit, gates = rec["proposal"], rec["edit"], rec["gates"]
+                item = {
+                    "id": p.stem,
+                    "title": prop["title"],
+                    "signal_key": prop["signal_key"],
+                    "branch": rec["branch"],
+                    "worktree": rec["worktree"],
+                    "commit": rec["commit"]["sha"],
+                    "base": {"branch": rec["base"]["branch"], "sha": rec["base"]["sha"]},
+                    "applied_at": rec["applied_at"],
+                    "line": edit["line"],
+                    "gates": gates["status"],
+                    "stale": gates["status"] == "running"
+                    and not (running is not None and running["id"] == p.stem),
+                }
+            except (OSError, ValueError, KeyError, TypeError) as exc:
+                problems.append({"file": p.name, "detail": f"{type(exc).__name__}: {exc}"})
+                continue
+            applies.append(item)
+        applies.sort(key=lambda a: (str(a["applied_at"]), a["id"]))
+        return {
+            "format": 1,
+            "enabled": enabled,
+            "why_disabled": why,
+            "applies": applies,
+            "running": running,
+            "problems": problems,
+        }
+
+    def _job_view(self, ident: str, job: dict[str, Any] | None) -> dict[str, Any]:
+        """The apply job `ident` as GET and POST answer it: the in-memory job, or (after a
+        restart) the record on disk."""
+        rec, err = self._read_apply_record(ident)
+        if job is None:
+            if rec is None and err is None:
+                raise ApiError(HTTPStatus.NOT_FOUND, f"no apply of {ident}", "not_applied")
+            gates = rec.get("gates") if rec and isinstance(rec.get("gates"), dict) else {}
+            status = gates.get("status")
+            return {
+                "id": ident,
+                "command": "apply",
+                "status": "done",
+                "source": "record",
+                "started_at": rec.get("applied_at") if rec else None,
+                "finished_at": None,
+                "options": {
+                    "gates": status not in ("skipped", None),
+                    "branch": rec.get("branch") if rec else None,
+                },
+                "exit_code": None,
+                "result": {"error": err} if err else None,
+                "record": rec,
+                "stale": status == "running",
+            }
+        with self._apply_lock:
+            out = {k: v for k, v in job.items() if not k.startswith("_")}
+        if out["status"] == "running":  # the record, once this job has written it
+            keep = rec is not None and str(rec.get("applied_at") or "") >= out["started_at"]
+            out["record"] = rec if keep else None
+        else:
+            res = out.get("result")
+            out["record"] = rec if isinstance(res, dict) and "commit" in res else None
+        return out
+
+    def get_improve_apply(self, ident: str, wait: float = 0.0) -> dict[str, Any]:
+        """``GET /api/improve/{id}/apply[?wait=S]``: the apply job, held until it is done or
+        `wait` seconds (at most MAX_WAIT) pass."""
+        with self._apply_lock:
+            job = self._apply_jobs.get(ident)
+        if job is not None and wait > 0 and job["status"] == "running":
+            job["_done"].wait(min(wait, MAX_WAIT))
+        return self._job_view(ident, job)
+
+    def _apply_store(self) -> StateStore:
+        if self.store is None:
+            raise ApiError(
+                HTTPStatus.CONFLICT,
+                "this project keeps no durable state ([state] enabled = false), so there is "
+                "nowhere to record an apply",
+                "no_state",
+            )
+        return self.store
+
+    @staticmethod
+    def _apply_busy(gate: ApplyGate) -> ApiError:
+        return ApiError(
+            HTTPStatus.CONFLICT,
+            "another apply or discard is running on this Studio; wait for it to finish",
+            "apply_running",
+        )
+
+    def _draft_sha(self, ident: str) -> str | None:
+        doc = self.get_improve_draft(ident)
+        text = doc.get("text")
+        if doc.get("refused") or "error" in doc or not isinstance(text, str):
+            return None
+        return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+    def improve_apply(self, gate: ApplyGate, ident: str, body: Mapping[str, Any]) -> Reply:
+        """``POST /api/improve/{id}/apply`` (guards (g)-(j) of API.md v1.21): start
+        ``lattice.improve.apply.apply`` for `ident` on a worker thread; 202 with the job."""
+        from lattice.improve import apply as apply_mod
+        from lattice.studio.rebuild import RebuildConfig
+
+        sha, gates, branch = body.get("draft_sha256"), body.get("gates", True), body.get("branch")
+        if not (isinstance(sha, str) and SHA256_HEX.fullmatch(sha)):
+            raise ApiError(
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                "draft_sha256 must be the sha256 (64 lowercase hex digits) of the draft text "
+                "you read",
+                "bad_body",
+            )
+        if not isinstance(gates, bool):
+            raise ApiError(
+                HTTPStatus.UNPROCESSABLE_ENTITY, "gates must be true or false", "bad_body"
+            )
+        if branch is not None and not (isinstance(branch, str) and 1 <= len(branch) <= 200):
+            raise ApiError(
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                "branch must be null or a name of 1 to 200 characters",
+                "bad_body",
+            )
+        store = self._apply_store()
+        if not gate.lock.acquire(blocking=False):
+            raise self._apply_busy(gate)
+        try:
+            current = self._draft_sha(ident)
+            if current != sha:
+                raise ApplyRefused(
+                    HTTPStatus.CONFLICT,
+                    "the draft is not the one you read (it changed, or it is refused now): "
+                    "read it again",
+                    "draft_changed",
+                    draft_sha256=current,
+                )
+            from lattice.improve.__main__ import state_dir as cli_state_dir
+
+            default = cli_state_dir(self.root)
+            flag = None if default.resolve() == store.root.resolve() else str(store.root)
+            grace = RebuildConfig(self.root, self.config.rebuild).stop_grace
+            job: dict[str, Any] = {
+                "id": ident,
+                "command": "apply",
+                "status": "running",
+                "source": "job",
+                "started_at": now_iso(),
+                "finished_at": None,
+                "options": {"gates": gates, "branch": branch},
+                "exit_code": None,
+                "result": None,
+                "record": None,
+                "stale": False,
+                "_done": threading.Event(),
+            }
+
+            def work() -> None:
+                try:
+                    try:
+                        code, doc = apply_mod.apply(
+                            self.root,
+                            store.root,
+                            lambda: store.root,
+                            ident,
+                            branch=branch,
+                            no_gates=not gates,
+                            state_flag=flag,
+                            stop=gate.stop,
+                        )
+                    except Exception as exc:  # noqa: BLE001 -- the job reports it
+                        code, doc = 2, {"error": f"{type(exc).__name__}: {exc}"}
+                    with self._apply_lock:
+                        job.update(
+                            status="done",
+                            finished_at=now_iso(),
+                            exit_code=code,
+                            result={k: v for k, v in doc.items() if k != "_record_path"},
+                        )
+                finally:
+                    job["_done"].set()
+                    gate.lock.release()
+
+            with self._apply_lock:
+                self._apply_jobs[ident] = job
+            t = threading.Thread(target=work, name=f"studio-apply-{ident}", daemon=True)
+            gate.workers[:] = [w for w in gate.workers if w[0].is_alive()]
+            gate.workers.append((t, grace))
+            t.start()
+        except BaseException:
+            gate.lock.release()
+            raise
+        return Reply(self._job_view(ident, job), 202)
+
+    def improve_discard(self, gate: ApplyGate, ident: str) -> dict[str, Any]:
+        """``POST /api/improve/{id}/discard``: ``lattice improve apply --discard ID`` (guards
+        (h)-(i) of API.md v1.21); synchronous."""
+        from lattice.improve import apply as apply_mod
+
+        store = self._apply_store()
+        if not gate.lock.acquire(blocking=False):
+            raise self._apply_busy(gate)
+        try:
+            code, doc = apply_mod.discard(self.root, store.root, ident)
+            if code == 0:
+                with self._apply_lock:
+                    self._apply_jobs.pop(ident, None)
+        finally:
+            gate.lock.release()
+        return {"id": ident, "command": "discard", "exit_code": code, "result": doc}
 
     def sync_spec(self, branch: str, body: Mapping[str, Any] | None) -> dict[str, Any]:
         """``POST /api/branches/{name}/sync-spec`` (API v1.12), logged as the owner's action."""
@@ -2108,6 +2449,29 @@ class Handler(BaseHTTPRequestHandler):
             return self._dispatch(st.get_linked_notifications)
         if path == "/api/improve":
             return self._dispatch(st.get_improve)
+        if path == "/api/improve/applies":  # API v1.21
+            return self._dispatch(lambda: st.get_improve_applies(self.server.apply_gate))
+        if path.startswith("/api/improve/"):  # API v1.21: draft, verify, the apply job
+            parts = path.removeprefix("/api/improve/").split("/")
+            if len(parts) == 2 and parts[1] in ("draft", "verify", "apply"):
+                ident = unquote(parts[0])
+                if not APPLY_ID.match(ident):
+                    return self._json({"detail": f"bad id {ident!r}", "code": "bad_id"}, 422)
+                query = parse_qs(urlparse(self.path).query)
+                if parts[1] == "draft":
+                    return self._dispatch(lambda: st.get_improve_draft(ident))
+                if parts[1] == "verify":
+                    at = (query.get("at") or [None])[-1]
+                    return self._dispatch(lambda: st.get_improve_verify(ident, at))
+                try:
+                    wait = float((query.get("wait") or ["0"])[-1])
+                except ValueError:
+                    wait = -1.0
+                if not 0 <= wait <= MAX_WAIT:
+                    return self._json(
+                        {"detail": f"wait must be a number of seconds, 0 to {MAX_WAIT:g}"}, 422
+                    )
+                return self._dispatch(lambda: st.get_improve_apply(ident, wait))
         if path == "/api/mcp":
             raw = (parse_qs(urlparse(self.path).query).get("refresh") or ["0"])[-1]
             if raw.lower() not in ("0", "1", "true", "false", ""):
@@ -2165,6 +2529,10 @@ class Handler(BaseHTTPRequestHandler):
         st = self._project(name)
         if st is None:
             return
+        if path.startswith("/api/improve/"):  # API v1.21: the two writes, guarded before the body
+            parts = path.removeprefix("/api/improve/").split("/")
+            if len(parts) == 2 and parts[1] in ("apply", "discard"):
+                return self._dispatch(lambda: self._improve_write(st, parts[0], parts[1]))
 
         def route() -> Any:
             body = self._body()
@@ -2216,6 +2584,42 @@ class Handler(BaseHTTPRequestHandler):
             raise ApiError(HTTPStatus.NOT_FOUND, "no such route")
 
         self._dispatch(route)
+
+    def _improve_write(self, st: Studio, raw_id: str, verb: str) -> Any:
+        """POST /api/improve/{id}/apply|discard, guards (b)-(g) of API.md v1.21 in order; (a) an
+        unknown project was answered by the router."""
+        gate = self.server.apply_gate
+        if not gate.allow:  # (b)
+            raise ApiError(
+                HTTPStatus.FORBIDDEN,
+                f"apply is off for this Studio: {APPLY_OFF}",
+                "apply_disabled",
+            )
+        host = self.headers.get("Host") or ""  # (c) DNS rebinding and cross-site POSTs
+        port = self.server.server_address[1]
+        origin = self.headers.get("Origin")
+        if host not in (f"127.0.0.1:{port}", f"localhost:{port}") or (
+            origin is not None and origin != f"http://{host}"
+        ):
+            raise ApiError(
+                HTTPStatus.FORBIDDEN,
+                "this request did not come from this Studio's own page (Host or Origin)",
+                "bad_origin",
+            )
+        ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+        if ctype != "application/json":  # (d)
+            raise ApiError(
+                HTTPStatus.UNSUPPORTED_MEDIA_TYPE,
+                "send the body as application/json",
+                "json_required",
+            )
+        body = self._body()  # (e)
+        ident = unquote(raw_id)
+        if not APPLY_ID.match(ident):  # (f)
+            raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, f"bad id {ident!r}", "bad_id")
+        if verb == "apply":  # (g) to (j) are the Studio's
+            return st.improve_apply(gate, ident, body)
+        return st.improve_discard(gate, ident)
 
     def do_DELETE(self) -> None:  # noqa: N802
         split = self._split()
@@ -2328,10 +2732,13 @@ class StudioServer(ThreadingHTTPServer):
         web_dir: Path = WEB_DIR,
         verbose: bool = False,
         workspace: Path | None = None,
+        allow_apply: bool = False,
     ) -> None:
         from lattice.studio.hub import StudioHub
 
         super().__init__(addr, Handler)
+        # API v1.21: the opt-in, the lock and the stop event of the improve writes
+        self.apply_gate = ApplyGate(allow_apply)
         # API v1.16: the lattice.workspace.toml GET /api/workspace reads (None: no workspace)
         self.workspace_path = workspace
         if isinstance(studio, StudioHub):
@@ -2349,6 +2756,7 @@ class StudioServer(ThreadingHTTPServer):
         return self.hub.get()
 
     def server_close(self) -> None:
+        self.apply_gate.shutdown()  # an apply's gates are interrupted, then it is joined
         self.hub.close()
         super().server_close()
 
@@ -2364,10 +2772,12 @@ def make_server(
     web_dir: Path = WEB_DIR,
     verbose: bool = False,
     workspace: Path | None = None,
+    allow_apply: bool = False,
 ) -> StudioServer:
     """A Studio server for `project` on 127.0.0.1:`port` (0 picks a free one); not yet
     serving. `generator` (tests: a ScriptedGenerator) replaces the Claude CLI client.
-    `workspace`: the manifest GET /api/workspace answers (API v1.16)."""
+    `workspace`: the manifest GET /api/workspace answers (API v1.16). `allow_apply`: the
+    improve writes of API v1.21 (default off)."""
     from lattice.cli import project_name
 
     root = Path(project).resolve()
@@ -2380,7 +2790,7 @@ def make_server(
         name=project_name(root),
         workspace_path=workspace,
     )
-    return StudioServer(("127.0.0.1", port), studio, web_dir, verbose, workspace)
+    return StudioServer(("127.0.0.1", port), studio, web_dir, verbose, workspace, allow_apply)
 
 
 def make_hub_server(
@@ -2396,6 +2806,7 @@ def make_hub_server(
     verbose: bool = False,
     prefixed: bool = True,
     workspace: Path | None = None,
+    allow_apply: bool = False,
 ) -> StudioServer:
     """A Studio server over many `projects` (``(name, root)``, see lattice.studio.hub),
     each with its own Studio built on first use; ``default`` (else the first) answers
@@ -2415,7 +2826,7 @@ def make_hub_server(
         )
 
     hub = StudioHub(projects, factory, default=default, prefixed=prefixed, claude_bin=claude_bin)
-    return StudioServer(("127.0.0.1", port), hub, web_dir, verbose, workspace)
+    return StudioServer(("127.0.0.1", port), hub, web_dir, verbose, workspace, allow_apply)
 
 
 NO_PROJECTS = """studio: no Lattice projects found in {where}.
@@ -2453,6 +2864,7 @@ def _single(args: argparse.Namespace) -> StudioServer | int:
         generator=StubGenerator() if args.stub_llm else None,
         verbose=not args.quiet,
         workspace=args.workspace_path,
+        allow_apply=args.allow_apply,
     )
     st = srv.studio
     print(
@@ -2497,6 +2909,7 @@ def _many(args: argparse.Namespace) -> StudioServer | int:
         generator_factory=(lambda _m: StubGenerator()) if args.stub_llm else None,
         verbose=not args.quiet,
         workspace=args.workspace_path,
+        allow_apply=args.allow_apply,
     )
     base = f"http://127.0.0.1:{srv.server_address[1]}"
     w = max(len(n) for n in names)
@@ -2538,6 +2951,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--stub-llm",
         action="store_true",
         help="TEST ONLY: a fixed offline generator instead of Claude (StubGenerator)",
+    )
+    ap.add_argument(
+        "--allow-apply",
+        action="store_true",
+        help="allow POST /api/improve/{id}/apply and /discard (API.md v1.21): a config "
+        "proposal is committed to a branch of its own and a worktree; nothing is merged",
     )
     args = ap.parse_args(argv)
     from lattice import workspace as wsmod

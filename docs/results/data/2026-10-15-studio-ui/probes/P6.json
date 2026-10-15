@@ -1,0 +1,79 @@
+{
+ "id": "P6",
+ "title": "hub routing",
+ "predicted": "/p/B/... writes only B's repo and state, A's hashes unchanged, route 3 of A empty, /p/nobody 404; same-repo hub: concurrent POST 5 gives one 202 and one 409 apply_running. 3 of 3",
+ "observed": "{\"a_branch\": false, \"a_route3_applies\": [], \"a_unchanged\": true, \"b_branch\": true, \"b_exit\": 0, \"b_record\": true, \"b_route3_ids\": [\"imp-3e1cd7f9\"], \"nobody\": [404, {\"detail\": \"no such project\"}], \"row_nobody_404\": true, \"row_separate\": true, \"same_repo\": {\"busy_codes\": [\"apply_running\"], \"statuses\": [202, 409]}}",
+ "pass": true,
+ "obs": {
+  "b_exit": 0,
+  "b_branch": true,
+  "a_branch": false,
+  "a_unchanged": true,
+  "b_record": true,
+  "a_route3_applies": [],
+  "b_route3_ids": [
+   "imp-3e1cd7f9"
+  ],
+  "nobody": [
+   404,
+   {
+    "detail": "no such project"
+   }
+  ],
+  "row_separate": true,
+  "same_repo": {
+   "statuses": [
+    202,
+    409
+   ],
+   "busy_codes": [
+    "apply_running"
+   ]
+  },
+  "row_nobody_404": true
+ },
+ "raw": {
+  "b_exit": 0,
+  "b_branch": true,
+  "a_branch": false,
+  "a_unchanged": true,
+  "b_record": true,
+  "a_route3_applies": [],
+  "b_route3_ids": [
+   "imp-3e1cd7f9"
+  ],
+  "nobody": [
+   404,
+   {
+    "detail": "no such project"
+   }
+  ],
+  "row_separate": true,
+  "same_repo": {
+   "statuses": [
+    202,
+    409
+   ],
+   "busy_codes": [
+    "apply_running"
+   ]
+  },
+  "row_nobody_404": true
+ },
+ "problems": [],
+ "digests": [
+  "4b3e7b714ae654a9",
+  "4b3e7b714ae654a9",
+  "4b3e7b714ae654a9",
+  "4b3e7b714ae654a9",
+  "4b3e7b714ae654a9",
+  "4b3e7b714ae654a9",
+  "4b3e7b714ae654a9",
+  "4b3e7b714ae654a9",
+  "4b3e7b714ae654a9",
+  "4b3e7b714ae654a9"
+ ],
+ "runs": 10,
+ "status": "RAN",
+ "seconds": 45.4
+}

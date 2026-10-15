@@ -1,0 +1,1229 @@
+{
+ "runs": {
+  "control": {
+   "catchers": {
+    "P0": {
+     "kind": "probe",
+     "passed": true,
+     "observed": "14 of 14 rows exact (rows ok: a, b, c, d, e, f, g, h, i, j, k, l, m, n)",
+     "problems": [],
+     "seconds": 7.5
+    },
+    "P1": {
+     "kind": "probe",
+     "passed": true,
+     "observed": "12 of 12 equal bare; 12 equal under /p/<name>/",
+     "problems": [],
+     "seconds": 2.7
+    },
+    "P2": {
+     "kind": "probe",
+     "passed": true,
+     "observed": "P2: {'exit': [0, 0], 'masked_equal': True, 'tree_equal': True, 'action': 'inserted', 'line': 'level_gate_args = [\"--x-repeats\", \"2\"]', 'listed': ['imp-3e1cd7f9'], 'source': 'job', 'next_has_state': False}; P2c: {'close_has_state': True, 'close_rc': 0, 'wrote': True, 'entry_signal': 'gate:level_regre",
+     "problems": [],
+     "seconds": 2.6
+    },
+    "P3": {
+     "kind": "probe",
+     "passed": true,
+     "observed": "{\"a\": {\"branch_kept\": true, \"exit\": 1, \"n_results\": 2, \"status\": \"failed\"}, \"b\": {\"exit\": 1, \"rc\": 124, \"seconds_in_2_9\": true, \"status\": \"failed\", \"timed_out\": true}, \"c\": {\"branch_kept\": true, \"exited_in_bound\": true, \"left\": 0, \"status\": \"interrupted\"}, \"d\": {\"hand_set_running_stale\": true, \"rest",
+     "problems": [],
+     "seconds": 7.9
+    },
+    "P4": {
+     "kind": "probe",
+     "passed": true,
+     "observed": "{\"p4a\": {\"branch_gone\": true, \"exit\": 0, \"live_record_gone\": true, \"record_renamed_identical\": true, \"route3_empty\": true, \"route4\": 404, \"status\": 200, \"worktree_gone\": true}, \"p4b\": {\"exit\": 3, \"reason\": \"not_applied\", \"status\": 200}, \"p4c\": {\"exit\": 3, \"reason\": \"merged\", \"status\": 200}}",
+     "problems": [],
+     "seconds": 2.2
+    },
+    "P5": {
+     "kind": "probe",
+     "passed": true,
+     "observed": "{\"dynamic\": {\"apply_exit\": 0, \"events_identical\": true, \"forbidden_argv\": 0, \"git_calls_logged\": true, \"improve_identical\": true, \"p5_apply\": {\"events_unchanged\": true, \"git_files_unchanged\": true, \"no_ledger\": true, \"only_new_ref\": true, \"tree_unchanged\": true}}, \"static\": {\"added_lines\": {\"lattice",
+     "problems": [],
+     "seconds": 2.2
+    },
+    "P6": {
+     "kind": "probe",
+     "passed": true,
+     "observed": "{\"a_branch\": false, \"a_route3_applies\": [], \"a_unchanged\": true, \"b_branch\": true, \"b_exit\": 0, \"b_record\": true, \"b_route3_ids\": [\"imp-3e1cd7f9\"], \"nobody\": [404, {\"detail\": \"no such project\"}], \"row_nobody_404\": true, \"row_separate\": true, \"same_repo\": {\"busy_codes\": [\"apply_running\"], \"statuses\":",
+     "problems": [],
+     "seconds": 5.2
+    },
+    "P7": {
+     "kind": "probe",
+     "passed": true,
+     "observed": "{\"help_ok\": true, \"removed_lines\": {\"lattice/studio/mock_server.py\": 2, \"lattice/studio/server.py\": 3}, \"routes_identical\": 15, \"stray_removed\": [], \"web_added\": [\"js/views/contracts.js\", \"js/views/improve.js\"], \"web_changed\": [\"css/views.css\", \"js/api.js\", \"js/app.js\"], \"web_removed\": []}",
+     "problems": [],
+     "seconds": 3.9
+    },
+    "P8": {
+     "kind": "probe",
+     "passed": true,
+     "observed": "17 of 17 (none differ)",
+     "problems": [],
+     "seconds": 3.5
+    },
+    "gate": {
+     "kind": "gate",
+     "exit": 0,
+     "passed": true,
+     "summary": "PASS: 0 findings (D 0, X 0); 481 cases run",
+     "seconds": 84.5,
+     "tail": "PASS: 0 findings (D 0, X 0); 481 cases run\n\nnot checked (stated in the spec, not checkable yet):\n  - R1: the server's purpose and setting (one project directory, 127.0.0.1, no login) is context; binding to 127.0.0.1 only is not observable over HTTP from the same host.\n  - R3 is checked only for the paths the scenarios walk (ready, rejected, cancelled, failed changes leave markdown and git_head alone); a write to the files by a non-accept path the scenarios never take would go unseen.\n  - R4: the `checking` status in between is not observed: with the stub LLM the pipeline is too fast to catch it, and a scenario has no conditional poll.\n  - R7: 'exactly one commit of those files' is checked through a reproducible commit id (fixed git identity and dates in the harness): the id pins the tree, the parent and the message. The spec cannot read the repository itself; the id was recorded from the real server once and verified by hand.\n  - R16: the window before a follow-up is ready is not covered: while the first follow-up is drafting its parent is still ready, and the server accepts a second follow-up on it (see the results doc).\n  - R17: one commit for a follow-up's accept is checked by the written markdown and the message, not by a commit id.\n  - R20: checked on the error answers the scenarios provoke, not on every route.\n  - R21/R22: what an answer says comes from the LLM; the stub always answers not_specified, so only the route and the answer's shape are checked.\n  - R24, R25, R2"
+    },
+    "P10": {
+     "kind": "pytest",
+     "exit": 0,
+     "passed": true,
+     "failed": [],
+     "summary": "8 passed in 3.35s",
+     "seconds": 3.5,
+     "tail": "........                                                                 [100%]\n8 passed in 3.35s\n"
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.83s",
+    "seconds": 10.1,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.83s\n"
+   },
+   "caught_by": [],
+   "predicted": [
+    "P0",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "P7",
+    "P8",
+    "gate",
+    "P10"
+   ],
+   "verdict": "CONTROL FAILED"
+  },
+  "U2": {
+   "catchers": {
+    "P0": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "10 of 14 rows exact (rows ok: a, c, e, f, g, h, i, j, k, n)",
+     "problems": [
+      "problem: b: got 202 None, want 403 'bad_origin'",
+      "problem: d: got 409 'apply_running', want 202 None",
+      "problem: d: the control apply ended with exit 3",
+      "problem: l: got 202 None, want 409 'apply_running'",
+      "problem: m: got 409 'apply_running', want 409 'draft_changed'"
+     ],
+     "seconds": 2.4
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 11.45s",
+    "seconds": 11.7,
+    "tail": "s_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 11.45s\n"
+   },
+   "caught_by": [
+    "P0"
+   ],
+   "predicted": [
+    "P0"
+   ],
+   "verdict": "caught"
+  },
+  "U3": {
+   "catchers": {
+    "P0": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "10 of 14 rows exact (rows ok: a, b, e, f, g, h, i, j, k, n)",
+     "problems": [
+      "problem: c: got 202 None, want 403 'bad_origin'",
+      "problem: d: got 409 'apply_running', want 202 None",
+      "problem: d: the control apply ended with exit 3",
+      "problem: l: got 202 None, want 409 'apply_running'",
+      "problem: m: got 409 'apply_running', want 409 'draft_changed'"
+     ],
+     "seconds": 2.3
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 11.47s",
+    "seconds": 11.7,
+    "tail": "s_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 11.47s\n"
+   },
+   "caught_by": [
+    "P0"
+   ],
+   "predicted": [
+    "P0"
+   ],
+   "verdict": "caught"
+  },
+  "U4": {
+   "catchers": {
+    "P0": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "10 of 14 rows exact (rows ok: a, b, c, f, g, h, i, j, k, n)",
+     "problems": [
+      "problem: d: got 409 'apply_running', want 202 None",
+      "problem: d: the control apply ended with exit 3",
+      "problem: e: got 202 None, want 415 'json_required'",
+      "problem: l: got 202 None, want 409 'apply_running'",
+      "problem: m: got 409 'apply_running', want 409 'draft_changed'"
+     ],
+     "seconds": 2.4
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.88s",
+    "seconds": 10.1,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.88s\n"
+   },
+   "caught_by": [
+    "P0"
+   ],
+   "predicted": [
+    "P0"
+   ],
+   "verdict": "caught"
+  },
+  "U1": {
+   "catchers": {
+    "P0": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "11 of 14 rows exact (rows ok: b, c, d, e, f, g, h, i, j, k, m)",
+     "problems": [
+      "problem: a: got 202 None, want 403 'apply_disabled'",
+      "problem: d: the control apply ended with exit 3",
+      "problem: l: got 202 None, want 409 'apply_running'",
+      "problem: n: got 409 'apply_running', want 403 'apply_disabled'"
+     ],
+     "seconds": 22.5
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.74s",
+    "seconds": 10.0,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.74s\n"
+   },
+   "caught_by": [
+    "P0"
+   ],
+   "predicted": [
+    "P0"
+   ],
+   "verdict": "caught"
+  },
+  "U5": {
+   "catchers": {
+    "P0": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "13 of 14 rows exact (rows ok: a, b, c, d, e, f, g, i, j, k, l, m, n)",
+     "problems": [
+      "problem: h: got 422 'bad_id', want 422 'bad_id'"
+     ],
+     "seconds": 7.5
+    },
+    "gate": {
+     "kind": "gate",
+     "exit": 0,
+     "passed": true,
+     "summary": "PASS: 0 findings (D 0, X 0); 481 cases run",
+     "seconds": 85.1,
+     "tail": "PASS: 0 findings (D 0, X 0); 481 cases run\n\nnot checked (stated in the spec, not checkable yet):\n  - R1: the server's purpose and setting (one project directory, 127.0.0.1, no login) is context; binding to 127.0.0.1 only is not observable over HTTP from the same host.\n  - R3 is checked only for the paths the scenarios walk (ready, rejected, cancelled, failed changes leave markdown and git_head alone); a write to the files by a non-accept path the scenarios never take would go unseen.\n  - R4: the `checking` status in between is not observed: with the stub LLM the pipeline is too fast to catch it, and a scenario has no conditional poll.\n  - R7: 'exactly one commit of those files' is checked through a reproducible commit id (fixed git identity and dates in the harness): the id pins the tree, the parent and the message. The spec cannot read the repository itself; the id was recorded from the real server once and verified by hand.\n  - R16: the window before a follow-up is ready is not covered: while the first follow-up is drafting its parent is still ready, and the server accepts a second follow-up on it (see the results doc).\n  - R17: one commit for a follow-up's accept is checked by the written markdown and the message, not by a commit id.\n  - R20: checked on the error answers the scenarios provoke, not on every route.\n  - R21/R22: what an answer says comes from the LLM; the stub always answers not_specified, so only the route and the answer's shape are checked.\n  - R24, R25, R2"
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.88s",
+    "seconds": 10.1,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.88s\n"
+   },
+   "caught_by": [
+    "P0"
+   ],
+   "predicted": [
+    "P0",
+    "gate"
+   ],
+   "verdict": "caught"
+  },
+  "U6": {
+   "catchers": {
+    "P0": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "12 of 14 rows exact (rows ok: a, b, c, e, f, g, h, i, j, k, l, n)",
+     "problems": [
+      "problem: d: got 409 'apply_running', want 202 None",
+      "problem: m: got 202 None, want 409 'draft_changed'"
+     ],
+     "seconds": 7.6
+    },
+    "gate": {
+     "kind": "gate",
+     "exit": 1,
+     "passed": false,
+     "summary": "FAIL: 1 finding (D 1, X 0); 469 cases run",
+     "seconds": 85.0,
+     "tail": "FAIL: 1 finding (D 1, X 0); 469 cases run\n\nrule (D: scenarios): scenario: apply_and_discard_refuse_without_writing\n  [D silent] POST /api/improve/imp-9bade1d1/apply (apply_and_discard_refuse_without_writing / step 2)\n    expected 409 {\"detail\": \"the draft is not the one you read (it changed, or it is refused now): read it again\", \"code\": \"draft_changed\", \"draft_sha256\": null}; got 202 {\"id\": \"imp-9bade1d1\", \"command\": \"apply\", \"status\": \"running\", \"source\": \"job\", \"started_at\": \"2026-10-15T21:58:44Z\", \"finished_at\": null, \"options\": {\"gate...\n    status: expected 409, got 202\n    body: expected {'detail': 'the draft is not the one you read (it changed, or it is refused now): read it again', 'code': 'draft_changed', 'draft_sha256': None} within {'id': 'imp-9bade1d1', 'command': 'apply', 'status': 'running', 'source': 'job', 'started_at': '2026-10-15T21:58:44Z', 'finished_at': None, 'options': {'gates': True, 'branch': None}, 'exit_code': None, 'result': None, 'record': None, 'stale': False}\n\nnot checked (stated in the spec, not checkable yet):\n  - R1: the server's purpose and setting (one project directory, 127.0.0.1, no login) is context; binding to 127.0.0.1 only is not observable over HTTP from the same host.\n  - R3 is checked only for the paths the scenarios walk (ready, rejected, cancelled, failed changes leave markdown and git_head alone); a write to the files by a non-accept path the scenarios never take would go unseen.\n  - R4: the `checking` status in between is not o"
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 10.01s",
+    "seconds": 10.3,
+    "tail": "s_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 10.01s\n"
+   },
+   "caught_by": [
+    "P0",
+    "gate"
+   ],
+   "predicted": [
+    "P0",
+    "gate"
+   ],
+   "verdict": "caught"
+  },
+  "U7": {
+   "catchers": {
+    "gate": {
+     "kind": "gate",
+     "exit": 1,
+     "passed": false,
+     "summary": "FAIL: 1 finding (D 1, X 0); 480 cases run",
+     "seconds": 85.2,
+     "tail": "FAIL: 1 finding (D 1, X 0); 480 cases run\n\nrule (D: scenarios): scenario: apply_and_discard_refuse_without_writing\n  [D silent] GET /api/improve (apply_and_discard_refuse_without_writing / step 13)\n    expected 200 {\"events\": 2, \"proposals\": [{\"signal_key\": \"change:rejected\", \"kind\": \"experiment\", \"status\": \"open\", \"score\": null, \"unit\": null, \"score_class\": \"C\", \"frequ...; got 200 {\"proposals\": [{\"id\": \"imp-9bade1d1\", \"title\": \"1 change set(s) rejected\", \"signal_key\": \"change:rejected\", \"evidence\": [\"e-89577903b97f43c0\"], \"score\": null...\n    body: expected {'events': 2, 'proposals': [{'signal_key': 'change:rejected', 'kind': 'experiment', 'status': 'open', 'score': None, 'unit': None, 'score_class': 'C', 'frequency': 1, 'cost_per': None, 'target_paths': ['lattice/spec/draft.py'], 'title': '1 change set(s) rejected'}]} within {'proposals': [{'id': 'imp-9bade1d1', 'title': '1 change set(s) rejected', 'signal_key': 'change:rejected', 'evidence': ['e-89577903b97f43c0'], 'score': None, 'unit': None, 'score_class': 'C', 'frequency': 1, 'cost_per': None, 'kind': 'experiment', 'target_paths': ['lattice/spec/draft.py'], 'why': 'drafts the owner did not take', 'status': 'open', 'draftable': True}], 'events': 3, 'method': 'Frequency x cost, the I-R method (docs/results/2026-10-12-i-r-improvement-ranking.md): events are clustered by signal_key or cause; f = occurrences; c = the mean cost of one occurrence in wall seconds, or in list-price dollars only when the cluster recorded no secon"
+    },
+    "P5": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "{\"dynamic\": {\"apply_exit\": 0, \"events_identical\": false, \"forbidden_argv\": 0, \"git_calls_logged\": true, \"improve_identical\": false, \"p5_apply\": {\"events_unchanged\": true, \"git_files_unchanged\": true, \"no_ledger\": true, \"only_new_ref\": true, \"tree_unchanged\": true}}, \"static\": {\"added_lines\": {\"latti",
+     "problems": [
+      "problem: GET /api/improve changed",
+      "problem: events.jsonl changed"
+     ],
+     "seconds": 2.2
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.81s",
+    "seconds": 10.0,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.81s\n"
+   },
+   "caught_by": [
+    "gate",
+    "P5"
+   ],
+   "predicted": [
+    "gate",
+    "P5"
+   ],
+   "verdict": "caught"
+  },
+  "U10": {
+   "catchers": {
+    "P2": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "P2: {'exit': [0, 0], 'masked_equal': True, 'tree_equal': True, 'action': 'inserted', 'line': 'level_gate_args = [\"--x-repeats\", \"2\"]', 'listed': ['imp-3e1cd7f9'], 'source': 'job', 'next_has_state': False}; P2c: {'close_has_state': False, 'close_rc': 0, 'wrote': False, 'entry_signal': None}",
+     "problems": [
+      "problem: next.close lacks --state <store root>: lattice improve ledger --project /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/lattice-ui-mutant-U10-w4muw7ft/work/scratch-P2/p2c-0/dirname --signal gate:level_regression:X --status closed --",
+      "problem: next.close rc 0, improvements.jsonl written: False"
+     ],
+     "seconds": 2.5
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.71s",
+    "seconds": 10.0,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.71s\n"
+   },
+   "caught_by": [
+    "P2"
+   ],
+   "predicted": [
+    "P2"
+   ],
+   "verdict": "caught"
+  },
+  "U8": {
+   "catchers": {
+    "P2": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "P2: {'exit': [0, 0], 'masked_equal': False, 'tree_equal': True, 'action': 'inserted', 'line': 'level_gate_args = [\"--x-repeats\", \"2\"]', 'listed': ['imp-3e1cd7f9'], 'source': 'job', 'next_has_state': False}; P2c: {'close_has_state': True, 'close_rc': 0, 'wrote': True, 'entry_signal': 'gate:level_regr",
+     "problems": [
+      "problem: the masked records differ"
+     ],
+     "seconds": 2.5
+    },
+    "P3": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "{\"a\": {\"branch_kept\": true, \"exit\": 0, \"n_results\": 0, \"status\": \"skipped\"}, \"b\": {\"exit\": 0, \"rc\": null, \"seconds_in_2_9\": false, \"status\": \"skipped\", \"timed_out\": null}, \"c\": {\"branch_kept\": true, \"exited_in_bound\": true, \"left\": 1, \"status\": \"skipped\"}, \"d\": {\"hand_set_running_stale\": true, \"rest",
+     "problems": [
+      "problem: a: {'exit': 0, 'status': 'skipped', 'n_results': 0, 'branch_kept': True}",
+      "problem: b: {'exit': 0, 'rc': None, 'timed_out': None, 'seconds_in_2_9': False, 'status': 'skipped'} seconds=None",
+      "problem: c: {'exited_in_bound': True, 'status': 'skipped', 'left': 1, 'branch_kept': True} took 0.0s left ['77957 sleep 29.40000']"
+     ],
+     "seconds": 18.2
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.63s",
+    "seconds": 9.9,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.63s\n"
+   },
+   "caught_by": [
+    "P2",
+    "P3"
+   ],
+   "predicted": [
+    "P2",
+    "P3"
+   ],
+   "verdict": "caught"
+  },
+  "U11": {
+   "catchers": {
+    "P6": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "{\"a_branch\": false, \"a_route3_applies\": [], \"a_unchanged\": true, \"b_branch\": true, \"b_exit\": 0, \"b_record\": true, \"b_route3_ids\": [\"imp-3e1cd7f9\"], \"nobody\": [404, {\"detail\": \"no such project\"}], \"row_nobody_404\": true, \"row_separate\": true, \"same_repo\": {\"busy_codes\": [], \"statuses\": [202, 202]}}",
+     "problems": [
+      "problem: same repository: {'statuses': [202, 202], 'busy_codes': []}"
+     ],
+     "seconds": 5.2
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.87s",
+    "seconds": 10.1,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.87s\n"
+   },
+   "caught_by": [
+    "P6"
+   ],
+   "predicted": [
+    "P6"
+   ],
+   "verdict": "caught"
+  },
+  "U12": {
+   "catchers": {
+    "P4": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "{\"p4a\": {\"branch_gone\": true, \"exit\": 0, \"live_record_gone\": true, \"record_renamed_identical\": true, \"route3_empty\": false, \"route4\": 404, \"status\": 200, \"worktree_gone\": true}, \"p4b\": {\"exit\": 3, \"reason\": \"not_applied\", \"status\": 200}, \"p4c\": {\"exit\": 3, \"reason\": \"merged\", \"status\": 200}}",
+     "problems": [
+      "problem: P4a: {'status': 200, 'exit': 0, 'branch_gone': True, 'worktree_gone': True, 'record_renamed_identical': True, 'live_record_gone': True, 'route3_empty': False, 'route4': 404}"
+     ],
+     "seconds": 2.0
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.75s",
+    "seconds": 10.0,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.75s\n"
+   },
+   "caught_by": [
+    "P4"
+   ],
+   "predicted": [
+    "P4"
+   ],
+   "verdict": "caught"
+  },
+  "U9": {
+   "catchers": {
+    "P3": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "{\"a\": {\"branch_kept\": true, \"exit\": 1, \"n_results\": 2, \"status\": \"failed\"}, \"b\": {\"exit\": 1, \"rc\": 124, \"seconds_in_2_9\": true, \"status\": \"failed\", \"timed_out\": true}, \"c\": {\"branch_kept\": true, \"exited_in_bound\": false, \"left\": 1, \"status\": \"running\"}, \"d\": {\"hand_set_running_stale\": true, \"restart",
+     "problems": [
+      "problem: c: {'exited_in_bound': False, 'status': 'running', 'left': 1, 'branch_kept': True} took 15.1s left ['77957 sleep 29.40000']",
+      "problem: d: {'restart': {'source': 'record', 'stale': True, 'status': 'done', 'exit_code': None}, 'hand_set_running_stale': True, 'source': 'record'}"
+     ],
+     "seconds": 22.8
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.74s",
+    "seconds": 10.0,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.74s\n"
+   },
+   "caught_by": [
+    "P3"
+   ],
+   "predicted": [
+    "P3"
+   ],
+   "verdict": "caught"
+  },
+  "U13": {
+   "catchers": {
+    "P1": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "11 of 12 equal bare; 11 equal under /p/<name>/",
+     "problems": [
+      "problem: route 2 closed imp-3e1cd7f9 at=2026-10-01T12:00:00Z '' differs",
+      "problem: route 2 closed imp-3e1cd7f9 at=2026-10-01T12:00:00Z '/p/closed' differs"
+     ],
+     "seconds": 2.6
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.78s",
+    "seconds": 10.0,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.78s\n"
+   },
+   "caught_by": [
+    "P1"
+   ],
+   "predicted": [
+    "P1"
+   ],
+   "verdict": "caught"
+  },
+  "U14": {
+   "catchers": {
+    "P8": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "14 of 17 (['applies empty', 'applies disabled', 'applies one'])",
+     "problems": [
+      "problem: applies disabled: key trees differ",
+      "problem: applies empty: key trees differ",
+      "problem: applies one: key trees differ"
+     ],
+     "seconds": 3.5
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.85s",
+    "seconds": 10.1,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.85s\n"
+   },
+   "caught_by": [
+    "P8"
+   ],
+   "predicted": [
+    "P8"
+   ],
+   "verdict": "caught"
+  },
+  "U15": {
+   "catchers": {
+    "P10": {
+     "kind": "pytest",
+     "exit": 1,
+     "passed": false,
+     "failed": [
+      "tests/studio/test_studio_ui.py::test_pure_functions_and_the_apply_call_under_node"
+     ],
+     "summary": "1 failed, 7 passed in 3.40s",
+     "seconds": 3.6,
+     "tail": "......F.                                                                 [100%]\n=================================== FAILURES ===================================\n______________ test_pure_functions_and_the_apply_call_under_node _______________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/studioui/pytest-of-vivekgade/pytest-23/test_pure_functions_and_the_ap0')\n\n    @needs_node\n    def test_pure_functions_and_the_apply_call_under_node(tmp_path: Path) -> None:\n        web = tmp_path / \"js\"\n        shutil.copytree(JS, web)\n        (web / \"package.json\").write_text('{\"type\": \"module\"}')\n        (web / \"t.mjs\").write_text(SCRIPT)\n        r = subprocess.run([NODE, str(web / \"t.mjs\")], capture_output=True, text=True, timeout=60)\n        assert r.returncode == 0, r.stderr\n        out = json.loads(r.stdout)\n        # canApply: true only for a config draft, apply enabled, no live record\n>       assert out[\"table\"] == [True, False, False, False, False, False, False, False]\nE       assert [True, False,...e, False, ...] == [True, False,...e, False, ...]\nE         \nE         At index 3 diff: True != False\nE         Use -v to get more diff\n\ntests/studio/test_studio_ui.py:149: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_studio_ui.py::test_pure_functions_and_the_apply_call_under_node\n1 failed, 7 passed in 3.40s\n"
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name",
+     "tests/studio/test_studio_ui.py::test_pure_functions_and_the_apply_call_under_node"
+    ],
+    "summary": "20 failed, 11 passed in 9.81s",
+    "seconds": 10.1,
+    "tail": "ng_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\nFAILED tests/studio/test_studio_ui.py::test_pure_functions_and_the_apply_call_under_node\n20 failed, 11 passed in 9.81s\n"
+   },
+   "caught_by": [
+    "P10"
+   ],
+   "predicted": [
+    "P10"
+   ],
+   "verdict": "caught"
+  },
+  "U16": {
+   "catchers": {
+    "P7": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "{\"help_ok\": true, \"removed_lines\": {\"lattice/studio/mock_server.py\": 2, \"lattice/studio/server.py\": 4}, \"routes_identical\": 14, \"stray_removed\": [\"        return {k: rep[k] for k in (\\\"proposals\\\", \\\"events\\\", \\\"method\\\", \\\"blind_spots\\\")}\"], \"web_added\": [\"js/views/contracts.js\", \"js/views/improve.",
+     "problems": [
+      "problem: removed lines other than the signature edits: ['        return {k: rep[k] for k in (\"proposals\", \"events\", \"method\", \"blind_spots\")}']",
+      "problem: route bodies differ: ['/api/improve base vs new: 200 vs 200', '/api/improve base vs new_allow: 200 vs 200']"
+     ],
+     "seconds": 3.9
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.76s",
+    "seconds": 10.0,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.76s\n"
+   },
+   "caught_by": [
+    "P7"
+   ],
+   "predicted": [
+    "P7"
+   ],
+   "verdict": "caught"
+  },
+  "U17": {
+   "catchers": {
+    "P7": {
+     "kind": "probe",
+     "passed": false,
+     "observed": "{\"help_ok\": true, \"removed_lines\": {\"lattice/studio/mock_server.py\": 2, \"lattice/studio/server.py\": 3}, \"routes_identical\": 15, \"stray_removed\": [], \"web_added\": [\"js/views/contracts.js\", \"js/views/improve.js\"], \"web_changed\": [\"css/views.css\", \"js/api.js\", \"js/app.js\", \"js/views/rebuilds.js\"], \"web",
+     "problems": [
+      "problem: web files: changed ['css/views.css', 'js/api.js', 'js/app.js', 'js/views/rebuilds.js'], added ['js/views/contracts.js', 'js/views/improve.js'], removed []"
+     ],
+     "seconds": 3.9
+    }
+   },
+   "extra_pytest": {
+    "kind": "pytest",
+    "exit": 1,
+    "passed": false,
+    "failed": [
+     "tests/studio/test_improve_api.py::test_a_closed_signal_gets_a_verdict_and_no_draft",
+     "tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3",
+     "tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record",
+     "tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on",
+     "tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch",
+     "tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else",
+     "tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates",
+     "tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written",
+     "tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged",
+     "tests/studio/test_improve_api.py::test_draft_and_verify_equal_the_cli",
+     "tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project",
+     "tests/studio/test_improve_api.py::test_ids_are_validated",
+     "tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees",
+     "tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time",
+     "tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404",
+     "tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state",
+     "tests/studio/test_improve_api.py::test_the_guard_ladder",
+     "tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project",
+     "tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name"
+    ],
+    "summary": "19 failed, 12 passed in 9.73s",
+    "seconds": 10.0,
+    "tail": "ts_a_verdict_and_no_draft\nFAILED tests/studio/test_improve_api.py::test_reads_write_nothing_and_create_no_state\nFAILED tests/studio/test_improve_api.py::test_other_methods_and_paths_are_404\nFAILED tests/studio/test_improve_api.py::test_ids_are_validated - FileNotFoun...\nFAILED tests/studio/test_improve_api.py::test_applies_listing_when_off_and_on\nFAILED tests/studio/test_improve_api.py::test_the_guard_ladder - FileNotFound...\nFAILED tests/studio/test_improve_api.py::test_one_apply_or_discard_at_a_time\nFAILED tests/studio/test_improve_api.py::test_apply_without_gates_makes_a_branch_and_changes_nothing_else\nFAILED tests/studio/test_improve_api.py::test_apply_with_a_failing_gate_keeps_the_branch\nFAILED tests/studio/test_improve_api.py::test_a_refusal_inside_apply_is_a_done_job_with_exit_3\nFAILED tests/studio/test_improve_api.py::test_dirty_checkout_is_refused_with_nothing_written\nFAILED tests/studio/test_improve_api.py::test_discard_then_not_applied_then_merged\nFAILED tests/studio/test_improve_api.py::test_a_restart_answers_from_the_record\nFAILED tests/studio/test_improve_api.py::test_closing_the_server_interrupts_the_gates\nFAILED tests/studio/test_improve_api.py::test_hub_routes_to_the_named_project\nFAILED tests/studio/test_improve_api.py::test_the_lock_is_per_server_not_per_project\nFAILED tests/studio/test_improve_api.py::test_the_state_flag_follows_the_hub_name\nFAILED tests/studio/test_improve_api.py::test_mock_and_real_answer_the_same_key_trees\n19 failed, 12 passed in 9.73s\n"
+   },
+   "caught_by": [
+    "P7"
+   ],
+   "predicted": [
+    "P7"
+   ],
+   "verdict": "caught"
+  }
+ },
+ "table": [
+  {
+   "id": "U1",
+   "behaviour": "--allow-apply ignored (the writes are always on)",
+   "predicted": [
+    "P0"
+   ],
+   "caught_by": [
+    "P0"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U2",
+   "behaviour": "the Origin check removed",
+   "predicted": [
+    "P0"
+   ],
+   "caught_by": [
+    "P0"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U3",
+   "behaviour": "the Host check removed",
+   "predicted": [
+    "P0"
+   ],
+   "caught_by": [
+    "P0"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U4",
+   "behaviour": "the Content-Type check removed",
+   "predicted": [
+    "P0"
+   ],
+   "caught_by": [
+    "P0"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U5",
+   "behaviour": "the id check skipped on GET .../apply (the record route reads the raw id)",
+   "predicted": [
+    "P0",
+    "gate"
+   ],
+   "caught_by": [
+    "P0"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U6",
+   "behaviour": "the draft_sha256 comparison removed",
+   "predicted": [
+    "P0",
+    "gate"
+   ],
+   "caught_by": [
+    "P0",
+    "gate"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U7",
+   "behaviour": "a discard appends a human event to the log",
+   "predicted": [
+    "gate",
+    "P5"
+   ],
+   "caught_by": [
+    "gate",
+    "P5"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U8",
+   "behaviour": "no_gates=gates (inverted)",
+   "predicted": [
+    "P2",
+    "P3"
+   ],
+   "caught_by": [
+    "P2",
+    "P3"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U9",
+   "behaviour": "the stop event is not passed to apply()",
+   "predicted": [
+    "P3"
+   ],
+   "caught_by": [
+    "P3"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U10",
+   "behaviour": "state_flag is always None",
+   "predicted": [
+    "P2"
+   ],
+   "caught_by": [
+    "P2"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U11",
+   "behaviour": "the apply lock is per project, not per server",
+   "predicted": [
+    "P6"
+   ],
+   "caught_by": [
+    "P6"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U12",
+   "behaviour": "the applies listing globs *.json (discarded records are listed)",
+   "predicted": [
+    "P4"
+   ],
+   "caught_by": [
+    "P4"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U13",
+   "behaviour": "verify drops `at`",
+   "predicted": [
+    "P1"
+   ],
+   "caught_by": [
+    "P1"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U14",
+   "behaviour": "the mock's applies listing drops `running`",
+   "predicted": [
+    "P8"
+   ],
+   "caught_by": [
+    "P8"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U15",
+   "behaviour": "canApply is true for a prereg draft",
+   "predicted": [
+    "P10"
+   ],
+   "caught_by": [
+    "P10"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U16",
+   "behaviour": "GET /api/improve gains an applies key",
+   "predicted": [
+    "P7"
+   ],
+   "caught_by": [
+    "P7"
+   ],
+   "verdict": "caught"
+  },
+  {
+   "id": "U17",
+   "behaviour": "one byte of views/rebuilds.js edited",
+   "predicted": [
+    "P7"
+   ],
+   "caught_by": [
+    "P7"
+   ],
+   "verdict": "caught"
+  }
+ ]
+}
