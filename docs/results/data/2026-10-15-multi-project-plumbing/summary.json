@@ -1,0 +1,674 @@
+{
+ "cost": {
+  "C16_max_s": 0.10530804190784693,
+  "C16_median_s": 0.08862727100495249,
+  "C16_samples": [
+   0.08738224999979138,
+   0.10186549997888505,
+   0.0931685830000788,
+   0.0851044999435544,
+   0.10530804190784693,
+   0.08228412503376603,
+   0.07691812515258789,
+   0.0845862498972565,
+   0.09017345798201859,
+   0.0898722920101136
+  ],
+  "C29_median_s": 0.00041118741501122713,
+  "C29_samples": [
+   0.0004339159931987524,
+   0.00042174989357590675,
+   0.0004102499224245548,
+   0.0003817079123109579,
+   0.00039900001138448715,
+   0.0003716670908033848,
+   0.0003950831014662981,
+   0.0004256668034940958,
+   0.00041212490759789944,
+   0.0004379169549793005
+  ]
+ },
+ "real_hub": {
+  "hub_listing": [
+   {
+    "name": "plumb-one",
+    "root": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/hub/one"
+   },
+   {
+    "name": "plumb-two",
+    "root": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/g8/fx/hub/two"
+   }
+  ],
+  "replies": [
+   {
+    "backend": null,
+    "error": false,
+    "project": "plumb-one",
+    "rule_count": 97
+   },
+   {
+    "backend": "http",
+    "error": false,
+    "project": "plumb-one",
+    "rule_count": null
+   },
+   {
+    "backend": null,
+    "error": false,
+    "project": "plumb-two",
+    "rule_count": 97
+   },
+   {
+    "backend": "http",
+    "error": false,
+    "project": "plumb-two",
+    "rule_count": null
+   }
+  ],
+  "stderr": ""
+ },
+ "rows": [
+  {
+   "failed_checks": [],
+   "id": "P1",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "holds"
+  },
+  {
+   "failed_checks": [],
+   "id": "P2",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "byte-identical to old"
+  },
+  {
+   "failed_checks": [],
+   "id": "P3",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "workspace server (old: the same)"
+  },
+  {
+   "failed_checks": [],
+   "id": "P4",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "workspace server (old: single project)"
+  },
+  {
+   "failed_checks": [],
+   "id": "P5",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "byte-identical to old; stderr: not used"
+  },
+  {
+   "failed_checks": [],
+   "id": "P6",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "workspace server (old: the same)"
+  },
+  {
+   "failed_checks": [],
+   "id": "P7",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "byte-identical to old"
+  },
+  {
+   "failed_checks": [],
+   "id": "U1",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "a, b via Studio; c local; 2 listings; writes local"
+  },
+  {
+   "failed_checks": [],
+   "id": "U2",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "a via /api/model, b via /p/beta, c local"
+  },
+  {
+   "failed_checks": [],
+   "id": "U3",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "a via Studio; b local (fallback)"
+  },
+  {
+   "failed_checks": [],
+   "id": "U4",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "b: Studio answered 500 twice; 2 listings"
+  },
+  {
+   "failed_checks": [],
+   "id": "U5",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "0 listings; byte-identical to old"
+  },
+  {
+   "failed_checks": [],
+   "id": "U6",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "b via /p/beta"
+  },
+  {
+   "failed_checks": [],
+   "id": "G01",
+   "identical_runs": true,
+   "observed": "deny ws-p1",
+   "pass": true,
+   "predicted": "deny ws-p1"
+  },
+  {
+   "failed_checks": [],
+   "id": "G02",
+   "identical_runs": true,
+   "observed": "deny ws-p1",
+   "pass": true,
+   "predicted": "deny ws-p1"
+  },
+  {
+   "failed_checks": [],
+   "id": "G03",
+   "identical_runs": true,
+   "observed": "deny ws-p3",
+   "pass": true,
+   "predicted": "deny ws-p3"
+  },
+  {
+   "failed_checks": [],
+   "id": "G04",
+   "identical_runs": true,
+   "observed": "deny ws-p3",
+   "pass": true,
+   "predicted": "deny ws-p3"
+  },
+  {
+   "failed_checks": [],
+   "id": "G05",
+   "identical_runs": true,
+   "observed": "deny ws-p3",
+   "pass": true,
+   "predicted": "deny ws-p3"
+  },
+  {
+   "failed_checks": [],
+   "id": "G06",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G07",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G08",
+   "identical_runs": true,
+   "observed": "deny ws-p1",
+   "pass": true,
+   "predicted": "deny ws-p1"
+  },
+  {
+   "failed_checks": [],
+   "id": "G09",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G10",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G11",
+   "identical_runs": true,
+   "observed": "deny ws-p1",
+   "pass": true,
+   "predicted": "deny ws-p1"
+  },
+  {
+   "failed_checks": [],
+   "id": "G12",
+   "identical_runs": true,
+   "observed": "deny loop-p",
+   "pass": true,
+   "predicted": "deny loop-p"
+  },
+  {
+   "failed_checks": [],
+   "id": "G13",
+   "identical_runs": true,
+   "observed": "deny cap-p6",
+   "pass": true,
+   "predicted": "deny cap-p6"
+  },
+  {
+   "failed_checks": [],
+   "id": "G14",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G15",
+   "identical_runs": true,
+   "observed": "deny cap-p6",
+   "pass": true,
+   "predicted": "deny cap-p6"
+  },
+  {
+   "failed_checks": [],
+   "id": "G16",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G17",
+   "identical_runs": true,
+   "observed": "deny wide-p",
+   "pass": true,
+   "predicted": "deny wide-p"
+  },
+  {
+   "failed_checks": [],
+   "id": "G18",
+   "identical_runs": true,
+   "observed": "deny ws-p1",
+   "pass": true,
+   "predicted": "deny ws-p1"
+  },
+  {
+   "failed_checks": [],
+   "id": "G19",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G20",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G21",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G22",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G23",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G24",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G25",
+   "identical_runs": true,
+   "observed": "deny ws-p3",
+   "pass": true,
+   "predicted": "deny ws-p3"
+  },
+  {
+   "failed_checks": [],
+   "id": "G26",
+   "identical_runs": true,
+   "observed": "deny ws-p3",
+   "pass": true,
+   "predicted": "deny ws-p3"
+  },
+  {
+   "failed_checks": [],
+   "id": "G27",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G28",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G29",
+   "identical_runs": true,
+   "observed": "deny lattice-studio",
+   "pass": true,
+   "predicted": "deny lattice-studio"
+  },
+  {
+   "failed_checks": [],
+   "id": "G30",
+   "identical_runs": true,
+   "observed": "deny ws-p1",
+   "pass": true,
+   "predicted": "deny ws-p1"
+  },
+  {
+   "failed_checks": [],
+   "id": "G01.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G02.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G03.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G04.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G05.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G06.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G07.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G08.old",
+   "identical_runs": true,
+   "observed": "deny ws-p1",
+   "pass": true,
+   "predicted": "deny ws-p1"
+  },
+  {
+   "failed_checks": [],
+   "id": "G09.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G10.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G11.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G12.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G13.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G14.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G15.old",
+   "identical_runs": true,
+   "observed": "deny cap-p6",
+   "pass": true,
+   "predicted": "deny cap-p6"
+  },
+  {
+   "failed_checks": [],
+   "id": "G16.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G17.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G18.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G19.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G20.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G21.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G22.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G23.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G24.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G25.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G26.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G27.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G28.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G29.old",
+   "identical_runs": true,
+   "observed": "allow",
+   "pass": true,
+   "predicted": "allow"
+  },
+  {
+   "failed_checks": [],
+   "id": "G30.old",
+   "identical_runs": true,
+   "observed": "deny ws-p1",
+   "pass": true,
+   "predicted": "deny ws-p1"
+  },
+  {
+   "failed_checks": [],
+   "id": "R1",
+   "identical_runs": true,
+   "observed": "holds",
+   "pass": true,
+   "predicted": "10/10 and 10/10"
+  },
+  {
+   "id": "C16",
+   "pass": true
+  },
+  {
+   "id": "C29",
+   "pass": true
+  }
+ ],
+ "runs": 10,
+ "wall_s": 173.1
+}

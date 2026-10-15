@@ -1,0 +1,464 @@
+{
+ "hashes": {
+  "dogfood/multi_plumbing_mutants.py": "dd8aab95fa7f5540",
+  "dogfood/multi_plumbing_probes.py": "e4a075f452caaaec",
+  "lattice/mcp/guard.py": "eebc4effe73915f3",
+  "lattice/mcp/server.py": "2bcb755e5f0e685c"
+ },
+ "runs": {
+  "PM1": {
+   "missed_predicted": [],
+   "predicted": [
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05",
+    "G11",
+    "G12",
+    "G13",
+    "G17",
+    "G18",
+    "G25",
+    "G26",
+    "G29"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 31/44 pass",
+    "probes_failed": [
+     "G01",
+     "G02",
+     "G03",
+     "G04",
+     "G05",
+     "G11",
+     "G12",
+     "G13",
+     "G17",
+     "G18",
+     "G25",
+     "G26",
+     "G29"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_guard.py::test_exit2_mode_denies_with_the_reason_on_stderr",
+     "tests/mcp/test_plumbing_guard.py::test_mv_walks_its_sources_and_not_its_destination",
+     "tests/mcp/test_plumbing_guard.py::test_the_deny_has_exactly_the_documented_shape",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row11]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row12]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row13]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row17]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row18]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row1]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row25]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row26]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row29]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row2]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row3]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row4]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row5]"
+    ],
+    "pytest_summary": "16 failed, 260 passed in 108.75s (0:01:48)",
+    "seconds": 125.7,
+    "tail": "\ntests/mcp/test_plumbing_guard.py:127: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row1] - AssertionErro...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row2] - AssertionErro...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row3] - AssertionErro...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row4] - AssertionErro...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row5] - AssertionErro...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row11] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row12] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row13] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row17] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row18] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row25] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row26] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row29] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_exit2_mode_denies_with_the_reason_on_stderr\nFAILED tests/mcp/test_plumbing_guard.py::test_the_deny_has_exactly_the_documented_shape\nFAILED tests/mcp/test_plumbing_guard.py::test_mv_walks_its_sources_and_not_its_destination\n16 failed, 260 passed in 108.75s (0:01:48)\n\n--- probes ---\n-p1 | allow | FAIL\n    failed check: new: deny ws-p1\nG03 | deny ws-p3 | allow | FAIL\n    failed check: new: deny ws-p3\nG04 | deny ws-p3 | allow | FAIL\n    failed check: new: deny ws-p3\nG05 | deny ws-p3 | allow | FAIL\n    failed check: new: deny ws-p3\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | allow | FAIL\n    failed check: new: deny ws-p1\nG12 | deny loop-p | allow | FAIL\n    failed check: new: deny loop-p\nG13 | deny cap-p6 | allow | FAIL\n    failed check: --mode exit2: exit 2 with the reason on stderr\n    failed check: new: deny cap-p6\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | allow | FAIL\n    failed check: new: deny wide-p\nG18 | deny ws-p1 | allow | FAIL\n    failed check: new: deny ws-p1\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | allow | FAIL\n    failed check: new: deny ws-p3\nG26 | deny ws-p3 | allow | FAIL\n    failed check: new: deny ws-p3\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | allow | FAIL\n    failed check: new: deny lattice-studio\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.0004 s, max 0.0004 s | pass\nC29 | median <= 0.5 s | median 0.0003 s | pass\nprobes: 31/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM10": {
+   "missed_predicted": [],
+   "predicted": [
+    "U1",
+    "U2",
+    "U6"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 41/44 pass",
+    "probes_failed": [
+     "U1",
+     "U2",
+     "U6"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_studio_url.py::test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio",
+     "tests/mcp/test_plumbing_studio_url.py::test_the_other_projects_writes_are_not_routed_to_the_studio",
+     "tests/mcp/test_plumbing_studio_url.py::test_u1_the_listing_is_asked_once_per_other_project_and_by_path",
+     "tests/mcp/test_plumbing_studio_url.py::test_u2_the_bare_base_url_works_too",
+     "tests/mcp/test_plumbing_studio_url.py::test_u6_a_symlinked_project_path_still_matches"
+    ],
+    "pytest_summary": "5 failed, 271 passed in 101.78s (0:01:41)",
+    "seconds": 118.3,
+    "tail": "fa75c50a8e80/scra...26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-46/test_reads_of_changes_and_the_0'))\n\n    def test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio(fx) -> None:\n        dirs, studio, _ = fx\n        studio.changes[\"c7\"] = {\"id\": \"c7\", \"status\": \"ready\", \"request\": \"r\"}\n        out = serve(\n            fx, [dirs[\"a\"], dirs[\"b\"]], studio.url + \"/p/alpha\",\n            [\n                (\"change_get\", {\"project\": \"b\", \"id\": \"c7\"}),\n                (\"change_list\", {\"project\": \"b\"}),\n                (\"spec_lint\", {\"project\": \"b\"}),\n                (\"project_status\", {\"project\": \"b\"}),\n            ],\n        )  # fmt: skip\n        err, got = tool_result(out[0])\n>       assert not err and got[\"status\"] == \"ready\"\nE       assert (not True)\n\ntests/mcp/test_plumbing_studio_url.py:173: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u1_the_listing_is_asked_once_per_other_project_and_by_path\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u2_the_bare_base_url_works_too\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u6_a_symlinked_project_path_still_matches\nFAILED tests/mcp/test_plumbing_studio_url.py::test_the_other_projects_writes_are_not_routed_to_the_studio\nFAILED tests/mcp/test_plumbing_studio_url.py::test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio\n5 failed, 271 passed in 101.78s (0:01:41)\n\n--- probes ---\nllback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | FAILED: b via /p/beta (both sides realpath'd); the request went to /p/beta/api/model | FAIL\n    failed check: b via /p/beta (both sides realpath'd)\n    failed check: the request went to /p/beta/api/model\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1685 s, max 0.1685 s | pass\nC29 | median <= 0.5 s | median 0.0006 s | pass\nprobes: 41/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM11": {
+   "missed_predicted": [],
+   "predicted": [
+    "U1"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 42/44 pass",
+    "probes_failed": [
+     "U1",
+     "U6"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_studio_url.py::test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio",
+     "tests/mcp/test_plumbing_studio_url.py::test_studio_base_strips_one_trailing_name",
+     "tests/mcp/test_plumbing_studio_url.py::test_the_other_projects_writes_are_not_routed_to_the_studio",
+     "tests/mcp/test_plumbing_studio_url.py::test_u1_the_listing_is_asked_once_per_other_project_and_by_path",
+     "tests/mcp/test_plumbing_studio_url.py::test_u6_a_symlinked_project_path_still_matches"
+    ],
+    "pytest_summary": "5 failed, 271 passed in 101.79s (0:01:41)",
+    "seconds": 118.4,
+    "tail": "o.url + \"/p/alpha\",\n            [\n                (\"change_get\", {\"project\": \"b\", \"id\": \"c7\"}),\n                (\"change_list\", {\"project\": \"b\"}),\n                (\"spec_lint\", {\"project\": \"b\"}),\n                (\"project_status\", {\"project\": \"b\"}),\n            ],\n        )  # fmt: skip\n        err, got = tool_result(out[0])\n>       assert not err and got[\"status\"] == \"ready\"\nE       assert (not True)\n\ntests/mcp/test_plumbing_studio_url.py:173: AssertionError\n__________________ test_studio_base_strips_one_trailing_name ___________________\n\n    def test_studio_base_strips_one_trailing_name() -> None:\n>       assert studio_base(\"http://h:1/p/alpha\") == \"http://h:1\"\nE       AssertionError: assert 'http://h:1/p/alpha' == 'http://h:1'\nE         \nE         - http://h:1\nE         + http://h:1/p/alpha\n\ntests/mcp/test_plumbing_studio_url.py:181: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u1_the_listing_is_asked_once_per_other_project_and_by_path\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u6_a_symlinked_project_path_still_matches\nFAILED tests/mcp/test_plumbing_studio_url.py::test_the_other_projects_writes_are_not_routed_to_the_studio\nFAILED tests/mcp/test_plumbing_studio_url.py::test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio\nFAILED tests/mcp/test_plumbing_studio_url.py::test_studio_base_strips_one_trailing_name\n5 failed, 271 passed in 101.79s (0:01:41)\n\n--- probes ---\nest\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | FAILED: b via /p/beta (both sides realpath'd) | FAIL\n    failed check: b via /p/beta (both sides realpath'd)\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1804 s, max 0.1804 s | pass\nC29 | median <= 0.5 s | median 0.0009 s | pass\nprobes: 42/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM12": {
+   "missed_predicted": [],
+   "predicted": [
+    "U3"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 43/44 pass",
+    "probes_failed": [
+     "U3"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_studio_url.py::test_u3_a_studio_without_the_listing_falls_back_to_local"
+    ],
+    "pytest_summary": "1 failed, 275 passed in 101.77s (0:01:41)",
+    "seconds": 118.3,
+    "tail": "................................. [ 52%]\n........................................................................ [ 78%]\n............................F...............................             [100%]\n=================================== FAILURES ===================================\n___________ test_u3_a_studio_without_the_listing_falls_back_to_local ___________\n\nfx = ({'a': PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scra...26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-47/test_u3_a_studio_without_the_l0'))\n\n    def test_u3_a_studio_without_the_listing_falls_back_to_local(fx) -> None:\n        dirs, studio, _ = fx\n        studio.listing_status = 404\n        out = serve(\n            fx, [dirs[\"a\"], dirs[\"b\"]], studio.url + \"/p/alpha\",\n            [(\"model_get\", {\"project\": \"a\"}), (\"model_get\", {\"project\": \"b\"})],\n        )  # fmt: skip\n        assert rule_text(out[0]) == \"ALPHA via studio\"\n        err, text = tool_result(out[1])\n>       assert err and NOT_A_PROJECT in text\nE       AssertionError: assert (True and 'is not a Lattice project yet' in 'Studio answered 404: listing unavailable (project: b)')\n\ntests/mcp/test_plumbing_studio_url.py:105: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u3_a_studio_without_the_listing_falls_back_to_local\n1 failed, 275 passed in 101.77s (0:01:41)\n\n--- probes ---\n | holds | pass\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | FAILED: b is the local error (fallback) | FAIL\n    failed check: b is the local error (fallback)\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1718 s, max 0.1718 s | pass\nC29 | median <= 0.5 s | median 0.0006 s | pass\nprobes: 43/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM13": {
+   "missed_predicted": [],
+   "predicted": [
+    "U4"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 43/44 pass",
+    "probes_failed": [
+     "U4"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_studio_url.py::test_u4_a_failed_listing_is_an_error_and_is_not_remembered"
+    ],
+    "pytest_summary": "1 failed, 275 passed in 98.53s (0:01:38)",
+    "seconds": 115.1,
+    "tail": "one:\n        dirs, studio, _ = fx\n        studio.listing_status = 500\n        out = serve(\n            fx, [dirs[\"a\"], dirs[\"b\"]], studio.url + \"/p/alpha\",\n            [(\"model_get\", {\"project\": \"b\"}), (\"model_get\", {\"project\": \"b\"})],\n        )  # fmt: skip\n        for line in out:\n            err, text = tool_result(line)\n>           assert err and \"Studio answered 500\" in text and text.endswith(\"(project: b)\"), text\nE           AssertionError: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-50/test_u4_a_failed_listing_is_an0/b is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. (project: b)\nE           assert (True and 'Studio answered 500' in '/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/t...` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. (project: b)')\n\ntests/mcp/test_plumbing_studio_url.py:118: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u4_a_failed_listing_is_an_error_and_is_not_remembered\n1 failed, 275 passed in 98.53s (0:01:38)\n\n--- probes ---\nLED: 2 listing requests (a failure is not cached); both calls are errors with `Studio answered 500` and `(project: b)` | FAIL\n    failed check: 2 listing requests (a failure is not cached)\n    failed check: both calls are errors with `Studio answered 500` and `(project: b)`\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1632 s, max 0.1632 s | pass\nC29 | median <= 0.5 s | median 0.0011 s | pass\nprobes: 43/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM14": {
+   "missed_predicted": [],
+   "predicted": [
+    "U5"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 41/44 pass",
+    "probes_failed": [
+     "U1",
+     "U4",
+     "U5"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_studio_url.py::test_u1_the_listing_is_asked_once_per_other_project_and_by_path",
+     "tests/mcp/test_plumbing_studio_url.py::test_u4_a_failed_listing_is_an_error_and_is_not_remembered",
+     "tests/mcp/test_plumbing_studio_url.py::test_u5_one_project_never_asks_for_the_listing"
+    ],
+    "pytest_summary": "3 failed, 273 passed in 98.54s (0:01:38)",
+    "seconds": 115.1,
+    "tail": "here requests = <tests.mcp.plumbing_support.FakeStudio object at 0x10ac92fd0>.requests\n\ntests/mcp/test_plumbing_studio_url.py:119: AssertionError\n________________ test_u5_one_project_never_asks_for_the_listing ________________\n\nfx = ({'a': PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scra...26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-49/test_u5_one_project_never_asks0'))\n\n    def test_u5_one_project_never_asks_for_the_listing(fx) -> None:\n        dirs, studio, _ = fx\n        out = serve(fx, [dirs[\"a\"]], studio.url + \"/p/alpha\", [(\"model_get\", {})])\n        assert rule_text(out[0]) == \"ALPHA via studio\"\n>       assert not studio.requests(None, \"/api/projects\")\nE       AssertionError: assert not [('GET', '/api/projects')]\nE        +  where [('GET', '/api/projects')] = requests(None, '/api/projects')\nE        +    where requests = <tests.mcp.plumbing_support.FakeStudio object at 0x10ac91cd0>.requests\n\ntests/mcp/test_plumbing_studio_url.py:126: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u1_the_listing_is_asked_once_per_other_project_and_by_path\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u4_a_failed_listing_is_an_error_and_is_not_remembered\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u5_one_project_never_asks_for_the_listing\n3 failed, 273 passed in 98.54s (0:01:38)\n\n--- probes ---\nb local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | FAILED: 2 listing requests (a failure is not cached) | FAIL\n    failed check: 2 listing requests (a failure is not cached)\nU5 | 0 listings; byte-identical to old | FAILED: 0 /api/projects requests | FAIL\n    failed check: 0 /api/projects requests\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1701 s, max 0.1701 s | pass\nC29 | median <= 0.5 s | median 0.0006 s | pass\nprobes: 41/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM15": {
+   "missed_predicted": [],
+   "predicted": [
+    "P5"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 43/44 pass",
+    "probes_failed": [
+     "P5"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_plugin.py::test_p5_a_manifest_that_does_not_declare_the_project_is_not_used"
+    ],
+    "pytest_summary": "1 failed, 275 passed in 98.50s (0:01:38)",
+    "seconds": 115.0,
+    "tail": "gade/pytest-51/test_p5_a_manifest_that_does_n0/ws')\n\n    def test_p5_a_manifest_that_does_not_declare_the_project_is_not_used(ws: Path) -> None:\n        manifest(ws, (\"other\", \"other\"))  # proj is no longer declared\n        init, names, rows, err = list_projects(\n            [\"--project\", str(ws / \"proj\")], ws.parent / \"elsewhere\", clean_env(CODE)\n        )\n>       assert init == INSTRUCTIONS and not set(WS_TOOLS) & set(names)\nE       assert ('Lattice Stud...re read-only.' == 'Lattice Stud...ttice Studio.'\nE         \nE         Skipping 293 identical leading characters in diff, use -v to show\nE         - ice Studio.\nE         + ice Studio. Several projects are known: project_list lists them; every tool takes an optional `project` (a name or path from project_list; default: the active project, which project_set_active changes). A workspace manifest links these projects; project_list shows each one's role and links. For \"has anything a provider changed affected this project?\": call project_list, then BOTH contract_check and linked_question_list for the consumer: contract_check shows what changed since its pin (BROKEN...\nE         \nE         ...Full output truncated (1 line hidden), use '-vv' to show)\n\ntests/mcp/test_plumbing_plugin.py:99: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_plugin.py::test_p5_a_manifest_that_does_not_declare_the_project_is_not_used\n1 failed, 275 passed in 98.50s (0:01:38)\n\n--- probes ---\nntical to old | holds | pass\nU1 | a, b via Studio; c local; 2 listings; writes local | holds | pass\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1458 s, max 0.1458 s | pass\nC29 | median <= 0.5 s | median 0.0006 s | pass\nprobes: 43/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM16": {
+   "missed_predicted": [],
+   "predicted": [
+    "P4"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 42/44 pass",
+    "probes_failed": [
+     "P4",
+     "P5"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_plugin.py::test_p4_the_manifest_is_found_from_the_project_when_the_launch_dir_has_none",
+     "tests/mcp/test_plumbing_plugin.py::test_p5_a_manifest_that_does_not_declare_the_project_is_not_used",
+     "tests/mcp/test_plumbing_plugin.py::test_p7_an_unreadable_manifest_above_the_project_changes_nothing"
+    ],
+    "pytest_summary": "3 failed, 273 passed in 95.29s (0:01:35)",
+    "seconds": 111.3,
+    "tail": "est_above_the_project_changes_nothing _______\n\nws = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-52/test_p7_an_unreadable_manifest0/ws')\n\n    def test_p7_an_unreadable_manifest_above_the_project_changes_nothing(ws: Path) -> None:\n        (ws / \"lattice.workspace.toml\").write_text(\"[[[\")\n        init, names, rows, err = list_projects(\n            [\"--project\", str(ws / \"proj\")], ws.parent / \"elsewhere\", clean_env(CODE)\n        )\n        assert init == INSTRUCTIONS and not set(WS_TOOLS) & set(names)\n>       assert \"workspace\" not in rows and \"not used\" in err\nE       AssertionError: assert ('workspace' not in {'active': 'proj', 'projects': [{'name': 'proj', 'path': '/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/e...g/tmp/pytest-of-vivekgade/pytest-52/test_p7_an_unreadable_manifest0/ws/proj', 'spec': 'present', 'active': True, ...}]} and 'not used' in '')\n\ntests/mcp/test_plumbing_plugin.py:118: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_plugin.py::test_p4_the_manifest_is_found_from_the_project_when_the_launch_dir_has_none\nFAILED tests/mcp/test_plumbing_plugin.py::test_p5_a_manifest_that_does_not_declare_the_project_is_not_used\nFAILED tests/mcp/test_plumbing_plugin.py::test_p7_an_unreadable_manifest_above_the_project_changes_nothing\n3 failed, 273 passed in 95.29s (0:01:35)\n\n--- probes ---\nntical to old | holds | pass\nU1 | a, b via Studio; c local; 2 listings; writes local | holds | pass\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1373 s, max 0.1373 s | pass\nC29 | median <= 0.5 s | median 0.0007 s | pass\nprobes: 42/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM17": {
+   "missed_predicted": [],
+   "predicted": [
+    "U1"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 43/44 pass",
+    "probes_failed": [
+     "U1"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_studio_url.py::test_studio_reads_splits_reads_from_writes_and_keeps_its_own_change_local",
+     "tests/mcp/test_plumbing_studio_url.py::test_the_other_projects_writes_are_not_routed_to_the_studio"
+    ],
+    "pytest_summary": "2 failed, 274 passed in 95.27s (0:01:35)",
+    "seconds": 111.3,
+    "tail": "ts = <tests.mcp.plumbing_support.FakeStudio object at 0x10c61ff00>.requests\n\ntests/mcp/test_plumbing_studio_url.py:157: AssertionError\n__ test_studio_reads_splits_reads_from_writes_and_keeps_its_own_change_local ___\n\n    def test_studio_reads_splits_reads_from_writes_and_keeps_its_own_change_local() -> None:\n        http, local = Rec(\"http\"), Rec(\"local\")\n        box = StudioReads(http, local)\n        assert box.model() == {\"tag\": \"http\"} and box.lint() == []\n        assert box.ask({}) == {\"tag\": \"local\"} and box.check(None, 1.0) == {\"tag\": \"local\"}\n        assert box.new_change({}) == {\"id\": \"mine\"}\n        assert box.get_change(\"mine\")[\"tag\"] == \"local\", \"the change this process made is local\"\n        assert box.get_change(\"theirs\")[\"tag\"] == \"http\"\n>       assert http.calls == [\"model\", \"lint\", \"get_change:theirs\"]\nE       AssertionError: assert ['model', 'li...hange:theirs'] == ['model', 'li...hange:theirs']\nE         \nE         At index 2 diff: 'new_change' != 'get_change:theirs'\nE         Left contains one more item: 'get_change:theirs'\nE         Use -v to get more diff\n\ntests/mcp/test_plumbing_studio_url.py:249: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_studio_url.py::test_the_other_projects_writes_are_not_routed_to_the_studio\nFAILED tests/mcp/test_plumbing_studio_url.py::test_studio_reads_splits_reads_from_writes_and_keeps_its_own_change_local\n2 failed, 274 passed in 95.27s (0:01:35)\n\n--- probes ---\nites local | FAILED: no POST reached the Studio | FAIL\n    failed check: no POST reached the Studio\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1358 s, max 0.1358 s | pass\nC29 | median <= 0.5 s | median 0.0007 s | pass\nprobes: 43/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM2": {
+   "missed_predicted": [],
+   "predicted": [
+    "G10"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 43/44 pass",
+    "probes_failed": [
+     "G10"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row10]"
+    ],
+    "pytest_summary": "1 failed, 275 passed in 108.74s (0:01:48)",
+    "seconds": 126.0,
+    "tail": "ing/tmp/pytest-of-vivekgade/pytest-33/g80/lg')\nrow = (10, '', 'Bash', 'rm -rf links', None, None, ...)\n\n    @pytest.mark.parametrize(\"row\", GUARD_ROWS, ids=[f\"row{r[0]}\" for r in GUARD_ROWS])\n    def test_the_table(lg: Path, row) -> None:\n        n, cwd, tool, arg, project, new, _old = row\n        if cwd == \"@base\":\n            cwd_p = lg.parent\n        else:\n            cwd_p = lg / cwd if cwd else lg\n        arg = arg.replace(\"{W}\", str(REPO))\n        args = [\"--project\", str(lg / project)] if project else []\n        rc, out, _err = hook(event(tool, cwd_p, arg), *args)\n        assert rc == 0\n>       assert denied_project(out) == new, (n, out)\nE       AssertionError: (10, '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\":...0/lg/ws/p1\\\\\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.\"}}\nE         ')\nE       assert 'ws-p1' == None\nE        +  where 'ws-p1' = denied_project('{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"Blo...80/lg/ws/p1\\\\\"}, poll change_get until it is ready, and tell the owner to review and accept it in Lattice Studio.\"}}\\n')\n\ntests/mcp/test_plumbing_guard.py:62: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row10] - AssertionErr...\n1 failed, 275 passed in 108.74s (0:01:48)\n\n--- probes ---\na, b via Studio; c local; 2 listings; writes local | holds | pass\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | deny ws-p1 | FAIL\n    failed check: new: allow\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1957 s, max 0.1957 s | pass\nC29 | median <= 0.5 s | median 0.0008 s | pass\nprobes: 43/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM3": {
+   "missed_predicted": [],
+   "predicted": [
+    "G13"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 43/44 pass",
+    "probes_failed": [
+     "G13"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_guard.py::test_the_depth_is_five_levels_below_the_target",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row13]"
+    ],
+    "pytest_summary": "2 failed, 274 passed in 108.74s (0:01:48)",
+    "seconds": 126.1,
+    "tail": "pytest-of-vivekgade/pytest-35/g80/lg')\n\n    def test_the_depth_is_five_levels_below_the_target(lg: Path) -> None:\n        g = MultiGuard()\n>       assert g.project_below(str(lg / \"cap\" / \"x1\")) == lg / \"cap/x1/x2/x3/x4/x5/p6\"\nE       AssertionError: assert None == (PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-35/g80/lg') / 'cap/x1/x2/x3/x4/x5/p6')\nE        +  where None = project_below('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-35/g80/lg/cap/x1')\nE        +    where project_below = <lattice.mcp.guard.MultiGuard object at 0x10c75c9d0>.project_below\nE        +    and   '/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-35/g80/lg/cap/x1' = str(((PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-35/g80/lg') / 'cap') / 'x1'))\n\ntests/mcp/test_plumbing_guard.py:102: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row13] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_depth_is_five_levels_below_the_target\n2 failed, 274 passed in 108.74s (0:01:48)\n\n--- probes ---\n pass\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | allow | FAIL\n    failed check: --mode exit2: exit 2 with the reason on stderr\n    failed check: new: deny cap-p6\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.2090 s, max 0.2090 s | pass\nC29 | median <= 0.5 s | median 0.0008 s | pass\nprobes: 43/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM4": {
+   "missed_predicted": [
+    "C16"
+   ],
+   "predicted": [
+    "G16",
+    "C16"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 43/44 pass",
+    "probes_failed": [
+     "G16"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_guard.py::test_the_budget_fails_open_and_is_deterministic",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row16]"
+    ],
+    "pytest_summary": "2 failed, 274 passed in 109.82s (0:01:49)",
+    "seconds": 127.6,
+    "tail": "_________\n\nlg = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-38/g80/lg')\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1092a2fd0>\n\n    def test_the_budget_fails_open_and_is_deterministic(lg: Path, monkeypatch) -> None:\n        g = MultiGuard()\n        target = str(lg / \"wide\")\n>       assert g.project_below(target) is None\nE       AssertionError: assert PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-38/g80/lg/wide/zzz/p') is None\nE        +  where PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-38/g80/lg/wide/zzz/p') = project_below('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-38/g80/lg/wide')\nE        +    where project_below = <lattice.mcp.guard.MultiGuard object at 0x10943c850>.project_below\n\ntests/mcp/test_plumbing_guard.py:93: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row16] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_budget_fails_open_and_is_deterministic\n2 failed, 274 passed in 109.82s (0:01:49)\n\n--- probes ---\n, b via Studio; c local; 2 listings; writes local | holds | pass\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | deny wide-p | FAIL\n    failed check: new: allow\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.2813 s, max 0.2813 s | pass\nC29 | median <= 0.5 s | median 0.0005 s | pass\nprobes: 43/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM5": {
+   "missed_predicted": [],
+   "predicted": [
+    "G09"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 43/44 pass",
+    "probes_failed": [
+     "G09"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_guard.py::test_pruned_names_are_neither_entered_nor_walked",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row9]"
+    ],
+    "pytest_summary": "2 failed, 274 passed in 110.38s (0:01:50)",
+    "seconds": 128.0,
+    "tail": "xPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-39/test_pruned_names_are_neither_0/t/.git/p') is None\nE        +  where PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-39/test_pruned_names_are_neither_0/t/.git/p') = project_below('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-39/test_pruned_names_are_neither_0/t')\nE        +    where project_below = <lattice.mcp.guard.MultiGuard object at 0x10889f5d0>.project_below\nE        +    and   '/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-39/test_pruned_names_are_neither_0/t' = str((PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-39/test_pruned_names_are_neither_0') / 't'))\n\ntests/mcp/test_plumbing_guard.py:110: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row9] - AssertionErro...\nFAILED tests/mcp/test_plumbing_guard.py::test_pruned_names_are_neither_entered_nor_walked\n2 failed, 274 passed in 110.38s (0:01:50)\n\n--- probes ---\na, b via Studio; c local; 2 listings; writes local | holds | pass\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | deny ws-p5 | FAIL\n    failed check: new: allow\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1957 s, max 0.1957 s | pass\nC29 | median <= 0.5 s | median 0.0010 s | pass\nprobes: 43/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM6": {
+   "missed_predicted": [],
+   "predicted": [
+    "G19"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 43/44 pass",
+    "probes_failed": [
+     "G19"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_guard.py::test_mv_walks_its_sources_and_not_its_destination",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row19]"
+    ],
+    "pytest_summary": "2 failed, 274 passed in 110.33s (0:01:50)",
+    "seconds": 128.0,
+    "tail": "lg')\n\n    def test_mv_walks_its_sources_and_not_its_destination(lg: Path) -> None:\n        g = MultiGuard()\n        assert g.decide(event(\"Bash\", lg, \"mv ws ws-old\")) is not None\n>       assert g.decide(event(\"Bash\", lg, \"mv notes.txt ws/\")) is None\nE       AssertionError: assert 'REQUIREMENTS.md' is None\nE        +  where 'REQUIREMENTS.md' = decide({'tool_name': 'Bash', 'tool_input': {'command': 'mv notes.txt ws/'}, 'cwd': '/private/tmp/claude-501/-Users-vivekgade-...-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-40/g80/lg', 'hook_event_name': 'PreToolUse'})\nE        +    where decide = <lattice.mcp.guard.MultiGuard object at 0x10abb8d50>.decide\nE        +    and   {'tool_name': 'Bash', 'tool_input': {'command': 'mv notes.txt ws/'}, 'cwd': '/private/tmp/claude-501/-Users-vivekgade-...-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-40/g80/lg', 'hook_event_name': 'PreToolUse'} = event('Bash', PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-40/g80/lg'), 'mv notes.txt ws/')\n\ntests/mcp/test_plumbing_guard.py:128: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row19] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_mv_walks_its_sources_and_not_its_destination\n2 failed, 274 passed in 110.33s (0:01:50)\n\n--- probes ---\na, b via Studio; c local; 2 listings; writes local | holds | pass\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | deny ws-p1 | FAIL\n    failed check: new: allow\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1975 s, max 0.1975 s | pass\nC29 | median <= 0.5 s | median 0.0009 s | pass\nprobes: 43/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM7p": {
+   "missed_predicted": [],
+   "predicted": [
+    "G20",
+    "G22"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 41/44 pass",
+    "probes_failed": [
+     "G20",
+     "G22",
+     "G23"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_guard.py::test_the_reverted_widenings_stay_reverted",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row20]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row22]",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row23]"
+    ],
+    "pytest_summary": "4 failed, 272 passed in 106.66s (0:01:46)",
+    "seconds": 123.6,
+    "tail": "     assert g.decide(ev(\"repo2\", \"git rm -r -q vendor\")) is None\n        assert g.decide(ev(\"\", \"git mv ws ws-old\")) is None\n>       assert g.decide(ev(\"repo2\", \"git clean -fdx\")) is None\nE       AssertionError: assert 'REQUIREMENTS.md' is None\nE        +  where 'REQUIREMENTS.md' = decide({'tool_name': 'Bash', 'tool_input': {'command': 'git clean -fdx'}, 'cwd': '/private/tmp/claude-501/-Users-vivekgade-Do...845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-43/g80/lg/repo2', 'hook_event_name': 'PreToolUse'})\nE        +    where decide = <lattice.mcp.guard.MultiGuard object at 0x10a9297d0>.decide\nE        +    and   {'tool_name': 'Bash', 'tool_input': {'command': 'git clean -fdx'}, 'cwd': '/private/tmp/claude-501/-Users-vivekgade-Do...845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-43/g80/lg/repo2', 'hook_event_name': 'PreToolUse'} = <function test_the_reverted_widenings_stay_reverted.<locals>.<lambda> at 0x10a9937f0>('repo2', 'git clean -fdx')\n\ntests/mcp/test_plumbing_guard.py:138: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row20] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row22] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row23] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_reverted_widenings_stay_reverted\n4 failed, 272 passed in 106.66s (0:01:46)\n\n--- probes ---\n | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | deny ws-np | FAIL\n    failed check: new: allow\nG21 | allow | allow | pass\nG22 | allow | deny ws-p1 | FAIL\n    failed check: new: allow\nG23 | allow | deny ws-np | FAIL\n    failed check: new: allow\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.2045 s, max 0.2045 s | pass\nC29 | median <= 0.5 s | median 0.0006 s | pass\nprobes: 41/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM8p": {
+   "missed_predicted": [],
+   "predicted": [
+    "G24"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 43/44 pass",
+    "probes_failed": [
+     "G24"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_guard.py::test_the_reverted_widenings_stay_reverted",
+     "tests/mcp/test_plumbing_guard.py::test_the_table[row24]"
+    ],
+    "pytest_summary": "2 failed, 274 passed in 105.50s (0:01:45)",
+    "seconds": 122.4,
+    "tail": "5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-44/g80/lg')\n\n    def test_the_reverted_widenings_stay_reverted(lg: Path) -> None:\n        g = MultiGuard()\n        ev = lambda cwd, c: event(\"Bash\", lg / cwd if cwd else lg, c)  # noqa: E731\n>       assert g.decide(ev(\"repo2\", \"git rm -r -q vendor\")) is None\nE       AssertionError: assert 'REQUIREMENTS.md' is None\nE        +  where 'REQUIREMENTS.md' = decide({'tool_name': 'Bash', 'tool_input': {'command': 'git rm -r -q vendor'}, 'cwd': '/private/tmp/claude-501/-Users-vivekga...845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-44/g80/lg/repo2', 'hook_event_name': 'PreToolUse'})\nE        +    where decide = <lattice.mcp.guard.MultiGuard object at 0x10cc5dad0>.decide\nE        +    and   {'tool_name': 'Bash', 'tool_input': {'command': 'git rm -r -q vendor'}, 'cwd': '/private/tmp/claude-501/-Users-vivekga...845d-fa75c50a8e80/scratchpad/plumbing/tmp/pytest-of-vivekgade/pytest-44/g80/lg/repo2', 'hook_event_name': 'PreToolUse'} = <function test_the_reverted_widenings_stay_reverted.<locals>.<lambda> at 0x10cc1b7f0>('repo2', 'git rm -r -q vendor')\n\ntests/mcp/test_plumbing_guard.py:136: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_guard.py::test_the_table[row24] - AssertionErr...\nFAILED tests/mcp/test_plumbing_guard.py::test_the_reverted_widenings_stay_reverted\n2 failed, 274 passed in 105.50s (0:01:45)\n\n--- probes ---\na, b via Studio; c local; 2 listings; writes local | holds | pass\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | deny ws-np | FAIL\n    failed check: new: allow\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.2086 s, max 0.2086 s | pass\nC29 | median <= 0.5 s | median 0.0007 s | pass\nprobes: 43/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "PM9": {
+   "missed_predicted": [],
+   "predicted": [
+    "U1",
+    "U2",
+    "U6"
+   ],
+   "suite": {
+    "probe_exit": 1,
+    "probe_last_line": "probes: 40/44 pass",
+    "probes_failed": [
+     "U1",
+     "U2",
+     "U4",
+     "U6"
+    ],
+    "pytest_exit": 1,
+    "pytest_failed": [
+     "tests/mcp/test_plumbing_studio_url.py::test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio",
+     "tests/mcp/test_plumbing_studio_url.py::test_the_other_projects_writes_are_not_routed_to_the_studio",
+     "tests/mcp/test_plumbing_studio_url.py::test_u1_the_listing_is_asked_once_per_other_project_and_by_path",
+     "tests/mcp/test_plumbing_studio_url.py::test_u2_the_bare_base_url_works_too",
+     "tests/mcp/test_plumbing_studio_url.py::test_u4_a_failed_listing_is_an_error_and_is_not_remembered",
+     "tests/mcp/test_plumbing_studio_url.py::test_u6_a_symlinked_project_path_still_matches"
+    ],
+    "pytest_summary": "6 failed, 270 passed in 105.47s (0:01:45)",
+    "seconds": 122.4,
+    "tail": "test_reads_of_changes_and_the_0'))\n\n    def test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio(fx) -> None:\n        dirs, studio, _ = fx\n        studio.changes[\"c7\"] = {\"id\": \"c7\", \"status\": \"ready\", \"request\": \"r\"}\n        out = serve(\n            fx, [dirs[\"a\"], dirs[\"b\"]], studio.url + \"/p/alpha\",\n            [\n                (\"change_get\", {\"project\": \"b\", \"id\": \"c7\"}),\n                (\"change_list\", {\"project\": \"b\"}),\n                (\"spec_lint\", {\"project\": \"b\"}),\n                (\"project_status\", {\"project\": \"b\"}),\n            ],\n        )  # fmt: skip\n        err, got = tool_result(out[0])\n>       assert not err and got[\"status\"] == \"ready\"\nE       assert (not True)\n\ntests/mcp/test_plumbing_studio_url.py:173: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u1_the_listing_is_asked_once_per_other_project_and_by_path\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u2_the_bare_base_url_works_too\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u4_a_failed_listing_is_an_error_and_is_not_remembered\nFAILED tests/mcp/test_plumbing_studio_url.py::test_u6_a_symlinked_project_path_still_matches\nFAILED tests/mcp/test_plumbing_studio_url.py::test_the_other_projects_writes_are_not_routed_to_the_studio\nFAILED tests/mcp/test_plumbing_studio_url.py::test_reads_of_changes_and_the_listing_of_changes_come_from_the_studio\n6 failed, 270 passed in 105.47s (0:01:45)\n\n--- probes ---\n  failed check: both calls are errors with `Studio answered 500` and `(project: b)`\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | FAILED: b via /p/beta (both sides realpath'd); the request went to /p/beta/api/model | FAIL\n    failed check: b via /p/beta (both sides realpath'd)\n    failed check: the request went to /p/beta/api/model\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.2094 s, max 0.2094 s | pass\nC29 | median <= 0.5 s | median 0.0006 s | pass\nprobes: 40/44 pass\n"
+   },
+   "verdict": "caught"
+  },
+  "control": {
+   "suite": {
+    "probe_exit": 0,
+    "probe_last_line": "probes: 44/44 pass",
+    "probes_failed": [],
+    "pytest_exit": 0,
+    "pytest_failed": [],
+    "pytest_summary": "276 passed in 106.75s (0:01:46)",
+    "seconds": 123.6,
+    "tail": "........................................................................ [ 26%]\n........................................................................ [ 52%]\n........................................................................ [ 78%]\n............................................................             [100%]\n276 passed in 106.75s (0:01:46)\n\n--- probes ---\nntical to old | holds | pass\nU1 | a, b via Studio; c local; 2 listings; writes local | holds | pass\nU2 | a via /api/model, b via /p/beta, c local | holds | pass\nU3 | a via Studio; b local (fallback) | holds | pass\nU4 | b: Studio answered 500 twice; 2 listings | holds | pass\nU5 | 0 listings; byte-identical to old | holds | pass\nU6 | b via /p/beta | holds | pass\nG01 | deny ws-p1 | deny ws-p1 | pass\nG02 | deny ws-p1 | deny ws-p1 | pass\nG03 | deny ws-p3 | deny ws-p3 | pass\nG04 | deny ws-p3 | deny ws-p3 | pass\nG05 | deny ws-p3 | deny ws-p3 | pass\nG06 | allow | allow | pass\nG07 | allow | allow | pass\nG08 | deny ws-p1 | deny ws-p1 | pass\nG09 | allow | allow | pass\nG10 | allow | allow | pass\nG11 | deny ws-p1 | deny ws-p1 | pass\nG12 | deny loop-p | deny loop-p | pass\nG13 | deny cap-p6 | deny cap-p6 | pass\nG14 | allow | allow | pass\nG15 | deny cap-p6 | deny cap-p6 | pass\nG16 | allow | allow | pass\nG17 | deny wide-p | deny wide-p | pass\nG18 | deny ws-p1 | deny ws-p1 | pass\nG19 | allow | allow | pass\nG20 | allow | allow | pass\nG21 | allow | allow | pass\nG22 | allow | allow | pass\nG23 | allow | allow | pass\nG24 | allow | allow | pass\nG25 | deny ws-p3 | deny ws-p3 | pass\nG26 | deny ws-p3 | deny ws-p3 | pass\nG27 | allow | allow | pass\nG28 | allow | allow | pass\nG29 | deny lattice-studio | deny lattice-studio | pass\nG30 | deny ws-p1 | deny ws-p1 | pass\nC16 | median <= 1.0 s, max <= 2.0 s | median 0.1060 s, max 0.1060 s | pass\nC29 | median <= 0.5 s | median 0.0007 s | pass\nprobes: 44/44 pass\n"
+   },
+   "verdict": "PASS (control)"
+  }
+ }
+}

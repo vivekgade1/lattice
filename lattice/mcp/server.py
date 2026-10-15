@@ -9,9 +9,13 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import threading
 import traceback
+import urllib.error
+import urllib.parse
+import urllib.request
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import IO, Any
@@ -173,6 +177,101 @@ class _RpcError(Exception):
         self.message = message
 
 
+LISTING_TIMEOUT = 10.0  # seconds, for GET <base>/api/projects
+
+
+def studio_base(url: str) -> str:
+    """The Studio's base URL: `url` without a trailing ``/`` and without a trailing
+    ``/p/<name>`` (chat sessions pass ``http://host/p/<name>``)."""
+    return re.sub(r"/p/[^/]+$", "", url.rstrip("/"))
+
+
+def studio_listing(base: str) -> list[Any] | None:
+    """``GET <base>/api/projects``: the hub's projects, or None when the Studio has no such
+    listing (404: a Studio without the hub API). Any other failure is a :class:`ToolError`."""
+    try:
+        with urllib.request.urlopen(  # noqa: S310 -- the owner's Studio URL
+            base + "/api/projects", timeout=LISTING_TIMEOUT
+        ) as r:
+            data = json.loads(r.read().decode() or "null")
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return None
+        try:
+            detail = json.loads(e.read().decode()).get("detail") or e.reason
+        except Exception:  # noqa: BLE001
+            detail = e.reason
+        raise ToolError(f"Studio answered {e.code}: {detail}") from None
+    except (urllib.error.URLError, OSError) as e:
+        raise ToolError(f"cannot reach Studio at {base}: {e}") from None
+    except ValueError:
+        raise ToolError(f"Studio answered 200: {base}/api/projects is not JSON") from None
+    if not isinstance(data, list):
+        raise ToolError(f"Studio answered 200: {base}/api/projects is not a list")
+    return data
+
+
+def studio_name_of(listing: Sequence[Any], root: Path) -> str | None:
+    """The name the Studio serves the project at `root` under: the first row whose real path
+    equals it (by path, never by name: the hub's names and this server's may differ)."""
+    want = os.path.realpath(root)
+    for row in listing:
+        if not isinstance(row, dict):
+            continue
+        name, where = row.get("name"), row.get("root")
+        if isinstance(name, str) and isinstance(where, str) and os.path.realpath(where) == want:
+            return name
+    return None
+
+
+class StudioReads:
+    """A non-first project the Studio serves: its READ methods (model, lint, change records)
+    come from ``<base>/p/<name>``; ask, new_change and check stay local, exactly as for a
+    project the Studio does not serve (a proposal is never routed into another project's
+    Studio queue by this server)."""
+
+    kind = "http"
+
+    def __init__(self, http: Any, local: Any) -> None:
+        self.http = http
+        self.local = local
+        self.root = http.root
+        self._own_changes: set[str] = set()  # ids new_change made here: the local ones
+
+    @property
+    def configured(self) -> bool:
+        return self.local.configured
+
+    def model(self) -> dict[str, Any]:
+        return self.http.model()
+
+    def lint(self) -> list[dict[str, Any]]:
+        return self.http.lint()
+
+    def get_change(self, cid: str) -> dict[str, Any]:
+        return (self.local if cid in self._own_changes else self.http).get_change(cid)
+
+    def ask(self, body: Mapping[str, Any]) -> dict[str, Any]:
+        return self.local.ask(body)
+
+    def new_change(self, body: Mapping[str, Any]) -> dict[str, Any]:
+        out = self.local.new_change(body)
+        if isinstance(out, Mapping) and isinstance(out.get("id"), str):
+            self._own_changes.add(out["id"])
+        return out
+
+    def check(self, layers: str | None, timeout: float) -> dict[str, Any]:
+        return self.local.check(layers, timeout)
+
+
+def _walk_up_manifest(start: Path) -> Path | None:
+    for d in (start, *start.parents):
+        cand = d / "lattice.workspace.toml"
+        if cand.is_file():
+            return cand
+    return None
+
+
 def serve(
     project: Path | Sequence[Path] | None = None,
     *,
@@ -185,7 +284,10 @@ def serve(
     """Serve the tools over stdio. `project`: one directory, several, or none (the launch
     directory, `launch` or the cwd, plus discovery: lattice/mcp/projects.py). `workspace`: a
     ``lattice.workspace.toml`` (default: ``$LATTICE_WORKSPACE``, else found walking up from the
-    launch directory). ``--studio-url`` proxies the first project only."""
+    launch directory, else, with a ``--project``, found walking up from the first project when
+    that manifest loads and declares it). ``--studio-url`` proxies the first project's tools to
+    that Studio; with several projects the others' READ tools go to the same Studio's
+    ``/p/<name>`` when it serves them (matched by path; see :class:`StudioReads`)."""
     from lattice import workspace as wsmod
     from lattice.mcp.projects import ProjectRouter, known_projects
 
@@ -198,10 +300,29 @@ def serve(
     here = (launch or Path.cwd()).resolve()
     ws_path = wsmod.find(start=here, explicit=workspace)
     ws, problems = wsmod.try_load(ws_path)
+    if ws_path is None and explicit:
+        # Nothing from the flag, the env or the launch directory: anchor at the project, so a
+        # host that launches elsewhere still finds the manifest that declares it.
+        near = _walk_up_manifest(explicit[0])
+        if near is not None:
+            found, found_problems = wsmod.try_load(near)
+            if found is None or any(p.code == "unreadable" for p in found_problems):
+                why = "it cannot be read: " + "; ".join(p.message for p in found_problems)
+            elif found.by_path(explicit[0]) is None:
+                why = f"it does not declare {explicit[0]}"
+            else:
+                ws_path, ws, problems = near, found, found_problems
+                why = ""
+            if why:
+                print(
+                    f"lattice mcp: workspace {near} (found from {explicit[0]}) not used: {why}",
+                    file=sys.stderr,
+                )
     for prob in problems:
         print(f"lattice mcp: workspace {ws_path}: {prob.severity}: {prob.message}", file=sys.stderr)
     known = known_projects(explicit, launch=here, workspace=ws)
     first = known[0].name
+    base = studio_base(studio_url) if studio_url else None
     # Protocol on the real stdout; every other write to fd 1 (the app under check, child
     # processes) goes to stderr.
     proto_fd = os.dup(1)
@@ -214,7 +335,18 @@ def serve(
             return HttpBackend(studio_url, p.root)
         # A directory without a spec still starts (tools say what is missing and upgrade
         # themselves once the spec exists), so a user-level plugin never shows a failed server.
-        return PendingBackend(p.root, model=model)
+        local = PendingBackend(p.root, model=model)
+        if base is None:
+            return local
+        # Another project behind --studio-url: when that Studio serves it (found by path), its
+        # reads come from the Studio. A failure to ask is a tool error and is not remembered.
+        listing = studio_listing(base)
+        name = studio_name_of(listing, p.root) if listing is not None else None
+        if name is None:
+            print(f"lattice mcp: Studio at {base} does not serve {p.root}: local", file=sys.stderr)
+            return local
+        http = HttpBackend(f"{base}/p/{urllib.parse.quote(name, safe='')}", p.root)
+        return StudioReads(http, local)
 
     router = ProjectRouter(
         known,

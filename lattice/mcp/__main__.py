@@ -26,21 +26,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         action="append",
         default=[],
         help="a project directory (repeatable; the first is the default project). None: the "
-        "launch directory, plus the projects Studio's discovery finds from it",
+        "launch directory, plus the projects Studio's discovery finds from it. When no workspace "
+        "manifest is found from the launch directory, the first manifest above the first project "
+        "is used if it declares that project",
     )
     sv.add_argument(
         "--workspace",
         default=None,
         help="a lattice.workspace.toml (or its directory); default: $LATTICE_WORKSPACE, else "
-        "the first one walking up from the launch directory",
+        "the first one walking up from the launch directory, else (with --project) the first "
+        "above the first project when it loads and declares that project",
     )
     sv.add_argument("--readonly", action="store_true", help="hide change_propose and check_run")
     sv.add_argument("--model", default=None, help="the LLM (default: studio.toml, else sonnet)")
     sv.add_argument(
         "--studio-url",
         default=None,
-        help="proxy the model, ask, change and check tools to a running Studio "
-        "(http://127.0.0.1:8765) so change sets appear in its UI, where the owner accepts them",
+        help="proxy the model, ask, change and check tools of the first project to a running "
+        "Studio (http://127.0.0.1:8765, or a hub's .../p/NAME) so change sets appear in its UI, "
+        "where the owner accepts them. With several projects, the others' READ tools (model, "
+        "rule, lint, code links, graph, status, change list/get) go to the same Studio's "
+        "/p/NAME when it serves them (matched by path); their change_propose, check_run and "
+        "spec_ask stay local",
     )
     sub.add_parser("guard", help="the PreToolUse hook (see lattice.mcp.guard)")
     ns = ap.parse_args(args)
