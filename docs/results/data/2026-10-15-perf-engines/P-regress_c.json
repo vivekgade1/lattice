@@ -1,0 +1,680 @@
+{
+ "id": "P-regress(c)",
+ "status": "RAN",
+ "title": "SQLite in-process, old vs new, 10x each",
+ "predicted": "1 distinct hash over 20; counts 2/2 and 4/8",
+ "observed": "1 distinct hash over 20 invocations (old a4ab4a1 and new); exit codes [0, 0]; counts 2/2 and 4/8 as predicted in 20/20 invocations",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "5eb5eb37114ec071",
+  "5eb5eb37114ec071",
+  "5eb5eb37114ec071",
+  "5eb5eb37114ec071",
+  "5eb5eb37114ec071",
+  "5eb5eb37114ec071",
+  "5eb5eb37114ec071",
+  "5eb5eb37114ec071",
+  "5eb5eb37114ec071",
+  "5eb5eb37114ec071"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 8.4,
+ "error": null,
+ "facts": {
+  "hash": {
+   "old": {
+    "version": 1,
+    "command": "measure",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [
+       {
+        "n": 2,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+         }
+        ]
+       },
+       {
+        "n": 6,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "n1",
+      "endpoint": "GET /items_n1",
+      "sizes": [
+       {
+        "n": 2,
+        "statements": [
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+         },
+         {
+          "count": 2,
+          "sql": "SELECT name FROM users WHERE id = ?"
+         }
+        ]
+       },
+       {
+        "n": 6,
+        "statements": [
+         8,
+         8,
+         8,
+         8,
+         8,
+         8,
+         8,
+         8,
+         8,
+         8
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+         },
+         {
+          "count": 6,
+          "sql": "SELECT name FROM users WHERE id = ?"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 1,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 1
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     }
+    ]
+   },
+   "new": {
+    "version": 1,
+    "command": "measure",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [
+       {
+        "n": 2,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+         }
+        ]
+       },
+       {
+        "n": 6,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "n1",
+      "endpoint": "GET /items_n1",
+      "sizes": [
+       {
+        "n": 2,
+        "statements": [
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+         },
+         {
+          "count": 2,
+          "sql": "SELECT name FROM users WHERE id = ?"
+         }
+        ]
+       },
+       {
+        "n": 6,
+        "statements": [
+         8,
+         8,
+         8,
+         8,
+         8,
+         8,
+         8,
+         8,
+         8,
+         8
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+         },
+         {
+          "count": 6,
+          "sql": "SELECT name FROM users WHERE id = ?"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 1,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 1
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     }
+    ]
+   },
+   "rc": [
+    0,
+    0
+   ]
+  },
+  "same": true,
+  "rc": [
+   0,
+   0
+  ],
+  "hashes": [
+   "6e39dbfe94aa820c",
+   "6e39dbfe94aa820c"
+  ],
+  "counts": {
+   "old": {
+    "items": [
+     [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+     ],
+     [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+     ]
+    ],
+    "n1": [
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     [
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8
+     ]
+    ]
+   },
+   "new": {
+    "items": [
+     [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+     ],
+     [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+     ]
+    ],
+    "n1": [
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     [
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8
+     ]
+    ]
+   }
+  },
+  "raw": {
+   "version": 1,
+   "command": "measure",
+   "project": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/scF/p-regress-c",
+   "budget_file": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/scF/p-regress-c/perf.budget.json",
+   "verdict": "pass",
+   "reports": [
+    {
+     "budget_id": "items",
+     "endpoint": "GET /items",
+     "sizes": [
+      {
+       "n": 2,
+       "statements": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+       ],
+       "latency_ms": {
+        "min": 0.954,
+        "median": 1.038,
+        "max": 1.198
+       },
+       "shapes": [
+        {
+         "count": 1,
+         "sql": "SELECT id FROM users WHERE token = ?"
+        },
+        {
+         "count": 1,
+         "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+        }
+       ]
+      },
+      {
+       "n": 6,
+       "statements": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+       ],
+       "latency_ms": {
+        "min": 0.748,
+        "median": 0.909,
+        "max": 1.08
+       },
+       "shapes": [
+        {
+         "count": 1,
+         "sql": "SELECT id FROM users WHERE token = ?"
+        },
+        {
+         "count": 1,
+         "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+        }
+       ]
+      }
+     ],
+     "fit": {
+      "constant": 2,
+      "per_item": 0,
+      "exact": true
+     },
+     "budget": {
+      "queries": {
+       "constant": 2,
+       "per_item": 0
+      },
+      "latency_ms": null
+     },
+     "verdict": "pass",
+     "delta": {
+      "constant": 0,
+      "per_item": 0
+     },
+     "notes": [
+      "database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)",
+      "10 run(s) per size, one fresh app and database per size"
+     ]
+    },
+    {
+     "budget_id": "n1",
+     "endpoint": "GET /items_n1",
+     "sizes": [
+      {
+       "n": 2,
+       "statements": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+       ],
+       "latency_ms": {
+        "min": 0.723,
+        "median": 0.887,
+        "max": 1.16
+       },
+       "shapes": [
+        {
+         "count": 1,
+         "sql": "SELECT id FROM users WHERE token = ?"
+        },
+        {
+         "count": 1,
+         "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+        },
+        {
+         "count": 2,
+         "sql": "SELECT name FROM users WHERE id = ?"
+        }
+       ]
+      },
+      {
+       "n": 6,
+       "statements": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+       ],
+       "latency_ms": {
+        "min": 0.835,
+        "median": 1.03,
+        "max": 1.161
+       },
+       "shapes": [
+        {
+         "count": 1,
+         "sql": "SELECT id FROM users WHERE token = ?"
+        },
+        {
+         "count": 1,
+         "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id"
+        },
+        {
+         "count": 6,
+         "sql": "SELECT name FROM users WHERE id = ?"
+        }
+       ]
+      }
+     ],
+     "fit": {
+      "constant": 2,
+      "per_item": 1,
+      "exact": true
+     },
+     "budget": {
+      "queries": {
+       "constant": 2,
+       "per_item": 1
+      },
+      "latency_ms": null
+     },
+     "verdict": "pass",
+     "delta": {
+      "constant": 0,
+      "per_item": 0
+     },
+     "notes": [
+      "database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)",
+      "10 run(s) per size, one fresh app and database per size"
+     ]
+    }
+   ]
+  },
+  "stderr": [
+   "",
+   ""
+  ]
+ }
+}

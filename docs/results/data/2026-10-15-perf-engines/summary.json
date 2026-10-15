@@ -1,0 +1,309 @@
+{
+ "environment": {
+  "docker": false,
+  "psycopg": false,
+  "clickhouse_connect": false,
+  "pymysql": false,
+  "streak": true
+ },
+ "runs": 10,
+ "measure_runs": 10,
+ "probes": [
+  {
+   "id": "P-regress(a)",
+   "status": "RAN",
+   "predicted": "0 differences: budget.py and __main__.py byte-identical, 10 definitions AST-identical",
+   "observed": "0 differences in 12 compared items (2 files byte-identical, 10 definitions AST-identical); changed elsewhere: __all__, _databases, measure, measure_size; new: SqlCounter, Unmeasured, _BIND, bind",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 0.4
+  },
+  {
+   "id": "P-regress(b)",
+   "status": "RAN",
+   "predicted": "0 changed test definitions, 68 passed, test_engines.py +1/-1 line",
+   "observed": "0 changed definitions of 64 in 4 files; pytest: 68 passed in 1.19s; tests/spec/test_engines.py: +1 -1 line(s)",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 11.1
+  },
+  {
+   "id": "P-regress(c)",
+   "status": "RAN",
+   "predicted": "1 distinct hash over 20; counts 2/2 and 4/8",
+   "observed": "1 distinct hash over 20 invocations (old a4ab4a1 and new); exit codes [0, 0]; counts 2/2 and 4/8 as predicted in 20/20 invocations",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 8.4
+  },
+  {
+   "id": "P-regress(d)",
+   "status": "RAN",
+   "predicted": "same unmeasured note old and new, exit 2",
+   "observed": "exit [2, 2]; the unmeasured note is the same old and new (True); 1 distinct hash over 20",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 5.3
+  },
+  {
+   "id": "P-regress(e)",
+   "status": "NOT RUN",
+   "predicted": "1 distinct hash over 20, exit 0 x20, counts 11/31 and 4/4, fits 6+1N and 4+0N exact",
+   "observed": "not run: needs a running Docker daemon, pymysql in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, pymysql in the probe python"
+  },
+  {
+   "id": "P-regress(f)",
+   "status": "RAN",
+   "predicted": "3/3 engines equal the a4ab4a1 argv",
+   "observed": "3/3 engines: old a4ab4a1 argv == new argv == literal (postgres=True, mysql=True, clickhouse=True)",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 3.1
+  },
+  {
+   "id": "U-desc",
+   "status": "RAN",
+   "predicted": "14/14 descriptor facts, round trips",
+   "observed": "14/14 descriptor facts as in decisions 4, 5 and 2",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 0.0
+  },
+  {
+   "id": "U-noperf",
+   "status": "RAN",
+   "predicted": "exit 2, the decision-3 note, 0 subprocess",
+   "observed": "exit 2; notes [['unmeasured: statement counting on MariaDB is not supported (its engine descriptor has no [perf] section)']]; 0 subprocess (no server started)",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 4.5
+  },
+  {
+   "id": "P-trust(a)",
+   "status": "RAN",
+   "predicted": "6/6 refused with the exact message",
+   "observed": "6/6 refused with the exact message",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 0.0
+  },
+  {
+   "id": "P-pg",
+   "status": "NOT RUN",
+   "predicted": "counts 2/2, 5/9, 5/9, 0/0 in every run; fits 2+0N, 2+1N, 2+1N, 0+0N exact; verdicts pass, fail, pass, pass; exits check 1, measure 0; 1 distinct hash; 0 containers left",
+   "observed": "not run: needs a running Docker daemon, psycopg in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, psycopg in the probe python"
+  },
+  {
+   "id": "P-pg/fake",
+   "status": "RAN",
+   "predicted": "counts 2/2, 5/9, 5/9, 0/0 in every run; fits 2+0N, 2+1N, 2+1N, 0+0N exact; verdicts pass, fail, pass, pass; exits check 1, measure 0; 1 distinct hash; 0 containers left",
+   "observed": "800/800 runs as predicted; exits check 1 / measure 0 in 10/10; 1 distinct canonical hash over 10; 0 container(s) left",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 8.9
+  },
+  {
+   "id": "P-ch",
+   "status": "NOT RUN",
+   "predicted": "counts 2/2, 5/9, 5/9, 0/0 in every run; fits 2+0N, 2+1N, 2+1N, 0+0N exact; verdicts pass, fail, pass, pass; exits check 1, measure 0; 1 distinct hash; 0 containers left",
+   "observed": "not run: needs a running Docker daemon, clickhouse-connect in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, clickhouse-connect in the probe python"
+  },
+  {
+   "id": "P-ch/fake",
+   "status": "RAN",
+   "predicted": "counts 2/2, 5/9, 5/9, 0/0 in every run; fits 2+0N, 2+1N, 2+1N, 0+0N exact; verdicts pass, fail, pass, pass; exits check 1, measure 0; 1 distinct hash; 0 containers left",
+   "observed": "800/800 runs as predicted; exits check 1 / measure 0 in 10/10; 1 distinct canonical hash over 10; 0 container(s) left",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 9.5
+  },
+  {
+   "id": "P-excl(a)",
+   "status": "NOT RUN",
+   "predicted": "nodb = 0 in every run on both engines",
+   "observed": "not run: needs a running Docker daemon, psycopg in the probe python, clickhouse-connect in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, psycopg in the probe python, clickhouse-connect in the probe python"
+  },
+  {
+   "id": "P-excl(a)/fake",
+   "status": "RAN",
+   "predicted": "nodb = 0 in every run",
+   "observed": "nodb = 0 in 400/400 runs",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 7.5
+  },
+  {
+   "id": "P-excl(b)",
+   "status": "NOT RUN",
+   "predicted": "GET /items = 2 in every run on both engines",
+   "observed": "not run: needs a running Docker daemon, psycopg in the probe python, clickhouse-connect in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, psycopg in the probe python, clickhouse-connect in the probe python"
+  },
+  {
+   "id": "P-excl(b)/fake",
+   "status": "RAN",
+   "predicted": "GET /items = 2 in every run",
+   "observed": "GET /items = 2 in 400/400 runs (5 + 5 noise statements per window)",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 8.9
+  },
+  {
+   "id": "P-excl(c)",
+   "status": "NOT RUN",
+   "predicted": ">= 1 row for the admin database on both engines",
+   "observed": "not run: needs a running Docker daemon, psycopg in the probe python, clickhouse-connect in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, psycopg in the probe python, clickhouse-connect in the probe python"
+  },
+  {
+   "id": "P-down(a)",
+   "status": "RAN",
+   "predicted": "exit 2, stderr 'needs Docker', 10 runs identical",
+   "observed": "exit [2, 2], stderr contains 'needs Docker' in 20/20; no docker CLI on PATH, so 0 containers can have started",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 6.0
+  },
+  {
+   "id": "P-down(b)",
+   "status": "NOT RUN",
+   "predicted": "exit 2 within 40 s, stderr 'did not answer within 30s'",
+   "observed": "not run: needs psycopg in the probe python",
+   "pass": null,
+   "reason": "needs psycopg in the probe python"
+  },
+  {
+   "id": "P-down(c)",
+   "status": "NOT RUN",
+   "predicted": "measure and check exit 2, all unmeasured with 'not available on this server' and pg_stat_statements, 0 pg_extension rows",
+   "observed": "not run: needs a running Docker daemon, psycopg in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, psycopg in the probe python"
+  },
+  {
+   "id": "P-down(c)/fake",
+   "status": "RAN",
+   "predicted": "measure and check exit 2, all unmeasured with the note, no CREATE EXTENSION sent",
+   "observed": "measure exit 2, check exit 2, verdicts ['unmeasured'], pg_extension rows afterwards 0",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 6.0
+  },
+  {
+   "id": "P-down(d)",
+   "status": "NOT RUN",
+   "predicted": "exit 2, 'lattice perf: error:', 0 containers left",
+   "observed": "not run: needs a running Docker daemon, psycopg in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, psycopg in the probe python"
+  },
+  {
+   "id": "P-down(d)/fake",
+   "status": "RAN",
+   "predicted": "exit 2, 'lattice perf: error:', the container removed",
+   "observed": "exit 2; stderr 'lattice perf: error: DatabaseError: cannot connect to postgresql://lattice:***@1'; containers left 0",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 3.5
+  },
+  {
+   "id": "P-down(e)",
+   "status": "NOT RUN",
+   "predicted": "every budget unmeasured with the decision-8 note, exit 2, identical",
+   "observed": "not run: needs a running Docker daemon, psycopg in the probe python, clickhouse-connect in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, psycopg in the probe python, clickhouse-connect in the probe python"
+  },
+  {
+   "id": "P-down(e)/fake",
+   "status": "RAN",
+   "predicted": "every budget unmeasured with the decision-8 note, exit 2, identical",
+   "observed": "every budget unmeasured with the liveness note on both engines (exit [2, 2]); 1 distinct hash over 10",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 7.2
+  },
+  {
+   "id": "P-trust(b)-pg",
+   "status": "NOT RUN",
+   "predicted": "verbs within the set, no exec, 1 run, image and args as the descriptor",
+   "observed": "not run: needs a running Docker daemon, psycopg in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, psycopg in the probe python"
+  },
+  {
+   "id": "P-trust(b)-pg/fake",
+   "status": "RAN",
+   "predicted": "verbs within the set, no exec, 1 run, image and args as the descriptor",
+   "observed": "verbs ['port', 'rm', 'run'] (no exec), 1 run, image postgres:16-alpine, args after image == descriptor; via the fake docker's recorded argv",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 3.5
+  },
+  {
+   "id": "P-trust(c)-pg",
+   "status": "NOT RUN",
+   "predicted": "178 statements, all descriptor statements, every {db} a clone",
+   "observed": "not run: needs a running Docker daemon, psycopg in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, psycopg in the probe python"
+  },
+  {
+   "id": "P-trust(c)-pg/fake",
+   "status": "RAN",
+   "predicted": "178 statements, all descriptor statements, every {db} a clone",
+   "observed": "178 statements sent (predicted 178 = setup 1 + check 1 + 88 windows x 2); every one a descriptor statement; every {db} a clone",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 4.3
+  },
+  {
+   "id": "P-trust(b)-ch",
+   "status": "NOT RUN",
+   "predicted": "verbs within the set, no exec, 1 run, image and args as the descriptor",
+   "observed": "not run: needs a running Docker daemon, clickhouse-connect in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, clickhouse-connect in the probe python"
+  },
+  {
+   "id": "P-trust(b)-ch/fake",
+   "status": "RAN",
+   "predicted": "verbs within the set, no exec, 1 run, image and args as the descriptor",
+   "observed": "verbs ['port', 'rm', 'run'] (no exec), 1 run, image clickhouse/clickhouse-server:24.8-alpine, args after image == descriptor; via the fake docker's recorded argv",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 3.4
+  },
+  {
+   "id": "P-trust(c)-ch",
+   "status": "NOT RUN",
+   "predicted": "266 statements, all descriptor statements, every {db} a clone",
+   "observed": "not run: needs a running Docker daemon, clickhouse-connect in the probe python",
+   "pass": null,
+   "reason": "needs a running Docker daemon, clickhouse-connect in the probe python"
+  },
+  {
+   "id": "P-trust(c)-ch/fake",
+   "status": "RAN",
+   "predicted": "266 statements, all descriptor statements, every {db} a clone",
+   "observed": "266 statements sent (predicted 266 = setup 0 + check 2 + 88 windows x 3); every one a descriptor statement; every {db} a clone",
+   "pass": true,
+   "distinct_hashes": 1,
+   "seconds": 4.6
+  }
+ ],
+ "passed": 20,
+ "failed": 0,
+ "not_run": 14,
+ "total": 34
+}

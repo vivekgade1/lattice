@@ -26,8 +26,17 @@ free port, or FastAPI's in-process transport), and callers log in through the ha
   opened on the measured database file while the app runs gets a trace callback
   (``sqlite3.connect`` is wrapped for the duration); every traced statement is counted,
   transaction control included (``BEGIN``, ``COMMIT``).
+* Any other server engine whose descriptor has a ``[perf]`` table with ``counter = "sql"``
+  (Postgres: ``pg_stat_statements``; ClickHouse: ``system.query_log``): the engine's own
+  statement statistics, read with the descriptor's SQL (:class:`SqlCounter`). The tool's own
+  statements are never counted because every statement of the descriptor is bound to the
+  measured database (its ``read`` must use ``{db}``). One window per request (``begin``, the
+  request, ``flush``, ``read``) and one over the seed phase, which proves the counter is alive:
+  an app whose seed requests left no statement in the measured database is ``unmeasured``.
+  Process apps are counted too (the server counts, not the app's process).
 * Not supported (the report says ``unmeasured``): a process app on SQLite (its SQLite
-  library is in another process), Postgres and ClickHouse.
+  library is in another process), an engine whose descriptor has no ``[perf]`` table, and
+  a server whose statistics are not available (a ``setup`` or ``check`` statement failed).
 
 **Latency** is the client-side wall time of the request (send to body read), per run.
 """
@@ -57,6 +66,12 @@ COUNTED_MYSQL = ("Query", "Execute")
 
 class MeasureError(RuntimeError):
     """The measurement could not run (the CLI's exit code 2)."""
+
+
+class Unmeasured(Exception):  # noqa: N818 -- a verdict with a reason, not an error
+    """Statements cannot be counted here: a report with the ``unmeasured`` verdict and this
+    note (exit 2 with the report printed), not a failed run. Raised by :class:`SqlCounter`
+    (its ``setup``/``check`` failed; the liveness guard), caught by :func:`measure`."""
 
 
 # ---- the harness -----------------------------------------------------------------------
@@ -222,6 +237,106 @@ class SqliteCounter:
             self._orig = None
 
 
+_BIND = re.compile(r"\{(\w+)\}")
+
+
+def bind(text: str, placeholder: str, values: dict[str, Any]) -> tuple[str, list[Any]]:
+    """A descriptor statement as ``(sql, params)``: every ``{name}`` becomes the engine's
+    ``placeholder`` and its value is passed as a parameter, in order of occurrence (never
+    spliced into the SQL). A literal ``%`` is written ``%%``: the driver reads it so when
+    there are parameters, and it is read here when there are none."""
+    names = _BIND.findall(text)
+    sql = _BIND.sub(lambda _m: placeholder, text)
+    if not names and placeholder == "%s":
+        sql = sql.replace("%%", "%")
+    return sql, [values[n] for n in names]
+
+
+class SqlCounter:
+    """Statements per request from the engine's own statistics, read with the SQL of the
+    descriptor's ``[perf]`` table (``counter = "sql"``; see the module docstring).
+
+    ``start(owned)`` opens the tool's connection (the server's admin database), runs
+    ``setup`` only on a container the tool started, then ``check`` (a failure is
+    :class:`Unmeasured`); ``watch`` keeps the measured database's name; a window is
+    ``begin()`` (``begin`` statements, then ``mark``) and ``end()`` (``flush`` statements,
+    then ``read``: each row's statement ``calls`` times, in row order); ``liveness`` is the
+    seed phase's guard."""
+
+    def __init__(self, server: Any, engine: Any) -> None:
+        self.server = server
+        self.engine = engine
+        self.perf = engine.perf
+        self.conn: Any = None
+        self.db = ""
+        self.mark: Any = None
+        self.liveness_checked = 0
+        self.notes: list[str] = []
+
+    def _bind(self, text: str, **values: Any) -> tuple[str, list[Any]]:
+        return bind(text, self.engine.sql.placeholder, values)
+
+    def _run(self, text: str, **values: Any) -> None:
+        sql, params = self._bind(text, **values)
+        self.conn.execute(sql, params)
+
+    def start(self, owned: bool) -> None:
+        from lattice.spec.db import DatabaseError, open_db
+
+        self.conn = open_db(self.server.url)
+        for text in [*(self.perf.setup if owned else ()), *self.perf.check]:
+            try:
+                self._run(text)
+            except DatabaseError as err:
+                lines = str(err).strip().splitlines()
+                raise Unmeasured(
+                    f"unmeasured: statement counting on {self.engine.title} is not available "
+                    f"on this server: {text!r} failed: {lines[0] if lines else 'no message'}"
+                ) from err
+        if not owned:
+            self.notes.append("counting on a given server: setup statements were not run")
+
+    def watch(self, url: Any) -> None:
+        from lattice.spec.db import database_name
+
+        self.db = str(database_name(str(url)))
+
+    def begin(self) -> None:
+        for text in self.perf.begin:
+            self._run(text, db=self.db)
+        if self.perf.mark:
+            sql, params = self._bind(self.perf.mark)
+            self.mark = self.conn.scalar(sql, params)
+
+    def end(self) -> list[str]:
+        for text in self.perf.flush:
+            self._run(text, db=self.db)
+        sql, params = self._bind(self.perf.read, db=self.db, mark=self.mark)
+        out: list[str] = []
+        for statement, calls in self.conn.query(sql, params):
+            text = statement.decode(errors="replace") if isinstance(statement, bytes) else statement
+            out.extend([str(text)] * int(calls))
+        return out
+
+    def liveness(self, n: int, requests: int) -> None:
+        """After the seed phase's window: no statement at all means the counter (or the
+        app's use of the database it was given) is dead, so nothing may pass on it."""
+        if not self.end():
+            raise Unmeasured(
+                f"unmeasured: no statement of the app was seen in database {self.db} while "
+                f"seeding (N={n}, {requests} seed requests); the app may not use the database "
+                "it was given, or its statements are not logged"
+            )
+        self.liveness_checked += 1
+
+    def stop(self) -> None:
+        if self.conn is None:
+            return
+        with contextlib.suppress(Exception):
+            self.conn.close()
+        self.conn = None
+
+
 _LITERAL = re.compile(r"'(?:[^'\\]|\\.|'')*'|\"(?:[^\"\\]|\\.)*\"|\b\d+(?:\.\d+)?\b")
 
 
@@ -264,14 +379,17 @@ def prepare(command: str, project: Path) -> None:
 @contextlib.contextmanager
 def _databases(h: Harness, tmp: Path) -> Iterator[tuple[Callable[..., Any], Any, list[str]]]:
     """(make_db, counter or None, notes) for the harness's database; cleans up after."""
+    from lattice.spec import engines
     from lattice.spec.check import as_db_factory
 
     notes: list[str] = []
-    if h.database == "mysql":
+    engine = None if h.database == "sqlite" else engines.find(h.database)
+    perf = None if engine is None else engine.perf
+    if engine is not None and perf is not None and perf.counter == "general_log":
         from lattice.spec.dbserver import DbServerError, ServerDatabases, server_for
 
         try:
-            server, owned = server_for("mysql", h.database_url, name_prefix=CONTAINER_PREFIX)
+            server, owned = server_for(engine.name, h.database_url, name_prefix=CONTAINER_PREFIX)
         except DbServerError as err:
             raise MeasureError(str(err)) from err
         dbs = ServerDatabases(server, h.db_factory)
@@ -285,6 +403,34 @@ def _databases(h: Harness, tmp: Path) -> Iterator[tuple[Callable[..., Any], Any,
             counter.stop()
             dbs.close()
             server.stop()
+        return
+    if engine is not None and perf is not None:  # counter = "sql"
+        from lattice.spec.dbserver import DbServerError, ServerDatabases, server_for
+
+        try:
+            server, owned = server_for(engine.name, h.database_url, name_prefix=CONTAINER_PREFIX,
+                                       extra_args=perf.server_args)  # fmt: skip
+        except DbServerError as err:
+            raise MeasureError(str(err)) from err
+        dbs = ServerDatabases(server, h.db_factory)
+        sql_counter = SqlCounter(server, engine)
+        try:
+            try:
+                sql_counter.start(owned)
+            except Unmeasured as err:
+                yield dbs, None, [str(err)]
+                return
+            notes.append(f"database: {server.describe()}; statements from {perf.source}")
+            yield dbs, sql_counter, notes + sql_counter.notes
+        finally:
+            sql_counter.stop()
+            dbs.close()
+            server.stop()
+        return
+    if engine is not None:  # a server engine whose descriptor has no [perf] table
+        yield (as_db_factory(h.db_factory), None,
+               [f"unmeasured: statement counting on {engine.title} is not supported (its "
+                "engine descriptor has no [perf] section)"])  # fmt: skip
         return
     if h.database == "sqlite":
         make = as_db_factory(h.db_factory)
@@ -335,7 +481,7 @@ def measure_size(
     result = SizeResult(n)
     db = make_db("seed", tmp / f"{budget.id}-{n}.db")
     try:
-        if isinstance(counter, SqliteCounter):
+        if isinstance(counter, (SqliteCounter, SqlCounter)):
             counter.watch(db)
         app = h.app_factory(db)
         try:
@@ -352,6 +498,10 @@ def measure_size(
                             raise MeasureError(f"cannot log in as {user!r}: {err}") from err
                     return dict(rt.auth.present(client, tokens[user]))
 
+                seeds = sum(step.times(n) for step in budget.steps)
+                guard = isinstance(counter, SqlCounter) and seeds > 0
+                if guard:
+                    counter.begin()  # one window over the seed phase (login included)
                 for step in budget.steps:
                     for i in range(1, step.times(n) + 1):
                         new = lambda: str(uuid.uuid4())  # noqa: E731
@@ -363,6 +513,8 @@ def measure_size(
                                 f"budget {budget.id!r} N={n}: seed step {step.method} {path} "
                                 f"#{i} answered {r.status_code}: {r.text[:300]}"
                             )
+                if guard:
+                    counter.liveness(n, seeds)
                 h_req = headers(budget.user)
                 for run in range(runs):
                     counter.begin()
@@ -412,13 +564,27 @@ def measure(
                 reports.append(r)
                 continue
             results = []
-            for n in ns:
-                results.append(measure_size(b, n, h, make_db, counter, Path(d), runs, want_shapes))
+            checked = getattr(counter, "liveness_checked", 0)  # SqlCounter's guard
+            try:
+                for n in ns:
+                    results.append(
+                        measure_size(b, n, h, make_db, counter, Path(d), runs, want_shapes)
+                    )
+            except Unmeasured as err:  # the liveness guard: no size of this budget counts
+                reports.append(Report(b, [], notes=[*notes, str(err)]))
+                continue
+            after = []
+            if isinstance(counter, SqlCounter) and counter.liveness_checked == checked:
+                after.append("the counter's liveness was not checked (no seed request)")
             reports.append(
                 judge(
                     b,
                     results,
-                    notes=[*notes, f"{runs} run(s) per size, one fresh app and database per size"],
+                    notes=[
+                        *notes,
+                        f"{runs} run(s) per size, one fresh app and database per size",
+                        *after,
+                    ],
                 )
             )
     return reports
@@ -429,8 +595,11 @@ __all__ = [
     "Harness",
     "MeasureError",
     "MysqlCounter",
+    "SqlCounter",
     "SqliteCounter",
+    "Unmeasured",
     "app_statements",
+    "bind",
     "harness_from_project",
     "measure",
     "measure_size",

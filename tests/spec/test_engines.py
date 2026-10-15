@@ -481,7 +481,7 @@ def _with(**changes):
             {"colour": "red"},
             "E: unknown field 'colour' (known: name, title, aliases, url_schemes, "
             "url_template, default_port, adapter, requires, clone, drivers, sql, capabilities, "
-            "server)",
+            "server, perf)",
         ),
         (
             {"name": "Bad Name"},

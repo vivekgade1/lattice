@@ -57,7 +57,7 @@ import shutil
 import subprocess
 import threading
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -169,9 +169,11 @@ def start_container(
     image: str | None = None,
     timeout: float = START_TIMEOUT,
     name_prefix: str = NAME_PREFIX,
+    extra_args: Sequence[str] = (),
 ) -> DbServer:
     """A new throwaway server of ``dialect`` (see the module docstring); its name starts
-    ``name_prefix`` (``lattice-``; the perf run uses ``lattice-perf-``)."""
+    ``name_prefix`` (``lattice-``; the perf run uses ``lattice-perf-``). ``extra_args``
+    follow the descriptor's ``[server] args`` (a perf run's ``[perf] server_args``)."""
     if _engines.REGISTRY.entry(dialect) is None:
         raise DbServerError(f"{dialect!r} is not a server dialect")
     engine = _engines.engine(dialect)
@@ -190,7 +192,8 @@ def start_container(
     if re.fullmatch(r"[A-Za-z0-9._-]{1,128}", owner):  # who to clean up after (Studio's gates)
         labels += ["--label", f"lattice.owner={owner}"]
     cmd = ["run", "-d", "--name", name, *labels,
-           "-p", f"127.0.0.1::{cport}", *opts, image or engine.server.image, *args]  # fmt: skip
+           "-p", f"127.0.0.1::{cport}", *opts, image or engine.server.image, *args,
+           *extra_args]  # fmt: skip
     with _LIVE_LOCK:
         _LIVE.add(name)
         _STARTED.append(name)
@@ -369,9 +372,7 @@ class DbServer:
                         )
                     ]
                     names = ", ".join(f"`{c}`" for c in cols)
-                    db.execute(
-                        f"INSERT INTO {dst}.`{t}` ({names}) SELECT {names} FROM {src}.`{t}`"
-                    )
+                    db.execute(f"INSERT INTO {dst}.`{t}` ({names}) SELECT {names} FROM {src}.`{t}`")
                 for v in views:
                     ddl = db.query(f"SHOW CREATE VIEW {src}.`{v}`")[0][1]
                     db.execute(ddl.replace(f"{src}.", f"{dst}."))
@@ -433,10 +434,15 @@ _BUILTIN_CLONES: dict[str, Callable[[DbServer, str, str], None]] = {
 
 
 def server_for(
-    dialect: str, url: str | None = None, name_prefix: str = NAME_PREFIX
+    dialect: str,
+    url: str | None = None,
+    name_prefix: str = NAME_PREFIX,
+    extra_args: Sequence[str] = (),
 ) -> tuple[DbServer, bool]:
     """The server of ``dialect`` (see the module docstring) and whether the check owns it
-    (a container it started, named ``name_prefix...``, removed when the check ends)."""
+    (a container it started, named ``name_prefix...``, removed when the check ends).
+    ``extra_args`` apply to a started container only (a given server is never
+    reconfigured)."""
     given = url or os.environ.get(f"LATTICE_{dialect.upper()}_URL")
     if given:
         found = dialect_of(given)
@@ -445,7 +451,7 @@ def server_for(
         server = DbServer(dialect, given)
         server.wait_ready(30)
         return server, False
-    return start_container(dialect, name_prefix=name_prefix), True
+    return start_container(dialect, name_prefix=name_prefix, extra_args=extra_args), True
 
 
 # ---- the per-scenario databases ------------------------------------------------------------

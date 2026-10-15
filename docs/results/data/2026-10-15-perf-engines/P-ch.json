@@ -1,0 +1,9 @@
+{
+ "id": "P-ch",
+ "status": "NOT RUN",
+ "title": "clickhouse counted exactly (in-process and process app)",
+ "predicted": "counts 2/2, 5/9, 5/9, 0/0 in every run; fits 2+0N, 2+1N, 2+1N, 0+0N exact; verdicts pass, fail, pass, pass; exits check 1, measure 0; 1 distinct hash; 0 containers left",
+ "observed": "not run: needs a running Docker daemon, clickhouse-connect in the probe python",
+ "pass": null,
+ "reason": "needs a running Docker daemon, clickhouse-connect in the probe python"
+}

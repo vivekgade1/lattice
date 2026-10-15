@@ -1,0 +1,50 @@
+{
+ "id": "P-trust(a)",
+ "status": "RAN",
+ "title": "[perf] cannot name code or docker run options",
+ "predicted": "6/6 refused with the exact message",
+ "observed": "6/6 refused with the exact message",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "632740d99f101655",
+  "632740d99f101655",
+  "632740d99f101655",
+  "632740d99f101655",
+  "632740d99f101655",
+  "632740d99f101655",
+  "632740d99f101655",
+  "632740d99f101655",
+  "632740d99f101655",
+  "632740d99f101655"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 0.0,
+ "error": null,
+ "facts": {
+  "hash": {
+   "counter = evil:Code": "E: perf.counter: must be \"general_log\" or \"sql\", not 'evil:Code'",
+   "[perf] docker_args": "E: [perf] unknown field 'docker_args' (known: counter, source, server_args, setup, check, begin, mark, flush, read)",
+   "read without {db}": "E: perf.read: must use {db} (the measured database; the tool's own statements are excluded by it)",
+   "setup with {db}": "E: perf.setup: unknown placeholder {db} (known: none)",
+   "general_log with read": "E: perf.read: only for counter = \"sql\"",
+   "{mark} without mark": "E: perf.read: {mark} needs perf.mark"
+  },
+  "got": {
+   "counter = evil:Code": "E: perf.counter: must be \"general_log\" or \"sql\", not 'evil:Code'",
+   "[perf] docker_args": "E: [perf] unknown field 'docker_args' (known: counter, source, server_args, setup, check, begin, mark, flush, read)",
+   "read without {db}": "E: perf.read: must use {db} (the measured database; the tool's own statements are excluded by it)",
+   "setup with {db}": "E: perf.setup: unknown placeholder {db} (known: none)",
+   "general_log with read": "E: perf.read: only for counter = \"sql\"",
+   "{mark} without mark": "E: perf.read: {mark} needs perf.mark"
+  },
+  "want": {
+   "counter = evil:Code": "E: perf.counter: must be \"general_log\" or \"sql\", not 'evil:Code'",
+   "[perf] docker_args": "E: [perf] unknown field 'docker_args' (known: counter, source, server_args, setup, check, begin, mark, flush, read)",
+   "read without {db}": "E: perf.read: must use {db} (the measured database; the tool's own statements are excluded by it)",
+   "setup with {db}": "E: perf.setup: unknown placeholder {db} (known: none)",
+   "general_log with read": "E: perf.read: only for counter = \"sql\"",
+   "{mark} without mark": "E: perf.read: {mark} needs perf.mark"
+  }
+ }
+}

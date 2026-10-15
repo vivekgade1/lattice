@@ -1,0 +1,9 @@
+{
+ "id": "P-down(c)",
+ "status": "NOT RUN",
+ "title": "a given Postgres without pgss is unmeasured, no setup",
+ "predicted": "measure and check exit 2, all unmeasured with 'not available on this server' and pg_stat_statements, 0 pg_extension rows",
+ "observed": "not run: needs a running Docker daemon, psycopg in the probe python",
+ "pass": null,
+ "reason": "needs a running Docker daemon, psycopg in the probe python"
+}

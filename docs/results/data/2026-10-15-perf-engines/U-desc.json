@@ -1,0 +1,134 @@
+{
+ "id": "U-desc",
+ "status": "RAN",
+ "title": "built-in descriptors carry the pre-registered [perf]",
+ "predicted": "14/14 descriptor facts, round trips",
+ "observed": "14/14 descriptor facts as in decisions 4, 5 and 2",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "a6eca5a28f8d0a57",
+  "a6eca5a28f8d0a57",
+  "a6eca5a28f8d0a57",
+  "a6eca5a28f8d0a57",
+  "a6eca5a28f8d0a57",
+  "a6eca5a28f8d0a57",
+  "a6eca5a28f8d0a57",
+  "a6eca5a28f8d0a57",
+  "a6eca5a28f8d0a57",
+  "a6eca5a28f8d0a57"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 0.0,
+ "error": null,
+ "facts": {
+  "hash": {
+   "postgres": {
+    "perf": {
+     "counter": "sql",
+     "source": "pg_stat_statements (top-level statement executions in the measured database)",
+     "server_args": [
+      "-c",
+      "shared_preload_libraries=pg_stat_statements",
+      "-c",
+      "pg_stat_statements.track=top",
+      "-c",
+      "pg_stat_statements.track_utility=on"
+     ],
+     "setup": [
+      "CREATE EXTENSION IF NOT EXISTS pg_stat_statements"
+     ],
+     "check": [
+      "SELECT count(*) FROM pg_stat_statements"
+     ],
+     "begin": [
+      "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = {db}), 0::bigint)"
+     ],
+     "mark": "",
+     "flush": [],
+     "read": "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = {db}) AND toplevel ORDER BY query, queryid"
+    },
+    "round_trip": true
+   },
+   "mysql": {
+    "perf": {
+     "counter": "general_log"
+    },
+    "round_trip": true
+   },
+   "clickhouse": {
+    "perf": {
+     "counter": "sql",
+     "source": "system.query_log (initial queries finished or failed in the measured database)",
+     "server_args": [],
+     "setup": [],
+     "check": [
+      "SYSTEM FLUSH LOGS",
+      "SELECT count() FROM system.query_log WHERE 0"
+     ],
+     "begin": [],
+     "mark": "SELECT toUnixTimestamp64Micro(now64(6))",
+     "flush": [
+      "SYSTEM FLUSH LOGS"
+     ],
+     "read": "SELECT query, 1 FROM system.query_log WHERE current_database = {db} AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= {mark} ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0"
+    },
+    "round_trip": true
+   }
+  },
+  "descriptors": {
+   "postgres": {
+    "perf": {
+     "counter": "sql",
+     "source": "pg_stat_statements (top-level statement executions in the measured database)",
+     "server_args": [
+      "-c",
+      "shared_preload_libraries=pg_stat_statements",
+      "-c",
+      "pg_stat_statements.track=top",
+      "-c",
+      "pg_stat_statements.track_utility=on"
+     ],
+     "setup": [
+      "CREATE EXTENSION IF NOT EXISTS pg_stat_statements"
+     ],
+     "check": [
+      "SELECT count(*) FROM pg_stat_statements"
+     ],
+     "begin": [
+      "SELECT pg_stat_statements_reset(0::oid, (SELECT oid FROM pg_database WHERE datname = {db}), 0::bigint)"
+     ],
+     "mark": "",
+     "flush": [],
+     "read": "SELECT query, calls FROM pg_stat_statements WHERE dbid = (SELECT oid FROM pg_database WHERE datname = {db}) AND toplevel ORDER BY query, queryid"
+    },
+    "round_trip": true
+   },
+   "mysql": {
+    "perf": {
+     "counter": "general_log"
+    },
+    "round_trip": true
+   },
+   "clickhouse": {
+    "perf": {
+     "counter": "sql",
+     "source": "system.query_log (initial queries finished or failed in the measured database)",
+     "server_args": [],
+     "setup": [],
+     "check": [
+      "SYSTEM FLUSH LOGS",
+      "SELECT count() FROM system.query_log WHERE 0"
+     ],
+     "begin": [],
+     "mark": "SELECT toUnixTimestamp64Micro(now64(6))",
+     "flush": [
+      "SYSTEM FLUSH LOGS"
+     ],
+     "read": "SELECT query, 1 FROM system.query_log WHERE current_database = {db} AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= {mark} ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0"
+    },
+    "round_trip": true
+   }
+  }
+ }
+}

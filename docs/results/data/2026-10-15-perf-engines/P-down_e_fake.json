@@ -1,0 +1,115 @@
+{
+ "id": "P-down(e)/fake",
+ "status": "RAN",
+ "title": "liveness guard on simulated servers (tool logic only)",
+ "predicted": "every budget unmeasured with the decision-8 note, exit 2, identical",
+ "observed": "every budget unmeasured with the liveness note on both engines (exit [2, 2]); 1 distinct hash over 10",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "54c0263487bbb417",
+  "54c0263487bbb417",
+  "54c0263487bbb417",
+  "54c0263487bbb417",
+  "54c0263487bbb417",
+  "54c0263487bbb417",
+  "54c0263487bbb417",
+  "54c0263487bbb417",
+  "54c0263487bbb417",
+  "54c0263487bbb417"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 7.2,
+ "error": null,
+ "facts": {
+  "hash": {
+   "postgres": {
+    "rc": 2,
+    "verdicts": [
+     "unmeasured",
+     "unmeasured"
+    ],
+    "notes": [
+     [
+      "database: postgres (container lattice-perf-postgres-9935931d); statements from pg_stat_statements (top-level statement executions in the measured database)",
+      "unmeasured: no statement of the app was seen in database lattice_918e94dd_c2 while seeding (N=3, 3 seed requests); the app may not use the database it was given, or its statements are not logged"
+     ],
+     [
+      "database: postgres (container lattice-perf-postgres-9935931d); statements from pg_stat_statements (top-level statement executions in the measured database)",
+      "unmeasured: no statement of the app was seen in database lattice_918e94dd_c3 while seeding (N=3, 3 seed requests); the app may not use the database it was given, or its statements are not logged"
+     ]
+    ],
+    "sizes": [
+     [],
+     []
+    ]
+   },
+   "clickhouse": {
+    "rc": 2,
+    "verdicts": [
+     "unmeasured",
+     "unmeasured"
+    ],
+    "notes": [
+     [
+      "database: clickhouse (container lattice-perf-clickhouse-6fce026d); statements from system.query_log (initial queries finished or failed in the measured database)",
+      "unmeasured: no statement of the app was seen in database lattice_2d7982ee_c2 while seeding (N=3, 3 seed requests); the app may not use the database it was given, or its statements are not logged"
+     ],
+     [
+      "database: clickhouse (container lattice-perf-clickhouse-6fce026d); statements from system.query_log (initial queries finished or failed in the measured database)",
+      "unmeasured: no statement of the app was seen in database lattice_2d7982ee_c3 while seeding (N=3, 3 seed requests); the app may not use the database it was given, or its statements are not logged"
+     ]
+    ],
+    "sizes": [
+     [],
+     []
+    ]
+   }
+  },
+  "out": {
+   "postgres": {
+    "rc": 2,
+    "verdicts": [
+     "unmeasured",
+     "unmeasured"
+    ],
+    "notes": [
+     [
+      "database: postgres (container lattice-perf-postgres-9935931d); statements from pg_stat_statements (top-level statement executions in the measured database)",
+      "unmeasured: no statement of the app was seen in database lattice_918e94dd_c2 while seeding (N=3, 3 seed requests); the app may not use the database it was given, or its statements are not logged"
+     ],
+     [
+      "database: postgres (container lattice-perf-postgres-9935931d); statements from pg_stat_statements (top-level statement executions in the measured database)",
+      "unmeasured: no statement of the app was seen in database lattice_918e94dd_c3 while seeding (N=3, 3 seed requests); the app may not use the database it was given, or its statements are not logged"
+     ]
+    ],
+    "sizes": [
+     [],
+     []
+    ]
+   },
+   "clickhouse": {
+    "rc": 2,
+    "verdicts": [
+     "unmeasured",
+     "unmeasured"
+    ],
+    "notes": [
+     [
+      "database: clickhouse (container lattice-perf-clickhouse-6fce026d); statements from system.query_log (initial queries finished or failed in the measured database)",
+      "unmeasured: no statement of the app was seen in database lattice_2d7982ee_c2 while seeding (N=3, 3 seed requests); the app may not use the database it was given, or its statements are not logged"
+     ],
+     [
+      "database: clickhouse (container lattice-perf-clickhouse-6fce026d); statements from system.query_log (initial queries finished or failed in the measured database)",
+      "unmeasured: no statement of the app was seen in database lattice_2d7982ee_c3 while seeding (N=3, 3 seed requests); the app may not use the database it was given, or its statements are not logged"
+     ]
+    ],
+    "sizes": [
+     [],
+     []
+    ]
+   }
+  },
+  "left": []
+ }
+}

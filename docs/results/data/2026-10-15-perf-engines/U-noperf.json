@@ -1,0 +1,65 @@
+{
+ "id": "U-noperf",
+ "status": "RAN",
+ "title": "an engine without [perf] is unmeasured, no server started",
+ "predicted": "exit 2, the decision-3 note, 0 subprocess",
+ "observed": "exit 2; notes [['unmeasured: statement counting on MariaDB is not supported (its engine descriptor has no [perf] section)']]; 0 subprocess (no server started)",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "db0a4a3708faedbd",
+  "db0a4a3708faedbd",
+  "db0a4a3708faedbd",
+  "db0a4a3708faedbd",
+  "db0a4a3708faedbd",
+  "db0a4a3708faedbd",
+  "db0a4a3708faedbd",
+  "db0a4a3708faedbd",
+  "db0a4a3708faedbd",
+  "db0a4a3708faedbd"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 4.5,
+ "error": null,
+ "facts": {
+  "hash": {
+   "rc": 2,
+   "data": {
+    "version": 1,
+    "command": "measure",
+    "verdict": "unmeasured",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [],
+      "fit": null,
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "unmeasured",
+      "delta": null,
+      "notes": [
+       "unmeasured: statement counting on MariaDB is not supported (its engine descriptor has no [perf] section)"
+      ]
+     }
+    ]
+   }
+  },
+  "rc": 2,
+  "notes": [
+   [
+    "unmeasured: statement counting on MariaDB is not supported (its engine descriptor has no [perf] section)"
+   ]
+  ],
+  "popen": [],
+  "stderr": "",
+  "without_engine_file": {
+   "rc": 2,
+   "stderr": "                [--await-cap SECONDS] [--json]\npython -m lattice.spec check: error: argument --database: invalid choice: 'mariadb' (choose from sqlite, postgres, mysql, clickhouse)\nlattice perf: the project's harness flags are not valid (2)"
+  }
+ }
+}

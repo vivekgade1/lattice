@@ -1,0 +1,488 @@
+{
+ "hashes": {
+  "lattice/perf/budget.py": "9aff69d8c9c5fdf4",
+  "lattice/perf/measure.py": "5fd4d4fab4ed4da1",
+  "lattice/perf/__main__.py": "1426b9b7f239fa59",
+  "tests/perf/test_budget.py": "c84c27017518a7cf",
+  "tests/perf/test_measure.py": "365fba5fffc06c12",
+  "dogfood/perf_mutants.py": "0da5961af1a798e8"
+ },
+ "streak": "None",
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "108 passed, 4 skipped in 2.18s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "........................................................................ [ 64%]\n...................ssss.................                                 [100%]\n=========================== short test summary info ============================\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n108 passed, 4 skipped in 2.18s\n"
+   },
+   "caught_by": [],
+   "verdict": "PASS (control)"
+  },
+  "PM2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_exactly_at_budget_passes",
+     "tests/perf/test_budget.py::test_latency_compared_only_when_set",
+     "tests/perf/test_budget.py::test_zero_per_item_budget_met_exactly_passes",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_liveness_guard_is_per_budget",
+     "tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests",
+     "tests/perf/test_measure.py::test_cli_check_pass_is_exit_0",
+     "tests/perf/test_measure.py::test_cli_json_report",
+     "tests/perf/test_measure.py::test_constant_endpoint_counts_exactly",
+     "tests/perf/test_measure.py::test_in_repo_racy_notes_app"
+    ],
+    "summary": "11 failed, 97 passed, 4 skipped in 2.05s",
+    "docker_skipped": true,
+    "seconds": 2.4,
+    "tail": "rf/test_measure.py:214: AssertionError\n----------------------------- Captured stdout call -----------------------------\n{\n \"version\": 1,\n \"command\": \"check\",\n \"project\": \"/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3256/test_cli_json_report0/proj\",\n \"budget_file\": \"/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3256/test_cli_json_report0/proj/perf.budget.json\",\n \"verdict\": \"fail\",\n \"reports\": [\n  {\n   \"budget_id\": \"n1\",\n   \"endpoint\": \"GET /items_n1\",\n   \"sizes\": [\n    {\n     \"n\": 1,\n     \"statements\": [\n      3,\n      3\n     ],\n     \"latency_ms\": {\n      \"min\": 0.902,\n      \"median\": 0.99,\n      \"max\": 1.079\n     }\n    },\n    {\n     \"n\": 4,\n     \"statements\": [\n      6,\n      6\n     ],\n     \"latency_ms\": {\n      \"min\": 1.025,\n      \"median\": 1.074,\n      \"max\": 1.122\n     }\n    }\n   ],\n   \"fit\": {\n    \"constant\": 2,\n    \"per_item\": 1,\n    \"exact\": true\n   },\n   \"budget\": {\n    \"queries\": {\n     \"constant\": 2,\n     \"per_item\": 1\n    },\n    \"latency_ms\": null\n   },\n   \"verdict\": \"fail\",\n   \"delta\": {\n    \"constant\": 0,\n    \"per_item\": 0\n   },\n   \"notes\": [\n    \"over budget: per_item 1 > budget 1\",\n    \"database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\",\n    \"2 run(s) per size, one fresh app and database per size\"\n   ]\n  }\n ]\n}\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_exactly_at_budget_passes - AssertionEr...\nFAILED tests/perf/test_budget.py::test_zero_per_item_budget_met_exactly_passes\nFAILED tests/perf/test_budget.py::test_latency_compared_only_when_set - Asser...\nFAILED tests/perf/test_counting.py::test_liveness_guard_is_per_budget - Asser...\nFAILED tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]\nFAILED tests/perf/test_measure.py::test_constant_endpoint_counts_exactly - As...\nFAILED tests/perf/test_measure.py::test_in_repo_racy_notes_app - AssertionErr...\nFAILED tests/perf/test_measure.py::test_cli_check_pass_is_exit_0 - AssertionE...\nFAILED tests/perf/test_measure.py::test_cli_json_report - AssertionError: ass...\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n11 failed, 97 passed, 4 skipped in 2.05s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PM1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails",
+     "tests/perf/test_budget.py::test_exactly_at_budget_passes",
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_fit_constant_is_the_intercept_not_a_count",
+     "tests/perf/test_budget.py::test_fit_is_rational_and_exact",
+     "tests/perf/test_budget.py::test_fit_of_the_p0_numbers_is_n_plus_6",
+     "tests/perf/test_budget.py::test_latency_compared_only_when_set",
+     "tests/perf/test_budget.py::test_render_table",
+     "tests/perf/test_budget.py::test_report_schema",
+     "tests/perf/test_budget.py::test_reverse_trade_is_refused",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_measure.py::test_cli_json_report",
+     "tests/perf/test_measure.py::test_n_plus_one_is_fitted_and_fails_a_constant_budget"
+    ],
+    "summary": "15 failed, 93 passed, 4 skipped in 2.11s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "verdict\": \"fail\",\n \"reports\": [\n  {\n   \"budget_id\": \"n1\",\n   \"endpoint\": \"GET /items_n1\",\n   \"sizes\": [\n    {\n     \"n\": 1,\n     \"statements\": [\n      3,\n      3\n     ],\n     \"latency_ms\": {\n      \"min\": 0.886,\n      \"median\": 0.917,\n      \"max\": 0.948\n     }\n    },\n    {\n     \"n\": 4,\n     \"statements\": [\n      6,\n      6\n     ],\n     \"latency_ms\": {\n      \"min\": 0.922,\n      \"median\": 0.96,\n      \"max\": 0.997\n     }\n    }\n   ],\n   \"fit\": {\n    \"constant\": 6,\n    \"per_item\": 1,\n    \"exact\": false\n   },\n   \"budget\": {\n    \"queries\": {\n     \"constant\": 2,\n     \"per_item\": 1\n    },\n    \"latency_ms\": null\n   },\n   \"verdict\": \"fail\",\n   \"delta\": {\n    \"constant\": 4,\n    \"per_item\": 0\n   },\n   \"notes\": [\n    \"over budget: constant 6 > budget 2\",\n    \"database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\",\n    \"2 run(s) per size, one fresh app and database per size\",\n    \"fit not exact: the counts are not one line in N (the fit uses the largest count per size)\"\n   ]\n  }\n ]\n}\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_fit_of_the_p0_numbers_is_n_plus_6 - as...\nFAILED tests/perf/test_budget.py::test_fit_constant_is_the_intercept_not_a_count\nFAILED tests/perf/test_budget.py::test_fit_is_rational_and_exact - assert (Fr...\nFAILED tests/perf/test_budget.py::test_exactly_at_budget_passes - AssertionEr...\nFAILED tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails\nFAILED tests/perf/test_budget.py::test_reverse_trade_is_refused - AssertionEr...\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - a...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nFAILED tests/perf/test_budget.py::test_latency_compared_only_when_set - Asser...\nFAILED tests/perf/test_budget.py::test_report_schema - AssertionError: assert...\nFAILED tests/perf/test_budget.py::test_render_table - AssertionError: assert ...\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]\nFAILED tests/perf/test_measure.py::test_n_plus_one_is_fitted_and_fails_a_constant_budget\nFAILED tests/perf/test_measure.py::test_cli_json_report - AssertionError: ass...\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n15 failed, 93 passed, 4 skipped in 2.11s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PM3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_app_statements_excludes_the_tools_connections_and_other_commands",
+     "tests/perf/test_measure.py::test_mysql_counter_truncates_counts_app_rows_and_restores"
+    ],
+    "summary": "2 failed, 106 passed, 4 skipped in 1.95s",
+    "docker_skipped": true,
+    "seconds": 2.3,
+    "tail": "sers WHERE id = 1\", \"SELECT 1\",\n                                             \"SELECT 2\"]  # fmt: skip\nE       AssertionError: assert ['TRUNCATE TA...', 'SELECT 2'] == ['SELECT * FR...', 'SELECT 2']\nE         \nE         At index 0 diff: 'TRUNCATE TABLE mysql.general_log' != 'SELECT * FROM users WHERE id = 1'\nE         Left contains 2 more items, first extra item: 'SELECT thread_id, command_type, argument FROM mysql.general_log'\nE         Use -v to get more diff\n\ntests/perf/test_budget.py:328: AssertionError\n__________ test_mysql_counter_truncates_counts_app_rows_and_restores ___________\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10b464d10>\n\n    def test_mysql_counter_truncates_counts_app_rows_and_restores(monkeypatch):\n        log = [(41, \"Query\", \"SELECT thread_id, command_type, argument FROM mysql.general_log\"),\n               (50, \"Prepare\", \"SELECT * FROM t WHERE id = ?\"),\n               (50, \"Execute\", \"SELECT * FROM t WHERE id = 1\"),\n               (50, \"Close stmt\", \"\"), (42, \"Query\", \"CREATE DATABASE x\")]  # fmt: skip\n        tool, admin = _FakeConn(41, log), _FakeConn(42, [])\n    \n        class Server:\n            url, container = \"mysql://root:x@127.0.0.1:1/mysql\", \"lattice-perf-mysql-0\"\n    \n            def admin(self):\n                return admin\n    \n        monkeypatch.setattr(\"lattice.spec.db.open_db\", lambda url: tool)\n        c = MysqlCounter(Server())\n        c.start()\n        assert c.tool_threads == {41, 42}\n        assert \"SET GLOBAL general_log = 1\" in tool.sent\n        c.begin()\n        assert tool.sent[-1] == \"TRUNCATE TABLE mysql.general_log\"\n>       assert c.end() == [\"SELECT * FROM t WHERE id = 1\"]\nE       AssertionError: assert ['SELECT thre...E DATABASE x'] == ['SELECT * FR...WHERE id = 1']\nE         \nE         At index 0 diff: 'SELECT thread_id, command_type, argument FROM mysql.general_log' != 'SELECT * FROM t WHERE id = 1'\nE         Left contains 2 more items, first extra item: 'SELECT * FROM t WHERE id = 1'\nE         Use -v to get more diff\n\ntests/perf/test_measure.py:169: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_app_statements_excludes_the_tools_connections_and_other_commands\nFAILED tests/perf/test_measure.py::test_mysql_counter_truncates_counts_app_rows_and_restores\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n2 failed, 106 passed, 4 skipped in 1.95s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PM4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_measure.py::test_cli_check_over_budget_is_exit_1_and_measure_is_0",
+     "tests/perf/test_measure.py::test_lattice_perf_dispatch"
+    ],
+    "summary": "2 failed, 106 passed, 4 skipped in 1.96s",
+    "docker_skipped": true,
+    "seconds": 2.3,
+    "tail": "x2                                2           1.04 / 1.11 / 1.18\n      6  8 x2                                2           1.04 / 1.08 / 1.12\n  fit: 2 + 1*N (exact)\n  - over budget: per_item 1 > budget 0\n  - over budget: N=2: 4 statements > allowed 2\n  - over budget: N=6: 8 statements > allowed 2\n  - database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\n  - 2 run(s) per size, one fresh app and database per size\nperf: fail (0 pass, 1 fail, 0 unmeasured)\n__________________________ test_lattice_perf_dispatch __________________________\n\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3259/test_lattice_perf_dispatch0')\ncapsys = <_pytest.capture.CaptureFixture object at 0x1095f6330>\n\n    def test_lattice_perf_dispatch(tmp_path, capsys):\n        d = _project(tmp_path, [_budget(\"GET /items_n1\", 2, 0)])\n>       assert cli.main([\"perf\", \"check\", \"--project\", str(d), \"--runs\", \"1\"]) == 1\nE       AssertionError: assert 0 == 1\nE        +  where 0 = <function main at 0x109271640>(['perf', 'check', '--project', '/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3259/test_lattice_perf_dispatch0/proj', '--runs', '1'])\nE        +    where <function main at 0x109271640> = cli.main\n\ntests/perf/test_measure.py:248: AssertionError\n----------------------------- Captured stdout call -----------------------------\nb: GET /items_n1  budget 2 + 0*N statements  ->  FAIL\n      N  statements per run            allowed    latency ms min/median/max\n      2  4 x1                                2           1.41 / 1.41 / 1.41\n      6  8 x1                                2           1.33 / 1.33 / 1.33\n  fit: 2 + 1*N (exact)\n  - over budget: per_item 1 > budget 0\n  - over budget: N=2: 4 statements > allowed 2\n  - over budget: N=6: 8 statements > allowed 2\n  - database: SQLite file; statements from a sqlite3 trace callback (every statement, BEGIN/COMMIT included)\n  - 1 run(s) per size, one fresh app and database per size\nperf: fail (0 pass, 1 fail, 0 unmeasured)\n=========================== short test summary info ============================\nFAILED tests/perf/test_measure.py::test_cli_check_over_budget_is_exit_1_and_measure_is_0\nFAILED tests/perf/test_measure.py::test_lattice_perf_dispatch - AssertionErro...\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n2 failed, 106 passed, 4 skipped in 1.96s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count"
+    ],
+    "summary": "1 failed, 107 passed, 4 skipped in 2.08s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "....................................F................................... [ 64%]\n...................ssss.................                                 [100%]\n=================================== FAILURES ===================================\n_____________ test_no_trade_when_a_size_is_over_its_allowed_count ______________\n\n    def test_no_trade_when_a_size_is_over_its_allowed_count():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [12] * 10}))\n        assert r.verdict == \"fail\"\n>       assert \"over budget: constant 12 > budget 6\" in r.notes\nE       AssertionError: assert 'over budget: constant 12 > budget 6' in ['over budget: N=5: 12 statements > allowed 11', 'constant traded for per-item: constant 12 > budget 6 accepted (per_i...s allowed count); at or under the budget for N >= N* = 6, over it for N < 6', 'better than the budget: per_item 0 < 1']\nE        +  where ['over budget: N=5: 12 statements > allowed 11', 'constant traded for per-item: constant 12 > budget 6 accepted (per_i...s allowed count); at or under the budget for N >= N* = 6, over it for N < 6', 'better than the budget: per_item 0 < 1'] = Report(budget=Budget(id='home', method='GET', path='/v1/home', user='ann', steps=(SeedStep(method='POST', path='/v1/ha... allowed count); at or under the budget for N >= N* = 6, over it for N < 6', 'better than the budget: per_item 0 < 1']).notes\n\ntests/perf/test_budget.py:207: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n1 failed, 107 passed, 4 skipped in 2.08s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_constant_over_budget_fails",
+     "tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails",
+     "tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count"
+    ],
+    "summary": "3 failed, 105 passed, 4 skipped in 2.07s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "ny(\"constant 4 > budget 3\" in n for n in r.notes)\nE       AssertionError: assert ('fail' == 'fail'\nE         \nE           fail and False)\nE        +  where False = any(<generator object test_constant_over_budget_fails.<locals>.<genexpr> at 0x10aa09560>)\n\ntests/perf/test_budget.py:177: AssertionError\n_____________ test_no_trade_when_a_size_is_over_its_allowed_count ______________\n\n    def test_no_trade_when_a_size_is_over_its_allowed_count():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [12] * 10}))\n        assert r.verdict == \"fail\"\n>       assert \"over budget: constant 12 > budget 6\" in r.notes\nE       AssertionError: assert 'over budget: constant 12 > budget 6' in ['over budget: N=5: 12 statements > allowed 11', 'no trade: per_item 0 < budget 1, but a measured size is over its allowed count, so constant 12 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1']\nE        +  where ['over budget: N=5: 12 statements > allowed 11', 'no trade: per_item 0 < budget 1, but a measured size is over its allowed count, so constant 12 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1'] = Report(budget=Budget(id='home', method='GET', path='/v1/home', user='ann', steps=(SeedStep(method='POST', path='/v1/ha...ize is over its allowed count, so constant 12 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1']).notes\n\ntests/perf/test_budget.py:207: AssertionError\n______________ test_constant_over_with_equal_per_item_still_fails ______________\n\n    def test_constant_over_with_equal_per_item_still_fails():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [32] * 10}))\n        assert r.verdict == \"fail\"\n        assert r.delta() == {\"constant\": 1, \"per_item\": 0}\n>       assert any(\"constant 7 > budget 6\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_constant_over_with_equal_per_item_still_fails.<locals>.<genexpr> at 0x10a92ec20>)\n\ntests/perf/test_budget.py:217: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_constant_over_budget_fails - Assertion...\nFAILED tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count\nFAILED tests/perf/test_budget.py::test_constant_over_with_equal_per_item_still_fails\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n3 failed, 105 passed, 4 skipped in 2.07s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_per_item_over_budget_fails",
+     "tests/perf/test_budget.py::test_reverse_trade_is_refused"
+    ],
+    "summary": "2 failed, 106 passed, 4 skipped in 2.10s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "................................F.....F................................. [ 64%]\n...................ssss.................                                 [100%]\n=================================== FAILURES ===================================\n_______________________ test_per_item_over_budget_fails ________________________\n\n    def test_per_item_over_budget_fails():\n        r = judge(_budget(4, 0), _sizes({5: [9] * 10, 25: [29] * 10}))\n        assert r.verdict == \"fail\"\n>       assert any(\"per_item 1 > budget 0\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_per_item_over_budget_fails.<locals>.<genexpr> at 0x108df1560>)\n\ntests/perf/test_budget.py:172: AssertionError\n________________________ test_reverse_trade_is_refused _________________________\n\n    def test_reverse_trade_is_refused():\n        # a cheaper constant bought with a per-item cost the budget does not allow\n        r = judge(_budget(30, 0), _sizes({5: [5] * 10, 25: [25] * 10}))\n>       assert r.verdict == \"fail\"\nE       AssertionError: assert 'pass' == 'fail'\nE         \nE         - fail\nE         + pass\n\ntests/perf/test_budget.py:224: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_per_item_over_budget_fails - assert False\nFAILED tests/perf/test_budget.py::test_reverse_trade_is_refused - AssertionEr...\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n2 failed, 106 passed, 4 skipped in 2.10s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes",
+     "tests/perf/test_budget.py::test_trade_does_not_excuse_latency",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover",
+     "tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover"
+    ],
+    "summary": "5 failed, 103 passed, 4 skipped in 2.11s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "trade_at_the_boundary_size_passes():\n        # 11 statements at N=5 is exactly the allowed 6 + 1*5; the crossover is the size itself\n        r = judge(_budget(6, 1), _sizes({5: [11] * 10, 25: [11] * 10}))\n        assert r.verdict == \"pass\", r.notes\n>       assert any(\"constant 11 > budget 6\" in n and \"N* = 5\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_trade_at_the_boundary_size_passes.<locals>.<genexpr> at 0x10a88a9b0>)\n\ntests/perf/test_budget.py:241: AssertionError\n______________________ test_trade_does_not_excuse_latency ______________________\n\n    def test_trade_does_not_excuse_latency():\n        slow = _sizes({5: [7] * 3, 25: [7] * 3}, lat=[100.0, 120.0, 110.0])\n        r = judge(_budget(6, 1, {\"median\": 50, \"size\": 25, \"margin\": 0.5}), slow)\n        assert r.verdict == \"fail\"\n        assert any(n.startswith(\"over budget: latency: median 110.00 ms\") for n in r.notes)\n>       assert any(n.startswith(\"constant traded for per-item\") for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_trade_does_not_excuse_latency.<locals>.<genexpr> at 0x1090a10e0>)\n\ntests/perf/test_budget.py:249: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n        r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (9, Fraction(-1, 5))\n        assert r.verdict == \"pass\", r.notes\n>       assert any(\"constant 9 > budget 8\" in n and \"N* = 5\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_falling_count_trades_against_a_zero_per_item_budget.<locals>.<genexpr> at 0x10a889ff0>)\n\ntests/perf/test_budget.py:257: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - a...\nFAILED tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes - as...\nFAILED tests/perf/test_budget.py::test_trade_does_not_excuse_latency - assert...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n5 failed, 103 passed, 4 skipped in 2.11s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes",
+     "tests/perf/test_budget.py::test_trade_does_not_excuse_latency",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover",
+     "tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover"
+    ],
+    "summary": "5 failed, 103 passed, 4 skipped in 2.10s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "nstant 11 > budget 6', 'constant traded for per-item: constant 11 > budget 6 accepted (per_item 0 < b...s allowed count); at or under the budget for N >= N* = 5, over it for N < 5', 'better than the budget: per_item 0 < 1']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:240: AssertionError\n______________________ test_trade_does_not_excuse_latency ______________________\n\n    def test_trade_does_not_excuse_latency():\n        slow = _sizes({5: [7] * 3, 25: [7] * 3}, lat=[100.0, 120.0, 110.0])\n        r = judge(_budget(6, 1, {\"median\": 50, \"size\": 25, \"margin\": 0.5}), slow)\n        assert r.verdict == \"fail\"\n        assert any(n.startswith(\"over budget: latency: median 110.00 ms\") for n in r.notes)\n        assert any(n.startswith(\"constant traded for per-item\") for n in r.notes)\n>       assert not any(n.startswith(\"over budget: constant\") for n in r.notes)\nE       assert not True\nE        +  where True = any(<generator object test_trade_does_not_excuse_latency.<locals>.<genexpr> at 0x1095a5620>)\n\ntests/perf/test_budget.py:250: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n        r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (9, Fraction(-1, 5))\n>       assert r.verdict == \"pass\", r.notes\nE       AssertionError: ['over budget: constant 9 > budget 8', 'constant traded for per-item: constant 9 > budget 8 accepted (per_item -0.2 < ...llowed count); at or under the budget for N >= N* = 5, over it for N < 5', 'better than the budget: per_item -0.2 < 0']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:256: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trading_constant_for_per_item_passes_and_shows_the_crossover\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - A...\nFAILED tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes - As...\nFAILED tests/perf/test_budget.py::test_trade_does_not_excuse_latency - assert...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n5 failed, 103 passed, 4 skipped in 2.10s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover"
+    ],
+    "summary": "2 failed, 106 passed, 4 skipped in 2.11s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "................. [ 64%]\n...................ssss.................                                 [100%]\n=================================== FAILURES ===================================\n___________________ test_trade_shows_a_fractional_crossover ____________________\n\n    def test_trade_shows_a_fractional_crossover():\n        r = judge(_budget(4, 3), _sizes({5: [12] * 10, 25: [32] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (7, 1)\n        assert r.verdict == \"pass\", r.notes\n>       assert any(\"constant 7 > budget 4\" in n and \"N* = 1.5\" in n for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_trade_shows_a_fractional_crossover.<locals>.<genexpr> at 0x1090b1560>)\n\ntests/perf/test_budget.py:234: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n>       r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/perf/test_budget.py:254: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-perf1a-mutant-PR6-i2zamti_/lattice/perf/budget.py:451: in judge\n    n_star = _show((f.constant - budget.constant) / budget.per_item)  # MUTANT PR6\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/fractions.py:699: in forward\n    return monomorphic_operator(a, b)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\na = Fraction(1, 1), b = Fraction(0, 1)\n\n    def _div(a, b):\n        \"\"\"a / b\"\"\"\n        # Same as _mul(), with inversed b.\n        nb, db = b._numerator, b._denominator\n        if nb == 0:\n>           raise ZeroDivisionError('Fraction(%s, 0)' % db)\nE           ZeroDivisionError: Fraction(1, 0)\n\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/fractions.py:847: ZeroDivisionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trade_shows_a_fractional_crossover - a...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n2 failed, 106 passed, 4 skipped in 2.11s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget",
+     "tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes"
+    ],
+    "summary": "2 failed, 106 passed, 4 skipped in 2.11s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "........................................F.F............................. [ 64%]\n...................ssss.................                                 [100%]\n=================================== FAILURES ===================================\n____________________ test_trade_at_the_boundary_size_passes ____________________\n\n    def test_trade_at_the_boundary_size_passes():\n        # 11 statements at N=5 is exactly the allowed 6 + 1*5; the crossover is the size itself\n        r = judge(_budget(6, 1), _sizes({5: [11] * 10, 25: [11] * 10}))\n>       assert r.verdict == \"pass\", r.notes\nE       AssertionError: ['over budget: constant 11 > budget 6', 'no trade: per_item 0 < budget 1, but a measured size is over its allowed count, so constant 11 > budget 6 stays over budget', 'better than the budget: per_item 0 < 1']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:240: AssertionError\n___________ test_falling_count_trades_against_a_zero_per_item_budget ___________\n\n    def test_falling_count_trades_against_a_zero_per_item_budget():\n        r = judge(_budget(8, 0), _sizes({5: [8] * 10, 25: [4] * 10}))\n        assert (r.fit.constant, r.fit.per_item) == (9, Fraction(-1, 5))\n>       assert r.verdict == \"pass\", r.notes\nE       AssertionError: ['over budget: constant 9 > budget 8', 'no trade: per_item -0.2 < budget 0, but a measured size is over its allowed count, so constant 9 > budget 8 stays over budget', 'better than the budget: per_item -0.2 < 0']\nE       assert 'fail' == 'pass'\nE         \nE         - pass\nE         + fail\n\ntests/perf/test_budget.py:256: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trade_at_the_boundary_size_passes - As...\nFAILED tests/perf/test_budget.py::test_falling_count_trades_against_a_zero_per_item_budget\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n2 failed, 106 passed, 4 skipped in 2.11s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_trade_does_not_excuse_latency"
+    ],
+    "summary": "1 failed, 107 passed, 4 skipped in 2.08s",
+    "docker_skipped": true,
+    "seconds": 2.4,
+    "tail": ".........................................F.............................. [ 64%]\n...................ssss.................                                 [100%]\n=================================== FAILURES ===================================\n______________________ test_trade_does_not_excuse_latency ______________________\n\n    def test_trade_does_not_excuse_latency():\n        slow = _sizes({5: [7] * 3, 25: [7] * 3}, lat=[100.0, 120.0, 110.0])\n        r = judge(_budget(6, 1, {\"median\": 50, \"size\": 25, \"margin\": 0.5}), slow)\n>       assert r.verdict == \"fail\"\nE       AssertionError: assert 'pass' == 'fail'\nE         \nE         - fail\nE         + pass\n\ntests/perf/test_budget.py:247: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_trade_does_not_excuse_latency - Assert...\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n1 failed, 107 passed, 4 skipped in 2.08s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PR9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count"
+    ],
+    "summary": "1 failed, 107 passed, 4 skipped in 2.09s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "....................................F................................... [ 64%]\n...................ssss.................                                 [100%]\n=================================== FAILURES ===================================\n_____________ test_no_trade_when_a_size_is_over_its_allowed_count ______________\n\n    def test_no_trade_when_a_size_is_over_its_allowed_count():\n        r = judge(_budget(6, 1), _sizes({5: [12] * 10, 25: [12] * 10}))\n        assert r.verdict == \"fail\"\n        assert \"over budget: constant 12 > budget 6\" in r.notes\n        assert \"over budget: N=5: 12 statements > allowed 11\" in r.notes\n>       assert any(n.startswith(\"no trade:\") for n in r.notes)\nE       assert False\nE        +  where False = any(<generator object test_no_trade_when_a_size_is_over_its_allowed_count.<locals>.<genexpr> at 0x1091c0ba0>)\n\ntests/perf/test_budget.py:209: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_budget.py::test_no_trade_when_a_size_is_over_its_allowed_count\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n1 failed, 107 passed, 4 skipped in 2.09s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests",
+     "tests/perf/test_counting.py::test_pg_shapes_follow_read_order",
+     "tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order",
+     "tests/perf/test_counting.py::test_the_tools_statements_are_not_counted"
+    ],
+    "summary": "5 failed, 103 passed, 4 skipped in 2.07s",
+    "docker_skipped": true,
+    "seconds": 2.6,
+    "tail": "items WHERE user_id = $? ORDER BY id\"),\n            (1, \"SELECT id FROM users WHERE token = $?\"),\n            (3, \"SELECT name FROM users WHERE id = $?\"),\n        ]\nE       AssertionError: assert [(3, 'INSERT ...E name = $?')] == [(1, 'SELECT ...ERE id = $?')]\nE         \nE         At index 0 diff: (3, 'INSERT INTO items (id, user_id, name) VALUES ($?, $?, $?)') != (1, 'SELECT * FROM items WHERE user_id = $? ORDER BY id')\nE         Left contains 2 more items, first extra item: (3, 'SELECT name FROM users WHERE id = $?')\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:514: AssertionError\n__________________ test_the_tools_statements_are_not_counted ___________________\n\nworld = <tests.perf.fakeengines.World object at 0x108fd4600>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x108fda690>\n\n    def test_the_tools_statements_are_not_counted(world, monkeypatch):\n        \"\"\"A noisy tool: statements on the measuring and on the admin connection inside a\n        window are not the app's, because the read is bound to the measured database.\"\"\"\n    \n        class Noisy(SqlCounter):\n            def begin(self) -> None:\n                super().begin()\n                for _ in range(5):\n                    self.conn.query(\"SELECT 1\")\n                    self.server.admin().query(\"SELECT 1\")\n    \n        monkeypatch.setattr(measure_mod, \"SqlCounter\", Noisy)\n        for engine in (\"postgres\", \"clickhouse\"):\n            (r,) = measure(_file(_budget(\"b\", \"GET /items\", 2, 0)), _harness(engine), runs=2)\n>           assert [s.statements for s in r.sizes] == [[2, 2], [2, 2]], engine\nE           AssertionError: postgres\nE           assert [[9, 11], [17, 19]] == [[2, 2], [2, 2]]\nE             \nE             At index 0 diff: [9, 11] != [2, 2]\nE             Use -v to get more diff\n\ntests/perf/test_counting.py:535: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order\nFAILED tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_pg_shapes_follow_read_order - Assert...\nFAILED tests/perf/test_counting.py::test_the_tools_statements_are_not_counted\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n5 failed, 103 passed, 4 skipped in 2.07s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]",
+     "tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order",
+     "tests/perf/test_counting.py::test_the_tools_statements_are_not_counted"
+    ],
+    "summary": "3 failed, 105 passed, 4 skipped in 1.93s",
+    "docker_skipped": true,
+    "seconds": 2.4,
+    "tail": "lickhouse'\n\n    @pytest.mark.parametrize(\"engine\", [\"postgres\", \"clickhouse\"])\n    def test_counts_on_a_simulated_server(world, engine):\n        reports = measure(\n            _file(_budget(\"items\", \"GET /items\", 2, 0), _budget(\"n1-tight\", \"GET /items_n1\", 2, 0),\n                  _budget(\"n1\", \"GET /items_n1\", 2, 1), _budget(\"nodb\", \"GET /nodb\", 0, 0)),\n            _harness(engine), runs=3, want_shapes=True,\n        )  # fmt: skip\n        by = {r.budget.id: r for r in reports}\n>       assert [s.statements for s in by[\"items\"].sizes] == [[2] * 3, [2] * 3]\nE       assert [] == [[2, 2, 2], [2, 2, 2]]\nE         \nE         Right contains 2 more items, first extra item: [2, 2, 2]\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:501: AssertionError\n__________________ test_the_tools_statements_are_not_counted ___________________\n\nworld = <tests.perf.fakeengines.World object at 0x10caff5f0>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10cb6bf00>\n\n    def test_the_tools_statements_are_not_counted(world, monkeypatch):\n        \"\"\"A noisy tool: statements on the measuring and on the admin connection inside a\n        window are not the app's, because the read is bound to the measured database.\"\"\"\n    \n        class Noisy(SqlCounter):\n            def begin(self) -> None:\n                super().begin()\n                for _ in range(5):\n                    self.conn.query(\"SELECT 1\")\n                    self.server.admin().query(\"SELECT 1\")\n    \n        monkeypatch.setattr(measure_mod, \"SqlCounter\", Noisy)\n        for engine in (\"postgres\", \"clickhouse\"):\n            (r,) = measure(_file(_budget(\"b\", \"GET /items\", 2, 0)), _harness(engine), runs=2)\n>           assert [s.statements for s in r.sizes] == [[2, 2], [2, 2]], engine\nE           AssertionError: clickhouse\nE           assert [] == [[2, 2], [2, 2]]\nE             \nE             Right contains 2 more items, first extra item: [2, 2]\nE             Use -v to get more diff\n\ntests/perf/test_counting.py:535: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]\nFAILED tests/perf/test_counting.py::test_the_tools_statements_are_not_counted\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n3 failed, 105 passed, 4 skipped in 1.93s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_pg_shapes_follow_read_order",
+     "tests/perf/test_counting.py::test_sql_counter_expands_calls"
+    ],
+    "summary": "3 failed, 105 passed, 4 skipped in 1.98s",
+    "docker_skipped": true,
+    "seconds": 2.5,
+    "tail": "  Right contains 2 more items, first extra item: 'SELECT d'\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:384: AssertionError\n_________________ test_counts_on_a_simulated_server[postgres] __________________\n\nworld = <tests.perf.fakeengines.World object at 0x108f03020>\nengine = 'postgres'\n\n    @pytest.mark.parametrize(\"engine\", [\"postgres\", \"clickhouse\"])\n    def test_counts_on_a_simulated_server(world, engine):\n        reports = measure(\n            _file(_budget(\"items\", \"GET /items\", 2, 0), _budget(\"n1-tight\", \"GET /items_n1\", 2, 0),\n                  _budget(\"n1\", \"GET /items_n1\", 2, 1), _budget(\"nodb\", \"GET /nodb\", 0, 0)),\n            _harness(engine), runs=3, want_shapes=True,\n        )  # fmt: skip\n        by = {r.budget.id: r for r in reports}\n        assert [s.statements for s in by[\"items\"].sizes] == [[2] * 3, [2] * 3]\n>       assert [s.statements for s in by[\"n1\"].sizes] == [[5] * 3, [9] * 3]\nE       assert [[3, 3, 3], [3, 3, 3]] == [[5, 5, 5], [9, 9, 9]]\nE         \nE         At index 0 diff: [3, 3, 3] != [5, 5, 5]\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:502: AssertionError\n_______________________ test_pg_shapes_follow_read_order _______________________\n\nworld = <tests.perf.fakeengines.World object at 0x109248d70>\n\n    def test_pg_shapes_follow_read_order(world):\n        (r,) = measure(_file(_budget(\"n1\", \"GET /items_n1\", 2, 1)), _harness(\"postgres\"), runs=1,\n                       want_shapes=True)  # fmt: skip\n>       assert r.sizes[0].shapes == [\n            (1, \"SELECT * FROM items WHERE user_id = $? ORDER BY id\"),\n            (1, \"SELECT id FROM users WHERE token = $?\"),\n            (3, \"SELECT name FROM users WHERE id = $?\"),\n        ]\nE       AssertionError: assert [(1, 'SELECT ...ERE id = $?')] == [(1, 'SELECT ...ERE id = $?')]\nE         \nE         At index 2 diff: (1, 'SELECT name FROM users WHERE id = $?') != (3, 'SELECT name FROM users WHERE id = $?')\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:514: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_sql_counter_expands_calls - Assertio...\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_pg_shapes_follow_read_order - Assert...\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n3 failed, 105 passed, 4 skipped in 1.98s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_liveness_guard_is_per_budget",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]",
+     "tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests",
+     "tests/perf/test_counting.py::test_pg_shapes_follow_read_order",
+     "tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order",
+     "tests/perf/test_counting.py::test_the_tools_statements_are_not_counted"
+    ],
+    "summary": "9 failed, 99 passed, 4 skipped in 1.88s",
+    "docker_skipped": true,
+    "seconds": 2.4,
+    "tail": "), ?::bigint)') != (1, 'SELECT * FROM items WHERE user_id = $? ORDER BY id')\nE         Right contains 2 more items, first extra item: (1, 'SELECT id FROM users WHERE token = $?')\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:514: AssertionError\n__________________ test_the_tools_statements_are_not_counted ___________________\n\nworld = <tests.perf.fakeengines.World object at 0x10b231980>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10b18a470>\n\n    def test_the_tools_statements_are_not_counted(world, monkeypatch):\n        \"\"\"A noisy tool: statements on the measuring and on the admin connection inside a\n        window are not the app's, because the read is bound to the measured database.\"\"\"\n    \n        class Noisy(SqlCounter):\n            def begin(self) -> None:\n                super().begin()\n                for _ in range(5):\n                    self.conn.query(\"SELECT 1\")\n                    self.server.admin().query(\"SELECT 1\")\n    \n        monkeypatch.setattr(measure_mod, \"SqlCounter\", Noisy)\n        for engine in (\"postgres\", \"clickhouse\"):\n            (r,) = measure(_file(_budget(\"b\", \"GET /items\", 2, 0)), _harness(engine), runs=2)\n>           assert [s.statements for s in r.sizes] == [[2, 2], [2, 2]], engine\nE           AssertionError: postgres\nE           assert [[11, 11], [11, 11]] == [[2, 2], [2, 2]]\nE             \nE             At index 0 diff: [11, 11] != [2, 2]\nE             Use -v to get more diff\n\ntests/perf/test_counting.py:535: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_sql_counter_sends_descriptor_statements_in_order\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]\nFAILED tests/perf/test_counting.py::test_liveness_guard_is_per_budget - Asser...\nFAILED tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]\nFAILED tests/perf/test_counting.py::test_pg_shapes_follow_read_order - Assert...\nFAILED tests/perf/test_counting.py::test_the_tools_statements_are_not_counted\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n9 failed, 99 passed, 4 skipped in 1.88s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_liveness_guard_is_per_budget",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]"
+    ],
+    "summary": "3 failed, 105 passed, 4 skipped in 1.92s",
+    "docker_skipped": true,
+    "seconds": 2.3,
+    "tail": "nmeasured[clickhouse] ____________\n\nworld = <tests.perf.fakeengines.World object at 0x10d15df50>\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3273/test_liveness_guard_marks_budg1')\nengine = 'clickhouse'\n\n    @pytest.mark.parametrize(\"engine\", [\"postgres\", \"clickhouse\"])\n    def test_liveness_guard_marks_budget_unmeasured(world, tmp_path, engine):\n        h = Harness(_silent_app_factory(tmp_path), serverapp.build_db, None, serverapp.login, engine)\n        (r,) = measure(_file(_budget(\"b\", \"GET /items\", 5, 5)), h, runs=2)\n>       assert r.verdict == \"unmeasured\" and r.sizes == [] and r.fit is None\nE       AssertionError: assert ('pass' == 'unmeasured'\nE         \nE         - unmeasured\nE         + pass)\n\ntests/perf/test_counting.py:458: AssertionError\n______________________ test_liveness_guard_is_per_budget _______________________\n\nworld = <tests.perf.fakeengines.World object at 0x10d15ed50>\ntmp_path = PosixPath('/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3273/test_liveness_guard_is_per_bud0')\n\n    def test_liveness_guard_is_per_budget(world, tmp_path):\n        \"\"\"On an app that ignores its database, the budget whose seed left nothing is\n        unmeasured and a budget with no seed request is judged (and says it was not guarded).\"\"\"\n        h = Harness(_silent_app_factory(tmp_path), serverapp.build_db, None, serverapp.login,\n                    \"postgres\")  # fmt: skip\n        no_seed = {\"items\": \"N\", \"steps\": []}\n        seeded, free = measure(\n            _file(_budget(\"items\", \"GET /items\", 2, 0), _budget(\"free\", \"GET /nodb\", 0, 0, no_seed)),\n            h, runs=2,\n        )  # fmt: skip\n>       assert (seeded.verdict, free.verdict) == (\"unmeasured\", \"pass\")\nE       AssertionError: assert ('pass', 'pass') == ('unmeasured', 'pass')\nE         \nE         At index 0 diff: 'pass' != 'unmeasured'\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:476: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]\nFAILED tests/perf/test_counting.py::test_liveness_guard_is_per_budget - Asser...\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n3 failed, 105 passed, 4 skipped in 1.92s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_a_dead_server_is_cannot_run_not_unmeasured",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_dispatch_by_descriptor_counter",
+     "tests/perf/test_counting.py::test_extra_args_follow_server_args",
+     "tests/perf/test_counting.py::test_liveness_guard_is_per_budget",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]",
+     "tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests",
+     "tests/perf/test_counting.py::test_pg_shapes_follow_read_order",
+     "tests/perf/test_counting.py::test_the_tools_statements_are_not_counted"
+    ],
+    "summary": "9 failed, 99 passed, 4 skipped in 1.69s",
+    "docker_skipped": true,
+    "seconds": 2.0,
+    "tail": "\n    def test_extra_args_follow_server_args(monkeypatch):\n        perf = engines.engine(\"postgres\").perf\n        base = [a.format(e=\"postgres\", port=5432) for a in ARGV[\"postgres\"]]\n        argv = _argv_of(monkeypatch, \"postgres\", extra_args=perf.server_args)\n        assert argv == [*base, *perf.server_args]\n        assert argv[argv.index(\"postgres:16-alpine\") + 1 :] == [\n            *engines.engine(\"postgres\").server.args, *perf.server_args]  # fmt: skip\n        # and the perf run asks for them (a started container only)\n        asked: list[dict] = []\n    \n        def fake_server_for(dialect, url=None, name_prefix=\"lattice-\", extra_args=()):\n            asked.append({\"dialect\": dialect, \"extra_args\": tuple(extra_args)})\n            raise dbserver.DbServerError(\"stop here\")\n    \n        monkeypatch.setattr(dbserver, \"server_for\", fake_server_for)\n        with pytest.raises(MeasureError, match=\"stop here\"):\n            measure(_file(_budget(\"b\", \"GET /items\", 2, 0)), _harness(\"postgres\"), runs=1)\n>       assert asked == [{\"dialect\": \"postgres\", \"extra_args\": perf.server_args}]\nE       AssertionError: assert [{'dialect': ...ra_args': ()}] == [{'dialect': ...utility=on')}]\nE         \nE         At index 0 diff: {'dialect': 'postgres', 'extra_args': ()} != {'dialect': 'postgres', 'extra_args': ('-c', 'shared_preload_libraries=pg_stat_statements', '-c', 'pg_stat_statements.track=top', '-c', 'pg_stat_statements.track_utility=on')}\nE         Use -v to get more diff\n\ntests/perf/test_counting.py:617: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_dispatch_by_descriptor_counter - Ass...\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]\nFAILED tests/perf/test_counting.py::test_liveness_guard_is_per_budget - Asser...\nFAILED tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_pg_shapes_follow_read_order - IndexE...\nFAILED tests/perf/test_counting.py::test_the_tools_statements_are_not_counted\nFAILED tests/perf/test_counting.py::test_a_dead_server_is_cannot_run_not_unmeasured\nFAILED tests/perf/test_counting.py::test_extra_args_follow_server_args - Asse...\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n9 failed, 99 passed, 4 skipped in 1.69s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_setup_statements_run_only_on_a_container_the_tool_started",
+     "tests/perf/test_counting.py::test_sql_counter_on_given_server_skips_setup"
+    ],
+    "summary": "2 failed, 106 passed, 4 skipped in 1.89s",
+    "docker_skipped": true,
+    "seconds": 2.2,
+    "tail": "........................................................................ [ 64%]\n..F..F.............ssss.................                                 [100%]\n=================================== FAILURES ===================================\n________ test_setup_statements_run_only_on_a_container_the_tool_started ________\n\nworld = <tests.perf.fakeengines.World object at 0x10d375810>\n\n    def test_setup_statements_run_only_on_a_container_the_tool_started(world):\n        \"\"\"Given a server (a URL), nothing is set up: no CREATE EXTENSION, so no pgss.\"\"\"\n        given = world.add_server(\"postgres\", preloaded=True)\n        (r,) = measure(_file(_budget(\"a\", \"GET /items\", 2, 0)), _harness(\"postgres\", url=given.url()),\n                       runs=1)  # fmt: skip\n>       assert r.verdict == \"unmeasured\"\nE       AssertionError: assert 'pass' == 'unmeasured'\nE         \nE         - unmeasured\nE         + pass\n\ntests/perf/test_counting.py:270: AssertionError\n_________________ test_sql_counter_on_given_server_skips_setup _________________\n\nworld = <tests.perf.fakeengines.World object at 0x10d4a2580>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d4a2030>\n\n    def test_sql_counter_on_given_server_skips_setup(world, monkeypatch):\n        rec = _Recording(monkeypatch)\n        perf = engines.engine(\"postgres\").perf\n        # a given server without pgss: only the check is sent, and it fails (unmeasured)\n        given, _server = _counter(world, \"postgres\", owned=False)\n>       with pytest.raises(Unmeasured):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE Unmeasured\n\ntests/perf/test_counting.py:393: Failed\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_setup_statements_run_only_on_a_container_the_tool_started\nFAILED tests/perf/test_counting.py::test_sql_counter_on_given_server_skips_setup\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n2 failed, 106 passed, 4 skipped in 1.89s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_perf_section_validation_messages[perf2-E:"
+    ],
+    "summary": "1 failed, 107 passed, 4 skipped in 1.84s",
+    "docker_skipped": true,
+    "seconds": 2.2,
+    "tail": "              \"E: [perf] unknown field 'docker_args' (known: counter, source, server_args, setup, \"\n                \"check, begin, mark, flush, read)\",\n            ),\n            (\n                {**SQL_OK, \"read\": \"SELECT 1\"},\n                \"E: perf.read: must use {db} (the measured database; the tool's own statements are \"\n                \"excluded by it)\",\n            ),\n            (\n                {**SQL_OK, \"setup\": [\"SELECT {db}\"]},\n                \"E: perf.setup: unknown placeholder {db} (known: none)\",\n            ),\n            (\n                {**SQL_OK, \"check\": [\"SELECT {mark}\"]},\n                \"E: perf.check: unknown placeholder {mark} (known: none)\",\n            ),\n            (\n                {**SQL_OK, \"begin\": [\"SELECT {mark}\"]},\n                \"E: perf.begin: unknown placeholder {mark} (known: {db})\",\n            ),\n            ({**SQL_OK, \"mark\": \"SELECT {db}\"}, \"E: perf.mark: unknown placeholder {db} (known: none)\"),\n            (\n                {\"counter\": \"general_log\", \"read\": \"SELECT {db}\"},\n                'E: perf.read: only for counter = \"sql\"',\n            ),\n            ({**SQL_OK, \"read\": \"SELECT {db}, {mark}\"}, \"E: perf.read: {mark} needs perf.mark\"),\n            ({**SQL_OK, \"mark\": \"SELECT 1\"}, \"E: perf.read: must use {mark} when perf.mark is set\"),\n            ({\"counter\": \"sql\", \"source\": \"s\"}, \"E: [perf] missing required field 'read'\"),\n            ({\"counter\": \"sql\", \"read\": \"SELECT {db}\"}, \"E: [perf] missing required field 'source'\"),\n            ({\"source\": \"s\"}, \"E: [perf] missing required field 'counter'\"),\n            ({**SQL_OK, \"setup\": [\"\"]}, \"E: perf.setup: must be a list of non-empty strings\"),\n            ({**SQL_OK, \"server_args\": \"-c x\"}, \"E: perf.server_args: must be a list of strings\"),\n            (\"sql\", \"E: perf: must be a table, not a string\"),\n        ],\n    )\n    def test_perf_section_validation_messages(perf, message):\n>       with pytest.raises(EngineError) as err:\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE EngineError\n\ntests/perf/test_counting.py:121: Failed\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_perf_section_validation_messages[perf2-E: perf.read: must use {db} (the measured database; the tool's own statements are excluded by it)]\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n1 failed, 107 passed, 4 skipped in 1.84s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_check_failure_is_unmeasured_and_server_stopped"
+    ],
+    "summary": "1 failed, 107 passed, 4 skipped in 1.84s",
+    "docker_skipped": true,
+    "seconds": 2.3,
+    "tail": "........................................................................ [ 64%]\n.F.................ssss.................                                 [100%]\n=================================== FAILURES ===================================\n_____________ test_check_failure_is_unmeasured_and_server_stopped ______________\n\nworld = <tests.perf.fakeengines.World object at 0x10b085590>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10b00dcd0>\n\n    def test_check_failure_is_unmeasured_and_server_stopped(world, monkeypatch):\n        \"\"\"A container whose statistics are not available (pgss not loaded): every budget is\n        unmeasured with the reason, the report still comes, and the container is removed.\"\"\"\n        real = dbserver.start_container\n    \n        def without_server_args(dialect, *a, extra_args=(), **kw):\n            return real(dialect, *a, extra_args=(), **kw)\n    \n        monkeypatch.setattr(dbserver, \"start_container\", without_server_args)\n        reports = measure(\n            _file(_budget(\"a\", \"GET /items\", 2, 0), _budget(\"b\", \"GET /nodb\", 0, 0)),\n            _harness(\"postgres\"),\n            runs=1,\n        )\n        assert [r.verdict for r in reports] == [\"unmeasured\", \"unmeasured\"]\n        for r in reports:\n            assert r.sizes == []\n            (note,) = r.notes\n            assert note.startswith(\"unmeasured: statement counting on PostgreSQL is not available \"\n                                   \"on this server: 'SELECT count(*) FROM pg_stat_statements' \"\n                                   \"failed: \")  # fmt: skip\n            assert \"pg_stat_statements\" in note and \"shared_preload_libraries\" in note\n>       assert world.live_containers() == [] and len(world.removed) == 1\nE       AssertionError: assert (['lattice-per...res-a8411684'] == []\nE         \nE         Left contains one more item: 'lattice-perf-postgres-a8411684'\nE         Use -v to get more diff)\n\ntests/perf/test_counting.py:262: AssertionError\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_check_failure_is_unmeasured_and_server_stopped\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n1 failed, 107 passed, 4 skipped in 1.84s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_a_dead_server_is_cannot_run_not_unmeasured",
+     "tests/perf/test_counting.py::test_check_failure_is_unmeasured_and_server_stopped",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]",
+     "tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]",
+     "tests/perf/test_counting.py::test_descriptor_without_perf_is_unmeasured_with_reason",
+     "tests/perf/test_counting.py::test_dispatch_by_descriptor_counter",
+     "tests/perf/test_counting.py::test_extra_args_follow_server_args",
+     "tests/perf/test_counting.py::test_liveness_guard_is_per_budget",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]",
+     "tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]",
+     "tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests",
+     "tests/perf/test_counting.py::test_pg_shapes_follow_read_order",
+     "tests/perf/test_counting.py::test_setup_statements_run_only_on_a_container_the_tool_started",
+     "tests/perf/test_counting.py::test_the_tools_statements_are_not_counted"
+    ],
+    "summary": "14 failed, 94 passed, 4 skipped in 1.64s",
+    "docker_skipped": true,
+    "seconds": 1.9,
+    "tail": " 0x108a009b0>\n\n    def test_extra_args_follow_server_args(monkeypatch):\n        perf = engines.engine(\"postgres\").perf\n        base = [a.format(e=\"postgres\", port=5432) for a in ARGV[\"postgres\"]]\n        argv = _argv_of(monkeypatch, \"postgres\", extra_args=perf.server_args)\n        assert argv == [*base, *perf.server_args]\n        assert argv[argv.index(\"postgres:16-alpine\") + 1 :] == [\n            *engines.engine(\"postgres\").server.args, *perf.server_args]  # fmt: skip\n        # and the perf run asks for them (a started container only)\n        asked: list[dict] = []\n    \n        def fake_server_for(dialect, url=None, name_prefix=\"lattice-\", extra_args=()):\n            asked.append({\"dialect\": dialect, \"extra_args\": tuple(extra_args)})\n            raise dbserver.DbServerError(\"stop here\")\n    \n        monkeypatch.setattr(dbserver, \"server_for\", fake_server_for)\n>       with pytest.raises(MeasureError, match=\"stop here\"):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE MeasureError\n\ntests/perf/test_counting.py:615: Failed\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_descriptor_without_perf_is_unmeasured_with_reason\nFAILED tests/perf/test_counting.py::test_dispatch_by_descriptor_counter - Ass...\nFAILED tests/perf/test_counting.py::test_check_failure_is_unmeasured_and_server_stopped\nFAILED tests/perf/test_counting.py::test_setup_statements_run_only_on_a_container_the_tool_started\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[postgres]\nFAILED tests/perf/test_counting.py::test_liveness_guard_marks_budget_unmeasured[clickhouse]\nFAILED tests/perf/test_counting.py::test_liveness_guard_is_per_budget - Asser...\nFAILED tests/perf/test_counting.py::test_liveness_not_checked_without_seed_requests\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[postgres]\nFAILED tests/perf/test_counting.py::test_counts_on_a_simulated_server[clickhouse]\nFAILED tests/perf/test_counting.py::test_pg_shapes_follow_read_order - IndexE...\nFAILED tests/perf/test_counting.py::test_the_tools_statements_are_not_counted\nFAILED tests/perf/test_counting.py::test_a_dead_server_is_cannot_run_not_unmeasured\nFAILED tests/perf/test_counting.py::test_extra_args_follow_server_args - Fail...\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n14 failed, 94 passed, 4 skipped in 1.64s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "PX10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/perf/test_counting.py::test_perf_section_validation_messages[perf0-E:"
+    ],
+    "summary": "1 failed, 107 passed, 4 skipped in 1.88s",
+    "docker_skipped": true,
+    "seconds": 2.1,
+    "tail": "cker_args\": [\"--privileged\"]},\n                \"E: [perf] unknown field 'docker_args' (known: counter, source, server_args, setup, \"\n                \"check, begin, mark, flush, read)\",\n            ),\n            (\n                {**SQL_OK, \"read\": \"SELECT 1\"},\n                \"E: perf.read: must use {db} (the measured database; the tool's own statements are \"\n                \"excluded by it)\",\n            ),\n            (\n                {**SQL_OK, \"setup\": [\"SELECT {db}\"]},\n                \"E: perf.setup: unknown placeholder {db} (known: none)\",\n            ),\n            (\n                {**SQL_OK, \"check\": [\"SELECT {mark}\"]},\n                \"E: perf.check: unknown placeholder {mark} (known: none)\",\n            ),\n            (\n                {**SQL_OK, \"begin\": [\"SELECT {mark}\"]},\n                \"E: perf.begin: unknown placeholder {mark} (known: {db})\",\n            ),\n            ({**SQL_OK, \"mark\": \"SELECT {db}\"}, \"E: perf.mark: unknown placeholder {db} (known: none)\"),\n            (\n                {\"counter\": \"general_log\", \"read\": \"SELECT {db}\"},\n                'E: perf.read: only for counter = \"sql\"',\n            ),\n            ({**SQL_OK, \"read\": \"SELECT {db}, {mark}\"}, \"E: perf.read: {mark} needs perf.mark\"),\n            ({**SQL_OK, \"mark\": \"SELECT 1\"}, \"E: perf.read: must use {mark} when perf.mark is set\"),\n            ({\"counter\": \"sql\", \"source\": \"s\"}, \"E: [perf] missing required field 'read'\"),\n            ({\"counter\": \"sql\", \"read\": \"SELECT {db}\"}, \"E: [perf] missing required field 'source'\"),\n            ({\"source\": \"s\"}, \"E: [perf] missing required field 'counter'\"),\n            ({**SQL_OK, \"setup\": [\"\"]}, \"E: perf.setup: must be a list of non-empty strings\"),\n            ({**SQL_OK, \"server_args\": \"-c x\"}, \"E: perf.server_args: must be a list of strings\"),\n            (\"sql\", \"E: perf: must be a table, not a string\"),\n        ],\n    )\n    def test_perf_section_validation_messages(perf, message):\n>       with pytest.raises(EngineError) as err:\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       Failed: DID NOT RAISE EngineError\n\ntests/perf/test_counting.py:121: Failed\n=========================== short test summary info ============================\nFAILED tests/perf/test_counting.py::test_perf_section_validation_messages[perf0-E: perf.counter: must be \"general_log\" or \"sql\", not 'evil:Code']\nSKIPPED [4] tests/perf/test_counting_docker.py:68: the Docker daemon does not answer (start Docker Desktop)\n1 failed, 107 passed, 4 skipped in 1.88s\n"
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  }
+ }
+}

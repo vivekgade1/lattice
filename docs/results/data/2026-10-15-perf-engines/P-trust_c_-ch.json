@@ -1,0 +1,9 @@
+{
+ "id": "P-trust(c)-ch",
+ "status": "NOT RUN",
+ "title": "clickhouse: every statement SqlCounter sends is the descriptor's",
+ "predicted": "266 statements, all descriptor statements, every {db} a clone",
+ "observed": "not run: needs a running Docker daemon, clickhouse-connect in the probe python",
+ "pass": null,
+ "reason": "needs a running Docker daemon, clickhouse-connect in the probe python"
+}

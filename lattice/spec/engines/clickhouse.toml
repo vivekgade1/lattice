@@ -43,3 +43,14 @@ admin_db = "default"
 env = { CLICKHOUSE_USER = "{user}", CLICKHOUSE_PASSWORD = "{password}", CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT = "1" }
 docker_args = ["--ulimit", "nofile=262144:262144"]
 ready_sql = "SELECT 1"
+
+# lattice perf: statements are counted from system.query_log (one row per finished or failed
+# initial query), by the measured database and a window start taken on the server's clock;
+# SYSTEM FLUSH LOGS makes the window's rows visible.
+[perf]
+counter = "sql"
+source = "system.query_log (initial queries finished or failed in the measured database)"
+check = ["SYSTEM FLUSH LOGS", "SELECT count() FROM system.query_log WHERE 0"]
+mark = "SELECT toUnixTimestamp64Micro(now64(6))"
+flush = ["SYSTEM FLUSH LOGS"]
+read = "SELECT query, 1 FROM system.query_log WHERE current_database = {db} AND is_initial_query = 1 AND type != 'QueryStart' AND toUnixTimestamp64Micro(query_start_time_microseconds) >= {mark} ORDER BY query_start_time_microseconds, event_time_microseconds, query SETTINGS final = 0"

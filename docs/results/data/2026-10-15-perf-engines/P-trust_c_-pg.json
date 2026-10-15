@@ -1,0 +1,9 @@
+{
+ "id": "P-trust(c)-pg",
+ "status": "NOT RUN",
+ "title": "postgres: every statement SqlCounter sends is the descriptor's",
+ "predicted": "178 statements, all descriptor statements, every {db} a clone",
+ "observed": "not run: needs a running Docker daemon, psycopg in the probe python",
+ "pass": null,
+ "reason": "needs a running Docker daemon, psycopg in the probe python"
+}

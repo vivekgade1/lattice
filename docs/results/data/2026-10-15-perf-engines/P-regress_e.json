@@ -1,0 +1,9 @@
+{
+ "id": "P-regress(e)",
+ "status": "NOT RUN",
+ "title": "MySQL on Streak, old vs new, 10x each",
+ "predicted": "1 distinct hash over 20, exit 0 x20, counts 11/31 and 4/4, fits 6+1N and 4+0N exact",
+ "observed": "not run: needs a running Docker daemon, pymysql in the probe python",
+ "pass": null,
+ "reason": "needs a running Docker daemon, pymysql in the probe python"
+}
