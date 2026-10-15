@@ -1,0 +1,66 @@
+... B0
+... D1
+... D2
+... D3
+... D4
+... D5
+... D6
+... D7
+... D8
+... D9
+... D10
+... D11
+... D12
+... D13
+... C1
+... C2
+... C3
+... C4
+... C5
+... C6
+... W1
+... W2
+... W3
+... W4
+... V1
+... V2
+... V3
+... V4
+... V5
+... V6
+... T1
+id   | predicted                                                    | observed                                                                         | pass
+B0   | export 26 endpoints (public 5, token 21, unknown 0); error_body json_key(error), observed; statuses = R1 26/26; GET /v1/habits envelope only; granted ann 21, ben 10, refused none; /health and /test/clock exported; pin exit 0, 26 endpoints; check exit 0, 0 findings, 2 gaps (cursor @ GET /v1/habits, access_token @ POST /v1/auth/login) | 26 endpoints; auth public 5 token 21 unknown 0; error_body json_key(error); statuses==R1 True; ann 21 ben 10; bodies object 19 empty 7; /health True /test/clock True; pin exit 0 (26 endpoints); check exit 0, 0 findings, gaps request_field_unobserved GET /v1/habits cursor; response_field_unobserved POST /v1/auth/login access_token | PASS
+D1   | endpoint removed (every GET /v1/home 2xx becomes 404): BROKEN; BROKEN endpoint_missing GET /v1/home; CHANGED 0: none; version_changed true; gaps 2 | BROKEN; BROKEN endpoint_missing GET /v1/home; CHANGED 0: none; exit 1; version_changed True; spec_hash_changed True; gaps 2 | PASS
+D2   | status changed (dismiss 200 -> 204): BROKEN; BROKEN status_not_observed POST /v1/nudges/{}/dismiss 200; CHANGED 1: status_added 204 @ POST /v1/nudges/{}/dismiss relied; version_changed true; gaps 2 | BROKEN; BROKEN status_not_observed POST /v1/nudges/{}/dismiss 200; CHANGED 1: status_added 204 @ POST /v1/nudges/{}/dismiss relied; exit 1; version_changed True; spec_hash_changed True; gaps 2 | PASS
+D3   | response field renamed (expires_in -> expires_in_s): BROKEN; BROKEN response_field_missing POST /v1/auth/login expires_in; CHANGED 3: field_added response expires_in_s @ POST /v1/auth/login relied; field_added response expires_in_s @ POST /v1/auth/refresh unrelied; field_removed response expires_in @ POST /v1/auth/refresh unrelied; version_changed true; gaps 2 | BROKEN; BROKEN response_field_missing POST /v1/auth/login expires_in; CHANGED 3: field_added response expires_in_s @ POST /v1/auth/login relied; field_added response expires_in_s @ POST /v1/auth/refresh unrelied; field_removed response expires_in @ POST /v1/auth/refresh unrelied; exit 1; version_changed True; spec_hash_changed True; gaps 2 | PASS
+D4   | request field renamed (password -> passphrase): BROKEN; BROKEN request_field_missing POST /v1/auth/login password; CHANGED 1: field_added request passphrase @ POST /v1/auth/login relied; version_changed true; gaps 2 | BROKEN; BROKEN request_field_missing POST /v1/auth/login password; CHANGED 1: field_added request passphrase @ POST /v1/auth/login relied; exit 1; version_changed True; spec_hash_changed True; gaps 2 | PASS
+D5   | access removed from ann (GET /v1/home 200 -> 404): BROKEN; BROKEN auth_changed GET /v1/home as_user ann; CHANGED 1: status_added 404 @ GET /v1/home relied; version_changed true; gaps 2 | BROKEN; BROKEN auth_changed GET /v1/home as_user ann; CHANGED 1: status_added 404 @ GET /v1/home relied; exit 1; version_changed True; spec_hash_changed True; gaps 2 | PASS
+D6   | next_cursor renamed to next: BROKEN; BROKEN response_field_missing GET /v1/habits next_cursor; CHANGED 5: field_added response next @ GET /v1/habits relied; field_added response next @ GET /v1/habits/{}/completions unrelied; field_added response next @ GET /v1/nudges unrelied; field_removed response next_cursor @ GET /v1/habits/{}/completions unrelied; field_removed response next_cursor @ GET /v1/nudges unrelied; version_changed true; gaps 2 | BROKEN; BROKEN response_field_missing GET /v1/habits next_cursor; CHANGED 5: field_added response next @ GET /v1/habits relied; field_added response next @ GET /v1/habits/{}/completions unrelied; field_added response next @ GET /v1/nudges unrelied; field_removed response next_cursor @ GET /v1/habits/{}/completions unrelied; field_removed response next_cursor @ GET /v1/nudges unrelied; exit 1; version_changed True; spec_hash_changed True; gaps 2 | PASS
+D7   | version bump /v1/ -> /v2/: BROKEN; BROKEN endpoint_missing GET /v1/habits; endpoint_missing GET /v1/habits/{}/progress; endpoint_missing GET /v1/home; endpoint_missing GET /v1/me; endpoint_missing POST /v1/auth/login; endpoint_missing POST /v1/habits/{}/completions; endpoint_missing POST /v1/nudges/{}/dismiss; CHANGED 41 (17 removed + 24 added); version_changed true; gaps 0 | BROKEN; BROKEN endpoint_missing GET /v1/habits; endpoint_missing GET /v1/habits/{}/progress; endpoint_missing GET /v1/home; endpoint_missing GET /v1/me; endpoint_missing POST /v1/auth/login; endpoint_missing POST /v1/habits/{}/completions; endpoint_missing POST /v1/nudges/{}/dismiss; CHANGED 41; exit 1; version_changed True; spec_hash_changed True; gaps 0 | PASS
+D8   | endpoint added (GET /v1/me/stats): CHANGED; BROKEN none; CHANGED 1: endpoint_added @ GET /v1/me/stats unrelied; version_changed true; gaps 2 | CHANGED; BROKEN none; CHANGED 1: endpoint_added @ GET /v1/me/stats unrelied; exit 1; version_changed True; spec_hash_changed True; gaps 2 | PASS
+D9   | field type changed (expires_in 900 -> '900'): MISS (0 findings, spec_hash equal, exit 0); BROKEN none; CHANGED 0: none; version_changed true; gaps 2 | none; BROKEN none; CHANGED 0: none; exit 0; version_changed True; spec_hash_changed False; gaps 2 | PASS
+D10  | required field added (client_tz on completions): CHANGED; BROKEN none; CHANGED 1: field_added request client_tz @ POST /v1/habits/{}/completions relied; version_changed true; gaps 2 | CHANGED; BROKEN none; CHANGED 1: field_added request client_tz @ POST /v1/habits/{}/completions relied; exit 1; version_changed True; spec_hash_changed True; gaps 2 | PASS
+D11  | ownership (ben's progress 200 -> 404): CHANGED; BROKEN none; CHANGED 1: auth_tightened as_user ben @ GET /v1/habits/{}/progress relied; version_changed true; gaps 2 | CHANGED; BROKEN none; CHANGED 1: auth_tightened as_user ben @ GET /v1/habits/{}/progress relied; exit 1; version_changed True; spec_hash_changed True; gaps 2 | PASS
+D12  | nested item key renamed (name -> title): MISS (0 findings, spec_hash equal, exit 0); BROKEN none; CHANGED 0: none; version_changed true; gaps 2 | none; BROKEN none; CHANGED 0: none; exit 0; version_changed True; spec_hash_changed False; gaps 2 | PASS
+D13  | relied noise (the only 429 on GET /v1/me): CHANGED; BROKEN none; CHANGED 1: status_removed 429 @ GET /v1/me relied; version_changed true; gaps 2 | CHANGED; BROKEN none; CHANGED 1: status_removed 429 @ GET /v1/me relied; exit 1; version_changed True; spec_hash_changed True; gaps 2 | PASS
+C1   | exit 0, 0 findings, B0's 2 gaps, version_changed false | exit 0, 0 findings, 2 gap(s), version_changed False | PASS
+C2   | spec.py sha256 changes; spec_hash equal; exit 0; version_changed true | file sha256 changed True; spec_hash_changed False; exit 0, 0 findings; version_changed True | PASS
+C3   | all 156 scenarios reordered: spec_hash equal; exit 0 | spec_hash_changed False; exit 0, 0 findings | PASS
+C4   | exit 1; exactly 1 CHANGED field_added response id @ POST /v1/auth/register, unrelied; 0 BROKEN | exit 1; CHANGED field_added response id @ POST /v1/auth/register unrelied; BROKEN none | PASS
+C5   | one scenario's UUIDs (101 -> 777 in progress_timezone_example): spec_hash equal; exit 0 | spec_hash_changed False; exit 0, 0 findings | PASS
+C6   | every UUID of the spec becomes another valid UUID: spec_hash equal; exit 0 | spec_hash_changed False; exit 0, 0 findings | PASS
+W1   | no contract key, spec.py ending in raise RuntimeError: exit 0, checked 0 (spec never loaded); the same link 'static': exit 2 export_failed | absent: exit 0, checked 0; static: exit 2 export_failed | PASS
+W2   | 'static' link: the spec loads and the check runs; the result equals B0; live is null | live None; result equals B0 True; exit 0; gaps 2 | PASS
+W3   | contract 'live' on Streak: check exit 2, link status error, error.code unsupported_database, findings and gaps []; nothing started (no Docker, no Go build, no provider process); --static-only exit 0 with live not_run/static-only; pin exit 0 | check exit 2, link status error, error.code unsupported_database, findings 0, gaps 0; docker/go/mysql calls 0; ps lines seen 7, provider-like 0; bin/ present False; static-only exit 0 live {'status': 'not_run', 'reason': 'static-only'}; pin exit 0 | PASS
+W4   | a manifest without layer-3 keys: workspace show, show --json, validate, validate --json, impact streak, impact streak --json are byte-identical (6 of 6) to the old code (c0cdefc) | 6/6 byte-identical to the old code; exits 0,0,0,0,0,0; old HEAD c0cdefc, workspace.py modified False | PASS
+V1   | 10 pins on the clean clone: locks byte-identical to each other and to the golden; spec_hash == sha256 of the embedded export; no scratch path, no timestamp | 1 distinct lock(s) in 10; equals golden True; spec_hash d44b738522ea == recomputed d44b738522ea; scratch path hits 0; timestamps 0 | PASS
+V2   | no lock: exit 2, no_pin, the message names the lock path and 'lattice contracts pin' | exit 2 no_pin; streak-widget has no lock ($WORK/w/V2/streak-widget/lattice.contracts.lock.json): run `lattice contracts pin streak-widget` | PASS
+V3   | after D1: pin exit 1, lock bytes unchanged; pin --force writes the lock; the next check exits 0 with a third gap endpoint_unobserved GET /v1/home | pin exit 1, lock unchanged True; --force exit 0, wrote True; check exit 0, 0 findings, gaps endpoint_unobserved GET /v1/home; request_field_unobserved GET /v1/habits cursor; response_field_unobserved POST /v1/auth/login access_token | PASS
+V4   | README-only commit: exit 0, 0 findings, version_changed true, same spec_hash, git_ref other than a0db033 | exit 0, 0 findings, version_changed True, spec_hash_changed False, git_ref a0db033a -> 214cc5db | PASS
+V5   | C2's edit left uncommitted: dirty true, version_changed true, exit 0 | dirty True, version_changed True, exit 0, 0 findings | PASS
+V6   | the lock with one hex digit of spec_hash flipped: exit 2, bad_pin | exit 2 bad_pin; $WORK/w/V6/streak-widget/lattice.contracts.lock.json: the spec_hash of 'streak' does not match its embedded export (recorded 044b738522ea, computed d44b738522ea); delete it and run `lattice contracts pin streak-widget` | PASS
+S1   | Streak HEAD a0db033... and ' M studio.toml' before and after the whole run; studio.toml sha256 unchanged; find -newer finds no file | before a0db033 ' M studio.toml' studio.toml 540211a64cb5; after a0db033 ' M studio.toml' 540211a64cb5; files newer than the start marker: 0 [] | PASS
+T1   | median wall time of the static check of one link over 10 runs <= 10 s (predicted <= 1 s); `contracts export streak` time reported | static check median 0.35 s wall (0.31 s elapsed_s); export median 0.35 s wall | PASS
+probes: 32/32 pass
+$PY dogfood/contracts/streak_probes.py --runs 10 --allow-code-diff --scratch   168.26s user 27.08s system 101% cpu 3:12.19 total

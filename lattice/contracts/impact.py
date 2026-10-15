@@ -32,6 +32,12 @@ contradiction) or 2 (it cannot run: a manifest error, an unknown provider or can
 export of the candidate, any row in error). ``current_label`` is the same label for the provider's
 *current* export against the same pin: it tells a stale pin (the whole pin -> candidate difference
 is then in the row) from a change the candidate brings.
+
+**``transitive=True``** (``--transitive``, slice 4c) adds one key, ``transitive``: the projects
+that rely on a ``contradiction`` consumer through opted-in links, at any depth, as ``downstream``
+rows (declared reachability, unverified, never a label of the first-order tier, never in
+``counts`` or the exit code). Without it the output is byte-for-byte the one above. See
+:mod:`lattice.contracts.transitive`.
 """
 
 from __future__ import annotations
@@ -47,6 +53,7 @@ from pathlib import Path
 from typing import Any
 
 from lattice.contracts import check as ck
+from lattice.contracts import transitive as tr
 from lattice.contracts.export import DEFAULT_SPEC, ExportFailed, compute_export
 from lattice.workspace import ERROR, WARNING, Link, Problem, Workspace
 
@@ -83,6 +90,7 @@ class Impact:
     problems: list[Problem] = dataclasses.field(default_factory=list)
     elapsed_s: float = 0.0
     cannot_run: bool = False  # no usable workspace at all: exit 2 whatever `problems` says
+    transitive: dict[str, Any] | None = None  # slice 4c: only with `transitive=True`
 
     @property
     def counts(self) -> dict[str, int]:
@@ -104,7 +112,7 @@ class Impact:
         return 0
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        out: dict[str, Any] = {
             "format": FORMAT,
             "workspace": self.workspace,
             "provider": self.provider,
@@ -116,10 +124,13 @@ class Impact:
             "checked": len(self.consumers),
             "consumers": self.consumers,
             "counts": self.counts,
-            "problems": [p.to_dict() for p in self.problems],
-            "exit_code": self.exit_code,
-            "elapsed_s": round(self.elapsed_s, 3),
         }
+        if self.transitive is not None:
+            out["transitive"] = self.transitive
+        out["problems"] = [p.to_dict() for p in self.problems]
+        out["exit_code"] = self.exit_code
+        out["elapsed_s"] = round(self.elapsed_s, 3)
+        return out
 
 
 def candidate_info(text: str, kind: str | None = None) -> dict[str, Any]:
@@ -322,14 +333,19 @@ def _row(session: ck._Session, link: Link, cand: Mapping[str, Any],
     }  # fmt: skip
 
 
-def run_impact(ws: Workspace, provider: str, candidate: str, *, base: Path | None = None) -> Impact:
+def run_impact(ws: Workspace, provider: str, candidate: str, *, base: Path | None = None,
+               transitive: bool = False) -> Impact:  # fmt: skip
     """The impact of `candidate` (a directory, relative to `base` (default: the cwd), or a git
     ref of the provider's repository) on the consumers of the workspace project `provider`. Never
     raises on content; errors are in ``Impact.problems`` and the rows' ``error``. Order: manifest,
-    provider, links, candidate, candidate export, current export, rows."""
+    provider, links, candidate, candidate export, current export, rows. With `transitive`
+    the answer also holds ``Impact.transitive`` (:mod:`lattice.contracts.transitive`): empty
+    whenever there is no row to start from, and computed with no export and no write."""
     t0 = time.monotonic()
     base = Path(base) if base is not None else Path.cwd()
     out = Impact(ws.name, provider, candidate_info(candidate, _kind(candidate, base)))
+    if transitive:
+        out.transitive = tr.empty()
     try:
         out.problems = list(ws.problems)
         if ws.errors:
@@ -369,6 +385,8 @@ def run_impact(ws: Workspace, provider: str, candidate: str, *, base: Path | Non
                 out.consumers.append(_row(session, link, cand, cur))
             except ck.ContractError as e:
                 out.consumers.append(_error_row(link, e))
+        if transitive:
+            out.transitive = tr.downstream(ws, out.consumers, provider)
         return out
     finally:
         out.elapsed_s = time.monotonic() - t0
