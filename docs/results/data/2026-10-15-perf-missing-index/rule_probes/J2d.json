@@ -1,0 +1,44 @@
+{
+ "id": "J2d",
+ "identical": true,
+ "observed": {
+  "identical": 2790,
+  "no_trade_notes_exact": 121,
+  "notes_only_differ": 121,
+  "nstar_in_0_to_5": 599,
+  "nstar_max": "5",
+  "old_trade_note_under_new": 0,
+  "old_trade_note_under_old": 599,
+  "other_field_differs": 0,
+  "summary": "identical 2790, verdict+notes 599, notes-only 121, other 0, old note old/new 599/0, N* ok 599 max 5",
+  "trade_notes_exact": 599,
+  "verdict_and_notes_differ": 599
+ },
+ "pass": true,
+ "prediction": {
+  "identical": 2790,
+  "no_trade_notes_exact": 121,
+  "notes_only_differ": 121,
+  "nstar_in_0_to_5": 599,
+  "nstar_max": "5",
+  "old_trade_note_under_new": 0,
+  "old_trade_note_under_old": 599,
+  "other_field_differs": 0,
+  "text": "identical 2790, verdict+notes 599, notes-only 121, old note 599/0, 599 N* in (0,5] max 5",
+  "trade_notes_exact": 599,
+  "verdict_and_notes_differ": 599
+ },
+ "runs": 10,
+ "sha256": [
+  "041af48e72d603e1e69e5fcb2abe9dddfe7897feaca5bd3b444f476e77bb1235",
+  "041af48e72d603e1e69e5fcb2abe9dddfe7897feaca5bd3b444f476e77bb1235",
+  "041af48e72d603e1e69e5fcb2abe9dddfe7897feaca5bd3b444f476e77bb1235",
+  "041af48e72d603e1e69e5fcb2abe9dddfe7897feaca5bd3b444f476e77bb1235",
+  "041af48e72d603e1e69e5fcb2abe9dddfe7897feaca5bd3b444f476e77bb1235",
+  "041af48e72d603e1e69e5fcb2abe9dddfe7897feaca5bd3b444f476e77bb1235",
+  "041af48e72d603e1e69e5fcb2abe9dddfe7897feaca5bd3b444f476e77bb1235",
+  "041af48e72d603e1e69e5fcb2abe9dddfe7897feaca5bd3b444f476e77bb1235",
+  "041af48e72d603e1e69e5fcb2abe9dddfe7897feaca5bd3b444f476e77bb1235",
+  "041af48e72d603e1e69e5fcb2abe9dddfe7897feaca5bd3b444f476e77bb1235"
+ ]
+}

@@ -1,0 +1,40 @@
+{
+ "id": "J2c",
+ "identical": true,
+ "observed": {
+  "new_fail": 2236,
+  "new_only": 599,
+  "new_pass": 1274,
+  "no_trade": 121,
+  "no_trade_over_at_n5": 121,
+  "old_fail": 2835,
+  "old_pass": 675,
+  "summary": "old 675, new-only 599, new 1274, no-trade 121",
+  "trade_candidates": 720
+ },
+ "pass": true,
+ "prediction": {
+  "new_fail": 2236,
+  "new_only": 599,
+  "new_pass": 1274,
+  "no_trade": 121,
+  "no_trade_over_at_n5": 121,
+  "old_fail": 2835,
+  "old_pass": 675,
+  "text": "old 675, new-only 599, new 1274, no-trade 121 (over at N=5 only)",
+  "trade_candidates": 720
+ },
+ "runs": 10,
+ "sha256": [
+  "fd6845bd59d2b383333468c6645849d8b79c260ffc20519708c28a047dc161f9",
+  "fd6845bd59d2b383333468c6645849d8b79c260ffc20519708c28a047dc161f9",
+  "fd6845bd59d2b383333468c6645849d8b79c260ffc20519708c28a047dc161f9",
+  "fd6845bd59d2b383333468c6645849d8b79c260ffc20519708c28a047dc161f9",
+  "fd6845bd59d2b383333468c6645849d8b79c260ffc20519708c28a047dc161f9",
+  "fd6845bd59d2b383333468c6645849d8b79c260ffc20519708c28a047dc161f9",
+  "fd6845bd59d2b383333468c6645849d8b79c260ffc20519708c28a047dc161f9",
+  "fd6845bd59d2b383333468c6645849d8b79c260ffc20519708c28a047dc161f9",
+  "fd6845bd59d2b383333468c6645849d8b79c260ffc20519708c28a047dc161f9",
+  "fd6845bd59d2b383333468c6645849d8b79c260ffc20519708c28a047dc161f9"
+ ]
+}

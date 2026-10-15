@@ -1,0 +1,228 @@
+{
+ "id": "P-mysql-ii",
+ "status": "RAN",
+ "title": "Streak (Go + MySQL), habits budget, clean and S3",
+ "predicted": "clean: 0 findings on tables >= 25 rows, exit 0; S3: a finding on habits (25 rows), exit 1; counts 4/4; 10/10 each",
+ "observed": "clean 0 findings 10/10, S3 caught 10/10 (habits 25 rows), counts 4/4, clone at a0679e9",
+ "pass": true,
+ "repetitions": 10,
+ "seconds": 130.7,
+ "error": null,
+ "facts": {
+  "streak_sha": "a0679e9044486c98611febcd050a1fd23b6cd756",
+  "wanted": "a0679e9",
+  "clean": {
+   "as_predicted": 10,
+   "runs": 10,
+   "access": [],
+   "distinct_hashes": 1,
+   "sample": {
+    "version": 1,
+    "command": "check",
+    "project": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/streak",
+    "budget_file": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/streak/perf.budget.json",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "habits",
+      "endpoint": "GET /v1/habits",
+      "sizes": [
+       {
+        "n": 5,
+        "statements": [
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4
+        ],
+        "latency_ms": {
+         "min": 2.19,
+         "median": 2.354,
+         "max": 4.134
+        }
+       },
+       {
+        "n": 25,
+        "statements": [
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4
+        ],
+        "latency_ms": {
+         "min": 2.1,
+         "median": 2.166,
+         "max": 3.057
+        }
+       }
+      ],
+      "fit": {
+       "constant": 4,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 4,
+        "per_item": 0
+       },
+       "latency_ms": null
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: mysql (container lattice-perf-mysql-2a0beaff); statements from the general log (Query + Execute rows of the app's connections)",
+       "10 run(s) per size, one fresh app and database per size"
+      ],
+      "explain": {
+       "size": 25,
+       "engine": "mysql",
+       "status": "checked",
+       "reason": "",
+       "min_rows": 25,
+       "explained": 3,
+       "ignored": 0,
+       "below_threshold": 0,
+       "skipped": [],
+       "tables": {},
+       "findings": []
+      }
+     }
+    ],
+    "explain": {
+     "verdict": "clean",
+     "findings": 0,
+     "budgets": 0,
+     "unchecked": 0
+    }
+   }
+  },
+  "S3": {
+   "as_predicted": 10,
+   "runs": 10,
+   "access": [
+    "type=index key=PRIMARY Extra=Using where"
+   ],
+   "distinct_hashes": 1,
+   "sample": {
+    "version": 1,
+    "command": "check",
+    "project": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/streak",
+    "budget_file": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/streak/perf.budget.json",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "habits",
+      "endpoint": "GET /v1/habits",
+      "sizes": [
+       {
+        "n": 5,
+        "statements": [
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4
+        ],
+        "latency_ms": {
+         "min": 1.985,
+         "median": 2.069,
+         "max": 3.883
+        }
+       },
+       {
+        "n": 25,
+        "statements": [
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4
+        ],
+        "latency_ms": {
+         "min": 2.112,
+         "median": 2.257,
+         "max": 3.146
+        }
+       }
+      ],
+      "fit": {
+       "constant": 4,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 4,
+        "per_item": 0
+       },
+       "latency_ms": null
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: mysql (container lattice-perf-mysql-5b9eb875); statements from the general log (Query + Execute rows of the app's connections)",
+       "10 run(s) per size, one fresh app and database per size"
+      ],
+      "explain": {
+       "size": 25,
+       "engine": "mysql",
+       "status": "checked",
+       "reason": "",
+       "min_rows": 25,
+       "explained": 3,
+       "ignored": 0,
+       "below_threshold": 0,
+       "skipped": [],
+       "tables": {
+        "habits": 25
+       },
+       "findings": [
+        {
+         "table": "habits",
+         "rows": 25,
+         "access": "type=index key=PRIMARY Extra=Using where",
+         "sql": "SELECT * FROM `habits` WHERE (user_id = ? AND deleted_at IS NULL) AND archived = ? ORDER BY id LIMIT ?"
+        }
+       ]
+      }
+     }
+    ],
+    "explain": {
+     "verdict": "findings",
+     "findings": 1,
+     "budgets": 1,
+     "unchecked": 0
+    }
+   }
+  }
+ }
+}

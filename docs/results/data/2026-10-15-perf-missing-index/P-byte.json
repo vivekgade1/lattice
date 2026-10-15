@@ -1,0 +1,150 @@
+{
+ "id": "P-byte",
+ "status": "RAN",
+ "title": "outputs without --explain are byte-identical to 30c9120",
+ "predicted": "(a) 112 old tests source-identical and passing; (b) 8 commands x 20 runs: 1 hash, same exits; (c) six invalid files identical, capture file the one difference; (d) indexapp old = new; (e) counts with --explain = without, 10/10",
+ "observed": "(a)-(e) as predicted: 8 commands x 20 runs, 1 hash each; 7 budget files; 4 test files, 112 passed in 12.64s",
+ "pass": true,
+ "repetitions": 10,
+ "seconds": 116.0,
+ "error": null,
+ "facts": {
+  "a_changed_defs": [],
+  "a_pytest": {
+   "files": [
+    "tests/perf/test_budget.py",
+    "tests/perf/test_counting.py",
+    "tests/perf/test_counting_docker.py",
+    "tests/perf/test_measure.py"
+   ],
+   "rc": 0,
+   "summary": "112 passed in 12.64s"
+  },
+  "b": {
+   "measure": {
+    "hashes": 1,
+    "exits": [
+     0
+    ]
+   },
+   "measure --statements": {
+    "hashes": 1,
+    "exits": [
+     0
+    ]
+   },
+   "measure --json": {
+    "hashes": 1,
+    "exits": [
+     0
+    ]
+   },
+   "measure --json --statements": {
+    "hashes": 1,
+    "exits": [
+     0
+    ]
+   },
+   "check": {
+    "hashes": 1,
+    "exits": [
+     0
+    ]
+   },
+   "check --statements": {
+    "hashes": 1,
+    "exits": [
+     0
+    ]
+   },
+   "check --json": {
+    "hashes": 1,
+    "exits": [
+     0
+    ]
+   },
+   "check --json --statements": {
+    "hashes": 1,
+    "exits": [
+     0
+    ]
+   }
+  },
+  "c": {
+   "not_json": {
+    "old": [
+     2,
+     "lattice perf: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/invalid-8/not_json.json: not JSON (Expecting property name enclosed in double quotes: line 1 column 2 (char 1))"
+    ],
+    "new_rc": 2,
+    "same": true
+   },
+   "version": {
+    "old": [
+     2,
+     "lattice perf: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/invalid-9/version.json: invalid budget file:\n  version: must be 1"
+    ],
+    "new_rc": 2,
+    "same": true
+   },
+   "top_key": {
+    "old": [
+     2,
+     "lattice perf: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/invalid-10/top_key.json: invalid budget file:\n  unknown top-level key(s) bogus"
+    ],
+    "new_rc": 2,
+    "same": true
+   },
+   "budget_empty": {
+    "old": [
+     2,
+     "lattice perf: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/invalid-11/budget_empty.json: invalid budget file:\n  budget 'x'.endpoint: \"METHOD /path\", METHOD one of GET, POST, PUT, PATCH, DELETE\n  budget 'x'.seed: {items: \"N\", steps: [...]}\n  budget 'x'.sizes: two or more distinct non-negative integers\n  budget 'x'.queries: {constant, per_item}"
+    ],
+    "new_rc": 2,
+    "same": true
+   },
+   "one_size": {
+    "old": [
+     2,
+     "lattice perf: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/invalid-12/one_size.json: invalid budget file:\n  budget 'a'.sizes: two or more distinct non-negative integers"
+    ],
+    "new_rc": 2,
+    "same": true
+   },
+   "bad_step": {
+    "old": [
+     2,
+     "lattice perf: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/invalid-13/bad_step.json: invalid budget file:\n  budget 'a'.seed.steps[0]: unknown key(s) colour\n  budget 'a'.seed.steps[0].count: \"N\" or a non-negative integer"
+    ],
+    "new_rc": 2,
+    "same": true
+   },
+   "capture": {
+    "old": [
+     2,
+     "lattice perf: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/missidx/probes-full/invalid-14/capture.json: invalid budget file:\n  budget 'notes'.seed.steps[0]: unknown key(s) capture"
+    ],
+    "new_rc": 0,
+    "same": false
+   }
+  },
+  "d": {
+   "text": {
+    "hashes": 1,
+    "exits": [
+     0
+    ]
+   },
+   "json": {
+    "hashes": 1,
+    "exits": [
+     0
+    ]
+   }
+  },
+  "e": {
+   "identical": 10,
+   "runs": 10
+  }
+ }
+}

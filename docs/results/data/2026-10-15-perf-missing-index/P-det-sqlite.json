@@ -1,0 +1,41 @@
+{
+ "id": "P-det-sqlite",
+ "status": "RAN",
+ "title": "determinism: SQLite arms",
+ "predicted": "1 sha256 per arm over 10 runs",
+ "observed": "4 arms x 10 runs: 1 sha256 each",
+ "pass": true,
+ "repetitions": 10,
+ "seconds": 0.0,
+ "error": null,
+ "facts": {
+  "sqlite/clean": {
+   "runs": 10,
+   "distinct": 1,
+   "hashes": [
+    "e487d5bcf70af502"
+   ]
+  },
+  "sqlite/drop_items": {
+   "runs": 10,
+   "distinct": 1,
+   "hashes": [
+    "88cc3b034501b7e7"
+   ]
+  },
+  "sqlite/drop_notes": {
+   "runs": 10,
+   "distinct": 1,
+   "hashes": [
+    "c603626246b718c3"
+   ]
+  },
+  "sqlite/clean+min0": {
+   "runs": 10,
+   "distinct": 1,
+   "hashes": [
+    "1b456d159ded6862"
+   ]
+  }
+ }
+}

@@ -1,0 +1,70 @@
+{
+ "id": "J1d",
+ "identical": true,
+ "observed": {
+  "new": {
+   "delta": {
+    "constant": -2,
+    "per_item": 1
+   },
+   "notes": [
+    "over budget: per_item 1 > budget 0",
+    "over budget: N=5: 11 statements > allowed 8",
+    "over budget: N=25: 31 statements > allowed 8",
+    "better than the budget: constant 6 < 8"
+   ],
+   "verdict": "fail"
+  },
+  "old": {
+   "notes": [
+    "over budget: per_item 1 > budget 0",
+    "over budget: N=5: 11 statements > allowed 8",
+    "over budget: N=25: 31 statements > allowed 8",
+    "better than the budget: constant 6 < 8"
+   ],
+   "verdict": "fail"
+  },
+  "summary": "J1d: old fail -> new fail; 4 notes; delta {'constant': -2, 'per_item': 1}",
+  "to_dict_identical": true
+ },
+ "pass": true,
+ "prediction": {
+  "new": {
+   "delta": {
+    "constant": -2,
+    "per_item": 1
+   },
+   "notes": [
+    "over budget: per_item 1 > budget 0",
+    "over budget: N=5: 11 statements > allowed 8",
+    "over budget: N=25: 31 statements > allowed 8",
+    "better than the budget: constant 6 < 8"
+   ],
+   "verdict": "fail"
+  },
+  "old": {
+   "notes": [
+    "over budget: per_item 1 > budget 0",
+    "over budget: N=5: 11 statements > allowed 8",
+    "over budget: N=25: 31 statements > allowed 8",
+    "better than the budget: constant 6 < 8"
+   ],
+   "verdict": "fail"
+  },
+  "text": "old fail -> new fail; 4 notes; delta {'constant': -2, 'per_item': 1}; to_dict old==new",
+  "to_dict_identical": true
+ },
+ "runs": 10,
+ "sha256": [
+  "6232bf26773f3c0bd3a49e818407e54659b0d7672afbac61f5097456ba4ef4de",
+  "6232bf26773f3c0bd3a49e818407e54659b0d7672afbac61f5097456ba4ef4de",
+  "6232bf26773f3c0bd3a49e818407e54659b0d7672afbac61f5097456ba4ef4de",
+  "6232bf26773f3c0bd3a49e818407e54659b0d7672afbac61f5097456ba4ef4de",
+  "6232bf26773f3c0bd3a49e818407e54659b0d7672afbac61f5097456ba4ef4de",
+  "6232bf26773f3c0bd3a49e818407e54659b0d7672afbac61f5097456ba4ef4de",
+  "6232bf26773f3c0bd3a49e818407e54659b0d7672afbac61f5097456ba4ef4de",
+  "6232bf26773f3c0bd3a49e818407e54659b0d7672afbac61f5097456ba4ef4de",
+  "6232bf26773f3c0bd3a49e818407e54659b0d7672afbac61f5097456ba4ef4de",
+  "6232bf26773f3c0bd3a49e818407e54659b0d7672afbac61f5097456ba4ef4de"
+ ]
+}

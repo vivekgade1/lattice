@@ -1,0 +1,87 @@
+{
+ "id": "P-safe-postgres",
+ "status": "RAN",
+ "title": "P-safe (a)-(c) on Postgres",
+ "predicted": "injected text skipped, rows unchanged, write refused (read-only transaction), only EXPLAIN/SET/COUNT sent",
+ "observed": "injected text skipped, rows unchanged, write refused (DatabaseError: cannot execute INSERT in a read-only transact), only EXPLAIN/SET/COUNT sent, 0 containers left",
+ "pass": true,
+ "repetitions": 10,
+ "seconds": 1.7,
+ "error": null,
+ "facts": {
+  "rc": 1,
+  "seen": {
+   "rows": [
+    [
+     6,
+     6
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "sent": [
+    "EXPLAIN (GENERIC_PLAN, FORMAT JSON) SELECT id FROM users WHERE token = $1",
+    "SELECT COUNT(*) FROM \"users\"",
+    "EXPLAIN (GENERIC_PLAN, FORMAT JSON) SELECT id, user_id, name FROM items WHERE user_id = $1 ORDER BY id",
+    "SELECT COUNT(*) FROM \"items\"",
+    "EXPLAIN (GENERIC_PLAN, FORMAT JSON) SELECT id FROM items WHERE id = $1 AND user_id = $2",
+    "EXPLAIN (GENERIC_PLAN, FORMAT JSON) SELECT id FROM users WHERE token = $1",
+    "SELECT COUNT(*) FROM \"users\"",
+    "EXPLAIN (GENERIC_PLAN, FORMAT JSON) SELECT id, item_id, body FROM notes WHERE item_id = $1 ORDER BY id"
+   ],
+   "write": "DatabaseError: cannot execute INSERT in a read-only transaction"
+  },
+  "explain": {
+   "items": {
+    "size": 6,
+    "engine": "postgres",
+    "status": "partial",
+    "reason": "1 statement(s) not explained",
+    "min_rows": 6,
+    "explained": 2,
+    "ignored": 0,
+    "below_threshold": 1,
+    "skipped": [
+     {
+      "sql": "SELECT ?; DELETE FROM items",
+      "reason": "more than one statement"
+     }
+    ],
+    "tables": {
+     "items": 6,
+     "users": 2
+    },
+    "findings": [
+     {
+      "table": "items",
+      "rows": 6,
+      "access": "Index Scan on items, Filter: (user_id = $1)",
+      "sql": "SELECT id, user_id, name FROM items WHERE user_id = $? ORDER BY id"
+     }
+    ]
+   },
+   "notes": {
+    "size": 6,
+    "engine": "postgres",
+    "status": "partial",
+    "reason": "1 statement(s) not explained",
+    "min_rows": 6,
+    "explained": 3,
+    "ignored": 0,
+    "below_threshold": 1,
+    "skipped": [
+     {
+      "sql": "SELECT ?; DELETE FROM items",
+      "reason": "more than one statement"
+     }
+    ],
+    "tables": {
+     "users": 2
+    },
+    "findings": []
+   }
+  }
+ }
+}
