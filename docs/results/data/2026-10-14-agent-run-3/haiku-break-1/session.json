@@ -1,0 +1,41 @@
+{
+ "sid": "haiku-break-1",
+ "condition": "break",
+ "model": "haiku",
+ "attempt": 1,
+ "world": "A-haiku-break-1",
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 12.3
+ },
+ "cost_usd": 0.016250260000000002,
+ "infra_failure": null,
+ "usage_limit": false,
+ "argv_max_turns_present": true,
+ "scratch_outside_changed": [],
+ "info_claude_projects_cwd_exists": true,
+ "started_utc": "2026-10-15T00:14:33+00:00",
+ "attempts": 1,
+ "attempt_history": [
+  {
+   "sid": "haiku-break-1",
+   "condition": "break",
+   "model": "haiku",
+   "attempt": 1,
+   "world": "A-haiku-break-1",
+   "run": {
+    "rc": 0,
+    "timed_out": false,
+    "wall_s": 12.3
+   },
+   "cost_usd": 0.016250260000000002,
+   "infra_failure": null,
+   "usage_limit": false,
+   "argv_max_turns_present": true,
+   "scratch_outside_changed": [],
+   "info_claude_projects_cwd_exists": true,
+   "started_utc": "2026-10-15T00:14:33+00:00"
+  }
+ ]
+}

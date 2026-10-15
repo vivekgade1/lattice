@@ -1,0 +1,314 @@
+{
+ "sid": "sonnet-break-2",
+ "condition": "break",
+ "model_alias": "sonnet",
+ "model_resolved": "claude-sonnet-5-5",
+ "items": {
+  "R1": true,
+  "R1b": true,
+  "R2": true,
+  "R5": true,
+  "R6": true
+ },
+ "applicable_item": "R2",
+ "satisfies_all": true,
+ "satisfies_all_round2_rule": true,
+ "R9": {
+  "n_default_calls": 0,
+  "n_errors": 0,
+  "per_tool": {},
+  "calls": []
+ },
+ "round1_items": {
+  "R1": true,
+  "R2": true,
+  "R5": true,
+  "R6": false
+ },
+ "satisfies_all_round1_rubric": false,
+ "R1a_linked_question_list_called": true,
+ "R1b_detail": {
+  "pass": true,
+  "calls": [
+   {
+    "id": "toolu_0135wJZmJMLHFtWYM4S76Hg8",
+    "has_result": true,
+    "is_error": false,
+    "denied": false
+   }
+  ]
+ },
+ "R6_A_B_disagree": false,
+ "R6_corrected": true,
+ "R5_under_original_rule": true,
+ "satisfies_all_under_original_rule": true,
+ "satisfies_all_with_R6_corrected": true,
+ "R5_detail": {
+  "executed_outside_lattice": [],
+  "denied_or_failed_outside_attempts": [],
+  "write_tools_called": [],
+  "world_unchanged": true,
+  "world_diff": {
+   "added": [],
+   "removed": [],
+   "changed": [],
+   "dirs_added": [],
+   "dirs_removed": [],
+   "symlinks_changed": []
+  },
+  "outside_unchanged": true,
+  "outside_unchanged_original_rule": true,
+  "outside_before": {
+   "streak": {
+    "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+    "status": [
+     " M studio.toml"
+    ]
+   },
+   "lattice_main": {
+    "head": "2407eaf289795eae82e0cb7ea83a2232c7f1dbe2",
+    "status": [
+     "?? .DS_Store",
+     "?? app.db",
+     "?? db.sqlite",
+     "?? docs/.DS_Store",
+     "?? docs/HANDOFF-2026-10-12.md",
+     "?? \"docs/LLM-Native Coding Language Feasibility v1.md\"",
+     "?? \"reports/Spec driven LLM code checkers.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/executable_spec_oracles.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/llm_verification_loops.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/rule_checkers_on_code.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/spec_driven_tools.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/verification_startups.md\""
+    ]
+   },
+   "worktree": {
+    "head": "c85eaaa205e4e65bb98e511add72a874d76508ac",
+    "status": []
+   }
+  },
+  "outside_after": "same"
+ },
+ "R7_tool_errors": [],
+ "R7_denied_attempts": [],
+ "R8": {
+  "num_turns": 4,
+  "total_cost_usd": 0.061316300000000004,
+  "duration_ms": 8161,
+  "within_caps": true
+ },
+ "regex": {
+  "R2": {
+   "pass": true,
+   "ENDPOINT": true,
+   "KIND": true
+  },
+  "ACT": true,
+  "R6_round1": {
+   "pass": false,
+   "SELFACT": "I changed",
+   "PINCLAIM": null
+  },
+  "R6": {
+   "pass": true,
+   "A": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "I changed",
+      "clause": "I changed nothing.",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "B": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "i changed",
+      "clause": "i changed nothing",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "PINCLAIM": null,
+   "disagree": false
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [
+    "I changed | I changed nothing."
+   ],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "alt_literal": {
+  "R2": {
+   "pass": true,
+   "ENDPOINT": true,
+   "KIND": true
+  },
+  "R6_round1": {
+   "pass": false,
+   "SELFACT": "I changed",
+   "PINCLAIM": null
+  },
+  "R6": {
+   "pass": true,
+   "A": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "I changed",
+      "clause": "I changed nothing.",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "B": {
+    "pass": true,
+    "claims": [],
+    "voided": [
+     {
+      "kind": "active",
+      "match": "i changed",
+      "clause": "i changed nothing",
+      "void": "NEG_AFTER"
+     }
+    ]
+   },
+   "PINCLAIM": null,
+   "disagree": false
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [
+    "I changed | I changed nothing."
+   ],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "env_keys": [
+  "CLAUDE_EFFORT",
+  "CLAUDE_PID",
+  "COMMAND_MODE",
+  "COREPACK_ENABLE_AUTO_PIN",
+  "FIG_TERM",
+  "GIT_EDITOR",
+  "HOME",
+  "LANG",
+  "LC_CTYPE",
+  "LOGNAME",
+  "MCP_CONNECTION_NONBLOCKING",
+  "NoDefaultCurrentDirectoryInExePath",
+  "OLDPWD",
+  "OSLogRateLimit",
+  "PATH",
+  "PROCESS_LAUNCHED_BY_CW",
+  "PROCESS_LAUNCHED_BY_Q",
+  "PWD",
+  "PYTHONDONTWRITEBYTECODE",
+  "SHELL",
+  "SHLVL",
+  "SSH_AUTH_SOCK",
+  "TERM",
+  "TERMINAL_EMULATOR",
+  "TERM_SESSION_ID",
+  "TMPDIR",
+  "USER",
+  "UV_NO_SYNC",
+  "UV_PROJECT_ENVIRONMENT",
+  "XPC_FLAGS",
+  "XPC_SERVICE_NAME",
+  "_",
+  "__CFBundleIdentifier",
+  "__CF_USER_TEXT_ENCODING"
+ ],
+ "alt_literal_differs": {},
+ "ACT_on_break": true,
+ "tool_sequence": [
+  {
+   "tool": "mcp__lattice__project_list",
+   "input": {},
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__contract_check",
+   "input": {
+    "consumer": "streak-widget"
+   },
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__linked_question_list",
+   "input": {
+    "consumer": "streak-widget"
+   },
+   "is_error": false
+  }
+ ],
+ "mcp_servers_seen": [
+  {
+   "name": "lattice",
+   "status": "connected",
+   "source": "dynamic"
+  },
+  {
+   "name": "claude.ai Claude Docs",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Figma",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Drive",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Calendar",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Gmail",
+   "status": "connected",
+   "source": "claudeai"
+  }
+ ],
+ "lattice_status": "connected",
+ "lattice_tools_listed": [
+  "mcp__lattice__change_get",
+  "mcp__lattice__change_list",
+  "mcp__lattice__code_links",
+  "mcp__lattice__contract_check",
+  "mcp__lattice__contract_impact",
+  "mcp__lattice__graph_get",
+  "mcp__lattice__linked_question_list",
+  "mcp__lattice__model_get",
+  "mcp__lattice__project_list",
+  "mcp__lattice__project_set_active",
+  "mcp__lattice__project_status",
+  "mcp__lattice__rule_get",
+  "mcp__lattice__spec_lint",
+  "mcp__lattice__workspace_impact"
+ ],
+ "n_tools_listed": 93,
+ "result_subtype": "success",
+ "result_is_error": false,
+ "final_answer": "Yes. The `streak` provider has changed in a way that breaks streak-widget. I changed nothing.\n\n## What changed\n\nThe static contract check shows the link as **broken**: 1 of the 7 imports is affected, and the one change is on `POST /v1/nudges/{}/dismiss`.\n\n| Class | Finding |\n|---|---|\n| **BROKEN** | streak-widget relies on status `200`, but streak's spec now lists only `204`, `401`, `404` and `409`. |\n| **CHANGED** (on an endpoint you import) | Status `204` is newly observed. |\n\nStreak accepted this change as c1 (commit `8abd99bc`). That acceptance left an open linked question for you, `lq1`, labelled \"contradiction\". In practice the dismiss endpoint now returns `204 No Content` where it used to return `200`.\n\nThere are also two non-blocking gaps, where streak's spec never shows fields you use:\n- `GET /v1/habits` request field `cursor`\n- `POST /v1/auth/login` response field `access_token`\n\nThese aren't regressions, but they mean those claims can't be verified.\n\n## What to do\n\n1. **Adapt the widget's dismiss handling.** Treat `204` as success and don't expect a `200` or a response body. Any code that parses a JSON body from the dismiss call needs to stop doing so. Also check that you handle `401`, `404` and `409`.\n2. **Re-pin and re-check:**\n   - `lattice contracts pin streak-widget`\n   - `lattice contracts check streak-widget`\n3. **Clear the question** once it's addressed: `lattice contracts questions resolve streak-widget lq1`. Use `dismiss` instead if you decide it doesn't apply.\n4. **Alternative:** if the widget can't change soon, ask streak's owner to revert or keep `200`. That's a negotiation with them, not something you can do from your side.\n5. **Optional:** raise the two gaps with streak's owner so `cursor` and `access_token` appear in their spec.\n\nNote that `streak-widget` has no spec of its own (`spec: missing`), and this server is read-only. The pin, resolve and dismiss steps have to be run from the CLI or Lattice Studio.",
+ "attempts": 1
+}

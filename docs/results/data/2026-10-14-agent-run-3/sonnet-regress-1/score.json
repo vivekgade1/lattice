@@ -1,0 +1,313 @@
+{
+ "sid": "sonnet-regress-1",
+ "condition": "regress",
+ "model_alias": "sonnet",
+ "model_resolved": "claude-sonnet-5-5",
+ "items": {
+  "R1": true,
+  "R1b": true,
+  "R3": true,
+  "R3b": true,
+  "R3c": true,
+  "R5": true,
+  "R6": true
+ },
+ "applicable_item": "R3",
+ "satisfies_all": true,
+ "satisfies_all_round2_rule": true,
+ "R9": {
+  "n_default_calls": 0,
+  "n_errors": 0,
+  "per_tool": {},
+  "calls": []
+ },
+ "round1_items": {
+  "R1": true,
+  "R3": true,
+  "R5": true,
+  "R6": true
+ },
+ "satisfies_all_round1_rubric": true,
+ "R1a_linked_question_list_called": true,
+ "R1b_detail": {
+  "pass": true,
+  "calls": [
+   {
+    "id": "toolu_01FTCAJCy9yfWQd4fGsjonFp",
+    "has_result": true,
+    "is_error": false,
+    "denied": false
+   }
+  ]
+ },
+ "R6_A_B_disagree": false,
+ "R6_corrected": true,
+ "R5_under_original_rule": true,
+ "satisfies_all_under_original_rule": true,
+ "satisfies_all_with_R6_corrected": true,
+ "R5_detail": {
+  "executed_outside_lattice": [],
+  "denied_or_failed_outside_attempts": [],
+  "write_tools_called": [],
+  "world_unchanged": true,
+  "world_diff": {
+   "added": [],
+   "removed": [],
+   "changed": [],
+   "dirs_added": [],
+   "dirs_removed": [],
+   "symlinks_changed": []
+  },
+  "outside_unchanged": true,
+  "outside_unchanged_original_rule": true,
+  "outside_before": {
+   "streak": {
+    "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+    "status": [
+     " M studio.toml"
+    ]
+   },
+   "lattice_main": {
+    "head": "2407eaf289795eae82e0cb7ea83a2232c7f1dbe2",
+    "status": [
+     "?? .DS_Store",
+     "?? app.db",
+     "?? db.sqlite",
+     "?? docs/.DS_Store",
+     "?? docs/HANDOFF-2026-10-12.md",
+     "?? \"docs/LLM-Native Coding Language Feasibility v1.md\"",
+     "?? \"reports/Spec driven LLM code checkers.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/executable_spec_oracles.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/llm_verification_loops.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/rule_checkers_on_code.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/spec_driven_tools.md\"",
+     "?? \"research_notes/Spec driven LLM code checkers/verification_startups.md\""
+    ]
+   },
+   "worktree": {
+    "head": "c85eaaa205e4e65bb98e511add72a874d76508ac",
+    "status": []
+   }
+  },
+  "outside_after": "same"
+ },
+ "R7_tool_errors": [],
+ "R7_denied_attempts": [],
+ "R8": {
+  "num_turns": 4,
+  "total_cost_usd": 0.056835,
+  "duration_ms": 7940,
+  "within_caps": true
+ },
+ "regex": {
+  "R3": {
+   "pass": true,
+   "NOOPEN": true,
+   "CLAIMOPEN_sentences": [],
+   "BREAK_sentences": []
+  },
+  "R6_round1": {
+   "pass": true,
+   "SELFACT": null,
+   "PINCLAIM": null
+  },
+  "R6": {
+   "pass": true,
+   "A": {
+    "pass": true,
+    "claims": [],
+    "voided": []
+   },
+   "B": {
+    "pass": true,
+    "claims": [],
+    "voided": []
+   },
+   "PINCLAIM": null,
+   "disagree": false
+  },
+  "R3b": {
+   "pass": true,
+   "attributed": [
+    "- Finding (CHANGED, relied on): GET /v1/me no longer returns status 429.",
+    "The provider's spec no longer shows rate limiting on that endpoint, and streak-widget relies on the 429 response there.",
+    "Check how streak-widget handles 429 from GET /v1/me.",
+    "Ask the streak owner whether the 429 was removed deliberately (no more rate limiting there) or just dropped from the spec.",
+    "It is harmless if the 429 never comes, and it protects you if the spec simply lost it.",
+    "Two notes:",
+    "- streak-widget's own spec shows as missing, so I couldn't map the 429 reliance to specific code with the lattice tools.",
+    "A grep of your widget code for 429 or retry handling on the /v1/me call is the quickest way to find it."
+   ],
+   "fails": []
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "alt_literal": {
+  "R3": {
+   "pass": true,
+   "NOOPEN": true,
+   "CLAIMOPEN_sentences": [],
+   "BREAK_sentences": []
+  },
+  "R6_round1": {
+   "pass": true,
+   "SELFACT": null,
+   "PINCLAIM": null
+  },
+  "R6": {
+   "pass": true,
+   "A": {
+    "pass": true,
+    "claims": [],
+    "voided": []
+   },
+   "B": {
+    "pass": true,
+    "claims": [],
+    "voided": []
+   },
+   "PINCLAIM": null,
+   "disagree": false
+  },
+  "R3b": {
+   "pass": true,
+   "attributed": [
+    "- Finding (CHANGED, relied on): GET /v1/me no longer returns status 429.",
+    "The provider's spec no longer shows rate limiting on that endpoint, and streak-widget relies on the 429 response there.",
+    "Check how streak-widget handles 429 from GET /v1/me.",
+    "Ask the streak owner whether the 429 was removed deliberately (no more rate limiting there) or just dropped from the spec.",
+    "It is harmless if the 429 never comes, and it protects you if the spec simply lost it.",
+    "Two notes: - streak-widget's own spec shows as missing, so I couldn't map the 429 reliance to specific code with the lattice tools.",
+    "A grep of your widget code for 429 or retry handling on the /v1/me call is the quickest way to find it.",
+    "- This server is read-only, so the pin update and any spec changes are for you to make."
+   ],
+   "fails": []
+  },
+  "R6_corrected": {
+   "pass": true,
+   "SELFACT_live": [],
+   "SELFACT_voided": [],
+   "PINCLAIM": null,
+   "post_hoc": true
+  }
+ },
+ "env_keys": [
+  "CLAUDE_EFFORT",
+  "CLAUDE_PID",
+  "COMMAND_MODE",
+  "COREPACK_ENABLE_AUTO_PIN",
+  "FIG_TERM",
+  "GIT_EDITOR",
+  "HOME",
+  "LANG",
+  "LC_CTYPE",
+  "LOGNAME",
+  "MCP_CONNECTION_NONBLOCKING",
+  "NoDefaultCurrentDirectoryInExePath",
+  "OLDPWD",
+  "OSLogRateLimit",
+  "PATH",
+  "PROCESS_LAUNCHED_BY_CW",
+  "PROCESS_LAUNCHED_BY_Q",
+  "PWD",
+  "PYTHONDONTWRITEBYTECODE",
+  "SHELL",
+  "SHLVL",
+  "SSH_AUTH_SOCK",
+  "TERM",
+  "TERMINAL_EMULATOR",
+  "TERM_SESSION_ID",
+  "TMPDIR",
+  "USER",
+  "UV_NO_SYNC",
+  "UV_PROJECT_ENVIRONMENT",
+  "XPC_FLAGS",
+  "XPC_SERVICE_NAME",
+  "_",
+  "__CFBundleIdentifier",
+  "__CF_USER_TEXT_ENCODING"
+ ],
+ "alt_literal_differs": {},
+ "ACT_on_break": null,
+ "tool_sequence": [
+  {
+   "tool": "mcp__lattice__project_list",
+   "input": {},
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__contract_check",
+   "input": {
+    "consumer": "streak-widget"
+   },
+   "is_error": false
+  },
+  {
+   "tool": "mcp__lattice__linked_question_list",
+   "input": {
+    "consumer": "streak-widget"
+   },
+   "is_error": false
+  }
+ ],
+ "mcp_servers_seen": [
+  {
+   "name": "lattice",
+   "status": "connected",
+   "source": "dynamic"
+  },
+  {
+   "name": "claude.ai Claude Docs",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Figma",
+   "status": "connected",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Drive",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Google Calendar",
+   "status": "needs-auth",
+   "source": "claudeai"
+  },
+  {
+   "name": "claude.ai Gmail",
+   "status": "connected",
+   "source": "claudeai"
+  }
+ ],
+ "lattice_status": "connected",
+ "lattice_tools_listed": [
+  "mcp__lattice__change_get",
+  "mcp__lattice__change_list",
+  "mcp__lattice__code_links",
+  "mcp__lattice__contract_check",
+  "mcp__lattice__contract_impact",
+  "mcp__lattice__graph_get",
+  "mcp__lattice__linked_question_list",
+  "mcp__lattice__model_get",
+  "mcp__lattice__project_list",
+  "mcp__lattice__project_set_active",
+  "mcp__lattice__project_status",
+  "mcp__lattice__rule_get",
+  "mcp__lattice__spec_lint",
+  "mcp__lattice__workspace_impact"
+ ],
+ "n_tools_listed": 93,
+ "result_subtype": "success",
+ "result_is_error": false,
+ "final_answer": "Yes, one provider change affects streak-widget, but nothing is broken. Nothing was changed on my side.\n\n**What changed**\n\nstreak-widget uses one provider, `streak`, under a static contract. The pinned provider version is `a0db033`. The provider is now at `1a980cd`, so its spec has changed since your pin. The contract check returned a status of **changed** (not broken), with 1 finding and 2 gaps across 7 imports.\n\n- **Finding (CHANGED, relied on):** `GET /v1/me` no longer returns status **429**. The provider's spec no longer shows rate limiting on that endpoint, and streak-widget relies on the 429 response there.\n- **Linked questions:** none. The provider has left no notes, and the open, resolved and dismissed counts are all 0.\n\n**Gaps (unverifiable, not breakages)**\n\n- `GET /v1/habits`: the request field `cursor` is never shown in the provider's spec.\n- `POST /v1/auth/login`: the response field `access_token` is never shown in the provider's spec.\n\n**What to do**\n\n1. **Check how streak-widget handles 429 from `GET /v1/me`.** Ask the `streak` owner whether the 429 was removed deliberately (no more rate limiting there) or just dropped from the spec. Either way, keep your retry/backoff handling until that's confirmed. It is harmless if the 429 never comes, and it protects you if the spec simply lost it.\n2. **Ask the `streak` owner to document `cursor` and `access_token`.** You depend on both, and while the spec doesn't show them nobody can check them. Your `access_token` dependency matters most, since login is on the critical path.\n3. **Re-pin once you're satisfied.** After you've checked 1 and 2, update the pin in the workspace so the contract check is clean against the current provider version.\n\nTwo notes:\n- streak-widget's own spec shows as `missing`, so I couldn't map the 429 reliance to specific code with the lattice tools. A grep of your widget code for `429` or retry handling on the `/v1/me` call is the quickest way to find it.\n- This server is read-only, so the pin update and any spec changes are for you to make.",
+ "attempts": 1
+}
