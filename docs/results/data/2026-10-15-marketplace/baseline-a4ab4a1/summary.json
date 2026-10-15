@@ -1,0 +1,227 @@
+{
+ "probes": [
+  {
+   "id": "M-flag-F1-check",
+   "predicted": "baseline: the rule holds",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb']",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F2-check",
+   "predicted": "baseline: the rule holds",
+   "observed": "exit 0; parsed {'database': 'mariadb', 'engine_file': ['/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/market/g3b/work/mflag/mariadb.toml']}",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F3-check",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F4-check",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F5-check",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: error: EngineError: engine 'mysql' is built in; give the descriptor an; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F6-check",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: error: ModuleError: module 'm' (1) is changed: its tree hashes to 0f28; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F7-check",
+   "predicted": "baseline: the rule holds",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb']",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F8-check",
+   "predicted": "baseline: the rule holds",
+   "observed": "exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse)",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F1-ask",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse']",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F2-ask",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F3-ask",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F4-ask",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F5-ask",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F6-ask",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: usage: python -m lattice.spec ask [-h] --spec SPEC [--trace TRACE]; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F7-ask",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse']",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F8-ask",
+   "predicted": "baseline: the rule holds",
+   "observed": "exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse)",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F1-draft",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse']",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F2-draft",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F3-draft",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F4-draft",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F5-draft",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F6-draft",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 2: usage: python -m lattice.spec draft [-h] [--context CONTEXT] --out OUT; same in all three: False",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F7-draft",
+   "predicted": "baseline: the rule fails",
+   "observed": "exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse']",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-flag-F8-draft",
+   "predicted": "baseline: the rule holds",
+   "observed": "exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse)",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-hub-H1",
+   "predicted": "baseline: the rule fails",
+   "observed": "{\"a_errors\": [], \"a_image\": \"mariadb:11\", \"a_names\": [\"sqlite\", \"postgres\", \"mysql\", \"clickhouse\", \"mariadb\", \"pga\"], \"b_errors\": [\"engine 'mariadb' is already ",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-hub-H2",
+   "predicted": "baseline: the rule fails",
+   "observed": "{\"a_image\": \"mariadb:11\", \"a_pga\": true, \"b_image\": \"mariadb:11\", \"b_pga\": true, \"b_pga_in_database_names\": true, \"base_names\": null}",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-hub-H3",
+   "predicted": "(no baseline prediction)",
+   "observed": "{\"equal_to_h1\": true, \"mismatches\": [], \"requests\": 200}",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-hub-H4",
+   "predicted": "baseline: the rule fails",
+   "observed": "{\"a_load_errors\": [], \"a_origin\": \"A\", \"b_error\": null, \"b_load_errors\": [], \"b_origin\": \"A\"}",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-hub-H5",
+   "predicted": "(no baseline prediction)",
+   "observed": "{\"sites\": [{\"function\": \"check_kwargs\", \"load\": 340, \"lookups\": [341], \"ok\": true}, {\"function\": \"verify_config\", \"load\": 351, \"lookups\": [352], \"ok\": true}, {\"",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-hub-M6",
+   "predicted": "(no baseline prediction)",
+   "observed": "{\"note\": \"no scoped activation in this code\"}",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-hub-M6b",
+   "predicted": "(no baseline prediction)",
+   "observed": "{\"note\": \"no scoped activation in this code\"}",
+   "pass": true,
+   "identical_runs": true
+  }
+ ],
+ "pass": 31,
+ "total": 31,
+ "runs": 3,
+ "seconds": 35.1,
+ "git": "git version 2.54.0 (Apple Git-157)",
+ "failing": []
+}

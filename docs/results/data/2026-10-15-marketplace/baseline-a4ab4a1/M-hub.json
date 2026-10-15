@@ -1,0 +1,155 @@
+{
+ "group": "hub",
+ "runs": 3,
+ "rows": [
+  {
+   "id": "M-hub-H1",
+   "predicted": "per-project /api/engines bodies identical in ABAB, BABA, AABB and to the project alone; B: 5 engines, mariadb:10.11, errors []; A lists pga",
+   "observed": "{\"a_errors\": [], \"a_image\": \"mariadb:11\", \"a_names\": [\"sqlite\", \"postgres\", \"mysql\", \"clickhouse\", \"mariadb\", \"pga\"], \"b_errors\": [\"engine 'mariadb' is already ",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "same_in_every_order": true,
+    "same_as_alone": true,
+    "b_names": [
+     "sqlite",
+     "postgres",
+     "mysql",
+     "clickhouse"
+    ],
+    "b_image": null,
+    "b_errors": [
+     "engine 'mariadb' is already registered from /private/tmp/claude-501/-Users-vivekgade-Documents-latti"
+    ],
+    "a_names": [
+     "sqlite",
+     "postgres",
+     "mysql",
+     "clickhouse",
+     "mariadb",
+     "pga"
+    ],
+    "a_image": "mariadb:11",
+    "a_errors": [],
+    "ok": false
+   }
+  },
+  {
+   "id": "M-hub-H2",
+   "predicted": "one thread A then B: mariadb:11 + pga, then mariadb:10.11 + no pga; _BASE = 3 built-ins",
+   "observed": "{\"a_image\": \"mariadb:11\", \"a_pga\": true, \"b_image\": \"mariadb:11\", \"b_pga\": true, \"b_pga_in_database_names\": true, \"base_names\": null}",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "a_image": "mariadb:11",
+    "a_pga": true,
+    "b_image": "mariadb:11",
+    "b_pga": true,
+    "b_pga_in_database_names": true,
+    "base_names": null,
+    "ok": false
+   }
+  },
+  {
+   "id": "M-hub-H3",
+   "predicted": "8 threads, 200 interleaved requests: every body = H1's",
+   "observed": "{\"equal_to_h1\": true, \"mismatches\": [], \"requests\": 200}",
+   "rule_holds": true,
+   "runs": 3,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "requests": 200,
+    "mismatches": [],
+    "equal_to_h1": true,
+    "ok": true
+   }
+  },
+  {
+   "id": "M-hub-H4",
+   "predicted": "A resolves its adapter; B raises 'already imported from ... distinct name'",
+   "observed": "{\"a_load_errors\": [], \"a_origin\": \"A\", \"b_error\": null, \"b_load_errors\": [], \"b_origin\": \"A\"}",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "a_origin": "A",
+    "b_origin": "A",
+    "b_error": null,
+    "b_load_errors": [],
+    "a_load_errors": [],
+    "ok": false
+   }
+  },
+  {
+   "id": "M-hub-H5",
+   "predicted": "static: the 3 load_project_engines sites precede their lookups",
+   "observed": "{\"sites\": [{\"function\": \"check_kwargs\", \"load\": 340, \"lookups\": [341], \"ok\": true}, {\"function\": \"verify_config\", \"load\": 351, \"lookups\": [352], \"ok\": true}, {\"",
+   "rule_holds": true,
+   "runs": 3,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "sites": [
+     {
+      "function": "check_kwargs",
+      "load": 340,
+      "lookups": [
+       341
+      ],
+      "ok": true
+     },
+     {
+      "function": "verify_config",
+      "load": 351,
+      "lookups": [
+       352
+      ],
+      "ok": true
+     },
+     {
+      "function": "get_engines",
+      "load": 1015,
+      "lookups": [
+       1017,
+       1027
+      ],
+      "ok": true
+     }
+    ],
+    "ok": true
+   }
+  },
+  {
+   "id": "M-hub-M6",
+   "predicted": "a worker thread that never loaded sees only the built-ins after another thread loaded A",
+   "observed": "{\"note\": \"no scoped activation in this code\"}",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "ok": false,
+    "note": "no scoped activation in this code"
+   }
+  },
+  {
+   "id": "M-hub-M6b",
+   "predicted": "a pooled thread serves A then B without B seeing A; built-ins only after each scope",
+   "observed": "{\"note\": \"no scoped activation in this code\"}",
+   "rule_holds": false,
+   "runs": 3,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "ok": false,
+    "note": "no scoped activation in this code"
+   }
+  }
+ ]
+}

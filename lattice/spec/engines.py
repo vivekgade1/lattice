@@ -79,12 +79,22 @@ A descriptor (every key; ``?`` = optional, with its default)::
     flush? = []                       # sql: run before read; may use {db}
     read = "SELECT statement, calls"  # sql: rows (text, count); uses {db} (and {mark})
 
+Registries. The process has one base registry (the built-ins, then what the CLI flags
+``--engine-file`` and ``--modules`` add). ``REGISTRY`` is a proxy for the registry of the
+*current context*: a project's own registry once :func:`activate` or :func:`using` made it
+current (``lattice.modules.load_project_engines`` builds one per project: the built-ins, its
+``[engines] paths``, its verified modules), else the base. Two projects in one process
+(Studio's hub) can therefore declare engines of the same name, and a thread that never
+activated a project's registry sees the built-ins only (it fails closed: an unknown
+``--database``), never the registry another request loaded.
+
 Errors are :class:`EngineError` with exact messages (``tests/spec/test_engines.py``).
 """
 
 from __future__ import annotations
 
 import contextlib
+import contextvars
 import importlib
 import re
 import sys
@@ -731,6 +741,28 @@ def read_descriptor(path: Path | str) -> EngineDescriptor:
 _ADAPTER_CACHE: dict[tuple[str, str], type] = {}
 
 
+def _check_adapter_module_is_free(engine: str, module: str, base_dir: Path | None) -> None:
+    """Refuse an adapter module whose top-level name another project's file already
+    holds in ``sys.modules``: Python would hand this engine that other class (two
+    projects in one process, each with an ``adapter.py``). Give the adapter module a
+    distinct name."""
+    if base_dir is None:
+        return
+    top = module.split(".")[0]
+    own = [base_dir / f"{top}.py", base_dir / top / "__init__.py"]
+    present = [p for p in own if p.is_file()]
+    loaded = sys.modules.get(top)
+    if not present or loaded is None:
+        return
+    where = getattr(loaded, "__file__", None)
+    if where is None or any(Path(where).resolve() == p.resolve() for p in present):
+        return
+    raise EngineError(
+        f"engine {engine!r}: adapter module {top!r} is already imported from {where}; "
+        "give this engine's adapter module a distinct name"
+    )
+
+
 def _adapter_class(engine: str, ref: str, base_dir: Path | None) -> type:
     from lattice.spec import db
 
@@ -740,6 +772,7 @@ def _adapter_class(engine: str, ref: str, base_dir: Path | None) -> type:
     if key in _ADAPTER_CACHE:
         return _ADAPTER_CACHE[key]
     module, _, attr = ref.partition(":")
+    _check_adapter_module_is_free(engine, module, base_dir)
     if base_dir is not None and str(base_dir) not in sys.path:
         sys.path.insert(0, str(base_dir))
     # an installed module's tree is hashed on every load: importing it must not write
@@ -884,21 +917,108 @@ class EngineRegistry:
                 self._entries = saved
 
 
-REGISTRY = EngineRegistry()
+# The process registry of the CLI: the built-ins, then what ``--engine-file`` and
+# ``--modules`` add. A project registry (``project_registry``, ``using``) is per context and
+# never merged into it, so two projects in one process (Studio's hub) can each declare an
+# engine of the same name.
+_BASE = EngineRegistry()
+_ACTIVE: contextvars.ContextVar[EngineRegistry | None] = contextvars.ContextVar(
+    "lattice_active_engines", default=None
+)
 
 
-def load_builtins(registry: EngineRegistry = REGISTRY) -> None:
+class _RegistryProxy:
+    """``REGISTRY``: the registry of the current context (the project one a scope or a
+    ``load_project_engines`` activated), else the process one. A thread or task that never
+    activated a project registry sees the process registry only (the built-ins, plus what
+    the CLI flags added), never another project's engines."""
+
+    @staticmethod
+    def current() -> EngineRegistry:
+        return _ACTIVE.get() or _BASE
+
+    def names(self) -> tuple[str, ...]:
+        return self.current().names()
+
+    def entries(self) -> list[Registered]:
+        return self.current().entries()
+
+    def get(self, name: str) -> EngineDescriptor | None:
+        return self.current().get(name)
+
+    def entry(self, name: str) -> Registered | None:
+        return self.current().entry(name)
+
+    def by_scheme(self, scheme: str) -> EngineDescriptor | None:
+        return self.current().by_scheme(scheme)
+
+    def add(
+        self,
+        engine: EngineDescriptor,
+        source: str,
+        path: Path | None = None,
+        module: str | None = None,
+    ) -> EngineDescriptor:
+        return self.current().add(engine, source, path, module)
+
+    def remove(self, name: str) -> None:
+        self.current().remove(name)
+
+    @contextlib.contextmanager
+    def scoped(self) -> Iterator[_RegistryProxy]:
+        """Engines added inside the block, and the registry activated inside it, are
+        forgotten after it (tests)."""
+        active = _ACTIVE.get()
+        with (active or _BASE).scoped():
+            try:
+                yield self
+            finally:
+                _ACTIVE.set(active)
+
+
+REGISTRY = _RegistryProxy()
+
+
+def load_builtins(registry: EngineRegistry = _BASE) -> None:
     for name in BUILTIN_FILES:
         path = HERE / name
         registry.add(read_descriptor(path), "builtin", path)
 
 
 load_builtins()
-BUILTIN_NAMES: tuple[str, ...] = REGISTRY.names()
+BUILTIN_NAMES: tuple[str, ...] = _BASE.names()
+
+
+def project_registry() -> EngineRegistry:
+    """A new registry holding the built-in engines only."""
+    reg = EngineRegistry()
+    for e in _BASE.entries():
+        if e.source == "builtin":
+            reg.add(e.engine, "builtin", e.path)
+    return reg
+
+
+def activate(registry: EngineRegistry) -> None:
+    """Make ``registry`` the one the calling context sees, until something else is
+    activated (no reset; a thread's context ends with the thread). Prefer
+    :func:`using`, which restores the previous one."""
+    _ACTIVE.set(registry)
+
+
+@contextlib.contextmanager
+def using(registry: EngineRegistry) -> Iterator[EngineRegistry]:
+    """``registry`` is the one the calling context sees inside the block; the previous
+    one is restored after it, also when the block raises."""
+    previous = _ACTIVE.get()
+    _ACTIVE.set(registry)
+    try:
+        yield registry
+    finally:
+        _ACTIVE.set(previous)
 
 
 def load_engine_file(
-    path: Path | str, source: str = "project", registry: EngineRegistry = REGISTRY
+    path: Path | str, source: str = "project", registry: Any = REGISTRY
 ) -> EngineDescriptor:
     """Read and register the descriptor in ``path``."""
     p = Path(path).resolve()
@@ -991,12 +1111,15 @@ __all__ = [
     "Perf",
     "Registered",
     "accepts_url",
+    "activate",
     "database_names",
     "engine",
     "engine_for_scheme",
     "find",
     "load_engine_file",
     "parse_descriptor",
+    "project_registry",
     "read_descriptor",
     "server_engines",
+    "using",
 ]

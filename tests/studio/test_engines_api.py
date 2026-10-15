@@ -127,7 +127,7 @@ def test_project_engines_and_modules_are_listed(tmp_path: Path) -> None:
             {"name": "pg-fast", "version": "1.2.0", "sha256": entry.sha256, "status": "ok"}
         ]
         # the project's checks can name its engine (registered in Studio's process)
-        assert REGISTRY.entry("mariadb").source == "project"
+        assert REGISTRY.entry("mariadb") is None
         # one byte of the installed tree changed: re-hashed on the next read, refused
         f = project / ".lattice/modules/pg-fast/engine.toml"
         f.write_text(f.read_text().replace("pgfast", "pgfasT", 1))

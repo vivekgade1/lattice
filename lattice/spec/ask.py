@@ -59,8 +59,13 @@ CLI (wired as ``python -m lattice.spec ask``)::
 
     ask --spec MOD:SPEC [--trace T.json] "question" [--selected TARGET ...]
         [--verify --app MOD:FN --db MOD:FN [--login MOD:FN] [--login-path /login]
-         [--runtime REF] [--services MOD:SERVICES] [--database D] [--database-url URL]]
+         [--runtime REF] [--services MOD:SERVICES] [--database D] [--database-url URL]
+         [--engine-file FILE ...] [--modules DIR]]
         [--model sonnet] [--json]
+
+``--engine-file`` and ``--modules`` register a project's engine descriptors and installed
+modules before ``--database`` is read (as ``lattice spec check`` does); they matter only with
+``--verify``.
 """
 
 from __future__ import annotations
@@ -1480,6 +1485,19 @@ def _parser() -> argparse.ArgumentParser:
 
     p.add_argument("--database", default="sqlite", choices=database_names())
     p.add_argument("--database-url")
+    p.add_argument(
+        "--engine-file",
+        action="append",
+        default=[],
+        metavar="FILE",
+        help="--verify: a project's engine descriptor (TOML), registered before --database "
+        "is read; repeatable",
+    )
+    p.add_argument(
+        "--modules",
+        metavar="DIR",
+        help="--verify: load the modules installed in project DIR, each re-hashed",
+    )
     return p
 
 
@@ -1490,6 +1508,12 @@ def main(argv: Sequence[str] | None = None, *, generator: Generator | None = Non
     argv = list(sys.argv[1:] if argv is None else argv)
     if argv and argv[0] == "ask":
         argv = argv[1:]
+    from lattice.spec.__main__ import _preload_engines
+
+    problem = _preload_engines(argv)  # before the parser: engine names are --database choices
+    if problem is not None:
+        print(f"error: {problem}", file=sys.stderr)
+        return 2
     try:
         args = _parser().parse_args(argv)
     except SystemExit as exc:

@@ -1,0 +1,66 @@
+M-git-a | exit 0; 3 files = git show C1; sha256 = git archive dir install; lock exact (+ | all 12 checks hold | PASS
+M-git-b | @C2 into a second project: exit 0, version 0.2.0, commit C2 | exit 0; lock version/commit exact | PASS
+M-git-c | 11 refusals: exit 2, 2.1's message each, 0 git calls, nothing written | 11/11 refused with the 2.1 message, 0 git calls | PASS
+M-git-d | git+https with --allow-remote: one fetch argv with https://, GIT_ALLOW_PROTOCO | exit 2; fetch argv tail ['https://example.invalid/r', 'fc796e4cecb3ce9bc3a5bb277f07c0288e469212']; a | PASS
+M-git-e | a under sandbox-exec (deny network*): identical to a | identical to a | PASS
+M-tamper-T1 | exit 2, git fetch ... failed: ... not our ref ... | exit 2: error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ | PASS
+M-tamper-T2 | exit 2, pins sha256 0000..., the source tree hashes to ...: refused | exit 2: error: index entry /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-075 | PASS
+M-tamper-T3 | exit 0, 0.1.0, sha256 = M-git a's (main advanced to C2) | main at C2; @C1 exit 0, sha256 = M-git a's: True | PASS
+M-tamper-T4 | a: exit 0 (unreachable, not gc'd) = M-git a; b: after gc --prune=now exit 2 no | a: exit 0 (= M-git a: True); b after gc: exit 2 fc796e4cecb3ce9bc3a5bb277f07c0288e469212 | PASS
+M-tamper-T5 | exit 2, link is a symbolic link (mode 120000): refused; 0 blobs read | exit 2: link is a symbolic link (mode 120000): refused; blobs read: 0 | PASS
+M-tamper-T6 | exit 2, the fetch fails on fsck (hasDotdot/hasDotgit) for each of ..,.git/conf | ..: exit 2, last line ': fatal: index-pack failed', fsck is the cause: True; .git/config: exit 2, la | PASS
+M-tamper-T7 | exit 2, sub is a submodule (mode 160000): refused; canary empty | exit 2: sub is a submodule (mode 160000): refused; canary [] | PASS
+M-tamper-T8 | exit 2 each: (cap 1048576); 201 files (cap 200); 9000000 bytes (cap 8388608);  | a: exit 2 big.bin is 2097152 bytes (cap 1048576): refused; b: exit 2 the tree has 201 files (cap 200 | PASS
+M-tamper-T9 | exit 0, installs; hooks/config/filters of the source never run (canary empty) | exit 0; canary [] | PASS
+M-tamper-T10 | exit 0; .gitattributes/.lfsconfig dropped and listed; user git config inert; e | exit 0; dropped listed: True; canary [] | PASS
+M-tamper-T11 | exit 0, installs; GIT_TRACE/GIT_DIR/GIT_CONFIG_*/GIT_SSH_COMMAND of the caller | exit 0; canary [] | PASS
+M-tamper-T12 | exit 0 each; canary empty; summary says CODE (adapter and entry) | exit 0/0; canary []; summary says CODE: adapter True, entry False | FAIL
+M-tamper-T13 | exit 2, differ only in case: refused | exit 2: Engine.toml and engine.toml differ only in case: refused | PASS
+M-tamper-T14 | exit 2, is a tag, not a commit; is a tree, not a commit | tag: exit 2 52e4dfba2c87 is a tag, not a commit: refused; tree: exit 2 a31cd52352fc4 is a tree, not  | PASS
+M-tamper-T15 | exit 2 for ' a.toml', 'é.toml', '-x', '.github/x' (2.4) | ' a.toml': exit 2; 'é.toml': exit 2; '-x': exit 2; '.github/x': exit 2 | PASS
+M-tamper-T16 | exit 2, older than 2.45.1 ...; no fetch | exit 2: git 2.39.0 is older than 2.45.1 (CVE-2024-32002, CVE-2024-32004, CVE-2024; git calls ['--ver | PASS
+M-index-I1 | install a b --index git+file://idx@X: exit 0; 2 lock entries by name with comm | exit 0; lock names ['a', 'b'] | PASS
+M-index-I2 | a b c: exit 2, nothing written | exit 2: error: link is a symbolic link (mode 120000): refused; written: False | PASS
+M-index-I3 | a b d: exit 2, nothing written | exit 2: error: index entry git+file:///private/tmp/claude-501/-Users-vivekgade-Documents; written: F | PASS
+M-index-I4 | a installed, then a b: exit 2 already installed, b absent, lock byte-identical | exit 2: error: module 'a' is already installed (version 0.1.0): uninstall it first; lock unchanged:  | PASS
+M-index-I5 | a a: exit 2, appears twice | exit 2: error: module a appears twice in this install; written: False | PASS
+M-index-I6 | dir index naming a pinned git source: exit 0; unpinned: exit 2 (GitSourceNotSu | pinned: exit 0; unpinned: exit 2 error: index entry /private/tmp/claude-501/-Users-vivekgade-Documen | PASS
+M-index-I7 | e (source ../a) in a git index: exit 2, a git index names pinned git sources o | exit 2: e0ecc58ad:e.toml: a git index names pinned git sources only (got ../a) | PASS
+M-index-I8 | --index ...idx@main: exit 2 (2.1) | exit 2: error: pin a full lowercase commit sha (git+<url>@<40 or 64 hex>); bra | PASS
+M-index-I9 | pytest: the 2nd rename raises: 1st removed, no .staging-*, lock unchanged | pytest: 1 passed | PASS
+M-flag-F1-check | --help lists {sqlite,postgres,mysql,clickhouse,mariadb} | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb'] | PASS
+M-flag-F2-check | parsed: database == mariadb, engine_file == [F] | exit 0; parsed {'database': 'mariadb', 'engine_file': ['/private/tmp/claude-501/-Users-vivekgade-Doc | PASS
+M-flag-F3-check | exit 2, 'error: EngineError: ...' (unknown field), same first line in all thre | exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: T | PASS
+M-flag-F4-check | exit 2, 'error: EngineError: ...' (missing file), same first line in all three | exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: T | PASS
+M-flag-F5-check | exit 2, 'error: EngineError: ...' (name mysql), same first line in all three | exit 2: error: EngineError: engine 'mysql' is built in; give the descriptor an; same in all three: T | PASS
+M-flag-F6-check | exit 2, 'error: ModuleError: ...' (tampered module), same first line in all th | exit 2: error: ModuleError: module 'm' (1) is changed: its tree hashes to 0f28; same in all three: T | PASS
+M-flag-F7-check | --engine-file=F form: --help lists mariadb | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb'] | PASS
+M-flag-F8-check | exit 2, invalid choice: 'mariadb' | exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse) | PASS
+M-flag-F1-ask | --help lists {sqlite,postgres,mysql,clickhouse,mariadb} | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb'] | PASS
+M-flag-F2-ask | parsed: database == mariadb, engine_file == [F] | exit 0; parsed {'database': 'mariadb', 'engine_file': ['/private/tmp/claude-501/-Users-vivekgade-Doc | PASS
+M-flag-F3-ask | exit 2, 'error: EngineError: ...' (unknown field), same first line in all thre | exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: T | PASS
+M-flag-F4-ask | exit 2, 'error: EngineError: ...' (missing file), same first line in all three | exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: T | PASS
+M-flag-F5-ask | exit 2, 'error: EngineError: ...' (name mysql), same first line in all three | exit 2: error: EngineError: engine 'mysql' is built in; give the descriptor an; same in all three: T | PASS
+M-flag-F6-ask | exit 2, 'error: ModuleError: ...' (tampered module), same first line in all th | exit 2: error: ModuleError: module 'm' (1) is changed: its tree hashes to 0f28; same in all three: T | PASS
+M-flag-F7-ask | --engine-file=F form: --help lists mariadb | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb'] | PASS
+M-flag-F8-ask | exit 2, invalid choice: 'mariadb' | exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse) | PASS
+M-flag-F1-draft | --help lists {sqlite,postgres,mysql,clickhouse,mariadb} | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb'] | PASS
+M-flag-F2-draft | parsed: database == mariadb, engine_file == [F] | exit 0; parsed {'database': 'mariadb', 'engine_file': ['/private/tmp/claude-501/-Users-vivekgade-Doc | PASS
+M-flag-F3-draft | exit 2, 'error: EngineError: ...' (unknown field), same first line in all thre | exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: T | PASS
+M-flag-F4-draft | exit 2, 'error: EngineError: ...' (missing file), same first line in all three | exit 2: error: EngineError: engine file /private/tmp/claude-501/-Users-vivekga; same in all three: T | PASS
+M-flag-F5-draft | exit 2, 'error: EngineError: ...' (name mysql), same first line in all three | exit 2: error: EngineError: engine 'mysql' is built in; give the descriptor an; same in all three: T | PASS
+M-flag-F6-draft | exit 2, 'error: ModuleError: ...' (tampered module), same first line in all th | exit 2: error: ModuleError: module 'm' (1) is changed: its tree hashes to 0f28; same in all three: T | PASS
+M-flag-F7-draft | --engine-file=F form: --help lists mariadb | exit 0; --database choices ['sqlite', 'postgres', 'mysql', 'clickhouse', 'mariadb'] | PASS
+M-flag-F8-draft | exit 2, invalid choice: 'mariadb' | exit 2:  'mariadb' (choose from sqlite, postgres, mysql, clickhouse) | PASS
+M-hub-H1 | per-project /api/engines bodies identical in ABAB, BABA, AABB and to the proje | {"a_errors": [], "a_image": "mariadb:11", "a_names": ["sqlite", "postgres", "mysql", "clickhouse", " | PASS
+M-hub-H2 | one thread A then B: mariadb:11 + pga, then mariadb:10.11 + no pga; _BASE = 3  | {"a_image": "mariadb:11", "a_pga": true, "b_image": "mariadb:10.11", "b_pga": false, "b_pga_in_datab | PASS
+M-hub-H3 | 8 threads, 200 interleaved requests: every body = H1's | {"equal_to_h1": true, "mismatches": [], "requests": 200} | PASS
+M-hub-H4 | A resolves its adapter; B raises 'already imported from ... distinct name' | {"a_load_errors": [], "a_origin": "A", "b_error": "EngineError: engine 'fakedb': adapter module 'ada | PASS
+M-hub-H5 | static: the 3 load_project_engines sites precede their lookups | {"sites": [{"function": "check_kwargs", "load": 340, "lookups": [341], "ok": true}, {"function": "ve | PASS
+M-hub-M6 | a worker thread that never loaded sees only the built-ins after another thread | {"loaded": ["postgres", "mysql", "clickhouse", "mariadb", "pga"], "worker_dbs": ["sqlite", "postgres | PASS
+M-hub-M6b | a pooled thread serves A then B without B seeing A; built-ins only after each  | {"sequence": [["mariadb:11", true], ["postgres", "mysql", "clickhouse"], ["mariadb:10.11", false], [ | PASS
+M-regress-R1 | directory install/list/info/uninstall: stdout, stderr, exit, lock bytes, trees | 15/15 steps byte-identical to a4ab4a1 | PASS
+M-regress-R2 | a4ab4a1's list and info on M-git a's project: ok | a4ab4a1 list exit 0, info exit 0: mariadb-engine 0.1.0 (engine): ok | PASS
+M-regress-R3 | test_modules.py unchanged, 26 passed; named suites unchanged and passing; only | unchanged files 6/6; suites 6/7 pass; check.sh exit 0: PASS: 0 findings (D 0, X 0); 435 cases run | FAIL
+M-regress-R4 | module --help and lattice --help differ from a4ab4a1 only by new options and u | module --help: 12 changed lines, 0 unexplained; module top --help: 0 changed lines, 0 unexplained; l | PASS
+probes: 63/65 pass

@@ -1,0 +1,700 @@
+{
+ "group": "tamper",
+ "runs": 2,
+ "rows": [
+  {
+   "id": "M-tamper-T1",
+   "predicted": "exit 2, git fetch ... failed: ... not our ref ...",
+   "observed": "exit 2: error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@deadbeefdeadbeefdeadbeefdeadbeefdeadbeef failed: fatal: remote error: upload-pack: not our ref deadbeefdeadbeefdeadbeefdeadbeefdeadbeef\n",
+    "err_line": "error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@deadbeefdeadbeefdeadbeefdeadbeefdeadbeef failed: fatal: remote error: upload-pack: not our ref deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+    "calls": [
+     "--version",
+     "init",
+     "fetch"
+    ],
+    "batch_reads": 0,
+    "written": false,
+    "leftover": []
+   }
+  },
+  {
+   "id": "M-tamper-T2",
+   "predicted": "exit 2, pins sha256 0000..., the source tree hashes to ...: refused",
+   "observed": "exit 2: error: index entry /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-075",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "error: index entry /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/work/mtamper/T2idx/mariadb-engine.toml pins sha256 0000000000000000000000000000000000000000000000000000000000000000, the source tree hashes to 0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9: refused\n",
+    "err_line": "error: index entry /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/work/mtamper/T2idx/mariadb-engine.toml pins sha256 0000000000000000000000000000000000000000000000000000000000000000, the source tree hashes to 0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9: refused",
+    "calls": [
+     "--version",
+     "init",
+     "fetch",
+     "count-objects",
+     "cat-file",
+     "ls-tree",
+     "cat-file"
+    ],
+    "batch_reads": 1,
+    "written": false,
+    "leftover": []
+   }
+  },
+  {
+   "id": "M-tamper-T3",
+   "predicted": "exit 0, 0.1.0, sha256 = M-git a's (main advanced to C2)",
+   "observed": "main at C2; @C1 exit 0, sha256 = M-git a's: True",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "first": {
+     "rc": 0,
+     "stdout": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t3@fc796e4cecb3ce9bc3a5bb277f07c0288e469212\n  commit:   fc796e4cecb3ce9bc3a5bb277f07c0288e469212 (fetched without hooks, filters, submodules, LFS; 3 files, 2156 bytes)\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---\ninstalled mariadb-engine 0.1.0 into .lattice/modules/mariadb-engine (sha256 0e7f3c6b14cb...; lattice.modules.lock)\n",
+     "stderr": "",
+     "err_line": "",
+     "calls": [
+      "--version",
+      "init",
+      "fetch",
+      "count-objects",
+      "cat-file",
+      "ls-tree",
+      "cat-file"
+     ],
+     "batch_reads": 1,
+     "written": true,
+     "leftover": []
+    },
+    "second": {
+     "rc": 0,
+     "stdout": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t3@fc796e4cecb3ce9bc3a5bb277f07c0288e469212\n  commit:   fc796e4cecb3ce9bc3a5bb277f07c0288e469212 (fetched without hooks, filters, submodules, LFS; 3 files, 2156 bytes)\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---\ninstalled mariadb-engine 0.1.0 into .lattice/modules/mariadb-engine (sha256 0e7f3c6b14cb...; lattice.modules.lock)\n",
+     "stderr": "",
+     "err_line": "",
+     "calls": [
+      "--version",
+      "init",
+      "fetch",
+      "count-objects",
+      "cat-file",
+      "ls-tree",
+      "cat-file"
+     ],
+     "batch_reads": 1,
+     "written": true,
+     "leftover": []
+    }
+   }
+  },
+  {
+   "id": "M-tamper-T4",
+   "predicted": "a: exit 0 (unreachable, not gc'd) = M-git a; b: after gc --prune=now exit 2 not our ref",
+   "observed": "a: exit 0 (= M-git a: True); b after gc: exit 2 fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "a": {
+     "rc": 0,
+     "stdout": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t4@fc796e4cecb3ce9bc3a5bb277f07c0288e469212\n  commit:   fc796e4cecb3ce9bc3a5bb277f07c0288e469212 (fetched without hooks, filters, submodules, LFS; 3 files, 2156 bytes)\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---\ninstalled mariadb-engine 0.1.0 into .lattice/modules/mariadb-engine (sha256 0e7f3c6b14cb...; lattice.modules.lock)\n",
+     "stderr": "",
+     "err_line": "",
+     "calls": [
+      "--version",
+      "init",
+      "fetch",
+      "count-objects",
+      "cat-file",
+      "ls-tree",
+      "cat-file"
+     ],
+     "batch_reads": 1,
+     "written": true,
+     "leftover": []
+    },
+    "b": {
+     "rc": 2,
+     "stdout": "",
+     "stderr": "error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t4@fc796e4cecb3ce9bc3a5bb277f07c0288e469212 failed: fatal: remote error: upload-pack: not our ref fc796e4cecb3ce9bc3a5bb277f07c0288e469212\n",
+     "err_line": "error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t4@fc796e4cecb3ce9bc3a5bb277f07c0288e469212 failed: fatal: remote error: upload-pack: not our ref fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+     "calls": [
+      "--version",
+      "init",
+      "fetch"
+     ],
+     "batch_reads": 0,
+     "written": false,
+     "leftover": []
+    }
+   }
+  },
+  {
+   "id": "M-tamper-T5",
+   "predicted": "exit 2, link is a symbolic link (mode 120000): refused; 0 blobs read",
+   "observed": "exit 2: link is a symbolic link (mode 120000): refused; blobs read: 0",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "error: link is a symbolic link (mode 120000): refused\n",
+    "err_line": "error: link is a symbolic link (mode 120000): refused",
+    "calls": [
+     "--version",
+     "init",
+     "fetch",
+     "count-objects",
+     "cat-file",
+     "ls-tree"
+    ],
+    "batch_reads": 0,
+    "written": false,
+    "leftover": []
+   }
+  },
+  {
+   "id": "M-tamper-T6",
+   "predicted": "exit 2, the fetch fails on fsck (hasDotdot/hasDotgit) for each of ..,.git/config,.GIT/hooks/x",
+   "observed": "..: exit 2, last line ': fatal: index-pack failed', fsck is the cause: True; .git/config: exit 2, last line ': fatal: index-pack failed', fsck is the cause: True; .GIT/hooks/x: exit 2, last line ': fatal: index-pack failed', fsck is the cause: True",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "cases": [
+     {
+      "entry": "..",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t6-5ec1f7@bcf033bbe4f1d70572123007e990e060b0493e29 failed: fatal: index-pack failed\n",
+      "err_line": "error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t6-5ec1f7@bcf033bbe4f1d70572123007e990e060b0493e29 failed: fatal: index-pack failed",
+      "calls": [
+       "--version",
+       "init",
+       "fetch"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "direct_git": {
+       "fsck_true": {
+        "rc": 128,
+        "stderr": [
+         "error: object f6339247000688fd448d4aa9f98f8626a7648931: hasDotdot: contains '..'",
+         "fatal: fsck error in packed object",
+         "fatal: index-pack failed"
+        ]
+       },
+       "fsck_false": {
+        "rc": 0,
+        "stderr": []
+       }
+      },
+      "fsck_is_the_cause": true,
+      "ok": true
+     },
+     {
+      "entry": ".git/config",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t6-24d5d2@20171230200ea022811e8c3b0d540eeaf29ed822 failed: fatal: index-pack failed\n",
+      "err_line": "error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t6-24d5d2@20171230200ea022811e8c3b0d540eeaf29ed822 failed: fatal: index-pack failed",
+      "calls": [
+       "--version",
+       "init",
+       "fetch"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "direct_git": {
+       "fsck_true": {
+        "rc": 128,
+        "stderr": [
+         "error: object 90af9340ce371318e8201c675507271e417bd8a3: hasDotgit: contains '.git'",
+         "fatal: fsck error in packed object",
+         "fatal: index-pack failed"
+        ]
+       },
+       "fsck_false": {
+        "rc": 0,
+        "stderr": []
+       }
+      },
+      "fsck_is_the_cause": true,
+      "ok": true
+     },
+     {
+      "entry": ".GIT/hooks/x",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t6-37186f@3a159f8723c9bdb2fd3eac2b5f49f3f522656b5c failed: fatal: index-pack failed\n",
+      "err_line": "error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t6-37186f@3a159f8723c9bdb2fd3eac2b5f49f3f522656b5c failed: fatal: index-pack failed",
+      "calls": [
+       "--version",
+       "init",
+       "fetch"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "direct_git": {
+       "fsck_true": {
+        "rc": 128,
+        "stderr": [
+         "error: object e6e74000e3f8817431d0e7deedaaa176cbc8050c: hasDotgit: contains '.git'",
+         "fatal: fsck error in packed object",
+         "fatal: index-pack failed"
+        ]
+       },
+       "fsck_false": {
+        "rc": 0,
+        "stderr": []
+       }
+      },
+      "fsck_is_the_cause": true,
+      "ok": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "M-tamper-T7",
+   "predicted": "exit 2, sub is a submodule (mode 160000): refused; canary empty",
+   "observed": "exit 2: sub is a submodule (mode 160000): refused; canary []",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "error: sub is a submodule (mode 160000): refused\n",
+    "err_line": "error: sub is a submodule (mode 160000): refused",
+    "calls": [
+     "--version",
+     "init",
+     "fetch",
+     "count-objects",
+     "cat-file",
+     "ls-tree"
+    ],
+    "batch_reads": 0,
+    "written": false,
+    "leftover": []
+   }
+  },
+  {
+   "id": "M-tamper-T8",
+   "predicted": "exit 2 each: (cap 1048576); 201 files (cap 200); 9000000 bytes (cap 8388608); size-pack ... (cap 32 MiB)",
+   "observed": "a: exit 2 big.bin is 2097152 bytes (cap 1048576): refused; b: exit 2 the tree has 201 files (cap 200): refused; c: exit 2 the tree is 9002156 bytes (cap 8388608): refused; d: exit 2 git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "cases": [
+     {
+      "case": "a 2 MiB blob",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: big.bin is 2097152 bytes (cap 1048576): refused\n",
+      "err_line": "error: big.bin is 2097152 bytes (cap 1048576): refused",
+      "calls": [
+       "--version",
+       "init",
+       "fetch",
+       "count-objects",
+       "cat-file",
+       "ls-tree"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "ok": true
+     },
+     {
+      "case": "b 201 files",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: the tree has 201 files (cap 200): refused\n",
+      "err_line": "error: the tree has 201 files (cap 200): refused",
+      "calls": [
+       "--version",
+       "init",
+       "fetch",
+       "count-objects",
+       "cat-file",
+       "ls-tree"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "ok": true
+     },
+     {
+      "case": "c 9 x 1,000,000 B",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: the tree is 9002156 bytes (cap 8388608): refused\n",
+      "err_line": "error: the tree is 9002156 bytes (cap 8388608): refused",
+      "calls": [
+       "--version",
+       "init",
+       "fetch",
+       "count-objects",
+       "cat-file",
+       "ls-tree"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "ok": true
+     },
+     {
+      "case": "d 40 MiB blob",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t8d@6ae3ddd07fe22897c8a02998b1a871aae11f5ea0: size-pack 40975 KiB (cap 32 MiB): refused\n",
+      "err_line": "error: git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t8d@6ae3ddd07fe22897c8a02998b1a871aae11f5ea0: size-pack 40975 KiB (cap 32 MiB): refused",
+      "calls": [
+       "--version",
+       "init",
+       "fetch",
+       "count-objects"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "ok": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "M-tamper-T9",
+   "predicted": "exit 0, installs; hooks/config/filters of the source never run (canary empty)",
+   "observed": "exit 0; canary []",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 0,
+    "stdout": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t9@fc796e4cecb3ce9bc3a5bb277f07c0288e469212\n  commit:   fc796e4cecb3ce9bc3a5bb277f07c0288e469212 (fetched without hooks, filters, submodules, LFS; 3 files, 2156 bytes)\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---\ninstalled mariadb-engine 0.1.0 into .lattice/modules/mariadb-engine (sha256 0e7f3c6b14cb...; lattice.modules.lock)\n",
+    "stderr": "",
+    "err_line": "",
+    "calls": [
+     "--version",
+     "init",
+     "fetch",
+     "count-objects",
+     "cat-file",
+     "ls-tree",
+     "cat-file"
+    ],
+    "batch_reads": 1,
+    "written": true,
+    "leftover": []
+   }
+  },
+  {
+   "id": "M-tamper-T10",
+   "predicted": "exit 0; .gitattributes/.lfsconfig dropped and listed; user git config inert; engine.toml = blob",
+   "observed": "exit 0; dropped listed: True; canary []",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 0,
+    "stdout": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t10@4adb4abc28c9692fb1e043e32b0f4f5c7eddc46f\n  commit:   4adb4abc28c9692fb1e043e32b0f4f5c7eddc46f (fetched without hooks, filters, submodules, LFS; 3 files, 2156 bytes)\n  dropped:  .gitattributes, .lfsconfig\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---\ninstalled mariadb-engine 0.1.0 into .lattice/modules/mariadb-engine (sha256 0e7f3c6b14cb...; lattice.modules.lock)\n",
+    "stderr": "",
+    "err_line": "",
+    "calls": [
+     "--version",
+     "init",
+     "fetch",
+     "count-objects",
+     "cat-file",
+     "ls-tree",
+     "cat-file"
+    ],
+    "batch_reads": 1,
+    "written": true,
+    "leftover": []
+   }
+  },
+  {
+   "id": "M-tamper-T11",
+   "predicted": "exit 0, installs; GIT_TRACE/GIT_DIR/GIT_CONFIG_*/GIT_SSH_COMMAND of the caller inert",
+   "observed": "exit 0; canary []",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 0,
+    "stdout": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria@fc796e4cecb3ce9bc3a5bb277f07c0288e469212\n  commit:   fc796e4cecb3ce9bc3a5bb277f07c0288e469212 (fetched without hooks, filters, submodules, LFS; 3 files, 2156 bytes)\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---\ninstalled mariadb-engine 0.1.0 into .lattice/modules/mariadb-engine (sha256 0e7f3c6b14cb...; lattice.modules.lock)\n",
+    "stderr": "",
+    "err_line": "",
+    "calls": [
+     "--version",
+     "init",
+     "fetch",
+     "count-objects",
+     "cat-file",
+     "ls-tree",
+     "cat-file"
+    ],
+    "batch_reads": 1,
+    "written": true,
+    "leftover": []
+   }
+  },
+  {
+   "id": "M-tamper-T12",
+   "predicted": "exit 0 each; canary empty; summary says CODE (adapter and entry)",
+   "observed": "exit 0/0; canary []; summary says CODE: adapter True, entry False",
+   "rule_holds": false,
+   "runs": 2,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "adapter": {
+     "rc": 0,
+     "stdout": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t12a@ae8bc795cb8bc07c181748899106504a9011ebfc\n  commit:   ae8bc795cb8bc07c181748899106504a9011ebfc (fetched without hooks, filters, submodules, LFS; 4 files, 2321 bytes)\n  sha256:   7c5958af9c8139806051b0411816c0317ed933e3c5039032940dabae0712a012\n  files:    4\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter evil:Adapter (CODE: imported into the checker when the engine is used)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---\ninstalled mariadb-engine 0.1.0 into .lattice/modules/mariadb-engine (sha256 7c5958af9c81...; lattice.modules.lock)\n",
+     "stderr": "",
+     "err_line": "",
+     "calls": [
+      "--version",
+      "init",
+      "fetch",
+      "count-objects",
+      "cat-file",
+      "ls-tree",
+      "cat-file"
+     ],
+     "batch_reads": 1,
+     "written": true,
+     "leftover": []
+    },
+    "entry": {
+     "rc": 0,
+     "stdout": "module custom-mod 1 (custom)\n  source:   git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/t12b@881b0128fc14f1ce6b2152f34efb3afa9602a6c6\n  commit:   881b0128fc14f1ce6b2152f34efb3afa9602a6c6 (fetched without hooks, filters, submodules, LFS; 2 files, 228 bytes)\n  sha256:   fed08836a55d749dfa4860a7cc9b6f1f76ca45af83869f0266d24bd8b78a17e5\n  files:    2\n  provides: (nothing)\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"custom-mod\"\nversion = \"1\"\nkind = \"custom\"\nentry = \"evilentry\"\n---\ninstalled custom-mod 1 into .lattice/modules/custom-mod (sha256 fed08836a55d...; lattice.modules.lock)\n",
+     "stderr": "",
+     "err_line": "",
+     "calls": [
+      "--version",
+      "init",
+      "fetch",
+      "count-objects",
+      "cat-file",
+      "ls-tree",
+      "cat-file"
+     ],
+     "batch_reads": 1,
+     "written": true,
+     "leftover": []
+    },
+    "says_code_adapter": true,
+    "says_code_entry": false
+   }
+  },
+  {
+   "id": "M-tamper-T13",
+   "predicted": "exit 2, differ only in case: refused",
+   "observed": "exit 2: Engine.toml and engine.toml differ only in case: refused",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "error: Engine.toml and engine.toml differ only in case: refused\n",
+    "err_line": "error: Engine.toml and engine.toml differ only in case: refused",
+    "calls": [
+     "--version",
+     "init",
+     "fetch",
+     "count-objects",
+     "cat-file",
+     "ls-tree"
+    ],
+    "batch_reads": 0,
+    "written": false,
+    "leftover": []
+   }
+  },
+  {
+   "id": "M-tamper-T14",
+   "predicted": "exit 2, is a tag, not a commit; is a tree, not a commit",
+   "observed": "tag: exit 2 52e4dfba2c87 is a tag, not a commit: refused; tree: exit 2 a31cd52352fc4 is a tree, not a commit: refused",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "tag": {
+     "rc": 2,
+     "stdout": "",
+     "stderr": "error: 8de6d5f5606dcb4099dffe9cfc2252e4dfba2c87 is a tag, not a commit: refused\n",
+     "err_line": "error: 8de6d5f5606dcb4099dffe9cfc2252e4dfba2c87 is a tag, not a commit: refused",
+     "calls": [
+      "--version",
+      "init",
+      "fetch",
+      "count-objects",
+      "cat-file"
+     ],
+     "batch_reads": 0,
+     "written": false,
+     "leftover": []
+    },
+    "tree": {
+     "rc": 2,
+     "stdout": "",
+     "stderr": "error: 961d6961ec87957603a64d2848aa31cd52352fc4 is a tree, not a commit: refused\n",
+     "err_line": "error: 961d6961ec87957603a64d2848aa31cd52352fc4 is a tree, not a commit: refused",
+     "calls": [
+      "--version",
+      "init",
+      "fetch",
+      "count-objects",
+      "cat-file"
+     ],
+     "batch_reads": 0,
+     "written": false,
+     "leftover": []
+    }
+   }
+  },
+  {
+   "id": "M-tamper-T15",
+   "predicted": "exit 2 for ' a.toml', '\u00e9.toml', '-x', '.github/x' (2.4)",
+   "observed": "' a.toml': exit 2; '\u00e9.toml': exit 2; '-x': exit 2; '.github/x': exit 2",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "cases": [
+     {
+      "name": " a.toml",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: ' a.toml' is not an allowed path name (component ' a.toml' must match [A-Za-z0-9][A-Za-z0-9._+-]*): refused\n",
+      "err_line": "error: ' a.toml' is not an allowed path name (component ' a.toml' must match [A-Za-z0-9][A-Za-z0-9._+-]*): refused",
+      "calls": [
+       "--version",
+       "init",
+       "fetch",
+       "count-objects",
+       "cat-file",
+       "ls-tree"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "ok": true
+     },
+     {
+      "name": "\u00e9.toml",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: '\u00e9.toml' is not an allowed path name (component '\u00e9.toml' must match [A-Za-z0-9][A-Za-z0-9._+-]*): refused\n",
+      "err_line": "error: '\u00e9.toml' is not an allowed path name (component '\u00e9.toml' must match [A-Za-z0-9][A-Za-z0-9._+-]*): refused",
+      "calls": [
+       "--version",
+       "init",
+       "fetch",
+       "count-objects",
+       "cat-file",
+       "ls-tree"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "ok": true
+     },
+     {
+      "name": "-x",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: '-x' is not an allowed path name (component '-x' must match [A-Za-z0-9][A-Za-z0-9._+-]*): refused\n",
+      "err_line": "error: '-x' is not an allowed path name (component '-x' must match [A-Za-z0-9][A-Za-z0-9._+-]*): refused",
+      "calls": [
+       "--version",
+       "init",
+       "fetch",
+       "count-objects",
+       "cat-file",
+       "ls-tree"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "ok": true
+     },
+     {
+      "name": ".github/x",
+      "rc": 2,
+      "stdout": "",
+      "stderr": "error: '.github/x' is not an allowed path name (component '.github' must match [A-Za-z0-9][A-Za-z0-9._+-]*): refused\n",
+      "err_line": "error: '.github/x' is not an allowed path name (component '.github' must match [A-Za-z0-9][A-Za-z0-9._+-]*): refused",
+      "calls": [
+       "--version",
+       "init",
+       "fetch",
+       "count-objects",
+       "cat-file",
+       "ls-tree"
+      ],
+      "batch_reads": 0,
+      "written": false,
+      "leftover": [],
+      "ok": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "M-tamper-T16",
+   "predicted": "exit 2, older than 2.45.1 ...; no fetch",
+   "observed": "exit 2: git 2.39.0 is older than 2.45.1 (CVE-2024-32002, CVE-2024-32004, CVE-2024; git calls ['--version']",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "rc": 2,
+    "stdout": "",
+    "stderr": "error: git 2.39.0 is older than 2.45.1 (CVE-2024-32002, CVE-2024-32004, CVE-2024-32465): update git; nothing was fetched\n",
+    "err_line": "error: git 2.39.0 is older than 2.45.1 (CVE-2024-32002, CVE-2024-32004, CVE-2024-32465): update git; nothing was fetched",
+    "calls": [
+     "--version"
+    ],
+    "batch_reads": 0,
+    "written": false,
+    "leftover": []
+   }
+  }
+ ]
+}

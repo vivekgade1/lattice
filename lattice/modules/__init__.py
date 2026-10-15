@@ -12,19 +12,29 @@ A **module** is a directory holding ``lattice-module.toml``::
     descriptor = "engine.toml"        # kind engine: the descriptor file in the module,
     # [engine] ...                    #   or the descriptor's fields inline as [engine]
 
-**Install** (:func:`install`, ``lattice module install SOURCE [--index DIR] [--yes]``)
-prints the manifest and the tree's sha256, then installs only after ``--yes`` or an
-interactive ``y`` (no terminal and no ``--yes``: refused, exit 2, nothing written). It
-copies the module to ``<project>/.lattice/modules/<name>/`` (without ``__pycache__``,
-``.git`` and ``.DS_Store``) and records ``name``, ``version``, ``kind``, ``sha256`` (of the
-installed tree) and ``source`` in ``<project>/lattice.modules.lock`` (JSON).
+**Install** (:func:`install`, :func:`install_many`, ``lattice module install SOURCE
+[SOURCE ...] [--index DIR|URL] [--allow-remote] [--yes]``) prints each manifest and the
+tree's sha256, then installs only after ``--yes`` or an interactive ``y`` (no terminal and
+no ``--yes``: refused, exit 2, nothing written). All sources are fetched, validated and
+clash-checked before the one confirmation, each is copied to
+``<project>/.lattice/modules/.staging-<pid>/<name>``, re-hashed and renamed into
+``<project>/.lattice/modules/<name>/`` (without ``__pycache__``, ``.git`` and
+``.DS_Store``), then ``name``, ``version``, ``kind``, ``sha256`` (of the installed tree) and
+``source`` are written to ``<project>/lattice.modules.lock`` (JSON) in one atomic replace; a
+failure removes what it made and leaves the lock as it was.
 
-SOURCE is a local directory or a ``file://`` URL. A git URL (``git+https://...``,
-``https://....git``, ``git@host:repo``, ``ssh://``) is recognised and refused: **installing
-from git is not implemented yet**. With ``--index DIR`` a bare NAME resolves through
-``DIR/<NAME>.toml`` (``name``, ``version``, ``source`` -- a path relative to the index, a
-``file://`` URL or a git URL -- and an optional ``sha256`` pin the source tree must match);
-the index is a directory (in this repository for now; a plain git checkout works the same).
+SOURCE is a local directory, a ``file://`` URL, or a git source pinned to a commit:
+``git+file://<absolute path>@<sha>`` and, with ``--allow-remote``,
+``git+https://<host>/<path>@<sha>`` (:mod:`lattice.modules.git`: ``<sha>`` is a full
+lowercase commit id; a branch, a tag, ssh, credentials in the URL are refused; the fetch runs
+in an isolated environment with no checkout, and **nothing from the module executes at
+install**). A git entry's lock record adds ``commit`` (and, through an index, ``index``).
+Any other git URL (``https://....git``, ``git@host:repo``, ``ssh://``) is refused with a
+message naming the accepted forms; :func:`resolve_source` itself still reads local
+directories only. With ``--index`` a bare NAME resolves through ``<index>/<NAME>.toml``
+(``name``, ``version``, ``source`` -- a path relative to the index, a ``file://`` URL or a
+pinned git source -- and an optional ``sha256`` pin the source tree must match); the index is
+a directory or a pinned git source (then every ``source`` in it must be a pinned git source).
 
 **Every load re-hashes** (:func:`verify`, :func:`register_modules`): a module whose
 installed tree no longer hashes to its lock entry is ``changed`` (``missing`` when its
@@ -37,13 +47,15 @@ writing off, so loading a module never changes its tree.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
+import os
 import re
 import shutil
 import sys
 import tomllib
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -237,15 +249,22 @@ class LockEntry:
     kind: str
     sha256: str
     source: str
+    commit: str | None = None  # a git install: the pinned commit
+    index: str | None = None  # a git install through an index: the index path or URL
 
     def to_dict(self) -> dict[str, str]:
-        return {
+        out = {
             "name": self.name,
             "version": self.version,
             "kind": self.kind,
             "sha256": self.sha256,
             "source": self.source,
         }
+        if self.commit is not None:  # directory installs gain no key
+            out["commit"] = self.commit
+        if self.index is not None:
+            out["index"] = self.index
+        return out
 
 
 def read_lock(project: Path | str) -> list[LockEntry]:
@@ -255,7 +274,11 @@ def read_lock(project: Path | str) -> list[LockEntry]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
         entries = [
-            LockEntry(**{k: str(e[k]) for k in ("name", "version", "kind", "sha256", "source")})
+            LockEntry(
+                **{k: str(e[k]) for k in ("name", "version", "kind", "sha256", "source")},
+                commit=None if e.get("commit") is None else str(e["commit"]),
+                index=None if e.get("index") is None else str(e["index"]),
+            )
             for e in data["modules"]
         ]
     except (OSError, ValueError, KeyError, TypeError) as err:
@@ -272,7 +295,12 @@ def write_lock(project: Path | str, entries: list[LockEntry]) -> None:
         "version": LOCK_VERSION,
         "modules": [e.to_dict() for e in sorted(entries, key=lambda e: e.name)],
     }
-    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    tmp = path.with_name(path.name + ".tmp")  # one atomic replace: never a half-written lock
+    try:
+        tmp.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+        os.replace(tmp, path)
+    finally:
+        tmp.unlink(missing_ok=True)
 
 
 def module_dir(project: Path | str, name: str) -> Path:
@@ -298,19 +326,26 @@ class IndexEntry:
     source: str
     sha256: str | None
     path: Path
+    label: str | None = None  # a git index: its source, for messages (path is a temp file)
+
+    @property
+    def where(self) -> str:
+        """The entry as messages and the lock name it."""
+        return str(self.path) if self.label is None else f"{self.label}:{self.path.name}"
 
 
-def read_index_entry(index: Path | str, name: str) -> IndexEntry:
+def read_index_entry(index: Path | str, name: str, label: str | None = None) -> IndexEntry:
     path = Path(index) / f"{name}.toml"
+    shown = str(index) if label is None else label
     if not _NAME.fullmatch(name):
         raise ModuleError(f"{name!r} is not a module name to look up in an index")
     try:
         data = tomllib.loads(path.read_text(encoding="utf-8"))
     except OSError as err:
-        raise ModuleError(f"index {index}: no module {name!r} ({path.name} not found)") from err
+        raise ModuleError(f"index {shown}: no module {name!r} ({path.name} not found)") from err
     except tomllib.TOMLDecodeError as err:
-        raise ModuleError(f"index {index}: {path.name} is not valid TOML ({err})") from err
-    where = f"index entry {path}"
+        raise ModuleError(f"index {shown}: {path.name} is not valid TOML ({err})") from err
+    where = f"index entry {path}" if label is None else f"index entry {label}:{path.name}"
     for key in data:
         if key not in _INDEX_FIELDS:
             raise ModuleError(f"{where}: unknown field {key!r}")
@@ -320,6 +355,7 @@ def read_index_entry(index: Path | str, name: str) -> IndexEntry:
         _str(data, "source", where),
         data.get("sha256"),
         path,
+        label,
     )
     if entry.name != name:
         raise ModuleError(f"{where}: names module {entry.name!r}, not {name!r}")
@@ -354,11 +390,24 @@ def resolve_source(source: str, index: Path | str | None = None) -> tuple[Path, 
 # ---- install / uninstall --------------------------------------------------------------------
 
 
-def describe(m: Manifest, sha256: str, source: str) -> str:
-    """The manifest as the install shows it before asking."""
+def describe(
+    m: Manifest,
+    sha256: str,
+    source: str,
+    commit: str | None = None,
+    dropped: Sequence[str] = (),
+) -> str:
+    """The manifest as the install shows it before asking (``commit``: a git install's
+    ``FetchedTree.note``; ``dropped``: the names left out of the fetched tree)."""
     lines = [
         f"module {m.name} {m.version} ({m.kind})",
         f"  source:   {source}",
+    ]
+    if commit is not None:
+        lines.append(f"  commit:   {commit}")
+    if dropped:
+        lines.append(f"  dropped:  {', '.join(dropped)}")
+    lines += [
         f"  sha256:   {sha256}",
         f"  files:    {len(tree_files(m.directory, COPY_IGNORE))}",
         f"  provides: {', '.join(m.provides) or '(nothing)'}",
@@ -390,6 +439,88 @@ def _tty_confirm(question: str) -> bool:
         return False
 
 
+@dataclass
+class _Prepared:
+    """One source, fetched and validated: its tree, manifest and what the lock records."""
+
+    manifest: Manifest
+    digest: str
+    source: Path  # the tree to copy (a temp directory for a git source)
+    where: str  # the lock's ``source``
+    commit: str | None = None
+    note: str | None = None
+    dropped: list[str] = field(default_factory=list)
+    index: str | None = None  # a git install through an index
+
+
+def _prepare(
+    source: str,
+    index_dir: Path | None,
+    index_label: str | None,
+    index_shown: str | None,
+    allow_remote: bool,
+    stack: contextlib.ExitStack,
+) -> _Prepared:
+    from lattice.modules import git as _git
+
+    entry: IndexEntry | None = None
+    commit: str | None = None
+    note: str | None = None
+    dropped: list[str] = []
+    via_index: str | None = None
+    git_source: str | None = None
+    src: Path | None = None
+    if is_git_url(source):
+        git_source = source
+    elif index_dir is not None and _NAME.fullmatch(source) and not Path(source).exists():
+        entry = read_index_entry(index_dir, source, index_label)
+        if is_git_url(entry.source):
+            git_source = entry.source
+        elif index_label is not None:
+            raise ModuleError(
+                f"index entry {entry.where}: a git index names pinned git sources only "
+                f"(got {entry.source})"
+            )
+        else:
+            src, entry = resolve_source(source, index_dir)
+    else:
+        src, entry = resolve_source(source, index_dir)
+    if git_source is not None:
+        try:
+            _git.parse_git_source(git_source, allow_remote)
+        except GitSourceNotSupported as err:
+            if entry is not None:
+                raise GitSourceNotSupported(f"index entry {entry.where}: {err}") from err
+            raise
+        fetched = stack.enter_context(_git.fetch_tree(git_source, allow_remote=allow_remote))
+        src, commit, note, dropped = (
+            fetched.directory,
+            fetched.commit,
+            fetched.note,
+            fetched.dropped,
+        )
+        if entry is not None:
+            via_index = index_shown
+    assert src is not None
+    manifest = read_manifest(src)
+    if entry is not None and (manifest.name, manifest.version) != (entry.name, entry.version):
+        raise ModuleError(
+            f"index entry {entry.where} says {entry.name} {entry.version}, the "
+            f"source is {manifest.name} {manifest.version}"
+        )
+    digest = tree_hash(src, COPY_IGNORE)
+    if entry is not None and entry.sha256 and entry.sha256 != digest:
+        raise ModuleError(
+            f"index entry {entry.where} pins sha256 {entry.sha256}, the source "
+            f"tree hashes to {digest}: refused"
+        )
+    if git_source is not None:
+        where = git_source
+    else:
+        where = entry.where if entry is not None else str(src.resolve())
+    return _Prepared(manifest, digest, src, where, commit, note, dropped, via_index)
+
+
 def install(
     project: Path | str,
     source: str,
@@ -398,61 +529,137 @@ def install(
     yes: bool = False,
     confirm: Callable[[str], bool] | None = None,
     out: Callable[[str], None] = print,
+    allow_remote: bool = False,
 ) -> LockEntry:
     """Install the module ``source`` into ``project`` (see the module docstring). Raises
     ModuleError when it cannot, :class:`Refused` when it was not confirmed."""
+    return install_many(
+        project, [source], index=index, yes=yes, confirm=confirm, out=out, allow_remote=allow_remote
+    )[0]
+
+
+def install_many(
+    project: Path | str,
+    sources: Sequence[str],
+    *,
+    index: Path | str | None = None,
+    yes: bool = False,
+    confirm: Callable[[str], bool] | None = None,
+    out: Callable[[str], None] = print,
+    allow_remote: bool = False,
+) -> list[LockEntry]:
+    """Install several modules in one step: every source is fetched, validated, hashed and
+    clash-checked before the single confirmation; the lock is written once, atomically."""
+    from lattice.modules import git as _git
+
+    if not sources:
+        raise ModuleError("nothing to install: give a SOURCE")
     root = Path(project).resolve()
-    src, entry = resolve_source(source, index)
-    manifest = read_manifest(src)
-    if entry is not None and (manifest.name, manifest.version) != (entry.name, entry.version):
-        raise ModuleError(
-            f"index entry {entry.path} says {entry.name} {entry.version}, the "
-            f"source is {manifest.name} {manifest.version}"
+    with contextlib.ExitStack() as stack:
+        index_dir: Path | None = None
+        index_label: str | None = None
+        index_shown: str | None = None
+        if index is not None:
+            index_text = str(index)
+            if is_git_url(index_text):
+                tree = stack.enter_context(_git.fetch_tree(index_text, allow_remote=allow_remote))
+                index_dir, index_label, index_shown = tree.directory, index_text, index_text
+            else:
+                index_dir, index_shown = Path(index), str(Path(index).resolve())
+        locked = {e.name: e for e in read_lock(root)}
+        reg = stack.enter_context(_engines.REGISTRY.scoped())  # clashes: built-ins and each other
+        prepared: list[_Prepared] = []
+        for source in sources:
+            p = _prepare(source, index_dir, index_label, index_shown, allow_remote, stack)
+            m = p.manifest
+            if any(q.manifest.name == m.name for q in prepared):
+                raise ModuleError(f"module {m.name} appears twice in this install")
+            dest = module_dir(root, m.name)
+            if m.name in locked or dest.exists():
+                have = locked.get(m.name)
+                what = f"version {have.version}" if have else f"a directory at {dest}"
+                raise ModuleError(
+                    f"module {m.name!r} is already installed ({what}): uninstall it first"
+                )
+            if m.engine is not None:  # would it register? (a name clash is an error now)
+                try:
+                    reg.add(m.engine, "module", module=m.name)
+                except _engines.EngineError as err:
+                    raise ModuleError(str(err)) from err
+            prepared.append(p)
+        for p in prepared:
+            out(describe(p.manifest, p.digest, p.where, p.note, p.dropped))
+        ask = confirm or _tty_confirm
+        if len(prepared) == 1:
+            m = prepared[0].manifest
+            question = f"Install {m.name} {m.version} into {root}? [y/N] "
+            named = f"{m.name} {m.version} was"
+        else:
+            names = ", ".join(f"{p.manifest.name} {p.manifest.version}" for p in prepared)
+            question = f"Install {len(prepared)} modules ({names}) into {root}? [y/N] "
+            named = f"{names} were"
+        if not yes and not ask(question):
+            raise Refused(
+                f"not installed: {named} not confirmed (give --yes, or answer y at a terminal)"
+            )
+        entries = _write_modules(root, prepared)
+    for e in entries:
+        dest = module_dir(root, e.name)
+        out(
+            f"installed {e.name} {e.version} into {dest.relative_to(root)} "
+            f"(sha256 {e.sha256[:12]}...; {LOCK})"
         )
-    digest = tree_hash(src, COPY_IGNORE)
-    if entry is not None and entry.sha256 and entry.sha256 != digest:
-        raise ModuleError(
-            f"index entry {entry.path} pins sha256 {entry.sha256}, the source "
-            f"tree hashes to {digest}: refused"
-        )
-    locked = {e.name: e for e in read_lock(root)}
-    dest = module_dir(root, manifest.name)
-    if manifest.name in locked or dest.exists():
-        have = locked.get(manifest.name)
-        what = f"version {have.version}" if have else f"a directory at {dest}"
-        raise ModuleError(
-            f"module {manifest.name!r} is already installed ({what}): uninstall it first"
-        )
-    if manifest.engine is not None:  # would it register? (a name clash is an error now)
-        with _engines.REGISTRY.scoped() as reg:
-            try:
-                reg.add(manifest.engine, "module", module=manifest.name)
-            except _engines.EngineError as err:
-                raise ModuleError(str(err)) from err
-    where = str(entry.path) if entry is not None else str(src.resolve())
-    out(describe(manifest, digest, where))
-    ask = confirm or _tty_confirm
-    if not yes and not ask(f"Install {manifest.name} {manifest.version} into {root}? [y/N] "):
-        raise Refused(
-            f"not installed: {manifest.name} {manifest.version} was not confirmed "
-            "(give --yes, or answer y at a terminal)"
-        )
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(src, dest, ignore=shutil.ignore_patterns(*COPY_IGNORE))
-    installed = tree_hash(dest)
-    if installed != digest:  # the source changed while we asked
-        shutil.rmtree(dest)
-        raise ModuleError(
-            f"module {manifest.name!r}: the source changed during the install "
-            "(hash mismatch); nothing installed"
-        )
-    lock_entry = LockEntry(manifest.name, manifest.version, manifest.kind, installed, where)
-    write_lock(root, [*locked.values(), lock_entry])
-    out(
-        f"installed {manifest.name} {manifest.version} into {dest.relative_to(root)} "
-        f"(sha256 {installed[:12]}...; {LOCK})"
-    )
-    return lock_entry
+    return entries
+
+
+def _write_modules(root: Path, prepared: Sequence[_Prepared]) -> list[LockEntry]:
+    """Copy every tree to a staging directory, re-hash, rename into place, then replace the
+    lock. A failure removes the staging directory and every renamed directory."""
+    locked = [e for e in read_lock(root)]
+    modules_dir = root / MODULES_DIR
+    staging = modules_dir / f".staging-{os.getpid()}"
+    created = [d for d in (root / ".lattice", modules_dir) if not d.exists()]
+    renamed: list[Path] = []
+    entries: list[LockEntry] = []
+    try:
+        staging.mkdir(parents=True)
+        for p in prepared:
+            name = p.manifest.name
+            tmp = staging / name
+            shutil.copytree(p.source, tmp, ignore=shutil.ignore_patterns(*COPY_IGNORE))
+            installed = tree_hash(tmp)
+            if installed != p.digest:  # the source changed while we asked
+                raise ModuleError(
+                    f"module {name!r}: the source changed during the install "
+                    "(hash mismatch); nothing installed"
+                )
+            entries.append(
+                LockEntry(
+                    name,
+                    p.manifest.version,
+                    p.manifest.kind,
+                    installed,
+                    p.where,
+                    p.commit,
+                    p.index if p.commit is not None else None,
+                )
+            )
+        for p in prepared:
+            dest = module_dir(root, p.manifest.name)
+            os.rename(staging / p.manifest.name, dest)
+            renamed.append(dest)
+        write_lock(root, [*locked, *entries])
+    except BaseException:
+        for d in reversed(renamed):
+            shutil.rmtree(d, ignore_errors=True)
+        shutil.rmtree(staging, ignore_errors=True)
+        for d in reversed(created):
+            with contextlib.suppress(OSError):
+                d.rmdir()
+        raise
+    with contextlib.suppress(OSError):
+        staging.rmdir()
+    return entries
 
 
 class Refused(ModuleError):
@@ -573,6 +780,9 @@ class ProjectEngines:
     files: list[tuple[Path, _engines.EngineDescriptor]] = field(default_factory=list)
     modules: list[ModuleState] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
+    # the project's own registry (built-ins, its files, its verified modules); also the one
+    # the calling context sees after load_project_engines (see lattice.spec.engines.using)
+    registry: _engines.EngineRegistry | None = field(default=None, compare=False, repr=False)
 
 
 def engine_paths(root: Path, engines_table: Any) -> tuple[list[Path], list[str]]:
@@ -590,25 +800,52 @@ def engine_paths(root: Path, engines_table: Any) -> tuple[list[Path], list[str]]
     return [(root / p).resolve() for p in paths], problems
 
 
-def load_project_engines(root: Path | str, engines_table: Any = None) -> ProjectEngines:
-    """Register ``root``'s engines (its ``[engines] paths``, then its verified modules) and
-    report them; a problem is listed in ``errors`` (never raised)."""
+def _load_into(
+    root: Path | str, engines_table: Any, reg: _engines.EngineRegistry
+) -> ProjectEngines:
     r = Path(root).resolve()
-    out = ProjectEngines()
+    out = ProjectEngines(registry=reg)
     paths, out.errors = engine_paths(r, engines_table)
     for p in paths:
         try:
-            out.files.append((p, _engines.load_engine_file(p, "project")))
+            out.files.append((p, _engines.load_engine_file(p, "project", reg)))
         except _engines.EngineError as err:
             out.errors.append(str(err))
     try:
-        out.modules = register_modules(r, strict=False)
+        out.modules = register_modules(r, strict=False, registry=reg)
     except ModuleError as err:
         out.errors.append(str(err))
     for s in out.modules:
         if s.status != "ok":
             out.errors.append(refusal(s))
     return out
+
+
+def load_project_engines(root: Path | str, engines_table: Any = None) -> ProjectEngines:
+    """Register ``root``'s engines (its ``[engines] paths``, then its verified modules) in
+    a NEW registry of its own (the built-ins, then those, in that order) and report them; a
+    problem is listed in ``errors`` (never raised).
+
+    The registry is activated for the calling context (``ProjectEngines.registry``; no
+    reset: a thread's context ends with the thread), so ``--database``, ``find`` and the
+    adapters resolve this project's engines, never another project's, and the process
+    registry (the CLI's) is not touched. Where a thread is reused across projects, use
+    :func:`project_engines`, which restores the previous registry on exit."""
+    out = _load_into(root, engines_table, _engines.project_registry())
+    assert out.registry is not None
+    _engines.activate(out.registry)
+    return out
+
+
+@contextlib.contextmanager
+def project_engines(root: Path | str, engines_table: Any = None) -> Iterator[ProjectEngines]:
+    """:func:`load_project_engines` as a scope: the project's registry is the one the
+    calling context sees inside the block, and the previous one is restored after it,
+    also when the block raises."""
+    out = _load_into(root, engines_table, _engines.project_registry())
+    assert out.registry is not None
+    with _engines.using(out.registry):
+        yield out
 
 
 __all__ = [
@@ -623,7 +860,9 @@ __all__ = [
     "ProjectEngines",
     "Refused",
     "install",
+    "install_many",
     "load_project_engines",
+    "project_engines",
     "read_lock",
     "read_manifest",
     "register_modules",

@@ -1,0 +1,149 @@
+{
+ "group": "regress",
+ "runs": 2,
+ "rows": [
+  {
+   "id": "M-regress-R1",
+   "predicted": "directory install/list/info/uninstall: stdout, stderr, exit, lock bytes, trees byte-identical to a4ab4a1",
+   "observed": "15/15 steps byte-identical to a4ab4a1",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "differing": [],
+    "steps": [
+     "dir install, no --yes, no tty",
+     "dir install --yes",
+     "list",
+     "list --json",
+     "info",
+     "info --json",
+     "uninstall",
+     "file:// install",
+     "uninstall",
+     "dir-index install",
+     "list again",
+     "list after a 1-byte tamper",
+     "info after tamper",
+     "uninstall (tampered)",
+     "uninstall (absent)"
+    ],
+    "exit_codes": [
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     2
+    ]
+   }
+  },
+  {
+   "id": "M-regress-R2",
+   "predicted": "a4ab4a1's list and info on M-git a's project: ok",
+   "observed": "a4ab4a1 list exit 0, info exit 0: mariadb-engine 0.1.0 (engine): ok",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "list": "mariadb-engine  0.1.0      engine  ok       0e7f3c6b14cb  git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria_r2@fc796e4cecb3ce9bc3a5bb277f07c0288e469212\n",
+    "info_head": [
+     "mariadb-engine 0.1.0 (engine): ok",
+     "  sha256 (locked): 0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9",
+     "  source:          git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/repos/maria_r2@fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+     "  directory:       /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3v/probes/work/r2/proj/.lattice/modules/mariadb-engine",
+     ""
+    ],
+    "stderr": ""
+   }
+  },
+  {
+   "id": "M-regress-R3",
+   "predicted": "test_modules.py unchanged, 26 passed; named suites unchanged and passing; only test_engines_api.py:130 changed; check.sh PASS",
+   "observed": "unchanged files 6/6; suites 7/7 pass; check.sh exit 0: PASS: 0 findings (D 0, X 0); 435 cases run",
+   "rule_holds": true,
+   "runs": 1,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "unchanged": {
+     "tests/modules/test_modules.py": true,
+     "tests/spec/test_engines.py": true,
+     "tests/studio/test_projects.py": true,
+     "tests/test_cli.py": true,
+     "tests/spec/test_ask.py": true,
+     "tests/spec/test_draft.py": true
+    },
+    "engines_api_diff_lines": [
+     "-        assert REGISTRY.entry(\"mariadb\").source == \"project\"",
+     "+        assert REGISTRY.entry(\"mariadb\") is None"
+    ],
+    "pytest": {
+     "tests/modules/test_modules.py": "rc 0: 26 passed (collected 26)",
+     "tests/spec/test_engines.py": "rc 0: 60 passed (collected 60)",
+     "tests/studio/test_projects.py": "rc 0: 24 passed (collected 24)",
+     "tests/test_cli.py": "rc 0: 21 passed (collected 21)",
+     "tests/spec/test_ask.py": "rc 0: 32 passed, 2 skipped (collected 34)",
+     "tests/spec/test_draft.py": "rc 0: 30 passed, 1 skipped (collected 31)",
+     "tests/studio/test_engines_api.py": "rc 0: 5 passed (collected 5)"
+    },
+    "check_sh": {
+     "rc": 0,
+     "head": "PASS: 0 findings (D 0, X 0); 435 cases run",
+     "tail": "start 0.29, db 0.00, steps 2.94, 14 requests)\n  3.15s a_plan_runs_level_by_level (start 0.31, db 0.00, steps 2.79, 12 requests)\n  3.01s one_rebuild_at_a_time_and_stop (start 0.30, db 0.00, steps 2.66, 14 requests)\n  2.92s land_is_409_when_nothing_waits (start 0.31, db 0.00, steps 2.58, 11 requests)\n"
+    }
+   }
+  },
+  {
+   "id": "M-regress-R4",
+   "predicted": "module --help and lattice --help differ from a4ab4a1 only by new options and usage",
+   "observed": "module --help: 12 changed lines, 0 unexplained; module top --help: 0 changed lines, 0 unexplained; lattice --help: 3 changed lines, 0 unexplained",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "module --help": {
+     "diff": [
+      "-usage: lattice module install [-h] [--index DIR] [--yes] [--project PROJECT]",
+      "-                              source",
+      "+usage: lattice module install [-h] [--index DIR|URL] [--allow-remote] [--yes]",
+      "+                              [--project PROJECT]",
+      "+                              source [source ...]",
+      "-  source             a module directory, a file:// URL, or a name (--index)",
+      "+  source             a module directory, a file:// URL, a pinned git+file://",
+      "+                     or git+https:// source, or a name (--index)",
+      "-  --index DIR        a directory of <name>.toml index entries",
+      "+  --index DIR|URL    a directory (or a pinned git+file:// / git+https://",
+      "+                     source) of <name>.toml index entries",
+      "+  --allow-remote     allow git+https:// sources (network)"
+     ],
+     "stray": []
+    },
+    "module top --help": {
+     "diff": [],
+     "stray": []
+    },
+    "lattice --help": {
+     "diff": [
+      "-                                                   .lattice/modules, pinned by sha256)",
+      "+            [--index DIR|URL] [--allow-remote]     .lattice/modules, pinned by sha256; a git",
+      "+                                                   source is pinned to a commit sha)"
+     ],
+     "stray": []
+    }
+   }
+  }
+ ]
+}

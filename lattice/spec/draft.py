@@ -20,7 +20,8 @@ CLI (:func:`main`)::
     draft REQUIREMENTS.md --context CONTEXT.md --out spec_gen.py [--model opus]
         [--max-repairs 3] [--revise --feedback lint.json]
     draft NEW.md --since OLD.md --base BASE.py [--context CTX.md] --out NEW.py
-        [--impact --app mod:factory --db mod:build_db ...]
+        [--impact --app mod:factory --db mod:build_db ...
+         [--engine-file FILE ...] [--modules DIR]]
 
 (the second form drafts only the change: :mod:`lattice.spec.incremental`)
 
@@ -848,6 +849,19 @@ def _parser() -> argparse.ArgumentParser:
 
     inc.add_argument("--database", default="sqlite", choices=database_names())
     inc.add_argument("--database-url", help="--impact: an existing database server")
+    inc.add_argument(
+        "--engine-file",
+        action="append",
+        default=[],
+        metavar="FILE",
+        help="--impact: a project's engine descriptor (TOML), registered before --database "
+        "is read; repeatable",
+    )
+    inc.add_argument(
+        "--modules",
+        metavar="DIR",
+        help="--impact: load the modules installed in project DIR, each re-hashed",
+    )
     inc.add_argument("--race", action="store_true", help="--impact: layer X too")
     return p
 
@@ -856,7 +870,10 @@ def _client(args: argparse.Namespace) -> Generator:
     from lattice.llm.cli_client import ClaudeCliClient
 
     return ClaudeCliClient(
-        model=args.model, max_tokens=args.max_tokens, effort=args.effort, timeout=args.timeout,
+        model=args.model,
+        max_tokens=args.max_tokens,
+        effort=args.effort,
+        timeout=args.timeout,
         full_text=True,
     )
 
@@ -867,6 +884,12 @@ def main(argv: list[str], *, generator: Generator | None = None) -> int:
     argv = list(argv)
     if argv and argv[0] == "draft":
         argv = argv[1:]
+    from lattice.spec.__main__ import _preload_engines
+
+    problem = _preload_engines(argv)  # before the parser: engine names are --database choices
+    if problem is not None:
+        print(f"error: {problem}", file=sys.stderr)
+        return 2
     parser = _parser()
     try:
         args = parser.parse_args(argv)
