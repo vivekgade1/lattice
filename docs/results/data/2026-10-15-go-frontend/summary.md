@@ -1,0 +1,26 @@
+# Go front end probes (streak stage)
+
+- RAN PR1: PASS -- routes: method + full path vs the registrations: observed {"extracted": 26, "recall": "26/26", "precision": "26/26", "exact": 26, "duplicates": 0}
+- RAN PR2: PASS -- handlers: distinct, file:line, wrappers: observed {"distinct_handlers": 26, "file_line_exact": "26/26", "wrappers_exact": "26/26"}
+- RAN PR3: PASS -- S4 vs its 20 registrations; spec-only on S4 and S: observed {"s4_routes": {"extracted": 20, "recall": "20/20", "precision": "20/20", "exact": 20, "duplicates": 0}, "spec_only_s4": [["DELETE", "/v1/devices/{}"], ["GET", "/v1/home"], ["GET", "/v1/nudges"], ["GET", "/v1/sync"], ["POST", "/v1/devices"], ["POST", "/v1/nudges/{}/dismiss"]], "spec_only_s": []}
+- RAN PA: PASS -- auth vs the code (Member iff on r.Member) and the spec's anon column: observed {"counts": {"Customer": 21, "Public": 5}, "code": "26/26", "spec": "26/26"}
+- RAN PA2: PASS -- AuthModel: login path, users table, scheme, password column, fields: observed {"login_path": "/v1/auth/login", "users_table": "User", "scheme": "bearer", "password_column": "hashed_password", "username_field": "email", "password_field": "password"}
+- RAN PT: PASS -- tables vs the independent regex parse (D3's rules): observed {"tables": 10, "tables_equal": true, "columns": "67/67", "facts": "469/469", "unique_together": "2/2", "count_table_exact": true}
+- RAN PE: PASS -- spec error cells (endpoint, status >= 400) in raises + guards: observed {"cells": 54, "found": "54/54"}
+- RAN PE2: REPORT -- codes and extras (report): observed {"spec_triples_found": "65/65", "extras": 111, "extra_429": 19, "extras_handler_raises_only": 22, "extras_handler_raises_and_guards": 72, "distinct_status_code_pairs_not_in_spec": [[426, "upgrade_required"]]}
+- RAN PF: PASS -- spec 422 (endpoint, field) cells found as RouteParam: observed {"cells": 32, "found": "32/32"}
+- RAN PF2: PASS -- bounds: name 1..100, description 500, target_count ge 1 / le unread, sync limit 1..200: observed "7/7"
+- RAN PO: PASS -- owner evidence: observed {"habits.user_id compare": "14/14", "assign": "2/2", "caller-id use per Member route": "21/21", "public with uses": 0}
+- RAN PM: PASS -- Nudge.delivery values by root: observed {"DELETE /v1/habits/{id}/completions/{cid}": ["pending", "suppressed"], "POST /v1/completions/batch": ["pending", "suppressed"], "POST /v1/habits/{id}/completions": ["pending", "suppressed"], "nudges.RunDailyPass": ["failed", "sent", "suppressed"]}
+- RAN PU: PASS -- unread: structural per route, detail items located: observed {"structural": "0/26", "detail": 4, "located": "4/4"}
+- RAN PS: PASS -- generate_profile + build_spec on S: observed {"runs": true, "contracts": 26, "ownership": {}, "unclear": {}, "unclear_notes": ["private:TestClockRow", "private:SchemaMigration", "private:User", "private:NotificationPrefs", "private:Device", "private:RefreshToken", "private:Habit", "private:HabitTarget", "private:Completion", "private:Nudge", "
+- RAN PD: PASS -- 10 runs + 1 from a second clone path: byte-identical: observed {"sidecar": "11/11", "model": "11/11", "leaks": []}
+- RAN PT2-extract: PASS -- goextract wall on S (median of 10): observed {"median_s": 0.02, "min_s": 0.02, "max_s": 0.02}
+- RAN PT2-build: PASS -- cold build_gocheck: observed {"fresh_checker_cache": 0.2, "fresh_checker_and_go_cache": 1.8}
+- RAN PB-gocheck: PASS -- gocheck sources changed only in main.go + goextract*.go; old and new findings byte-identical: observed {"changed": ["lattice/gocheck/src/main.go", "lattice/gocheck/src/goextract.go", "lattice/gocheck/src/goextract_assemble.go", "lattice/gocheck/src/goextract_closure.go", "lattice/gocheck/src/goextract_owner.go", "lattice/gocheck/src/goextract_raise.go", "lattice/gocheck/src/goextract_routes.go", "lat
+- RAN PB-diff: PASS -- changes against 4845ab5: owned files only; frozen modules and goldens untouched: observed {"foreign": [], "frozen_diff": [], "changed": ["dogfood/importer_go_mutants.py", "dogfood/importer_go_probes.py", "lattice/gocheck/src/goextract.go", "lattice/gocheck/src/goextract_assemble.go", "lattice/gocheck/src/goextract_closure.go", "lattice/gocheck/src/goextract_owner.go", "lattice/gocheck/sr
+- RAN PX: FAIL -- reconcile on S: observed, control, container leaks: observed {"observed": "26/26", "member_401": 21, "health": 200, "public_4xx": 4, "control_404": "21/26", "containers_started": 1, "leaks": 0}
+- RAN PW: PASS -- tree listing + sha256 of S: after build vs after extract + reconcile: observed {"changed": 0, "new": 0}
+- RAN PX2: PASS -- stale binary: reconcile reports the route the binary lacks: observed {"not_observed": ["GET /v1/home"]}
+- RAN REPRO: PASS -- every deterministic probe 10x identical: observed {"no_docker_probes": "10/10", "px_px2": "10/10"}
+- RAN LEAK: PASS -- lattice-gox- containers after the run: observed 0

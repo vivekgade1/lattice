@@ -64,6 +64,9 @@ type output struct {
 }
 
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "extract" {
+		os.Exit(runExtract(os.Stdin, os.Stdout, os.Stderr))
+	}
 	raw, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "gocheck: cannot read the input:", err)

@@ -1,0 +1,5413 @@
+{
+  "app_package": "streak",
+  "tables": [
+    {
+      "name": "TestClockRow",
+      "table_name": "test_clock",
+      "module": "streak/internal/clock",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "now",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "SchemaMigration",
+      "table_name": "schema_migrations",
+      "module": "streak/internal/db",
+      "columns": [
+        {
+          "name": "version",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "applied_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "User",
+      "table_name": "users",
+      "module": "streak/internal/db",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "email",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 255,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": true,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "hashed_password",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 255,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "timezone",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 64,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "change_seq",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "0",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "created_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "NotificationPrefs",
+      "table_name": "notification_prefs",
+      "module": "streak/internal/db",
+      "columns": [
+        {
+          "name": "user_id",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "push_enabled",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "true",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "quiet_start",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 5,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "quiet_end",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 5,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "nudge_time",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 5,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "last_pass_date",
+          "annotation": "*time.Time",
+          "type": "Date",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "Device",
+      "table_name": "devices",
+      "module": "streak/internal/db",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "user_id",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "installation_id",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 36,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "platform",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 16,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "push_token",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 4096,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "timezone",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 64,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "app_version",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 32,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "created_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "updated_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "RefreshToken",
+      "table_name": "refresh_tokens",
+      "module": "streak/internal/db",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "user_id",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "installation_id",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 36,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "token_hash",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 64,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": true,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "expires_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "rotated_at",
+          "annotation": "*time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "revoked_at",
+          "annotation": "*time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "created_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "Habit",
+      "table_name": "habits",
+      "module": "streak/internal/db",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 36,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "user_id",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "name",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 255,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "description",
+          "annotation": "*string",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "target_count",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "period",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 8,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "start_date",
+          "annotation": "time.Time",
+          "type": "Date",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "end_date",
+          "annotation": "*time.Time",
+          "type": "Date",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "archived",
+          "annotation": "bool",
+          "type": "Bool",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "false",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "version",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": false,
+          "default": "1",
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "change_seq",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "created_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "updated_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "deleted_at",
+          "annotation": "*time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "HabitTarget",
+      "table_name": "habit_targets",
+      "module": "streak/internal/db",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "habit_id",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 36,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "target_count",
+          "annotation": "int",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "effective_from",
+          "annotation": "time.Time",
+          "type": "Date",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [],
+      "unique_together": [
+        [
+          "habit_id",
+          "effective_from"
+        ]
+      ]
+    },
+    {
+      "name": "Completion",
+      "table_name": "completions",
+      "module": "streak/internal/db",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 36,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "habit_id",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 36,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "date",
+          "annotation": "time.Time",
+          "type": "Date",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "note",
+          "annotation": "*string",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "change_seq",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "created_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "updated_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "deleted_at",
+          "annotation": "*time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": []
+    },
+    {
+      "name": "Nudge",
+      "table_name": "nudges",
+      "module": "streak/internal/db",
+      "columns": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 36,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": true,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "habit_id",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 36,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "for_date",
+          "annotation": "time.Time",
+          "type": "Date",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": true,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "kind",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 16,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "message",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "delivery",
+          "annotation": "string",
+          "type": "Str",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": 16,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "delivery_reason",
+          "annotation": "*string",
+          "type": "Str",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": 32,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "change_seq",
+          "annotation": "int64",
+          "type": "Int",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "created_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "updated_at",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": false,
+          "required": true,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "dismissed_at",
+          "annotation": "*time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        },
+        {
+          "name": "deleted_at",
+          "annotation": "*time.Time",
+          "type": "DateTime",
+          "item": null,
+          "nullable": true,
+          "required": false,
+          "default": null,
+          "min_length": null,
+          "max_length": null,
+          "ge": null,
+          "gt": null,
+          "le": null,
+          "lt": null,
+          "unique": false,
+          "primary_key": false,
+          "foreign_key": null,
+          "index": false,
+          "tz_aware": false,
+          "choices": [],
+          "choice_names": []
+        }
+      ],
+      "bases": [],
+      "unique_together": [
+        [
+          "habit_id",
+          "for_date"
+        ]
+      ]
+    }
+  ],
+  "models": [],
+  "dependencies": [],
+  "routes": [
+    {
+      "name": "account.handler.get",
+      "module": "streak/internal/account",
+      "method": "GET",
+      "path": "/v1/me",
+      "params": [],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [],
+      "calls": [
+        "streak/internal/account:handler.me",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:Deps.Q"
+      ],
+      "tables": [
+        "NotificationPrefs",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 61
+        },
+        {
+          "table": "NotificationPrefs",
+          "column": "user_id",
+          "how": "compare",
+          "line": 61
+        }
+      ],
+      "body_models": [],
+      "line": 20,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/account:account.handler.get"
+    },
+    {
+      "name": "account.handler.put",
+      "module": "streak/internal/account",
+      "method": "PUT",
+      "path": "/v1/me",
+      "params": [
+        {
+          "name": "timezone",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "push_enabled",
+          "annotation": "bool",
+          "type": "Bool",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "quiet_start",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "quiet_end",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "nudge_time",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 83,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 91,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 101,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 75,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 107,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/account:handler.me",
+        "streak/internal/db:LockUser",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:ReadBody",
+        "streak/internal/period:Location",
+        "streak/internal/period:ValidZone"
+      ],
+      "tables": [
+        "NotificationPrefs",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 111
+        },
+        {
+          "table": "NotificationPrefs",
+          "column": "user_id",
+          "how": "compare",
+          "line": 117
+        }
+      ],
+      "body_models": [],
+      "line": 21,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/account:account.handler.put"
+    },
+    {
+      "name": "account.handler.remove",
+      "module": "streak/internal/account",
+      "method": "DELETE",
+      "path": "/v1/me",
+      "params": [],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 204,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 137,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:LockUser",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Tx"
+      ],
+      "tables": [
+        "Completion",
+        "Device",
+        "Habit",
+        "HabitTarget",
+        "NotificationPrefs",
+        "Nudge",
+        "RefreshToken",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 141
+        },
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 158
+        }
+      ],
+      "body_models": [],
+      "line": 22,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/account:account.handler.remove"
+    },
+    {
+      "name": "account.handler.postDevice",
+      "module": "streak/internal/account",
+      "method": "POST",
+      "path": "/v1/devices",
+      "params": [
+        {
+          "name": "installation_id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "platform",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "push_token",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "timezone",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "app_version",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 62,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 69,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 76,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 83,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 49,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 57,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 64,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 71,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 78,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/account:deviceBody",
+        "streak/internal/account:requiredStr",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:ReadBody",
+        "streak/internal/period:Location",
+        "streak/internal/period:ValidZone"
+      ],
+      "tables": [
+        "Device"
+      ],
+      "owner_uses": [
+        {
+          "table": "Device",
+          "column": "user_id",
+          "how": "assign",
+          "line": 110
+        }
+      ],
+      "body_models": [],
+      "line": 23,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/account:account.handler.postDevice",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "account.handler.deleteDevice",
+      "module": "streak/internal/account",
+      "method": "DELETE",
+      "path": "/v1/devices/{id}",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 204,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 141,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 148,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:Deps.Q"
+      ],
+      "tables": [
+        "Device"
+      ],
+      "owner_uses": [
+        {
+          "table": "Device",
+          "column": "user_id",
+          "how": "compare",
+          "line": 143
+        }
+      ],
+      "body_models": [],
+      "line": 24,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/account:account.handler.deleteDevice"
+    },
+    {
+      "name": "auth.handler.register",
+      "module": "streak/internal/auth",
+      "method": "POST",
+      "path": "/v1/auth/register",
+      "params": [
+        {
+          "name": "email",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "password",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": 8,
+          "max_length": 72
+        },
+        {
+          "name": "timezone",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 201,
+      "dependencies": [],
+      "auth": "Public",
+      "auth_reason": "no authenticating middleware in the chain (engine > Group(\"/v1\") > Routes.Public from internal/httpapi/router.go:53)",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 69,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 74,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 78,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "email_taken",
+          "line": 91,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 63,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/auth:isDuplicate",
+        "streak/internal/auth:validEmail",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:ReadBody",
+        "streak/internal/period:Location",
+        "streak/internal/period:ValidZone"
+      ],
+      "tables": [
+        "NotificationPrefs",
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 25,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        }
+      ],
+      "view": "streak/internal/auth:auth.handler.register",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "auth.handler.login",
+      "module": "streak/internal/auth",
+      "method": "POST",
+      "path": "/v1/auth/login",
+      "params": [
+        {
+          "name": "email",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "password",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "installation_id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Public",
+      "auth_reason": "no authenticating middleware in the chain (engine > Group(\"/v1\") > Routes.Public from internal/httpapi/router.go:53)",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 149,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 153,
+          "kind": "return"
+        },
+        {
+          "status": 401,
+          "detail": "invalid_credentials",
+          "line": 163,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 143,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 177,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/auth:HashRefresh",
+        "streak/internal/auth:LoginIssuedAt",
+        "streak/internal/auth:NewRefreshToken",
+        "streak/internal/auth:SignAccess",
+        "streak/internal/auth:handler.issue",
+        "streak/internal/auth:mac",
+        "streak/internal/auth:revokeSession",
+        "streak/internal/db:LockUser",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:ReadBody"
+      ],
+      "tables": [
+        "RefreshToken",
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 26,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        }
+      ],
+      "view": "streak/internal/auth:auth.handler.login",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "auth.handler.refresh",
+      "module": "streak/internal/auth",
+      "method": "POST",
+      "path": "/v1/auth/refresh",
+      "params": [
+        {
+          "name": "refresh_token",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Public",
+      "auth_reason": "no authenticating middleware in the chain (engine > Group(\"/v1\") > Routes.Public from internal/httpapi/router.go:53)",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 205,
+          "kind": "return"
+        },
+        {
+          "status": 401,
+          "detail": "invalid_refresh_token",
+          "line": 211,
+          "kind": "return"
+        },
+        {
+          "status": 401,
+          "detail": "refresh_token_reused",
+          "line": 243,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 199,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 225,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/auth:HashRefresh",
+        "streak/internal/auth:NewRefreshToken",
+        "streak/internal/auth:SignAccess",
+        "streak/internal/auth:handler.issue",
+        "streak/internal/auth:mac",
+        "streak/internal/auth:revokeSession",
+        "streak/internal/db:LockUser",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:ReadBody"
+      ],
+      "tables": [
+        "RefreshToken",
+        "User"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 27,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        }
+      ],
+      "view": "streak/internal/auth:auth.handler.refresh",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "auth.handler.logout",
+      "module": "streak/internal/auth",
+      "method": "POST",
+      "path": "/v1/auth/logout",
+      "params": [],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 204,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 275,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/auth:revokeSession",
+        "streak/internal/db:LockUser",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Tx"
+      ],
+      "tables": [
+        "Device",
+        "RefreshToken",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Device",
+          "column": "user_id",
+          "how": "compare",
+          "line": 281
+        },
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 275
+        },
+        {
+          "table": "RefreshToken",
+          "column": "user_id",
+          "how": "compare",
+          "line": 278
+        }
+      ],
+      "body_models": [],
+      "line": 28,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/auth:auth.handler.logout",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "completions.handler.create",
+      "module": "streak/internal/completions",
+      "method": "POST",
+      "path": "/v1/habits/{id}/completions",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "date",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "note",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": 280
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": null,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 219,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 223,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 227,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 238,
+          "kind": "handler"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 241,
+          "kind": "handler"
+        },
+        {
+          "status": 409,
+          "detail": "habit_archived",
+          "line": 245,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "id_conflict",
+          "line": 245,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "date_in_future",
+          "line": 245,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "date_out_of_range",
+          "line": 245,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "date_too_old",
+          "line": 245,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "already_checked_in",
+          "line": 245,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/completions:Create",
+        "streak/internal/completions:ReadInput",
+        "streak/internal/completions:sameNote",
+        "streak/internal/db:CompletionBody",
+        "streak/internal/db:Instant",
+        "streak/internal/db:LockUser",
+        "streak/internal/db:NextChangeSeq",
+        "streak/internal/db:OwnedHabit",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:CanonicalUUID",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Today",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:PathUUID",
+        "streak/internal/httpapi:ReadBody",
+        "streak/internal/nudges:AfterCheckIn",
+        "streak/internal/nudges:Message",
+        "streak/internal/nudges:newID",
+        "streak/internal/period:AddDays",
+        "streak/internal/period:Date",
+        "streak/internal/period:Days",
+        "streak/internal/period:End",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:Location",
+        "streak/internal/period:ParseDate",
+        "streak/internal/period:Start",
+        "streak/internal/period:Today",
+        "streak/internal/progress:ActiveWindow",
+        "streak/internal/progress:Compute",
+        "streak/internal/progress:Of",
+        "streak/internal/progress:ProRate",
+        "streak/internal/progress:Window.A",
+        "streak/internal/progress:Window.L",
+        "streak/internal/progress:WindowFor",
+        "streak/internal/progress:liveDates",
+        "streak/internal/progress:ptr",
+        "streak/internal/progress:rate"
+      ],
+      "tables": [
+        "Completion",
+        "Habit",
+        "NotificationPrefs",
+        "Nudge",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 238
+        },
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 241
+        },
+        {
+          "table": "NotificationPrefs",
+          "column": "user_id",
+          "how": "compare",
+          "line": 249
+        }
+      ],
+      "body_models": [],
+      "line": 25,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/completions:completions.handler.create",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "completions.handler.list",
+      "module": "streak/internal/completions",
+      "method": "GET",
+      "path": "/v1/habits/{id}/completions",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "from",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "to",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "cursor",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "limit",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": 1,
+          "le": 200,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 278,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "invalid_cursor",
+          "line": 297,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 265,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 269,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 273,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 280,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "invalid_cursor",
+          "line": 280,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 284,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:OwnedHabit",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:CanonicalUUID",
+        "streak/internal/httpapi:DecodeCursor",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:EncodeCursor",
+        "streak/internal/httpapi:ListParams",
+        "streak/internal/httpapi:NewPage",
+        "streak/internal/httpapi:ParseLimit",
+        "streak/internal/httpapi:PathUUID",
+        "streak/internal/httpapi:QueryDate",
+        "streak/internal/httpapi:cursorMAC",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:ParseDate"
+      ],
+      "tables": [
+        "Completion",
+        "Habit"
+      ],
+      "owner_uses": [
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 284
+        }
+      ],
+      "body_models": [],
+      "line": 26,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/completions:completions.handler.list",
+      "unread": "internal/httpapi/pagination.go:93 call: function value `body` is called: its target is not read; internal/httpapi/pagination.go:97 call: function value `position` is called: its target is not read"
+    },
+    {
+      "name": "completions.handler.remove",
+      "module": "streak/internal/completions",
+      "method": "DELETE",
+      "path": "/v1/habits/{id}/completions/{cid}",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "cid",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 204,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 409,
+          "detail": "habit_archived",
+          "line": 338,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 314,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 318,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 327,
+          "kind": "handler"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 330,
+          "kind": "handler"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 334,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:LiveCompletion",
+        "streak/internal/db:LockUser",
+        "streak/internal/db:NextChangeSeq",
+        "streak/internal/db:OwnedHabit",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:CanonicalUUID",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Today",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:PathUUID",
+        "streak/internal/nudges:AfterCheckIn",
+        "streak/internal/nudges:Message",
+        "streak/internal/nudges:newID",
+        "streak/internal/period:AddDays",
+        "streak/internal/period:Date",
+        "streak/internal/period:Days",
+        "streak/internal/period:End",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:Location",
+        "streak/internal/period:ParseDate",
+        "streak/internal/period:Start",
+        "streak/internal/period:Today",
+        "streak/internal/progress:ActiveWindow",
+        "streak/internal/progress:Compute",
+        "streak/internal/progress:Of",
+        "streak/internal/progress:ProRate",
+        "streak/internal/progress:Window.A",
+        "streak/internal/progress:Window.L",
+        "streak/internal/progress:WindowFor",
+        "streak/internal/progress:liveDates",
+        "streak/internal/progress:ptr",
+        "streak/internal/progress:rate"
+      ],
+      "tables": [
+        "Completion",
+        "Habit",
+        "NotificationPrefs",
+        "Nudge",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 327
+        },
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 330
+        },
+        {
+          "table": "NotificationPrefs",
+          "column": "user_id",
+          "how": "compare",
+          "line": 348
+        }
+      ],
+      "body_models": [],
+      "line": 27,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/completions:completions.handler.remove",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "completions.handler.batch",
+      "module": "streak/internal/completions",
+      "method": "POST",
+      "path": "/v1/completions/batch",
+      "params": [
+        {
+          "name": "items",
+          "annotation": "",
+          "type": null,
+          "source": "body",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "habit_id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "date",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "note",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": 280
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 66,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 71,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 59,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 80,
+          "kind": "handler"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 89,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 97,
+          "kind": "handler"
+        },
+        {
+          "status": 409,
+          "detail": "habit_archived",
+          "line": 101,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "id_conflict",
+          "line": 101,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "date_in_future",
+          "line": 101,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "date_out_of_range",
+          "line": 101,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "date_too_old",
+          "line": 101,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "already_checked_in",
+          "line": 101,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/completions:Create",
+        "streak/internal/completions:ReadInput",
+        "streak/internal/completions:refusalCode",
+        "streak/internal/completions:sameNote",
+        "streak/internal/db:CompletionBody",
+        "streak/internal/db:Instant",
+        "streak/internal/db:LockUser",
+        "streak/internal/db:NextChangeSeq",
+        "streak/internal/db:OwnedHabit",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Today",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:ReadBody",
+        "streak/internal/nudges:AfterCheckIn",
+        "streak/internal/nudges:Message",
+        "streak/internal/nudges:newID",
+        "streak/internal/period:AddDays",
+        "streak/internal/period:Date",
+        "streak/internal/period:Days",
+        "streak/internal/period:End",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:Location",
+        "streak/internal/period:ParseDate",
+        "streak/internal/period:Start",
+        "streak/internal/period:Today",
+        "streak/internal/progress:ActiveWindow",
+        "streak/internal/progress:Compute",
+        "streak/internal/progress:Of",
+        "streak/internal/progress:ProRate",
+        "streak/internal/progress:Window.A",
+        "streak/internal/progress:Window.L",
+        "streak/internal/progress:WindowFor",
+        "streak/internal/progress:liveDates",
+        "streak/internal/progress:ptr",
+        "streak/internal/progress:rate"
+      ],
+      "tables": [
+        "Completion",
+        "Habit",
+        "NotificationPrefs",
+        "Nudge",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 80
+        },
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 97
+        },
+        {
+          "table": "NotificationPrefs",
+          "column": "user_id",
+          "how": "compare",
+          "line": 105
+        }
+      ],
+      "body_models": [],
+      "line": 28,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/completions:completions.handler.batch",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "habits.handler.create",
+      "module": "streak/internal/habits",
+      "method": "POST",
+      "path": "/v1/habits",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "period",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "start_date",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "source": "body",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "name",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": 1,
+          "max_length": 100
+        },
+        {
+          "name": "description",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": 500
+        },
+        {
+          "name": "target_count",
+          "annotation": "int",
+          "type": "Int",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": 1,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "end_date",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "source": "body",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 201,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 138,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 159,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "id_conflict",
+          "line": 177,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 120,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 128,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 132,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 140,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 165,
+          "kind": "handler"
+        },
+        {
+          "status": 409,
+          "detail": "name_taken",
+          "line": 182,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "habit_limit",
+          "line": 185,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:HabitBody",
+        "streak/internal/db:Instant",
+        "streak/internal/db:LockUser",
+        "streak/internal/db:NextChangeSeq",
+        "streak/internal/habits:atLimit",
+        "streak/internal/habits:description",
+        "streak/internal/habits:endDate",
+        "streak/internal/habits:name",
+        "streak/internal/habits:nameTaken",
+        "streak/internal/habits:sameDate",
+        "streak/internal/habits:sameString",
+        "streak/internal/habits:targetCount",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Today",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:ReadBody",
+        "streak/internal/period:AddDays",
+        "streak/internal/period:Date",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:FormatDatePtr",
+        "streak/internal/period:Location",
+        "streak/internal/period:MaxTarget",
+        "streak/internal/period:Start",
+        "streak/internal/period:Today",
+        "streak/internal/period:Valid"
+      ],
+      "tables": [
+        "Habit",
+        "HabitTarget",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "assign",
+          "line": 161
+        },
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 171
+        },
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 165
+        }
+      ],
+      "body_models": [],
+      "line": 24,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/habits:habits.handler.create",
+      "unread": "internal/habits/routes.go:55 bound: the bound `period.MaxTarget(kind)` of `target_count` is not a constant; internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "habits.handler.list",
+      "module": "streak/internal/habits",
+      "method": "GET",
+      "path": "/v1/habits",
+      "params": [
+        {
+          "name": "include_archived",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "cursor",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "limit",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": 1,
+          "le": 200,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 214,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 217,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "invalid_cursor",
+          "line": 217,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:DecodeCursor",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:EncodeCursor",
+        "streak/internal/httpapi:ListParams",
+        "streak/internal/httpapi:NewPage",
+        "streak/internal/httpapi:ParseLimit",
+        "streak/internal/httpapi:cursorMAC"
+      ],
+      "tables": [
+        "Habit"
+      ],
+      "owner_uses": [
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 221
+        }
+      ],
+      "body_models": [],
+      "line": 25,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/habits:habits.handler.list",
+      "unread": "internal/httpapi/pagination.go:93 call: function value `body` is called: its target is not read; internal/httpapi/pagination.go:97 call: function value `position` is called: its target is not read"
+    },
+    {
+      "name": "habits.handler.get",
+      "module": "streak/internal/habits",
+      "method": "GET",
+      "path": "/v1/habits/{id}",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 239,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 243,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:HabitBody",
+        "streak/internal/db:Instant",
+        "streak/internal/db:OwnedHabit",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:CanonicalUUID",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:PathUUID",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:FormatDatePtr"
+      ],
+      "tables": [
+        "Habit"
+      ],
+      "owner_uses": [
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 243
+        }
+      ],
+      "body_models": [],
+      "line": 26,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/habits:habits.handler.get"
+    },
+    {
+      "name": "habits.handler.patch",
+      "module": "streak/internal/habits",
+      "method": "PATCH",
+      "path": "/v1/habits/{id}",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "version",
+          "annotation": "int",
+          "type": "Int",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "period",
+          "annotation": "",
+          "type": null,
+          "source": "body",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "name",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": 1,
+          "max_length": 100
+        },
+        {
+          "name": "description",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": 500
+        },
+        {
+          "name": "target_count",
+          "annotation": "int",
+          "type": "Int",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": 1,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "start_date",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "end_date",
+          "annotation": "time.Time",
+          "type": "DateTime",
+          "source": "body",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "archived",
+          "annotation": "bool",
+          "type": "Bool",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 264,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 267,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 301,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 313,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 318,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "version_conflict",
+          "line": 321,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "start_date_locked",
+          "line": 332,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "checkins_after_end",
+          "line": 343,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 254,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 258,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 275,
+          "kind": "handler"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 278,
+          "kind": "handler"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 284,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 289,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 294,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "name_taken",
+          "line": 326,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "habit_limit",
+          "line": 348,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:HabitBody",
+        "streak/internal/db:Instant",
+        "streak/internal/db:LockUser",
+        "streak/internal/db:NextChangeSeq",
+        "streak/internal/db:OwnedHabit",
+        "streak/internal/habits:atLimit",
+        "streak/internal/habits:description",
+        "streak/internal/habits:endDate",
+        "streak/internal/habits:name",
+        "streak/internal/habits:nameTaken",
+        "streak/internal/habits:sameDate",
+        "streak/internal/habits:setTarget",
+        "streak/internal/habits:targetCount",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:CanonicalUUID",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Today",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:PathUUID",
+        "streak/internal/httpapi:ReadBody",
+        "streak/internal/period:AddDays",
+        "streak/internal/period:Date",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:FormatDatePtr",
+        "streak/internal/period:Location",
+        "streak/internal/period:MaxTarget",
+        "streak/internal/period:Start",
+        "streak/internal/period:Today"
+      ],
+      "tables": [
+        "Completion",
+        "Habit",
+        "HabitTarget",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 275
+        },
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 278
+        }
+      ],
+      "body_models": [],
+      "line": 27,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/habits:habits.handler.patch",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module; internal/habits/routes.go:55 bound: the bound `period.MaxTarget(kind)` of `target_count` is not a constant"
+    },
+    {
+      "name": "habits.handler.remove",
+      "module": "streak/internal/habits",
+      "method": "DELETE",
+      "path": "/v1/habits/{id}",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 204,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 402,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 411,
+          "kind": "handler"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 414,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:LockUser",
+        "streak/internal/db:NextChangeSeq",
+        "streak/internal/db:OwnedHabit",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:CanonicalUUID",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:PathUUID"
+      ],
+      "tables": [
+        "Completion",
+        "Habit",
+        "Nudge",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 411
+        },
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 414
+        }
+      ],
+      "body_models": [],
+      "line": 28,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/habits:habits.handler.remove",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "home.handler.home",
+      "module": "streak/internal/home",
+      "method": "GET",
+      "path": "/v1/home",
+      "params": [],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [],
+      "calls": [
+        "streak/internal/db:HabitBody",
+        "streak/internal/db:Instant",
+        "streak/internal/db:InstantPtr",
+        "streak/internal/db:NudgeBody",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Today",
+        "streak/internal/period:AddDays",
+        "streak/internal/period:Date",
+        "streak/internal/period:Days",
+        "streak/internal/period:End",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:FormatDatePtr",
+        "streak/internal/period:Location",
+        "streak/internal/period:Max",
+        "streak/internal/period:Min",
+        "streak/internal/period:Start",
+        "streak/internal/period:Today",
+        "streak/internal/progress:ActiveWindow",
+        "streak/internal/progress:Compute",
+        "streak/internal/progress:Hundredths",
+        "streak/internal/progress:Of",
+        "streak/internal/progress:ProRate",
+        "streak/internal/progress:Window.A",
+        "streak/internal/progress:Window.L",
+        "streak/internal/progress:WindowFor",
+        "streak/internal/progress:liveDates",
+        "streak/internal/progress:ptr",
+        "streak/internal/progress:rate"
+      ],
+      "tables": [
+        "Completion",
+        "Habit",
+        "Nudge"
+      ],
+      "owner_uses": [
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 37
+        }
+      ],
+      "body_models": [],
+      "line": 18,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/home:home.handler.home",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "httpapi.NewRouter.func4",
+      "module": "streak/internal/httpapi",
+      "method": "GET",
+      "path": "/health",
+      "params": [],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Public",
+      "auth_reason": "no authenticating middleware in the chain (engine)",
+      "raises": [],
+      "calls": [],
+      "tables": [],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 48,
+      "enclosing": null,
+      "returns": null,
+      "guards": [],
+      "view": "streak/internal/httpapi:httpapi.NewRouter.func4"
+    },
+    {
+      "name": "httpapi.setTestClock.func1",
+      "module": "streak/internal/httpapi",
+      "method": "PUT",
+      "path": "/test/clock",
+      "params": [
+        {
+          "name": "now",
+          "annotation": "string",
+          "type": "Str",
+          "source": "body",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Public",
+      "auth_reason": "no authenticating middleware in the chain (engine)",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 116,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 106,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/clock:Test.Set",
+        "streak/internal/httpapi:ReadBody"
+      ],
+      "tables": [
+        "TestClockRow"
+      ],
+      "owner_uses": [],
+      "body_models": [],
+      "line": 50,
+      "enclosing": null,
+      "returns": null,
+      "guards": [],
+      "view": "streak/internal/httpapi:httpapi.setTestClock.func1"
+    },
+    {
+      "name": "nudges.handler.list",
+      "module": "streak/internal/nudges",
+      "method": "GET",
+      "path": "/v1/nudges",
+      "params": [
+        {
+          "name": "cursor",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "limit",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": 1,
+          "le": 200,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 35,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "invalid_cursor",
+          "line": 35,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:DecodeCursor",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Today",
+        "streak/internal/httpapi:EncodeCursor",
+        "streak/internal/httpapi:ListParams",
+        "streak/internal/httpapi:NewPage",
+        "streak/internal/httpapi:ParseLimit",
+        "streak/internal/httpapi:cursorMAC",
+        "streak/internal/nudges:active",
+        "streak/internal/period:Date",
+        "streak/internal/period:Location",
+        "streak/internal/period:Today"
+      ],
+      "tables": [
+        "Nudge"
+      ],
+      "owner_uses": [
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 43
+        }
+      ],
+      "body_models": [],
+      "line": 16,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/nudges:nudges.handler.list",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module; internal/httpapi/pagination.go:93 call: function value `body` is called: its target is not read; internal/httpapi/pagination.go:97 call: function value `position` is called: its target is not read"
+    },
+    {
+      "name": "nudges.handler.dismiss",
+      "module": "streak/internal/nudges",
+      "method": "POST",
+      "path": "/v1/nudges/{id}/dismiss",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 409,
+          "detail": "nudge_dismissed",
+          "line": 78,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 59,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 70,
+          "kind": "handler"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 73,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:Instant",
+        "streak/internal/db:InstantPtr",
+        "streak/internal/db:LockUser",
+        "streak/internal/db:NextChangeSeq",
+        "streak/internal/db:NudgeBody",
+        "streak/internal/db:OwnedNudge",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:CanonicalUUID",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Tx",
+        "streak/internal/httpapi:PathUUID",
+        "streak/internal/period:FormatDate",
+        "streak/internal/push:Stub.SendClear"
+      ],
+      "tables": [
+        "Device",
+        "Nudge",
+        "User"
+      ],
+      "owner_uses": [
+        {
+          "table": "Device",
+          "column": "user_id",
+          "how": "compare",
+          "line": 90
+        },
+        {
+          "table": "User",
+          "column": "id",
+          "how": "compare",
+          "line": 70
+        },
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 73
+        }
+      ],
+      "body_models": [],
+      "line": 17,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/nudges:nudges.handler.dismiss",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "progress.handler.progress",
+      "module": "streak/internal/progress",
+      "method": "GET",
+      "path": "/v1/habits/{id}/progress",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 47,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 55,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:OwnedHabit",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:CanonicalUUID",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Today",
+        "streak/internal/httpapi:PathUUID",
+        "streak/internal/period:AddDays",
+        "streak/internal/period:Date",
+        "streak/internal/period:Days",
+        "streak/internal/period:End",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:Location",
+        "streak/internal/period:Max",
+        "streak/internal/period:Min",
+        "streak/internal/period:Start",
+        "streak/internal/period:Today",
+        "streak/internal/progress:ActiveWindow",
+        "streak/internal/progress:Compute",
+        "streak/internal/progress:Hundredths",
+        "streak/internal/progress:Of",
+        "streak/internal/progress:ProRate",
+        "streak/internal/progress:Window.A",
+        "streak/internal/progress:Window.L",
+        "streak/internal/progress:WindowFor",
+        "streak/internal/progress:liveDates",
+        "streak/internal/progress:ptr",
+        "streak/internal/progress:rate"
+      ],
+      "tables": [
+        "Completion",
+        "Habit"
+      ],
+      "owner_uses": [
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 55
+        }
+      ],
+      "body_models": [],
+      "line": 19,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/progress:progress.handler.progress",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "progress.handler.history",
+      "module": "streak/internal/progress",
+      "method": "GET",
+      "path": "/v1/habits/{id}/history",
+      "params": [
+        {
+          "name": "id",
+          "annotation": "string",
+          "type": "Str",
+          "source": "path",
+          "default": null,
+          "required": true,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "limit",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": 1,
+          "le": 100,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 78,
+          "kind": "return"
+        },
+        {
+          "status": 409,
+          "detail": "habit_not_started",
+          "line": 92,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 70,
+          "kind": "return"
+        },
+        {
+          "status": 404,
+          "detail": "not_found",
+          "line": 87,
+          "kind": "handler"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:OwnedHabit",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:CanonicalUUID",
+        "streak/internal/httpapi:Deps.Now",
+        "streak/internal/httpapi:Deps.NowCtx",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:Deps.Today",
+        "streak/internal/httpapi:PathUUID",
+        "streak/internal/period:AddDays",
+        "streak/internal/period:Date",
+        "streak/internal/period:Days",
+        "streak/internal/period:End",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:Location",
+        "streak/internal/period:Max",
+        "streak/internal/period:Min",
+        "streak/internal/period:Previous",
+        "streak/internal/period:Start",
+        "streak/internal/period:Today",
+        "streak/internal/progress:ActiveWindow",
+        "streak/internal/progress:History",
+        "streak/internal/progress:ProRate",
+        "streak/internal/progress:TargetAt",
+        "streak/internal/progress:liveDates"
+      ],
+      "tables": [
+        "Completion",
+        "Habit",
+        "HabitTarget"
+      ],
+      "owner_uses": [
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 87
+        }
+      ],
+      "body_models": [],
+      "line": 20,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/progress:progress.handler.history",
+      "unread": "internal/httpapi/registry.go:51 call: interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+    },
+    {
+      "name": "sync.handler.sync",
+      "module": "streak/internal/sync",
+      "method": "GET",
+      "path": "/v1/sync",
+      "params": [
+        {
+          "name": "limit",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": 1,
+          "le": 200,
+          "min_length": null,
+          "max_length": null
+        },
+        {
+          "name": "cursor",
+          "annotation": "string",
+          "type": "Str",
+          "source": "query",
+          "default": null,
+          "required": false,
+          "dependency": null,
+          "item": null,
+          "choices": [],
+          "ge": null,
+          "le": null,
+          "min_length": null,
+          "max_length": null
+        }
+      ],
+      "response_model": null,
+      "response_class": null,
+      "status_code": 200,
+      "dependencies": [],
+      "auth": "Customer",
+      "auth_reason": "authenticated by auth.Middleware.func1 (internal/auth/middleware.go:19): a 401 refusal and the caller recorded under streak.caller; chain engine > Group(\"/v1\") > Group(\"\") > Routes.Member from internal/httpapi/router.go:54",
+      "raises": [
+        {
+          "status": 422,
+          "detail": "validation_failed",
+          "line": 37,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "invalid_cursor",
+          "line": 50,
+          "kind": "return"
+        },
+        {
+          "status": 422,
+          "detail": "invalid_cursor",
+          "line": 44,
+          "kind": "return"
+        }
+      ],
+      "calls": [
+        "streak/internal/db:CompletionBody",
+        "streak/internal/db:HabitBody",
+        "streak/internal/db:Instant",
+        "streak/internal/db:InstantPtr",
+        "streak/internal/db:NudgeBody",
+        "streak/internal/httpapi:CallerOf",
+        "streak/internal/httpapi:DecodeCursor",
+        "streak/internal/httpapi:Deps.Q",
+        "streak/internal/httpapi:EncodeCursor",
+        "streak/internal/httpapi:cursorMAC",
+        "streak/internal/period:FormatDate",
+        "streak/internal/period:FormatDatePtr",
+        "streak/internal/sync:owned"
+      ],
+      "tables": [
+        "Completion",
+        "Habit",
+        "Nudge"
+      ],
+      "owner_uses": [
+        {
+          "table": "Habit",
+          "column": "user_id",
+          "how": "compare",
+          "line": 58
+        }
+      ],
+      "body_models": [],
+      "line": 17,
+      "enclosing": null,
+      "returns": null,
+      "guards": [
+        {
+          "kind": "custom",
+          "source": "httpapi.ClientVersion.func1",
+          "status": 426,
+          "detail": "upgrade_required",
+          "roles": [],
+          "line": 97
+        },
+        {
+          "kind": "authenticated",
+          "source": "auth.Middleware.func1",
+          "status": 401,
+          "detail": "not_authenticated",
+          "roles": [],
+          "line": 22
+        },
+        {
+          "kind": "custom",
+          "source": "httpapi.RateLimited.func1",
+          "status": 429,
+          "detail": "rate_limited",
+          "roles": [],
+          "line": 63
+        }
+      ],
+      "view": "streak/internal/sync:sync.handler.sync"
+    }
+  ],
+  "natives": [],
+  "database_url": null,
+  "dialect": "mysql",
+  "exception_handlers": [],
+  "custom_serialization": [],
+  "role_scheme": null,
+  "framework": "gin",
+  "orm": "gorm",
+  "auth": {
+    "login_path": "/v1/auth/login",
+    "login_encoding": "json",
+    "username_field": "email",
+    "password_field": "password",
+    "token_path": [
+      "access_token"
+    ],
+    "scheme": "bearer",
+    "cookie": null,
+    "hasher": null,
+    "minter": null,
+    "users_table": "User",
+    "email_column": null,
+    "password_column": "hashed_password",
+    "active_column": null,
+    "admin_column": null,
+    "role_column": null,
+    "role_table": null,
+    "permissions": [],
+    "role_permissions": [],
+    "unauthenticated_answer": null,
+    "invalid_answer": null,
+    "unknown_answer": null,
+    "inactive_answer": null,
+    "password_setter": null
+  },
+  "constraints": [
+    {
+      "table": "HabitTarget",
+      "kind": "unique",
+      "columns": [
+        "habit_id",
+        "effective_from"
+      ],
+      "expr": null,
+      "name": null
+    },
+    {
+      "table": "Nudge",
+      "kind": "unique",
+      "columns": [
+        "habit_id",
+        "for_date"
+      ],
+      "expr": null,
+      "name": null
+    }
+  ],
+  "excluded_routes": [
+    {
+      "method": "ANY",
+      "path": "*",
+      "kind": "framework",
+      "reason": "gin NoRoute handler"
+    },
+    {
+      "method": "ANY",
+      "path": "*",
+      "kind": "framework",
+      "reason": "gin NoMethod handler"
+    }
+  ]
+}

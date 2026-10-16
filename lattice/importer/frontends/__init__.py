@@ -8,7 +8,8 @@ auth, dispose, seed and error-site hooks) and ``graph_hints``
 (``lattice.importer.graph.GraphHints``). :func:`select` picks one by name, or (None)
 the first whose ``detect`` holds. The built-in front end is FastAPI + SQLModel
 (:mod:`.fastapi`); Django + DRF and Flask + SQLAlchemy register themselves the same way
-(:func:`register`).
+(:func:`register`). The Go front end (:mod:`.go_gin`: Gin + GORM, over ``gocheck extract``)
+is loaded by name, or last when every Python front end declined (:func:`_load_go`).
 
 (This package's ``__init__`` is loaded whenever any front end is: it holds no string
 literal, as the request suite's Hypothesis bodies draw from the importer's own -- see
@@ -63,6 +64,12 @@ def _load_others() -> None:
     from lattice.importer.frontends import django_drf, flask_app  # noqa: F401 -- register
 
 
+def _load_go() -> None:
+    """Register the Go (Gin + GORM) front end: imported only on a request for it, or after
+    every Python front end declined, so a Python import never loads it."""
+    from lattice.importer.frontends import go_gin  # noqa: F401 -- register
+
+
 def select(
     framework: str | None = None, root: Path | str | None = None, package: str | None = None
 ) -> FrontEnd:
@@ -75,12 +82,15 @@ def select(
             _load_others()
             known = {fe.name: fe for fe in front_ends()}
         if framework not in known:
+            _load_go()
+            known = {fe.name: fe for fe in front_ends()}
+        if framework not in known:
             raise KeyError(f"no front end {framework!r} (known: {', '.join(sorted(known))})")
         return known[framework]
     if root is None or package is None:
         raise ValueError(f"detecting the framework needs a root and a package: {root}, {package}")
     tried: set[str] = set()
-    for load in (None, _load_others):
+    for load in (None, _load_others, _load_go):
         if load is not None:
             load()
         for fe in front_ends():

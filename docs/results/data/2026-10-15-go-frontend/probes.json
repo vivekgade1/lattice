@@ -1,0 +1,1523 @@
+{
+  "streak_ref": "a0679e9",
+  "streak_ref2": "1d00ede",
+  "runs": 10,
+  "ran": [
+    "LEAK",
+    "PA",
+    "PA2",
+    "PB-diff",
+    "PB-gocheck",
+    "PD",
+    "PE",
+    "PE2",
+    "PF",
+    "PF2",
+    "PM",
+    "PO",
+    "PR1",
+    "PR2",
+    "PR3",
+    "PS",
+    "PT",
+    "PT2-build",
+    "PT2-extract",
+    "PU",
+    "PW",
+    "PX",
+    "PX2",
+    "REPRO"
+  ],
+  "not_run": [],
+  "results": [
+    {
+      "id": "PR1",
+      "probe": "routes: method + full path vs the registrations",
+      "ran": true,
+      "predicted": {
+        "recall": "26/26",
+        "precision": "26/26",
+        "exact": 26,
+        "extra": 0
+      },
+      "observed": {
+        "extracted": 26,
+        "recall": "26/26",
+        "precision": "26/26",
+        "exact": 26,
+        "duplicates": 0
+      },
+      "pass": true,
+      "evidence": {
+        "missing": [],
+        "extra": []
+      }
+    },
+    {
+      "id": "PR2",
+      "probe": "handlers: distinct, file:line, wrappers",
+      "ran": true,
+      "predicted": {
+        "distinct": 26,
+        "file_line": "26/26",
+        "wrappers": "25/25 (+ /health none)"
+      },
+      "observed": {
+        "distinct_handlers": 26,
+        "file_line_exact": "26/26",
+        "wrappers_exact": "26/26"
+      },
+      "pass": true,
+      "evidence": {
+        "mismatches": []
+      }
+    },
+    {
+      "id": "PR3",
+      "probe": "S4 vs its 20 registrations; spec-only on S4 and S",
+      "ran": true,
+      "predicted": {
+        "s4": "20/20",
+        "spec_only_s4": [
+          [
+            "DELETE",
+            "/v1/devices/{}"
+          ],
+          [
+            "GET",
+            "/v1/home"
+          ],
+          [
+            "GET",
+            "/v1/nudges"
+          ],
+          [
+            "GET",
+            "/v1/sync"
+          ],
+          [
+            "POST",
+            "/v1/devices"
+          ],
+          [
+            "POST",
+            "/v1/nudges/{}/dismiss"
+          ]
+        ],
+        "spec_only_s": []
+      },
+      "observed": {
+        "s4_routes": {
+          "extracted": 20,
+          "recall": "20/20",
+          "precision": "20/20",
+          "exact": 20,
+          "duplicates": 0
+        },
+        "spec_only_s4": [
+          [
+            "DELETE",
+            "/v1/devices/{}"
+          ],
+          [
+            "GET",
+            "/v1/home"
+          ],
+          [
+            "GET",
+            "/v1/nudges"
+          ],
+          [
+            "GET",
+            "/v1/sync"
+          ],
+          [
+            "POST",
+            "/v1/devices"
+          ],
+          [
+            "POST",
+            "/v1/nudges/{}/dismiss"
+          ]
+        ],
+        "spec_only_s": []
+      },
+      "pass": true,
+      "evidence": {
+        "s4_missing": [],
+        "s4_extra": []
+      }
+    },
+    {
+      "id": "PA",
+      "probe": "auth vs the code (Member iff on r.Member) and the spec's anon column",
+      "ran": true,
+      "predicted": {
+        "counts": {
+          "Customer": 21,
+          "Public": 5
+        },
+        "code": "26/26",
+        "spec": "26/26"
+      },
+      "observed": {
+        "counts": {
+          "Customer": 21,
+          "Public": 5
+        },
+        "code": "26/26",
+        "spec": "26/26"
+      },
+      "pass": true,
+      "evidence": {
+        "mismatches": []
+      }
+    },
+    {
+      "id": "PA2",
+      "probe": "AuthModel: login path, users table, scheme, password column, fields",
+      "ran": true,
+      "predicted": {
+        "login_path": "/v1/auth/login",
+        "users_table": "User",
+        "scheme": "bearer",
+        "password_column": "hashed_password",
+        "username_field": "email",
+        "password_field": "password"
+      },
+      "observed": {
+        "login_path": "/v1/auth/login",
+        "users_table": "User",
+        "scheme": "bearer",
+        "password_column": "hashed_password",
+        "username_field": "email",
+        "password_field": "password"
+      },
+      "pass": true,
+      "evidence": {
+        "matched": "6/6"
+      }
+    },
+    {
+      "id": "PT",
+      "probe": "tables vs the independent regex parse (D3's rules)",
+      "ran": true,
+      "predicted": {
+        "tables": 10,
+        "columns": "67/67",
+        "facts": "469/469",
+        "unique_together": "2/2",
+        "count_table_exact": true
+      },
+      "observed": {
+        "tables": 10,
+        "tables_equal": true,
+        "columns": "67/67",
+        "facts": "469/469",
+        "unique_together": "2/2",
+        "count_table_exact": true
+      },
+      "pass": true,
+      "evidence": {
+        "diffs": [],
+        "extra_columns": [],
+        "counts": {
+          "TestClockRow": [
+            2,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "SchemaMigration": [
+            2,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "User": [
+            6,
+            0,
+            1,
+            1,
+            1,
+            1,
+            3,
+            0
+          ],
+          "NotificationPrefs": [
+            6,
+            1,
+            1,
+            0,
+            0,
+            1,
+            3,
+            0
+          ],
+          "Device": [
+            9,
+            0,
+            1,
+            0,
+            2,
+            0,
+            5,
+            0
+          ],
+          "RefreshToken": [
+            8,
+            2,
+            1,
+            1,
+            2,
+            0,
+            2,
+            0
+          ],
+          "Habit": [
+            14,
+            3,
+            1,
+            0,
+            1,
+            2,
+            3,
+            0
+          ],
+          "HabitTarget": [
+            4,
+            0,
+            1,
+            0,
+            2,
+            0,
+            1,
+            1
+          ],
+          "Completion": [
+            8,
+            2,
+            1,
+            0,
+            1,
+            0,
+            2,
+            0
+          ],
+          "Nudge": [
+            12,
+            3,
+            1,
+            0,
+            2,
+            0,
+            5,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "id": "PE",
+      "probe": "spec error cells (endpoint, status >= 400) in raises + guards",
+      "ran": true,
+      "predicted": {
+        "cells": 54,
+        "endpoints": 24,
+        "found": "54/54"
+      },
+      "observed": {
+        "cells": 54,
+        "found": "54/54"
+      },
+      "pass": true,
+      "evidence": {
+        "missing": []
+      }
+    },
+    {
+      "id": "PE2",
+      "probe": "codes and extras (report)",
+      "ran": true,
+      "predicted": {
+        "spec_triples_found": "58-65 of 65",
+        "extras": "25-45 (19 are Member 429s)"
+      },
+      "observed": {
+        "spec_triples_found": "65/65",
+        "extras": 111,
+        "extra_429": 19,
+        "extras_handler_raises_only": 22,
+        "extras_handler_raises_and_guards": 72,
+        "distinct_status_code_pairs_not_in_spec": [
+          [
+            426,
+            "upgrade_required"
+          ]
+        ]
+      },
+      "pass": null,
+      "evidence": {
+        "missing": [],
+        "extras": [
+          [
+            "DELETE",
+            "/v1/devices/{}",
+            401,
+            "invalid_token"
+          ],
+          [
+            "DELETE",
+            "/v1/devices/{}",
+            401,
+            "token_expired"
+          ],
+          [
+            "DELETE",
+            "/v1/devices/{}",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "DELETE",
+            "/v1/devices/{}",
+            429,
+            "rate_limited"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}",
+            401,
+            "invalid_token"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}",
+            401,
+            "not_authenticated"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}",
+            401,
+            "token_expired"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}",
+            422,
+            "validation_failed"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}",
+            429,
+            "rate_limited"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}/completions/{}",
+            401,
+            "invalid_token"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}/completions/{}",
+            401,
+            "not_authenticated"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}/completions/{}",
+            401,
+            "token_expired"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}/completions/{}",
+            422,
+            "validation_failed"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}/completions/{}",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "DELETE",
+            "/v1/habits/{}/completions/{}",
+            429,
+            "rate_limited"
+          ],
+          [
+            "DELETE",
+            "/v1/me",
+            401,
+            "invalid_token"
+          ],
+          [
+            "DELETE",
+            "/v1/me",
+            401,
+            "token_expired"
+          ],
+          [
+            "DELETE",
+            "/v1/me",
+            404,
+            "not_found"
+          ],
+          [
+            "DELETE",
+            "/v1/me",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "DELETE",
+            "/v1/me",
+            429,
+            "rate_limited"
+          ],
+          [
+            "GET",
+            "/v1/habits",
+            401,
+            "invalid_token"
+          ],
+          [
+            "GET",
+            "/v1/habits",
+            401,
+            "token_expired"
+          ],
+          [
+            "GET",
+            "/v1/habits",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "GET",
+            "/v1/habits",
+            429,
+            "rate_limited"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}",
+            401,
+            "invalid_token"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}",
+            401,
+            "token_expired"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}",
+            422,
+            "validation_failed"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}",
+            429,
+            "rate_limited"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/completions",
+            401,
+            "invalid_token"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/completions",
+            401,
+            "token_expired"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/completions",
+            422,
+            "invalid_cursor"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/completions",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/completions",
+            429,
+            "rate_limited"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/history",
+            401,
+            "invalid_token"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/history",
+            401,
+            "token_expired"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/history",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/history",
+            429,
+            "rate_limited"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/progress",
+            401,
+            "invalid_token"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/progress",
+            401,
+            "token_expired"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/progress",
+            422,
+            "validation_failed"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/progress",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "GET",
+            "/v1/habits/{}/progress",
+            429,
+            "rate_limited"
+          ],
+          [
+            "GET",
+            "/v1/home",
+            401,
+            "invalid_token"
+          ],
+          [
+            "GET",
+            "/v1/home",
+            401,
+            "token_expired"
+          ],
+          [
+            "GET",
+            "/v1/home",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "GET",
+            "/v1/home",
+            429,
+            "rate_limited"
+          ],
+          [
+            "GET",
+            "/v1/me",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "GET",
+            "/v1/nudges",
+            401,
+            "invalid_token"
+          ],
+          [
+            "GET",
+            "/v1/nudges",
+            401,
+            "token_expired"
+          ],
+          [
+            "GET",
+            "/v1/nudges",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "GET",
+            "/v1/nudges",
+            429,
+            "rate_limited"
+          ],
+          [
+            "GET",
+            "/v1/sync",
+            401,
+            "invalid_token"
+          ],
+          [
+            "GET",
+            "/v1/sync",
+            401,
+            "token_expired"
+          ],
+          [
+            "GET",
+            "/v1/sync",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "GET",
+            "/v1/sync",
+            429,
+            "rate_limited"
+          ],
+          [
+            "PATCH",
+            "/v1/habits/{}",
+            401,
+            "invalid_token"
+          ],
+          [
+            "PATCH",
+            "/v1/habits/{}",
+            401,
+            "not_authenticated"
+          ],
+          [
+            "PATCH",
+            "/v1/habits/{}",
+            401,
+            "token_expired"
+          ],
+          [
+            "PATCH",
+            "/v1/habits/{}",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "PATCH",
+            "/v1/habits/{}",
+            429,
+            "rate_limited"
+          ],
+          [
+            "POST",
+            "/v1/auth/login",
+            404,
+            "not_found"
+          ],
+          [
+            "POST",
+            "/v1/auth/login",
+            422,
+            "validation_failed"
+          ],
+          [
+            "POST",
+            "/v1/auth/login",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "POST",
+            "/v1/auth/logout",
+            401,
+            "invalid_token"
+          ],
+          [
+            "POST",
+            "/v1/auth/logout",
+            401,
+            "not_authenticated"
+          ],
+          [
+            "POST",
+            "/v1/auth/logout",
+            401,
+            "token_expired"
+          ],
+          [
+            "POST",
+            "/v1/auth/logout",
+            404,
+            "not_found"
+          ],
+          [
+            "POST",
+            "/v1/auth/logout",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "POST",
+            "/v1/auth/logout",
+            429,
+            "rate_limited"
+          ],
+          [
+            "POST",
+            "/v1/auth/refresh",
+            404,
+            "not_found"
+          ],
+          [
+            "POST",
+            "/v1/auth/refresh",
+            422,
+            "validation_failed"
+          ],
+          [
+            "POST",
+            "/v1/auth/refresh",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "POST",
+            "/v1/auth/register",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            401,
+            "invalid_token"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            401,
+            "not_authenticated"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            401,
+            "token_expired"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            404,
+            "not_found"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            409,
+            "already_checked_in"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            409,
+            "habit_archived"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            409,
+            "id_conflict"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            422,
+            "date_in_future"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            422,
+            "date_out_of_range"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            422,
+            "date_too_old"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "POST",
+            "/v1/completions/batch",
+            429,
+            "rate_limited"
+          ],
+          [
+            "POST",
+            "/v1/devices",
+            401,
+            "invalid_token"
+          ],
+          [
+            "POST",
+            "/v1/devices",
+            401,
+            "token_expired"
+          ],
+          [
+            "POST",
+            "/v1/devices",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "POST",
+            "/v1/devices",
+            429,
+            "rate_limited"
+          ],
+          [
+            "POST",
+            "/v1/habits",
+            401,
+            "invalid_token"
+          ],
+          [
+            "POST",
+            "/v1/habits",
+            404,
+            "not_found"
+          ],
+          [
+            "POST",
+            "/v1/habits",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "POST",
+            "/v1/habits/{}/completions",
+            401,
+            "invalid_token"
+          ],
+          [
+            "POST",
+            "/v1/habits/{}/completions",
+            401,
+            "token_expired"
+          ],
+          [
+            "POST",
+            "/v1/habits/{}/completions",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "POST",
+            "/v1/habits/{}/completions",
+            429,
+            "rate_limited"
+          ],
+          [
+            "POST",
+            "/v1/nudges/{}/dismiss",
+            401,
+            "invalid_token"
+          ],
+          [
+            "POST",
+            "/v1/nudges/{}/dismiss",
+            401,
+            "not_authenticated"
+          ],
+          [
+            "POST",
+            "/v1/nudges/{}/dismiss",
+            401,
+            "token_expired"
+          ],
+          [
+            "POST",
+            "/v1/nudges/{}/dismiss",
+            422,
+            "validation_failed"
+          ],
+          [
+            "POST",
+            "/v1/nudges/{}/dismiss",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "POST",
+            "/v1/nudges/{}/dismiss",
+            429,
+            "rate_limited"
+          ],
+          [
+            "PUT",
+            "/test/clock",
+            422,
+            "validation_failed"
+          ],
+          [
+            "PUT",
+            "/v1/me",
+            401,
+            "invalid_token"
+          ],
+          [
+            "PUT",
+            "/v1/me",
+            401,
+            "not_authenticated"
+          ],
+          [
+            "PUT",
+            "/v1/me",
+            401,
+            "token_expired"
+          ],
+          [
+            "PUT",
+            "/v1/me",
+            404,
+            "not_found"
+          ],
+          [
+            "PUT",
+            "/v1/me",
+            426,
+            "upgrade_required"
+          ],
+          [
+            "PUT",
+            "/v1/me",
+            429,
+            "rate_limited"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "PF",
+      "probe": "spec 422 (endpoint, field) cells found as RouteParam",
+      "ran": true,
+      "predicted": {
+        "cells": 32,
+        "found": "31-32"
+      },
+      "observed": {
+        "cells": 32,
+        "found": "32/32"
+      },
+      "pass": true,
+      "evidence": {
+        "missing": []
+      }
+    },
+    {
+      "id": "PF2",
+      "probe": "bounds: name 1..100, description 500, target_count ge 1 / le unread, sync limit 1..200",
+      "ran": true,
+      "predicted": "7/7",
+      "observed": "7/7",
+      "pass": true,
+      "evidence": {
+        "facts": {
+          "name.min_length=1": true,
+          "name.max_length=100": true,
+          "description.max_length=500": true,
+          "target_count.ge=1": true,
+          "target_count.le unread at habits/routes.go:55": true,
+          "sync limit.ge=1": true,
+          "sync limit.le=200": true
+        }
+      }
+    },
+    {
+      "id": "PO",
+      "probe": "owner evidence",
+      "ran": true,
+      "predicted": {
+        "compare": "14/14",
+        "assign": "2/2",
+        "member_use": ">= 20/21",
+        "public": 0
+      },
+      "observed": {
+        "habits.user_id compare": "14/14",
+        "assign": "2/2",
+        "caller-id use per Member route": "21/21",
+        "public with uses": 0
+      },
+      "pass": true,
+      "evidence": {
+        "compare_missing": [],
+        "compare_extra": [
+          [
+            "DELETE",
+            "/v1/me"
+          ],
+          [
+            "POST",
+            "/v1/habits"
+          ]
+        ],
+        "member_without_use": [],
+        "public_with_use": []
+      }
+    },
+    {
+      "id": "PM",
+      "probe": "Nudge.delivery values by root",
+      "ran": true,
+      "predicted": {
+        "routes (3)": [
+          "pending",
+          "suppressed"
+        ],
+        "nudges.RunDailyPass": [
+          "failed",
+          "sent",
+          "suppressed"
+        ],
+        "union": [
+          "failed",
+          "pending",
+          "sent",
+          "suppressed"
+        ]
+      },
+      "observed": {
+        "DELETE /v1/habits/{id}/completions/{cid}": [
+          "pending",
+          "suppressed"
+        ],
+        "POST /v1/completions/batch": [
+          "pending",
+          "suppressed"
+        ],
+        "POST /v1/habits/{id}/completions": [
+          "pending",
+          "suppressed"
+        ],
+        "nudges.RunDailyPass": [
+          "failed",
+          "sent",
+          "suppressed"
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "union": [
+          "failed",
+          "pending",
+          "sent",
+          "suppressed"
+        ]
+      }
+    },
+    {
+      "id": "PU",
+      "probe": "unread: structural per route, detail items located",
+      "ran": true,
+      "predicted": {
+        "structural": "0/26",
+        "detail": "3-25",
+        "located": "all"
+      },
+      "observed": {
+        "structural": "0/26",
+        "detail": 4,
+        "located": "4/4"
+      },
+      "pass": true,
+      "evidence": {
+        "items": [
+          {
+            "file": "internal/habits/routes.go",
+            "line": 55,
+            "what": "bound",
+            "reason": "the bound `period.MaxTarget(kind)` of `target_count` is not a constant"
+          },
+          {
+            "file": "internal/httpapi/pagination.go",
+            "line": 93,
+            "what": "call",
+            "reason": "function value `body` is called: its target is not read"
+          },
+          {
+            "file": "internal/httpapi/pagination.go",
+            "line": 97,
+            "what": "call",
+            "reason": "function value `position` is called: its target is not read"
+          },
+          {
+            "file": "internal/httpapi/registry.go",
+            "line": 51,
+            "what": "call",
+            "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module"
+          }
+        ],
+        "unlocated": []
+      }
+    },
+    {
+      "id": "PS",
+      "probe": "generate_profile + build_spec on S",
+      "ran": true,
+      "predicted": {
+        "runs": true,
+        "contracts": 26,
+        "user_id owners": "unclear"
+      },
+      "observed": {
+        "runs": true,
+        "contracts": 26,
+        "ownership": {},
+        "unclear": {},
+        "unclear_notes": [
+          "private:TestClockRow",
+          "private:SchemaMigration",
+          "private:User",
+          "private:NotificationPrefs",
+          "private:Device",
+          "private:RefreshToken",
+          "private:Habit",
+          "private:HabitTarget",
+          "private:Completion",
+          "private:Nudge",
+          "auth:User",
+          "storage:streak",
+          "datetime_wire:streak"
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "ownership_reasons": {}
+      }
+    },
+    {
+      "id": "PD",
+      "probe": "10 runs + 1 from a second clone path: byte-identical",
+      "ran": true,
+      "predicted": {
+        "sidecar": "11/11",
+        "model": "11/11",
+        "leaks": []
+      },
+      "observed": {
+        "sidecar": "11/11",
+        "model": "11/11",
+        "leaks": []
+      },
+      "pass": true,
+      "evidence": {
+        "sha256": "5b473b1e3be0c440a016050ffabe1724f74711c934f9e05eb94c0612eb58aaac"
+      }
+    },
+    {
+      "id": "PT2-extract",
+      "probe": "goextract wall on S (median of 10)",
+      "ran": true,
+      "predicted": "0.05-0.5 s; <= 5 s",
+      "observed": {
+        "median_s": 0.02,
+        "min_s": 0.02,
+        "max_s": 0.02
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PT2-build",
+      "probe": "cold build_gocheck",
+      "ran": true,
+      "predicted": "3-15 s; <= 60 s",
+      "observed": {
+        "fresh_checker_cache": 0.2,
+        "fresh_checker_and_go_cache": 1.8
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PB-gocheck",
+      "probe": "gocheck sources changed only in main.go + goextract*.go; old and new findings byte-identical",
+      "ran": true,
+      "predicted": {
+        "changed": "main.go + new goextract*.go",
+        "findings": "identical"
+      },
+      "observed": {
+        "changed": [
+          "lattice/gocheck/src/main.go",
+          "lattice/gocheck/src/goextract.go",
+          "lattice/gocheck/src/goextract_assemble.go",
+          "lattice/gocheck/src/goextract_closure.go",
+          "lattice/gocheck/src/goextract_owner.go",
+          "lattice/gocheck/src/goextract_raise.go",
+          "lattice/gocheck/src/goextract_routes.go",
+          "lattice/gocheck/src/goextract_tables.go"
+        ],
+        "owned_only": true,
+        "identical": "22/22",
+        "different": []
+      },
+      "pass": true,
+      "evidence": {
+        "sizes": {
+          "app:empty": 630,
+          "bounds:empty": 1230,
+          "boundsets:empty": 1064,
+          "clean:empty": 25,
+          "clean2:empty": 25,
+          "goextract:empty": 25,
+          "machine:empty": 25,
+          "owner:empty": 25,
+          "partial:empty": 7760,
+          "private:empty": 25,
+          "runs:empty": 1909,
+          "txflag:empty": 2494,
+          "private:test-policy": 2586,
+          "owner:test-policy": 2875,
+          "app:test-policy": 1697,
+          "runs:test-policy": 6073,
+          "clean:test-policy": 25,
+          "clean2:test-policy": 25,
+          "partial:GO807": 7760,
+          "app:tasks-spec": 1697,
+          "streak:from_spec": 25,
+          "streak:empty": 25
+        }
+      }
+    },
+    {
+      "id": "PB-diff",
+      "probe": "changes against 4845ab5: owned files only; frozen modules and goldens untouched",
+      "ran": true,
+      "predicted": {
+        "foreign": [],
+        "frozen_diff": []
+      },
+      "observed": {
+        "foreign": [],
+        "frozen_diff": [],
+        "changed": [
+          "dogfood/importer_go_mutants.py",
+          "dogfood/importer_go_probes.py",
+          "lattice/gocheck/src/goextract.go",
+          "lattice/gocheck/src/goextract_assemble.go",
+          "lattice/gocheck/src/goextract_closure.go",
+          "lattice/gocheck/src/goextract_owner.go",
+          "lattice/gocheck/src/goextract_raise.go",
+          "lattice/gocheck/src/goextract_routes.go",
+          "lattice/gocheck/src/goextract_tables.go",
+          "lattice/gocheck/src/main.go",
+          "lattice/importer/frontends/__init__.py",
+          "lattice/importer/frontends/go_gin.py",
+          "tests/gocheck/fixtures/goextract/api/api.go",
+          "tests/gocheck/fixtures/goextract/api/debug_routes.go",
+          "tests/gocheck/fixtures/goextract/go.mod",
+          "tests/gocheck/fixtures/goextract/main.go",
+          "tests/gocheck/fixtures/goextract/models/models.go",
+          "tests/gocheck/test_goextract.py",
+          "tests/importer/test_go_gin.py"
+        ]
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PX",
+      "probe": "reconcile on S: observed, control, container leaks",
+      "ran": true,
+      "predicted": {
+        "observed": "26/26",
+        "member_401": 21,
+        "health": 200,
+        "public_4xx": 4,
+        "control_404": "26/26",
+        "containers_started": 1,
+        "leaks": 0
+      },
+      "observed": {
+        "observed": "26/26",
+        "member_401": 21,
+        "health": 200,
+        "public_4xx": 4,
+        "control_404": "21/26",
+        "containers_started": 1,
+        "leaks": 0
+      },
+      "pass": false,
+      "evidence": {
+        "non_404_controls": {
+          "POST /v1/devices": 405,
+          "POST /v1/habits/{id}/completions": 405,
+          "GET /v1/habits/{id}/completions": 405,
+          "POST /v1/habits": 405,
+          "GET /v1/habits": 401
+        },
+        "statuses": {
+          "GET /v1/me": 401,
+          "PUT /v1/me": 401,
+          "DELETE /v1/me": 401,
+          "POST /v1/devices": 401,
+          "DELETE /v1/devices/{}": 401,
+          "POST /v1/auth/register": 422,
+          "POST /v1/auth/login": 422,
+          "POST /v1/auth/refresh": 422,
+          "POST /v1/auth/logout": 401,
+          "POST /v1/habits/{}/completions": 401,
+          "GET /v1/habits/{}/completions": 401,
+          "DELETE /v1/habits/{}/completions/{}": 401,
+          "POST /v1/completions/batch": 401,
+          "POST /v1/habits": 401,
+          "GET /v1/habits": 401,
+          "GET /v1/habits/{}": 401,
+          "PATCH /v1/habits/{}": 401,
+          "DELETE /v1/habits/{}": 401,
+          "GET /v1/home": 401,
+          "GET /health": 200,
+          "PUT /test/clock": 422,
+          "GET /v1/nudges": 401,
+          "POST /v1/nudges/{}/dismiss": 401,
+          "GET /v1/habits/{}/progress": 401,
+          "GET /v1/habits/{}/history": 401,
+          "GET /v1/sync": 401
+        }
+      }
+    },
+    {
+      "id": "PW",
+      "probe": "tree listing + sha256 of S: after build vs after extract + reconcile",
+      "ran": true,
+      "predicted": {
+        "changed": 0,
+        "new": 0
+      },
+      "observed": {
+        "changed": 0,
+        "new": 0
+      },
+      "pass": true,
+      "evidence": {
+        "changed": [],
+        "new": [],
+        "files": 75
+      }
+    },
+    {
+      "id": "PX2",
+      "probe": "stale binary: reconcile reports the route the binary lacks",
+      "ran": true,
+      "predicted": {
+        "not_observed": [
+          "GET /v1/home"
+        ]
+      },
+      "observed": {
+        "not_observed": [
+          "GET /v1/home"
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "statuses": {
+          "GET /v1/me": 401,
+          "PUT /v1/me": 401,
+          "DELETE /v1/me": 401,
+          "POST /v1/devices": 401,
+          "DELETE /v1/devices/{id}": 401,
+          "POST /v1/auth/register": 422,
+          "POST /v1/auth/login": 422,
+          "POST /v1/auth/refresh": 422,
+          "POST /v1/auth/logout": 401,
+          "POST /v1/habits/{id}/completions": 401,
+          "GET /v1/habits/{id}/completions": 401,
+          "DELETE /v1/habits/{id}/completions/{cid}": 401,
+          "POST /v1/completions/batch": 401,
+          "POST /v1/habits": 401,
+          "GET /v1/habits": 401,
+          "GET /v1/habits/{id}": 401,
+          "PATCH /v1/habits/{id}": 401,
+          "DELETE /v1/habits/{id}": 401,
+          "GET /v1/home": 404,
+          "GET /health": 200,
+          "PUT /test/clock": 422,
+          "GET /v1/nudges": 401,
+          "POST /v1/nudges/{id}/dismiss": 401,
+          "GET /v1/habits/{id}/progress": 401,
+          "GET /v1/habits/{id}/history": 401,
+          "GET /v1/sync": 401
+        }
+      }
+    },
+    {
+      "id": "REPRO",
+      "probe": "every deterministic probe 10x identical",
+      "ran": true,
+      "predicted": {
+        "no_docker_probes": "10/10",
+        "px_px2": "10/10"
+      },
+      "observed": {
+        "no_docker_probes": "10/10",
+        "px_px2": "10/10"
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "LEAK",
+      "probe": "lattice-gox- containers after the run",
+      "ran": true,
+      "predicted": 0,
+      "observed": 0,
+      "pass": true,
+      "evidence": {
+        "names": []
+      }
+    }
+  ]
+}

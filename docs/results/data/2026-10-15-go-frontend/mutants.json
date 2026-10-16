@@ -1,0 +1,631 @@
+{
+  "rows": [
+    {
+      "id": "control",
+      "failing": [],
+      "fixture_unwired_register": true,
+      "passes": true
+    },
+    {
+      "id": "GX1",
+      "mutant": "struct-field router not resolved (group prefix dropped)",
+      "expected": "PR1",
+      "caught_by": [
+        "PA",
+        "PA2",
+        "PE",
+        "PF",
+        "PF2",
+        "PM",
+        "PO",
+        "PR1",
+        "PR2",
+        "PR3"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PR1": {
+          "extracted": 26,
+          "recall": "2/26",
+          "precision": "2/26",
+          "exact": 2,
+          "duplicates": 0
+        },
+        "PR2": {
+          "distinct_handlers": 26,
+          "file_line_exact": "2/26",
+          "wrappers_exact": "2/26"
+        },
+        "PR3": {
+          "s4_routes": {
+            "extracted": 20,
+            "recall": "2/20",
+            "precision": "2/20",
+            "exact": 2,
+            "duplicates": 0
+          },
+          "spec_only_s4": [
+            [
+              "DELETE",
+              "/v1/devices/{}"
+            ],
+            [
+              "DELETE",
+              "/v1/habits/{}"
+            ],
+            [
+              "DELETE",
+              "/v1/habits/{}/completions/{}"
+            ],
+            [
+              "DELETE",
+              "/v1/me"
+            ],
+            [
+              "GET",
+              "/v1/habits"
+            ],
+            [
+              "GET",
+              "/v1/habits/{}"
+            ],
+            [
+              "GET",
+              "/v1/habits/{}/completions"
+            ],
+            [
+              "GET",
+              "/v1/habits/{}/history"
+            ],
+            [
+              "GET",
+              "/v1/habits/{}/progress"
+            ],
+            [
+              "GET",
+              "/v1/home"
+            ],
+            [
+              "GET",
+              "/v1/me"
+            ],
+            [
+              "GET",
+              "/v1/nudges"
+            ],
+            [
+              "GET",
+              "/v1/sync"
+            ],
+            [
+              "PATCH",
+              "/v1/habits/{}"
+            ],
+            [
+              "POST",
+              "/v1/auth/login"
+            ],
+            [
+              "POST",
+              "/v1/auth/logout"
+            ],
+            [
+              "POST",
+              "/v1/auth/refresh"
+            ],
+            [
+              "POST",
+              "/v1/auth/register"
+            ],
+            [
+              "POST",
+              "/v1/completions/batch"
+            ],
+            [
+              "POST",
+              "/v1/devices"
+            ],
+            [
+              "POST",
+              "/v1/habits"
+            ],
+            [
+              "POST",
+              "/v1/habits/{}/completions"
+            ],
+            [
+              "POST",
+              "/v1/nudges/{}/dismiss"
+            ],
+            [
+              "PUT",
+              "/v1/me"
+            ]
+          ],
+          "spec_only_s": [
+            [
+              "DELETE",
+              "/v1/devices/{}"
+            ],
+            [
+              "DELETE",
+              "/v1/habits/{}"
+            ],
+            [
+              "DELETE",
+              "/v1/habits/{}/completions/{}"
+            ],
+            [
+              "DELETE",
+              "/v1/me"
+            ],
+            [
+              "GET",
+              "/v1/habits"
+            ],
+            [
+              "GET",
+              "/v1/habits/{}"
+            ],
+            [
+              "GET",
+              "/v1/habits/{}/completions"
+            ],
+            [
+              "GET",
+              "/v1/habits/{}/history"
+            ],
+            [
+              "GET",
+              "/v1/habits/{}/progress"
+            ],
+            [
+              "GET",
+              "/v1/home"
+            ],
+            [
+              "GET",
+              "/v1/me"
+            ],
+            [
+              "GET",
+              "/v1/nudges"
+            ],
+            [
+              "GET",
+              "/v1/sync"
+            ],
+            [
+              "PATCH",
+              "/v1/habits/{}"
+            ],
+            [
+              "POST",
+              "/v1/auth/login"
+            ],
+            [
+              "POST",
+              "/v1/auth/logout"
+            ],
+            [
+              "POST",
+              "/v1/auth/refresh"
+            ],
+            [
+              "POST",
+              "/v1/auth/register"
+            ],
+            [
+              "POST",
+              "/v1/completions/batch"
+            ],
+            [
+              "POST",
+              "/v1/devices"
+            ],
+            [
+              "POST",
+              "/v1/habits"
+            ],
+            [
+              "POST",
+              "/v1/habits/{}/completions"
+            ],
+            [
+              "POST",
+              "/v1/nudges/{}/dismiss"
+            ],
+            [
+              "PUT",
+              "/v1/me"
+            ]
+          ]
+        },
+        "PA": {
+          "counts": {
+            "Customer": 0,
+            "Public": 26
+          },
+          "code": "2/26",
+          "spec": "2/26"
+        },
+        "PA2": {
+          "login_path": null,
+          "users_table": null,
+          "scheme": null,
+          "password_column": null,
+          "username_field": null,
+          "password_field": null
+        },
+        "PE": {
+          "cells": 54,
+          "found": "0/54"
+        },
+        "PF": {
+          "cells": 32,
+          "found": "0/32"
+        },
+        "PF2": "1/7",
+        "PO": {
+          "habits.user_id compare": "0/14",
+          "assign": "0/2",
+          "caller-id use per Member route": "0/21",
+          "public with uses": 0
+        },
+        "PM": {
+          "DELETE /habits/{id}/completions/{cid}": [
+            "pending",
+            "suppressed"
+          ],
+          "POST /completions/batch": [
+            "pending",
+            "suppressed"
+          ],
+          "POST /habits/{id}/completions": [
+            "pending",
+            "suppressed"
+          ],
+          "nudges.RunDailyPass": [
+            "failed",
+            "sent",
+            "suppressed"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GX2",
+      "mutant": "wrapper not unwrapped (handler = the wrapper's literal)",
+      "expected": "PR2",
+      "caught_by": [
+        "PA",
+        "PA2",
+        "PE",
+        "PF",
+        "PF2",
+        "PM",
+        "PO",
+        "PR2"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PR2": {
+          "distinct_handlers": 2,
+          "file_line_exact": "1/26",
+          "wrappers_exact": "1/26"
+        },
+        "PA": {
+          "counts": {
+            "Customer": 0,
+            "Public": 26
+          },
+          "code": "5/26",
+          "spec": "5/26"
+        },
+        "PA2": {
+          "login_path": null,
+          "users_table": null,
+          "scheme": null,
+          "password_column": null,
+          "username_field": null,
+          "password_field": null
+        },
+        "PE": {
+          "cells": 54,
+          "found": "0/54"
+        },
+        "PF": {
+          "cells": 32,
+          "found": "1/32"
+        },
+        "PF2": "0/7",
+        "PO": {
+          "habits.user_id compare": "0/14",
+          "assign": "0/2",
+          "caller-id use per Member route": "0/21",
+          "public with uses": 0
+        },
+        "PM": {
+          "nudges.RunDailyPass": [
+            "failed",
+            "pending",
+            "sent",
+            "suppressed"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GX3",
+      "mutant": "Body guards ignored (no bounds from the refusing if)",
+      "expected": "PF2",
+      "caught_by": [
+        "PF2"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PF2": "0/7"
+      }
+    },
+    {
+      "id": "GX4",
+      "mutant": "caller id not followed into helper parameters",
+      "expected": "PO",
+      "caught_by": [
+        "PO"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PO": {
+          "habits.user_id compare": "3/14",
+          "assign": "2/2",
+          "caller-id use per Member route": "10/21",
+          "public with uses": 0
+        }
+      }
+    },
+    {
+      "id": "GX5",
+      "mutant": "SQL condition strings not parsed",
+      "expected": "PO",
+      "caught_by": [
+        "PO"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PO": {
+          "habits.user_id compare": "0/14",
+          "assign": "2/2",
+          "caller-id use per Member route": "2/21",
+          "public with uses": 0
+        }
+      }
+    },
+    {
+      "id": "GX6",
+      "mutant": "middleware ignored for auth (all Public)",
+      "expected": "PA",
+      "caught_by": [
+        "PA"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PA": {
+          "counts": {
+            "Customer": 0,
+            "Public": 26
+          },
+          "code": "5/26",
+          "spec": "5/26"
+        }
+      }
+    },
+    {
+      "id": "GX7",
+      "mutant": "constructors not resolved (direct Abort* / JSON only)",
+      "expected": "PE",
+      "caught_by": [
+        "PE",
+        "PF2"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PE": {
+          "cells": 54,
+          "found": "45/54"
+        },
+        "PF2": "0/7"
+      }
+    },
+    {
+      "id": "GX8",
+      "mutant": "sentinels not mapped (ErrNotFound -> 404 lost)",
+      "expected": "PE",
+      "caught_by": [
+        "PE"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PE": {
+          "cells": 54,
+          "found": "45/54"
+        }
+      }
+    },
+    {
+      "id": "GX9",
+      "mutant": "wiring off (every registering function counts)",
+      "expected": "fixture test unwired_register",
+      "caught_by": [
+        "fixture test unwired_register"
+      ],
+      "killed": true,
+      "evidence": "mplate': '/orphan', 'path_exact': True, ...}]\n\ntests/gocheck/test_goextract.py:91: AssertionError\n=========================== short test summary info ============================\nFAILED tests/gocheck/test_goextract.py::test_unwired_register_is_excluded_not_extracted\n1 failed, 25 deselected in 0.26s\n"
+    },
+    {
+      "id": "GX10",
+      "mutant": "conditional registration dropped",
+      "expected": "PR1",
+      "caught_by": [
+        "PA",
+        "PR1",
+        "PR2",
+        "PR3",
+        "PS"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PR1": {
+          "extracted": 25,
+          "recall": "25/26",
+          "precision": "25/25",
+          "exact": 25,
+          "duplicates": 0
+        },
+        "PR2": {
+          "distinct_handlers": 25,
+          "file_line_exact": "25/26",
+          "wrappers_exact": "25/26"
+        },
+        "PR3": {
+          "s4_routes": {
+            "extracted": 19,
+            "recall": "19/20",
+            "precision": "19/19",
+            "exact": 19,
+            "duplicates": 0
+          },
+          "spec_only_s4": [
+            [
+              "DELETE",
+              "/v1/devices/{}"
+            ],
+            [
+              "GET",
+              "/v1/home"
+            ],
+            [
+              "GET",
+              "/v1/nudges"
+            ],
+            [
+              "GET",
+              "/v1/sync"
+            ],
+            [
+              "POST",
+              "/v1/devices"
+            ],
+            [
+              "POST",
+              "/v1/nudges/{}/dismiss"
+            ],
+            [
+              "PUT",
+              "/test/clock"
+            ]
+          ],
+          "spec_only_s": [
+            [
+              "PUT",
+              "/test/clock"
+            ]
+          ]
+        },
+        "PA": {
+          "counts": {
+            "Customer": 21,
+            "Public": 4
+          },
+          "code": "25/26",
+          "spec": "25/26"
+        },
+        "PS": {
+          "runs": true,
+          "contracts": 25,
+          "ownership": {},
+          "unclear": {},
+          "unclear_notes": [
+            "private:TestClockRow",
+            "private:SchemaMigration",
+            "private:User",
+            "private:NotificationPrefs",
+            "private:Device",
+            "private:RefreshToken",
+            "private:Habit",
+            "private:HabitTarget",
+            "private:Completion",
+            "private:Nudge",
+            "auth:User",
+            "storage:streak",
+            "datetime_wire:streak"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GX11",
+      "mutant": "composite uniqueIndex read as per-column unique",
+      "expected": "PT",
+      "caught_by": [
+        "PT"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PT": {
+          "tables": 10,
+          "tables_equal": true,
+          "columns": "67/67",
+          "facts": "465/469",
+          "unique_together": "2/2",
+          "count_table_exact": false
+        }
+      }
+    },
+    {
+      "id": "GX12",
+      "mutant": "unsorted map iteration and an absolute path in the output",
+      "expected": "PD",
+      "caught_by": [
+        "PD"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "evidence": {
+        "PD": {
+          "sidecar": "1/4",
+          "model": "1/4",
+          "leaks": [
+            "/private",
+            "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/goextract/m/s",
+            "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/goextract/m/s-second-path"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GX13",
+      "mutant": "reconcile counts a 404 as observed",
+      "expected": "PX2",
+      "caught_by": [
+        "PX2"
+      ],
+      "killed": true,
+      "evidence": {
+        "not_observed": []
+      }
+    }
+  ],
+  "killed": 13,
+  "total": 13
+}
