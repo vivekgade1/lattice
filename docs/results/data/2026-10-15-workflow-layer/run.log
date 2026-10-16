@@ -1,0 +1,23 @@
+PE: True {"hit": "11/11", "missing": [], "extra": [], "id_source": {"completions": ["client"], "devices": ["response"], "habits": ["client"], "nudges": ["list"]}, "body_edges": [{"table": "habits", "producer": "POST /v1/habits", 
+PS: True {"lenient": "3/20", "strict": "1/20", "lenient_verified_only": "3/20", "strict_verified_only": "1/20", "matched_lenient": [["PATCH /v1/habits/{}", "GET /v1/habits/{}/progress"], ["POST /v1/habits", "POST /v1/habits/{}/co
+PS2: None {"lenient": 0.0588, "strict": 0.0147, "flows": 68}
+PK: True {"synthesised": "3/3", "verified": "2/3", "synth": {"K1": true, "K2": true, "K3": true}, "status": {"K1": ["verified", "verified"], "K2": "failed", "K3": "verified"}, "k2_reason": "step 1 POST /v1/completions/batch answe
+PF: True {"count": 68, "counts": {"verified": 59, "unverified": 1, "failed": 8}, "fractions": {"verified": 0.8676, "unverified": 0.0147, "failed": 0.1176}, "by_kind": {"pair": {"verified": 9, "failed": 2}, "lifecycle": {"verified
+PG: True {"route": "21/21", "handler": "21/21", "binding": "111/111", "status": "23/23", "param_use_line": "148/148"}
+PM: True {"states": ["failed", "pending", "sent", "suppressed"], "edges": [["pending", "failed"], ["pending", "sent"], ["pending", "suppressed"]], "initial": ["pending", "suppressed"], "observed_initial": ["pending"], "observed_m
+PV: None {"sources": {"timezone": "probe", "period": "literal", "date": "bound", "email": "probe", "installation_id": "probe"}, "values": {"timezone": "UTC", "period": "week", "date": "2026-03-04", "email": "wf2@example.test", "i
+PD: True {"static": "11/11", "dynamic": "10/10", "leaks": []}
+PW: True {"changed": 0, "new": 0}
+PT: True {"after_each_run": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "names": [], "now": []}
+PX: True {"static_median_s": 0.24, "static_max_s": 0.25, "dynamic_s": [31.3, 31.4, 31.2, 30.4, 31.2, 31.3, 31.1, 31.4, 31.0, 31.0], "dynamic_median_s": 31.2}
+PR: True {"scenarios": 59, "failures": 0, "failed": {}}
+PT-sigint: True {"containers": 0, "names": [], "apps": 0, "interrupted_mid_flow": true, "container_seen": true, "snapshots_when_interrupted": 14, "exited": true, "returncode": -2, "scratch_removed": true}
+PB-extract: True {"identical": "4/4", "different": [], "committed_equal": {"S": true, "S4": true, "S model.to_json": true}}
+PB-gocheck: True {"changed": ["lattice/gocheck/src/goextract.go", "lattice/gocheck/src/goextract_assemble.go", "lattice/gocheck/src/goextract_closure.go", "lattice/gocheck/src/goextract_owner.go", "lattice/gocheck/src/goextract_raise.go"
+PB-diff: True {"foreign": [], "frozen_diff": [], "other_gocheck_files": [], "changed": ["dogfood/workflow_mutants.py", "dogfood/workflow_probes.py", "lattice/gocheck/src/goextract.go", "lattice/gocheck/src/goextract_workflow.go", "lat
+PB-lint: True {"go_vet_rc": 0, "gofmt": [], "ruff_rc": 0, "ruff_format_rc": 0, "files": ["dogfood/workflow_mutants.py", "dogfood/workflow_probes.py", "lattice/importer/cli.py", "lattice/importer/frontends/go_gin.py", "lattice/importer
+PB-spike-a: True {"ran": ["LEAK", "PA", "PA2", "PD", "PE", "PE2", "PF", "PF2", "PM", "PO", "PR1", "PR2", "PR3", "PS", "PT", "PU", "PW"], "failed": [], "rc": 0}
+PB-pytest: True ["", "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html", "857 passed, 148 warnings in 142.90s (0:02:22)"]
+PW-final: True {"changed": 0, "new": 0}
+LEAK: True 0
+$DRV dogfood/workflow_probes.py --streak-ref a0679e9 --users ann,ben  10  10   302.97s user 39.59s system 70% cpu 8:05.33 total

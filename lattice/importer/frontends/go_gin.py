@@ -290,8 +290,12 @@ class GoGinFrontEnd:
         req = _requires(text)
         return "github.com/gin-gonic/gin" in req and "gorm.io/gorm" in req
 
-    def extract_json(self, root: Path | str, package: str = ".") -> dict[str, Any]:
-        """``gocheck extract`` on the module: its JSON (read-only on the target)."""
+    def extract_json(
+        self, root: Path | str, package: str = ".", workflow: bool = False
+    ) -> dict[str, Any]:
+        """``gocheck extract`` on the module: its JSON (read-only on the target).
+        ``workflow=True`` asks for the workflow layer's extra keys (opt-in: the default
+        input and output are unchanged)."""
         from lattice.gocheck import build_gocheck
 
         module_dir = self._module_dir(root, package).resolve()
@@ -301,7 +305,9 @@ class GoGinFrontEnd:
         try:
             proc = subprocess.run(  # noqa: S603 -- the project's own checker binary
                 [str(binary), "extract"],
-                input=json.dumps({"root": str(module_dir)}),
+                input=json.dumps({"root": str(module_dir), "workflow": True})
+                if workflow
+                else json.dumps({"root": str(module_dir)}),
                 capture_output=True,
                 text=True,
                 check=False,

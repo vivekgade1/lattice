@@ -139,7 +139,8 @@ func runExtract(stdin io.Reader, stdout, stderr io.Writer) int {
 		return 2
 	}
 	var in struct {
-		Root string `json:"root"`
+		Root     string `json:"root"`
+		Workflow bool   `json:"workflow"`
 	}
 	if err := json.Unmarshal(raw, &in); err != nil || in.Root == "" {
 		fmt.Fprintln(stderr, `gocheck extract: the input must be JSON {"root": <directory>}`)
@@ -149,14 +150,18 @@ func runExtract(stdin io.Reader, stdout, stderr io.Writer) int {
 		fmt.Fprintln(stderr, "gocheck extract: the root is not a directory:", in.Root)
 		return 2
 	}
-	var res *xResult
+	var res any
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
 				err = fmt.Errorf("internal error: %v\n%s", r, debug.Stack())
 			}
 		}()
-		res, err = extractModule(in.Root)
+		if in.Workflow { // the opt-in workflow facts (goextract_workflow.go)
+			res, err = extractWorkflow(in.Root)
+		} else {
+			res, err = extractModule(in.Root)
+		}
 	}()
 	if err != nil {
 		fmt.Fprintln(stderr, "gocheck extract:", err)

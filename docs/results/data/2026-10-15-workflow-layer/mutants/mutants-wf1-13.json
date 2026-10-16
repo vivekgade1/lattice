@@ -1,0 +1,734 @@
+{
+  "rows": [
+    {
+      "id": "control",
+      "failing": [],
+      "rc": 0,
+      "probes": 17,
+      "passes": true,
+      "containers_before": [],
+      "containers_after": []
+    },
+    {
+      "id": "WF1",
+      "mutant": "param_uses ignored (no edges)",
+      "expected": "PE",
+      "caught_by": [
+        "PE",
+        "PF",
+        "PK",
+        "PS"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "probes_ran": 17,
+      "evidence": {
+        "PE": {
+          "hit": "0/11",
+          "missing": [
+            [
+              "completions",
+              "DELETE /v1/habits/{}/completions/{}",
+              1
+            ],
+            [
+              "devices",
+              "DELETE /v1/devices/{}",
+              0
+            ],
+            [
+              "habits",
+              "DELETE /v1/habits/{}",
+              0
+            ],
+            [
+              "habits",
+              "DELETE /v1/habits/{}/completions/{}",
+              0
+            ],
+            [
+              "habits",
+              "GET /v1/habits/{}",
+              0
+            ],
+            [
+              "habits",
+              "GET /v1/habits/{}/completions",
+              0
+            ],
+            [
+              "habits",
+              "GET /v1/habits/{}/history",
+              0
+            ],
+            [
+              "habits",
+              "GET /v1/habits/{}/progress",
+              0
+            ],
+            [
+              "habits",
+              "PATCH /v1/habits/{}",
+              0
+            ],
+            [
+              "habits",
+              "POST /v1/habits/{}/completions",
+              0
+            ],
+            [
+              "nudges",
+              "POST /v1/nudges/{}/dismiss",
+              0
+            ]
+          ],
+          "extra": [],
+          "id_source": {},
+          "body_edges": [],
+          "static_equals_dynamic": true,
+          "mode": "observed"
+        },
+        "PS": {
+          "lenient": "0/20",
+          "strict": "0/20",
+          "lenient_verified_only": "0/20",
+          "strict_verified_only": "0/20",
+          "matched_lenient": [],
+          "matched_strict": []
+        },
+        "PK": {
+          "synthesised": "0/3",
+          "verified": "0/3",
+          "synth": {
+            "K1": false,
+            "K2": false,
+            "K3": false
+          },
+          "status": {
+            "K1": [
+              "verified",
+              null
+            ],
+            "K2": null,
+            "K3": null
+          },
+          "k2_reason": null
+        },
+        "PF": {
+          "count": 21,
+          "counts": {
+            "verified": 12,
+            "unverified": 1,
+            "failed": 8
+          },
+          "fractions": {
+            "verified": 0.5714,
+            "unverified": 0.0476,
+            "failed": 0.381
+          },
+          "by_kind": {
+            "account": {
+              "verified": 1,
+              "unverified": 1
+            },
+            "guard": {
+              "verified": 8
+            },
+            "effect": {
+              "failed": 8,
+              "verified": 3
+            }
+          },
+          "in_range": {
+            "count": false,
+            "verified": true,
+            "unverified": false,
+            "failed": false
+          }
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF2",
+      "mutant": "path params filled with 1 instead of the threaded ids",
+      "expected": "PF",
+      "caught_by": [
+        "PF",
+        "PK",
+        "PS"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "probes_ran": 17,
+      "evidence": {
+        "PS": {
+          "lenient": "0/20",
+          "strict": "0/20",
+          "lenient_verified_only": "0/20",
+          "strict_verified_only": "0/20",
+          "matched_lenient": [],
+          "matched_strict": []
+        },
+        "PK": {
+          "synthesised": "2/3",
+          "verified": "1/3",
+          "synth": {
+            "K1": false,
+            "K2": true,
+            "K3": true
+          },
+          "status": {
+            "K1": [
+              "verified",
+              null
+            ],
+            "K2": "failed",
+            "K3": "verified"
+          },
+          "k2_reason": "step 1 POST /v1/completions/batch answered 422 (validation_failed): status 422"
+        },
+        "PF": {
+          "count": 39,
+          "counts": {
+            "verified": 22,
+            "unverified": 1,
+            "failed": 16
+          },
+          "fractions": {
+            "verified": 0.5641,
+            "unverified": 0.0256,
+            "failed": 0.4103
+          },
+          "by_kind": {
+            "pair": {
+              "verified": 1,
+              "failed": 8
+            },
+            "lifecycle": {
+              "failed": 1
+            },
+            "account": {
+              "verified": 1,
+              "unverified": 1
+            },
+            "owner_guard": {
+              "verified": 9,
+              "failed": 1
+            },
+            "after_delete": {
+              "failed": 2
+            },
+            "guard": {
+              "verified": 8
+            },
+            "effect": {
+              "failed": 4,
+              "verified": 3
+            }
+          },
+          "in_range": {
+            "count": false,
+            "verified": true,
+            "unverified": false,
+            "failed": false
+          }
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF3",
+      "mutant": "verified from the live run alone (no replay)",
+      "expected": "PR",
+      "caught_by": [
+        "PD",
+        "PR"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "probes_ran": 17,
+      "evidence": {
+        "PD": {
+          "static": "4/4",
+          "dynamic": "1/2",
+          "leaks": []
+        },
+        "PR": {
+          "scenarios": 60,
+          "failures": 1,
+          "failed": {
+            "wf-0da61e11ce": "{\"problems\": [\"status: expected 200, got 401\"], \"expected\": {\"status\": 200, \"body\": null, \"db\": null}, \"actual\": {\"status\": 401, \"body\": {\"error\": {\"code\": \"invalid_refresh_token\", \"message\": \"the ref"
+          }
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF4",
+      "mutant": "expected status = the first static 2xx, not the observed one",
+      "expected": "PF",
+      "caught_by": [
+        "PF",
+        "PK"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "probes_ran": 17,
+      "evidence": {
+        "PK": {
+          "synthesised": "3/3",
+          "verified": "0/3",
+          "synth": {
+            "K1": true,
+            "K2": true,
+            "K3": true
+          },
+          "status": {
+            "K1": [
+              "verified",
+              "unverified"
+            ],
+            "K2": "failed",
+            "K3": "unverified"
+          },
+          "k2_reason": "step 1 POST /v1/completions/batch answered 422 (validation_failed): status 422"
+        },
+        "PF": {
+          "count": 68,
+          "counts": {
+            "verified": 21,
+            "unverified": 39,
+            "failed": 8
+          },
+          "fractions": {
+            "verified": 0.3088,
+            "unverified": 0.5735,
+            "failed": 0.1176
+          },
+          "by_kind": {
+            "pair": {
+              "unverified": 3,
+              "verified": 6,
+              "failed": 2
+            },
+            "lifecycle": {
+              "unverified": 1
+            },
+            "account": {
+              "verified": 1,
+              "unverified": 1
+            },
+            "owner_guard": {
+              "unverified": 10,
+              "failed": 1
+            },
+            "after_delete": {
+              "unverified": 2
+            },
+            "guard": {
+              "unverified": 5
+            },
+            "effect": {
+              "verified": 14,
+              "failed": 5,
+              "unverified": 17
+            }
+          },
+          "in_range": {
+            "count": true,
+            "verified": false,
+            "unverified": false,
+            "failed": true
+          }
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF5",
+      "mutant": "machine from-rule off (from = *)",
+      "expected": "PM",
+      "caught_by": [
+        "PM"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "probes_ran": 17,
+      "evidence": {
+        "PM": {
+          "states": [
+            "failed",
+            "pending",
+            "sent",
+            "suppressed"
+          ],
+          "edges": [],
+          "initial": [
+            "pending",
+            "suppressed"
+          ],
+          "observed_initial": [
+            "pending"
+          ],
+          "observed_moves": 0,
+          "status": "static",
+          "sweeps": [
+            {
+              "moved": false,
+              "service": "nudger"
+            }
+          ],
+          "mode": "observed",
+          "spec": {
+            "states": [
+              "failed",
+              "pending",
+              "sent",
+              "suppressed"
+            ],
+            "edges": [
+              [
+                "pending",
+                "failed"
+              ],
+              [
+                "pending",
+                "sent"
+              ],
+              [
+                "pending",
+                "suppressed"
+              ]
+            ],
+            "initial": [
+              "pending",
+              "suppressed"
+            ]
+          }
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF6",
+      "mutant": "every written value counted as initial",
+      "expected": "PM",
+      "caught_by": [
+        "PM"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "probes_ran": 17,
+      "evidence": {
+        "PM": {
+          "states": [
+            "failed",
+            "pending",
+            "sent",
+            "suppressed"
+          ],
+          "edges": [
+            [
+              "pending",
+              "failed"
+            ],
+            [
+              "pending",
+              "sent"
+            ],
+            [
+              "pending",
+              "suppressed"
+            ]
+          ],
+          "initial": [
+            "failed",
+            "pending",
+            "sent",
+            "suppressed"
+          ],
+          "observed_initial": [
+            "pending"
+          ],
+          "observed_moves": 0,
+          "status": "static",
+          "sweeps": [
+            {
+              "moved": false,
+              "service": "nudger"
+            }
+          ],
+          "mode": "observed",
+          "spec": {
+            "states": [
+              "failed",
+              "pending",
+              "sent",
+              "suppressed"
+            ],
+            "edges": [
+              [
+                "pending",
+                "failed"
+              ],
+              [
+                "pending",
+                "sent"
+              ],
+              [
+                "pending",
+                "suppressed"
+              ]
+            ],
+            "initial": [
+              "pending",
+              "suppressed"
+            ]
+          }
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF7",
+      "mutant": "an absolute path and a timestamp in the output",
+      "expected": "PD",
+      "caught_by": [
+        "PD"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "probes_ran": 17,
+      "evidence": {
+        "PD": {
+          "static": "2/4",
+          "dynamic": "1/2",
+          "leaks": [
+            ".app.at: 2026-10-15T23:46:36",
+            ".app.at: 2026-10-15T23:46:37",
+            ".app.at: 2026-10-15T23:47:09",
+            ".app.root: /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-84"
+          ]
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF8",
+      "mutant": "repair loop off",
+      "expected": "PF",
+      "caught_by": [
+        "PK"
+      ],
+      "killed": true,
+      "expected_hit": false,
+      "probes_ran": 17,
+      "evidence": {
+        "PK": {
+          "synthesised": "1/3",
+          "verified": "0/3",
+          "synth": {
+            "K1": false,
+            "K2": true,
+            "K3": false
+          },
+          "status": {
+            "K1": [
+              null,
+              "verified"
+            ],
+            "K2": "failed",
+            "K3": null
+          },
+          "k2_reason": "step 1 POST /v1/completions/batch answered 422 (validation_failed): status 422"
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF9",
+      "mutant": "literals not read",
+      "expected": "PV",
+      "caught_by": [
+        "PF",
+        "PK",
+        "PS"
+      ],
+      "killed": true,
+      "expected_hit": false,
+      "probes_ran": 17,
+      "evidence": {
+        "PS": {
+          "lenient": "0/20",
+          "strict": "0/20",
+          "lenient_verified_only": "0/20",
+          "strict_verified_only": "0/20",
+          "matched_lenient": [],
+          "matched_strict": []
+        },
+        "PK": {
+          "synthesised": "0/3",
+          "verified": "0/3",
+          "synth": {
+            "K1": false,
+            "K2": false,
+            "K3": false
+          },
+          "status": {
+            "K1": [
+              "verified",
+              null
+            ],
+            "K2": null,
+            "K3": null
+          },
+          "k2_reason": null
+        },
+        "PF": {
+          "count": 11,
+          "counts": {
+            "verified": 3,
+            "unverified": 1,
+            "failed": 7
+          },
+          "fractions": {
+            "verified": 0.2727,
+            "unverified": 0.0909,
+            "failed": 0.6364
+          },
+          "by_kind": {
+            "pair": {
+              "failed": 2
+            },
+            "lifecycle": {
+              "failed": 1
+            },
+            "account": {
+              "verified": 1,
+              "unverified": 1
+            },
+            "owner_guard": {
+              "failed": 2
+            },
+            "after_delete": {
+              "failed": 1
+            },
+            "guard": {
+              "verified": 2
+            },
+            "effect": {
+              "failed": 1
+            }
+          },
+          "in_range": {
+            "count": false,
+            "verified": false,
+            "unverified": true,
+            "failed": false
+          }
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF10",
+      "mutant": "a status accepted although it is not in the code evidence",
+      "expected": "PG",
+      "caught_by": [
+        "unit: tests/importer/test_workflows.py -k not_in_the_code_evidence"
+      ],
+      "killed": true,
+      "expected_hit": false,
+      "probes_ran": 17,
+      "evidence": {},
+      "unit_tail": "bs': [], 'runs': []}, next_id={})).ok\n\ntests/importer/test_workflows.py:609: AssertionError\n=========================== short test summary info ============================\nFAILED tests/importer/test_workflows.py::test_a_2xx_not_in_the_code_evidence_fails_the_step\nFAILED tests/importer/test_workflows.py::test_a_refusal_not_in_the_code_evidence_fails_the_guard_flow\n2 failed, 62 deselected in 0.22s\n",
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF11",
+      "mutant": "workflow keys emitted in the default extract",
+      "expected": "PB-extract",
+      "caught_by": [
+        "PB-extract",
+        "unit: tests/gocheck/test_goextract_workflow.py -k default_output_has_no_workflow_key"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "probes_ran": 17,
+      "evidence": {
+        "PB-extract": {
+          "identical": "0/4",
+          "different": [
+            "S",
+            "S4",
+            "fixture:goextract",
+            "fixture:goextract_workflow"
+          ],
+          "committed_equal": {
+            "S": false,
+            "S4": false,
+            "S model.to_json": true
+          }
+        }
+      },
+      "unit_tail": "rue\nE        +  where True = any(<generator object test_the_default_output_has_no_workflow_key.<locals>.<genexpr> at 0x10b8db760>)\n\ntests/gocheck/test_goextract_workflow.py:105: AssertionError\n=========================== short test summary info ============================\nFAILED tests/gocheck/test_goextract_workflow.py::test_the_default_output_has_no_workflow_key\n1 failed, 17 deselected in 0.14s\n",
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF12",
+      "mutant": "snapshots written under the target root, never removed",
+      "expected": "PW",
+      "caught_by": [
+        "PW"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "probes_ran": 17,
+      "evidence": {
+        "PW": {
+          "changed": 0,
+          "new": 378
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    },
+    {
+      "id": "WF13",
+      "mutant": "the container is not removed on exit (an error included)",
+      "expected": "PT",
+      "caught_by": [],
+      "killed": false,
+      "expected_hit": false,
+      "probes_ran": 17,
+      "evidence": {},
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": []
+    }
+  ],
+  "killed": 12,
+  "total": 13
+}
