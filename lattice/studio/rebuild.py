@@ -1543,13 +1543,25 @@ class Rebuilder:
         plus ``[mcp] protected`` (a sync copies exactly these; a directory means the files
         under it)."""
         out: list[str] = []
-        for raw in [*SPEC_FILES, *self.protected]:
+        for raw in [*SPEC_FILES, *self.protected, *self._notes_names(self.project)]:
             n = posixpath.normpath(str(raw).replace("\\", "/"))
             if n in (".", "") or n.startswith(("/", "../")) or n == "..":
                 continue
             if n not in out:
                 out.append(n)
         return out
+
+    @staticmethod
+    def _notes_names(project_dir: Path) -> list[str]:
+        """The owner's approved rationale / glossary files that exist in `project_dir` (Spike G;
+        ``<stem>.rationale.json`` and ``<stem>.glossary.json`` beside the trace): protected like
+        the spec files while they exist, and nothing at all when they do not."""
+        from lattice.spec.rationale import notes_paths
+
+        paths = notes_paths(project_dir / "spec.trace.json")
+        if paths is None:
+            return []
+        return [p.name for p in (paths.rationale, paths.glossary) if p.is_file()]
 
     def _spec_tree(self, repo: Path, rel: str, ref: str) -> dict[str, str]:
         """``{project-relative path: "<mode> <blob>"}`` of the spec files committed at
@@ -3260,6 +3272,12 @@ class Rebuilder:
     def _protected_paths(self, run: _Run) -> list[str]:
         rel = "" if run.project_rel == "." else run.project_rel + "/"
         names = [*SPEC_FILES, *self.protected]
+        # Spike G: the owner's approved notes, while they exist in the worktree or at the base
+        for n in self._notes_names(run.worktree / run.project_rel):
+            names.append(n)
+        for n in self._base_notes_names(run):
+            if n not in names:
+                names.append(n)
         out = [f"{rel}{n}" for n in names]
         for g in run.gates:  # the gate scripts themselves
             try:
@@ -3273,6 +3291,28 @@ class Rebuilder:
                 if _git(run.repo, "cat-file", "-e", f"{run.base}:{p}").returncode == 0:
                     out.append(p)
         return list(dict.fromkeys(out))
+
+    def _base_notes_names(self, run: _Run) -> list[str]:
+        """The owner's rationale / glossary files committed at the run's base commit (so a file
+        a round deleted is restored); none without them."""
+        rel = "" if run.project_rel == "." else run.project_rel + "/"
+        r = _git(run.repo, "cat-file", "-p", f"{run.base}:{rel}spec.trace.json")
+        if r.returncode != 0:
+            return []
+        try:
+            source = json.loads(r.stdout).get("source")
+        except (ValueError, AttributeError):
+            return []
+        if not isinstance(source, str) or not source:
+            return []
+        from lattice.spec.rationale import notes_names
+
+        cands = (notes_names(source)[0], notes_names(source)[2])
+        return [
+            n
+            for n in cands
+            if _git(run.repo, "cat-file", "-e", f"{run.base}:{rel}{n}").returncode == 0
+        ]
 
     def _restore_protected(self, run: _Run) -> list[str]:
         """The protected files the round changed (restored to the base commit's)."""

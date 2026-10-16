@@ -1,0 +1,31 @@
+{
+ "rule": "R75",
+ "status": "RAN",
+ "reason": null,
+ "exit": 0,
+ "cost_usd": 0.0146,
+ "stopped": null,
+ "authoritative_absent": true,
+ "others_unchanged": true,
+ "entry": {
+  "rule": "R75",
+  "anchor": "fb2e198fe0991a78f2280b677bad8f3bc54f9509770688c9fe2af506f13907ab",
+  "why": "A bounded backfill window keeps streak and period history from being rewritten arbitrarily far in the past, so old streaks and stats stay stable and clients can't silently alter long-settled records. It also limits how far back the streak recomputation must reach.",
+  "tradeoff": "Users who forgot to log or return after a long gap cannot enter check-ins older than 60 days, even for genuine activity, so they lose those streak credits.",
+  "owner": null,
+  "status": "proposed",
+  "author": "llm:sonnet",
+  "approved_by": null,
+  "approved_sha": null,
+  "basis": [],
+  "refs": [],
+  "rejected_basis": [],
+  "dropped": []
+ },
+ "stderr": "",
+ "gated_ok": true,
+ "basis": 0,
+ "rejected_basis": 0,
+ "valid_basis": false,
+ "basis_empty": true
+}

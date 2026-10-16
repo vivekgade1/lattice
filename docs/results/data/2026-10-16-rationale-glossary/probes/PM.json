@@ -1,0 +1,32 @@
+{
+ "checks": {
+  "S_lists_neither": true,
+  "W_lists_both_after_existing": true,
+  "errors": true,
+  "glossary_get_lint": true,
+  "glossary_get_term": true,
+  "no_proposal_text": true,
+  "rationale_get_R26_no_text": true,
+  "rationale_get_R63": true,
+  "rationale_get_R8_stale_no_text": true,
+  "readonly_lists_them": true,
+  "rule_get_adds_keys": true,
+  "spec_lint_unchanged": true
+ },
+ "id": "PM",
+ "observed": {
+  "checks": 12,
+  "tools_W": [
+   "change_get",
+   "change_list",
+   "rationale_get",
+   "glossary_get"
+  ]
+ },
+ "output_sha256": "5296f4fa603756d6a57307d5ba654a018ab3b8a0eb068354ecbd750c314fb5d2",
+ "pass": true,
+ "predicted": "as D12",
+ "probe": "MCP on W and S: tools listed only when present; outputs; no proposal text; --readonly lists them",
+ "ran": true,
+ "seconds": 0.4
+}

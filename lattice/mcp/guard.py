@@ -10,6 +10,8 @@ Wire it in ``.claude/settings.json``::
 It reads the hook's JSON from stdin (``tool_name``, ``tool_input``, ``cwd``, ...). The
 protected files are a project's ``REQUIREMENTS.md``, ``spec.py`` and ``spec.trace.json``
 (plus names under ``[mcp] protected = [...]`` in ``studio.toml``, relative to the project).
+While they exist, the owner's approved ``<stem>.rationale.json`` and ``<stem>.glossary.json``
+(Spike G, named from the trace's ``source``) are protected too; the proposals files are not.
 
 **Many projects** (layer 1 of the multi-project phase): ``--project`` is optional and may be
 repeated. Each ``--project`` that has a drafted spec is protected as before; on top of that,
@@ -70,6 +72,8 @@ from pathlib import Path
 from typing import Any
 
 DEFAULT_PROTECTED = ("REQUIREMENTS.md", "spec.py", "spec.trace.json")
+# Spike G: the owner's approved rationale and glossary files, protected while they exist
+NOTES_SUFFIXES = (".rationale.json", ".glossary.json")
 EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
 PATH_KEYS = ("file_path", "notebook_path", "path")
 
@@ -81,6 +85,24 @@ _WRITE_WORDS = re.compile(
 )
 
 
+def notes_files(project: Path) -> list[str]:
+    """The names (relative to `project`) of the owner's authoritative rationale and glossary
+    files that exist: ``<stem>.rationale.json`` and ``<stem>.glossary.json`` beside the trace,
+    named from its ``source`` (the same rule as ``lattice.spec.rationale.notes_names``, kept
+    here so the hook does not import the spec package). Empty without a trace or any such file."""
+    try:
+        data = json.loads((project / "spec.trace.json").read_text(encoding="utf-8"))
+        source = data.get("source") if isinstance(data, dict) else None
+    except (OSError, ValueError):
+        return []
+    if not isinstance(source, str) or not source:
+        return []
+    stem = Path(source).stem
+    return [
+        f"{stem}{suffix}" for suffix in NOTES_SUFFIXES if (project / f"{stem}{suffix}").is_file()
+    ]
+
+
 def _reason(name: str, project: Path | None = None) -> str:
     where = ""
     pick = ""
@@ -89,6 +111,15 @@ def _reason(name: str, project: Path | None = None) -> str:
 
         where = f" of project {project_name(project)} ({project})"
         pick = f', project: "{project}"'
+    if name.endswith(NOTES_SUFFIXES):
+        return (
+            f"Blocked: {name}{where} holds the owner's approved rationale or glossary. Only the "
+            "owner writes it, in a terminal (`python -m lattice.spec rationale approve|add` or "
+            "`glossary approve|add`), or in their own editor. Do not edit it directly (not with "
+            "Edit/Write and not from the shell). You may draft proposals into the "
+            "`.proposed.json` file beside it with `rationale draft --out` or `glossary draft "
+            "--out`; the owner approves them."
+        )
     return (
         f"Blocked: {name}{where} is a Lattice spec file that Studio owns, and nothing changes in "
         "it without a checked change set. Do not edit it directly (not with Edit/Write and not "
@@ -108,6 +139,7 @@ class Guard:
             names += [str(x) for x in more if isinstance(x, str)]
         except (OSError, tomllib.TOMLDecodeError):
             pass
+        names += notes_files(self.project)  # Spike G: only while the owner's files exist
         self.names = list(dict.fromkeys(names))
         self.protected = [self._real(self.project / n) for n in self.names]
         self._fold = sys.platform == "darwin"

@@ -1,0 +1,13 @@
+RATIONALE-STALE
+
+The rule that governs this is R70: "`DELETE /v1/habits/{id}` answers 204, sets the habit's `deleted_at`, increments its `version`, and sets `deleted_at` on its non-deleted check-ins and nudges; nothing is removed from the database."
+
+The owner did approve a rationale for R70, but it was written for an older wording of the rule. The rationale store marks it stale, and a stale note carries no usable text. I therefore can't tell you the owner's reason for keeping the rows, and I won't offer one as theirs. The only proposals on file are unapproved, and they are counted but never shown.
+
+The spec does show how the soft delete works, though not why it was chosen:
+- R70 marks the habit and its check-ins and nudges as deleted instead of removing them.
+- The spec's intro list of assumptions (line 57, listed there as M12) says: "Deletes of habits and check-ins are soft (deleted_at, tombstone); deleting a habit tombstones its check-ins and nudges too. Account deletion is a hard delete."
+- Line 189 of the spec says the sync response reports a soft-deleted row as a tombstone (`deleted` is true and `data` is null). Line 190 says a full sync includes tombstones. This suggests the tombstones exist so that sync can tell clients about deletions, but the spec doesn't say that is the reason.
+- R26 contrasts this with `DELETE /v1/me`, which permanently deletes everything "(no tombstones)". R26 only has an unapproved rationale proposal.
+
+Nothing was changed.

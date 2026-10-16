@@ -1,0 +1,13 @@
+TERM-DEFINED
+
+In this spec, the "active window" is the stretch of days in which a habit is in effect within a reporting period. The glossary defines it as:
+
+term:active-window — "The active window is `as = max(period_start, start_date)` to `ae = min(period_end, end_date)` (`ae = period_end` when `end_date` is null), and `A = ae - as + 1` is its number of days."
+
+- **Start:** `as` is the later of the period's start and the habit's `start_date`.
+- **End:** `ae` is the earlier of the period's end and the habit's `end_date`. If `end_date` is null, `ae` is the period's end.
+- **Length:** `A` is the number of days in the window, counted inclusively.
+
+The term was approved by fixture-owner.
+
+I did not look up which rules use the term, so I'm not citing any R<n> here. I also did not check for an approved rationale, because you asked about the term rather than a rule. I changed nothing.

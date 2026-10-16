@@ -955,11 +955,18 @@ def build_report(
     trace: Trace | None,
     inventory: Inventory,
     last_check: Mapping[str, Any] | None = None,
+    notes: Any = None,
 ) -> dict[str, Any]:
     """The implementation report, ``lattice.implementation-report/1`` (D7). Pure: the same
     arguments always give the same dict, sorted, with relative ``/`` paths and no time, absolute
     path or response body. Without a trace the requirements are the spec's cells and
-    scenarios (``requirement_basis: "spec"``) and there is no ``rules`` section."""
+    scenarios (``requirement_basis: "spec"``) and there is no ``rules`` section.
+
+    `notes` (a ``lattice.spec.glossary.Notes``, Spike G): only with rules, each rule row gains
+    ``terms`` (the sorted slugs of the approved terms it uses) and ``rationale`` (the state of its
+    note: current, moved, edited, ambiguous, stale, proposed_only or none) and the report a
+    top-level ``glossary`` ({slug: {term, definition}} for the terms used by a reported rule).
+    Without `notes` the report is exactly as before."""
     sv = SpecView.of(spec, trace)
     cv = code_view(inventory)
     facts = facts_of(cv)
@@ -1162,7 +1169,24 @@ def build_report(
         "by_element": by_element,
         "unread": unread,
     }
+    if notes is not None and basis == "rules":
+        _add_notes(report, spec, trace, notes)
     return report
+
+
+def _add_notes(report: dict[str, Any], spec: Spec, trace: Trace | None, notes: Any) -> None:
+    """Spike G's additive keys (see `build_report`)."""
+    from lattice.spec.glossary import analyse, terms_by_rule
+
+    used = terms_by_rule(analyse(spec, trace), notes.glossary) if trace is not None else {}
+    glossary: dict[str, dict[str, str]] = {}
+    for e in report["rules"]:
+        ts = used.get(e["id"], [])
+        e["terms"] = [t.slug for t in ts]
+        e["rationale"] = notes.rationale.rule_state(e["id"]) if notes.rationale else "none"
+        for t in ts:
+            glossary[t.slug] = {"term": t.term, "definition": t.definition}
+    report["glossary"] = dict(sorted(glossary.items()))
 
 
 def _count(rows: Sequence[Mapping[str, Any]], field_: str) -> dict[str, int]:
@@ -1955,6 +1979,18 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--json", action="store_true")
     p.add_argument("--rule", help="only this rule or requirement id")
     p.add_argument("--status", choices=STATUSES, help="only this status")
+    p.add_argument(
+        "--rationale",
+        type=Path,
+        metavar="PATH",
+        help="the owner's approved rationale file (default: beside --trace)",
+    )
+    p.add_argument(
+        "--glossary",
+        type=Path,
+        metavar="PATH",
+        help="the owner's approved glossary file (default: beside --trace)",
+    )
     return p
 
 
@@ -1977,12 +2013,24 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise ValueError(f"{args.spec} is not a Spec")
         trace = Trace.load(args.trace) if args.trace else None
         inv = load_inventory(args.inventory, args.app_root)
-        report = build_report(spec, trace, inv)
+        notes = None
+        if trace is not None:  # Spike G: the owner's rationale and glossary beside the trace
+            from lattice.spec.glossary import discover_notes
+
+            notes = discover_notes(
+                trace, args.trace, rationale=args.rationale, glossary=args.glossary
+            )
+        report = build_report(spec, trace, inv, notes=notes)
     except ImplementationError as err:
         print(f"error: {err}", file=sys.stderr)
         return 2
     except Exception as err:  # noqa: BLE001 -- any failure to report is exit 2
-        print(f"error: {type(err).__name__}: {err}", file=sys.stderr)
+        from lattice.spec.rationale import NotesError
+
+        if isinstance(err, NotesError):  # bad_rationale / bad_glossary (D14)
+            print(f"error: {err}", file=sys.stderr)
+        else:
+            print(f"error: {type(err).__name__}: {err}", file=sys.stderr)
         return 2
     if args.json:
         if args.rule or args.status:

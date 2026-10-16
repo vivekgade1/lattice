@@ -1,0 +1,21 @@
+GM0 control: {"PA": true, "PAP": true, "PB": true, "PBp": true, "PC": true, "PDR": true, "PG": true, "PI": true, "PL": null, "PM": true, "PR": true, "PS": true, "PV": true} failed: []
+GM1 KILLED ['PA fails', 'PC fails', 'PI fails', 'PM fails', 'PA output differs'] | other: ['PC', 'PI', 'PM'] | proposed notes count as approved (coverage, digest, attachment)
+GM2 KILLED ['PA fails', 'PC fails', 'PI fails', 'PM fails', 'PR fails', 'PA output differs', 'PR output differs'] | other: ['PC', 'PI', 'PM'] | a note matched by id only (anchor ignored)
+GM3 KILLED ['PR fails', 'PR output differs'] | other: [] | no re-anchoring (an id mismatch makes a note stale)
+GM4 KILLED ['PR fails', 'PR output differs'] | other: [] | duplicate anchors resolve to the first match
+GM5 KILLED ['PR fails', 'PR output differs'] | other: [] | approved_sha not checked
+GM6 SURVIVED [] | other: ['PC', 'PL', 'PM'] | enum values matched only in identifier form (no `quiet hours`)
+GM7 KILLED ['PS fails', 'PS output differs'] | other: ['PC', 'PI', 'PL', 'PM'] | C3/C6 phrases not propagated across rules
+GM8 KILLED ['PS fails', 'PS output differs'] | other: ['PC', 'PL', 'PM'] | code (backtick) tokens not scanned for C1/C2/C5
+GM9 KILLED ['PG fails', 'PM fails', 'PS fails', 'PV fails', 'PS output differs'] | other: ['PC', 'PG', 'PI', 'PL', 'PM'] | no plural or possessive normalisation
+GM10 KILLED ['PV fails', 'PS output differs'] | other: [] | aliases ignored
+GM11 KILLED ['PS output differs'] | other: [] | `ignore` list ignored
+GM12 KILLED ['PS output differs'] | other: [] | JSON-bracket exclusion off
+GM13 KILLED ['PS fails', 'PS output differs'] | other: ['PC', 'PL', 'PM'] | shortest-first matching (overlaps counted)
+GM14 KILLED ['PA fails', 'PA output differs'] | other: [] | the answer attachment carries proposal or stale text
+GM15 KILLED ['PA fails', 'PA output differs'] | other: [] | `rationale:` citations accepted without the quote check, and counted as grounding
+GM16 KILLED ['PV fails'] | other: [] | an invalid file silently ignored
+GM17 KILLED ['PAP fails'] | other: ['PAP'] | `approve` allowed without a TTY or with `CLAUDECODE` set
+GM18 KILLED ['PB fails', 'PB output differs'] | other: [] | files_hash changed while the files are absent
+GM19 KILLED ['PDR fails'] | other: ['PDR'] | the drafter keeps a model-supplied `owner` or `status`
+{"killed": 18, "of": 19}

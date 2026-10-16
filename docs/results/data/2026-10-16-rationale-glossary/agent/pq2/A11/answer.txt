@@ -1,0 +1,12 @@
+NO-RATIONALE
+
+The owner has not recorded a reason for this behaviour, so I can't say why it was chosen. The rationale state for R139 is `none`. The two proposals on file belong to other rules (R20 and R26), and the glossary has no term for "nudge".
+
+What the spec says is what the rule does:
+
+- **R139:** "A dismissal belongs to the user, not to a device: a dismissed nudge is not returned as active by `GET /v1/nudges`, by the `nudges` of `GET /v1/home` or by `GET /v1/sync` for any device or installation of that user, and `GET /v1/sync` returns the dismissed nudge as a `nudge` change with `deleted` false and `data.dismissed_at` set, so the user's other devices remove it locally."
+- **Mechanism, from the spec text only:** the rule's own wording says that other devices drop the nudge when they sync.
+- **Silent clear push:** a successful dismiss also sends one to every device of the user except the caller's (spec line 248). A failed push does not fail the dismiss (spec line 249). Neither line has an R-number in the excerpts I saw.
+- **Restated at spec line 25:** "a dismissed nudge stays dismissed that day." I did not look up which rule that line belongs to.
+
+I changed nothing.

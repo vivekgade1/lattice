@@ -1,0 +1,11 @@
+RATIONALE-APPROVED
+
+A user is limited to 50 active habits because the home screen returns all of a user's active habits in one unpaginated response, so the count has to be capped.
+
+- **R56:** "A user has at most 50 active (non-archived, non-deleted) habits; creating one more answers 409 with code `habit_limit`."
+- **rationale:R56 (why):** "the home screen returns every active habit in one unpaginated response, so the count is capped."
+- **rationale:R56 (trade-off):** "heavy users must archive habits to add more."
+
+The owner (fixture-owner) approved this note, and it is current for the present wording of R56. Archived and deleted habits don't count toward the 50, which is why archiving frees up room.
+
+I changed nothing.

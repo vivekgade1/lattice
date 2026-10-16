@@ -1,0 +1,40 @@
+{
+ "rule": "R26",
+ "status": "RAN",
+ "reason": null,
+ "exit": 0,
+ "cost_usd": 0.0198,
+ "stopped": null,
+ "authoritative_absent": true,
+ "others_unchanged": true,
+ "entry": {
+  "rule": "R26",
+  "anchor": "6564cd63737b11c2ddae0785d77ef11746b8dc295e43e29960b706e080aff4bf",
+  "why": "Account deletion is meant as a true erasure: the user and everything tied to them are removed with no tombstones, so no personal data or credentials linger. Invalidating the old token and login confirms the account is really gone and cannot be used again.",
+  "tradeoff": "Deletion is irreversible, with no recovery or audit trail. It requires cascading removal across many tables, and the user's data cannot be restored if deleted by mistake.",
+  "owner": null,
+  "status": "proposed",
+  "author": "llm:sonnet",
+  "approved_by": null,
+  "approved_sha": null,
+  "basis": [
+   {
+    "target": "rule:R22",
+    "quote": "one whose user no longer exists, answers 401 with code `invalid_token`"
+   },
+   {
+    "target": "rule:R26",
+    "quote": "permanently deletes the user with their notification prefs, devices, refresh tokens, habits, habit targets, check-ins and nudges (no tombstones)"
+   }
+  ],
+  "refs": [],
+  "rejected_basis": [],
+  "dropped": []
+ },
+ "stderr": "",
+ "gated_ok": true,
+ "basis": 2,
+ "rejected_basis": 0,
+ "valid_basis": true,
+ "basis_empty": false
+}

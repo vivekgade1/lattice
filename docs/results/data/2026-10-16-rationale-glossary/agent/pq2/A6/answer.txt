@@ -1,0 +1,9 @@
+RATIONALE-PROPOSED-ONLY
+
+The spec doesn't record an owner-approved reason for deleting an account as a hard delete. Only an unapproved proposal exists for it.
+
+- **What the spec says (R26):** `DELETE /v1/me` "answers 204 and permanently deletes the user with their notification prefs, devices, refresh tokens, habits, habit targets, check-ins and nudges (no tombstones); afterwards the user's old access token answers 401 `invalid_token` and their login answers 401 `invalid_credentials`." So the spec says what happens (permanent deletion, no tombstones), not why.
+- **Rationale status:** R26 is `proposed_only`. A proposed rationale exists, but the tool never shows proposal text and it isn't the owner's approved reason. There is no `rationale:R26` note I can quote, so I won't offer a reason as the owner's.
+- **Glossary:** it has no approved term for "hard delete". Its only approved terms are `active-window` and `past-period`.
+
+The owner can approve or reject the pending proposal for R26 in Lattice Studio. I haven't changed anything.

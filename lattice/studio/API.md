@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.22)
+# Lattice Studio API contract (v1.23)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--allow-apply] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -1137,3 +1137,30 @@ Errors start with their code: `inventory_missing`, `bad_inventory`, `bad_workflo
 
 ### The CLI
 `python -m lattice.spec implementation --spec MOD:SPEC [--trace T] --inventory DIR [--app-root DIR] [--json] [--rule R] [--status S]` prints the report (`lattice.implementation-report/1`: per rule `implemented_verified | implemented_unverified | required_not_implemented | no_element`, the routes, flows and machines no rule requires, the exclusions with their reason); exit 0 report produced, 2 not. `python -m lattice.spec ask ... --inventory DIR [--app-root DIR]` is the ask above. Without a trace the requirements are the spec's cells and scenarios.
+
+## v1.23 additions (the owner's rationale notes and business glossary: why a rule exists, what its words mean)
+
+**No new route and no UI change; the mock is unchanged.** Everything below applies only when one of four optional, owner-held JSON files exists beside `spec.trace.json`, named from the trace's `source` stem (`REQUIREMENTS.md` gives `REQUIREMENTS`): `<stem>.rationale.json` and `<stem>.glossary.json` (approved, authoritative) and `<stem>.rationale.proposed.json` and `<stem>.glossary.proposed.json` (proposals). With all four absent every response, prompt and tool list is byte-identical to v1.22. They are not inside the trace because `Trace` keeps only its own fields, so a key there would be lost on the next draft or accept.
+
+### The files
+`lattice.rationale/1`: `{"schema", "source", "notes": [{rule, anchor, why, tradeoff, owner, status, author, approved_by, approved_sha, basis[], refs[]}]}`. `anchor` is the sha256 of the rule's whitespace-normalised text; `approved_sha` is the sha256 of `{why, tradeoff, owner}` at approval. A note resolves against the current rules: `edited` (its `approved_sha` no longer matches), `current` (the rule with its id has its anchor), `moved` (exactly one rule has it), `ambiguous` (two or more) or `stale` (none). Only `current` and `moved` count as approved, in coverage, in the chat and in the tools. `lattice.glossary/1`: `{"schema", "source", "terms": [{term, aliases[], definition, owner, status, author, approved_by, approved_sha, basis[]}], "ignore": []}`. The authoritative files hold only `approved` entries with an owner, an approver and a sha; the proposals files hold `proposed` or `rejected` ones, with `owner` null when `author` is `llm:<model>`. An invalid file answers `bad_rationale: <reason>` or `bad_glossary: <reason>`: 422 on `POST /api/ask`, and under `rationale.error` / `glossary.error` in the model. It is never ignored silently.
+
+### GET /api/model: three additive keys
+- `rationale`: `{"file": "<name>|null", "metrics": {RC, RC_all, RN, RP, proposals}, "notes": [{rule, state, applies_to, author, why?, tradeoff?, owner?, approved_by?}]}`; text only for a `current` or `moved` note, and no proposal text. `RC` is the share of rules (context rules excluded) with an approved note, `{n, d, pct}`.
+- `glossary`: `{"file", "metrics": {GU, GT, GR, GC, GA, GP, GX, G003}, "terms": [{term, slug, aliases, definition, owner, approved_by}], "findings": [...]}` where each finding has a `code`: `G001` undefined term (one per rule and term, with `source` C1-C6, `match` and a `fix`), `G002` an approved term no rule uses, `G003` a note or term that is not current, `G004` a proposal pending. These findings are never part of `views.lint_gaps`, `lint()` or the MCP `spec_lint`.
+- `rules[]` gain `rationale_status`: `approved|proposed_only|stale|ambiguous|edited|none`.
+
+Each key appears only when one of its files exists. `files_hash` (the model cache key) includes the four files only while they exist.
+
+### POST /api/ask: the `rationale` key
+With a rationale or proposals file the answer carries `rationale`, attached by code and never written by the model: at most 5 entries `{rule, status: approved|proposed_only|stale|ambiguous|edited|none, via}`, built from the **valid** citations only (rules cited as `rule:Rn` in citation order, then the rules the trace links to a cited `scenario:`, `invariant:`, `machine:`, `service:` or `profile:` target, by rule number; `via` names that target, null for a direct citation). Only an `approved` entry carries `why`, `tradeoff`, `owner` and `approved_by`; a proposal's or a non-current note's text is never put in an answer. With an approved file the digest ends with `## Rationale` and `## Glossary` sections of `[rationale:<Rn>]` and `[term:<slug>]` elements (current or moved notes and approved terms only); a citation of one is valid only when its quote (8 or more non-space characters) is a normalised substring of the note's why / trade-off or the definition, and it never counts toward the "at least one valid citation" a yes / no / value answer needs.
+
+### MCP tools (read-only, also under `--readonly`; listed after `change_list` and the implementation tools, only when the respective file exists when the tools are built)
+- `rationale_get {rule?, state?, limit? <= 200}`: the notes with their state, the coverage metrics and the proposals as counts (never their text).
+- `glossary_get {term?, lint?: bool, limit? <= 200}`: the approved terms with metrics, or with `lint` the G001-G004 findings, or one `term`.
+- `rule_get` gains `rationale` (`state`, and `why` / `tradeoff` / `owner` / `approved_by` when approved) and `terms` (`[{term, slug, definition}]`).
+
+Errors start with their code: `bad_rationale`, `bad_glossary`, `no_spec`, `unknown_rule`, `unknown_term`, `bad_limit`, `bad_state`. The MCP `instructions` text is unchanged. The ask, explain and change chat sessions allow the tools whose files exist and add one rule to their system prompt (an approved reason is cited, a missing one is said to be missing, never offered as the owner's).
+
+### Writing, and who may
+Nothing in Studio, the MCP server, a chat session or a rebuild writes, approves or rejects either approved file. The owner does, in a terminal: `python -m lattice.spec rationale approve|add` and `glossary approve|add` refuse (exit 2, `approve_needs_terminal`) when stdin or stdout is not a terminal or `CLAUDECODE` is set, write exactly one file atomically, and bind the approval to the exact text with `approved_sha`. `mcp.guard` denies writes to the approved files and a rebuild protects and restores them while they exist (the proposals files are not protected); this is a speed bump against an agent's slip, not a security boundary. `python -m lattice.spec rationale draft` and `glossary draft` write proposals only, to `--out`, which must not be the approved file. The CLI also reads them: `ask` and `implementation` take `--rationale PATH` and `--glossary PATH` (default: beside `--trace`); the implementation report gains, only with such a file, `terms` and `rationale` on each rule and a top-level `glossary`.

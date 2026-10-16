@@ -551,3 +551,24 @@ answers; (6) context rules stay out of the coverage denominator; (7) USD 7.50 mo
 only, NOT RUN on a usage limit, agent exercise gated at 11/13. Clarification: the seeded lint set's predicted two
 misses and six false positives are kept as registered; they are reported, never tuned away. A model-drafted
 rationale is a proposal with `owner` null; only the owner's CLI approval makes it authoritative.
+
+## Amendment 2 (freeze hashes, appended by the build node before the PQ runs)
+The real-model runner `dogfood/rationale_agent.py` writes `freeze.sha256` after its scorer cases (46 synthetic cases, all
+as expected) and refuses to start on a mismatch. Frozen at 2026-10-16, before any PQ session (sha256, path):
+
+```
+8e8710024a4311925f7b17da40a0e3c29c3820384da5015e275f5de9a32fd2e7  dogfood/rationale_agent.py
+b05d8fcc8c91c348af527606143404fcc7dbce8d2aaea4bbeebad01411b8315a  dogfood/rationale_agent_scorer.py
+97f89a25a7a6406be4a26d245849ffe77610935695fdc042f3a4a09493cc1d3d  dogfood/rationale_agent_cases.json
+a45678bc422fcdf43cd1b8730f54a4057a85304890f138b8251ee1235530ba2a  dogfood/rationale_agent_world.json
+4928e9a11fe81821517dee76a7e913ceaad15f1297b6cb4de38b9cc7f05deb2c  dogfood/rationale_probes.py
+ca65bcb4a10ca1e020523c4a8fd7f4fbc76f5b5af5afa5f11f3c22411301c728  dogfood/implementation_agent.py
+3be9520c6d94fe70816f11c92357be42f73f8bfc86948d51a056d3a1a20c4e7d  dogfood/implementation_agent_scorer.py
+92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08  dogfood/contracts/agent_scorer.py
+2251501bd34c508b1ff046661592b01356ec2eb725c6a106061f05c8ad9e0dd8  prompt
+f9d5e88a786cb89edd846f2f404ddf927c9a6416d40dbfc343e3aee818521c88  claude --version: 2.1.299 (Claude Code)
+```
+Two build-time notes, neither changes a gate: PQ1 and PQ3 call the CLI client through a subclass that adds the registered
+caps (`--max-budget-usd`, `--max-turns`), because `ClaudeCliClient` has no flag for them; PQ3 calls `lattice.spec.ask.main`
+in process (the code behind `python -m lattice.spec ask`) with that client.
+

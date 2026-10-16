@@ -1,0 +1,36 @@
+{
+ "id": "PW",
+ "observed": {
+  "changed": [],
+  "checks": {
+   "main_checkout_unchanged": true,
+   "owner_streak_unchanged": true,
+   "worlds_unchanged": true
+  },
+  "main_after": {
+   "files_sha": "b1aa99bfb2a270395aa8cb3c294a6b29aaf04e2a769759481454e9a8d771ab3d",
+   "n_files": 128149,
+   "status": "?? .DS_Store\n?? app.db\n?? db.sqlite\n?? docs/.DS_Store\n?? docs/HANDOFF-2026-10-12.md\n?? \"docs/LLM-Native Coding Language Feasibility v1.md\"\n?? reports/\n?? research_notes/\n"
+  },
+  "main_before": {
+   "files_sha": "b1aa99bfb2a270395aa8cb3c294a6b29aaf04e2a769759481454e9a8d771ab3d",
+   "n_files": 128149,
+   "status": "?? .DS_Store\n?? app.db\n?? db.sqlite\n?? docs/.DS_Store\n?? docs/HANDOFF-2026-10-12.md\n?? \"docs/LLM-Native Coding Language Feasibility v1.md\"\n?? reports/\n?? research_notes/\n"
+  },
+  "owner_after": {
+   "files_sha": "e9f5d8b363ef3954b76f59201b7f3f083fea9baa18a7b6dd5fb0fa32ead8c952",
+   "n_files": 147,
+   "status": " M studio.toml\n"
+  },
+  "owner_before": {
+   "files_sha": "e9f5d8b363ef3954b76f59201b7f3f083fea9baa18a7b6dd5fb0fa32ead8c952",
+   "n_files": 147,
+   "status": " M studio.toml\n"
+  },
+  "worlds": 15
+ },
+ "pass": true,
+ "predicted": "0 changed, 0 new; exactly the named path",
+ "probe": "tree sha256 of each scratch world before vs after all read paths; git status + file listing of the owner's Streak and the main checkout before vs after",
+ "ran": true
+}

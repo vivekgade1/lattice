@@ -1,0 +1,32 @@
+{
+ "id": "Q4",
+ "question": "What is the active window of a habit?",
+ "status": "RAN",
+ "reason": null,
+ "cost_usd": 0.07367,
+ "kind": "value",
+ "citations": [
+  "rule:R97"
+ ],
+ "rationale": [
+  {
+   "rule": "R97",
+   "status": "none",
+   "via": null
+  }
+ ],
+ "expected_rationale": [
+  {
+   "rule": "R97",
+   "status": "none",
+   "via": null
+  }
+ ],
+ "key_equals_function": true,
+ "leaked": false,
+ "world_unchanged": true,
+ "cited_referent": false,
+ "answer": "The active window runs from as = max(period_start, start_date) to ae = min(period_end, end_date) (ae = period_end when end_date is null); A = ae - as + 1 is its number of days.",
+ "explanation": "Rule R97 and the owner's glossary term both define the active window within the current period. It is used to pro-rate the target and count check-ins.",
+ "gated_ok": true
+}

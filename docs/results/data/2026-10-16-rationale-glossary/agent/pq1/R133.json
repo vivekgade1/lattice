@@ -1,0 +1,40 @@
+{
+ "rule": "R133",
+ "status": "RAN",
+ "reason": null,
+ "exit": 0,
+ "cost_usd": 0.0225,
+ "stopped": null,
+ "authoritative_absent": true,
+ "others_unchanged": true,
+ "entry": {
+  "rule": "R133",
+  "anchor": "7abe06e9102281c3ce87274d67b4df6079548e55beaa709109cbc63976d37509",
+  "why": "Caps push volume so a user with many habits behind or unreachable isn't flooded with notifications in one day, which would annoy them and may lead them to disable push or uninstall. Excess nudges are still kept in the in-app list.",
+  "tradeoff": "Some habits that need attention may get no push on a busy day, and later habits in id order lose out to earlier ones; the user has to open the app to see them.",
+  "owner": null,
+  "status": "proposed",
+  "author": "llm:sonnet",
+  "approved_by": null,
+  "approved_sha": null,
+  "basis": [
+   {
+    "target": "rule:R135",
+    "quote": "a user at most 3 pushes per local day; every nudge, pushed or not, stays in the in-app list"
+   },
+   {
+    "target": "rule:R127",
+    "quote": "in habit id order"
+   }
+  ],
+  "refs": [],
+  "rejected_basis": [],
+  "dropped": []
+ },
+ "stderr": "",
+ "gated_ok": true,
+ "basis": 2,
+ "rejected_basis": 0,
+ "valid_basis": true,
+ "basis_empty": false
+}

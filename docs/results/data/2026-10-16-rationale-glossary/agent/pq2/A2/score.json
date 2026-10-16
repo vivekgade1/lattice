@@ -1,0 +1,32 @@
+{
+ "items": {
+  "E1": true,
+  "E2": true,
+  "E3": true,
+  "E4": null,
+  "E5": null,
+  "E6": true
+ },
+ "applicable": [
+  "E1",
+  "E2",
+  "E3",
+  "E6"
+ ],
+ "pass": true,
+ "labels": [
+  "RATIONALE-APPROVED"
+ ],
+ "citations": [
+  {
+   "kind": "rationale",
+   "id": "R56",
+   "quote": "the home screen returns every active habit in one unpaginated response, so the count is capped."
+  },
+  {
+   "kind": "rationale",
+   "id": "R56",
+   "quote": "heavy users must archive habits to add more."
+  }
+ ]
+}

@@ -1,0 +1,720 @@
+{
+ "b0_pairs": [],
+ "id": "PS",
+ "observed": {
+  "b0_findings": 0,
+  "fn": 3,
+  "fp": 6,
+  "precision": 0.8929,
+  "recall": 0.9434,
+  "tp": 50
+ },
+ "output": {
+  "B0": [],
+  "SN1": [
+   [
+    "R149",
+    "try again later"
+   ]
+  ],
+  "SN2": [],
+  "SN3": [
+   [
+    "R134",
+    "failed"
+   ],
+   [
+    "R149",
+    "failed"
+   ],
+   [
+    "R42",
+    "failed"
+   ]
+  ],
+  "SN4": [
+   [
+    "R122",
+    "own"
+   ],
+   [
+    "R149",
+    "own habit"
+   ],
+   [
+    "R27",
+    "own habit"
+   ],
+   [
+    "R93",
+    "own"
+   ]
+  ],
+  "SN5": [],
+  "SN6": [],
+  "SN7": [],
+  "SN8": [],
+  "SP1": [
+   [
+    "R149",
+    "grace day"
+   ]
+  ],
+  "SP2": [
+   [
+    "R149",
+    "streak freeze"
+   ]
+  ],
+  "SP3": [
+   [
+    "R149",
+    "paused"
+   ]
+  ],
+  "SP4": [
+   [
+    "R149",
+    "focus habit"
+   ],
+   [
+    "R150",
+    "focus habit"
+   ]
+  ],
+  "SP5": [],
+  "SP6": [],
+  "SP7": [
+   [
+    "R149",
+    "category"
+   ]
+  ],
+  "SP8": [
+   [
+    "R149",
+    "streak length"
+   ]
+  ],
+  "SR1": [
+   [
+    "R132",
+    "quiet hour"
+   ],
+   [
+    "R42",
+    "quiet hour"
+   ]
+  ],
+  "SR2": [
+   [
+    "R106",
+    "active window"
+   ],
+   [
+    "R146",
+    "active window"
+   ],
+   [
+    "R97",
+    "active window"
+   ]
+  ],
+  "SR3": [
+   [
+    "R126",
+    "nudger"
+   ]
+  ],
+  "SR4": [
+   [
+    "R146",
+    "habit target"
+   ],
+   [
+    "R26",
+    "habit target"
+   ],
+   [
+    "R40",
+    "habit target"
+   ],
+   [
+    "R57",
+    "habit target"
+   ],
+   [
+    "R65",
+    "habit target"
+   ],
+   [
+    "R67",
+    "habit target"
+   ]
+  ],
+  "SR5": [
+   [
+    "R106",
+    "unreachable"
+   ],
+   [
+    "R108",
+    "unreachable"
+   ],
+   [
+    "R111",
+    "unreachable"
+   ],
+   [
+    "R118",
+    "unreachable"
+   ],
+   [
+    "R42",
+    "unreachable"
+   ]
+  ],
+  "SR6": [
+   [
+    "R144",
+    "past period"
+   ],
+   [
+    "R145",
+    "past period"
+   ],
+   [
+    "R146",
+    "past period"
+   ],
+   [
+    "R148",
+    "past period"
+   ]
+  ],
+  "SR7": [
+   [
+    "R100",
+    "today"
+   ],
+   [
+    "R108",
+    "today"
+   ],
+   [
+    "R109",
+    "today"
+   ],
+   [
+    "R121",
+    "today"
+   ],
+   [
+    "R122",
+    "today"
+   ],
+   [
+    "R126",
+    "today"
+   ],
+   [
+    "R127",
+    "today"
+   ],
+   [
+    "R137",
+    "today"
+   ],
+   [
+    "R145",
+    "today"
+   ],
+   [
+    "R148",
+    "today"
+   ],
+   [
+    "R45",
+    "today"
+   ],
+   [
+    "R47",
+    "today"
+   ],
+   [
+    "R50",
+    "today"
+   ],
+   [
+    "R65",
+    "today"
+   ],
+   [
+    "R67",
+    "today"
+   ],
+   [
+    "R73",
+    "today"
+   ],
+   [
+    "R75",
+    "today"
+   ],
+   [
+    "R96",
+    "today"
+   ]
+  ],
+  "SR8": [
+   [
+    "R134",
+    "failed"
+   ],
+   [
+    "R42",
+    "failed"
+   ]
+  ]
+ },
+ "output_sha256": "3f50c531559cf6fe21eeccf155440fee675d8caca117e758e5f9fda09c42f516",
+ "pass": true,
+ "per_case": {
+  "B0": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 0,
+   "tp": [],
+   "truth": 0
+  },
+  "SN1": {
+   "fn": [],
+   "fp": [
+    [
+     "R149",
+     "try again later"
+    ]
+   ],
+   "n_findings": 1,
+   "tp": [],
+   "truth": 0
+  },
+  "SN2": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 0,
+   "tp": [],
+   "truth": 0
+  },
+  "SN3": {
+   "fn": [],
+   "fp": [
+    [
+     "R149",
+     "failed"
+    ]
+   ],
+   "n_findings": 3,
+   "tp": [
+    [
+     "R134",
+     "failed"
+    ],
+    [
+     "R42",
+     "failed"
+    ]
+   ],
+   "truth": 2
+  },
+  "SN4": {
+   "fn": [],
+   "fp": [
+    [
+     "R122",
+     "own"
+    ],
+    [
+     "R149",
+     "own habit"
+    ],
+    [
+     "R27",
+     "own habit"
+    ],
+    [
+     "R93",
+     "own"
+    ]
+   ],
+   "n_findings": 4,
+   "tp": [],
+   "truth": 0
+  },
+  "SN5": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 0,
+   "tp": [],
+   "truth": 0
+  },
+  "SN6": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 0,
+   "tp": [],
+   "truth": 0
+  },
+  "SN7": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 0,
+   "tp": [],
+   "truth": 0
+  },
+  "SN8": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 0,
+   "tp": [],
+   "truth": 0
+  },
+  "SP1": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 1,
+   "tp": [
+    [
+     "R149",
+     "grace day"
+    ]
+   ],
+   "truth": 1
+  },
+  "SP2": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 1,
+   "tp": [
+    [
+     "R149",
+     "streak freeze"
+    ]
+   ],
+   "truth": 1
+  },
+  "SP3": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 1,
+   "tp": [
+    [
+     "R149",
+     "paused"
+    ]
+   ],
+   "truth": 1
+  },
+  "SP4": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 2,
+   "tp": [
+    [
+     "R149",
+     "focus habit"
+    ],
+    [
+     "R150",
+     "focus habit"
+    ]
+   ],
+   "truth": 2
+  },
+  "SP5": {
+   "fn": [
+    [
+     "R149",
+     "vacation pause"
+    ]
+   ],
+   "fp": [],
+   "n_findings": 0,
+   "tp": [],
+   "truth": 1
+  },
+  "SP6": {
+   "fn": [
+    [
+     "R149",
+     "snoozed"
+    ]
+   ],
+   "fp": [],
+   "n_findings": 0,
+   "tp": [],
+   "truth": 1
+  },
+  "SP7": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 1,
+   "tp": [
+    [
+     "R149",
+     "category"
+    ]
+   ],
+   "truth": 1
+  },
+  "SP8": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 1,
+   "tp": [
+    [
+     "R149",
+     "streak length"
+    ]
+   ],
+   "truth": 1
+  },
+  "SR1": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 2,
+   "tp": [
+    [
+     "R132",
+     "quiet hour"
+    ],
+    [
+     "R42",
+     "quiet hour"
+    ]
+   ],
+   "truth": 2
+  },
+  "SR2": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 3,
+   "tp": [
+    [
+     "R106",
+     "active window"
+    ],
+    [
+     "R146",
+     "active window"
+    ],
+    [
+     "R97",
+     "active window"
+    ]
+   ],
+   "truth": 3
+  },
+  "SR3": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 1,
+   "tp": [
+    [
+     "R126",
+     "nudger"
+    ]
+   ],
+   "truth": 1
+  },
+  "SR4": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 6,
+   "tp": [
+    [
+     "R146",
+     "habit target"
+    ],
+    [
+     "R26",
+     "habit target"
+    ],
+    [
+     "R40",
+     "habit target"
+    ],
+    [
+     "R57",
+     "habit target"
+    ],
+    [
+     "R65",
+     "habit target"
+    ],
+    [
+     "R67",
+     "habit target"
+    ]
+   ],
+   "truth": 6
+  },
+  "SR5": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 5,
+   "tp": [
+    [
+     "R106",
+     "unreachable"
+    ],
+    [
+     "R108",
+     "unreachable"
+    ],
+    [
+     "R111",
+     "unreachable"
+    ],
+    [
+     "R118",
+     "unreachable"
+    ],
+    [
+     "R42",
+     "unreachable"
+    ]
+   ],
+   "truth": 5
+  },
+  "SR6": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 4,
+   "tp": [
+    [
+     "R144",
+     "past period"
+    ],
+    [
+     "R145",
+     "past period"
+    ],
+    [
+     "R146",
+     "past period"
+    ],
+    [
+     "R148",
+     "past period"
+    ]
+   ],
+   "truth": 4
+  },
+  "SR7": {
+   "fn": [
+    [
+     "R114",
+     "today"
+    ]
+   ],
+   "fp": [],
+   "n_findings": 18,
+   "tp": [
+    [
+     "R100",
+     "today"
+    ],
+    [
+     "R108",
+     "today"
+    ],
+    [
+     "R109",
+     "today"
+    ],
+    [
+     "R121",
+     "today"
+    ],
+    [
+     "R122",
+     "today"
+    ],
+    [
+     "R126",
+     "today"
+    ],
+    [
+     "R127",
+     "today"
+    ],
+    [
+     "R137",
+     "today"
+    ],
+    [
+     "R145",
+     "today"
+    ],
+    [
+     "R148",
+     "today"
+    ],
+    [
+     "R45",
+     "today"
+    ],
+    [
+     "R47",
+     "today"
+    ],
+    [
+     "R50",
+     "today"
+    ],
+    [
+     "R65",
+     "today"
+    ],
+    [
+     "R67",
+     "today"
+    ],
+    [
+     "R73",
+     "today"
+    ],
+    [
+     "R75",
+     "today"
+    ],
+    [
+     "R96",
+     "today"
+    ]
+   ],
+   "truth": 19
+  },
+  "SR8": {
+   "fn": [],
+   "fp": [],
+   "n_findings": 2,
+   "tp": [
+    [
+     "R134",
+     "failed"
+    ],
+    [
+     "R42",
+     "failed"
+    ]
+   ],
+   "truth": 2
+  }
+ },
+ "predicted": "TP 51, FP 6, FN 2; precision 0.895, recall 0.962; B0 0-2 findings (pass: precision>=0.85, recall>=0.90, B0<=2)",
+ "probe": "glossary lint precision and recall on the hash-frozen seeded set (25 cases)",
+ "ran": true,
+ "seconds": 0.9
+}

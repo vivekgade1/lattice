@@ -1,0 +1,40 @@
+{
+ "rule": "R56",
+ "status": "RAN",
+ "reason": null,
+ "exit": 0,
+ "cost_usd": 0.0988,
+ "stopped": null,
+ "authoritative_absent": true,
+ "others_unchanged": true,
+ "entry": {
+  "rule": "R56",
+  "anchor": "ae2b7148b5769b327a03380942cf2f7ef2ff1c4da7172308c0aacea325b35fbc",
+  "why": "A cap on active habits probably keeps per-user data and per-request work bounded, since progress, nudges and check-ins are computed per habit. It may also keep the habit list usable and discourage over-committing. Archived and deleted habits do not count, so users can free capacity by archiving or deleting.",
+  "tradeoff": "Power users with many habits are blocked at 50 and must archive or delete to add more. Restoring an archived habit can also be refused with the same limit. The check adds a count query on every create and restore.",
+  "owner": null,
+  "status": "proposed",
+  "author": "llm:sonnet",
+  "approved_by": null,
+  "approved_sha": null,
+  "basis": [
+   {
+    "target": "rule:R69",
+    "quote": "restoring when the user already has 50 active habits answers 409 `habit_limit`"
+   },
+   {
+    "target": "invariant:at_most_50_active_habits",
+    "quote": "A user has at most 50 non-archived, non-deleted habits."
+   }
+  ],
+  "refs": [],
+  "rejected_basis": [],
+  "dropped": []
+ },
+ "stderr": "",
+ "gated_ok": true,
+ "basis": 2,
+ "rejected_basis": 0,
+ "valid_basis": true,
+ "basis_empty": false
+}

@@ -1,0 +1,18 @@
+{
+ "id": "PBp",
+ "observed": {
+  "lint_cli_identical": true,
+  "lint_identical": true,
+  "new_sections_only_at_end": true,
+  "old_digest_is_prefix": true,
+  "old_elements_unchanged": true,
+  "report_minus_keys_identical": true,
+  "rule_lines_byte_identical": true,
+  "spec_lint_identical": true
+ },
+ "pass": true,
+ "predicted": "lint identical; old digest a prefix; report minus D11 keys identical",
+ "probe": "invariants with W's files present (D13)",
+ "ran": true,
+ "seconds": 0.4
+}

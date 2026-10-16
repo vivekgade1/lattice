@@ -1,0 +1,42 @@
+{
+ "id": "Q1",
+ "question": "Why can't a habit's period be changed after creation?",
+ "status": "RAN",
+ "reason": null,
+ "cost_usd": 0.131368,
+ "kind": "value",
+ "citations": [
+  "rule:R63",
+  "rationale:R63",
+  "rationale:R63"
+ ],
+ "rationale": [
+  {
+   "rule": "R63",
+   "status": "approved",
+   "via": null,
+   "why": "FIXTURE: a habit's period is fixed so that its history and its habit_targets rows never mix weeks, months and years.",
+   "tradeoff": "FIXTURE: a user who wants another period must create a new habit.",
+   "owner": "fixture-owner",
+   "approved_by": "fixture-owner"
+  }
+ ],
+ "expected_rationale": [
+  {
+   "rule": "R63",
+   "status": "approved",
+   "via": null,
+   "why": "FIXTURE: a habit's period is fixed so that its history and its habit_targets rows never mix weeks, months and years.",
+   "tradeoff": "FIXTURE: a user who wants another period must create a new habit.",
+   "owner": "fixture-owner",
+   "approved_by": "fixture-owner"
+  }
+ ],
+ "key_equals_function": true,
+ "leaked": false,
+ "world_unchanged": true,
+ "cited_referent": true,
+ "answer": "A PATCH that contains `period` is refused with 422 validation_failed (field `period`) and nothing changes. The owner's rationale: a habit's period is fixed so its history and habit_targets rows never mix weeks, months and years.",
+ "explanation": "R63 states the rule, and the owner-approved rationale for R63 gives the reason and the trade-off: a user who wants another period must create a new habit.",
+ "gated_ok": true
+}

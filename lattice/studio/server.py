@@ -432,6 +432,15 @@ def files_hash(root: Path) -> str:
         h.update(name.encode() + b"\0")
         h.update(p.read_bytes() if p.is_file() else b"<missing>")
         h.update(b"\0")
+    # Spike G: the owner's rationale / glossary files count only while they exist, so the hash
+    # of a project without them is what it always was
+    from lattice.spec.rationale import notes_paths
+
+    notes = notes_paths(root / TRACE_FILE)
+    for p in notes.existing() if notes is not None else ():
+        h.update(p.name.encode() + b"\0")
+        h.update(p.read_bytes())
+        h.update(b"\0")
     return h.hexdigest()
 
 
@@ -563,6 +572,59 @@ def rules_json(trace: Trace, data: ReviewData) -> list[dict[str, Any]]:
             }
         )
     return out
+
+
+def notes_model(
+    spec: Spec, trace: Trace, root: Path
+) -> tuple[dict[str, Any], dict[str, str] | None]:
+    """Spike G's keys of ``GET /api/model`` (API v1.23): ``rationale {file, metrics, notes}`` and
+    ``glossary {file, metrics, terms, findings}``, each only when one of its two files exists, and
+    ``{rule id: rationale status}`` for ``rules[]`` (None without a valid rationale). An invalid
+    file puts ``{file, error: "bad_rationale: ..."}`` under its key instead (D14). Empty for a
+    project without any such file."""
+    from lattice.spec import glossary as gl
+    from lattice.spec import rationale as rt
+
+    paths = rt.notes_paths(root / TRACE_FILE, source=trace.source)
+    out: dict[str, Any] = {}
+    status: dict[str, str] | None = None
+    if paths is None or not paths.any:
+        return out, None
+    rs = None
+    if paths.has_rationale:
+        try:
+            rs = rt.load_set(trace, paths)
+            assert rs is not None
+            m = rs.metrics()
+            out["rationale"] = {
+                "file": m["file"],
+                "metrics": m,
+                "notes": [rt.note_view(r) for r in rs.resolved],
+            }
+            status = {r.id: rs.status(r.id) for r in trace.rules}
+        except rt.NotesError as e:
+            name = paths.rationale if paths.rationale.is_file() else paths.rationale_proposed
+            out["rationale"] = {"file": name.name, "error": str(e)}
+    if paths.has_glossary:
+        try:
+            gset = gl.load_glossary(paths)
+            res = gl.lint_glossary(
+                gl.analyse(spec, trace),
+                trace,
+                gset,
+                rs,
+                (paths.glossary.name, paths.glossary_proposed.name),
+            )
+            out["glossary"] = {
+                "file": res.metrics["file"],
+                "metrics": res.metrics,
+                "terms": [gl.term_view(t) for t in (gset.defining if gset else [])],
+                "findings": res.findings,
+            }
+        except rt.NotesError as e:
+            name = paths.glossary if paths.glossary.is_file() else paths.glossary_proposed
+            out["glossary"] = {"file": name.name, "error": str(e)}
+    return out, status
 
 
 def element_targets(spec: Spec) -> list[str]:
@@ -1746,6 +1808,12 @@ class Studio:
                 "views": views,
                 "data_model": data_model(snap.spec),
             }
+            extra, rstatus = notes_model(snap.spec, snap.trace, self.root)  # API v1.23
+            if extra:
+                core.update(extra)
+            if rstatus is not None:
+                for r in core["rules"]:
+                    r["rationale_status"] = rstatus.get(r["id"], "none")
             with self.lock:
                 self._cache = cache = (h, git_head(self.root), core, snap, lint_items)
             log(f"model built in {time.perf_counter() - t0:.2f}s")
@@ -1797,6 +1865,18 @@ class Studio:
         except impl.ImplementationError as e:
             raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, str(e)) from None
 
+    def _notes(self, snap: Snapshot) -> Any:
+        """The owner's rationale and glossary beside the trace (API v1.23), re-read on every
+        ask; None when no such file exists; 422 ``bad_rationale`` / ``bad_glossary`` when one is
+        invalid."""
+        from lattice.spec.glossary import discover_notes
+        from lattice.spec.rationale import NotesError
+
+        try:
+            return discover_notes(snap.trace, self.root / TRACE_FILE)
+        except NotesError as e:
+            raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, str(e)) from None
+
     def ask(self, body: Mapping[str, Any]) -> dict[str, Any]:
         question = str(body.get("question") or "").strip()
         if not question:
@@ -1805,6 +1885,8 @@ class Studio:
         snap = self.snapshot()
         verify = bool(body.get("verify")) and self.harness is not None
         inventory = self._inventory()  # API v1.22: None unless studio.toml has [implementation]
+        notes = self._notes(snap)  # API v1.23: None unless a rationale / glossary file exists
+        notes_kw = {"notes": notes} if notes is not None else {}
 
         def run() -> dict[str, Any]:
             if verify:
@@ -1819,6 +1901,7 @@ class Studio:
                         model=self.model,
                         verify=cfg,
                         **({"inventory": inventory} if inventory is not None else {}),
+                        **notes_kw,
                     )
             else:
                 a = ask(
@@ -1829,6 +1912,7 @@ class Studio:
                     generator=self.generator,
                     model=self.model,
                     **({"inventory": inventory} if inventory is not None else {}),
+                    **notes_kw,
                 )
             return a.to_dict()
 

@@ -1,0 +1,575 @@
+{
+  "GM0": {
+    "gated_failed": [],
+    "output_sha256": {
+      "PA": "7661d9f5baa14d31aa1d7e95eef3f27c30bbfc8f5d80f6637c1fc2a720bcfb44",
+      "PAP": "16b508d911e10b6fa16036e76451e2bc48f5c1fe19bbe16d8c2bc77caea0607c",
+      "PB": "87a09271118750f01670d1c000464e8264651b4cf601a8a2e60c0d59bd61f84c",
+      "PBp": null,
+      "PC": "61762aa441a2070de5817142d94af86f88e514a55791bc4c42d586f51edb020e",
+      "PDR": "b0b65e8e876bd24cbc93429f767decab03b9644e17c3234b8bb08cd83d08bb52",
+      "PG": "bf7f3bab23ea030107ee0343cc7892e75ce58bbcab37961dd36408df363317ce",
+      "PI": "aaeb94285fc0baebac78e259a70aae2781590616ff3a2c29c8742c65982ba309",
+      "PL": "d4a211509c6f6831926c4ad93897fc1b62afdd5743c3fb22816ad61c5d053085",
+      "PM": "5296f4fa603756d6a57307d5ba654a018ab3b8a0eb068354ecbd750c314fb5d2",
+      "PR": "d59dda9e7b4a12fca3d2a6053ecee24adad998306cc8bd5f08dbfeb9cb670747",
+      "PS": "3f50c531559cf6fe21eeccf155440fee675d8caca117e758e5f9fda09c42f516",
+      "PV": null
+    },
+    "pass": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PL": null,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": true
+    },
+    "rc": 0,
+    "seconds": 33.4,
+    "stderr_tail": "",
+    "what": "control (no change)"
+  },
+  "GM1": {
+    "caught_by": [
+      "PA fails",
+      "PC fails",
+      "PI fails",
+      "PM fails",
+      "PA output differs"
+    ],
+    "gated": {
+      "PA": false,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": false,
+      "PDR": true,
+      "PG": true,
+      "PI": false,
+      "PM": false,
+      "PR": true,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [
+      "PC",
+      "PI",
+      "PM"
+    ],
+    "predicted_catcher": "PC (RC), PA (R26), PR",
+    "rc": 1,
+    "seconds": 34.0,
+    "what": "proposed notes count as approved (coverage, digest, attachment)"
+  },
+  "GM10": {
+    "caught_by": [
+      "PV fails",
+      "PS output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": false
+    },
+    "killed": true,
+    "other_outputs_differ": [],
+    "predicted_catcher": "PS SN6",
+    "rc": 1,
+    "seconds": 33.2,
+    "what": "aliases ignored"
+  },
+  "GM11": {
+    "caught_by": [
+      "PS output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [],
+    "predicted_catcher": "PS SN5",
+    "rc": 0,
+    "seconds": 33.6,
+    "what": "`ignore` list ignored"
+  },
+  "GM12": {
+    "caught_by": [
+      "PS output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [],
+    "predicted_catcher": "PS SN2",
+    "rc": 0,
+    "seconds": 33.9,
+    "what": "JSON-bracket exclusion off"
+  },
+  "GM13": {
+    "caught_by": [
+      "PS fails",
+      "PS output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": false,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [
+      "PC",
+      "PL",
+      "PM"
+    ],
+    "predicted_catcher": "PS B0 and SN4 (extra pairs), PL",
+    "rc": 1,
+    "seconds": 33.6,
+    "what": "shortest-first matching (overlaps counted)"
+  },
+  "GM14": {
+    "caught_by": [
+      "PA fails",
+      "PA output differs"
+    ],
+    "gated": {
+      "PA": false,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [],
+    "predicted_catcher": "PA (R26, R8)",
+    "rc": 1,
+    "seconds": 33.6,
+    "what": "the answer attachment carries proposal or stale text"
+  },
+  "GM15": {
+    "caught_by": [
+      "PA fails",
+      "PA output differs"
+    ],
+    "gated": {
+      "PA": false,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [],
+    "predicted_catcher": "PA (bad quote; rationale-only `yes`)",
+    "rc": 1,
+    "seconds": 33.9,
+    "what": "`rationale:` citations accepted without the quote check, and counted as grounding"
+  },
+  "GM16": {
+    "caught_by": [
+      "PV fails"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": false
+    },
+    "killed": true,
+    "other_outputs_differ": [],
+    "predicted_catcher": "PV",
+    "rc": 1,
+    "seconds": 31.9,
+    "what": "an invalid file silently ignored"
+  },
+  "GM17": {
+    "caught_by": [
+      "PAP fails"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": false,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [
+      "PAP"
+    ],
+    "predicted_catcher": "PAP",
+    "rc": 1,
+    "seconds": 35.4,
+    "what": "`approve` allowed without a TTY or with `CLAUDECODE` set"
+  },
+  "GM18": {
+    "caught_by": [
+      "PB fails",
+      "PB output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": false,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [],
+    "predicted_catcher": "PB",
+    "rc": 1,
+    "seconds": 35.0,
+    "what": "files_hash changed while the files are absent"
+  },
+  "GM19": {
+    "caught_by": [
+      "PDR fails"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": false,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [
+      "PDR"
+    ],
+    "predicted_catcher": "PDR",
+    "rc": 1,
+    "seconds": 33.9,
+    "what": "the drafter keeps a model-supplied `owner` or `status`"
+  },
+  "GM2": {
+    "caught_by": [
+      "PA fails",
+      "PC fails",
+      "PI fails",
+      "PM fails",
+      "PR fails",
+      "PA output differs",
+      "PR output differs"
+    ],
+    "gated": {
+      "PA": false,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": false,
+      "PDR": true,
+      "PG": true,
+      "PI": false,
+      "PM": false,
+      "PR": false,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [
+      "PC",
+      "PI",
+      "PM"
+    ],
+    "predicted_catcher": "PR K2 and K4 (stale read as current)",
+    "rc": 1,
+    "seconds": 33.8,
+    "what": "a note matched by id only (anchor ignored)"
+  },
+  "GM3": {
+    "caught_by": [
+      "PR fails",
+      "PR output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": false,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [],
+    "predicted_catcher": "PR K1 (5 moved -> stale)",
+    "rc": 1,
+    "seconds": 34.0,
+    "what": "no re-anchoring (an id mismatch makes a note stale)"
+  },
+  "GM4": {
+    "caught_by": [
+      "PR fails",
+      "PR output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": false,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [],
+    "predicted_catcher": "PR K1 (R88 ambiguous -> moved)",
+    "rc": 1,
+    "seconds": 33.9,
+    "what": "duplicate anchors resolve to the first match"
+  },
+  "GM5": {
+    "caught_by": [
+      "PR fails",
+      "PR output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": false,
+      "PS": true,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [],
+    "predicted_catcher": "PR K3",
+    "rc": 1,
+    "seconds": 33.7,
+    "what": "approved_sha not checked"
+  },
+  "GM6": {
+    "caught_by": [],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": true,
+      "PV": true
+    },
+    "killed": false,
+    "other_outputs_differ": [
+      "PC",
+      "PL",
+      "PM"
+    ],
+    "predicted_catcher": "PS SR1 (R132)",
+    "rc": 0,
+    "seconds": 33.6,
+    "what": "enum values matched only in identifier form (no `quiet hours`)"
+  },
+  "GM7": {
+    "caught_by": [
+      "PS fails",
+      "PS output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": false,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [
+      "PC",
+      "PI",
+      "PL",
+      "PM"
+    ],
+    "predicted_catcher": "PS SR2, SR6, SR7, SP4 (R150)",
+    "rc": 1,
+    "seconds": 33.6,
+    "what": "C3/C6 phrases not propagated across rules"
+  },
+  "GM8": {
+    "caught_by": [
+      "PS fails",
+      "PS output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": true,
+      "PI": true,
+      "PM": true,
+      "PR": true,
+      "PS": false,
+      "PV": true
+    },
+    "killed": true,
+    "other_outputs_differ": [
+      "PC",
+      "PL",
+      "PM"
+    ],
+    "predicted_catcher": "PS SR3, SR4, SR5, SR8",
+    "rc": 1,
+    "seconds": 33.9,
+    "what": "code (backtick) tokens not scanned for C1/C2/C5"
+  },
+  "GM9": {
+    "caught_by": [
+      "PG fails",
+      "PM fails",
+      "PS fails",
+      "PV fails",
+      "PS output differs"
+    ],
+    "gated": {
+      "PA": true,
+      "PAP": true,
+      "PB": true,
+      "PBp": true,
+      "PC": true,
+      "PDR": true,
+      "PG": false,
+      "PI": true,
+      "PM": false,
+      "PR": true,
+      "PS": false,
+      "PV": false
+    },
+    "killed": true,
+    "other_outputs_differ": [
+      "PC",
+      "PG",
+      "PI",
+      "PL",
+      "PM"
+    ],
+    "predicted_catcher": "PS SR4 (R26), SR6 (R146), SR7 (R122, R127), SN6, SN7",
+    "rc": 1,
+    "seconds": 32.7,
+    "what": "no plural or possessive normalisation"
+  },
+  "summary": {
+    "killed": 18,
+    "of": 19
+  }
+}
