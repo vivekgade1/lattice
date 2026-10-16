@@ -146,6 +146,10 @@ def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
         from lattice.importer.review import main as review_main
 
         return review_main(argv[1:])
+    if argv[:1] == ["workflows"]:  # a repo literally named `workflows` needs `./workflows`
+        from lattice.importer.workflow_run import main as workflows_main
+
+        return workflows_main(argv[1:])
     p = parser()
     args = p.parse_args(argv)
     logging.getLogger("httpx2").setLevel(logging.WARNING)

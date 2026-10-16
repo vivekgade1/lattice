@@ -1,0 +1,60 @@
+........................................................................ [  9%]
+........................................................................ [ 18%]
+........................................................................ [ 27%]
+........................................................................ [ 37%]
+........................................................................ [ 46%]
+........................................................................ [ 55%]
+........................................................................ [ 65%]
+........................................................................ [ 74%]
+........................................................................ [ 83%]
+........................................................................ [ 92%]
+.......................................................                  [100%]
+=============================== warnings summary ===============================
+bench/import_repos/multivendor/app/core/config.py:5
+  /Users/vivekgade/Documents/lattice-workflow/bench/import_repos/multivendor/app/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+  /Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/marshmallow/schema.py:129: RemovedInMarshmallow4Warning: The `ordered` `class Meta` option is deprecated. Field order is already preserved by default. Set `Schema.dict_class` to OrderedDict to maintain the previous behavior.
+    klass.opts = klass.OPTIONS_CLASS(meta, ordered=ordered)
+
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+  /Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/marshmallow_sqlalchemy/load_instance_mixin.py:44: RemovedInMarshmallow4Warning: The `ordered` `class Meta` option is deprecated. Field order is already preserved by default. Set `Schema.dict_class` to OrderedDict to maintain the previous behavior.
+    super().__init__(meta, *args, **kwargs)
+
+tests/importer/flask/test_flask_runtime.py: 14 warnings
+  /Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/sqlalchemy/sql/schema.py:3627: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+
+tests/importer/flask/test_flask_runtime.py::test_runtime_logs_in_every_role[flasky]
+tests/importer/flask/test_flask_runtime.py::test_runtime_logs_in_every_role[flasky]
+tests/importer/flask/test_flask_runtime.py::test_runtime_logs_in_every_role[flasky]
+  /Users/vivekgade/Documents/lattice-workflow/bench/import_repos/flasky/app/models.py:269: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    return User.query.get(data['id'])
+
+tests/importer/test_emit_spec.py: 9 warnings
+tests/importer/test_mine.py: 32 warnings
+tests/importer/test_review_cli.py: 18 warnings
+  /Users/vivekgade/Documents/lattice-workflow/bench/import_repos/multivendor/app/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/importer/test_emit_spec.py: 12 warnings
+tests/importer/test_mine.py: 24 warnings
+tests/importer/test_review_cli.py: 24 warnings
+  /Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/pydantic/_internal/_fields.py:727: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return fac()
+
+tests/importer/test_mine.py::test_multivendor_recall_and_precision
+  /Users/vivekgade/Documents/lattice-workflow/bench/edit_slice/repos/multivendor.py:91: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    exp = datetime.utcnow() + timedelta(days=36500)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+775 passed, 148 warnings in 141.12s (0:02:21)

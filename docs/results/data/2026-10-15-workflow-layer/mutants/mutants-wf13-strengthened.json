@@ -1,0 +1,48 @@
+{
+  "rows": [
+    {
+      "id": "control",
+      "failing": [],
+      "rc": 0,
+      "probes": 17,
+      "passes": true,
+      "containers_before": [],
+      "containers_after": []
+    },
+    {
+      "id": "WF13",
+      "mutant": "the container is not removed on exit (an error included), and dbserver's own atexit guard is off",
+      "expected": "PT",
+      "caught_by": [
+        "PT"
+      ],
+      "killed": true,
+      "expected_hit": true,
+      "probes_ran": 17,
+      "evidence": {
+        "PT": {
+          "after_each_run": [
+            1,
+            2
+          ],
+          "names": [
+            "lattice-wf-mysql-33972c17",
+            "lattice-wf-mysql-f009430f"
+          ],
+          "now": [
+            "lattice-wf-mysql-33972c17",
+            "lattice-wf-mysql-f009430f"
+          ]
+        }
+      },
+      "unit_tail": null,
+      "stderr": "",
+      "containers_left": [
+        "lattice-wf-mysql-f009430f",
+        "lattice-wf-mysql-33972c17"
+      ]
+    }
+  ],
+  "killed": 1,
+  "total": 1
+}
