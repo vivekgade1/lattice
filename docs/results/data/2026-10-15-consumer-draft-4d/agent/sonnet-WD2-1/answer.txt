@@ -1,0 +1,39 @@
+scheduler changed what `POST /applications/{}/jobs/{}/runs` returns on success: it now returns **200**, where it used to return **201**. ci-bot still expects 201, so its import is broken. I changed nothing.
+
+## What broke
+
+- **Question lq1** is open. scheduler's accepted contract (commit `c73bea6e`, spec_hash `24c5fd8f4800`) contradicts ci-bot's pin (spec_hash `9bcae0e24da9`).
+- **Endpoint:** `POST /applications/{}/jobs/{}/runs`
+  - **Before (pinned):** statuses `[201, 401, 404, 409]`
+  - **Now:** statuses `[200, 401, 404, 409]`
+- **Findings:** BROKEN `status_not_observed 201`, and CHANGED* `status_added 200`. The asterisk means ci-bot relies on that endpoint.
+- **Not affected:** only import #4 is touched, and the 401/404/409 statuses are unchanged. `response_fields` `[id, status]` are still fine.
+
+## What to change in ci-bot, in this order
+
+1. **Code.** Find where ci-bot starts a run via that endpoint and make it treat **200** as success instead of 201. Check for any `== 201` or `status_code === 201` assertions, retry or error handling that branches on 201, and tests or mocks for the `start_run` scenario that fake a 201.
+   - I couldn't locate the call sites. `code_links` fails because ci-bot has no `spec.py` yet, so you'll need to grep for them.
+   - Accepting both 200 and 201 in code is a safe transition if you want to deploy before scheduler does. The import table should declare only what you actually expect.
+
+2. **Import table.** In ci-bot's `lattice.imports.toml`, change import #4 (scheduler, `POST /applications/{}/jobs/{}/runs`, auth `token`, as_user `eve`):
+   ```
+   status = [201]   ->   status = [200]
+   ```
+   Leave `auth`, `as_user`, `request_fields = []` and `response_fields = ["id", "status"]` as they are.
+
+3. **Spec rule R3.** Reword it, in `REQUIREMENTS.md` and then the spec through the change flow or Studio:
+   - **Old:** "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 201 with id and status."
+   - **New:** "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 200 with id and status."
+   - R3's trace is ok and it is covered by scenario `start_run`. If that scenario's expected status is 201, update it to 200 too.
+
+4. **Re-pin and verify**, once the code and import are edited:
+   - `lattice contracts pin ci-bot`
+   - `lattice contracts check ci-bot`
+   - `lattice contracts questions resolve ci-bot lq1`
+
+## Caveats
+
+- **Check the change was intended.** I can't tell whether scheduler's 201→200 change was deliberate. If it wasn't, ask its owner to revert it instead of adapting. Reverting would make step 4 unnecessary.
+- **`contract_check` still says `ok`.** It compares against scheduler's checked-out spec, which is still at the old commit `ef17cf88`. Only lq1 shows the break, so don't treat the green check as proof you're fine.
+- **Unrelated gap.** `POST /auth/login` `response_field_unobserved` for `access_token`: scheduler's spec never shows that field. It isn't caused by this change, but you may want to ask scheduler's owner to document it.
+- **ci-bot has no `spec.py` yet.** The `project_list` entry shows `spec: missing`, so the R3 edit means writing or drafting the spec first (`REQUIREMENTS.md`, then `lattice spec draft`). The contract work in steps 1, 2 and 4 doesn't need it.

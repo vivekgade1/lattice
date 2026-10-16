@@ -775,6 +775,7 @@ def test_no_reader_of_a_gate_looks_at_linked_questions() -> None:
     rel = sorted(str(Path(p).relative_to(root)) for p in out)
     assert rel == [
         "contracts/__main__.py",
+        "contracts/draft.py",  # slice 4d (disclosed): reads one question on request, no gate
         "contracts/linked.py",
         "mcp/projects.py",
         "studio/mock_server.py",

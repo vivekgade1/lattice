@@ -12,6 +12,7 @@
     lattice contracts questions list CONSUMER [--status open|resolved|dismissed|all] [--json]
     lattice contracts questions resolve|dismiss CONSUMER ID [--note TEXT] [--json]
     lattice contracts questions init CONSUMER
+    lattice contracts questions draft CONSUMER ID [--json]
 
 ``export`` prints the canonical JSON ``{"export", "spec_ref", "version"}`` (exit 0, or 2 when the
 spec cannot be loaded), plus ``exclude_unmatched`` when the provider excludes routes. The
@@ -40,6 +41,13 @@ the impact could not run; ``--dry-run`` writes nothing. ``questions`` is the con
 side: ``list`` (exit 0, 2 unknown consumer or manifest error), ``resolve`` / ``dismiss`` (0, 1
 refused: not open, bad note, 2 cannot), ``init`` creates the consumer's state directory. See
 :mod:`lattice.contracts.linked`.
+``questions draft`` (slice 4d, consumer-side drafting) prints a text-only, deterministic draft of
+what the consumer's owner could change for one open question: the findings with their pinned
+("before") facts, the ``[[import]]`` tables that rely on them, replacement-only edit suggestions,
+and the consumer's own spec rules that name the endpoint (a text match, never verified
+reliance). It writes nothing, applies nothing and takes no lock (stdout only); exit 0 produced, 1
+refused (not open), 2 cannot (unknown consumer, no state directory, unknown question). See
+:mod:`lattice.contracts.draft`.
 """
 
 from __future__ import annotations
@@ -128,6 +136,12 @@ def _parser() -> argparse.ArgumentParser:
         qc.add_argument("--note", default="", help="a note of at most 2000 characters")
         qc.add_argument("--json", action="store_true")
         common(qc)
+    qd = qsub.add_parser("draft", help="a text-only draft of what to change in the consumer "
+                         "for an open question (writes nothing, applies nothing)")  # fmt: skip
+    qd.add_argument("consumer")
+    qd.add_argument("id", metavar="ID", help="a question id (lq1, lq2, ...)")
+    qd.add_argument("--json", action="store_true")
+    common(qd)
     qi = qsub.add_parser("init", help="create the consumer's state directory and its "
                          "linked_questions/ (idempotent)")  # fmt: skip
     qi.add_argument("consumer")
@@ -316,6 +330,18 @@ def _questions(ns: argparse.Namespace, ws: wsmod.Workspace) -> int:
             print(json.dumps(doc, indent=1))
         else:
             _print_questions(doc)
+        return 0
+    if ns.qcmd == "draft":
+        from lattice.contracts import draft as dr
+
+        rc, doc = dr.draft_for(ws, wp.name, ns.id)
+        if rc != 0:
+            err = doc["error"]
+            return fail(err["code"], err["message"], rc)
+        if as_json:
+            print(json.dumps(doc, indent=1))
+        else:
+            print(doc["text"])
         return 0
     status = linked.RESOLVED if ns.qcmd == "resolve" else linked.DISMISSED
     if loc.state != "present" or loc.state_dir is None:

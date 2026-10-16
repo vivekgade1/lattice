@@ -1,0 +1,1595 @@
+{
+ "id": "Q2",
+ "prediction": "s1 created lq1; s2 existing, 0 files changed; s3 the D2 sha and d2c4 existing, 0 files changed; s4 d3 -> lq2, lq1 open and superseded {by lq2, newer_question}, lq1.json byte-identical; s5 HEAD: nothing created, both superseded {by null, no_contradiction}; s6 d2 -> existing lq1, lq2 superseded by lq1; s7 dismiss lq1 then d2: existing, 0 question files changed, 2 questions; s8 HEAD: none, current null (link rewritten); s9 d2 -> NEW lq3 (same key as dismissed lq1), lq1 stays dismissed, 3 questions; s10 d8 (regression): 0 created, current null, lq2 open",
+ "observed": "10/10 steps; s1=created/lq1 s2=existing/lq1 s4=created/lq2 s5=none s6=existing/lq1 s7=existing/lq1 s8=none s9=created/lq3 s10=none",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "s1": true,
+  "s2": true,
+  "s3": true,
+  "s4": true,
+  "s5": true,
+  "s6": true,
+  "s7": true,
+  "s8": true,
+  "s9": true,
+  "s10": true,
+  "no_status_changed_by_a_notification": true,
+  "nothing_outside_linked_questions": true
+ },
+ "extra": {},
+ "runs": [
+  {
+   "s1": {
+    "action": "created",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json"
+    ],
+    "outside": [],
+    "current": "lq1"
+   },
+   "s2": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3a": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3b": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s4": {
+    "action": "created",
+    "question": "lq2",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json"
+    ],
+    "outside": [],
+    "lq1": {
+     "status": "open",
+     "sup": {
+      "by": "lq2",
+      "reason": "newer_question"
+     },
+     "same_bytes": true
+    },
+    "lq2_sup": null
+   },
+   "s5": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     }
+    }
+   },
+   "s6": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": null
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": "lq1",
+       "reason": "newer_question"
+      }
+     }
+    }
+   },
+   "s7_dismiss": {
+    "rc": 0,
+    "status": "dismissed"
+   },
+   "s7": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": [],
+    "files_equal": true,
+    "n_questions": 2
+   },
+   "s8": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null
+   },
+   "s9": {
+    "action": "created",
+    "question": "lq3",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "same_key": true
+   },
+   "s10": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null,
+    "lq2": "open"
+   },
+   "final_status": {
+    "lq1.json": "dismissed",
+    "lq2.json": "open",
+    "lq3.json": "open"
+   }
+  },
+  {
+   "s1": {
+    "action": "created",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json"
+    ],
+    "outside": [],
+    "current": "lq1"
+   },
+   "s2": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3a": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3b": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s4": {
+    "action": "created",
+    "question": "lq2",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json"
+    ],
+    "outside": [],
+    "lq1": {
+     "status": "open",
+     "sup": {
+      "by": "lq2",
+      "reason": "newer_question"
+     },
+     "same_bytes": true
+    },
+    "lq2_sup": null
+   },
+   "s5": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     }
+    }
+   },
+   "s6": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": null
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": "lq1",
+       "reason": "newer_question"
+      }
+     }
+    }
+   },
+   "s7_dismiss": {
+    "rc": 0,
+    "status": "dismissed"
+   },
+   "s7": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": [],
+    "files_equal": true,
+    "n_questions": 2
+   },
+   "s8": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null
+   },
+   "s9": {
+    "action": "created",
+    "question": "lq3",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "same_key": true
+   },
+   "s10": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null,
+    "lq2": "open"
+   },
+   "final_status": {
+    "lq1.json": "dismissed",
+    "lq2.json": "open",
+    "lq3.json": "open"
+   }
+  },
+  {
+   "s1": {
+    "action": "created",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json"
+    ],
+    "outside": [],
+    "current": "lq1"
+   },
+   "s2": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3a": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3b": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s4": {
+    "action": "created",
+    "question": "lq2",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json"
+    ],
+    "outside": [],
+    "lq1": {
+     "status": "open",
+     "sup": {
+      "by": "lq2",
+      "reason": "newer_question"
+     },
+     "same_bytes": true
+    },
+    "lq2_sup": null
+   },
+   "s5": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     }
+    }
+   },
+   "s6": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": null
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": "lq1",
+       "reason": "newer_question"
+      }
+     }
+    }
+   },
+   "s7_dismiss": {
+    "rc": 0,
+    "status": "dismissed"
+   },
+   "s7": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": [],
+    "files_equal": true,
+    "n_questions": 2
+   },
+   "s8": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null
+   },
+   "s9": {
+    "action": "created",
+    "question": "lq3",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "same_key": true
+   },
+   "s10": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null,
+    "lq2": "open"
+   },
+   "final_status": {
+    "lq1.json": "dismissed",
+    "lq2.json": "open",
+    "lq3.json": "open"
+   }
+  },
+  {
+   "s1": {
+    "action": "created",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json"
+    ],
+    "outside": [],
+    "current": "lq1"
+   },
+   "s2": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3a": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3b": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s4": {
+    "action": "created",
+    "question": "lq2",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json"
+    ],
+    "outside": [],
+    "lq1": {
+     "status": "open",
+     "sup": {
+      "by": "lq2",
+      "reason": "newer_question"
+     },
+     "same_bytes": true
+    },
+    "lq2_sup": null
+   },
+   "s5": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     }
+    }
+   },
+   "s6": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": null
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": "lq1",
+       "reason": "newer_question"
+      }
+     }
+    }
+   },
+   "s7_dismiss": {
+    "rc": 0,
+    "status": "dismissed"
+   },
+   "s7": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": [],
+    "files_equal": true,
+    "n_questions": 2
+   },
+   "s8": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null
+   },
+   "s9": {
+    "action": "created",
+    "question": "lq3",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "same_key": true
+   },
+   "s10": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null,
+    "lq2": "open"
+   },
+   "final_status": {
+    "lq1.json": "dismissed",
+    "lq2.json": "open",
+    "lq3.json": "open"
+   }
+  },
+  {
+   "s1": {
+    "action": "created",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json"
+    ],
+    "outside": [],
+    "current": "lq1"
+   },
+   "s2": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3a": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3b": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s4": {
+    "action": "created",
+    "question": "lq2",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json"
+    ],
+    "outside": [],
+    "lq1": {
+     "status": "open",
+     "sup": {
+      "by": "lq2",
+      "reason": "newer_question"
+     },
+     "same_bytes": true
+    },
+    "lq2_sup": null
+   },
+   "s5": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     }
+    }
+   },
+   "s6": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": null
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": "lq1",
+       "reason": "newer_question"
+      }
+     }
+    }
+   },
+   "s7_dismiss": {
+    "rc": 0,
+    "status": "dismissed"
+   },
+   "s7": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": [],
+    "files_equal": true,
+    "n_questions": 2
+   },
+   "s8": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null
+   },
+   "s9": {
+    "action": "created",
+    "question": "lq3",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "same_key": true
+   },
+   "s10": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null,
+    "lq2": "open"
+   },
+   "final_status": {
+    "lq1.json": "dismissed",
+    "lq2.json": "open",
+    "lq3.json": "open"
+   }
+  },
+  {
+   "s1": {
+    "action": "created",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json"
+    ],
+    "outside": [],
+    "current": "lq1"
+   },
+   "s2": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3a": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3b": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s4": {
+    "action": "created",
+    "question": "lq2",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json"
+    ],
+    "outside": [],
+    "lq1": {
+     "status": "open",
+     "sup": {
+      "by": "lq2",
+      "reason": "newer_question"
+     },
+     "same_bytes": true
+    },
+    "lq2_sup": null
+   },
+   "s5": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     }
+    }
+   },
+   "s6": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": null
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": "lq1",
+       "reason": "newer_question"
+      }
+     }
+    }
+   },
+   "s7_dismiss": {
+    "rc": 0,
+    "status": "dismissed"
+   },
+   "s7": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": [],
+    "files_equal": true,
+    "n_questions": 2
+   },
+   "s8": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null
+   },
+   "s9": {
+    "action": "created",
+    "question": "lq3",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "same_key": true
+   },
+   "s10": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null,
+    "lq2": "open"
+   },
+   "final_status": {
+    "lq1.json": "dismissed",
+    "lq2.json": "open",
+    "lq3.json": "open"
+   }
+  },
+  {
+   "s1": {
+    "action": "created",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json"
+    ],
+    "outside": [],
+    "current": "lq1"
+   },
+   "s2": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3a": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3b": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s4": {
+    "action": "created",
+    "question": "lq2",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json"
+    ],
+    "outside": [],
+    "lq1": {
+     "status": "open",
+     "sup": {
+      "by": "lq2",
+      "reason": "newer_question"
+     },
+     "same_bytes": true
+    },
+    "lq2_sup": null
+   },
+   "s5": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     }
+    }
+   },
+   "s6": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": null
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": "lq1",
+       "reason": "newer_question"
+      }
+     }
+    }
+   },
+   "s7_dismiss": {
+    "rc": 0,
+    "status": "dismissed"
+   },
+   "s7": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": [],
+    "files_equal": true,
+    "n_questions": 2
+   },
+   "s8": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null
+   },
+   "s9": {
+    "action": "created",
+    "question": "lq3",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "same_key": true
+   },
+   "s10": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null,
+    "lq2": "open"
+   },
+   "final_status": {
+    "lq1.json": "dismissed",
+    "lq2.json": "open",
+    "lq3.json": "open"
+   }
+  },
+  {
+   "s1": {
+    "action": "created",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json"
+    ],
+    "outside": [],
+    "current": "lq1"
+   },
+   "s2": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3a": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3b": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s4": {
+    "action": "created",
+    "question": "lq2",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json"
+    ],
+    "outside": [],
+    "lq1": {
+     "status": "open",
+     "sup": {
+      "by": "lq2",
+      "reason": "newer_question"
+     },
+     "same_bytes": true
+    },
+    "lq2_sup": null
+   },
+   "s5": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     }
+    }
+   },
+   "s6": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": null
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": "lq1",
+       "reason": "newer_question"
+      }
+     }
+    }
+   },
+   "s7_dismiss": {
+    "rc": 0,
+    "status": "dismissed"
+   },
+   "s7": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": [],
+    "files_equal": true,
+    "n_questions": 2
+   },
+   "s8": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null
+   },
+   "s9": {
+    "action": "created",
+    "question": "lq3",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "same_key": true
+   },
+   "s10": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null,
+    "lq2": "open"
+   },
+   "final_status": {
+    "lq1.json": "dismissed",
+    "lq2.json": "open",
+    "lq3.json": "open"
+   }
+  },
+  {
+   "s1": {
+    "action": "created",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json"
+    ],
+    "outside": [],
+    "current": "lq1"
+   },
+   "s2": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3a": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3b": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s4": {
+    "action": "created",
+    "question": "lq2",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json"
+    ],
+    "outside": [],
+    "lq1": {
+     "status": "open",
+     "sup": {
+      "by": "lq2",
+      "reason": "newer_question"
+     },
+     "same_bytes": true
+    },
+    "lq2_sup": null
+   },
+   "s5": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     }
+    }
+   },
+   "s6": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": null
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": "lq1",
+       "reason": "newer_question"
+      }
+     }
+    }
+   },
+   "s7_dismiss": {
+    "rc": 0,
+    "status": "dismissed"
+   },
+   "s7": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": [],
+    "files_equal": true,
+    "n_questions": 2
+   },
+   "s8": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null
+   },
+   "s9": {
+    "action": "created",
+    "question": "lq3",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "same_key": true
+   },
+   "s10": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null,
+    "lq2": "open"
+   },
+   "final_status": {
+    "lq1.json": "dismissed",
+    "lq2.json": "open",
+    "lq3.json": "open"
+   }
+  },
+  {
+   "s1": {
+    "action": "created",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json"
+    ],
+    "outside": [],
+    "current": "lq1"
+   },
+   "s2": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3a": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s3b": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": []
+   },
+   "s4": {
+    "action": "created",
+    "question": "lq2",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json"
+    ],
+    "outside": [],
+    "lq1": {
+     "status": "open",
+     "sup": {
+      "by": "lq2",
+      "reason": "newer_question"
+     },
+     "same_bytes": true
+    },
+    "lq2_sup": null
+   },
+   "s5": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": null,
+       "reason": "no_contradiction"
+      }
+     }
+    }
+   },
+   "s6": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": {
+      "status": "open",
+      "sup": null
+     },
+     "lq2": {
+      "status": "open",
+      "sup": {
+       "by": "lq1",
+       "reason": "newer_question"
+      }
+     }
+    }
+   },
+   "s7_dismiss": {
+    "rc": 0,
+    "status": "dismissed"
+   },
+   "s7": {
+    "action": "existing",
+    "question": "lq1",
+    "rc": 0,
+    "changed": [],
+    "outside": [],
+    "files_equal": true,
+    "n_questions": 2
+   },
+   "s8": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null
+   },
+   "s9": {
+    "action": "created",
+    "question": "lq3",
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "q": {
+     "lq1": "dismissed",
+     "lq2": "open",
+     "lq3": "open"
+    },
+    "same_key": true
+   },
+   "s10": {
+    "action": "none",
+    "question": null,
+    "rc": 0,
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json"
+    ],
+    "outside": [],
+    "current": null,
+    "lq2": "open"
+   },
+   "final_status": {
+    "lq1.json": "dismissed",
+    "lq2.json": "open",
+    "lq3.json": "open"
+   }
+  }
+ ]
+}

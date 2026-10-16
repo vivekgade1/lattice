@@ -1,0 +1,42 @@
+## What broke
+
+The scheduler's accepted contract (commit `c73bea6e`) changed the success status of `POST /applications/{}/jobs/{}/runs` from **201 to 200**. ci-bot's pin still says 201. The question is `lq1`, a contradiction, and it is open.
+
+| Finding | Detail |
+|---|---|
+| BROKEN | `status_not_observed 201`. The scheduler's spec now shows [200, 401, 404, 409]. |
+| CHANGED (relied) | `status_added 200`. |
+
+The other statuses (401, 404, 409) are unchanged. The request fields (none) and the response fields (`id`, `status`) are unchanged.
+
+## What to change in ci-bot
+
+Do these in order. Nothing has been applied.
+
+1. **Code.** Find where ci-bot starts a run (the call to `POST /applications/{app}/jobs/{job}/runs`) and make it treat **200** as success instead of 201. I couldn't locate the call site. ci-bot has no `spec.py`, so the code-link tools don't work here. Search for `201` near that call, including any `status == 201` check or "expects created" assertion.
+
+2. **Import table** in `lattice.imports.toml`: `[[import]]` #4 (`POST /applications/{}/jobs/{}/runs`, auth `token`, as_user `eve`):
+   ```
+   status = [201]   →   status = [200]
+   ```
+   Don't delete the claim. Replace it, and only after the code in step 1 is fixed.
+
+3. **Spec rule R3** (needs a spec edit):
+   - Current: "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **201** with id and status."
+   - New: "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status."
+   - Scenario `start_run` is traced to R3. Check that its expected status becomes 200 as well.
+   - Propose the rule edit through the change flow (`lattice:change` or Studio). The MCP server here is read-only, so I can't propose it.
+
+4. **Re-pin and verify:**
+   ```
+   lattice contracts pin ci-bot
+   lattice contracts check ci-bot
+   lattice contracts questions resolve ci-bot lq1
+   ```
+   `check` should come back `ok` with no findings.
+
+## Things to know
+
+- **Spec location.** The project list shows ci-bot's spec as `missing` (no `spec.py`). The R3 text came from the linked-question draft, so it may live in `REQUIREMENTS.md`. You'll need to run `lattice spec draft` before the change flow works.
+- **Check with the scheduler owner first.** If the 201 → 200 change was unintended, asking them to revert avoids touching ci-bot at all. Whether it is intended is not something I can tell.
+- **Remaining gap, not a break.** `POST /auth/login` response field `access_token` is not shown in the scheduler's spec. This was true before the change and doesn't need action.

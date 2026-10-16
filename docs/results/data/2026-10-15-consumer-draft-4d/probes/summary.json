@@ -1,0 +1,135 @@
+{
+ "experiment": "2026-10-15-consumer-draft-4d",
+ "command": "python dogfood/contracts/draft_probes.py --runs 10 --scratch $SCRATCH --out docs/results/data/2026-10-15-consumer-draft-4d/probes --old /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/base",
+ "runs": 10,
+ "code_head": "6a837c90ba3b50063a036498c389ec85aca17b62",
+ "old_head": "223adff",
+ "job_scheduler_ref": "ef17cf8",
+ "streak_ref": "a0db033",
+ "wall_s": 385.9,
+ "probes": [
+  {
+   "id": "P1",
+   "prediction": "13/13 contradiction rows as the table (imports exactly, hunks exactly, rules exactly with the planted spec, none without), identical 10/10 and across two scratch roots; 11 + 11 no-draft (library not_contradiction exit 1, CLI unknown_question exit 2); dismissed D2 not_open exit 1; superseded lq1 produced with the line; variants stale trace, pin moved, imports deleted, two-adds 4/4 as described; 28/28 in all",
+   "observed": "13/13 contradiction rows as predicted; no-draft 11/11 (x2 channels); identical 10 runs True, two roots True; dismissed True, superseded True; variants stale True, pin True, imports True, two-adds True; row==question True",
+   "pass": true,
+   "ran": "RAN",
+   "checks": {
+    "job-D1": true,
+    "job-D2": true,
+    "job-D3": true,
+    "job-D4": true,
+    "job-D5": true,
+    "streak-D1": true,
+    "streak-D2": true,
+    "streak-D3": true,
+    "streak-D4": true,
+    "streak-D5": true,
+    "streak-D6": true,
+    "streak-D7": true,
+    "I3x-b": true,
+    "nodraft-job-D6": true,
+    "nodraft-job-D7": true,
+    "nodraft-job-D8": true,
+    "nodraft-job-D9": true,
+    "nodraft-job-D10": true,
+    "nodraft-streak-D8": true,
+    "nodraft-streak-D9": true,
+    "nodraft-streak-D10": true,
+    "nodraft-streak-D11": true,
+    "nodraft-streak-D12": true,
+    "nodraft-streak-D13": true,
+    "identical_10_runs": true,
+    "identical_two_roots": true,
+    "dismissed_not_open": true,
+    "superseded_line": true,
+    "variant_stale_trace": true,
+    "variant_pin_moved": true,
+    "variant_imports_deleted": true,
+    "variant_two_adds": true,
+    "row_equals_question_draft": true
+   }
+  },
+  {
+   "id": "P2",
+   "prediction": "for each of the 13 contradiction rows: 6 of 6 checks (window ran with no error and all outputs equal, snapshot identical, no changes/ entry, change_list equal, question files byte-identical, no .lock created); a missing state directory: exit 2 no_state and nothing created; 14/14",
+   "observed": "13/13 rows 6/6; missing state dir ok",
+   "pass": true,
+   "ran": "RAN",
+   "checks": {
+    "job-D1": true,
+    "job-D2": true,
+    "job-D3": true,
+    "job-D4": true,
+    "job-D5": true,
+    "streak-D1": true,
+    "streak-D2": true,
+    "streak-D3": true,
+    "streak-D4": true,
+    "streak-D5": true,
+    "streak-D6": true,
+    "streak-D7": true,
+    "I3x-b": true,
+    "missing_state": true
+   }
+  },
+  {
+   "id": "T",
+   "prediction": "median wall time of `questions draft` over 10 runs <= 1.0 s (predicted 0.2-0.5 s)",
+   "observed": "median 0.17 s (min 0.16, max 0.17); --json median 0.07 s",
+   "pass": true,
+   "ran": "RAN",
+   "checks": {
+    "median_le_1s": true
+   }
+  },
+  {
+   "id": "P4",
+   "prediction": "old-command output identical to git archive 223adff (text and --json, times masked) for export, pin, check, impact [--transitive], notify [--dry-run], questions list, resolve, dismiss, init; MCP initialize instructions identical in 6 configurations; tools/list byte-identical without a workspace and base + exactly one appended definition with one; lattice/ differs from 223adff only in draft.py (new), contracts/__main__.py and mcp/projects.py; API.md and every studio file unchanged",
+   "observed": "100/100 CLI argv identical; MCP instructions 6/6; tools no-workspace True, workspace +1 True; tree ['lattice/contracts/__main__.py', 'lattice/mcp/projects.py'] + new ['lattice/contracts/draft.py']; studio unchanged True",
+   "pass": true,
+   "ran": "RAN",
+   "checks": {
+    "cli_identical": true,
+    "mcp_instructions_6_of_6": true,
+    "mcp_tools_no_workspace_identical": true,
+    "mcp_tools_workspace_plus_one": true,
+    "tree_owned_files_only": true,
+    "studio_and_api_md_unchanged": true
+   }
+  },
+  {
+   "id": "S",
+   "prediction": "the real job-scheduler (HEAD ef17cf8, ' M uv.lock') and Streak (HEAD a0db033, ' M studio.toml') have the same HEAD and git status before and after the run, and 0 files newer than the start marker",
+   "observed": "job-scheduler: ef17cf8 ' M uv.lock' -> ef17cf8 ' M uv.lock', 0 newer files []; streak: a0db033 ' M studio.toml' -> a0db033 ' M studio.toml', 0 newer files []",
+   "pass": true,
+   "ran": "RAN",
+   "checks": {
+    "job-scheduler_head": true,
+    "job-scheduler_status_expected": true,
+    "job-scheduler_no_newer_file": true,
+    "streak_head": true,
+    "streak_status_expected": true,
+    "streak_no_newer_file": true
+   }
+  }
+ ],
+ "totals": {
+  "pass": 5,
+  "total": 5
+ },
+ "p3": "NOT RUN here: draft_agent.py runs separately and last",
+ "leftover_processes": [],
+ "leftover_tmp_entries": [],
+ "post_hoc": {
+  "script_corrections": [],
+  "procedure": [
+   "Streak is cloned at a0db033 (streak_probes.REF, the commit of the committed D-series data, the golden lock and every earlier runner), not at a0679e9: the merge a0679e9 adds build code, not spec, and the pin's spec_hash prefix d44b738522ea is a0db033's.",
+   "P1 'identical 10/10' compares, per run, every row's CLI text, CLI --json document (and its sha256) of a FRESH state (`questions init` after removing `.lattice/`, then `notify dN`), without and with the planted spec for the job rows; 'identical across two scratch roots' compares run 0 of this root with a second, independent root (own clones, own manifests) of the 13 contradiction rows with and without the spec.",
+   "No-draft rows are asked twice: through `draft_from_row` on the `impact --json` row and the consumer's files (library, refused `not_contradiction`, exit 1), and through the CLI on the state `notify` left (no question: `unknown_question`, exit 2).",
+   "The 'pin moved' variant re-pins the consumer's lock against a provider clone at D3 (`pin --force`, the BROKEN cancel import), then drafts the D2 question against the original manifest; 'imports file deleted' removes lattice.imports.toml of the consumer; the two-adds question is lq2 written into the consumer's state directory beside lq1 (D2's findings with a second relied CHANGED field_added on the BROKEN response field).",
+   "P2: the window is `chmod -R a-w` of the consumer directory (its state directory is inside it), exact original modes restored; the provider clone, the manifest and the consumer are snapshotted (sha256, mtime_ns, mode, sorted dirs and symlink targets) before and after; `.lock` is removed from half of the rows' state directories first and must stay absent. `change_list` is the MCP tool of the consumer's own server, called before and after.",
+   "P4 runs each argv under PYTHONPATH=<this tree> and PYTHONPATH=<--old> on the same files: a command that writes (pin, notify, resolve, dismiss, init) runs on a restored copy of the consumer directory for each tree. Times are masked (timestamps, elapsed_s). `improve draft` byte-compat is the improve2 runner's own D-series of the old and new trees compared."
+  ]
+ }
+}

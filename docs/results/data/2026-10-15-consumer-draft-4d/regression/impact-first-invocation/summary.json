@@ -1,0 +1,1156 @@
+{
+ "experiment": "2026-10-13-contracts-impact",
+ "command": "python dogfood/contracts/impact_probes.py --runs 10 --scratch $SCRATCH --out docs/results/data/2026-10-15-consumer-draft-4d/regression/impact --only I0a,I0b,I0c,I1,I2,I3,I4,I5,I7,T,I6",
+ "runs": 10,
+ "code_root": "/Users/vivekgade/Documents/lattice-draft4c",
+ "code_head": "6a837c90ba3b50063a036498c389ec85aca17b62",
+ "job_scheduler_ref": "ef17cf8",
+ "streak_ref": "a0db033",
+ "wall_s": 827.2,
+ "probes": [
+  {
+   "id": "I0a",
+   "prediction": "job-scheduler, --candidate HEAD, clean provider: ci-bot unaffected, 0 findings, 1 gap (access_token), findings and gaps equal to `check --static-only` in the same window, spec_hash_changed and version_changed false, current_label unaffected, exit 0",
+   "observed": "job-scheduler: exit 0, unaffected/0f/1g, current_label unaffected, hash_changed False, version_changed False; check exit 0 0f/1g; findings==check yes gaps==check yes",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "exit": true,
+    "label": true,
+    "current_label": true,
+    "findings_equal_check": true,
+    "gaps_equal_check": true,
+    "pinned_equal_check": true,
+    "text_ok": true,
+    "candidate_head_resolved": true,
+    "findings_0": true,
+    "gaps_n": true,
+    "spec_hash_changed_false": true,
+    "version_changed_false": true,
+    "check_exit_0": true
+   }
+  },
+  {
+   "id": "I0b",
+   "prediction": "Streak, --candidate HEAD, clean provider: streak-widget unaffected, 0 findings, 2 gaps, equal to `check --static-only`, hash/version unchanged, current_label unaffected, exit 0",
+   "observed": "streak: exit 0, unaffected/0f/2g, current_label unaffected, hash_changed False, version_changed False; check exit 0 0f/2g; findings==check yes gaps==check yes",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "exit": true,
+    "label": true,
+    "current_label": true,
+    "findings_equal_check": true,
+    "gaps_equal_check": true,
+    "pinned_equal_check": true,
+    "text_ok": true,
+    "candidate_head_resolved": true,
+    "findings_0": true,
+    "gaps_n": true,
+    "spec_hash_changed_false": true,
+    "version_changed_false": true,
+    "check_exit_0": true
+   }
+  },
+  {
+   "id": "I0c",
+   "prediction": "stale pin (the provider clone's HEAD is the D2 commit), --candidate HEAD: contradiction, current_label contradiction, findings = `check --static-only` = committed D2, exit 1",
+   "observed": "stale pin: exit 1, contradiction/2f/1g, current_label contradiction, hash_changed True, version_changed True; check exit 1 2f/1g; findings==check yes gaps==check yes",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "exit": true,
+    "label": true,
+    "current_label": true,
+    "findings_equal_check": true,
+    "gaps_equal_check": true,
+    "pinned_equal_check": true,
+    "text_ok": true,
+    "candidate_head_resolved": true,
+    "findings_equal_committed_D2": true,
+    "check_equals_committed_D2": true,
+    "gaps_equal_committed_D2": true,
+    "check_exit_1": true
+   }
+  },
+  {
+   "id": "I1",
+   "prediction": "job-scheduler D1-D10 (ci-bot): D1-D5 contradiction exit 1, D6 unaffected, D7 unaffected (miss), D8 regression, D9 regression, D10 unaffected (miss); 5/2/3; 10/10 rows = committed Dn; current_label unaffected, version_changed true, 1 gap",
+   "observed": "10/10 labels+exits, 10/10 rows = committed; D1 contradiction/1 D2 contradiction/1 D3 contradiction/1 D4 contradiction/1 D5 contradiction/1 D6 unaffected/0 D7 unaffected/0 D8 regression/0 D9 regression/0 D10 unaffected/0",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "D1_label_and_exit": true,
+    "D1_row_equals_committed": true,
+    "D1_current_label_unaffected": true,
+    "D1_version_changed_true": true,
+    "D1_gaps": true,
+    "D1_spec_hash_changed": true,
+    "D1_counts": true,
+    "D1_resolved_is_the_fetched_commit": true,
+    "D1_text_ok": true,
+    "D1_exit_in_json": true,
+    "D2_label_and_exit": true,
+    "D2_row_equals_committed": true,
+    "D2_current_label_unaffected": true,
+    "D2_version_changed_true": true,
+    "D2_gaps": true,
+    "D2_spec_hash_changed": true,
+    "D2_counts": true,
+    "D2_resolved_is_the_fetched_commit": true,
+    "D2_text_ok": true,
+    "D2_exit_in_json": true,
+    "D3_label_and_exit": true,
+    "D3_row_equals_committed": true,
+    "D3_current_label_unaffected": true,
+    "D3_version_changed_true": true,
+    "D3_gaps": true,
+    "D3_spec_hash_changed": true,
+    "D3_counts": true,
+    "D3_resolved_is_the_fetched_commit": true,
+    "D3_text_ok": true,
+    "D3_exit_in_json": true,
+    "D4_label_and_exit": true,
+    "D4_row_equals_committed": true,
+    "D4_current_label_unaffected": true,
+    "D4_version_changed_true": true,
+    "D4_gaps": true,
+    "D4_spec_hash_changed": true,
+    "D4_counts": true,
+    "D4_resolved_is_the_fetched_commit": true,
+    "D4_text_ok": true,
+    "D4_exit_in_json": true,
+    "D5_label_and_exit": true,
+    "D5_row_equals_committed": true,
+    "D5_current_label_unaffected": true,
+    "D5_version_changed_true": true,
+    "D5_gaps": true,
+    "D5_spec_hash_changed": true,
+    "D5_counts": true,
+    "D5_resolved_is_the_fetched_commit": true,
+    "D5_text_ok": true,
+    "D5_exit_in_json": true,
+    "D6_label_and_exit": true,
+    "D6_row_equals_committed": true,
+    "D6_current_label_unaffected": true,
+    "D6_version_changed_true": true,
+    "D6_gaps": true,
+    "D6_spec_hash_changed": true,
+    "D6_counts": true,
+    "D6_resolved_is_the_fetched_commit": true,
+    "D6_text_ok": true,
+    "D6_exit_in_json": true,
+    "D7_label_and_exit": true,
+    "D7_row_equals_committed": true,
+    "D7_current_label_unaffected": true,
+    "D7_version_changed_true": true,
+    "D7_gaps": true,
+    "D7_spec_hash_changed": true,
+    "D7_counts": true,
+    "D7_resolved_is_the_fetched_commit": true,
+    "D7_text_ok": true,
+    "D7_exit_in_json": true,
+    "D8_label_and_exit": true,
+    "D8_row_equals_committed": true,
+    "D8_current_label_unaffected": true,
+    "D8_version_changed_true": true,
+    "D8_gaps": true,
+    "D8_spec_hash_changed": true,
+    "D8_counts": true,
+    "D8_resolved_is_the_fetched_commit": true,
+    "D8_text_ok": true,
+    "D8_exit_in_json": true,
+    "D9_label_and_exit": true,
+    "D9_row_equals_committed": true,
+    "D9_current_label_unaffected": true,
+    "D9_version_changed_true": true,
+    "D9_gaps": true,
+    "D9_spec_hash_changed": true,
+    "D9_counts": true,
+    "D9_resolved_is_the_fetched_commit": true,
+    "D9_text_ok": true,
+    "D9_exit_in_json": true,
+    "D10_label_and_exit": true,
+    "D10_row_equals_committed": true,
+    "D10_current_label_unaffected": true,
+    "D10_version_changed_true": true,
+    "D10_gaps": true,
+    "D10_spec_hash_changed": true,
+    "D10_counts": true,
+    "D10_resolved_is_the_fetched_commit": true,
+    "D10_text_ok": true,
+    "D10_exit_in_json": true,
+    "labels_and_exits_all": true,
+    "rows_equal_committed_all": true
+   }
+  },
+  {
+   "id": "I2",
+   "prediction": "Streak D1-D13 (streak-widget): D1-D7 contradiction exit 1, D8 unaffected, D9 unaffected (miss), D10 regression, D11 regression, D12 unaffected (miss), D13 regression; 7/3/3; 13/13 rows = committed Dn; current_label unaffected, version_changed true, 2 gaps (D7: 0)",
+   "observed": "13/13 labels+exits, 13/13 rows = committed; D1 contradiction/1 D2 contradiction/1 D3 contradiction/1 D4 contradiction/1 D5 contradiction/1 D6 contradiction/1 D7 contradiction/1 D8 unaffected/0 D9 unaffected/0 D10 regression/0 D11 regression/0 D12 unaffected/0 D13 regression/0",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "D1_label_and_exit": true,
+    "D1_row_equals_committed": true,
+    "D1_current_label_unaffected": true,
+    "D1_version_changed_true": true,
+    "D1_gaps": true,
+    "D1_spec_hash_changed": true,
+    "D1_counts": true,
+    "D1_resolved_is_the_fetched_commit": true,
+    "D1_text_ok": true,
+    "D1_exit_in_json": true,
+    "D2_label_and_exit": true,
+    "D2_row_equals_committed": true,
+    "D2_current_label_unaffected": true,
+    "D2_version_changed_true": true,
+    "D2_gaps": true,
+    "D2_spec_hash_changed": true,
+    "D2_counts": true,
+    "D2_resolved_is_the_fetched_commit": true,
+    "D2_text_ok": true,
+    "D2_exit_in_json": true,
+    "D3_label_and_exit": true,
+    "D3_row_equals_committed": true,
+    "D3_current_label_unaffected": true,
+    "D3_version_changed_true": true,
+    "D3_gaps": true,
+    "D3_spec_hash_changed": true,
+    "D3_counts": true,
+    "D3_resolved_is_the_fetched_commit": true,
+    "D3_text_ok": true,
+    "D3_exit_in_json": true,
+    "D4_label_and_exit": true,
+    "D4_row_equals_committed": true,
+    "D4_current_label_unaffected": true,
+    "D4_version_changed_true": true,
+    "D4_gaps": true,
+    "D4_spec_hash_changed": true,
+    "D4_counts": true,
+    "D4_resolved_is_the_fetched_commit": true,
+    "D4_text_ok": true,
+    "D4_exit_in_json": true,
+    "D5_label_and_exit": true,
+    "D5_row_equals_committed": true,
+    "D5_current_label_unaffected": true,
+    "D5_version_changed_true": true,
+    "D5_gaps": true,
+    "D5_spec_hash_changed": true,
+    "D5_counts": true,
+    "D5_resolved_is_the_fetched_commit": true,
+    "D5_text_ok": true,
+    "D5_exit_in_json": true,
+    "D6_label_and_exit": true,
+    "D6_row_equals_committed": true,
+    "D6_current_label_unaffected": true,
+    "D6_version_changed_true": true,
+    "D6_gaps": true,
+    "D6_spec_hash_changed": true,
+    "D6_counts": true,
+    "D6_resolved_is_the_fetched_commit": true,
+    "D6_text_ok": true,
+    "D6_exit_in_json": true,
+    "D7_label_and_exit": true,
+    "D7_row_equals_committed": true,
+    "D7_current_label_unaffected": true,
+    "D7_version_changed_true": true,
+    "D7_gaps": true,
+    "D7_spec_hash_changed": true,
+    "D7_counts": true,
+    "D7_resolved_is_the_fetched_commit": true,
+    "D7_text_ok": true,
+    "D7_exit_in_json": true,
+    "D8_label_and_exit": true,
+    "D8_row_equals_committed": true,
+    "D8_current_label_unaffected": true,
+    "D8_version_changed_true": true,
+    "D8_gaps": true,
+    "D8_spec_hash_changed": true,
+    "D8_counts": true,
+    "D8_resolved_is_the_fetched_commit": true,
+    "D8_text_ok": true,
+    "D8_exit_in_json": true,
+    "D9_label_and_exit": true,
+    "D9_row_equals_committed": true,
+    "D9_current_label_unaffected": true,
+    "D9_version_changed_true": true,
+    "D9_gaps": true,
+    "D9_spec_hash_changed": true,
+    "D9_counts": true,
+    "D9_resolved_is_the_fetched_commit": true,
+    "D9_text_ok": true,
+    "D9_exit_in_json": true,
+    "D10_label_and_exit": true,
+    "D10_row_equals_committed": true,
+    "D10_current_label_unaffected": true,
+    "D10_version_changed_true": true,
+    "D10_gaps": true,
+    "D10_spec_hash_changed": true,
+    "D10_counts": true,
+    "D10_resolved_is_the_fetched_commit": true,
+    "D10_text_ok": true,
+    "D10_exit_in_json": true,
+    "D11_label_and_exit": true,
+    "D11_row_equals_committed": true,
+    "D11_current_label_unaffected": true,
+    "D11_version_changed_true": true,
+    "D11_gaps": true,
+    "D11_spec_hash_changed": true,
+    "D11_counts": true,
+    "D11_resolved_is_the_fetched_commit": true,
+    "D11_text_ok": true,
+    "D11_exit_in_json": true,
+    "D12_label_and_exit": true,
+    "D12_row_equals_committed": true,
+    "D12_current_label_unaffected": true,
+    "D12_version_changed_true": true,
+    "D12_gaps": true,
+    "D12_spec_hash_changed": true,
+    "D12_counts": true,
+    "D12_resolved_is_the_fetched_commit": true,
+    "D12_text_ok": true,
+    "D12_exit_in_json": true,
+    "D13_label_and_exit": true,
+    "D13_row_equals_committed": true,
+    "D13_current_label_unaffected": true,
+    "D13_version_changed_true": true,
+    "D13_gaps": true,
+    "D13_spec_hash_changed": true,
+    "D13_counts": true,
+    "D13_resolved_is_the_fetched_commit": true,
+    "D13_text_ok": true,
+    "D13_exit_in_json": true,
+    "labels_and_exits_all": true,
+    "rows_equal_committed_all": true
+   }
+  },
+  {
+   "id": "I3",
+   "prediction": "12 controls unaffected, exit 0, rows = committed: J-C1..C3 0 findings 1 gap, J-C4 exactly 1 unrelied CHANGED; S-C1..C3, C5, C6 0 findings 2 gaps (C2, C3, C5, C6 hash unchanged), S-C4 1 unrelied CHANGED; I3x (a) re-pinned under the exclusion: 0 findings 2 gaps; (b) force-pinned with a PUT /test/clock import: contradiction, 1 BROKEN endpoint_missing EXCLUDED_DETAIL, 2 gaps, exit 1",
+   "observed": "J-C1 unaffected/0/0f; J-C2 unaffected/0/0f; J-C3 unaffected/0/0f; J-C4 unaffected/0/1f; S-C1 unaffected/0/0f; S-C2 unaffected/0/0f; S-C3 unaffected/0/0f; S-C4 unaffected/0/1f; S-C5 unaffected/0/0f; S-C6 unaffected/0/0f; I3x-a unaffected/0/0f/2g; I3x-b contradiction/1/1f/2g",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "J-C1": true,
+    "J-C2": true,
+    "J-C3": true,
+    "J-C4": true,
+    "S-C1": true,
+    "S-C2": true,
+    "S-C3": true,
+    "S-C4": true,
+    "S-C5": true,
+    "S-C6": true,
+    "I3x-a": true,
+    "I3x-b": true,
+    "all_12": true
+   }
+  },
+  {
+   "id": "I4",
+   "prediction": "a D1: ci-bot contradiction, ci-bot-2 unaffected with exactly 1 unrelied CHANGED endpoint_removed (GET .../jobs/{}/runs), 1 gap, exit 1; b D3: ci-bot contradiction, ci-bot-2 unaffected with exactly 2 unrelied CHANGED @ cancel, exit 1; c D4: both contradiction = committed D4, exit 1; d D8: both regression = committed D8, exit 0; e ci-bot-2 live: live not_run/static-only; f ci-bot-2 without contract: not listed, checked 1; g ci-bot-2 lock deleted: no_pin, ci-bot contradiction, exit 2; h multi: scheduler+D2 = committed D2 (1 gap, exit 1), streak+Streak D13 = committed S-D13 (2 gaps, exit 0); i provider ci-bot: exit 0 checked 0 no_consumers resolved null; nobody: exit 2 unknown_project; rows ordered ci-bot, ci-bot-2",
+   "observed": "a 1 [contradiction/1f/1g | unaffected/1f/1g]; b 1 [contradiction/2f/1g | unaffected/2f/1g]; c 1 [contradiction/2f/1g | contradiction/2f/1g]; d 0 [regression/1f/1g | regression/1f/1g]; e live {'status': 'not_run', 'reason': 'static-only'}; f checked 1; g 2 no_pin; h 1 contradiction/2f/1g / 0 regression/1f/2g; i 0 ['no_consumers'] / 2 ['unknown_project']",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "pins_identical_to_golden_entry": true,
+    "a_ci_bot": true,
+    "a_ci_bot_2": true,
+    "a_exit_1": true,
+    "b_ci_bot": true,
+    "b_ci_bot_2": true,
+    "b_exit_1": true,
+    "c_both_contradiction_equal_D4": true,
+    "d_both_regression_equal_D8": true,
+    "e_live_not_run_static_only": true,
+    "f_not_listed": true,
+    "g_no_pin_exit_2": true,
+    "h_scheduler": true,
+    "h_streak": true,
+    "i_ci_bot": true,
+    "i_nobody": true,
+    "rows_ordered_everywhere": true,
+    "texts_ok": true
+   }
+  },
+  {
+   "id": "I5",
+   "prediction": "(a) `d2` and the D2 sha: JSON equal but candidate.input; (b) the D2 clone's directory: kind path, findings = (a), version.git_ref = D2 sha; (c) a directory with C2's edit uncommitted: unaffected, version.dirty true; (d) no-such-ref: exit 2 unknown_candidate naming it, 0 export children; (e) --candidate=-x: exit 2 unknown_candidate, git never gets -x; (f) a ref whose spec ends in raise RuntimeError('not loaded'): exit 2 candidate_failed with 'not loaded', no temp path; (g) a directory d2 in the cwd: kind path, unaffected; (h) the provider clone untouched over (a)-(g) (status v2 --ignored, HEAD, refs, reflog, sha256 of every file)",
+   "observed": "a name/sha exit 1/1 contradiction/2f/1g equal yes; b path contradiction/2f/1g; c unaffected/0f/1g dirty True; d 2 unknown_candidate; e 2 unknown_candidate; f 2 candidate_failed; g path unaffected/0f/1g; h untouched yes []",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "a_json_equal_but_input": true,
+    "a_row_equals_committed_D2": true,
+    "b_path_equal_a": true,
+    "c_unaffected_dirty": true,
+    "d_unknown_candidate": true,
+    "e_unknown_candidate": true,
+    "f_candidate_failed": true,
+    "g_dir_shadows": true,
+    "h_provider_untouched": true,
+    "texts_ok": true,
+    "bad_sha_resolved_in_f": true
+   }
+  },
+  {
+   "id": "I7",
+   "prediction": "on I1-D2 and I4-a the MCP contract_impact and GET /api/contracts/impact equal `contracts impact --json` (elapsed_s dropped): 4 of 4; the mock has the same keys and types",
+   "observed": "D2: mcp==cli yes, api==cli yes, mock shape ok; I4a: mcp==cli yes, api==cli yes, mock shape ok",
+   "pass": true,
+   "runs": 10,
+   "identical": true,
+   "checks": {
+    "D2_mcp_equals_cli": true,
+    "D2_api_equals_cli": true,
+    "D2_mcp_lists_tool_readonly": true,
+    "D2_mock_same_keys_types": true,
+    "I4a_mcp_equals_cli": true,
+    "I4a_api_equals_cli": true,
+    "I4a_mcp_lists_tool_readonly": true,
+    "I4a_mock_same_keys_types": true
+   }
+  },
+  {
+   "id": "T",
+   "prediction": "median wall per preview over 10 runs <= 10 s (predicted <= 2 s job-scheduler, <= 3 s Streak)",
+   "observed": "job-scheduler median 0.44 s wall (0.38 s elapsed_s), Streak median 0.43 s wall (0.37 s elapsed_s)",
+   "pass": true,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "job_scheduler_median_le_10s": true,
+    "streak_median_le_10s": true,
+    "job_scheduler_prediction_le_2s": true,
+    "streak_prediction_le_3s": true
+   }
+  },
+  {
+   "id": "I6",
+   "prediction": "over every traced call of I0-I5, I7: (1) sha256 of the workspace, consumers (locks), provider clones and the lattice-impact worktree unchanged and 0 files newer; (2) TMPDIR empty after each call; (3) 0 socket connects, every argv git {rev-parse, ls-tree, cat-file, status} or the export child, 2 export children per call (0 for I4-i and I5-d, 1 for I5-f), no claude, no ANTHROPIC variable; (4) the real job-scheduler (ef17cf8, ' M uv.lock') and Streak (a0db033, ' M studio.toml') unchanged, 0 newer files",
+   "observed": "1220 traced calls; tree changed 17, newer 14, tmp left 0, bad argv 0, connects 0, export-children mismatches 0, claude/ANTHROPIC 0; real repos: job-scheduler: ef17cf8 ' M uv.lock' -> ef17cf8 ' M uv.lock', 0 newer files []; streak: a0db033 ' M studio.toml' -> a0db033 ' M studio.toml', 0 newer files []; worktree newer since marker 54",
+   "pass": false,
+   "runs": 1,
+   "identical": true,
+   "checks": {
+    "calls_traced_gt_0": true,
+    "1_tree_unchanged_every_call": false,
+    "1_no_file_newer_than_a_call": false,
+    "2_tmpdir_empty_after_every_call": true,
+    "3_only_allowed_argv": true,
+    "3_zero_connects": true,
+    "3_export_children_as_predicted": true,
+    "3_no_claude_no_anthropic": true,
+    "3_no_x_to_git": true,
+    "4_real_repos_unchanged": true,
+    "worktree_newer_since_marker_0": false
+   }
+  }
+ ],
+ "totals": {
+  "pass": 10,
+  "total": 11
+ },
+ "regression_skipped": false,
+ "trace": {
+  "calls": 1220,
+  "tree_changed": [
+   {
+    "probe": "I0a",
+    "call": "impact scheduler HEAD",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/"
+    ],
+    "newer": [],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4342
+   },
+   {
+    "probe": "I0b",
+    "call": "impact streak HEAD (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4091
+   },
+   {
+    "probe": "I0b",
+    "call": "impact streak HEAD",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4092
+   },
+   {
+    "probe": "I0c",
+    "call": "impact scheduler HEAD",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4367
+   },
+   {
+    "probe": "I1",
+    "call": "impact scheduler d3 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+     "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+     "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4447
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d7",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4215
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d11 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4216
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d5 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4217
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d4",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7-regression/",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4219
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d8 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4221
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d13 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4222
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d9 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4223
+   },
+   {
+    "probe": "I4",
+    "call": "impact scheduler d3",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4487
+   },
+   {
+    "probe": "I5",
+    "call": "impact scheduler $WORK_J/w/r-I5-provider-d2/scheduler",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/check-sh-new.txt",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/check-sh-old-223adff.txt"
+    ],
+    "newer": [],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 5049
+   },
+   {
+    "probe": "I5",
+    "call": "impact scheduler bad",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 1,
+    "expect_children": 1,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4409
+   },
+   {
+    "probe": "I5",
+    "call": "impact scheduler -x (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/agent/"
+    ],
+    "newer": [],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 0,
+    "expect_children": 0,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4412
+   },
+   {
+    "probe": "T",
+    "call": "impact streak d2",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4251
+   }
+  ],
+  "newer": [
+   {
+    "probe": "I0b",
+    "call": "impact streak HEAD (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4091
+   },
+   {
+    "probe": "I0b",
+    "call": "impact streak HEAD",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4092
+   },
+   {
+    "probe": "I0c",
+    "call": "impact scheduler HEAD",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4367
+   },
+   {
+    "probe": "I1",
+    "call": "impact scheduler d3 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+     "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+     "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4447
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d7",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4215
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d11 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4216
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d5 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4217
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d4",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7-regression/",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4219
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d8 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4221
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d13 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4222
+   },
+   {
+    "probe": "I2",
+    "call": "impact streak d9 (text)",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4223
+   },
+   {
+    "probe": "I4",
+    "call": "impact scheduler d3",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4487
+   },
+   {
+    "probe": "I5",
+    "call": "impact scheduler bad",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 1,
+    "expect_children": 1,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4409
+   },
+   {
+    "probe": "T",
+    "call": "impact streak d2",
+    "tree_unchanged": false,
+    "changed": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+    ],
+    "newer": [
+     "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+    ],
+    "tmp_left": [],
+    "bad_popen": [],
+    "connects": 0,
+    "export_children": 2,
+    "expect_children": 2,
+    "git_args_with_x": [],
+    "claude": [],
+    "anthropic_env": false,
+    "files_hashed": 4251
+   }
+  ],
+  "tmp_left": [],
+  "bad_popen": [],
+  "connects": 0,
+  "children_mismatch": [],
+  "claude_or_anthropic": [],
+  "by_probe": {
+   "I0a": 20,
+   "I0b": 20,
+   "I0c": 20,
+   "I1": 200,
+   "I2": 260,
+   "I3": 240,
+   "I4": 220,
+   "I5": 160,
+   "I7": 60,
+   "T": 20
+  }
+ },
+ "safety_before": {
+  "job-scheduler": {
+   "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+   "status": " M uv.lock"
+  },
+  "streak": {
+   "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+   "status": " M studio.toml"
+  }
+ },
+ "leftover_processes": [],
+ "leftover_tmp_entries": [],
+ "scratch_removed": true,
+ "post_hoc": {
+  "script_corrections": [
+   "I1/I2: a first development run (--runs 2) failed every row on an extra check of my own, 'candidate.resolved equals the committed Dn run's git_ref'; the prereg does not ask for it and it cannot hold: a clone's commit message carries the clone's name (`probe <name>`), so the sha differs from the committed run's although the tree is the same. The check is now 'resolved is the commit that was fetched as dN'. No pass rule of the prereg changed."
+  ],
+  "procedure": [
+   "Helpers: JCtx and SX (exclude_probes.py: Ctx subclasses of probes.py and streak_probes.py) are reused; the manifests of the multi-consumer workspaces (I4) are written here. A candidate ref dN is the committed edit list applied to a clone of the clean clone (`ctx.clone`, the runners' fixed author and dates, so the sha is the committed Dn's) and fetched into the provider clone as refs/heads/dN, before the measured window.",
+   "Each run of a deterministic probe makes the --json call and the text call; the canonical record holds both (the JSON without elapsed_s). Scratch paths are scrubbed to $WORK only when written out; equality across the 10 runs is on the raw canonical records.",
+   "'= committed Dn' compares the row's `findings` and `gaps` with `links[0]` of `runs[0]` of the committed data file (job-scheduler D/C: runs[0].doc; Streak D: runs[0].check.doc; Streak C: runs[0].doc; exclude X2: runs[0].check_after_pin.doc, X3: runs[0].r6_check.doc).",
+   "I6: a `sitecustomize` in a directory first on PYTHONPATH logs every Popen argv and socket connect (append-only file outside TMPDIR). Allowed argv: `git` with a subcommand in {rev-parse, ls-tree, cat-file, status} (global options skipped) or the export child (`-m lattice.contracts export`); export children counted from the Popen events of the call. The snapshot covers the probe's workspace directory (manifest variants, consumers), its provider clone(s), any candidate directory the call names and the lattice-impact worktree (the --out directory excluded); 'newer' is a file whose mtime is later than the call's start (the find -newer rule). I7's MCP and API calls are traced from the request (the server's start-up is not part of the call).",
+   "I4 workspaces: A = scheduler (clean clone, spec.tickets:t5), ci-bot, ci-bot-2 (the `POST /auth/login` and `GET /applications` tables of ci-bot); B = scheduler, streak, multi (ci-bot's 7 and streak-widget's 7 tables) with static links to both. ci-bot-2 and multi are pinned with `contracts pin` on the clean clones.",
+   "I8: the three runners run as subprocesses with --runs and read their last line; pytest and dogfood/studio/check.sh run in this process' environment (UV_NO_SYNC set); the byte comparison runs the same argv under PYTHONPATH=<this tree> and PYTHONPATH=<the main checkout at 67189af> on the I1 workspace; `pin` writes into two copies of the consumer."
+  ]
+ }
+}

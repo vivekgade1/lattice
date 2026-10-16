@@ -1,0 +1,5278 @@
+{
+ "id": "T-long",
+ "prediction": "scheduler <- ci-bot <- p2 <- p3 <- p4 <- p5 <- p6 (static, p2..p6 empty directories): D1 5 rows, depths 2..6 in order, each via its predecessor, roots [ci-bot], link relies_on null, pinned null, notes [no_imports, no_pin], exit 1; D6: 0 rows",
+ "observed": "D1 rows [('p2', 2), ('p3', 3), ('p4', 4), ('p5', 5), ('p6', 6)] exit 1; D6 rows 0 exit 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "D1_five_rows_depths_2_to_6_in_order": true,
+  "D1_each_via_its_predecessor_roots_ci_bot": true,
+  "D1_links_null_null_notes": true,
+  "D6_zero_rows_exit_0": true,
+  "additive_all": true
+ },
+ "extra": {},
+ "runs": [
+  {
+   "D1": {
+    "json_on": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [
+        {
+         "consumer": "ci-bot",
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "dependents": [
+          "p2"
+         ]
+        }
+       ],
+       "downstream": [
+        {
+         "consumer": "p2",
+         "label": "downstream",
+         "depth": 2,
+         "via": [
+          "ci-bot"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "ci-bot",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p3",
+         "label": "downstream",
+         "depth": 3,
+         "via": [
+          "p2"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p2",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p4",
+         "label": "downstream",
+         "depth": 4,
+         "via": [
+          "p3"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p3",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p5",
+         "label": "downstream",
+         "depth": 5,
+         "via": [
+          "p4"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p4",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p6",
+         "label": "downstream",
+         "depth": 6,
+         "via": [
+          "p5"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p5",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        }
+       ],
+       "notes": [],
+       "counts": {
+        "roots": 1,
+        "downstream": 5
+       }
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_on": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 1 root(s), 5 project(s)\np2  DOWNSTREAM  depth 2 via ci-bot (roots: ci-bot)\n  ci-bot static: relies on unreadable; pinned no pin [no_imports, no_pin]\np3  DOWNSTREAM  depth 3 via p2 (roots: ci-bot)\n  p2 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np4  DOWNSTREAM  depth 4 via p3 (roots: ci-bot)\n  p3 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np5  DOWNSTREAM  depth 5 via p4 (roots: ci-bot)\n  p4 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np6  DOWNSTREAM  depth 6 via p5 (roots: ci-bot)\n  p5 static: relies on unreadable; pinned no pin [no_imports, no_pin]\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_off": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\n",
+     "err": ""
+    }
+   },
+   "D6": {
+    "json_on": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [],
+       "downstream": [],
+       "notes": [],
+       "counts": {
+        "roots": 0,
+        "downstream": 0
+       }
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_on": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 0 root(s), 0 project(s)\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_off": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "D1": {
+    "json_on": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [
+        {
+         "consumer": "ci-bot",
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "dependents": [
+          "p2"
+         ]
+        }
+       ],
+       "downstream": [
+        {
+         "consumer": "p2",
+         "label": "downstream",
+         "depth": 2,
+         "via": [
+          "ci-bot"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "ci-bot",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p3",
+         "label": "downstream",
+         "depth": 3,
+         "via": [
+          "p2"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p2",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p4",
+         "label": "downstream",
+         "depth": 4,
+         "via": [
+          "p3"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p3",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p5",
+         "label": "downstream",
+         "depth": 5,
+         "via": [
+          "p4"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p4",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p6",
+         "label": "downstream",
+         "depth": 6,
+         "via": [
+          "p5"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p5",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        }
+       ],
+       "notes": [],
+       "counts": {
+        "roots": 1,
+        "downstream": 5
+       }
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_on": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 1 root(s), 5 project(s)\np2  DOWNSTREAM  depth 2 via ci-bot (roots: ci-bot)\n  ci-bot static: relies on unreadable; pinned no pin [no_imports, no_pin]\np3  DOWNSTREAM  depth 3 via p2 (roots: ci-bot)\n  p2 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np4  DOWNSTREAM  depth 4 via p3 (roots: ci-bot)\n  p3 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np5  DOWNSTREAM  depth 5 via p4 (roots: ci-bot)\n  p4 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np6  DOWNSTREAM  depth 6 via p5 (roots: ci-bot)\n  p5 static: relies on unreadable; pinned no pin [no_imports, no_pin]\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_off": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\n",
+     "err": ""
+    }
+   },
+   "D6": {
+    "json_on": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [],
+       "downstream": [],
+       "notes": [],
+       "counts": {
+        "roots": 0,
+        "downstream": 0
+       }
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_on": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 0 root(s), 0 project(s)\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_off": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "D1": {
+    "json_on": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [
+        {
+         "consumer": "ci-bot",
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "dependents": [
+          "p2"
+         ]
+        }
+       ],
+       "downstream": [
+        {
+         "consumer": "p2",
+         "label": "downstream",
+         "depth": 2,
+         "via": [
+          "ci-bot"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "ci-bot",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p3",
+         "label": "downstream",
+         "depth": 3,
+         "via": [
+          "p2"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p2",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p4",
+         "label": "downstream",
+         "depth": 4,
+         "via": [
+          "p3"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p3",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p5",
+         "label": "downstream",
+         "depth": 5,
+         "via": [
+          "p4"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p4",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p6",
+         "label": "downstream",
+         "depth": 6,
+         "via": [
+          "p5"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p5",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        }
+       ],
+       "notes": [],
+       "counts": {
+        "roots": 1,
+        "downstream": 5
+       }
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_on": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 1 root(s), 5 project(s)\np2  DOWNSTREAM  depth 2 via ci-bot (roots: ci-bot)\n  ci-bot static: relies on unreadable; pinned no pin [no_imports, no_pin]\np3  DOWNSTREAM  depth 3 via p2 (roots: ci-bot)\n  p2 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np4  DOWNSTREAM  depth 4 via p3 (roots: ci-bot)\n  p3 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np5  DOWNSTREAM  depth 5 via p4 (roots: ci-bot)\n  p4 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np6  DOWNSTREAM  depth 6 via p5 (roots: ci-bot)\n  p5 static: relies on unreadable; pinned no pin [no_imports, no_pin]\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_off": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\n",
+     "err": ""
+    }
+   },
+   "D6": {
+    "json_on": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [],
+       "downstream": [],
+       "notes": [],
+       "counts": {
+        "roots": 0,
+        "downstream": 0
+       }
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_on": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 0 root(s), 0 project(s)\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_off": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "D1": {
+    "json_on": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [
+        {
+         "consumer": "ci-bot",
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "dependents": [
+          "p2"
+         ]
+        }
+       ],
+       "downstream": [
+        {
+         "consumer": "p2",
+         "label": "downstream",
+         "depth": 2,
+         "via": [
+          "ci-bot"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "ci-bot",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p3",
+         "label": "downstream",
+         "depth": 3,
+         "via": [
+          "p2"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p2",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p4",
+         "label": "downstream",
+         "depth": 4,
+         "via": [
+          "p3"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p3",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p5",
+         "label": "downstream",
+         "depth": 5,
+         "via": [
+          "p4"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p4",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p6",
+         "label": "downstream",
+         "depth": 6,
+         "via": [
+          "p5"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p5",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        }
+       ],
+       "notes": [],
+       "counts": {
+        "roots": 1,
+        "downstream": 5
+       }
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_on": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 1 root(s), 5 project(s)\np2  DOWNSTREAM  depth 2 via ci-bot (roots: ci-bot)\n  ci-bot static: relies on unreadable; pinned no pin [no_imports, no_pin]\np3  DOWNSTREAM  depth 3 via p2 (roots: ci-bot)\n  p2 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np4  DOWNSTREAM  depth 4 via p3 (roots: ci-bot)\n  p3 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np5  DOWNSTREAM  depth 5 via p4 (roots: ci-bot)\n  p4 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np6  DOWNSTREAM  depth 6 via p5 (roots: ci-bot)\n  p5 static: relies on unreadable; pinned no pin [no_imports, no_pin]\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_off": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\n",
+     "err": ""
+    }
+   },
+   "D6": {
+    "json_on": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [],
+       "downstream": [],
+       "notes": [],
+       "counts": {
+        "roots": 0,
+        "downstream": 0
+       }
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_on": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 0 root(s), 0 project(s)\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_off": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "D1": {
+    "json_on": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [
+        {
+         "consumer": "ci-bot",
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "dependents": [
+          "p2"
+         ]
+        }
+       ],
+       "downstream": [
+        {
+         "consumer": "p2",
+         "label": "downstream",
+         "depth": 2,
+         "via": [
+          "ci-bot"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "ci-bot",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p3",
+         "label": "downstream",
+         "depth": 3,
+         "via": [
+          "p2"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p2",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p4",
+         "label": "downstream",
+         "depth": 4,
+         "via": [
+          "p3"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p3",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p5",
+         "label": "downstream",
+         "depth": 5,
+         "via": [
+          "p4"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p4",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p6",
+         "label": "downstream",
+         "depth": 6,
+         "via": [
+          "p5"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p5",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        }
+       ],
+       "notes": [],
+       "counts": {
+        "roots": 1,
+        "downstream": 5
+       }
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_on": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 1 root(s), 5 project(s)\np2  DOWNSTREAM  depth 2 via ci-bot (roots: ci-bot)\n  ci-bot static: relies on unreadable; pinned no pin [no_imports, no_pin]\np3  DOWNSTREAM  depth 3 via p2 (roots: ci-bot)\n  p2 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np4  DOWNSTREAM  depth 4 via p3 (roots: ci-bot)\n  p3 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np5  DOWNSTREAM  depth 5 via p4 (roots: ci-bot)\n  p4 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np6  DOWNSTREAM  depth 6 via p5 (roots: ci-bot)\n  p5 static: relies on unreadable; pinned no pin [no_imports, no_pin]\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_off": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\n",
+     "err": ""
+    }
+   },
+   "D6": {
+    "json_on": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [],
+       "downstream": [],
+       "notes": [],
+       "counts": {
+        "roots": 0,
+        "downstream": 0
+       }
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_on": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 0 root(s), 0 project(s)\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_off": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "D1": {
+    "json_on": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [
+        {
+         "consumer": "ci-bot",
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "dependents": [
+          "p2"
+         ]
+        }
+       ],
+       "downstream": [
+        {
+         "consumer": "p2",
+         "label": "downstream",
+         "depth": 2,
+         "via": [
+          "ci-bot"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "ci-bot",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p3",
+         "label": "downstream",
+         "depth": 3,
+         "via": [
+          "p2"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p2",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p4",
+         "label": "downstream",
+         "depth": 4,
+         "via": [
+          "p3"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p3",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p5",
+         "label": "downstream",
+         "depth": 5,
+         "via": [
+          "p4"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p4",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p6",
+         "label": "downstream",
+         "depth": 6,
+         "via": [
+          "p5"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p5",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        }
+       ],
+       "notes": [],
+       "counts": {
+        "roots": 1,
+        "downstream": 5
+       }
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_on": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 1 root(s), 5 project(s)\np2  DOWNSTREAM  depth 2 via ci-bot (roots: ci-bot)\n  ci-bot static: relies on unreadable; pinned no pin [no_imports, no_pin]\np3  DOWNSTREAM  depth 3 via p2 (roots: ci-bot)\n  p2 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np4  DOWNSTREAM  depth 4 via p3 (roots: ci-bot)\n  p3 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np5  DOWNSTREAM  depth 5 via p4 (roots: ci-bot)\n  p4 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np6  DOWNSTREAM  depth 6 via p5 (roots: ci-bot)\n  p5 static: relies on unreadable; pinned no pin [no_imports, no_pin]\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_off": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\n",
+     "err": ""
+    }
+   },
+   "D6": {
+    "json_on": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [],
+       "downstream": [],
+       "notes": [],
+       "counts": {
+        "roots": 0,
+        "downstream": 0
+       }
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_on": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 0 root(s), 0 project(s)\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_off": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "D1": {
+    "json_on": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [
+        {
+         "consumer": "ci-bot",
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "dependents": [
+          "p2"
+         ]
+        }
+       ],
+       "downstream": [
+        {
+         "consumer": "p2",
+         "label": "downstream",
+         "depth": 2,
+         "via": [
+          "ci-bot"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "ci-bot",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p3",
+         "label": "downstream",
+         "depth": 3,
+         "via": [
+          "p2"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p2",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p4",
+         "label": "downstream",
+         "depth": 4,
+         "via": [
+          "p3"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p3",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p5",
+         "label": "downstream",
+         "depth": 5,
+         "via": [
+          "p4"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p4",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p6",
+         "label": "downstream",
+         "depth": 6,
+         "via": [
+          "p5"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p5",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        }
+       ],
+       "notes": [],
+       "counts": {
+        "roots": 1,
+        "downstream": 5
+       }
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_on": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 1 root(s), 5 project(s)\np2  DOWNSTREAM  depth 2 via ci-bot (roots: ci-bot)\n  ci-bot static: relies on unreadable; pinned no pin [no_imports, no_pin]\np3  DOWNSTREAM  depth 3 via p2 (roots: ci-bot)\n  p2 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np4  DOWNSTREAM  depth 4 via p3 (roots: ci-bot)\n  p3 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np5  DOWNSTREAM  depth 5 via p4 (roots: ci-bot)\n  p4 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np6  DOWNSTREAM  depth 6 via p5 (roots: ci-bot)\n  p5 static: relies on unreadable; pinned no pin [no_imports, no_pin]\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_off": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\n",
+     "err": ""
+    }
+   },
+   "D6": {
+    "json_on": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [],
+       "downstream": [],
+       "notes": [],
+       "counts": {
+        "roots": 0,
+        "downstream": 0
+       }
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_on": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 0 root(s), 0 project(s)\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_off": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "D1": {
+    "json_on": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [
+        {
+         "consumer": "ci-bot",
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "dependents": [
+          "p2"
+         ]
+        }
+       ],
+       "downstream": [
+        {
+         "consumer": "p2",
+         "label": "downstream",
+         "depth": 2,
+         "via": [
+          "ci-bot"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "ci-bot",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p3",
+         "label": "downstream",
+         "depth": 3,
+         "via": [
+          "p2"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p2",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p4",
+         "label": "downstream",
+         "depth": 4,
+         "via": [
+          "p3"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p3",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p5",
+         "label": "downstream",
+         "depth": 5,
+         "via": [
+          "p4"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p4",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p6",
+         "label": "downstream",
+         "depth": 6,
+         "via": [
+          "p5"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p5",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        }
+       ],
+       "notes": [],
+       "counts": {
+        "roots": 1,
+        "downstream": 5
+       }
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_on": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 1 root(s), 5 project(s)\np2  DOWNSTREAM  depth 2 via ci-bot (roots: ci-bot)\n  ci-bot static: relies on unreadable; pinned no pin [no_imports, no_pin]\np3  DOWNSTREAM  depth 3 via p2 (roots: ci-bot)\n  p2 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np4  DOWNSTREAM  depth 4 via p3 (roots: ci-bot)\n  p3 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np5  DOWNSTREAM  depth 5 via p4 (roots: ci-bot)\n  p4 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np6  DOWNSTREAM  depth 6 via p5 (roots: ci-bot)\n  p5 static: relies on unreadable; pinned no pin [no_imports, no_pin]\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_off": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\n",
+     "err": ""
+    }
+   },
+   "D6": {
+    "json_on": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [],
+       "downstream": [],
+       "notes": [],
+       "counts": {
+        "roots": 0,
+        "downstream": 0
+       }
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_on": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 0 root(s), 0 project(s)\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_off": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "D1": {
+    "json_on": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [
+        {
+         "consumer": "ci-bot",
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "dependents": [
+          "p2"
+         ]
+        }
+       ],
+       "downstream": [
+        {
+         "consumer": "p2",
+         "label": "downstream",
+         "depth": 2,
+         "via": [
+          "ci-bot"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "ci-bot",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p3",
+         "label": "downstream",
+         "depth": 3,
+         "via": [
+          "p2"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p2",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p4",
+         "label": "downstream",
+         "depth": 4,
+         "via": [
+          "p3"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p3",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p5",
+         "label": "downstream",
+         "depth": 5,
+         "via": [
+          "p4"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p4",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p6",
+         "label": "downstream",
+         "depth": 6,
+         "via": [
+          "p5"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p5",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        }
+       ],
+       "notes": [],
+       "counts": {
+        "roots": 1,
+        "downstream": 5
+       }
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_on": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 1 root(s), 5 project(s)\np2  DOWNSTREAM  depth 2 via ci-bot (roots: ci-bot)\n  ci-bot static: relies on unreadable; pinned no pin [no_imports, no_pin]\np3  DOWNSTREAM  depth 3 via p2 (roots: ci-bot)\n  p2 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np4  DOWNSTREAM  depth 4 via p3 (roots: ci-bot)\n  p3 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np5  DOWNSTREAM  depth 5 via p4 (roots: ci-bot)\n  p4 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np6  DOWNSTREAM  depth 6 via p5 (roots: ci-bot)\n  p5 static: relies on unreadable; pinned no pin [no_imports, no_pin]\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_off": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\n",
+     "err": ""
+    }
+   },
+   "D6": {
+    "json_on": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [],
+       "downstream": [],
+       "notes": [],
+       "counts": {
+        "roots": 0,
+        "downstream": 0
+       }
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_on": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 0 root(s), 0 project(s)\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_off": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\n",
+     "err": ""
+    }
+   }
+  },
+  {
+   "D1": {
+    "json_on": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [
+        {
+         "consumer": "ci-bot",
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "dependents": [
+          "p2"
+         ]
+        }
+       ],
+       "downstream": [
+        {
+         "consumer": "p2",
+         "label": "downstream",
+         "depth": 2,
+         "via": [
+          "ci-bot"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "ci-bot",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p3",
+         "label": "downstream",
+         "depth": 3,
+         "via": [
+          "p2"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p2",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p4",
+         "label": "downstream",
+         "depth": 4,
+         "via": [
+          "p3"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p3",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p5",
+         "label": "downstream",
+         "depth": 5,
+         "via": [
+          "p4"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p4",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        },
+        {
+         "consumer": "p6",
+         "label": "downstream",
+         "depth": 6,
+         "via": [
+          "p5"
+         ],
+         "roots": [
+          "ci-bot"
+         ],
+         "links": [
+          {
+           "provider": "p5",
+           "contract": "static",
+           "relies_on": null,
+           "pinned": null,
+           "notes": [
+            "no_imports",
+            "no_pin"
+           ]
+          }
+         ]
+        }
+       ],
+       "notes": [],
+       "counts": {
+        "roots": 1,
+        "downstream": 5
+       }
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_on": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 1 root(s), 5 project(s)\np2  DOWNSTREAM  depth 2 via ci-bot (roots: ci-bot)\n  ci-bot static: relies on unreadable; pinned no pin [no_imports, no_pin]\np3  DOWNSTREAM  depth 3 via p2 (roots: ci-bot)\n  p2 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np4  DOWNSTREAM  depth 4 via p3 (roots: ci-bot)\n  p3 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np5  DOWNSTREAM  depth 5 via p4 (roots: ci-bot)\n  p4 static: relies on unreadable; pinned no pin [no_imports, no_pin]\np6  DOWNSTREAM  depth 6 via p5 (roots: ci-bot)\n  p5 static: relies on unreadable; pinned no pin [no_imports, no_pin]\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "BROKEN",
+          "provider": "scheduler",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "kind": "endpoint_missing",
+          "item": "",
+          "detail": "the endpoint is not in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 1,
+         "changed_relied": 0,
+         "changed_unrelied": 0,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 1,
+       "regression": 0,
+       "unaffected": 0,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text_off": {
+     "rc": 1,
+     "out": "impact of d1 (ref, fca2bdf9 8c2b202396de) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  CONTRADICTION  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 1 contradiction, 0 regression, 0 unaffected, 0 error\n",
+     "err": ""
+    }
+   },
+   "D6": {
+    "json_on": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "transitive": {
+       "basis": "declared_links",
+       "verified": false,
+       "propagates_from": [
+        "contradiction"
+       ],
+       "roots": [],
+       "downstream": [],
+       "notes": [],
+       "counts": {
+        "roots": 0,
+        "downstream": 0
+       }
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_on": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\ndownstream (declared links, unverified; from contradiction only): 0 root(s), 0 project(s)\n",
+     "err": ""
+    },
+    "json_off": {
+     "rc": 0,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d6",
+       "kind": "ref",
+       "resolved": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "80159fe118712d48f25bd2703de15d99775b5699241617e29d2b31ded1d1d36b",
+        "git_ref": "308520255bdaf89f3fe2c2829b9400c2ebd3006e",
+        "dirty": false
+       },
+       "endpoints": 21
+      },
+      "current": {
+       "spec_ref": "spec.tickets:t5",
+       "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+       "dirty": false
+      },
+      "advisory": true,
+      "static_only": true,
+      "baseline": "pin",
+      "checked": 1,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "provider": "scheduler",
+        "contract": "static",
+        "label": "unaffected",
+        "error": null,
+        "imports": 7,
+        "pinned": {
+         "spec_ref": "spec.tickets:t5",
+         "spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+         "git_ref": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+         "dirty": false
+        },
+        "version_changed": true,
+        "spec_hash_changed": true,
+        "spec_ref_changed": false,
+        "current_label": "unaffected",
+        "findings": [
+         {
+          "class": "CHANGED",
+          "provider": "scheduler",
+          "endpoint": "GET /users/{}",
+          "kind": "endpoint_added",
+          "item": "",
+          "relied": false,
+          "detail": "a new endpoint in the provider's spec"
+         }
+        ],
+        "gaps": [
+         {
+          "class": "GAP",
+          "provider": "scheduler",
+          "endpoint": "POST /auth/login",
+          "kind": "response_field_unobserved",
+          "item": "access_token",
+          "detail": "the provider's spec never shows it"
+         }
+        ],
+        "counts": {
+         "broken": 0,
+         "changed_relied": 0,
+         "changed_unrelied": 1,
+         "gaps": 1
+        },
+        "live": null
+       }
+      ],
+      "counts": {
+       "contradiction": 0,
+       "regression": 0,
+       "unaffected": 1,
+       "error": 0
+      },
+      "problems": [],
+      "exit_code": 0
+     }
+    },
+    "text_off": {
+     "rc": 0,
+     "out": "impact of d6 (ref, 30852025 80159fe11871) on scheduler: advisory, static only, baseline = each consumer's pin; provider now ef17cf88 (9bcae0e24da9)\nci-bot  UNAFFECTED  7 import(s), pinned ef17cf88 (9bcae0e24da9), now: unaffected\n  CHANGED  endpoint_added  @ GET /users/{}\n  gap      response_field_unobserved  access_token  @ POST /auth/login\n1 consumer(s): 0 contradiction, 0 regression, 1 unaffected, 0 error\n",
+     "err": ""
+    }
+   }
+  }
+ ]
+}

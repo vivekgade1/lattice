@@ -1,0 +1,125 @@
+{
+ "sid": "ablation-WD2-2",
+ "world": "W-D2",
+ "with_tool": false,
+ "status": "SCORED",
+ "reason": null,
+ "pre": {
+  "action": "created",
+  "question": "lq1",
+  "draft_rc": 0
+ },
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 14.8
+ },
+ "cost_usd": 0.0720906,
+ "tokens": 10529,
+ "tokens_incl_cache_reads": 216555,
+ "turns": 6,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": [],
+ "outside_same": true,
+ "started_utc": "2026-10-16T00:17:51+00:00",
+ "score": {
+  "items": {
+   "A1": null,
+   "A2": false,
+   "A3": false,
+   "A4": true,
+   "A5": true,
+   "A7": false,
+   "A6": true
+  },
+  "applicable": [
+   "A2",
+   "A3",
+   "A4",
+   "A5",
+   "A6",
+   "A7"
+  ],
+  "detail": {
+   "A1": {
+    "pass": false,
+    "calls": []
+   },
+   "A2": {
+    "pass": false,
+    "endpoint": true,
+    "number": false,
+    "others": []
+   },
+   "A3": {
+    "pass": false,
+    "invented": [
+     {
+      "kind": "field",
+      "item": "ef17cf88",
+      "sentence": "`scheduler` has an accepted change that moved its spec from `9bcae0e2\u2026` (commit `ef17cf88`) to `24c5fd8f\u2026` (commit `c73bea6e`)."
+     }
+    ]
+   },
+   "A4": {
+    "pass": true,
+    "advice": []
+   },
+   "A5": {
+    "pass": true,
+    "r6": true,
+    "proposed": []
+   },
+   "A7": {
+    "pass": false,
+    "R3": false,
+    "R4_affirmed": []
+   },
+   "A6": {
+    "world_changed": [],
+    "outside_same": true
+   }
+  },
+  "pass": false
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__project_list",
+   "is_error": false,
+   "input": {}
+  },
+  {
+   "name": "mcp__lattice__contract_check",
+   "is_error": false,
+   "input": {
+    "consumer": "ci-bot"
+   }
+  },
+  {
+   "name": "mcp__lattice__linked_question_list",
+   "is_error": false,
+   "input": {
+    "consumer": "ci-bot"
+   }
+  },
+  {
+   "name": "mcp__lattice__model_get",
+   "is_error": true,
+   "input": {
+    "project": "ci-bot",
+    "section": "rules"
+   }
+  },
+  {
+   "name": "mcp__lattice__code_links",
+   "is_error": true,
+   "input": {
+    "project": "ci-bot",
+    "target": "POST /applications/{}/jobs/{}/runs"
+   }
+  }
+ ]
+}

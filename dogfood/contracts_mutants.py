@@ -93,14 +93,37 @@ tests are ``tests/contracts/test_linked.py``, ``tests/studio/test_linked_api.py`
 
 LQ14 and LQ15 are probabilistic (races): a survivor is a finding, not a pass.
 
+The fourteen mutants of the consumer-side draft (slice 4d,
+``docs/results/2026-10-15-consumer-draft-4c-prereg.md`` section 4; every patch is a change of
+``lattice/contracts/draft.py``, the tests are ``tests/contracts/test_draft.py`` and
+``tests/mcp/test_linked_question_draft.py``, the probes named are in
+``dogfood/contracts/draft_probes.py``):
+
+* DR1  every import of the provider named, not only affected ones          (P1 D2: #1-#7)
+* DR2  endpoint match by prefix                                            (P1 D1: #2 named)
+* DR3  rule match ignores the method                                       (P1 D2: R4 named)
+* DR4  rule match without templating                                       (P1 D2: R3 missed)
+* DR5  rule match by path prefix                                           (P1 D3: R5 named)
+* DR6  a time stamp in ``text``                                            (P1 10/10 identity)
+* DR7  label check dropped in ``draft_from_row``                           (P1 no-draft)
+* DR8  resolved/dismissed questions drafted                                (P1 dismissed D2)
+* DR9  pairing accepts two added items                                     (P1 two-adds)
+* DR10 a removal-only hunk when no pair                                    (P1 D1, D5)
+* DR11 the draft cached in ``linked_questions/``                           (P2 read-only window)
+* DR12 ``init_state`` instead of ``locate``                                (P2 missing state dir)
+* DR13 stale-trace guard dropped                                           (P1 stale trace)
+* DR14 before facts shown although the pin moved                           (P1 pin moved)
+
 Test selection: ``tests/contracts tests/workspace -q -x`` (about a minute); a mutant that
 touches only ``live.py`` runs ``tests/contracts/test_live.py`` first and the rest only when it
 survives that; an XM mutant runs ``tests/contracts/test_exclude.py`` first and the rest only when
 it survives that; an IMP mutant runs ``tests/contracts/test_impact.py`` first and the rest only
 when it survives that; an LQ mutant runs its own test file first (contracts, studio or mcp) and
-the three linked-question test files together when it survives that. The control runs the suite
-and then the studio and mcp linked-question tests. ``--all-failures`` drops ``-x`` to list
-every killing test.
+the three linked-question test files together when it survives that; a DR mutant runs
+``tests/contracts/test_draft.py`` first and that file with
+``tests/mcp/test_linked_question_draft.py`` when it survives that. The control runs the suite and
+then the studio and mcp linked-question tests and the mcp draft tests. ``--all-failures`` drops
+``-x`` to list every killing test.
 
 Usage: ``python dogfood/contracts_mutants.py [--out FILE] [--jobs N] [--all-failures] [ID ...]``.
 Exit 0 when the control passes and every mutant is killed; the last line is
@@ -133,6 +156,9 @@ LQ_CONTRACTS = ["tests/contracts/test_linked.py"]
 LQ_STUDIO = ["tests/studio/test_linked_api.py"]
 LQ_MCP = ["tests/mcp/test_linked_questions.py"]
 LQ_ALL = [*LQ_CONTRACTS, *LQ_STUDIO, *LQ_MCP]
+DR_CONTRACTS = ["tests/contracts/test_draft.py"]
+DR_MCP = ["tests/mcp/test_linked_question_draft.py"]
+DR_ALL = [*DR_CONTRACTS, *DR_MCP]
 CK, EX, LV, WS, IM = (
     "lattice/contracts/check.py",
     "lattice/contracts/export.py",
@@ -145,6 +171,7 @@ LK, SV, PJ = (
     "lattice/studio/server.py",
     "lattice/mcp/projects.py",
 )
+DK = "lattice/contracts/draft.py"
 # copied into the scratch tree (dogfood/contracts only: the fixtures, not another node's probes)
 COPY = [
     "lattice",
@@ -154,6 +181,7 @@ COPY = [
     "dogfood/contracts/golden",
     "dogfood/contracts/golden-streak",
     "dogfood/contracts/streak-widget",
+    "dogfood/contracts/draft",  # the planted consumer spec of the draft tests
 ]
 
 # id -> (behaviour, file, old text, new text, first-stage tests or None)
@@ -611,6 +639,121 @@ MUTANTS: dict[str, tuple[str, str, str, str, list[str] | None]] = {
         '        if doc is not None and doc.get("key") == key:  # MUTANT LQ18\n',
         LQ_CONTRACTS,
     ),
+    "DR1": (
+        "draft: every import of the provider is named, not only the affected ones",
+        DK,
+        "        if im.endpoint not in affected:\n",
+        "        if False:  # MUTANT DR1\n",
+        DR_CONTRACTS,
+    ),
+    "DR2": (
+        "draft: an import is matched to a finding's endpoint by prefix",
+        DK,
+        "        if im.endpoint not in affected:\n",
+        "        if not any(  # MUTANT DR2\n"
+        "            im.endpoint.startswith(a) or a.startswith(im.endpoint) for a in affected\n"
+        "        ):\n",
+        DR_CONTRACTS,
+    ),
+    "DR3": (
+        "draft: a rule matches an endpoint of any method (the method is ignored)",
+        DK,
+        "    return any(p == path and (mm is None or mm == method) for mm, p in _mentions(text))\n",
+        "    return any(p == path for mm, p in _mentions(text))  # MUTANT DR3\n",
+        DR_CONTRACTS,
+    ),
+    "DR4": (
+        "draft: a rule's path is not templated before the comparison",
+        DK,
+        "        out.append((method, template_path(raw)))\n",
+        "        out.append((method, raw))  # MUTANT DR4\n",
+        DR_CONTRACTS,
+    ),
+    "DR5": (
+        "draft: a rule matches an endpoint by path prefix",
+        DK,
+        "    return any(p == path and (mm is None or mm == method) for mm, p in _mentions(text))\n",
+        "    return any(  # MUTANT DR5\n"
+        "        (p == path or p.startswith(path) or path.startswith(p))\n"
+        "        and (mm is None or mm == method)\n"
+        "        for mm, p in _mentions(text)\n"
+        "    )\n",
+        DR_CONTRACTS,
+    ),
+    "DR6": (
+        "draft: a time stamp in the text",
+        DK,
+        '    text = "\\n".join(t)\n',
+        "    import time  # MUTANT DR6\n\n"
+        '    text = "\\n".join(t) + "\\ndrafted at " + str(time.time())\n',
+        DR_CONTRACTS,
+    ),
+    "DR7": (
+        "draft: draft_from_row does not check the label",
+        DK,
+        '    if row.get("label") != imp.CONTRADICTION:\n',
+        "    if False:  # MUTANT DR7\n",
+        DR_CONTRACTS,
+    ),
+    "DR8": (
+        "draft: a resolved or dismissed question is drafted",
+        DK,
+        '    if question.get("status") != linked.OPEN:\n',
+        "    if False:  # MUTANT DR8\n",
+        DR_CONTRACTS,
+    ),
+    "DR9": (
+        "draft: the pairing accepts two added items (the first is taken)",
+        DK,
+        "        if len(old) == 1 and len(new) == 1:\n",
+        "        if len(old) == 1 and len(new) >= 1:  # MUTANT DR9\n",
+        DR_CONTRACTS,
+    ),
+    "DR10": (
+        "draft: a removal-only hunk when there is no pair",
+        DK,
+        "    edits = _edits(pairs, numbered) if imports_error is None else []\n",
+        "    edits = _edits(pairs, numbered) if imports_error is None else []\n"
+        "    edits += [  # MUTANT DR10: a hunk that only removes the claim\n"
+        '        {"import": n, "endpoint": im.endpoint, "key": "status", "old": 0, "new": None,\n'
+        '         "before": list(im.status), "after": [],\n'
+        '         "text": f"status = {_toml(im.status)} -> []"}\n'
+        "        for n, im in numbered\n"
+        "        if im.endpoint in affected and not any(e == im.endpoint for e, _s in pairs)\n"
+        "    ]\n",
+        DR_CONTRACTS,
+    ),
+    "DR11": (
+        "draft: the draft is cached in the consumer's linked_questions/",
+        DK,
+        "    return draft(q, *load_files(wp.path, wp.name))\n",
+        "    rc, doc = draft(q, *load_files(wp.path, wp.name))  # MUTANT DR11\n"
+        '    (loc.state_dir / linked.DIR / f"{qid}.draft.json").write_text(json.dumps(doc))\n'
+        "    return rc, doc\n",
+        DR_CONTRACTS,
+    ),
+    "DR12": (
+        "draft: init_state is called before locate (the state directory is created)",
+        DK,
+        "    loc = linked.locate(wp.path, wp.name)\n",
+        "    linked.init_state(wp.path, wp.name)  # MUTANT DR12\n"
+        "    loc = linked.locate(wp.path, wp.name)\n",
+        DR_CONTRACTS,
+    ),
+    "DR13": (
+        "draft: the stale-trace guard is dropped (scenarios of any trace text)",
+        DK,
+        "            if traced.get(rule.id) == rule.text:\n",
+        "            if True:  # MUTANT DR13\n",
+        DR_CONTRACTS,
+    ),
+    "DR14": (
+        "draft: before facts are shown although the pin moved",
+        DK,
+        "        elif have != pinned:\n",
+        "        elif False:  # MUTANT DR14\n",
+        DR_CONTRACTS,
+    ),
 }
 
 
@@ -698,9 +841,11 @@ def one(mid: str, all_failures: bool) -> dict[str, Any]:
     t0 = time.monotonic()
     first = None if mid == "control" else MUTANTS[mid][4]
     if mid == "control":
-        stages: list[list[str]] = [SUITE, [*LQ_STUDIO, *LQ_MCP]]
+        stages: list[list[str]] = [SUITE, [*LQ_STUDIO, *LQ_MCP, *DR_MCP]]
     elif mid.startswith("LQ"):
         stages = [first, LQ_ALL] if first else [LQ_ALL]
+    elif mid.startswith("DR"):
+        stages = [first, DR_ALL] if first else [DR_ALL]
     else:
         stages = [first, SUITE] if first else [SUITE]
     with tempfile.TemporaryDirectory(prefix=f"lattice-contracts-mutant-{mid}-") as d:
@@ -727,7 +872,7 @@ def one(mid: str, all_failures: bool) -> dict[str, Any]:
 
 def _order(mid: str) -> tuple[int, int]:
     prefix = mid.rstrip("0123456789")
-    return (("CM", "XM", "IMP", "LQ").index(prefix), int(mid[len(prefix) :]))
+    return (("CM", "XM", "IMP", "LQ", "DR").index(prefix), int(mid[len(prefix) :]))
 
 
 def main(argv: list[str] | None = None) -> int:

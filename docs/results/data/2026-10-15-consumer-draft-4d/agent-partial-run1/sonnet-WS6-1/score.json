@@ -1,0 +1,72 @@
+{
+ "items": {
+  "A1": true,
+  "A2": true,
+  "A3": false,
+  "A4": true,
+  "A5": true,
+  "A7": null,
+  "A6": true
+ },
+ "applicable": [
+  "A1",
+  "A2",
+  "A3",
+  "A4",
+  "A5",
+  "A6"
+ ],
+ "detail": {
+  "A1": {
+   "pass": true,
+   "calls": [
+    {
+     "id": "toolu_01DyxGKxpup2Aiatzn6Qjxtf",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "A2": {
+   "pass": true,
+   "endpoint": true,
+   "number": true,
+   "others": []
+  },
+  "A3": {
+   "pass": false,
+   "invented": [
+    {
+     "kind": "field",
+     "item": "contract_check",
+     "sentence": "`contract_check` still reports `ok` because it compares against your pin, which is the old contract."
+    },
+    {
+     "kind": "field",
+     "item": "ok",
+     "sentence": "`contract_check` still reports `ok` because it compares against your pin, which is the old contract."
+    }
+   ]
+  },
+  "A4": {
+   "pass": true,
+   "advice": []
+  },
+  "A5": {
+   "pass": true,
+   "r6": true,
+   "proposed": []
+  },
+  "A7": {
+   "pass": false,
+   "R3": false,
+   "R4_affirmed": []
+  },
+  "A6": {
+   "world_changed": [],
+   "outside_same": true
+  }
+ },
+ "pass": false
+}

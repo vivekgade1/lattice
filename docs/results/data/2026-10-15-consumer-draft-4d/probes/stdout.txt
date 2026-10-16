@@ -1,0 +1,16 @@
+... P1
+... P2
+... T
+... P4
+id   | observed                                                                                                                                               | pass
+P1   | 13/13 contradiction rows as predicted; no-draft 11/11 (x2 channels); identical 10 runs True, two roots True; dismissed True, superseded True; variants stale True, pin True, imports True, two-adds True; row==question True | PASS
+P2   | 13/13 rows 6/6; missing state dir ok | PASS
+T    | median 0.17 s (min 0.16, max 0.17); --json median 0.07 s | PASS
+P4   | 100/100 CLI argv identical; MCP instructions 6/6; tools no-workspace True, workspace +1 True; tree ['lattice/contracts/__main__.py', 'lattice/mcp/projects.py'] + new ['lattice/contracts/draft.py']; studio unchanged True | PASS
+S    | job-scheduler: ef17cf8 ' M uv.lock' -> ef17cf8 ' M uv.lock', 0 newer files []; streak: a0db033 ' M studio.toml' -> a0db033 ' M studio.toml', 0 newer files [] | PASS
+probes: 5/5 pass
+real 388.35
+user 290.79
+sys 82.23
+exit 0
+done

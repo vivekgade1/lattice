@@ -1,0 +1,78 @@
+{
+ "id": "P4",
+ "prediction": "old-command output identical to git archive 223adff (text and --json, times masked) for export, pin, check, impact [--transitive], notify [--dry-run], questions list, resolve, dismiss, init; MCP initialize instructions identical in 6 configurations; tools/list byte-identical without a workspace and base + exactly one appended definition with one; lattice/ differs from 223adff only in draft.py (new), contracts/__main__.py and mcp/projects.py; API.md and every studio file unchanged",
+ "observed": "100/100 CLI argv identical; MCP instructions 6/6; tools no-workspace True, workspace +1 True; tree ['lattice/contracts/__main__.py', 'lattice/mcp/projects.py'] + new ['lattice/contracts/draft.py']; studio unchanged True",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "cli_identical": true,
+  "mcp_instructions_6_of_6": true,
+  "mcp_tools_no_workspace_identical": true,
+  "mcp_tools_workspace_plus_one": true,
+  "tree_owned_files_only": true,
+  "studio_and_api_md_unchanged": true
+ },
+ "extra": {
+  "cli_commands": 100,
+  "cli_differing": [],
+  "mcp": {
+   "one-project": {
+    "instructions_same": true,
+    "init_same": true,
+    "with_workspace": false,
+    "tools_same": true
+   },
+   "one-project-readonly": {
+    "instructions_same": true,
+    "init_same": true,
+    "with_workspace": false,
+    "tools_same": true
+   },
+   "one-project-workspace": {
+    "instructions_same": true,
+    "init_same": true,
+    "with_workspace": true,
+    "tools_old_prefix": true,
+    "appended": [
+     "linked_question_draft"
+    ],
+    "tools_same": null
+   },
+   "several": {
+    "instructions_same": true,
+    "init_same": true,
+    "with_workspace": false,
+    "tools_same": true
+   },
+   "several-workspace": {
+    "instructions_same": true,
+    "init_same": true,
+    "with_workspace": true,
+    "tools_old_prefix": true,
+    "appended": [
+     "linked_question_draft"
+    ],
+    "tools_same": null
+   },
+   "several-workspace-readonly": {
+    "instructions_same": true,
+    "init_same": true,
+    "with_workspace": true,
+    "tools_old_prefix": true,
+    "appended": [
+     "linked_question_draft"
+    ],
+    "tools_same": null
+   }
+  },
+  "tree_touched": [
+   "lattice/contracts/__main__.py",
+   "lattice/mcp/projects.py"
+  ],
+  "tree_new": [
+   "lattice/contracts/draft.py"
+  ],
+  "wall_s": 80.5
+ }
+}

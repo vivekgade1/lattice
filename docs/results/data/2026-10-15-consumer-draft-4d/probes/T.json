@@ -1,0 +1,26 @@
+{
+ "id": "T",
+ "prediction": "median wall time of `questions draft` over 10 runs <= 1.0 s (predicted 0.2-0.5 s)",
+ "observed": "median 0.17 s (min 0.16, max 0.17); --json median 0.07 s",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "median_le_1s": true
+ },
+ "extra": {
+  "walls_s": [
+   0.164,
+   0.166,
+   0.164,
+   0.166,
+   0.167,
+   0.163,
+   0.166,
+   0.167,
+   0.164,
+   0.163
+  ],
+  "wall_s": 2.9
+ }
+}

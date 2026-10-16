@@ -1,0 +1,102 @@
+{
+ "id": "V1g",
+ "predicted": "= V1a: improved rc0, 3/3, 119.51->58.50, error 0.149; source --at + override warning",
+ "observed": "rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149",
+ "pass": true,
+ "checks": [
+  {
+   "name": "V1g",
+   "argv": [
+    "verify",
+    "I-01",
+    "--at",
+    "2026-10-12T23:08:00Z"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 3,
+   "mismatches": [],
+   "expected": {
+    "rc": 0,
+    "verdict": "improved",
+    "before.n": 3,
+    "after.n": 3,
+    "before.cost_per": 119.51,
+    "after.cost_per": 58.5,
+    "before.min": 119.31,
+    "before.max": 119.75,
+    "after.min": 58.44,
+    "after.max": 58.56,
+    "change.delta": -61.01,
+    "change.relative": -0.51,
+    "change.separated": true,
+    "predicted.delta": -71.7,
+    "error": 0.149,
+    "closing_point.source": "--at",
+    "context.per_window.before.x_repeats": [
+     5
+    ],
+    "context.per_window.after.x_repeats": [
+     2
+    ],
+    "context.per_window.before.selected": [
+     152
+    ],
+    "context.per_window.before.sha": [
+     "a0679e9"
+    ],
+    "closing_point.ts": "2026-10-12T23:08:00Z",
+    "warnings.0": "closing point overridden by --at (ledger ts 2026-10-12T23:12:00Z)",
+    "entry.ts": "2026-10-12T23:12:00Z"
+   },
+   "observed": {
+    "rc": 0,
+    "verdict": "improved",
+    "before.n": 3,
+    "after.n": 3,
+    "before.cost_per": 119.51,
+    "after.cost_per": 58.5,
+    "before.min": 119.31,
+    "before.max": 119.75,
+    "after.min": 58.44,
+    "after.max": 58.56,
+    "change.delta": -61.01,
+    "change.relative": -0.51,
+    "change.separated": true,
+    "predicted.delta": -71.7,
+    "error": 0.149,
+    "closing_point.source": "--at",
+    "context.per_window.before.x_repeats": [
+     5
+    ],
+    "context.per_window.after.x_repeats": [
+     2
+    ],
+    "context.per_window.before.selected": [
+     152
+    ],
+    "context.per_window.before.sha": [
+     "a0679e9"
+    ],
+    "closing_point.ts": "2026-10-12T23:08:00Z",
+    "warnings.0": "closing point overridden by --at (ledger ts 2026-10-12T23:12:00Z)",
+    "entry.ts": "2026-10-12T23:12:00Z"
+   },
+   "short": "rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"verify\",\n \"id\": \"I-01\",\n \"entry\": {\n  \"id\": \"I-01\",\n  \"signal\": \"gate:level_regression:X\",\n  \"status\": \"closed\",\n  \"commit\": \"scratch-clone studio.toml (not merged)\",\n  \"ts\": \"2026-10-12T23:12:00Z\"\n },\n \"closing_point\": {\n  \"ts\": \"2026-10-12T23:08:00Z\",\n  \"source\": \"--at\"\n },\n \"keys\": [\n  \"gate:level_regression:X\"\n ],\n \"family\": \"cost\",\n \"unit\": \"s\",\n \"verdict\": \"improved\",\n \"reason\": \"cost fell and every after value is below every before value\",\n \"direction\": \"down\",\n \"before\": {\n  \"n\": 3,\n  \"frequency\": 3,\n  \"cost_per\": 119.51,\n  \"min\": 119.31,\n  \"max\": 119.75,\n  \"first_ts\": \"2026-10-12T23:02:23Z\",\n  \"last_ts\": \"2026-10-12T23:07:11Z\",\n  \"exposure\": null,\n  \"evidence\": [\n   \"e-e8d9c91c15964512\",\n   \"e-327c71cd641f49a0\",\n   \"e-f6061c7895644d98\"\n  ]\n },\n \"after\": {\n  \"n\": 3,\n  \"frequency\": 3,\n  \"cost_per\": 58.5,\n  \"min\": 58.44,\n  \"max\": 58.56,\n  \"first_ts\": \"2026-10-12T23:09:06Z\",\n  \"last_ts\": \"2026-10-12T23:11:50Z\",\n  \"exposure\": null,\n  \"evidence\": [\n   \"e-07264822a1c541d2\",\n   \"e-9e47b5542c8f4b45\",\n   \"e-4cbd0ccd6d9d4a08\"\n  ]\n },\n \"change\": {\n  \"delta\": -61.01,\n  \"relative\": -0.51,\n  \"separated\": true\n },\n \"predicted\": {\n  \"delta\": -71.7,\n  \"unit\": \"s\",\n  \"source\": \"the report's expected saving, rebuilt from the before window alone (none was recorded)\",\n  \"basis\": \"layer X seconds scale with tries per race (x_repeats); x_repeats 5 -> 2\"\n },\n \"prediction_note\": \"\",\n \"error\": 0.149,\n \"excluded\": {\n  \"at_close\": 0,\n  \"undated\": 0\n },\n \"context\": {\n  \"other_closes\": [],\n  \"per_window\": {\n   \"before\": {\n    \"x_repeats\": [\n     5\n    ],\n    \"selected\": [\n     152\n    ],\n    \"mode\": [\n     \"regression\"\n    ],\n    \"sha\": [\n     \"a0679e9\"\n    ]\n   },\n   \"after\": {\n    \"x_repeats\": [\n     2\n    ],\n    \"selected\": [\n     152\n    ],\n    \"mode\": [\n     \"regression\"\n    ],\n    \"sha\": [\n     \"a0679e9\"\n    ]\n   }\n  }\n },\n \"per_key\": [\n  {\n   \"key\": \"gate:level_regression:X\",\n   \"family\": \"cost\",\n   \"verdict\": \"improved\",\n   \"reason\": \"cost fell and every after value is below every before value\",\n   \"n_before\": 3,\n   \"n_after\": 3,\n   \"frequency_before\": 3,\n   \"frequency_after\": 3,\n   \"cost_per_before\": 119.51,\n   \"cost_per_after\": 58.5,\n   \"delta\": -61.01\n  }\n ],\n \"blind_spots\": [\n  \"confounders: everything else that changed between the two windows is credited to this change (a new model, a slower machine, a different plan)\",\n  \"small n: 3 against 3 is the floor; full separation of 3 against 3 is p = 0.05 one-sided, weak evidence, and it is one project's log\",\n  \"the prediction is a heuristic: only the layer X templates predict (X proportional to repeats); frequency x cost is the cost of a problem, not a predicted saving\",\n  \"Goodhart: hiding a signal (a renamed key, a gate that is not run) reads as improved; exposure catches 'not exercised', not 'not logged'\",\n  \"unseen: human time, coverage and risk (fewer repeats save seconds and look for fewer races)\",\n  \"timing: the close is when the owner ran the ledger (or the time given with --at), and a gate run is stamped when it ends\"\n ],\n \"warnings\": [\n  \"closing point overridden by --at (ledger ts 2026-10-12T23:12:00Z)\"\n ]\n}\n",
+   "json_stderr": "",
+   "text_stdout": "Lattice improve verify: I-01 (gate:level_regression:X), closed 2026-10-12T23:08:00Z, commit scratch-clone studio.toml (not merged)\n\nVerdict: improved (cost fell and every after value is below every before value)\nFamily: cost (unit s); keys: gate:level_regression:X\nBefore (ts < close): n 3, f 3, mean 119.51 s (min 119.31 s, max 119.75 s), 2026-10-12T23:02:23Z .. 2026-10-12T23:07:11Z\nAfter (ts > close): n 3, f 3, mean 58.50 s (min 58.44 s, max 58.56 s), 2026-10-12T23:09:06Z .. 2026-10-12T23:11:50Z\nChange: -61.01 s (-51.0%, down); every after below every before: yes\nPredicted: -71.7 s (the report's expected saving, rebuilt from the before window alone (none was recorded); layer X seconds scale with tries per race (x_repeats); x_repeats 5 -> 2)\nError: |measured - predicted| / |predicted| = 14.9%\nExcluded: at the close second 0, undated 0\nContext: x_repeats 5 -> 2; selected 152 -> 152; mode regression -> regression; sha a0679e9 -> a0679e9\nEvidence (before): e-e8d9c91c15964512, e-327c71cd641f49a0, e-f6061c7895644d98\nEvidence (after): e-07264822a1c541d2, e-9e47b5542c8f4b45, e-4cbd0ccd6d9d4a08\nBlind spots:\n  - confounders: everything else that changed between the two windows is credited to this change (a new model, a slower machine, a different plan)\n  - small n: 3 against 3 is the floor; full separation of 3 against 3 is p = 0.05 one-sided, weak evidence, and it is one project's log\n  - the prediction is a heuristic: only the layer X templates predict (X proportional to repeats); frequency x cost is the cost of a problem, not a predicted saving\n  - Goodhart: hiding a signal (a renamed key, a gate that is not run) reads as improved; exposure catches 'not exercised', not 'not logged'\n  - unseen: human time, coverage and risk (fewer repeats save seconds and look for fewer races)\n  - timing: the close is when the owner ran the ledger (or the time given with --at), and a gate run is stamped when it ends\nwarning: closing point overridden by --at (ledger ts 2026-10-12T23:12:00Z)\n",
+   "text_stderr": "",
+   "run_digests": [
+    "b35283896c6b7f3a",
+    "b35283896c6b7f3a",
+    "b35283896c6b7f3a"
+   ]
+  }
+ ],
+ "fields_differing_from_V1a": [
+  "closing_point.source",
+  "entry.ts",
+  "warnings"
+ ]
+}

@@ -20,9 +20,11 @@ Each project gets its own Toolbox (and backend), built on first use. Every exist
 optional ``project`` (a name or a path as ``project_list`` gives it; default: the active project,
 which only ``project_set_active`` changes, for the life of the process). ``project_list`` and
 ``project_set_active`` are always listed (also ``--readonly``); ``workspace_impact``,
-``contract_check`` (layer 3), ``contract_impact`` (layer 4a) and ``linked_question_list`` (layer
-4b, read only: a session can see the notes other projects left in a consumer, never clear one)
-only when a workspace is known.
+``contract_check`` (layer 3), ``contract_impact`` (layer 4a), ``linked_question_list`` (layer
+4b, read only: a session can see the notes other projects left in a consumer, never clear one) and
+``linked_question_draft`` (slice 4d, read only: the text-only draft of what to change in the
+consumer for one open question, nothing is written or applied; it is found by its description,
+the instruction strings below do not name it) only when a workspace is known.
 
 **Single-project compatibility.** With exactly one known project the existing tools' definitions,
 the ``initialize`` instructions and every result are exactly the single-project server's: the
@@ -42,6 +44,10 @@ a read-only single-project server still suggests ``change_propose``).
 "" is not given; then the active project is the consumer when it is the ``from`` of a link with a
 ``contract`` key. Otherwise ``contract_check`` checks every opted-in consumer and
 ``linked_question_list`` is an error naming the consumers. An explicit value always wins.
+
+**``consumer``** of ``linked_question_draft`` is resolved as for ``linked_question_list``; its
+result is what ``lattice contracts questions draft CONSUMER ID --json`` prints, and a refusal
+(``not_open``, ``no_state``, ``unknown_question``, ...) is a tool error ``code: message``.
 """
 
 from __future__ import annotations
@@ -64,6 +70,7 @@ WORKSPACE_TOOLS = (  # listed only with a workspace
     "contract_check",
     "contract_impact",
     "linked_question_list",
+    "linked_question_draft",
 )
 OWN_TOOLS = ("project_list", "project_set_active", *WORKSPACE_TOOLS)
 MULTI_NOTE = (
@@ -513,6 +520,51 @@ class ProjectRouter:
                 },
             },
             linked_question_list,
+        )
+
+        def linked_question_draft(a: Mapping[str, Any]) -> dict[str, Any]:
+            from lattice import workspace as wsmod
+            from lattice.contracts import draft
+
+            consumer, qid = self._given_consumer(a), a.get("id")
+            if not isinstance(qid, str) or not qid:
+                raise ToolError("argument 'id' is required (a question id: lq1, lq2, ...)")
+            # the manifest is re-read on every call, so the answer is the CLI's at this moment
+            ws, problems = wsmod.try_load(self.workspace.path)
+            if ws is None or ws.errors:
+                why = "; ".join(p.message for p in (problems if ws is None else ws.errors))
+                raise ToolError(f"manifest_error: {why or 'the workspace manifest has errors'}")
+            if consumer is None:
+                consumer = self._active_consumer(ws)
+                if consumer is None:
+                    names = ", ".join(_consumers_of(ws)) or "none"
+                    raise ToolError(
+                        f"argument 'consumer' is required: the active project {self.active} is "
+                        f"not a contract consumer of the workspace (consumers: {names})"
+                    )
+            rc, doc = draft.draft_for(ws, consumer, qid)
+            if rc != 0:
+                err = doc["error"]
+                raise ToolError(f"{err['code']}: {err['message']}")
+            return doc
+
+        self._reg(
+            "linked_question_draft",
+            "A text-only DRAFT of what to change in a consumer for one open linked question: the "
+            "findings with the consumer's pinned facts, the `[[import]]` tables that rely on "
+            "them (by position), replacement-only edit suggestions (never a removed claim) and "
+            "the consumer's own spec rules that name the endpoint (a text match, not verified "
+            "reliance). `id`: a question id from `linked_question_list` (lq1, ...); `consumer`: "
+            "a workspace project name (default: the active project when it is a consumer with "
+            "an opted-in link). Returns what `lattice contracts questions draft CONSUMER ID "
+            "--json` prints (`text` is the draft). Read-only and never applied: nothing is "
+            "written, pinned, resolved or proposed; the consumer's owner decides.",
+            {
+                "consumer": {"type": "string", "description": "a project name of the workspace"},
+                "id": {"type": "string", "description": "a question id (lq1, lq2, ...)"},
+            },
+            linked_question_draft,
+            required=("id",),
         )
 
 

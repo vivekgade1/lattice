@@ -1,0 +1,2266 @@
+{
+ "id": "P1",
+ "prediction": "13/13 contradiction rows as the table (imports exactly, hunks exactly, rules exactly with the planted spec, none without), identical 10/10 and across two scratch roots; 11 + 11 no-draft (library not_contradiction exit 1, CLI unknown_question exit 2); dismissed D2 not_open exit 1; superseded lq1 produced with the line; variants stale trace, pin moved, imports deleted, two-adds 4/4 as described; 28/28 in all",
+ "observed": "13/13 contradiction rows as predicted; no-draft 11/11 (x2 channels); identical 10 runs True, two roots True; dismissed True, superseded True; variants stale True, pin True, imports True, two-adds True; row==question True",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "job-D1": true,
+  "job-D2": true,
+  "job-D3": true,
+  "job-D4": true,
+  "job-D5": true,
+  "streak-D1": true,
+  "streak-D2": true,
+  "streak-D3": true,
+  "streak-D4": true,
+  "streak-D5": true,
+  "streak-D6": true,
+  "streak-D7": true,
+  "I3x-b": true,
+  "nodraft-job-D6": true,
+  "nodraft-job-D7": true,
+  "nodraft-job-D8": true,
+  "nodraft-job-D9": true,
+  "nodraft-job-D10": true,
+  "nodraft-streak-D8": true,
+  "nodraft-streak-D9": true,
+  "nodraft-streak-D10": true,
+  "nodraft-streak-D11": true,
+  "nodraft-streak-D12": true,
+  "nodraft-streak-D13": true,
+  "identical_10_runs": true,
+  "identical_two_roots": true,
+  "dismissed_not_open": true,
+  "superseded_line": true,
+  "variant_stale_trace": true,
+  "variant_pin_moved": true,
+  "variant_imports_deleted": true,
+  "variant_two_adds": true,
+  "row_equals_question_draft": true
+ },
+ "extra": {
+  "diffs": {},
+  "variants": {
+   "stale_trace": {
+    "rules": [
+     "R3"
+    ],
+    "trace": [
+     "stale"
+    ],
+    "scen": [
+     []
+    ],
+    "has_sentence": true
+   },
+   "pin_moved": {
+    "pin_rc": 0,
+    "lock_changed": true,
+    "before_note": "pin moved: the lock now holds spec_hash 799527061f00, this question was raised against 9bcae0e24da9; before facts are omitted",
+    "any_before": false,
+    "edits": [
+     [
+      4,
+      "status",
+      201,
+      200
+     ]
+    ]
+   },
+   "imports_deleted": {
+    "rc": 0,
+    "imports_error": "no_imports",
+    "n_findings": 2,
+    "edits": []
+   },
+   "two_adds": {
+    "rc": 0,
+    "edits": [],
+    "rules": [
+     "R4"
+    ],
+    "wording": [
+     null
+    ]
+   }
+  },
+  "cross": {
+   "job-D2": {
+    "rc": 0,
+    "same": true,
+    "id": "row"
+   },
+   "streak-D2": {
+    "rc": 0,
+    "same": true,
+    "id": "row"
+   }
+  },
+  "first_run": {
+   "I3x-b": {
+    "nospec": {
+     "err": "",
+     "json": {
+      "applied": false,
+      "before_note": null,
+      "consumer": "streak-widget",
+      "contract": "static",
+      "edits": [],
+      "findings": [
+       {
+        "after": "the provider excludes it from its contract (exclude in the workspace manifest)",
+        "before": "not in the pinned export",
+        "class": "BROKEN",
+        "endpoint": "PUT /test/clock",
+        "item": "",
+        "kind": "endpoint_missing",
+        "line": "  BROKEN   endpoint_missing  @ PUT /test/clock"
+       }
+      ],
+      "format": 1,
+      "imports": [
+       {
+        "broken": [
+         {
+          "item": "",
+          "kind": "endpoint_missing"
+         }
+        ],
+        "changed": [],
+        "endpoint": "PUT /test/clock",
+        "number": 8,
+        "table": {
+         "auth": "public",
+         "endpoint": "PUT /test/clock",
+         "provider": "streak",
+         "request_fields": [
+          "now"
+         ],
+         "response_fields": [],
+         "status": [
+          200
+         ]
+        }
+       }
+      ],
+      "imports_error": null,
+      "kind": "consumer_draft",
+      "no_edit": [
+       {
+        "advice": "Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+        "endpoint": "PUT /test/clock",
+        "reason": "streak excludes PUT /test/clock from its contract (exclude in its manifest)"
+       }
+      ],
+      "no_longer_imported": [],
+      "pinned_spec_hash": "7f1bf3ff7a345e8ef7accbeb19f2cb88a40602b64baa56c3b0449fedb17bbb74",
+      "provider": "streak",
+      "provider_after_spec_hash": "7f1bf3ff7a345e8ef7accbeb19f2cb88a40602b64baa56c3b0449fedb17bbb74",
+      "question": {
+       "id": "lq1",
+       "label": "contradiction",
+       "status": "open",
+       "superseded": null
+      },
+      "rules": [],
+      "rules_note": "streak-widget has no Lattice spec: no rule to edit",
+      "sha256": "f1898769a63adfac5419270f60395d7779543b22f46b300de4888a80eef885d6",
+      "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 7f1bf3ff7a34; streak now spec_hash 7f1bf3ff7a34 (commit a0db033a)\n  BROKEN   endpoint_missing  @ PUT /test/clock\n    before: not in the pinned export\n    after: the provider excludes it from its contract (exclude in the workspace manifest)\n\n## 2. Imports that rely on it\nimport #8: PUT /test/clock  status [200], auth public, request_fields [now], response_fields []\n    broken claim: endpoint_missing\n\n## 3. Suggested edits (verify in the code first)\n- PUT /test/clock: no edit suggested: streak excludes PUT /test/clock from its contract (exclude in its manifest). Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+     },
+     "json_raw_sha": "44968d4646f9d38c6f04a8df34dd0e9f342bd8e57b89889dcf0b14b3c2356acf",
+     "rc": 0,
+     "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 7f1bf3ff7a34; streak now spec_hash 7f1bf3ff7a34 (commit a0db033a)\n  BROKEN   endpoint_missing  @ PUT /test/clock\n    before: not in the pinned export\n    after: the provider excludes it from its contract (exclude in the workspace manifest)\n\n## 2. Imports that rely on it\nimport #8: PUT /test/clock  status [200], auth public, request_fields [now], response_fields []\n    broken claim: endpoint_missing\n\n## 3. Suggested edits (verify in the code first)\n- PUT /test/clock: no edit suggested: streak excludes PUT /test/clock from its contract (exclude in its manifest). Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+     "text_rc": 0
+    },
+    "table": [
+     8
+    ]
+   },
+   "job": {
+    "D1": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "ci-bot",
+       "contract": "static",
+       "edits": [],
+       "findings": [
+        {
+         "after": "the endpoint is not in the provider's spec",
+         "before": "statuses [200]; request fields []; query fields []; response fields [id, status]; auth unknown, granted [eve]",
+         "class": "BROKEN",
+         "endpoint": "GET /applications/{}/jobs/{}/runs",
+         "item": "",
+         "kind": "endpoint_missing",
+         "line": "  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "",
+           "kind": "endpoint_missing"
+          }
+         ],
+         "changed": [],
+         "endpoint": "GET /applications/{}/jobs/{}/runs",
+         "number": 6,
+         "table": {
+          "as_user": "eve",
+          "auth": "token",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "provider": "scheduler",
+          "request_fields": [],
+          "response_fields": [
+           "id",
+           "status"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [
+        {
+         "advice": "Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "GET /applications/{}/jobs/{}/runs",
+         "reason": "GET /applications/{}/jobs/{}/runs is no longer in scheduler's spec"
+        }
+       ],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "provider": "scheduler",
+       "provider_after_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "ci-bot has no Lattice spec: no rule to edit",
+       "sha256": "3e062867e2d3fe62d0b86567eadd33485c4cfa40059d7fc453c5ef0e5a333932",
+       "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 8c2b202396de (commit fca2bdf9)\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n    before: statuses [200]; request fields []; query fields []; response fields [id, status]; auth unknown, granted [eve]\n    after: the endpoint is not in the provider's spec\n\n## 2. Imports that rely on it\nimport #6: GET /applications/{}/jobs/{}/runs  status [200], auth token as eve, request_fields [], response_fields [id, status]\n    broken claim: endpoint_missing\n\n## 3. Suggested edits (verify in the code first)\n- GET /applications/{}/jobs/{}/runs: no edit suggested: GET /applications/{}/jobs/{}/runs is no longer in scheduler's spec. Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nci-bot has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "3900ff7ff874db0c39b9aa0c4f4ac92ae19aa7f4a2f86d0637dbda7e3ce42f67",
+      "rc": 0,
+      "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 8c2b202396de (commit fca2bdf9)\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n    before: statuses [200]; request fields []; query fields []; response fields [id, status]; auth unknown, granted [eve]\n    after: the endpoint is not in the provider's spec\n\n## 2. Imports that rely on it\nimport #6: GET /applications/{}/jobs/{}/runs  status [200], auth token as eve, request_fields [], response_fields [id, status]\n    broken claim: endpoint_missing\n\n## 3. Suggested edits (verify in the code first)\n- GET /applications/{}/jobs/{}/runs: no edit suggested: GET /applications/{}/jobs/{}/runs is no longer in scheduler's spec. Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nci-bot has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1",
+     "spec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "ci-bot",
+       "contract": "static",
+       "edits": [],
+       "findings": [
+        {
+         "after": "the endpoint is not in the provider's spec",
+         "before": "statuses [200]; request fields []; query fields []; response fields [id, status]; auth unknown, granted [eve]",
+         "class": "BROKEN",
+         "endpoint": "GET /applications/{}/jobs/{}/runs",
+         "item": "",
+         "kind": "endpoint_missing",
+         "line": "  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "",
+           "kind": "endpoint_missing"
+          }
+         ],
+         "changed": [],
+         "endpoint": "GET /applications/{}/jobs/{}/runs",
+         "number": 6,
+         "table": {
+          "as_user": "eve",
+          "auth": "token",
+          "endpoint": "GET /applications/{}/jobs/{}/runs",
+          "provider": "scheduler",
+          "request_fields": [],
+          "response_fields": [
+           "id",
+           "status"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [
+        {
+         "advice": "Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "GET /applications/{}/jobs/{}/runs",
+         "reason": "GET /applications/{}/jobs/{}/runs is no longer in scheduler's spec"
+        }
+       ],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "provider": "scheduler",
+       "provider_after_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [
+        {
+         "endpoints": [
+          "GET /applications/{}/jobs/{}/runs"
+         ],
+         "id": "R4",
+         "scenarios": [
+          "timeout_cancel"
+         ],
+         "text": "On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading status.",
+         "trace": "ok",
+         "wording": null
+        }
+       ],
+       "rules_note": null,
+       "sha256": "2192a2e388035a46869646b0138a42e4771e994106624ae6998aa00ba25a9c2a",
+       "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 8c2b202396de (commit fca2bdf9)\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n    before: statuses [200]; request fields []; query fields []; response fields [id, status]; auth unknown, granted [eve]\n    after: the endpoint is not in the provider's spec\n\n## 2. Imports that rely on it\nimport #6: GET /applications/{}/jobs/{}/runs  status [200], auth token as eve, request_fields [], response_fields [id, status]\n    broken claim: endpoint_missing\n\n## 3. Suggested edits (verify in the code first)\n- GET /applications/{}/jobs/{}/runs: no edit suggested: GET /applications/{}/jobs/{}/runs is no longer in scheduler's spec. Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR4: On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading status.\n    names: GET /applications/{}/jobs/{}/runs\n    scenarios: timeout_cancel\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "7e86463975b735e554756e027c9ca504ceabda501d064f5beb5a6258beaad38d",
+      "rc": 0,
+      "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 8c2b202396de (commit fca2bdf9)\n  BROKEN   endpoint_missing  @ GET /applications/{}/jobs/{}/runs\n    before: statuses [200]; request fields []; query fields []; response fields [id, status]; auth unknown, granted [eve]\n    after: the endpoint is not in the provider's spec\n\n## 2. Imports that rely on it\nimport #6: GET /applications/{}/jobs/{}/runs  status [200], auth token as eve, request_fields [], response_fields [id, status]\n    broken claim: endpoint_missing\n\n## 3. Suggested edits (verify in the code first)\n- GET /applications/{}/jobs/{}/runs: no edit suggested: GET /applications/{}/jobs/{}/runs is no longer in scheduler's spec. Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR4: On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading status.\n    names: GET /applications/{}/jobs/{}/runs\n    scenarios: timeout_cancel\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     }
+    },
+    "D10": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "unaffected",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    },
+    "D2": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "ci-bot",
+       "contract": "static",
+       "edits": [
+        {
+         "after": [
+          200
+         ],
+         "before": [
+          201
+         ],
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "import": 4,
+         "key": "status",
+         "new": 200,
+         "old": 201,
+         "text": "status = [201] -> [200]"
+        }
+       ],
+       "findings": [
+        {
+         "after": "the spec now shows statuses [200, 401, 404, 409]",
+         "before": "statuses [201, 401, 404, 409]",
+         "class": "BROKEN",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "item": "201",
+         "kind": "status_not_observed",
+         "line": "  BROKEN   status_not_observed  201  @ POST /applications/{}/jobs/{}/runs"
+        },
+        {
+         "after": "status 200 is now observed",
+         "before": "statuses [201, 401, 404, 409]",
+         "class": "CHANGED",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "item": "200",
+         "kind": "status_added",
+         "line": "  CHANGED* status_added  200  @ POST /applications/{}/jobs/{}/runs"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "201",
+           "kind": "status_not_observed"
+          }
+         ],
+         "changed": [
+          {
+           "item": "200",
+           "kind": "status_added"
+          }
+         ],
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "number": 4,
+         "table": {
+          "as_user": "eve",
+          "auth": "token",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "provider": "scheduler",
+          "request_fields": [],
+          "response_fields": [
+           "id",
+           "status"
+          ],
+          "status": [
+           201
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "provider": "scheduler",
+       "provider_after_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "ci-bot has no Lattice spec: no rule to edit",
+       "sha256": "ba08bbac318857ac0c23f728e383172af5d6d915ae4d1bdf2709df5d4667e522",
+       "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 24c5fd8f4800 (commit c73bea6e)\n  BROKEN   status_not_observed  201  @ POST /applications/{}/jobs/{}/runs\n    before: statuses [201, 401, 404, 409]\n    after: the spec now shows statuses [200, 401, 404, 409]\n  CHANGED* status_added  200  @ POST /applications/{}/jobs/{}/runs\n    before: statuses [201, 401, 404, 409]\n    after: status 200 is now observed\n\n## 2. Imports that rely on it\nimport #4: POST /applications/{}/jobs/{}/runs  status [201], auth token as eve, request_fields [], response_fields [id, status]\n    broken claim: status_not_observed 201\n    relied change: status_added 200\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #4: status = [201] -> [200]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nci-bot has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "afe75c7b15a52b811ec133214b71cba5fc8c236c3c8758710815b06d65873306",
+      "rc": 0,
+      "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 24c5fd8f4800 (commit c73bea6e)\n  BROKEN   status_not_observed  201  @ POST /applications/{}/jobs/{}/runs\n    before: statuses [201, 401, 404, 409]\n    after: the spec now shows statuses [200, 401, 404, 409]\n  CHANGED* status_added  200  @ POST /applications/{}/jobs/{}/runs\n    before: statuses [201, 401, 404, 409]\n    after: status 200 is now observed\n\n## 2. Imports that rely on it\nimport #4: POST /applications/{}/jobs/{}/runs  status [201], auth token as eve, request_fields [], response_fields [id, status]\n    broken claim: status_not_observed 201\n    relied change: status_added 200\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #4: status = [201] -> [200]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nci-bot has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1",
+     "spec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "ci-bot",
+       "contract": "static",
+       "edits": [
+        {
+         "after": [
+          200
+         ],
+         "before": [
+          201
+         ],
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "import": 4,
+         "key": "status",
+         "new": 200,
+         "old": 201,
+         "text": "status = [201] -> [200]"
+        }
+       ],
+       "findings": [
+        {
+         "after": "the spec now shows statuses [200, 401, 404, 409]",
+         "before": "statuses [201, 401, 404, 409]",
+         "class": "BROKEN",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "item": "201",
+         "kind": "status_not_observed",
+         "line": "  BROKEN   status_not_observed  201  @ POST /applications/{}/jobs/{}/runs"
+        },
+        {
+         "after": "status 200 is now observed",
+         "before": "statuses [201, 401, 404, 409]",
+         "class": "CHANGED",
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "item": "200",
+         "kind": "status_added",
+         "line": "  CHANGED* status_added  200  @ POST /applications/{}/jobs/{}/runs"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "201",
+           "kind": "status_not_observed"
+          }
+         ],
+         "changed": [
+          {
+           "item": "200",
+           "kind": "status_added"
+          }
+         ],
+         "endpoint": "POST /applications/{}/jobs/{}/runs",
+         "number": 4,
+         "table": {
+          "as_user": "eve",
+          "auth": "token",
+          "endpoint": "POST /applications/{}/jobs/{}/runs",
+          "provider": "scheduler",
+          "request_fields": [],
+          "response_fields": [
+           "id",
+           "status"
+          ],
+          "status": [
+           201
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "provider": "scheduler",
+       "provider_after_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [
+        {
+         "endpoints": [
+          "POST /applications/{}/jobs/{}/runs"
+         ],
+         "id": "R3",
+         "scenarios": [
+          "start_run"
+         ],
+         "text": "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 201 with id and status.",
+         "trace": "ok",
+         "wording": "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 200 with id and status."
+        }
+       ],
+       "rules_note": null,
+       "sha256": "01e72f4339e442de79f940be5bbf41d17416050bd683622a2da3f486f3a213e4",
+       "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 24c5fd8f4800 (commit c73bea6e)\n  BROKEN   status_not_observed  201  @ POST /applications/{}/jobs/{}/runs\n    before: statuses [201, 401, 404, 409]\n    after: the spec now shows statuses [200, 401, 404, 409]\n  CHANGED* status_added  200  @ POST /applications/{}/jobs/{}/runs\n    before: statuses [201, 401, 404, 409]\n    after: status 200 is now observed\n\n## 2. Imports that rely on it\nimport #4: POST /applications/{}/jobs/{}/runs  status [201], auth token as eve, request_fields [], response_fields [id, status]\n    broken claim: status_not_observed 201\n    relied change: status_added 200\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #4: status = [201] -> [200]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR3: It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 201 with id and status.\n    names: POST /applications/{}/jobs/{}/runs\n    scenarios: start_run\n    suggested wording: It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 200 with id and status.\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "a2cf00a74f72ac6ef7756c404fd74f096d476da93aedc9c7f4e4fe2845f091f2",
+      "rc": 0,
+      "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 24c5fd8f4800 (commit c73bea6e)\n  BROKEN   status_not_observed  201  @ POST /applications/{}/jobs/{}/runs\n    before: statuses [201, 401, 404, 409]\n    after: the spec now shows statuses [200, 401, 404, 409]\n  CHANGED* status_added  200  @ POST /applications/{}/jobs/{}/runs\n    before: statuses [201, 401, 404, 409]\n    after: status 200 is now observed\n\n## 2. Imports that rely on it\nimport #4: POST /applications/{}/jobs/{}/runs  status [201], auth token as eve, request_fields [], response_fields [id, status]\n    broken claim: status_not_observed 201\n    relied change: status_added 200\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #4: status = [201] -> [200]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR3: It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 201 with id and status.\n    names: POST /applications/{}/jobs/{}/runs\n    scenarios: start_run\n    suggested wording: It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 200 with id and status.\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     }
+    },
+    "D3": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "ci-bot",
+       "contract": "static",
+       "edits": [
+        {
+         "after": [
+          "state"
+         ],
+         "before": [
+          "status"
+         ],
+         "endpoint": "POST /applications/{}/runs/{}/cancel",
+         "import": 7,
+         "key": "response_fields",
+         "new": "state",
+         "old": "status",
+         "text": "response_fields = [\"status\"] -> [\"state\"]"
+        }
+       ],
+       "findings": [
+        {
+         "after": "the spec now shows response fields ['id', 'state']",
+         "before": "response fields [id, status]",
+         "class": "BROKEN",
+         "endpoint": "POST /applications/{}/runs/{}/cancel",
+         "item": "status",
+         "kind": "response_field_missing",
+         "line": "  BROKEN   response_field_missing  status  @ POST /applications/{}/runs/{}/cancel"
+        },
+        {
+         "after": "response field state is now shown",
+         "before": "response fields [id, status]",
+         "class": "CHANGED",
+         "endpoint": "POST /applications/{}/runs/{}/cancel",
+         "item": "state",
+         "kind": "field_added",
+         "line": "  CHANGED* field_added  response  state  @ POST /applications/{}/runs/{}/cancel"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "status",
+           "kind": "response_field_missing"
+          }
+         ],
+         "changed": [
+          {
+           "item": "state",
+           "kind": "field_added"
+          }
+         ],
+         "endpoint": "POST /applications/{}/runs/{}/cancel",
+         "number": 7,
+         "table": {
+          "as_user": "eve",
+          "auth": "token",
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "provider": "scheduler",
+          "request_fields": [],
+          "response_fields": [
+           "status"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "provider": "scheduler",
+       "provider_after_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "ci-bot has no Lattice spec: no rule to edit",
+       "sha256": "138416964495f02016b9611fced39484c9f76baf5bb57d5c14f58e9bb5609323",
+       "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 799527061f00 (commit b1bd059d)\n  BROKEN   response_field_missing  status  @ POST /applications/{}/runs/{}/cancel\n    before: response fields [id, status]\n    after: the spec now shows response fields ['id', 'state']\n  CHANGED* field_added  response  state  @ POST /applications/{}/runs/{}/cancel\n    before: response fields [id, status]\n    after: response field state is now shown\n\n## 2. Imports that rely on it\nimport #7: POST /applications/{}/runs/{}/cancel  status [200], auth token as eve, request_fields [], response_fields [status]\n    broken claim: response_field_missing status\n    relied change: field_added state\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #7: response_fields = [\"status\"] -> [\"state\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nci-bot has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "7ee54b6b3ce735f509fd2f40ac59f761a97b4773833e6f1b994ad63d5fdf62b6",
+      "rc": 0,
+      "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 799527061f00 (commit b1bd059d)\n  BROKEN   response_field_missing  status  @ POST /applications/{}/runs/{}/cancel\n    before: response fields [id, status]\n    after: the spec now shows response fields ['id', 'state']\n  CHANGED* field_added  response  state  @ POST /applications/{}/runs/{}/cancel\n    before: response fields [id, status]\n    after: response field state is now shown\n\n## 2. Imports that rely on it\nimport #7: POST /applications/{}/runs/{}/cancel  status [200], auth token as eve, request_fields [], response_fields [status]\n    broken claim: response_field_missing status\n    relied change: field_added state\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #7: response_fields = [\"status\"] -> [\"state\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nci-bot has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1",
+     "spec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "ci-bot",
+       "contract": "static",
+       "edits": [
+        {
+         "after": [
+          "state"
+         ],
+         "before": [
+          "status"
+         ],
+         "endpoint": "POST /applications/{}/runs/{}/cancel",
+         "import": 7,
+         "key": "response_fields",
+         "new": "state",
+         "old": "status",
+         "text": "response_fields = [\"status\"] -> [\"state\"]"
+        }
+       ],
+       "findings": [
+        {
+         "after": "the spec now shows response fields ['id', 'state']",
+         "before": "response fields [id, status]",
+         "class": "BROKEN",
+         "endpoint": "POST /applications/{}/runs/{}/cancel",
+         "item": "status",
+         "kind": "response_field_missing",
+         "line": "  BROKEN   response_field_missing  status  @ POST /applications/{}/runs/{}/cancel"
+        },
+        {
+         "after": "response field state is now shown",
+         "before": "response fields [id, status]",
+         "class": "CHANGED",
+         "endpoint": "POST /applications/{}/runs/{}/cancel",
+         "item": "state",
+         "kind": "field_added",
+         "line": "  CHANGED* field_added  response  state  @ POST /applications/{}/runs/{}/cancel"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "status",
+           "kind": "response_field_missing"
+          }
+         ],
+         "changed": [
+          {
+           "item": "state",
+           "kind": "field_added"
+          }
+         ],
+         "endpoint": "POST /applications/{}/runs/{}/cancel",
+         "number": 7,
+         "table": {
+          "as_user": "eve",
+          "auth": "token",
+          "endpoint": "POST /applications/{}/runs/{}/cancel",
+          "provider": "scheduler",
+          "request_fields": [],
+          "response_fields": [
+           "status"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "provider": "scheduler",
+       "provider_after_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [
+        {
+         "endpoints": [
+          "POST /applications/{}/runs/{}/cancel"
+         ],
+         "id": "R4",
+         "scenarios": [
+          "timeout_cancel"
+         ],
+         "text": "On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading status.",
+         "trace": "ok",
+         "wording": "On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading state."
+        }
+       ],
+       "rules_note": null,
+       "sha256": "3c20e774e5771157888c3600ea53eea0d1e446e6a528fc3db204adf3c8fed36e",
+       "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 799527061f00 (commit b1bd059d)\n  BROKEN   response_field_missing  status  @ POST /applications/{}/runs/{}/cancel\n    before: response fields [id, status]\n    after: the spec now shows response fields ['id', 'state']\n  CHANGED* field_added  response  state  @ POST /applications/{}/runs/{}/cancel\n    before: response fields [id, status]\n    after: response field state is now shown\n\n## 2. Imports that rely on it\nimport #7: POST /applications/{}/runs/{}/cancel  status [200], auth token as eve, request_fields [], response_fields [status]\n    broken claim: response_field_missing status\n    relied change: field_added state\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #7: response_fields = [\"status\"] -> [\"state\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR4: On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading status.\n    names: POST /applications/{}/runs/{}/cancel\n    scenarios: timeout_cancel\n    suggested wording: On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading state.\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "40bbc7f4e2ce97f6760c4cabc61cf78f2ac36abf86e5d003f859698cedeeb98b",
+      "rc": 0,
+      "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 799527061f00 (commit b1bd059d)\n  BROKEN   response_field_missing  status  @ POST /applications/{}/runs/{}/cancel\n    before: response fields [id, status]\n    after: the spec now shows response fields ['id', 'state']\n  CHANGED* field_added  response  state  @ POST /applications/{}/runs/{}/cancel\n    before: response fields [id, status]\n    after: response field state is now shown\n\n## 2. Imports that rely on it\nimport #7: POST /applications/{}/runs/{}/cancel  status [200], auth token as eve, request_fields [], response_fields [status]\n    broken claim: response_field_missing status\n    relied change: field_added state\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #7: response_fields = [\"status\"] -> [\"state\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR4: On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading status.\n    names: POST /applications/{}/runs/{}/cancel\n    scenarios: timeout_cancel\n    suggested wording: On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading state.\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     }
+    },
+    "D4": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "ci-bot",
+       "contract": "static",
+       "edits": [
+        {
+         "after": [
+          "username",
+          "password"
+         ],
+         "before": [
+          "email",
+          "password"
+         ],
+         "endpoint": "POST /auth/login",
+         "import": 1,
+         "key": "request_fields",
+         "new": "username",
+         "old": "email",
+         "text": "request_fields = [\"email\", \"password\"] -> [\"username\", \"password\"]"
+        }
+       ],
+       "findings": [
+        {
+         "after": "the spec now shows request fields ['password', 'username']",
+         "before": "request fields [email, password]; query fields []",
+         "class": "BROKEN",
+         "endpoint": "POST /auth/login",
+         "item": "email",
+         "kind": "request_field_missing",
+         "line": "  BROKEN   request_field_missing  email  @ POST /auth/login"
+        },
+        {
+         "after": "request field username is now shown",
+         "before": "request fields [email, password]; query fields []",
+         "class": "CHANGED",
+         "endpoint": "POST /auth/login",
+         "item": "username",
+         "kind": "field_added",
+         "line": "  CHANGED* field_added  request  username  @ POST /auth/login"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "email",
+           "kind": "request_field_missing"
+          }
+         ],
+         "changed": [
+          {
+           "item": "username",
+           "kind": "field_added"
+          }
+         ],
+         "endpoint": "POST /auth/login",
+         "number": 1,
+         "table": {
+          "auth": "public",
+          "endpoint": "POST /auth/login",
+          "provider": "scheduler",
+          "request_fields": [
+           "email",
+           "password"
+          ],
+          "response_fields": [
+           "access_token"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "provider": "scheduler",
+       "provider_after_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "ci-bot has no Lattice spec: no rule to edit",
+       "sha256": "63671d4cdc1909146107bc8f59ef3cf96c62bef37175d4e26520ae388725e16f",
+       "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash ad33f739200d (commit a090159b)\n  BROKEN   request_field_missing  email  @ POST /auth/login\n    before: request fields [email, password]; query fields []\n    after: the spec now shows request fields ['password', 'username']\n  CHANGED* field_added  request  username  @ POST /auth/login\n    before: request fields [email, password]; query fields []\n    after: request field username is now shown\n\n## 2. Imports that rely on it\nimport #1: POST /auth/login  status [200], auth public, request_fields [email, password], response_fields [access_token]\n    broken claim: request_field_missing email\n    relied change: field_added username\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #1: request_fields = [\"email\", \"password\"] -> [\"username\", \"password\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nci-bot has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "77a4fbb30d08ca6f8c709f46709ed3f4f3d8f26f409ac12971ff8c090459355a",
+      "rc": 0,
+      "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash ad33f739200d (commit a090159b)\n  BROKEN   request_field_missing  email  @ POST /auth/login\n    before: request fields [email, password]; query fields []\n    after: the spec now shows request fields ['password', 'username']\n  CHANGED* field_added  request  username  @ POST /auth/login\n    before: request fields [email, password]; query fields []\n    after: request field username is now shown\n\n## 2. Imports that rely on it\nimport #1: POST /auth/login  status [200], auth public, request_fields [email, password], response_fields [access_token]\n    broken claim: request_field_missing email\n    relied change: field_added username\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #1: request_fields = [\"email\", \"password\"] -> [\"username\", \"password\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nci-bot has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1",
+     "spec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "ci-bot",
+       "contract": "static",
+       "edits": [
+        {
+         "after": [
+          "username",
+          "password"
+         ],
+         "before": [
+          "email",
+          "password"
+         ],
+         "endpoint": "POST /auth/login",
+         "import": 1,
+         "key": "request_fields",
+         "new": "username",
+         "old": "email",
+         "text": "request_fields = [\"email\", \"password\"] -> [\"username\", \"password\"]"
+        }
+       ],
+       "findings": [
+        {
+         "after": "the spec now shows request fields ['password', 'username']",
+         "before": "request fields [email, password]; query fields []",
+         "class": "BROKEN",
+         "endpoint": "POST /auth/login",
+         "item": "email",
+         "kind": "request_field_missing",
+         "line": "  BROKEN   request_field_missing  email  @ POST /auth/login"
+        },
+        {
+         "after": "request field username is now shown",
+         "before": "request fields [email, password]; query fields []",
+         "class": "CHANGED",
+         "endpoint": "POST /auth/login",
+         "item": "username",
+         "kind": "field_added",
+         "line": "  CHANGED* field_added  request  username  @ POST /auth/login"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "email",
+           "kind": "request_field_missing"
+          }
+         ],
+         "changed": [
+          {
+           "item": "username",
+           "kind": "field_added"
+          }
+         ],
+         "endpoint": "POST /auth/login",
+         "number": 1,
+         "table": {
+          "auth": "public",
+          "endpoint": "POST /auth/login",
+          "provider": "scheduler",
+          "request_fields": [
+           "email",
+           "password"
+          ],
+          "response_fields": [
+           "access_token"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "provider": "scheduler",
+       "provider_after_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [
+        {
+         "endpoints": [
+          "POST /auth/login"
+         ],
+         "id": "R1",
+         "scenarios": [
+          "login"
+         ],
+         "text": "ci-bot logs in with POST /auth/login using email and password and keeps the access_token.",
+         "trace": "ok",
+         "wording": "ci-bot logs in with POST /auth/login using username and password and keeps the access_token."
+        }
+       ],
+       "rules_note": null,
+       "sha256": "c4509a556336b99230088feb63c936dcf79b187fb04957f7ffcd067ce2673179",
+       "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash ad33f739200d (commit a090159b)\n  BROKEN   request_field_missing  email  @ POST /auth/login\n    before: request fields [email, password]; query fields []\n    after: the spec now shows request fields ['password', 'username']\n  CHANGED* field_added  request  username  @ POST /auth/login\n    before: request fields [email, password]; query fields []\n    after: request field username is now shown\n\n## 2. Imports that rely on it\nimport #1: POST /auth/login  status [200], auth public, request_fields [email, password], response_fields [access_token]\n    broken claim: request_field_missing email\n    relied change: field_added username\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #1: request_fields = [\"email\", \"password\"] -> [\"username\", \"password\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR1: ci-bot logs in with POST /auth/login using email and password and keeps the access_token.\n    names: POST /auth/login\n    scenarios: login\n    suggested wording: ci-bot logs in with POST /auth/login using username and password and keeps the access_token.\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "919c08c01cf73c3771ce9b548dd9e3d11c8e088c4d4306b7ebc2a6c7cdb65ec7",
+      "rc": 0,
+      "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash ad33f739200d (commit a090159b)\n  BROKEN   request_field_missing  email  @ POST /auth/login\n    before: request fields [email, password]; query fields []\n    after: the spec now shows request fields ['password', 'username']\n  CHANGED* field_added  request  username  @ POST /auth/login\n    before: request fields [email, password]; query fields []\n    after: request field username is now shown\n\n## 2. Imports that rely on it\nimport #1: POST /auth/login  status [200], auth public, request_fields [email, password], response_fields [access_token]\n    broken claim: request_field_missing email\n    relied change: field_added username\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #1: request_fields = [\"email\", \"password\"] -> [\"username\", \"password\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR1: ci-bot logs in with POST /auth/login using email and password and keeps the access_token.\n    names: POST /auth/login\n    scenarios: login\n    suggested wording: ci-bot logs in with POST /auth/login using username and password and keeps the access_token.\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     }
+    },
+    "D5": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "ci-bot",
+       "contract": "static",
+       "edits": [],
+       "findings": [
+        {
+         "after": "granted handles are now ['ann']",
+         "before": "auth unknown, granted [ann, eve]",
+         "class": "BROKEN",
+         "endpoint": "GET /applications/{}/runs/{}",
+         "item": "as_user:eve",
+         "kind": "auth_changed",
+         "line": "  BROKEN   auth_changed  as_user:eve  @ GET /applications/{}/runs/{}"
+        },
+        {
+         "after": "status 403 is now observed",
+         "before": "statuses [200, 404]",
+         "class": "CHANGED",
+         "endpoint": "GET /applications/{}/runs/{}",
+         "item": "403",
+         "kind": "status_added",
+         "line": "  CHANGED* status_added  403  @ GET /applications/{}/runs/{}"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "as_user:eve",
+           "kind": "auth_changed"
+          }
+         ],
+         "changed": [
+          {
+           "item": "403",
+           "kind": "status_added"
+          }
+         ],
+         "endpoint": "GET /applications/{}/runs/{}",
+         "number": 5,
+         "table": {
+          "as_user": "eve",
+          "auth": "token",
+          "endpoint": "GET /applications/{}/runs/{}",
+          "provider": "scheduler",
+          "request_fields": [],
+          "response_fields": [
+           "status",
+           "exit_code"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [
+        {
+         "advice": "Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "GET /applications/{}/runs/{}",
+         "reason": "the auth of GET /applications/{}/runs/{} changed (granted handles are now ['ann'])"
+        }
+       ],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "provider": "scheduler",
+       "provider_after_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "ci-bot has no Lattice spec: no rule to edit",
+       "sha256": "9491617d74645eb16f45a248b68393d425a9798dd030bae9eb9a4a904ab9dc12",
+       "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash bd8b0798044b (commit 8251b881)\n  BROKEN   auth_changed  as_user:eve  @ GET /applications/{}/runs/{}\n    before: auth unknown, granted [ann, eve]\n    after: granted handles are now ['ann']\n  CHANGED* status_added  403  @ GET /applications/{}/runs/{}\n    before: statuses [200, 404]\n    after: status 403 is now observed\n\n## 2. Imports that rely on it\nimport #5: GET /applications/{}/runs/{}  status [200], auth token as eve, request_fields [], response_fields [status, exit_code]\n    broken claim: auth_changed as_user:eve\n    relied change: status_added 403\n\n## 3. Suggested edits (verify in the code first)\n- GET /applications/{}/runs/{}: no edit suggested: the auth of GET /applications/{}/runs/{} changed (granted handles are now ['ann']). Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nci-bot has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "b612aeca5fd421e974729d3e19d308c4b5535a51b17c35a631989dd0868d1613",
+      "rc": 0,
+      "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash bd8b0798044b (commit 8251b881)\n  BROKEN   auth_changed  as_user:eve  @ GET /applications/{}/runs/{}\n    before: auth unknown, granted [ann, eve]\n    after: granted handles are now ['ann']\n  CHANGED* status_added  403  @ GET /applications/{}/runs/{}\n    before: statuses [200, 404]\n    after: status 403 is now observed\n\n## 2. Imports that rely on it\nimport #5: GET /applications/{}/runs/{}  status [200], auth token as eve, request_fields [], response_fields [status, exit_code]\n    broken claim: auth_changed as_user:eve\n    relied change: status_added 403\n\n## 3. Suggested edits (verify in the code first)\n- GET /applications/{}/runs/{}: no edit suggested: the auth of GET /applications/{}/runs/{} changed (granted handles are now ['ann']). Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nci-bot has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1",
+     "spec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "ci-bot",
+       "contract": "static",
+       "edits": [],
+       "findings": [
+        {
+         "after": "granted handles are now ['ann']",
+         "before": "auth unknown, granted [ann, eve]",
+         "class": "BROKEN",
+         "endpoint": "GET /applications/{}/runs/{}",
+         "item": "as_user:eve",
+         "kind": "auth_changed",
+         "line": "  BROKEN   auth_changed  as_user:eve  @ GET /applications/{}/runs/{}"
+        },
+        {
+         "after": "status 403 is now observed",
+         "before": "statuses [200, 404]",
+         "class": "CHANGED",
+         "endpoint": "GET /applications/{}/runs/{}",
+         "item": "403",
+         "kind": "status_added",
+         "line": "  CHANGED* status_added  403  @ GET /applications/{}/runs/{}"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "as_user:eve",
+           "kind": "auth_changed"
+          }
+         ],
+         "changed": [
+          {
+           "item": "403",
+           "kind": "status_added"
+          }
+         ],
+         "endpoint": "GET /applications/{}/runs/{}",
+         "number": 5,
+         "table": {
+          "as_user": "eve",
+          "auth": "token",
+          "endpoint": "GET /applications/{}/runs/{}",
+          "provider": "scheduler",
+          "request_fields": [],
+          "response_fields": [
+           "status",
+           "exit_code"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [
+        {
+         "advice": "Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "GET /applications/{}/runs/{}",
+         "reason": "the auth of GET /applications/{}/runs/{} changed (granted handles are now ['ann'])"
+        }
+       ],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+       "provider": "scheduler",
+       "provider_after_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [
+        {
+         "endpoints": [
+          "GET /applications/{}/runs/{}"
+         ],
+         "id": "R5",
+         "scenarios": [
+          "poll"
+         ],
+         "text": "It polls /applications/{app}/runs/{run} every 5 seconds until a final status.",
+         "trace": "ok",
+         "wording": null
+        }
+       ],
+       "rules_note": null,
+       "sha256": "25749c7c1ffee4754a98f70a30405bf04543a58320b1b51fef6d5342289a62cd",
+       "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash bd8b0798044b (commit 8251b881)\n  BROKEN   auth_changed  as_user:eve  @ GET /applications/{}/runs/{}\n    before: auth unknown, granted [ann, eve]\n    after: granted handles are now ['ann']\n  CHANGED* status_added  403  @ GET /applications/{}/runs/{}\n    before: statuses [200, 404]\n    after: status 403 is now observed\n\n## 2. Imports that rely on it\nimport #5: GET /applications/{}/runs/{}  status [200], auth token as eve, request_fields [], response_fields [status, exit_code]\n    broken claim: auth_changed as_user:eve\n    relied change: status_added 403\n\n## 3. Suggested edits (verify in the code first)\n- GET /applications/{}/runs/{}: no edit suggested: the auth of GET /applications/{}/runs/{} changed (granted handles are now ['ann']). Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR5: It polls /applications/{app}/runs/{run} every 5 seconds until a final status.\n    names: GET /applications/{}/runs/{}\n    scenarios: poll\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "fbfd3559bcd5e6b61854cae4323e1e7d419dd384fe3080f1c1edef30ef3bc303",
+      "rc": 0,
+      "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash bd8b0798044b (commit 8251b881)\n  BROKEN   auth_changed  as_user:eve  @ GET /applications/{}/runs/{}\n    before: auth unknown, granted [ann, eve]\n    after: granted handles are now ['ann']\n  CHANGED* status_added  403  @ GET /applications/{}/runs/{}\n    before: statuses [200, 404]\n    after: status 403 is now observed\n\n## 2. Imports that rely on it\nimport #5: GET /applications/{}/runs/{}  status [200], auth token as eve, request_fields [], response_fields [status, exit_code]\n    broken claim: auth_changed as_user:eve\n    relied change: status_added 403\n\n## 3. Suggested edits (verify in the code first)\n- GET /applications/{}/runs/{}: no edit suggested: the auth of GET /applications/{}/runs/{} changed (granted handles are now ['ann']). Ask scheduler's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR5: It polls /applications/{app}/runs/{run} every 5 seconds until a final status.\n    names: GET /applications/{}/runs/{}\n    scenarios: poll\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     }
+    },
+    "D6": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "unaffected",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    },
+    "D7": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "unaffected",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    },
+    "D8": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "regression",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    },
+    "D9": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "regression",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    }
+   },
+   "streak": {
+    "D1": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "streak-widget",
+       "contract": "static",
+       "edits": [],
+       "findings": [
+        {
+         "after": "the endpoint is not in the provider's spec",
+         "before": "statuses [200, 401]; request fields []; query fields []; response fields [habits, nudges, today]; auth token, granted [ann, ben]",
+         "class": "BROKEN",
+         "endpoint": "GET /v1/home",
+         "item": "",
+         "kind": "endpoint_missing",
+         "line": "  BROKEN   endpoint_missing  @ GET /v1/home"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "",
+           "kind": "endpoint_missing"
+          }
+         ],
+         "changed": [],
+         "endpoint": "GET /v1/home",
+         "number": 3,
+         "table": {
+          "as_user": "ann",
+          "auth": "token",
+          "endpoint": "GET /v1/home",
+          "provider": "streak",
+          "request_fields": [],
+          "response_fields": [
+           "today",
+           "nudges"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [
+        {
+         "advice": "Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "GET /v1/home",
+         "reason": "GET /v1/home is no longer in streak's spec"
+        }
+       ],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "provider": "streak",
+       "provider_after_spec_hash": "f0aba674e3f0329aa4947d86f50841603d39b0f8fd76e9be21716bf09086ce9d",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "streak-widget has no Lattice spec: no rule to edit",
+       "sha256": "be3e3bdf620f1da2f8aed279730651f0717bee031bee91166ce574962ac247b1",
+       "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash f0aba674e3f0 (commit 352ea6be)\n  BROKEN   endpoint_missing  @ GET /v1/home\n    before: statuses [200, 401]; request fields []; query fields []; response fields [habits, nudges, today]; auth token, granted [ann, ben]\n    after: the endpoint is not in the provider's spec\n\n## 2. Imports that rely on it\nimport #3: GET /v1/home  status [200], auth token as ann, request_fields [], response_fields [today, nudges]\n    broken claim: endpoint_missing\n\n## 3. Suggested edits (verify in the code first)\n- GET /v1/home: no edit suggested: GET /v1/home is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "47a54d3b7b6089058fc7150fd6e8632898ae9685c29f863a18859109d538be50",
+      "rc": 0,
+      "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash f0aba674e3f0 (commit 352ea6be)\n  BROKEN   endpoint_missing  @ GET /v1/home\n    before: statuses [200, 401]; request fields []; query fields []; response fields [habits, nudges, today]; auth token, granted [ann, ben]\n    after: the endpoint is not in the provider's spec\n\n## 2. Imports that rely on it\nimport #3: GET /v1/home  status [200], auth token as ann, request_fields [], response_fields [today, nudges]\n    broken claim: endpoint_missing\n\n## 3. Suggested edits (verify in the code first)\n- GET /v1/home: no edit suggested: GET /v1/home is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1"
+    },
+    "D10": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "regression",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    },
+    "D11": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "regression",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    },
+    "D12": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "unaffected",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    },
+    "D13": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "regression",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    },
+    "D2": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "streak-widget",
+       "contract": "static",
+       "edits": [
+        {
+         "after": [
+          204
+         ],
+         "before": [
+          200
+         ],
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "import": 7,
+         "key": "status",
+         "new": 204,
+         "old": 200,
+         "text": "status = [200] -> [204]"
+        }
+       ],
+       "findings": [
+        {
+         "after": "the spec now shows statuses [204, 401, 404, 409]",
+         "before": "statuses [200, 401, 404, 409]",
+         "class": "BROKEN",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "item": "200",
+         "kind": "status_not_observed",
+         "line": "  BROKEN   status_not_observed  200  @ POST /v1/nudges/{}/dismiss"
+        },
+        {
+         "after": "status 204 is now observed",
+         "before": "statuses [200, 401, 404, 409]",
+         "class": "CHANGED",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "item": "204",
+         "kind": "status_added",
+         "line": "  CHANGED* status_added  204  @ POST /v1/nudges/{}/dismiss"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "200",
+           "kind": "status_not_observed"
+          }
+         ],
+         "changed": [
+          {
+           "item": "204",
+           "kind": "status_added"
+          }
+         ],
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "number": 7,
+         "table": {
+          "as_user": "ann",
+          "auth": "token",
+          "endpoint": "POST /v1/nudges/{}/dismiss",
+          "provider": "streak",
+          "request_fields": [],
+          "response_fields": [
+           "id"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "provider": "streak",
+       "provider_after_spec_hash": "642bacb1999e4ef7b093a6d946039225bc5753776719aa19aa2747762a319484",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "streak-widget has no Lattice spec: no rule to edit",
+       "sha256": "6d85123473b7f41bd3a80080b9647834dd8e58138c0d301c9cbae00f1aa5ca4f",
+       "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash 642bacb1999e (commit 529bfbc8)\n  BROKEN   status_not_observed  200  @ POST /v1/nudges/{}/dismiss\n    before: statuses [200, 401, 404, 409]\n    after: the spec now shows statuses [204, 401, 404, 409]\n  CHANGED* status_added  204  @ POST /v1/nudges/{}/dismiss\n    before: statuses [200, 401, 404, 409]\n    after: status 204 is now observed\n\n## 2. Imports that rely on it\nimport #7: POST /v1/nudges/{}/dismiss  status [200], auth token as ann, request_fields [], response_fields [id]\n    broken claim: status_not_observed 200\n    relied change: status_added 204\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #7: status = [200] -> [204]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "51c89bdf6200aea9d8fafa018829c7bd130a5a81d9ff2602dc9831b1ef1337e0",
+      "rc": 0,
+      "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash 642bacb1999e (commit 529bfbc8)\n  BROKEN   status_not_observed  200  @ POST /v1/nudges/{}/dismiss\n    before: statuses [200, 401, 404, 409]\n    after: the spec now shows statuses [204, 401, 404, 409]\n  CHANGED* status_added  204  @ POST /v1/nudges/{}/dismiss\n    before: statuses [200, 401, 404, 409]\n    after: status 204 is now observed\n\n## 2. Imports that rely on it\nimport #7: POST /v1/nudges/{}/dismiss  status [200], auth token as ann, request_fields [], response_fields [id]\n    broken claim: status_not_observed 200\n    relied change: status_added 204\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #7: status = [200] -> [204]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1"
+    },
+    "D3": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "streak-widget",
+       "contract": "static",
+       "edits": [
+        {
+         "after": [
+          "access_token",
+          "expires_in_s"
+         ],
+         "before": [
+          "access_token",
+          "expires_in"
+         ],
+         "endpoint": "POST /v1/auth/login",
+         "import": 1,
+         "key": "response_fields",
+         "new": "expires_in_s",
+         "old": "expires_in",
+         "text": "response_fields = [\"access_token\", \"expires_in\"] -> [\"access_token\", \"expires_in_s\"]"
+        }
+       ],
+       "findings": [
+        {
+         "after": "the spec now shows response fields ['expires_in_s', 'token_type']",
+         "before": "response fields [expires_in, token_type]",
+         "class": "BROKEN",
+         "endpoint": "POST /v1/auth/login",
+         "item": "expires_in",
+         "kind": "response_field_missing",
+         "line": "  BROKEN   response_field_missing  expires_in  @ POST /v1/auth/login"
+        },
+        {
+         "after": "response field expires_in_s is now shown",
+         "before": "response fields [expires_in, token_type]",
+         "class": "CHANGED",
+         "endpoint": "POST /v1/auth/login",
+         "item": "expires_in_s",
+         "kind": "field_added",
+         "line": "  CHANGED* field_added  response  expires_in_s  @ POST /v1/auth/login"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "expires_in",
+           "kind": "response_field_missing"
+          }
+         ],
+         "changed": [
+          {
+           "item": "expires_in_s",
+           "kind": "field_added"
+          }
+         ],
+         "endpoint": "POST /v1/auth/login",
+         "number": 1,
+         "table": {
+          "auth": "public",
+          "endpoint": "POST /v1/auth/login",
+          "provider": "streak",
+          "request_fields": [
+           "email",
+           "password",
+           "installation_id"
+          ],
+          "response_fields": [
+           "access_token",
+           "expires_in"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "provider": "streak",
+       "provider_after_spec_hash": "a88adef3a32b8e3eeed80b0aeb2a8f58feeea6f46b9fb47aaa883a6f81a0f954",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "streak-widget has no Lattice spec: no rule to edit",
+       "sha256": "6474f33a6231ee486e2558ae2e26780615f13705d73659dd73f70fafe2d5b161",
+       "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash a88adef3a32b (commit bf87042b)\n  BROKEN   response_field_missing  expires_in  @ POST /v1/auth/login\n    before: response fields [expires_in, token_type]\n    after: the spec now shows response fields ['expires_in_s', 'token_type']\n  CHANGED* field_added  response  expires_in_s  @ POST /v1/auth/login\n    before: response fields [expires_in, token_type]\n    after: response field expires_in_s is now shown\n\n## 2. Imports that rely on it\nimport #1: POST /v1/auth/login  status [200], auth public, request_fields [email, password, installation_id], response_fields [access_token, expires_in]\n    broken claim: response_field_missing expires_in\n    relied change: field_added expires_in_s\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #1: response_fields = [\"access_token\", \"expires_in\"] -> [\"access_token\", \"expires_in_s\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "c53f1aa91413fed4eb2dc9636f59aef747118f687488c8b17d87b958070345f3",
+      "rc": 0,
+      "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash a88adef3a32b (commit bf87042b)\n  BROKEN   response_field_missing  expires_in  @ POST /v1/auth/login\n    before: response fields [expires_in, token_type]\n    after: the spec now shows response fields ['expires_in_s', 'token_type']\n  CHANGED* field_added  response  expires_in_s  @ POST /v1/auth/login\n    before: response fields [expires_in, token_type]\n    after: response field expires_in_s is now shown\n\n## 2. Imports that rely on it\nimport #1: POST /v1/auth/login  status [200], auth public, request_fields [email, password, installation_id], response_fields [access_token, expires_in]\n    broken claim: response_field_missing expires_in\n    relied change: field_added expires_in_s\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #1: response_fields = [\"access_token\", \"expires_in\"] -> [\"access_token\", \"expires_in_s\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1"
+    },
+    "D4": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "streak-widget",
+       "contract": "static",
+       "edits": [
+        {
+         "after": [
+          "email",
+          "passphrase",
+          "installation_id"
+         ],
+         "before": [
+          "email",
+          "password",
+          "installation_id"
+         ],
+         "endpoint": "POST /v1/auth/login",
+         "import": 1,
+         "key": "request_fields",
+         "new": "passphrase",
+         "old": "password",
+         "text": "request_fields = [\"email\", \"password\", \"installation_id\"] -> [\"email\", \"passphrase\", \"installation_id\"]"
+        }
+       ],
+       "findings": [
+        {
+         "after": "the spec now shows request fields ['email', 'installation_id', 'passphrase']",
+         "before": "request fields [email, installation_id, password]; query fields []",
+         "class": "BROKEN",
+         "endpoint": "POST /v1/auth/login",
+         "item": "password",
+         "kind": "request_field_missing",
+         "line": "  BROKEN   request_field_missing  password  @ POST /v1/auth/login"
+        },
+        {
+         "after": "request field passphrase is now shown",
+         "before": "request fields [email, installation_id, password]; query fields []",
+         "class": "CHANGED",
+         "endpoint": "POST /v1/auth/login",
+         "item": "passphrase",
+         "kind": "field_added",
+         "line": "  CHANGED* field_added  request  passphrase  @ POST /v1/auth/login"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "password",
+           "kind": "request_field_missing"
+          }
+         ],
+         "changed": [
+          {
+           "item": "passphrase",
+           "kind": "field_added"
+          }
+         ],
+         "endpoint": "POST /v1/auth/login",
+         "number": 1,
+         "table": {
+          "auth": "public",
+          "endpoint": "POST /v1/auth/login",
+          "provider": "streak",
+          "request_fields": [
+           "email",
+           "password",
+           "installation_id"
+          ],
+          "response_fields": [
+           "access_token",
+           "expires_in"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "provider": "streak",
+       "provider_after_spec_hash": "a0c76e8d94e208bfde69e4a03119bd74290655725b13bbb1c86e3d2ea7589002",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "streak-widget has no Lattice spec: no rule to edit",
+       "sha256": "f445a35cbd35e414542bee201181123274a075fc0d4ecbc354374c49f5d23d60",
+       "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash a0c76e8d94e2 (commit a46c1f3b)\n  BROKEN   request_field_missing  password  @ POST /v1/auth/login\n    before: request fields [email, installation_id, password]; query fields []\n    after: the spec now shows request fields ['email', 'installation_id', 'passphrase']\n  CHANGED* field_added  request  passphrase  @ POST /v1/auth/login\n    before: request fields [email, installation_id, password]; query fields []\n    after: request field passphrase is now shown\n\n## 2. Imports that rely on it\nimport #1: POST /v1/auth/login  status [200], auth public, request_fields [email, password, installation_id], response_fields [access_token, expires_in]\n    broken claim: request_field_missing password\n    relied change: field_added passphrase\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #1: request_fields = [\"email\", \"password\", \"installation_id\"] -> [\"email\", \"passphrase\", \"installation_id\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "06ef40bd920e41ede95ba6f4755f1c121beb9c542621fc70a89b94231074662e",
+      "rc": 0,
+      "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash a0c76e8d94e2 (commit a46c1f3b)\n  BROKEN   request_field_missing  password  @ POST /v1/auth/login\n    before: request fields [email, installation_id, password]; query fields []\n    after: the spec now shows request fields ['email', 'installation_id', 'passphrase']\n  CHANGED* field_added  request  passphrase  @ POST /v1/auth/login\n    before: request fields [email, installation_id, password]; query fields []\n    after: request field passphrase is now shown\n\n## 2. Imports that rely on it\nimport #1: POST /v1/auth/login  status [200], auth public, request_fields [email, password, installation_id], response_fields [access_token, expires_in]\n    broken claim: request_field_missing password\n    relied change: field_added passphrase\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #1: request_fields = [\"email\", \"password\", \"installation_id\"] -> [\"email\", \"passphrase\", \"installation_id\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1"
+    },
+    "D5": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "streak-widget",
+       "contract": "static",
+       "edits": [],
+       "findings": [
+        {
+         "after": "granted handles are now ['ben']",
+         "before": "auth token, granted [ann, ben]",
+         "class": "BROKEN",
+         "endpoint": "GET /v1/home",
+         "item": "as_user:ann",
+         "kind": "auth_changed",
+         "line": "  BROKEN   auth_changed  as_user:ann  @ GET /v1/home"
+        },
+        {
+         "after": "status 404 is now observed",
+         "before": "statuses [200, 401]",
+         "class": "CHANGED",
+         "endpoint": "GET /v1/home",
+         "item": "404",
+         "kind": "status_added",
+         "line": "  CHANGED* status_added  404  @ GET /v1/home"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "as_user:ann",
+           "kind": "auth_changed"
+          }
+         ],
+         "changed": [
+          {
+           "item": "404",
+           "kind": "status_added"
+          }
+         ],
+         "endpoint": "GET /v1/home",
+         "number": 3,
+         "table": {
+          "as_user": "ann",
+          "auth": "token",
+          "endpoint": "GET /v1/home",
+          "provider": "streak",
+          "request_fields": [],
+          "response_fields": [
+           "today",
+           "nudges"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [
+        {
+         "advice": "Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "GET /v1/home",
+         "reason": "the auth of GET /v1/home changed (granted handles are now ['ben'])"
+        }
+       ],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "provider": "streak",
+       "provider_after_spec_hash": "a25d50fe0fb6bda1f71cf7a91179bcfb2b454da73359494b44d46d4642f0f28e",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "streak-widget has no Lattice spec: no rule to edit",
+       "sha256": "8fc81e44236c1b957473500b4c242715d835bd4fea4a1c4307bbcb6ee630a5ab",
+       "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash a25d50fe0fb6 (commit f2bf71a0)\n  BROKEN   auth_changed  as_user:ann  @ GET /v1/home\n    before: auth token, granted [ann, ben]\n    after: granted handles are now ['ben']\n  CHANGED* status_added  404  @ GET /v1/home\n    before: statuses [200, 401]\n    after: status 404 is now observed\n\n## 2. Imports that rely on it\nimport #3: GET /v1/home  status [200], auth token as ann, request_fields [], response_fields [today, nudges]\n    broken claim: auth_changed as_user:ann\n    relied change: status_added 404\n\n## 3. Suggested edits (verify in the code first)\n- GET /v1/home: no edit suggested: the auth of GET /v1/home changed (granted handles are now ['ben']). Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "e03f06a24f54d044726b31201dff130f71e1a54c211858904d1ac69570492e06",
+      "rc": 0,
+      "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash a25d50fe0fb6 (commit f2bf71a0)\n  BROKEN   auth_changed  as_user:ann  @ GET /v1/home\n    before: auth token, granted [ann, ben]\n    after: granted handles are now ['ben']\n  CHANGED* status_added  404  @ GET /v1/home\n    before: statuses [200, 401]\n    after: status 404 is now observed\n\n## 2. Imports that rely on it\nimport #3: GET /v1/home  status [200], auth token as ann, request_fields [], response_fields [today, nudges]\n    broken claim: auth_changed as_user:ann\n    relied change: status_added 404\n\n## 3. Suggested edits (verify in the code first)\n- GET /v1/home: no edit suggested: the auth of GET /v1/home changed (granted handles are now ['ben']). Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1"
+    },
+    "D6": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "streak-widget",
+       "contract": "static",
+       "edits": [
+        {
+         "after": [
+          "items",
+          "has_more",
+          "next"
+         ],
+         "before": [
+          "items",
+          "has_more",
+          "next_cursor"
+         ],
+         "endpoint": "GET /v1/habits",
+         "import": 4,
+         "key": "response_fields",
+         "new": "next",
+         "old": "next_cursor",
+         "text": "response_fields = [\"items\", \"has_more\", \"next_cursor\"] -> [\"items\", \"has_more\", \"next\"]"
+        }
+       ],
+       "findings": [
+        {
+         "after": "the spec now shows response fields ['has_more', 'items', 'next']",
+         "before": "response fields [has_more, items, next_cursor]",
+         "class": "BROKEN",
+         "endpoint": "GET /v1/habits",
+         "item": "next_cursor",
+         "kind": "response_field_missing",
+         "line": "  BROKEN   response_field_missing  next_cursor  @ GET /v1/habits"
+        },
+        {
+         "after": "response field next is now shown",
+         "before": "response fields [has_more, items, next_cursor]",
+         "class": "CHANGED",
+         "endpoint": "GET /v1/habits",
+         "item": "next",
+         "kind": "field_added",
+         "line": "  CHANGED* field_added  response  next  @ GET /v1/habits"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "next_cursor",
+           "kind": "response_field_missing"
+          }
+         ],
+         "changed": [
+          {
+           "item": "next",
+           "kind": "field_added"
+          }
+         ],
+         "endpoint": "GET /v1/habits",
+         "number": 4,
+         "table": {
+          "as_user": "ann",
+          "auth": "token",
+          "endpoint": "GET /v1/habits",
+          "provider": "streak",
+          "request_fields": [
+           "limit",
+           "cursor"
+          ],
+          "response_fields": [
+           "items",
+           "has_more",
+           "next_cursor"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "provider": "streak",
+       "provider_after_spec_hash": "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "streak-widget has no Lattice spec: no rule to edit",
+       "sha256": "1267970f04cb0ee58934d76e5d9f8069d878a16014b7ddf99cdc701e5b4b7c11",
+       "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash cad3bbb9e0af (commit 168e2a03)\n  BROKEN   response_field_missing  next_cursor  @ GET /v1/habits\n    before: response fields [has_more, items, next_cursor]\n    after: the spec now shows response fields ['has_more', 'items', 'next']\n  CHANGED* field_added  response  next  @ GET /v1/habits\n    before: response fields [has_more, items, next_cursor]\n    after: response field next is now shown\n\n## 2. Imports that rely on it\nimport #4: GET /v1/habits  status [200], auth token as ann, request_fields [limit, cursor], response_fields [items, has_more, next_cursor]\n    broken claim: response_field_missing next_cursor\n    relied change: field_added next\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #4: response_fields = [\"items\", \"has_more\", \"next_cursor\"] -> [\"items\", \"has_more\", \"next\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "1f20a88ad6f9a72b931a835b4d0400d86148fc19f786ee58f8f31529d9a6a848",
+      "rc": 0,
+      "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash cad3bbb9e0af (commit 168e2a03)\n  BROKEN   response_field_missing  next_cursor  @ GET /v1/habits\n    before: response fields [has_more, items, next_cursor]\n    after: the spec now shows response fields ['has_more', 'items', 'next']\n  CHANGED* field_added  response  next  @ GET /v1/habits\n    before: response fields [has_more, items, next_cursor]\n    after: response field next is now shown\n\n## 2. Imports that rely on it\nimport #4: GET /v1/habits  status [200], auth token as ann, request_fields [limit, cursor], response_fields [items, has_more, next_cursor]\n    broken claim: response_field_missing next_cursor\n    relied change: field_added next\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #4: response_fields = [\"items\", \"has_more\", \"next_cursor\"] -> [\"items\", \"has_more\", \"next\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1"
+    },
+    "D7": {
+     "nospec": {
+      "err": "",
+      "json": {
+       "applied": false,
+       "before_note": null,
+       "consumer": "streak-widget",
+       "contract": "static",
+       "edits": [],
+       "findings": [
+        {
+         "after": "the endpoint is not in the provider's spec",
+         "before": "statuses [200, 401, 422]; request fields []; query fields [include_archived, limit]; response fields [has_more, items, next_cursor]; auth token, granted [ann, ben]",
+         "class": "BROKEN",
+         "endpoint": "GET /v1/habits",
+         "item": "",
+         "kind": "endpoint_missing",
+         "line": "  BROKEN   endpoint_missing  @ GET /v1/habits"
+        },
+        {
+         "after": "the endpoint is not in the provider's spec",
+         "before": "statuses [200, 401, 404]; request fields []; query fields []; response fields [days_elapsed, days_remaining, done, habit_id, period, period_end, period_start, projected, rate_per_day, rate_per_period, required_per_day, required_per_period, status, target]; auth token, granted [ann, ben]",
+         "class": "BROKEN",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "item": "",
+         "kind": "endpoint_missing",
+         "line": "  BROKEN   endpoint_missing  @ GET /v1/habits/{}/progress"
+        },
+        {
+         "after": "the endpoint is not in the provider's spec",
+         "before": "statuses [200, 401]; request fields []; query fields []; response fields [habits, nudges, today]; auth token, granted [ann, ben]",
+         "class": "BROKEN",
+         "endpoint": "GET /v1/home",
+         "item": "",
+         "kind": "endpoint_missing",
+         "line": "  BROKEN   endpoint_missing  @ GET /v1/home"
+        },
+        {
+         "after": "the endpoint is not in the provider's spec",
+         "before": "statuses [200, 401, 429]; request fields []; query fields []; response fields [email, id, notification_prefs, timezone]; auth token, granted [ann, ben]",
+         "class": "BROKEN",
+         "endpoint": "GET /v1/me",
+         "item": "",
+         "kind": "endpoint_missing",
+         "line": "  BROKEN   endpoint_missing  @ GET /v1/me"
+        },
+        {
+         "after": "the endpoint is not in the provider's spec",
+         "before": "statuses [200, 401]; request fields [email, installation_id, password]; query fields []; response fields [expires_in, token_type]; auth public, granted []",
+         "class": "BROKEN",
+         "endpoint": "POST /v1/auth/login",
+         "item": "",
+         "kind": "endpoint_missing",
+         "line": "  BROKEN   endpoint_missing  @ POST /v1/auth/login"
+        },
+        {
+         "after": "the endpoint is not in the provider's spec",
+         "before": "statuses [200, 201, 401, 404, 409, 422]; request fields [date, id, note]; query fields []; response fields [date, habit_id, id, note]; auth token, granted [ann]",
+         "class": "BROKEN",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "item": "",
+         "kind": "endpoint_missing",
+         "line": "  BROKEN   endpoint_missing  @ POST /v1/habits/{}/completions"
+        },
+        {
+         "after": "the endpoint is not in the provider's spec",
+         "before": "statuses [200, 401, 404, 409]; request fields []; query fields []; response fields [habit_id, id, kind, message]; auth token, granted [ann]",
+         "class": "BROKEN",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "item": "",
+         "kind": "endpoint_missing",
+         "line": "  BROKEN   endpoint_missing  @ POST /v1/nudges/{}/dismiss"
+        }
+       ],
+       "format": 1,
+       "imports": [
+        {
+         "broken": [
+          {
+           "item": "",
+           "kind": "endpoint_missing"
+          }
+         ],
+         "changed": [],
+         "endpoint": "POST /v1/auth/login",
+         "number": 1,
+         "table": {
+          "auth": "public",
+          "endpoint": "POST /v1/auth/login",
+          "provider": "streak",
+          "request_fields": [
+           "email",
+           "password",
+           "installation_id"
+          ],
+          "response_fields": [
+           "access_token",
+           "expires_in"
+          ],
+          "status": [
+           200
+          ]
+         }
+        },
+        {
+         "broken": [
+          {
+           "item": "",
+           "kind": "endpoint_missing"
+          }
+         ],
+         "changed": [],
+         "endpoint": "GET /v1/me",
+         "number": 2,
+         "table": {
+          "as_user": "ann",
+          "auth": "token",
+          "endpoint": "GET /v1/me",
+          "provider": "streak",
+          "request_fields": [],
+          "response_fields": [
+           "id",
+           "timezone"
+          ],
+          "status": [
+           200
+          ]
+         }
+        },
+        {
+         "broken": [
+          {
+           "item": "",
+           "kind": "endpoint_missing"
+          }
+         ],
+         "changed": [],
+         "endpoint": "GET /v1/home",
+         "number": 3,
+         "table": {
+          "as_user": "ann",
+          "auth": "token",
+          "endpoint": "GET /v1/home",
+          "provider": "streak",
+          "request_fields": [],
+          "response_fields": [
+           "today",
+           "nudges"
+          ],
+          "status": [
+           200
+          ]
+         }
+        },
+        {
+         "broken": [
+          {
+           "item": "",
+           "kind": "endpoint_missing"
+          }
+         ],
+         "changed": [],
+         "endpoint": "GET /v1/habits",
+         "number": 4,
+         "table": {
+          "as_user": "ann",
+          "auth": "token",
+          "endpoint": "GET /v1/habits",
+          "provider": "streak",
+          "request_fields": [
+           "limit",
+           "cursor"
+          ],
+          "response_fields": [
+           "items",
+           "has_more",
+           "next_cursor"
+          ],
+          "status": [
+           200
+          ]
+         }
+        },
+        {
+         "broken": [
+          {
+           "item": "",
+           "kind": "endpoint_missing"
+          }
+         ],
+         "changed": [],
+         "endpoint": "GET /v1/habits/{}/progress",
+         "number": 5,
+         "table": {
+          "as_user": "ann",
+          "auth": "token",
+          "endpoint": "GET /v1/habits/{}/progress",
+          "provider": "streak",
+          "request_fields": [],
+          "response_fields": [
+           "done",
+           "target",
+           "status"
+          ],
+          "status": [
+           200
+          ]
+         }
+        },
+        {
+         "broken": [
+          {
+           "item": "",
+           "kind": "endpoint_missing"
+          }
+         ],
+         "changed": [],
+         "endpoint": "POST /v1/habits/{}/completions",
+         "number": 6,
+         "table": {
+          "as_user": "ann",
+          "auth": "token",
+          "endpoint": "POST /v1/habits/{}/completions",
+          "provider": "streak",
+          "request_fields": [
+           "id",
+           "date"
+          ],
+          "response_fields": [
+           "id",
+           "date"
+          ],
+          "status": [
+           200,
+           201
+          ]
+         }
+        },
+        {
+         "broken": [
+          {
+           "item": "",
+           "kind": "endpoint_missing"
+          }
+         ],
+         "changed": [],
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "number": 7,
+         "table": {
+          "as_user": "ann",
+          "auth": "token",
+          "endpoint": "POST /v1/nudges/{}/dismiss",
+          "provider": "streak",
+          "request_fields": [],
+          "response_fields": [
+           "id"
+          ],
+          "status": [
+           200
+          ]
+         }
+        }
+       ],
+       "imports_error": null,
+       "kind": "consumer_draft",
+       "no_edit": [
+        {
+         "advice": "Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "GET /v1/habits",
+         "reason": "GET /v1/habits is no longer in streak's spec"
+        },
+        {
+         "advice": "Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "GET /v1/habits/{}/progress",
+         "reason": "GET /v1/habits/{}/progress is no longer in streak's spec"
+        },
+        {
+         "advice": "Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "GET /v1/home",
+         "reason": "GET /v1/home is no longer in streak's spec"
+        },
+        {
+         "advice": "Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "GET /v1/me",
+         "reason": "GET /v1/me is no longer in streak's spec"
+        },
+        {
+         "advice": "Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "POST /v1/auth/login",
+         "reason": "POST /v1/auth/login is no longer in streak's spec"
+        },
+        {
+         "advice": "Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "POST /v1/habits/{}/completions",
+         "reason": "POST /v1/habits/{}/completions is no longer in streak's spec"
+        },
+        {
+         "advice": "Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.",
+         "endpoint": "POST /v1/nudges/{}/dismiss",
+         "reason": "POST /v1/nudges/{}/dismiss is no longer in streak's spec"
+        }
+       ],
+       "no_longer_imported": [],
+       "pinned_spec_hash": "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c",
+       "provider": "streak",
+       "provider_after_spec_hash": "a9c56d059a2a73f3087dfca79514b1deab732fd3704a62f2f9fe5189812994cf",
+       "question": {
+        "id": "lq1",
+        "label": "contradiction",
+        "status": "open",
+        "superseded": null
+       },
+       "rules": [],
+       "rules_note": "streak-widget has no Lattice spec: no rule to edit",
+       "sha256": "40102652e7ff88d7d2115eaa67f8293855201852ece62c5e3e8f73d8d51a45b3",
+       "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash a9c56d059a2a (commit 534946f2)\n  BROKEN   endpoint_missing  @ GET /v1/habits\n    before: statuses [200, 401, 422]; request fields []; query fields [include_archived, limit]; response fields [has_more, items, next_cursor]; auth token, granted [ann, ben]\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ GET /v1/habits/{}/progress\n    before: statuses [200, 401, 404]; request fields []; query fields []; response fields [days_elapsed, days_remaining, done, habit_id, period, period_end, period_start, projected, rate_per_day, rate_per_period, required_per_day, required_per_period, status, target]; auth token, granted [ann, ben]\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ GET /v1/home\n    before: statuses [200, 401]; request fields []; query fields []; response fields [habits, nudges, today]; auth token, granted [ann, ben]\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ GET /v1/me\n    before: statuses [200, 401, 429]; request fields []; query fields []; response fields [email, id, notification_prefs, timezone]; auth token, granted [ann, ben]\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ POST /v1/auth/login\n    before: statuses [200, 401]; request fields [email, installation_id, password]; query fields []; response fields [expires_in, token_type]; auth public, granted []\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ POST /v1/habits/{}/completions\n    before: statuses [200, 201, 401, 404, 409, 422]; request fields [date, id, note]; query fields []; response fields [date, habit_id, id, note]; auth token, granted [ann]\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ POST /v1/nudges/{}/dismiss\n    before: statuses [200, 401, 404, 409]; request fields []; query fields []; response fields [habit_id, id, kind, message]; auth token, granted [ann]\n    after: the endpoint is not in the provider's spec\n\n## 2. Imports that rely on it\nimport #1: POST /v1/auth/login  status [200], auth public, request_fields [email, password, installation_id], response_fields [access_token, expires_in]\n    broken claim: endpoint_missing\nimport #2: GET /v1/me  status [200], auth token as ann, request_fields [], response_fields [id, timezone]\n    broken claim: endpoint_missing\nimport #3: GET /v1/home  status [200], auth token as ann, request_fields [], response_fields [today, nudges]\n    broken claim: endpoint_missing\nimport #4: GET /v1/habits  status [200], auth token as ann, request_fields [limit, cursor], response_fields [items, has_more, next_cursor]\n    broken claim: endpoint_missing\nimport #5: GET /v1/habits/{}/progress  status [200], auth token as ann, request_fields [], response_fields [done, target, status]\n    broken claim: endpoint_missing\nimport #6: POST /v1/habits/{}/completions  status [200, 201], auth token as ann, request_fields [id, date], response_fields [id, date]\n    broken claim: endpoint_missing\nimport #7: POST /v1/nudges/{}/dismiss  status [200], auth token as ann, request_fields [], response_fields [id]\n    broken claim: endpoint_missing\n\n## 3. Suggested edits (verify in the code first)\n- GET /v1/habits: no edit suggested: GET /v1/habits is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- GET /v1/habits/{}/progress: no edit suggested: GET /v1/habits/{}/progress is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- GET /v1/home: no edit suggested: GET /v1/home is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- GET /v1/me: no edit suggested: GET /v1/me is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- POST /v1/auth/login: no edit suggested: POST /v1/auth/login is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- POST /v1/habits/{}/completions: no edit suggested: POST /v1/habits/{}/completions is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- POST /v1/nudges/{}/dismiss: no edit suggested: POST /v1/nudges/{}/dismiss is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint."
+      },
+      "json_raw_sha": "e3d49a041f8f7d8d08ee2a3ceaf599eee882bb12d23a788a37d5b06b48629231",
+      "rc": 0,
+      "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash a9c56d059a2a (commit 534946f2)\n  BROKEN   endpoint_missing  @ GET /v1/habits\n    before: statuses [200, 401, 422]; request fields []; query fields [include_archived, limit]; response fields [has_more, items, next_cursor]; auth token, granted [ann, ben]\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ GET /v1/habits/{}/progress\n    before: statuses [200, 401, 404]; request fields []; query fields []; response fields [days_elapsed, days_remaining, done, habit_id, period, period_end, period_start, projected, rate_per_day, rate_per_period, required_per_day, required_per_period, status, target]; auth token, granted [ann, ben]\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ GET /v1/home\n    before: statuses [200, 401]; request fields []; query fields []; response fields [habits, nudges, today]; auth token, granted [ann, ben]\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ GET /v1/me\n    before: statuses [200, 401, 429]; request fields []; query fields []; response fields [email, id, notification_prefs, timezone]; auth token, granted [ann, ben]\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ POST /v1/auth/login\n    before: statuses [200, 401]; request fields [email, installation_id, password]; query fields []; response fields [expires_in, token_type]; auth public, granted []\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ POST /v1/habits/{}/completions\n    before: statuses [200, 201, 401, 404, 409, 422]; request fields [date, id, note]; query fields []; response fields [date, habit_id, id, note]; auth token, granted [ann]\n    after: the endpoint is not in the provider's spec\n  BROKEN   endpoint_missing  @ POST /v1/nudges/{}/dismiss\n    before: statuses [200, 401, 404, 409]; request fields []; query fields []; response fields [habit_id, id, kind, message]; auth token, granted [ann]\n    after: the endpoint is not in the provider's spec\n\n## 2. Imports that rely on it\nimport #1: POST /v1/auth/login  status [200], auth public, request_fields [email, password, installation_id], response_fields [access_token, expires_in]\n    broken claim: endpoint_missing\nimport #2: GET /v1/me  status [200], auth token as ann, request_fields [], response_fields [id, timezone]\n    broken claim: endpoint_missing\nimport #3: GET /v1/home  status [200], auth token as ann, request_fields [], response_fields [today, nudges]\n    broken claim: endpoint_missing\nimport #4: GET /v1/habits  status [200], auth token as ann, request_fields [limit, cursor], response_fields [items, has_more, next_cursor]\n    broken claim: endpoint_missing\nimport #5: GET /v1/habits/{}/progress  status [200], auth token as ann, request_fields [], response_fields [done, target, status]\n    broken claim: endpoint_missing\nimport #6: POST /v1/habits/{}/completions  status [200, 201], auth token as ann, request_fields [id, date], response_fields [id, date]\n    broken claim: endpoint_missing\nimport #7: POST /v1/nudges/{}/dismiss  status [200], auth token as ann, request_fields [], response_fields [id]\n    broken claim: endpoint_missing\n\n## 3. Suggested edits (verify in the code first)\n- GET /v1/habits: no edit suggested: GET /v1/habits is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- GET /v1/habits/{}/progress: no edit suggested: GET /v1/habits/{}/progress is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- GET /v1/home: no edit suggested: GET /v1/home is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- GET /v1/me: no edit suggested: GET /v1/me is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- POST /v1/auth/login: no edit suggested: POST /v1/auth/login is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- POST /v1/habits/{}/completions: no edit suggested: POST /v1/habits/{}/completions is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- POST /v1/nudges/{}/dismiss: no edit suggested: POST /v1/nudges/{}/dismiss is no longer in streak's spec. Ask streak's owner, or adapt the code; the claim stays until the code no longer relies on it.\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n",
+      "text_rc": 0
+     },
+     "notify_action": "created",
+     "question": "lq1"
+    },
+    "D8": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "unaffected",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    },
+    "D9": {
+     "cli": {
+      "code": "unknown_question",
+      "rc": 2
+     },
+     "label": "unaffected",
+     "library": {
+      "code": "not_contradiction",
+      "rc": 1
+     },
+     "notify_action": "none"
+    }
+   }
+  },
+  "second_root_equal": true,
+  "wall_s": 257.6
+ }
+}

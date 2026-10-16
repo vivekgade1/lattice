@@ -1,0 +1,1441 @@
+{
+ "id": "I6",
+ "prediction": "over every traced call of I0-I5, I7: (1) sha256 of the workspace, consumers (locks), provider clones and the lattice-impact worktree unchanged and 0 files newer; (2) TMPDIR empty after each call; (3) 0 socket connects, every argv git {rev-parse, ls-tree, cat-file, status} or the export child, 2 export children per call (0 for I4-i and I5-d, 1 for I5-f), no claude, no ANTHROPIC variable; (4) the real job-scheduler (ef17cf8, ' M uv.lock') and Streak (a0db033, ' M studio.toml') unchanged, 0 newer files",
+ "observed": "1220 traced calls; tree changed 17, newer 14, tmp left 0, bad argv 0, connects 0, export-children mismatches 0, claude/ANTHROPIC 0; real repos: job-scheduler: ef17cf8 ' M uv.lock' -> ef17cf8 ' M uv.lock', 0 newer files []; streak: a0db033 ' M studio.toml' -> a0db033 ' M studio.toml', 0 newer files []; worktree newer since marker 54",
+ "pass": false,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "calls_traced_gt_0": true,
+  "1_tree_unchanged_every_call": false,
+  "1_no_file_newer_than_a_call": false,
+  "2_tmpdir_empty_after_every_call": true,
+  "3_only_allowed_argv": true,
+  "3_zero_connects": true,
+  "3_export_children_as_predicted": true,
+  "3_no_claude_no_anthropic": true,
+  "3_no_x_to_git": true,
+  "4_real_repos_unchanged": true,
+  "worktree_newer_since_marker_0": false
+ },
+ "extra": {
+  "summary": {
+   "calls": 1220,
+   "tree_changed": [
+    {
+     "probe": "I0a",
+     "call": "impact scheduler HEAD",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/"
+     ],
+     "newer": [],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4342
+    },
+    {
+     "probe": "I0b",
+     "call": "impact streak HEAD (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4091
+    },
+    {
+     "probe": "I0b",
+     "call": "impact streak HEAD",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4092
+    },
+    {
+     "probe": "I0c",
+     "call": "impact scheduler HEAD",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4367
+    },
+    {
+     "probe": "I1",
+     "call": "impact scheduler d3 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+      "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+      "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4447
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d7",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4215
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d11 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4216
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d5 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4217
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d4",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7-regression/",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4219
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d8 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4221
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d13 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4222
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d9 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4223
+    },
+    {
+     "probe": "I4",
+     "call": "impact scheduler d3",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4487
+    },
+    {
+     "probe": "I5",
+     "call": "impact scheduler $WORK_J/w/r-I5-provider-d2/scheduler",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/check-sh-new.txt",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/check-sh-old-223adff.txt"
+     ],
+     "newer": [],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 5049
+    },
+    {
+     "probe": "I5",
+     "call": "impact scheduler bad",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 1,
+     "expect_children": 1,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4409
+    },
+    {
+     "probe": "I5",
+     "call": "impact scheduler -x (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/agent/"
+     ],
+     "newer": [],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 0,
+     "expect_children": 0,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4412
+    },
+    {
+     "probe": "T",
+     "call": "impact streak d2",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4251
+    }
+   ],
+   "newer": [
+    {
+     "probe": "I0b",
+     "call": "impact streak HEAD (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4091
+    },
+    {
+     "probe": "I0b",
+     "call": "impact streak HEAD",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4092
+    },
+    {
+     "probe": "I0c",
+     "call": "impact scheduler HEAD",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4367
+    },
+    {
+     "probe": "I1",
+     "call": "impact scheduler d3 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+      "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+      "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4447
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d7",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4215
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d11 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4216
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d5 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4217
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d4",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7-regression/",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4219
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d8 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4221
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d13 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4222
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d9 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4223
+    },
+    {
+     "probe": "I4",
+     "call": "impact scheduler d3",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4487
+    },
+    {
+     "probe": "I5",
+     "call": "impact scheduler bad",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 1,
+     "expect_children": 1,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4409
+    },
+    {
+     "probe": "T",
+     "call": "impact streak d2",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4251
+    }
+   ],
+   "tmp_left": [],
+   "bad_popen": [],
+   "connects": 0,
+   "children_mismatch": [],
+   "claude_or_anthropic": [],
+   "by_probe": {
+    "I0a": 20,
+    "I0b": 20,
+    "I0c": 20,
+    "I1": 200,
+    "I2": 260,
+    "I3": 240,
+    "I4": 220,
+    "I5": 160,
+    "I7": 60,
+    "T": 20
+   }
+  },
+  "real_repos": [
+   {
+    "repo": "job-scheduler",
+    "before": {
+     "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+     "status": " M uv.lock"
+    },
+    "after": {
+     "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+     "status": " M uv.lock"
+    },
+    "newer": []
+   },
+   {
+    "repo": "streak",
+    "before": {
+     "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+     "status": " M studio.toml"
+    },
+    "after": {
+     "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+     "status": " M studio.toml"
+    },
+    "newer": []
+   }
+  ],
+  "marker": {
+   "newer": [
+    "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/agent/scorer-freeze.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/check-sh-new.txt",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/check-sh-old-223adff.txt",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/V1a.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/V1b.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/V1c.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/V1d.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/V1e.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/V1f.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/V1g.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/V1h.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/V2.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/V3.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/summary.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/D1.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/D2.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/D3.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/D4.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/D5.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/V1a.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/V1b.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/V1c.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/V1d.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/V1e.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/V1f.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/V1g.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/V1h.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/V2.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/V3.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/summary.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-additive.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-cycle.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-diamond.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-flagoff.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json",
+    "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+   ]
+  }
+ },
+ "runs": [
+  {
+   "calls": 1220,
+   "tree_changed": [
+    {
+     "probe": "I0a",
+     "call": "impact scheduler HEAD",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-old/"
+     ],
+     "newer": [],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4342
+    },
+    {
+     "probe": "I0b",
+     "call": "impact streak HEAD (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4091
+    },
+    {
+     "probe": "I0b",
+     "call": "impact streak HEAD",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4092
+    },
+    {
+     "probe": "I0c",
+     "call": "impact scheduler HEAD",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4367
+    },
+    {
+     "probe": "I1",
+     "call": "impact scheduler d3 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+      "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+      "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4447
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d7",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4215
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d11 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4216
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d5 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4217
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d4",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7-regression/",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4219
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d8 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4221
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d13 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4222
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d9 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4223
+    },
+    {
+     "probe": "I4",
+     "call": "impact scheduler d3",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4487
+    },
+    {
+     "probe": "I5",
+     "call": "impact scheduler $WORK_J/w/r-I5-provider-d2/scheduler",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/check-sh-new.txt",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/check-sh-old-223adff.txt"
+     ],
+     "newer": [],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 5049
+    },
+    {
+     "probe": "I5",
+     "call": "impact scheduler bad",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 1,
+     "expect_children": 1,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4409
+    },
+    {
+     "probe": "I5",
+     "call": "impact scheduler -x (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/agent/"
+     ],
+     "newer": [],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 0,
+     "expect_children": 0,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4412
+    },
+    {
+     "probe": "T",
+     "call": "impact streak d2",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4251
+    }
+   ],
+   "newer": [
+    {
+     "probe": "I0b",
+     "call": "impact streak HEAD (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-basis.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4091
+    },
+    {
+     "probe": "I0b",
+     "call": "impact streak HEAD",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q3.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4092
+    },
+    {
+     "probe": "I0c",
+     "call": "impact scheduler HEAD",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D1.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D2.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D3.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D4.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/improve2-new/D5.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4367
+    },
+    {
+     "probe": "I1",
+     "call": "impact scheduler d3 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+      "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/.ruff_cache/0.16.9/2557999441097561086",
+      "/Users/vivekgade/Documents/lattice-draft4c/tests/contracts/test_draft.py"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4447
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d7",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q4.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4215
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d11 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q5.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4216
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d5 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q6.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4217
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d4",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7-regression/",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/T.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4219
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d8 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/Q7.json",
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/S.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4221
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d13 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/linkedq/summary.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4222
+    },
+    {
+     "probe": "I2",
+     "call": "impact streak d9 (text)",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-chain.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4223
+    },
+    {
+     "probe": "I4",
+     "call": "impact scheduler d3",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-long.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4487
+    },
+    {
+     "probe": "I5",
+     "call": "impact scheduler bad",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-edge.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 1,
+     "expect_children": 1,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4409
+    },
+    {
+     "probe": "T",
+     "call": "impact streak d2",
+     "tree_unchanged": false,
+     "changed": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+     ],
+     "newer": [
+      "/Users/vivekgade/Documents/lattice-draft4c/docs/results/data/2026-10-15-consumer-draft-4d/regression/transitive/T-parity.json"
+     ],
+     "tmp_left": [],
+     "bad_popen": [],
+     "connects": 0,
+     "export_children": 2,
+     "expect_children": 2,
+     "git_args_with_x": [],
+     "claude": [],
+     "anthropic_env": false,
+     "files_hashed": 4251
+    }
+   ],
+   "tmp_left": [],
+   "bad_popen": [],
+   "connects": 0,
+   "children_mismatch": [],
+   "claude_or_anthropic": [],
+   "by_probe": {
+    "I0a": 20,
+    "I0b": 20,
+    "I0c": 20,
+    "I1": 200,
+    "I2": 260,
+    "I3": 240,
+    "I4": 220,
+    "I5": 160,
+    "I7": 60,
+    "T": 20
+   }
+  }
+ ]
+}

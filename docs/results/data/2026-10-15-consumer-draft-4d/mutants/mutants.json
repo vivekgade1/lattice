@@ -1,0 +1,223 @@
+{
+ "hashes": {
+  "lattice/contracts/check.py": "cb6833beb59f093d",
+  "lattice/contracts/draft.py": "fbc4590744c3248e",
+  "lattice/contracts/export.py": "7e644a855ae78a39",
+  "lattice/contracts/impact.py": "17abca742f99d99b",
+  "lattice/contracts/linked.py": "71e383d1bef6456d",
+  "lattice/contracts/live.py": "8d345a4cc13f7413",
+  "lattice/mcp/projects.py": "cbad4328b8a36255",
+  "lattice/studio/server.py": "01eab4573e4b5afb",
+  "lattice/workspace.py": "704e677e2ebbcbf4"
+ },
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "41 passed in 58.25s",
+    "seconds": 58.4,
+    "tail": ".........................................                                [100%]\n41 passed in 58.25s\n",
+    "tests": "tests/studio/test_linked_api.py tests/mcp/test_linked_questions.py tests/mcp/test_linked_question_draft.py"
+   },
+   "verdict": "PASS (control)",
+   "seconds": 286.4
+  },
+  "DR3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_the_endpoint_gone"
+    ],
+    "summary": "1 failed in 0.40s",
+    "seconds": 0.6,
+    "tail": "F\n=================================== FAILURES ===================================\n____________________________ test_the_endpoint_gone ____________________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/tmp-rm/pytest-of-vivekgade/pytest-2/test_the_endpoint_gone0')\n\n    def test_the_endpoint_gone(tmp_path: Path) -> None:\n        doc = make(D1)\n        assert numbers(doc) == [6]  # not #2, whose endpoint is a path prefix of this one\n        assert hunks(doc) == []\n>       assert rule_ids(doc) == [\"R4\"]\nE       AssertionError: assert ['R3', 'R4'] == ['R4']\nE         \nE         At index 0 diff: 'R3' != 'R4'\nE         Left contains one more item: 'R4'\nE         Use -v to get more diff\n\ntests/contracts/test_draft.py:255: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_the_endpoint_gone - AssertionError...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.40s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.0
+  },
+  "DR2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_the_endpoint_gone"
+    ],
+    "summary": "1 failed in 1.40s",
+    "seconds": 1.6,
+    "tail": "F\n=================================== FAILURES ===================================\n____________________________ test_the_endpoint_gone ____________________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/tmp-rm/pytest-of-vivekgade/pytest-3/test_the_endpoint_gone0')\n\n    def test_the_endpoint_gone(tmp_path: Path) -> None:\n        doc = make(D1)\n>       assert numbers(doc) == [6]  # not #2, whose endpoint is a path prefix of this one\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       assert [2, 3, 6] == [6]\nE         \nE         At index 0 diff: 2 != 6\nE         Left contains 2 more items, first extra item: 3\nE         Use -v to get more diff\n\ntests/contracts/test_draft.py:253: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_the_endpoint_gone - assert [2, 3, ...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 1.40s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 2.0
+  },
+  "DR1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_the_endpoint_gone"
+    ],
+    "summary": "1 failed in 1.40s",
+    "seconds": 1.6,
+    "tail": "F\n=================================== FAILURES ===================================\n____________________________ test_the_endpoint_gone ____________________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/tmp-rm/pytest-of-vivekgade/pytest-4/test_the_endpoint_gone0')\n\n    def test_the_endpoint_gone(tmp_path: Path) -> None:\n        doc = make(D1)\n>       assert numbers(doc) == [6]  # not #2, whose endpoint is a path prefix of this one\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       assert [1, 2, 3, 4, 5, 6, ...] == [6]\nE         \nE         At index 0 diff: 1 != 6\nE         Left contains 6 more items, first extra item: 2\nE         Use -v to get more diff\n\ntests/contracts/test_draft.py:253: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_the_endpoint_gone - assert [1, 2, ...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 1.40s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 2.0
+  },
+  "DR4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_the_endpoint_gone"
+    ],
+    "summary": "1 failed in 0.40s",
+    "seconds": 0.6,
+    "tail": "F\n=================================== FAILURES ===================================\n____________________________ test_the_endpoint_gone ____________________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/tmp-rm/pytest-of-vivekgade/pytest-5/test_the_endpoint_gone0')\n\n    def test_the_endpoint_gone(tmp_path: Path) -> None:\n        doc = make(D1)\n        assert numbers(doc) == [6]  # not #2, whose endpoint is a path prefix of this one\n        assert hunks(doc) == []\n>       assert rule_ids(doc) == [\"R4\"]\nE       AssertionError: assert [] == ['R4']\nE         \nE         Right contains one more item: 'R4'\nE         Use -v to get more diff\n\ntests/contracts/test_draft.py:255: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_the_endpoint_gone - AssertionError...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.40s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.1
+  },
+  "DR5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_the_endpoint_gone"
+    ],
+    "summary": "1 failed in 0.40s",
+    "seconds": 0.6,
+    "tail": "F\n=================================== FAILURES ===================================\n____________________________ test_the_endpoint_gone ____________________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/tmp-rm/pytest-of-vivekgade/pytest-6/test_the_endpoint_gone0')\n\n    def test_the_endpoint_gone(tmp_path: Path) -> None:\n        doc = make(D1)\n        assert numbers(doc) == [6]  # not #2, whose endpoint is a path prefix of this one\n        assert hunks(doc) == []\n>       assert rule_ids(doc) == [\"R4\"]\nE       AssertionError: assert ['R2', 'R4'] == ['R4']\nE         \nE         At index 0 diff: 'R2' != 'R4'\nE         Left contains one more item: 'R4'\nE         Use -v to get more diff\n\ntests/contracts/test_draft.py:255: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_the_endpoint_gone - AssertionError...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.40s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.0
+  },
+  "DR6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_the_text_is_exactly_the_template"
+    ],
+    "summary": "1 failed, 31 passed in 0.41s",
+    "seconds": 0.6,
+    "tail": "...............................F\n=================================== FAILURES ===================================\n____________________ test_the_text_is_exactly_the_template _____________________\n\n    def test_the_text_is_exactly_the_template() -> None:\n        doc = make(D2)\n>       assert doc[\"text\"] == GOLDEN_D2\nE       AssertionError: assert '# Draft: ada...108548.623681' == '# Draft: ada...the endpoint.'\nE         \nE         Skipping 2035 identical leading characters in diff, use -v to show\nE         - e endpoint.\nE         + e endpoint.\nE         ?            +\nE         + drafted at 1792108548.623681\n\ntests/contracts/test_draft.py:603: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_the_text_is_exactly_the_template\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 31 passed in 0.41s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.0
+  },
+  "DR7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_the_draft_row_label_is_checked"
+    ],
+    "summary": "1 failed, 30 passed in 0.41s",
+    "seconds": 0.6,
+    "tail": "..............................F\n=================================== FAILURES ===================================\n_____________________ test_the_draft_row_label_is_checked ______________________\n\n    def test_the_draft_row_label_is_checked() -> None:\n        cand = {\n            \"input\": \"x\",\n            \"kind\": \"ref\",\n            \"resolved\": GIT,\n            \"version\": {\"spec_hash\": AFTER, \"git_ref\": GIT, \"dirty\": False},\n        }\n        row = {\n            \"provider\": \"scheduler\",\n            \"consumer\": \"ci-bot\",\n            \"contract\": \"static\",\n            \"label\": \"contradiction\",\n            \"error\": None,\n            \"imports\": 7,\n            \"pinned\": {\n                \"spec_ref\": \"spec.tickets:t5\",\n                \"spec_hash\": PIN,\n                \"git_ref\": \"ef\",\n                \"dirty\": False,\n            },\n            \"findings\": D2,\n            \"gaps\": [],\n            \"counts\": {\"broken\": 1, \"changed_relied\": 1, \"changed_unrelied\": 0, \"gaps\": 0},\n        }\n        rc, doc = dr.draft_from_row(row, cand, IMPORTS, LOCK, RULES, TRACE)\n        assert rc == 0 and doc[\"question\"][\"id\"] == \"row\"\n        assert hunks(doc) == [(4, \"status\", 201, 200)]\n        for label in (\"regression\", \"unaffected\", \"error\"):\n            rc, err = dr.draft_from_row({**row, \"label\": label}, cand, IMPORTS, LOCK, RULES, TRACE)\n>           assert rc == 1 and err[\"error\"][\"code\"] == \"not_contradiction\"\nE           assert (0 == 1)\n\ntests/contracts/test_draft.py:549: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_the_draft_row_label_is_checked - a...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 30 passed in 0.41s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.0
+  },
+  "DR8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_a_cleared_question_is_refused[resolved]"
+    ],
+    "summary": "1 failed, 27 passed in 0.40s",
+    "seconds": 0.6,
+    "tail": "...........................F\n=================================== FAILURES ===================================\n_________________ test_a_cleared_question_is_refused[resolved] _________________\n\nstatus = 'resolved'\n\n    @pytest.mark.parametrize(\"status\", [\"resolved\", \"dismissed\"])\n    def test_a_cleared_question_is_refused(status: str) -> None:\n        rc, doc = dr.draft(Q(D2, status=status), IMPORTS, LOCK, RULES, TRACE)\n>       assert rc == 1 and doc[\"error\"][\"code\"] == \"not_open\"\nE       assert (0 == 1)\n\ntests/contracts/test_draft.py:507: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_a_cleared_question_is_refused[resolved]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 27 passed in 0.40s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.0
+  },
+  "DR9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_two_added_items_do_not_pair"
+    ],
+    "summary": "1 failed, 7 passed in 0.40s",
+    "seconds": 0.6,
+    "tail": ".......F\n=================================== FAILURES ===================================\n_______________________ test_two_added_items_do_not_pair _______________________\n\n    def test_two_added_items_do_not_pair() -> None:\n        f = [\n            B(CANCEL, \"response_field_missing\", \"status\"),\n            C(CANCEL, \"field_added\", \"state\", \"response\"),\n            C(CANCEL, \"field_added\", \"phase\", \"response\"),\n        ]\n        doc = make(f)\n>       assert doc[\"edits\"] == []\nE       AssertionError: assert [{'import': 7...status', ...}] == []\nE         \nE         Left contains one more item: {'import': 7, 'endpoint': 'POST /applications/{}/runs/{}/cancel', 'key': 'response_fields', 'old': 'status', ...}\nE         Use -v to get more diff\n\ntests/contracts/test_draft.py:328: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_two_added_items_do_not_pair - Asse...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 7 passed in 0.40s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.0
+  },
+  "DR10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_the_endpoint_gone"
+    ],
+    "summary": "1 failed in 0.39s",
+    "seconds": 0.6,
+    "tail": "F\n=================================== FAILURES ===================================\n____________________________ test_the_endpoint_gone ____________________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/tmp-rm/pytest-of-vivekgade/pytest-11/test_the_endpoint_gone0')\n\n    def test_the_endpoint_gone(tmp_path: Path) -> None:\n        doc = make(D1)\n        assert numbers(doc) == [6]  # not #2, whose endpoint is a path prefix of this one\n>       assert hunks(doc) == []\nE       AssertionError: assert [(6, 'status', 0, None)] == []\nE         \nE         Left contains one more item: (6, 'status', 0, None)\nE         Use -v to get more diff\n\ntests/contracts/test_draft.py:254: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_the_endpoint_gone - AssertionError...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.39s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.0
+  },
+  "DR13": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_the_trace_guard"
+    ],
+    "summary": "1 failed, 20 passed in 0.40s",
+    "seconds": 0.6,
+    "tail": "....................F\n=================================== FAILURES ===================================\n_____________________________ test_the_trace_guard _____________________________\n\n    def test_the_trace_guard() -> None:\n        stale = copy.deepcopy(TRACE)\n        for r in stale[\"rules\"]:\n            if r[\"id\"] == \"R3\":\n                r[\"text\"] += \" (edited in the trace only)\"\n        doc = make(D2, trace=stale)\n        (rule,) = doc[\"rules\"]\n>       assert rule[\"id\"] == \"R3\" and rule[\"trace\"] == \"stale\" and rule[\"scenarios\"] == []\nE       AssertionError: assert ('R3' == 'R3'\nE         \nE           R3 and 'ok' == 'stale'\nE         \nE         - stale\nE         + ok)\n\ntests/contracts/test_draft.py:445: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_the_trace_guard - AssertionError: ...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 20 passed in 0.40s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 1.0
+  },
+  "DR14": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_a_moved_pin_omits_the_before_facts"
+    ],
+    "summary": "1 failed, 14 passed in 0.40s",
+    "seconds": 0.6,
+    "tail": "..............F\n=================================== FAILURES ===================================\n___________________ test_a_moved_pin_omits_the_before_facts ____________________\n\n    def test_a_moved_pin_omits_the_before_facts() -> None:\n        q = Q(D2, pin=\"1\" * 64)  # the lock holds PIN, the question was raised against another\n        doc = make(D2, question=q)\n>       assert \"pin moved\" in doc[\"before_note\"]\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       TypeError: argument of type 'NoneType' is not a container or iterable\n\ntests/contracts/test_draft.py:388: TypeError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_a_moved_pin_omits_the_before_facts\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 14 passed in 0.40s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 0.8
+  },
+  "DR11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_nothing_is_written_not_even_a_timestamp"
+    ],
+    "summary": "1 failed, 35 passed in 2.47s",
+    "seconds": 2.7,
+    "tail": " _________________\n\nworld = <contracts.helpers.World object at 0x10a7fa7b0>\ninbox = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/tmp-rm/pytest-of-vivekgade/pytest-13/draft0/w/cons/.lattice/state/cons')\n\n    def test_nothing_is_written_not_even_a_timestamp(world: World, inbox: Path) -> None:\n        before = tree(world.consumer, world.provider, world.root / \"lattice.workspace.toml\")\n        texts = []\n        for _ in range(3):\n            rc, out, _err = cli(world, \"cons\", \"lq1\")\n            assert rc == 0\n            texts.append(out)\n            rc, js, _ = cli(world, \"cons\", \"lq1\", json_out=True)\n            assert rc == 0\n        assert len(set(texts)) == 1\n>       assert tree(world.consumer, world.provider, world.root / \"lattice.workspace.toml\") == before\nE       AssertionError: assert {'/private/tm..., 16877), ...} == {'/private/tm..., 16877), ...}\nE         \nE         Omitting 64 identical items, use -vv to show\nE         Differing items:\nE         {'/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/tmp-rm/pytest-of-vivekgade/pytest-13/draft0/w/cons/.lattice/state/cons/linked_questions': ('', 1792108552655026600, 16877)} != {'/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/tmp-rm/pytest-of-vivekgade/pytest-13/draft0/w/cons/.lattice/state/cons/linked_questions': ('', 1792108552632767394, 16877)}\nE         Left contains 1 more item:\nE         {'/pri...\nE         \nE         ...Full output truncated (4 lines hidden), use '-vv' to show\n\ntests/contracts/test_draft.py:696: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_nothing_is_written_not_even_a_timestamp\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 35 passed in 2.47s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 3.0
+  },
+  "DR12": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/contracts/test_draft.py::test_a_missing_state_directory_is_no_state_and_nothing_is_created"
+    ],
+    "summary": "1 failed, 37 passed in 3.35s",
+    "seconds": 3.5,
+    "tail": ".....................................F\n=================================== FAILURES ===================================\n______ test_a_missing_state_directory_is_no_state_and_nothing_is_created _______\n\nworld = <contracts.helpers.World object at 0x107d2a7b0>\n\n    def test_a_missing_state_directory_is_no_state_and_nothing_is_created(world: World) -> None:\n        shutil.rmtree(world.consumer / \".lattice\", ignore_errors=True)\n        before = tree(world.consumer)\n        rc, out, err = cli(world, \"cons\", \"lq1\")\n>       assert rc == 2 and out == \"\" and \"[no_state]\" in err\nE       assert (2 == 2 and '' == '' and '[no_state]' in \"lattice contracts questions: [unknown_question] no linked question 'lq1'\\n\")\n\ntests/contracts/test_draft.py:721: AssertionError\n=========================== short test summary info ============================\nFAILED tests/contracts/test_draft.py::test_a_missing_state_directory_is_no_state_and_nothing_is_created\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed, 37 passed in 3.35s\n",
+    "tests": "tests/contracts/test_draft.py"
+   },
+   "verdict": "killed",
+   "seconds": 3.9
+  }
+ }
+}

@@ -1,0 +1,55 @@
+{
+ "id": "V1f",
+ "predicted": "improved rc0, 3/3, 4 keys summed, 142.46->81.19, delta -61.27 (-0.430), predicted null",
+ "observed": "rc0 improved n3/3 142.46->81.19 d-61.27 pNone eNone",
+ "pass": true,
+ "checks": [
+  {
+   "name": "V1f",
+   "argv": [
+    "verify",
+    "I-01"
+   ],
+   "ok": true,
+   "identical": true,
+   "runs": 3,
+   "mismatches": [],
+   "expected": {
+    "rc": 0,
+    "verdict": "improved",
+    "before.n": 3,
+    "after.n": 3,
+    "keys.3": "gate:level_regression:X",
+    "before.cost_per": 142.46,
+    "after.cost_per": 81.19,
+    "change.delta": -61.27,
+    "change.relative": -0.43,
+    "predicted": null,
+    "error": null
+   },
+   "observed": {
+    "rc": 0,
+    "verdict": "improved",
+    "before.n": 3,
+    "after.n": 3,
+    "keys.3": "gate:level_regression:X",
+    "before.cost_per": 142.46,
+    "after.cost_per": 81.19,
+    "change.delta": -61.27,
+    "change.relative": -0.43,
+    "predicted": null,
+    "error": null
+   },
+   "short": "rc0 improved n3/3 142.46->81.19 d-61.27 pNone eNone",
+   "json_stdout": "{\n \"format\": 1,\n \"command\": \"verify\",\n \"id\": \"I-01\",\n \"entry\": {\n  \"id\": \"I-01\",\n  \"signal\": \"gate:level_regression:*\",\n  \"status\": \"closed\",\n  \"commit\": \"scratch-clone studio.toml (not merged)\",\n  \"ts\": \"2026-10-12T23:08:00Z\"\n },\n \"closing_point\": {\n  \"ts\": \"2026-10-12T23:08:00Z\",\n  \"source\": \"ledger\"\n },\n \"keys\": [\n  \"gate:level_regression:A\",\n  \"gate:level_regression:C\",\n  \"gate:level_regression:D\",\n  \"gate:level_regression:X\"\n ],\n \"family\": \"cost\",\n \"unit\": \"s\",\n \"verdict\": \"improved\",\n \"reason\": \"cost fell and every after value is below every before value\",\n \"direction\": \"down\",\n \"before\": {\n  \"n\": 3,\n  \"frequency\": 3,\n  \"cost_per\": 142.46,\n  \"min\": 142.27,\n  \"max\": 142.56,\n  \"first_ts\": \"2026-10-12T23:02:23Z\",\n  \"last_ts\": \"2026-10-12T23:07:11Z\",\n  \"exposure\": null,\n  \"evidence\": [\n   \"e-e8d9c91c15964512\",\n   \"e-327c71cd641f49a0\",\n   \"e-f6061c7895644d98\"\n  ]\n },\n \"after\": {\n  \"n\": 3,\n  \"frequency\": 3,\n  \"cost_per\": 81.19,\n  \"min\": 81.09,\n  \"max\": 81.33,\n  \"first_ts\": \"2026-10-12T23:09:06Z\",\n  \"last_ts\": \"2026-10-12T23:11:50Z\",\n  \"exposure\": null,\n  \"evidence\": [\n   \"e-07264822a1c541d2\",\n   \"e-9e47b5542c8f4b45\",\n   \"e-4cbd0ccd6d9d4a08\"\n  ]\n },\n \"change\": {\n  \"delta\": -61.27,\n  \"relative\": -0.43,\n  \"separated\": true\n },\n \"predicted\": null,\n \"prediction_note\": \"no prediction recorded (the signal matches more than one key)\",\n \"error\": null,\n \"excluded\": {\n  \"at_close\": 0,\n  \"undated\": 0\n },\n \"context\": {\n  \"other_closes\": [],\n  \"per_window\": {\n   \"before\": {\n    \"x_repeats\": [\n     5\n    ],\n    \"selected\": [\n     152\n    ],\n    \"mode\": [\n     \"regression\"\n    ],\n    \"sha\": [\n     \"a0679e9\"\n    ]\n   },\n   \"after\": {\n    \"x_repeats\": [\n     2\n    ],\n    \"selected\": [\n     152\n    ],\n    \"mode\": [\n     \"regression\"\n    ],\n    \"sha\": [\n     \"a0679e9\"\n    ]\n   }\n  }\n },\n \"per_key\": [\n  {\n   \"key\": \"gate:level_regression:A\",\n   \"family\": \"cost\",\n   \"verdict\": \"not_improved\",\n   \"reason\": \"no material change\",\n   \"n_before\": 3,\n   \"n_after\": 3,\n   \"frequency_before\": 3,\n   \"frequency_after\": 3,\n   \"cost_per_before\": 0.03,\n   \"cost_per_after\": 0.03,\n   \"delta\": 0.0\n  },\n  {\n   \"key\": \"gate:level_regression:C\",\n   \"family\": \"cost\",\n   \"verdict\": \"improved\",\n   \"reason\": \"cost fell and every after value is below every before value\",\n   \"n_before\": 3,\n   \"n_after\": 3,\n   \"frequency_before\": 3,\n   \"frequency_after\": 3,\n   \"cost_per_before\": 0.4,\n   \"cost_per_after\": 0.35,\n   \"delta\": -0.05\n  },\n  {\n   \"key\": \"gate:level_regression:D\",\n   \"family\": \"cost\",\n   \"verdict\": \"not_improved\",\n   \"reason\": \"no material change\",\n   \"n_before\": 3,\n   \"n_after\": 3,\n   \"frequency_before\": 3,\n   \"frequency_after\": 3,\n   \"cost_per_before\": 22.52,\n   \"cost_per_after\": 22.31,\n   \"delta\": -0.21\n  },\n  {\n   \"key\": \"gate:level_regression:X\",\n   \"family\": \"cost\",\n   \"verdict\": \"improved\",\n   \"reason\": \"cost fell and every after value is below every before value\",\n   \"n_before\": 3,\n   \"n_after\": 3,\n   \"frequency_before\": 3,\n   \"frequency_after\": 3,\n   \"cost_per_before\": 119.51,\n   \"cost_per_after\": 58.5,\n   \"delta\": -61.01\n  }\n ],\n \"blind_spots\": [\n  \"confounders: everything else that changed between the two windows is credited to this change (a new model, a slower machine, a different plan)\",\n  \"small n: 3 against 3 is the floor; full separation of 3 against 3 is p = 0.05 one-sided, weak evidence, and it is one project's log\",\n  \"the prediction is a heuristic: only the layer X templates predict (X proportional to repeats); frequency x cost is the cost of a problem, not a predicted saving\",\n  \"Goodhart: hiding a signal (a renamed key, a gate that is not run) reads as improved; exposure catches 'not exercised', not 'not logged'\",\n  \"unseen: human time, coverage and risk (fewer repeats save seconds and look for fewer races)\",\n  \"timing: the close is when the owner ran the ledger (or the time given with --at), and a gate run is stamped when it ends\"\n ],\n \"warnings\": []\n}\n",
+   "json_stderr": "",
+   "text_stdout": "Lattice improve verify: I-01 (gate:level_regression:*), closed 2026-10-12T23:08:00Z, commit scratch-clone studio.toml (not merged)\n\nVerdict: improved (cost fell and every after value is below every before value)\nFamily: cost (unit s); keys: gate:level_regression:A, gate:level_regression:C, gate:level_regression:D, gate:level_regression:X\nBefore (ts < close): n 3, f 3, mean 142.46 s (min 142.27 s, max 142.56 s), 2026-10-12T23:02:23Z .. 2026-10-12T23:07:11Z\nAfter (ts > close): n 3, f 3, mean 81.19 s (min 81.09 s, max 81.33 s), 2026-10-12T23:09:06Z .. 2026-10-12T23:11:50Z\nChange: -61.27 s (-43.0%, down); every after below every before: yes\nPredicted: no prediction recorded (the signal matches more than one key)\nError: |measured - predicted| / |predicted| = -\nExcluded: at the close second 0, undated 0\nContext: x_repeats 5 -> 2; selected 152 -> 152; mode regression -> regression; sha a0679e9 -> a0679e9\nEvidence (before): e-e8d9c91c15964512, e-327c71cd641f49a0, e-f6061c7895644d98\nEvidence (after): e-07264822a1c541d2, e-9e47b5542c8f4b45, e-4cbd0ccd6d9d4a08\nPer key:\n  - gate:level_regression:A: not_improved (n 3/3, 0.03 -> 0.03)\n  - gate:level_regression:C: improved (n 3/3, 0.4 -> 0.35)\n  - gate:level_regression:D: not_improved (n 3/3, 22.52 -> 22.31)\n  - gate:level_regression:X: improved (n 3/3, 119.51 -> 58.5)\nBlind spots:\n  - confounders: everything else that changed between the two windows is credited to this change (a new model, a slower machine, a different plan)\n  - small n: 3 against 3 is the floor; full separation of 3 against 3 is p = 0.05 one-sided, weak evidence, and it is one project's log\n  - the prediction is a heuristic: only the layer X templates predict (X proportional to repeats); frequency x cost is the cost of a problem, not a predicted saving\n  - Goodhart: hiding a signal (a renamed key, a gate that is not run) reads as improved; exposure catches 'not exercised', not 'not logged'\n  - unseen: human time, coverage and risk (fewer repeats save seconds and look for fewer races)\n  - timing: the close is when the owner ran the ledger (or the time given with --at), and a gate run is stamped when it ends\n",
+   "text_stderr": "",
+   "run_digests": [
+    "f69e6b6b23dc8af7",
+    "f69e6b6b23dc8af7",
+    "f69e6b6b23dc8af7"
+   ]
+  }
+ ]
+}

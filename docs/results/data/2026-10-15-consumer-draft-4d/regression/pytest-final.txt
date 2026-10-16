@@ -1,0 +1,1 @@
+pytest tests/contracts tests/mcp tests/workspace: 691 passed in 169.51s (final, after the 41st draft test)

@@ -1,0 +1,38 @@
+# Draft: adapt ci-bot to scheduler (linked question lq1)
+Question lq1, contradiction, open
+NOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.
+
+## 1. What changed
+pinned spec_hash 9bcae0e24da9; scheduler now spec_hash 24c5fd8f4800 (commit c73bea6e)
+  BROKEN   status_not_observed  201  @ POST /applications/{}/jobs/{}/runs
+    before: statuses [201, 401, 404, 409]
+    after: the spec now shows statuses [200, 401, 404, 409]
+  CHANGED* status_added  200  @ POST /applications/{}/jobs/{}/runs
+    before: statuses [201, 401, 404, 409]
+    after: status 200 is now observed
+
+## 2. Imports that rely on it
+import #4: POST /applications/{}/jobs/{}/runs  status [201], auth token as eve, request_fields [], response_fields [id, status]
+    broken claim: status_not_observed 201
+    relied change: status_added 200
+
+## 3. Suggested edits (verify in the code first)
+- change the code that sends/reads it first, then import #4: status = [201] -> [200]
+- A claim is never removed here: declaring less would make `check` pass without the code being right.
+
+## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)
+R3: It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 201 with id and status.
+    names: POST /applications/{}/jobs/{}/runs
+    scenarios: start_run
+    suggested wording: It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 200 with id and status.
+
+## 5. Then
+1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.
+2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.
+3. Propose any rule edit with `lattice:change` or in Studio.
+4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.
+
+## Not decided here
+- Whether scheduler's change is intended (its owner may revert it).
+- Where in the code each call lives.
+- Whether a rule's behaviour really depends on the endpoint.

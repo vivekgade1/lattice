@@ -1,0 +1,77 @@
+{
+ "items": {
+  "A1": true,
+  "A2": true,
+  "A3": false,
+  "A4": true,
+  "A5": true,
+  "A7": null,
+  "A6": true
+ },
+ "applicable": [
+  "A1",
+  "A2",
+  "A3",
+  "A4",
+  "A5",
+  "A6"
+ ],
+ "detail": {
+  "A1": {
+   "pass": true,
+   "calls": [
+    {
+     "id": "toolu_01VDJ9gSyTraaHq3gZoBpSYR",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "A2": {
+   "pass": true,
+   "endpoint": true,
+   "number": true,
+   "others": []
+  },
+  "A3": {
+   "pass": false,
+   "invented": [
+    {
+     "kind": "field",
+     "item": "a0db033a",
+     "sentence": "streak-widget is pinned to commit `a0db033a` (spec hash `d44b738522ea`)."
+    },
+    {
+     "kind": "field",
+     "item": "contract_check",
+     "sentence": "- **Check result:** `contract_check` currently reports `ok`, because the provider's spec on disk still matches your pin."
+    },
+    {
+     "kind": "field",
+     "item": "ok",
+     "sentence": "- **Check result:** `contract_check` currently reports `ok`, because the provider's spec on disk still matches your pin."
+    }
+   ]
+  },
+  "A4": {
+   "pass": true,
+   "advice": []
+  },
+  "A5": {
+   "pass": true,
+   "r6": true,
+   "proposed": []
+  },
+  "A7": {
+   "pass": false,
+   "R3": false,
+   "R4_affirmed": []
+  },
+  "A6": {
+   "world_changed": [],
+   "outside_same": true
+  }
+ },
+ "pass": false
+}

@@ -20,7 +20,13 @@ from tests.studio.test_server import make_project
 
 CODE = Path(lattice.__file__).resolve().parents[1]
 PLUGIN = CODE / "lattice-claude-plugin"
-WS_TOOLS = ["workspace_impact", "contract_check", "contract_impact", "linked_question_list"]
+WS_TOOLS = [
+    "workspace_impact",
+    "contract_check",
+    "contract_impact",
+    "linked_question_list",
+    "linked_question_draft",  # slice 4d (disclosed): appended after the four
+]
 
 
 def expand(arg: str, env: dict[str, str]) -> str:
@@ -76,7 +82,7 @@ def test_p3_the_plugin_shape_in_a_workspace_dir_is_a_workspace_server(ws: Path) 
         ["--project", "."], ws / "proj", clean_env(CODE), via_cli=True
     )
     assert init == INSTRUCTIONS + MULTI_NOTE + WORKSPACE_NOTE
-    assert names[-4:] == WS_TOOLS
+    assert names[-5:] == WS_TOOLS
     src = {p["name"]: p["source"] for p in rows["projects"]}
     assert src == {"proj": "explicit", "other": "workspace"}
 
@@ -86,7 +92,7 @@ def test_p4_the_manifest_is_found_from_the_project_when_the_launch_dir_has_none(
         ["--project", str(ws / "proj")], ws.parent / "elsewhere", clean_env(CODE)
     )
     assert init == INSTRUCTIONS + MULTI_NOTE + WORKSPACE_NOTE
-    assert names[-4:] == WS_TOOLS
+    assert names[-5:] == WS_TOOLS
     assert {p["name"]: p["source"] for p in rows["projects"]} == {
         "proj": "explicit", "other": "workspace",
     }  # fmt: skip
@@ -108,7 +114,7 @@ def test_p6_the_env_workspace_is_used_as_before(ws: Path) -> None:
     init, names, _rows, err = list_projects(
         ["--project", str(ws / "proj")], ws.parent / "elsewhere", env
     )
-    assert names[-4:] == WS_TOOLS and "not used" not in err and init.endswith(WORKSPACE_NOTE)
+    assert names[-5:] == WS_TOOLS and "not used" not in err and init.endswith(WORKSPACE_NOTE)
 
 
 def test_p7_an_unreadable_manifest_above_the_project_changes_nothing(ws: Path) -> None:

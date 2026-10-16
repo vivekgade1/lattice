@@ -1,0 +1,37 @@
+streak renamed `next_cursor` to `next` in the `GET /v1/habits` response, which breaks streak-widget's import #4. The finding is `lq1`, still open, against streak commit `168e2a03`.
+
+## What changed in the provider
+- **BROKEN:** the response no longer has `next_cursor`. It now has `items`, `has_more` and `next`.
+- **CHANGED (relied on):** `next` is the new field, and it now carries the pagination cursor.
+- **Unaffected:** the request fields `limit` and `cursor`, the 200 status, and token auth as `ann`.
+
+## What to change in streak-widget
+
+**1. Code that calls `GET /v1/habits`.** I couldn't read the source from here, so find the call sites yourself.
+- Read the pagination cursor from `response.next` instead of `response.next_cursor`.
+- Keep sending `cursor` and `limit` as request fields.
+- Keep reading `items` and `has_more` as before.
+- Fix this first, before touching the spec.
+
+**2. `lattice.imports.toml`, import #4 (`GET /v1/habits`).** Change one line:
+```toml
+response_fields = ["items", "has_more", "next_cursor"]
+# becomes
+response_fields = ["items", "has_more", "next"]
+```
+Replace the field rather than deleting the claim. Declaring less would make `check` pass without the code being right.
+
+**3. Spec rules (`REQUIREMENTS.md`, `spec.py`, `spec.trace.json`).**
+- streak-widget has no Lattice spec yet (`spec: missing`), so no rule names this endpoint and there is nothing to edit.
+- If you want one, write `REQUIREMENTS.md` and run `lattice spec draft` before this fix. Any rule about habit-list pagination should say `next`, not `next_cursor`.
+
+**4. Re-pin and clear the question**, once the code and imports are fixed:
+1. `lattice contracts pin streak-widget`
+2. `lattice contracts check streak-widget`, which should show no BROKEN findings.
+3. `lattice contracts questions resolve streak-widget lq1`
+
+## Two things to know
+- **Two gaps are not breakages.** They show no BROKEN or CHANGED finding: `GET /v1/habits` request field `cursor` and `POST /v1/auth/login` response field `access_token` are never shown in streak's spec, so they can't be verified either way.
+- **The provider's change may be reversible.** Whether the rename was intended is streak's owner's call. If it wasn't, asking them to revert is an alternative to adapting.
+
+I changed nothing.

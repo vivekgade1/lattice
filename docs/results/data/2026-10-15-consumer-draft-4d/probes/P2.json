@@ -1,0 +1,338 @@
+{
+ "id": "P2",
+ "prediction": "for each of the 13 contradiction rows: 6 of 6 checks (window ran with no error and all outputs equal, snapshot identical, no changes/ entry, change_list equal, question files byte-identical, no .lock created); a missing state directory: exit 2 no_state and nothing created; 14/14",
+ "observed": "13/13 rows 6/6; missing state dir ok",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "job-D1": true,
+  "job-D2": true,
+  "job-D3": true,
+  "job-D4": true,
+  "job-D5": true,
+  "streak-D1": true,
+  "streak-D2": true,
+  "streak-D3": true,
+  "streak-D4": true,
+  "streak-D5": true,
+  "streak-D6": true,
+  "streak-D7": true,
+  "I3x-b": true,
+  "missing_state": true
+ },
+ "extra": {
+  "rows": {
+   "job-D1": {
+    "tag": "job-D1",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": false,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_J/w/P2j/ci-bot is not a Lattice project yet (missing: spec.py). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: ci-bot)",
+      "doc": null
+     }
+    ],
+    "sha256": "2192a2e388035a46869646b0138a42e4771e994106624ae6998aa00ba25a9c2a",
+    "n_outputs": 40
+   },
+   "job-D2": {
+    "tag": "job-D2",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": true,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_J/w/P2j/ci-bot is not a Lattice project yet (missing: spec.py). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: ci-bot)",
+      "doc": null
+     }
+    ],
+    "sha256": "01e72f4339e442de79f940be5bbf41d17416050bd683622a2da3f486f3a213e4",
+    "n_outputs": 40
+   },
+   "job-D3": {
+    "tag": "job-D3",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": false,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_J/w/P2j/ci-bot is not a Lattice project yet (missing: spec.py). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: ci-bot)",
+      "doc": null
+     }
+    ],
+    "sha256": "3c20e774e5771157888c3600ea53eea0d1e446e6a528fc3db204adf3c8fed36e",
+    "n_outputs": 40
+   },
+   "job-D4": {
+    "tag": "job-D4",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": true,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_J/w/P2j/ci-bot is not a Lattice project yet (missing: spec.py). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: ci-bot)",
+      "doc": null
+     }
+    ],
+    "sha256": "c4509a556336b99230088feb63c936dcf79b187fb04957f7ffcd067ce2673179",
+    "n_outputs": 40
+   },
+   "job-D5": {
+    "tag": "job-D5",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": false,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_J/w/P2j/ci-bot is not a Lattice project yet (missing: spec.py). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: ci-bot)",
+      "doc": null
+     }
+    ],
+    "sha256": "25749c7c1ffee4754a98f70a30405bf04543a58320b1b51fef6d5342289a62cd",
+    "n_outputs": 40
+   },
+   "streak-D1": {
+    "tag": "streak-D1",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": true,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_S/w/P2s/streak-widget is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: streak-widget)",
+      "doc": null
+     }
+    ],
+    "sha256": "be3e3bdf620f1da2f8aed279730651f0717bee031bee91166ce574962ac247b1",
+    "n_outputs": 40
+   },
+   "streak-D2": {
+    "tag": "streak-D2",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": false,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_S/w/P2s/streak-widget is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: streak-widget)",
+      "doc": null
+     }
+    ],
+    "sha256": "6d85123473b7f41bd3a80080b9647834dd8e58138c0d301c9cbae00f1aa5ca4f",
+    "n_outputs": 40
+   },
+   "streak-D3": {
+    "tag": "streak-D3",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": true,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_S/w/P2s/streak-widget is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: streak-widget)",
+      "doc": null
+     }
+    ],
+    "sha256": "6474f33a6231ee486e2558ae2e26780615f13705d73659dd73f70fafe2d5b161",
+    "n_outputs": 40
+   },
+   "streak-D4": {
+    "tag": "streak-D4",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": false,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_S/w/P2s/streak-widget is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: streak-widget)",
+      "doc": null
+     }
+    ],
+    "sha256": "f445a35cbd35e414542bee201181123274a075fc0d4ecbc354374c49f5d23d60",
+    "n_outputs": 40
+   },
+   "streak-D5": {
+    "tag": "streak-D5",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": true,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_S/w/P2s/streak-widget is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: streak-widget)",
+      "doc": null
+     }
+    ],
+    "sha256": "8fc81e44236c1b957473500b4c242715d835bd4fea4a1c4307bbcb6ee630a5ab",
+    "n_outputs": 40
+   },
+   "streak-D6": {
+    "tag": "streak-D6",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": false,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_S/w/P2s/streak-widget is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: streak-widget)",
+      "doc": null
+     }
+    ],
+    "sha256": "1267970f04cb0ee58934d76e5d9f8069d878a16014b7ddf99cdc701e5b4b7c11",
+    "n_outputs": 40
+   },
+   "streak-D7": {
+    "tag": "streak-D7",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": true,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_S/w/P2s/streak-widget is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: streak-widget)",
+      "doc": null
+     }
+    ],
+    "sha256": "40102652e7ff88d7d2115eaa67f8293855201852ece62c5e3e8f73d8d51a45b3",
+    "n_outputs": 40
+   },
+   "I3x-b": {
+    "tag": "I3x-b",
+    "checks": {
+     "window_ran_without_error": true,
+     "snapshot_identical": true,
+     "no_changes_entry": true,
+     "change_list_equal": true,
+     "question_files_identical": true,
+     "lock_unchanged": true
+    },
+    "errors": [],
+    "changed": [],
+    "lock_present_before": false,
+    "change_list_before": [
+     {
+      "isError": true,
+      "text": "$WORK_S/w/Q1xb/streak-widget is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_list show what its providers changed and the notes they left (otherwise `lattice contracts check` and `lattice contracts questions list` with --workspace). (project: streak-widget)",
+      "doc": null
+     }
+    ],
+    "sha256": "9bd2be942eb90304d23d7e826e416ec4e86866b9cabd48f2118306e95eaf372e",
+    "n_outputs": 40
+   },
+   "missing_state": {
+    "ok": true,
+    "cli": [
+     2,
+     2,
+     "no_state"
+    ],
+    "mcp": "no_state: ci-bot has no state directory (missing)",
+    "created": false
+   }
+  },
+  "wall_s": 42.5
+ }
+}

@@ -1,0 +1,95 @@
+{
+ "id": "T-safety",
+ "prediction": "over every traced call: sha256 of the workspace, consumers (locks, imports), provider clone and the worktree unchanged, 0 files newer; TMPDIR empty; 0 socket connects; only git {rev-parse, ls-tree, cat-file, status} and the export child, export children as expected (2; 0 for T-cycle d, T-edge e, f) and EQUAL with and without the flag; no claude, no ANTHROPIC variable; no linked_questions/ or state dir created; the real job-scheduler and Streak git status unchanged, 0 newer files",
+ "observed": "1430 traced calls; tree changed 0, newer 0, tmp left 0, bad argv 0, connects 0, children mismatches 0, labels with differing children 0, claude/ANTHROPIC 0; real repos: job-scheduler: ef17cf8 ' M uv.lock' -> ef17cf8 ' M uv.lock', 0 newer files []; streak: a0db033 ' M studio.toml' -> a0db033 ' M studio.toml', 0 newer files []; worktree newer since marker 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "calls_traced_gt_0": true,
+  "tree_unchanged_every_call": true,
+  "no_file_newer_than_a_call": true,
+  "tmpdir_empty_after_every_call": true,
+  "only_allowed_argv": true,
+  "zero_connects": true,
+  "export_children_as_expected": true,
+  "children_equal_with_and_without_flag": true,
+  "no_claude_no_anthropic": true,
+  "no_state_dir_or_linked_questions": true,
+  "real_repos_unchanged": true,
+  "worktree_newer_since_marker_0": true
+ },
+ "extra": {
+  "summary": {
+   "calls": 1430,
+   "tree_changed": [],
+   "newer": [],
+   "tmp_left": [],
+   "bad_popen": [],
+   "connects": 0,
+   "children_mismatch": [],
+   "claude_or_anthropic": [],
+   "by_probe": {
+    "T-chain": 400,
+    "T-cost": 20,
+    "T-cycle": 160,
+    "T-diamond": 200,
+    "T-edge": 280,
+    "T-flagoff": 230,
+    "T-long": 80,
+    "T-parity": 60
+   }
+  },
+  "real_repos": [
+   {
+    "repo": "job-scheduler",
+    "before": {
+     "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+     "status": " M uv.lock"
+    },
+    "after": {
+     "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+     "status": " M uv.lock"
+    },
+    "newer": []
+   },
+   {
+    "repo": "streak",
+    "before": {
+     "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+     "status": " M studio.toml"
+    },
+    "after": {
+     "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+     "status": " M studio.toml"
+    },
+    "newer": []
+   }
+  ],
+  "marker": {
+   "newer": []
+  }
+ },
+ "runs": [
+  {
+   "calls": 1430,
+   "tree_changed": [],
+   "newer": [],
+   "tmp_left": [],
+   "bad_popen": [],
+   "connects": 0,
+   "children_mismatch": [],
+   "claude_or_anthropic": [],
+   "by_probe": {
+    "T-chain": 400,
+    "T-cost": 20,
+    "T-cycle": 160,
+    "T-diamond": 200,
+    "T-edge": 280,
+    "T-flagoff": 230,
+    "T-long": 80,
+    "T-parity": 60
+   }
+  }
+ ]
+}

@@ -1,0 +1,29 @@
+## What broke
+
+scheduler's accepted contract (commit `c73bea6e`) changed `POST /applications/{app}/jobs/{job}/runs` from returning **201** to returning **200**. The statuses it now shows are `[200, 401, 404, 409]`. ci-bot's pin still says 201, so linked question `lq1` is open as a contradiction. Nothing has been changed.
+
+## What to change in ci-bot
+
+Do these in order.
+
+1. **Code.** Find where ci-bot starts a run on `POST /applications/{app}/jobs/{job}/runs`. Make it treat **200** as success instead of 201, and read `id` and `status` from the response body as before. The Lattice tools have no code index here, so locating the call site needs a grep. Also check any `== 201` or `status_code == 201` checks and any test fixtures or mocks that return 201.
+
+2. **Import table #4** (`[[import]]` for `POST /applications/{}/jobs/{}/runs`, scheduler, token auth as `eve`). Change only `status = [201]` to `status = [200]`. Leave `auth`, `as_user`, `request_fields = []` and `response_fields = ["id", "status"]` alone.
+
+3. **Spec rule R3.** Currently: "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 201 with id and status."
+   Change to: "...and expects **200** with id and status."
+   Check the `start_run` scenario that traces to R3. Its expected status should be 200 as well. Propose this through the Lattice change flow or Studio; don't edit `REQUIREMENTS.md`, `spec.py` or `spec.trace.json` directly.
+
+4. **Re-pin and clear the question** (CLI, only after the code and spec edits above):
+   - `lattice contracts pin ci-bot`
+   - `lattice contracts check ci-bot` (should report no BROKEN or CHANGED findings)
+   - `lattice contracts questions resolve ci-bot lq1`
+
+## Before you do any of this
+
+- Confirm with scheduler's owner that 200 is intentional. If it isn't, asking them to revert is the alternative, and ci-bot would need no change.
+- Don't widen the import to `[200, 201]` just to make `check` pass. The tool deliberately never removes a claim, so the status has to be replaced with what the code actually expects.
+
+## Unrelated note
+
+`contract_check` also reports a gap: `POST /auth/login` response field `access_token` is relied on by ci-bot but never shown in scheduler's spec. It's not part of this break, but it means that claim is unverified.

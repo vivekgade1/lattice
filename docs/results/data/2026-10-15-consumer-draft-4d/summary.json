@@ -1,0 +1,287 @@
+{
+ "experiment": "2026-10-15 slice 4d consumer-side drafting (prereg 2026-10-15-consumer-draft-4c-prereg.md, Amendment 1)",
+ "base": "223adff",
+ "prereg_commit": "6a837c9",
+ "deterministic_probes": [
+  {
+   "id": "P1",
+   "status": "RAN",
+   "pass": true,
+   "observed": "13/13 contradiction rows as predicted; no-draft 11/11 (x2 channels); identical 10 runs True, two roots True; dismissed True, superseded True; variants stale True, pin True, imports True, two-adds True; row==question True"
+  },
+  {
+   "id": "P2",
+   "status": "RAN",
+   "pass": true,
+   "observed": "13/13 rows 6/6; missing state dir ok"
+  },
+  {
+   "id": "T",
+   "status": "RAN",
+   "pass": true,
+   "observed": "median 0.17 s (min 0.16, max 0.17); --json median 0.07 s"
+  },
+  {
+   "id": "P4",
+   "status": "RAN",
+   "pass": true,
+   "observed": "100/100 CLI argv identical; MCP instructions 6/6; tools no-workspace True, workspace +1 True; tree ['lattice/contracts/__main__.py', 'lattice/mcp/projects.py'] + new ['lattice/contracts/draft.py']; studio unchanged True"
+  },
+  {
+   "id": "S",
+   "status": "RAN",
+   "pass": true,
+   "observed": "real job-scheduler and Streak unchanged (HEAD, git status, 0 newer files)"
+  }
+ ],
+ "mutants": {
+  "status": "RAN",
+  "killed": 14,
+  "total": 14,
+  "verdicts": {
+   "DR3": "killed",
+   "DR2": "killed",
+   "DR1": "killed",
+   "DR4": "killed",
+   "DR5": "killed",
+   "DR6": "killed",
+   "DR7": "killed",
+   "DR8": "killed",
+   "DR9": "killed",
+   "DR10": "killed",
+   "DR13": "killed",
+   "DR14": "killed",
+   "DR11": "killed",
+   "DR12": "killed"
+  },
+  "control": "PASS (control)"
+ },
+ "regression": {
+  "pytest tests/contracts tests/mcp tests/workspace": {
+   "status": "RAN",
+   "baseline_before_first_edit": "641 passed",
+   "final": "691 passed"
+  },
+  "pytest tests/studio tests/improve": {
+   "status": "RAN",
+   "result": "740 passed, 1 skipped"
+  },
+  "dogfood/contracts/probes.py --runs 1": {
+   "status": "RAN",
+   "baseline_before_first_edit": "35/35",
+   "after": "35/35"
+  },
+  "dogfood/studio/check.sh": {
+   "status": "RAN",
+   "new": "PASS 481 cases, 57 scenarios",
+   "old_223adff": "PASS 481 cases, 57 scenarios"
+  },
+  "linkedq_probes.py --runs 10 --skip-regression": {
+   "status": "RAN",
+   "result": "8/10; Q4 static allow-list names contracts/draft.py; Q7 regression_run false by --skip-regression (its 12/12 byte comparison passes)"
+  },
+  "impact_probes.py --runs 10 --only I0a..I7,T,I6": {
+   "status": "RAN",
+   "first_invocation": "10/11 (I6 failed: runners ran concurrently in one worktree)",
+   "rerun_in_isolation": "11/11"
+  },
+  "transitive_probes.py --runs 10": {
+   "status": "RAN",
+   "first_invocation": "9/11 (no --base: T-flagoff 0/19; T-safety: concurrent runners)",
+   "rerun_in_isolation_with_base": "10/11 (T-flagoff 30/30 byte-identical; only regression_run false, --regression not passed)"
+  },
+  "improve2_probes.py --runs 3 new vs old tree": {
+   "status": "RAN",
+   "result": "15/15 both; D1-D4 identical, D5 report digests differ between the two scratch paths (information)"
+  }
+ },
+ "P3": {
+  "status": "RAN: all 8 sessions (run 2, Amendment 2); run 1 was partial (2 sessions, token cap) and is kept in agent-partial-run1/",
+  "run2": {
+   "stop": null,
+   "scored": 8,
+   "tool_sessions_pass": 4,
+   "tool_sessions_scored": 6,
+   "pass_rule_met": false,
+   "items_with_tool": {
+    "A1": "6/6",
+    "A2": "6/6",
+    "A3": "4/6",
+    "A4": "6/6",
+    "A5": "6/6",
+    "A7": "3/3"
+   },
+   "items_ablation": {
+    "A2": "0/2",
+    "A3": "0/2",
+    "A4": "2/2",
+    "A5": "2/2",
+    "A7": "0/2"
+   },
+   "A6": "8/8",
+   "total_cost_usd": 0.9486,
+   "total_tokens_counted": 156364,
+   "total_tokens_incl_cache_reads": 2687749,
+   "token_definition": "input + output + cache creation (cache reads excluded), Amendment 2; cap 400000",
+   "sessions": [
+    {
+     "sid": "sonnet-WD2-1",
+     "status": "SCORED",
+     "cost_usd": 0.0956036,
+     "tokens": 12377,
+     "tokens_incl_cache_reads": 364693,
+     "turns": 6,
+     "items": {
+      "A1": true,
+      "A2": true,
+      "A3": false,
+      "A4": true,
+      "A5": true,
+      "A7": true,
+      "A6": true
+     }
+    },
+    {
+     "sid": "sonnet-WS6-1",
+     "status": "SCORED",
+     "cost_usd": 0.1006042,
+     "tokens": 12100,
+     "tokens_incl_cache_reads": 438922,
+     "turns": 7,
+     "items": {
+      "A1": true,
+      "A2": true,
+      "A3": true,
+      "A4": true,
+      "A5": true,
+      "A7": null,
+      "A6": true
+     }
+    },
+    {
+     "sid": "sonnet-WD2-2",
+     "status": "SCORED",
+     "cost_usd": 0.0789704,
+     "tokens": 11102,
+     "tokens_incl_cache_reads": 288846,
+     "turns": 5,
+     "items": {
+      "A1": true,
+      "A2": true,
+      "A3": true,
+      "A4": true,
+      "A5": true,
+      "A7": true,
+      "A6": true
+     }
+    },
+    {
+     "sid": "sonnet-WS6-2",
+     "status": "SCORED",
+     "cost_usd": 0.09188640000000001,
+     "tokens": 12094,
+     "tokens_incl_cache_reads": 364178,
+     "turns": 7,
+     "items": {
+      "A1": true,
+      "A2": true,
+      "A3": true,
+      "A4": true,
+      "A5": true,
+      "A7": null,
+      "A6": true
+     }
+    },
+    {
+     "sid": "sonnet-WD2-3",
+     "status": "SCORED",
+     "cost_usd": 0.0903373,
+     "tokens": 11763,
+     "tokens_incl_cache_reads": 364056,
+     "turns": 6,
+     "items": {
+      "A1": true,
+      "A2": true,
+      "A3": true,
+      "A4": true,
+      "A5": true,
+      "A7": true,
+      "A6": true
+     }
+    },
+    {
+     "sid": "sonnet-WS6-3",
+     "status": "SCORED",
+     "cost_usd": 0.0920055,
+     "tokens": 11956,
+     "tokens_incl_cache_reads": 364031,
+     "turns": 6,
+     "items": {
+      "A1": true,
+      "A2": true,
+      "A3": false,
+      "A4": true,
+      "A5": true,
+      "A7": null,
+      "A6": true
+     }
+    },
+    {
+     "sid": "ablation-WD2-1",
+     "status": "SCORED",
+     "cost_usd": 0.3271305,
+     "tokens": 74443,
+     "tokens_incl_cache_reads": 286468,
+     "turns": 6,
+     "items": {
+      "A1": null,
+      "A2": false,
+      "A3": false,
+      "A4": true,
+      "A5": true,
+      "A7": false,
+      "A6": true
+     }
+    },
+    {
+     "sid": "ablation-WD2-2",
+     "status": "SCORED",
+     "cost_usd": 0.0720906,
+     "tokens": 10529,
+     "tokens_incl_cache_reads": 216555,
+     "turns": 6,
+     "items": {
+      "A1": null,
+      "A2": false,
+      "A3": false,
+      "A4": true,
+      "A5": true,
+      "A7": false,
+      "A6": true
+     }
+    }
+   ]
+  },
+  "run1_partial": {
+   "stop": "tokens 582479 > 400000",
+   "scored": 2,
+   "total_cost_usd": 0.4146,
+   "total_tokens_with_cache_reads": 582479,
+   "items_with_tool": {
+    "A1": "2/2",
+    "A2": "2/2",
+    "A3": "0/2",
+    "A4": "2/2",
+    "A5": "2/2",
+    "A7": "1/1"
+   }
+  },
+  "by_hand_reading": "both run-2 A3 misses (WD2-1, WS6-3) and both run-1 misses are false positives of the frozen scorer on backticked tool names, `ok` and real commit ids; by hand 6/6 would pass; frozen verdict 4/6, pass rule not met",
+  "claude_version": "2.1.299 (Claude Code)",
+  "scorer_hashes": {
+   "draft_agent_scorer.py": "97395b9e5007ceb32e7cabd45f610525561858e2e8fc64efc470b055613b20ad",
+   "draft_agent_scorer_cases.json": "32201ba412ebe0ec682a6778ac4458276ab7513621948ecd2aad2d4abcc0581a",
+   "draft_agent_check.py": "46b667681b9271122794518686e3dda9e727aead78648ebbbbf0c9b97c5fcbfe"
+  }
+ }
+}

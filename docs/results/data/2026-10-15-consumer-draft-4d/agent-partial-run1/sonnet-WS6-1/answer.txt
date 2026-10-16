@@ -1,0 +1,47 @@
+## What broke
+
+The provider `streak` (commit `168e2a03`) renamed a response field on `GET /v1/habits`: `next_cursor` is now `next`. Linked question `lq1` is open for this.
+
+- **BROKEN:** `next_cursor` is no longer in the response. The fields are now `items`, `has_more` and `next`.
+- **CHANGED (relied):** `next` was added.
+
+`contract_check` still reports `ok` because it compares against your pin, which is the old contract. The break only shows up in `lq1`.
+
+## What to change in streak-widget
+
+Do these in order.
+
+1. **Code that reads the pagination cursor from the `GET /v1/habits` response.**
+   - Read `response.next` instead of `response.next_cursor`.
+   - Keep sending `cursor` in the request. It hasn't changed. The contract check lists it only as "unobserved" because the provider's spec never shows it, which is not a break.
+   - I couldn't locate the code for you. Search the widget source for `next_cursor`.
+
+2. **`lattice.imports.toml`, import #4 (`GET /v1/habits`).** Change the response fields:
+   ```
+   response_fields = ["items", "has_more", "next_cursor"]
+   →
+   response_fields = ["items", "has_more", "next"]
+   ```
+   Do this only after step 1, so the claim matches what the code does. Don't delete the field to make the check pass.
+
+3. **Re-pin and verify.**
+   ```
+   lattice contracts pin streak-widget
+   lattice contracts check streak-widget
+   ```
+   The check should come back with no BROKEN findings.
+
+4. **Clear the question.**
+   ```
+   lattice contracts questions resolve streak-widget lq1
+   ```
+
+## About the spec
+
+streak-widget has no Lattice spec (`REQUIREMENTS.md`, `spec.py` and `spec.trace.json` are missing), so there is no rule to edit. The only spec-level artifact is the contract import in `lattice.imports.toml` (step 2). If you later want rules, write `REQUIREMENTS.md` and run `lattice spec draft`. A rule that mentions pagination should then say `next`, not `next_cursor`.
+
+## Alternative
+
+If the rename is unintended, ask streak's owner to revert it instead. That would make steps 1–3 unnecessary.
+
+I changed nothing.

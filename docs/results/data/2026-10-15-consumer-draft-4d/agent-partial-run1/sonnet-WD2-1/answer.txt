@@ -1,0 +1,35 @@
+The scheduler changed `POST /applications/{app}/jobs/{job}/runs` from returning 201 to returning 200, and ci-bot still expects 201. I changed nothing.
+
+## What broke
+- Scheduler's spec is now at hash `24c5fd8f4800` (commit `c73bea6e`). ci-bot is pinned to `9bcae0e24da9`.
+- The endpoint's statuses went from `[201, 401, 404, 409]` to `[200, 401, 404, 409]`.
+- That is one BROKEN finding (201 is no longer observed) and one CHANGED finding (200 is now observed).
+- This is open as question `lq1`.
+- `contract_check` still shows "ok" because it compares against the pin, which is still the old spec. The break appears only in the linked question.
+
+## What to change in ci-bot
+
+**1. Code.** Find where ci-bot starts a run and make it accept 200 instead of 201. I couldn't locate the call site, because ci-bot has no `spec.py` yet, so the code index doesn't work. Search the code for the call to `POST /applications/{app}/jobs/{job}/runs`.
+- Keep reading `id` and `status` from the response body.
+- 401, 404 and 409 are unchanged.
+
+**2. Import table in `lattice.imports.toml`.** This is import #4, the `POST /applications/{}/jobs/{}/runs` table.
+- Change `status = [201]` to `status = [200]`.
+- Leave the other fields as they are: auth `token`, as_user `eve`, `request_fields = []`, `response_fields = ["id", "status"]`.
+- Do this after the code change, so the declared claim matches what the code actually does.
+
+**3. Spec rule R3.** Change the wording from "...expects 201 with id and status" to "...expects 200 with id and status".
+- The full text becomes: "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 200 with id and status."
+- Scenario `start_run` traces to R3, so check that its expected status is also 200.
+- ci-bot's spec files are missing (`spec: missing`, no `spec.py`), so the R3 wording came from a text match, not a verified link. You'll need to write `REQUIREMENTS.md` and run `lattice spec draft`, or edit wherever R3 lives, before this rule can go through the change flow.
+
+## Then
+1. `lattice contracts pin ci-bot`
+2. `lattice contracts check ci-bot`, which should come back clean.
+3. `lattice contracts questions resolve ci-bot lq1`
+
+## Before you do any of that
+Confirm that scheduler's 201 to 200 change is intended. If it wasn't, ask its owner to revert it instead, and then ci-bot needs no changes.
+
+## Unrelated gap
+The `POST /auth/login` response field `access_token` is never shown in scheduler's spec, so the contract can't verify it. It's informational and not a break.
