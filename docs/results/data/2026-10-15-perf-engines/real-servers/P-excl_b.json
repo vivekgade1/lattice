@@ -1,0 +1,196 @@
+{
+ "id": "P-excl(b)",
+ "status": "RAN",
+ "title": "a noisy tool's statements are not counted",
+ "predicted": "GET /items = 2 in every run on both engines",
+ "observed": "GET /items = 2 in 400/400 runs (5 + 5 noise statements per window)",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "a02b4a4909d4af90",
+  "a02b4a4909d4af90",
+  "a02b4a4909d4af90",
+  "a02b4a4909d4af90",
+  "a02b4a4909d4af90",
+  "a02b4a4909d4af90",
+  "a02b4a4909d4af90",
+  "a02b4a4909d4af90",
+  "a02b4a4909d4af90",
+  "a02b4a4909d4af90"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 28.6,
+ "error": null,
+ "facts": {
+  "hash": {
+   "postgres": {
+    "version": 1,
+    "command": "check",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: postgres (container <container>); statements from pg_stat_statements (top-level statement executions in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     }
+    ]
+   },
+   "clickhouse": {
+    "version": 1,
+    "command": "check",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     }
+    ]
+   }
+  },
+  "counts": [
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2,
+   2
+  ]
+ }
+}

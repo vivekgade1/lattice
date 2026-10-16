@@ -1,0 +1,74 @@
+{
+ "id": "P-down(c)",
+ "status": "RAN",
+ "title": "a given Postgres without pgss is unmeasured, no setup",
+ "predicted": "measure and check exit 2, all unmeasured with 'not available on this server' and pg_stat_statements, 0 pg_extension rows",
+ "observed": "measure exit 2, check exit 2, verdicts ['unmeasured'], pg_extension rows afterwards 0",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "84e00c2bc57f7ff9",
+  "84e00c2bc57f7ff9",
+  "84e00c2bc57f7ff9",
+  "84e00c2bc57f7ff9",
+  "84e00c2bc57f7ff9",
+  "84e00c2bc57f7ff9",
+  "84e00c2bc57f7ff9",
+  "84e00c2bc57f7ff9",
+  "84e00c2bc57f7ff9",
+  "84e00c2bc57f7ff9"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 17.8,
+ "error": null,
+ "facts": {
+  "hash": {
+   "measure": {
+    "rc": 2,
+    "verdicts": [
+     "unmeasured"
+    ],
+    "notes": [
+     [
+      "unmeasured: statement counting on PostgreSQL is not available on this server: 'SELECT count(*) FROM pg_stat_statements' failed: relation \"pg_stat_statements\" does not exist"
+     ]
+    ]
+   },
+   "check": {
+    "rc": 2,
+    "verdicts": [
+     "unmeasured"
+    ],
+    "notes": [
+     [
+      "unmeasured: statement counting on PostgreSQL is not available on this server: 'SELECT count(*) FROM pg_stat_statements' failed: relation \"pg_stat_statements\" does not exist"
+     ]
+    ]
+   },
+   "extension_rows": 0
+  },
+  "measure": {
+   "rc": 2,
+   "verdicts": [
+    "unmeasured"
+   ],
+   "notes": [
+    [
+     "unmeasured: statement counting on PostgreSQL is not available on this server: 'SELECT count(*) FROM pg_stat_statements' failed: relation \"pg_stat_statements\" does not exist"
+    ]
+   ]
+  },
+  "check": {
+   "rc": 2,
+   "verdicts": [
+    "unmeasured"
+   ],
+   "notes": [
+    [
+     "unmeasured: statement counting on PostgreSQL is not available on this server: 'SELECT count(*) FROM pg_stat_statements' failed: relation \"pg_stat_statements\" does not exist"
+    ]
+   ]
+  },
+  "extension_rows": 0
+ }
+}

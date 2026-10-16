@@ -1,0 +1,562 @@
+{
+ "id": "P-regress(e)",
+ "status": "RAN",
+ "title": "MySQL on Streak, old vs new, 10x each",
+ "predicted": "1 distinct hash over 20, exit 0 x20, counts 11/31 and 4/4, fits 6+1N and 4+0N exact",
+ "observed": "1 distinct hash over 20; exit 0 in 20/20; counts and fits as predicted in 20/20 invocations",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "da917290c624e34c",
+  "da917290c624e34c",
+  "da917290c624e34c",
+  "da917290c624e34c",
+  "da917290c624e34c",
+  "da917290c624e34c",
+  "da917290c624e34c",
+  "da917290c624e34c",
+  "da917290c624e34c",
+  "da917290c624e34c"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 137.8,
+ "error": null,
+ "facts": {
+  "hash": {
+   "old": {
+    "version": 1,
+    "command": "check",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "home",
+      "endpoint": "GET /v1/home",
+      "sizes": [
+       {
+        "n": 5,
+        "statements": [
+         11,
+         11,
+         11,
+         11,
+         11,
+         11,
+         11,
+         11,
+         11,
+         11
+        ],
+        "shapes": [
+         {
+          "count": 3,
+          "sql": "SELECT * FROM `test_clock` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `users` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `habits` WHERE user_id = ? AND deleted_at IS NULL AND archived = ? ORDER BY id"
+         },
+         {
+          "count": 5,
+          "sql": "SELECT `date` FROM `completions` WHERE habit_id = ? AND deleted_at IS NULL AND date BETWEEN ? AND ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT `nudges`.`id`,`nudges`.`habit_id`,`nudges`.`for_date`,`nudges`.`kind`,`nudges`.`message`,`nudges`.`delivery`,`nudges`.`delivery_reason`,`nudges`.`change_seq`,`nudges`.`created_at`,`nudges`.`updated_at`,`nudges`.`dismissed_at`,`nudges`.`deleted_at` FROM `nudges` JOIN habits ON habits.id = nudges.habit_id WHERE habits.user_id = ? AND habits.archived = ? AND habits.deleted_at IS NULL AND nudges.for_date = ? AND nudges.dismissed_at IS NULL AND nudges.deleted_at IS NULL ORDER BY nudges.habit_id"
+         }
+        ]
+       },
+       {
+        "n": 25,
+        "statements": [
+         31,
+         31,
+         31,
+         31,
+         31,
+         31,
+         31,
+         31,
+         31,
+         31
+        ],
+        "shapes": [
+         {
+          "count": 3,
+          "sql": "SELECT * FROM `test_clock` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `users` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `habits` WHERE user_id = ? AND deleted_at IS NULL AND archived = ? ORDER BY id"
+         },
+         {
+          "count": 25,
+          "sql": "SELECT `date` FROM `completions` WHERE habit_id = ? AND deleted_at IS NULL AND date BETWEEN ? AND ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT `nudges`.`id`,`nudges`.`habit_id`,`nudges`.`for_date`,`nudges`.`kind`,`nudges`.`message`,`nudges`.`delivery`,`nudges`.`delivery_reason`,`nudges`.`change_seq`,`nudges`.`created_at`,`nudges`.`updated_at`,`nudges`.`dismissed_at`,`nudges`.`deleted_at` FROM `nudges` JOIN habits ON habits.id = nudges.habit_id WHERE habits.user_id = ? AND habits.archived = ? AND habits.deleted_at IS NULL AND nudges.for_date = ? AND nudges.dismissed_at IS NULL AND nudges.deleted_at IS NULL ORDER BY nudges.habit_id"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 6,
+       "per_item": 1,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 6,
+        "per_item": 1
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: mysql (container <container>); statements from the general log (Query + Execute rows of the app's connections)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "habits",
+      "endpoint": "GET /v1/habits",
+      "sizes": [
+       {
+        "n": 5,
+        "statements": [
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4
+        ],
+        "shapes": [
+         {
+          "count": 2,
+          "sql": "SELECT * FROM `test_clock` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `users` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `habits` WHERE (user_id = ? AND deleted_at IS NULL) AND archived = ? ORDER BY id LIMIT ?"
+         }
+        ]
+       },
+       {
+        "n": 25,
+        "statements": [
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4
+        ],
+        "shapes": [
+         {
+          "count": 2,
+          "sql": "SELECT * FROM `test_clock` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `users` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `habits` WHERE (user_id = ? AND deleted_at IS NULL) AND archived = ? ORDER BY id LIMIT ?"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 4,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 4,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: mysql (container <container>); statements from the general log (Query + Execute rows of the app's connections)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     }
+    ]
+   },
+   "new": {
+    "version": 1,
+    "command": "check",
+    "verdict": "pass",
+    "reports": [
+     {
+      "budget_id": "home",
+      "endpoint": "GET /v1/home",
+      "sizes": [
+       {
+        "n": 5,
+        "statements": [
+         11,
+         11,
+         11,
+         11,
+         11,
+         11,
+         11,
+         11,
+         11,
+         11
+        ],
+        "shapes": [
+         {
+          "count": 3,
+          "sql": "SELECT * FROM `test_clock` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `users` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `habits` WHERE user_id = ? AND deleted_at IS NULL AND archived = ? ORDER BY id"
+         },
+         {
+          "count": 5,
+          "sql": "SELECT `date` FROM `completions` WHERE habit_id = ? AND deleted_at IS NULL AND date BETWEEN ? AND ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT `nudges`.`id`,`nudges`.`habit_id`,`nudges`.`for_date`,`nudges`.`kind`,`nudges`.`message`,`nudges`.`delivery`,`nudges`.`delivery_reason`,`nudges`.`change_seq`,`nudges`.`created_at`,`nudges`.`updated_at`,`nudges`.`dismissed_at`,`nudges`.`deleted_at` FROM `nudges` JOIN habits ON habits.id = nudges.habit_id WHERE habits.user_id = ? AND habits.archived = ? AND habits.deleted_at IS NULL AND nudges.for_date = ? AND nudges.dismissed_at IS NULL AND nudges.deleted_at IS NULL ORDER BY nudges.habit_id"
+         }
+        ]
+       },
+       {
+        "n": 25,
+        "statements": [
+         31,
+         31,
+         31,
+         31,
+         31,
+         31,
+         31,
+         31,
+         31,
+         31
+        ],
+        "shapes": [
+         {
+          "count": 3,
+          "sql": "SELECT * FROM `test_clock` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `users` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `habits` WHERE user_id = ? AND deleted_at IS NULL AND archived = ? ORDER BY id"
+         },
+         {
+          "count": 25,
+          "sql": "SELECT `date` FROM `completions` WHERE habit_id = ? AND deleted_at IS NULL AND date BETWEEN ? AND ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT `nudges`.`id`,`nudges`.`habit_id`,`nudges`.`for_date`,`nudges`.`kind`,`nudges`.`message`,`nudges`.`delivery`,`nudges`.`delivery_reason`,`nudges`.`change_seq`,`nudges`.`created_at`,`nudges`.`updated_at`,`nudges`.`dismissed_at`,`nudges`.`deleted_at` FROM `nudges` JOIN habits ON habits.id = nudges.habit_id WHERE habits.user_id = ? AND habits.archived = ? AND habits.deleted_at IS NULL AND nudges.for_date = ? AND nudges.dismissed_at IS NULL AND nudges.deleted_at IS NULL ORDER BY nudges.habit_id"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 6,
+       "per_item": 1,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 6,
+        "per_item": 1
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: mysql (container <container>); statements from the general log (Query + Execute rows of the app's connections)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "habits",
+      "endpoint": "GET /v1/habits",
+      "sizes": [
+       {
+        "n": 5,
+        "statements": [
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4
+        ],
+        "shapes": [
+         {
+          "count": 2,
+          "sql": "SELECT * FROM `test_clock` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `users` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `habits` WHERE (user_id = ? AND deleted_at IS NULL) AND archived = ? ORDER BY id LIMIT ?"
+         }
+        ]
+       },
+       {
+        "n": 25,
+        "statements": [
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4,
+         4
+        ],
+        "shapes": [
+         {
+          "count": 2,
+          "sql": "SELECT * FROM `test_clock` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `users` WHERE id = ? LIMIT ?"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM `habits` WHERE (user_id = ? AND deleted_at IS NULL) AND archived = ? ORDER BY id LIMIT ?"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 4,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 4,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: mysql (container <container>); statements from the general log (Query + Execute rows of the app's connections)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     }
+    ]
+   },
+   "rc": [
+    0,
+    0
+   ]
+  },
+  "rc": [
+   0,
+   0
+  ],
+  "hashes": [
+   "2cb1822df58646cf",
+   "2cb1822df58646cf"
+  ],
+  "counts": {
+   "old": {
+    "home": [
+     [
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11
+     ],
+     [
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31
+     ]
+    ],
+    "habits": [
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ]
+    ]
+   },
+   "new": {
+    "home": [
+     [
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11
+     ],
+     [
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31
+     ]
+    ],
+    "habits": [
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ],
+     [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+     ]
+    ]
+   }
+  },
+  "fits": {
+   "old": {
+    "home": {
+     "constant": 6,
+     "per_item": 1,
+     "exact": true
+    },
+    "habits": {
+     "constant": 4,
+     "per_item": 0,
+     "exact": true
+    }
+   },
+   "new": {
+    "home": {
+     "constant": 6,
+     "per_item": 1,
+     "exact": true
+    },
+    "habits": {
+     "constant": 4,
+     "per_item": 0,
+     "exact": true
+    }
+   }
+  },
+  "stderr": [
+   "",
+   ""
+  ]
+ }
+}

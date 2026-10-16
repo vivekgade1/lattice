@@ -11,9 +11,19 @@ liveness guard marks a budget `unmeasured` when the counter saw nothing. MySQL a
 byte-identical: `lattice/perf/budget.py` and `__main__.py` unchanged, the 68 existing perf tests unchanged.
 
 ## Result, stated plainly
-**The counting has NOT been shown to work against a real Postgres or ClickHouse server.** Docker was not
-running and no database driver was installed, so under Amendment 1 every container probe is **NOT RUN**
-(14 of 34 probes), never a pass. What did run (20/34, all PASS, 10 identical repetitions each):
+**Update (same day, after Docker Desktop was started and a scratch venv with `psycopg`, `clickhouse-connect`,
+`pymysql` was layered over the Lattice venv): the 14 probes that were NOT RUN were run against real servers
+and all PASS, `probes: 14/14 pass, 0 not run`** (data: `real-servers/`; `tests/perf` 112 passed, 0 skipped
+with the Docker tests running). Postgres and ClickHouse counts are exact (2/2, 5/9, 5/9, 0/0 in 1600/1600
+runs per engine, 10 identical canonical hashes), the measured-database filter holds (the tool's own
+statements never counted, 800/800), the liveness guard and the two failure kinds behave as predicted, no
+container is left, and the MySQL path on a Streak clone is byte-identical (P-regress(e), 20/20). The
+ClickHouse `FORMAT Native` assumption of finding 3 held on a real server. The section below is the state
+at the first build, kept as written.
+
+**At the first build the counting had NOT been shown to work against a real Postgres or ClickHouse
+server.** Docker was not running and no database driver was installed, so under Amendment 1 every
+container probe was **NOT RUN** (14 of 34 probes), never a pass. What did run (20/34, all PASS, 10 identical repetitions each):
 - the regression probes: SQLite in-process and the process app are identical to `a4ab4a1`; the container
   command lines for `lattice check` are byte-identical with the default `extra_args`;
 - descriptor parsing and the trust boundary (`[perf]` cannot name code or docker options);

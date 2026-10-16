@@ -1,0 +1,1388 @@
+{
+ "id": "P-ch",
+ "status": "RAN",
+ "title": "clickhouse counted exactly (in-process and process app)",
+ "predicted": "counts 2/2, 5/9, 5/9, 0/0 in every run; fits 2+0N, 2+1N, 2+1N, 0+0N exact; verdicts pass, fail, pass, pass; exits check 1, measure 0; 1 distinct hash; 0 containers left",
+ "observed": "1600/1600 runs as predicted; exits check 1 / measure 0 in 20/20; 1 distinct canonical hash over 20; 0 container(s) left",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "036866656315a7b0",
+  "036866656315a7b0",
+  "036866656315a7b0",
+  "036866656315a7b0",
+  "036866656315a7b0",
+  "036866656315a7b0",
+  "036866656315a7b0",
+  "036866656315a7b0",
+  "036866656315a7b0",
+  "036866656315a7b0"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 185.5,
+ "error": null,
+ "facts": {
+  "variants": {
+   "inproc": {
+    "check_rc": 1,
+    "measure_rc": 0,
+    "ok": 80,
+    "total": 80,
+    "problems": [],
+    "stderr": "",
+    "raw": {
+     "version": 1,
+     "command": "check",
+     "project": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/probes/project-21",
+     "budget_file": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/probes/project-21/perf.budget.json",
+     "verdict": "fail",
+     "reports": [
+      {
+       "budget_id": "items",
+       "endpoint": "GET /items",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+         ],
+         "latency_ms": {
+          "min": 2.5,
+          "median": 2.869,
+          "max": 3.639
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          }
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+         ],
+         "latency_ms": {
+          "min": 2.487,
+          "median": 2.572,
+          "max": 2.844
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          }
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 2,
+        "per_item": 0,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 2,
+         "per_item": 0
+        },
+        "latency_ms": null
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: clickhouse (container lattice-perf-clickhouse-f14982d4); statements from system.query_log (initial queries finished or failed in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      },
+      {
+       "budget_id": "n1-tight",
+       "endpoint": "GET /items_n1",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+         ],
+         "latency_ms": {
+          "min": 4.558,
+          "median": 4.811,
+          "max": 5.964
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          },
+          {
+           "count": 3,
+           "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+          }
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9
+         ],
+         "latency_ms": {
+          "min": 7.357,
+          "median": 7.583,
+          "max": 8.056
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          },
+          {
+           "count": 7,
+           "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+          }
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 2,
+        "per_item": 1,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 2,
+         "per_item": 0
+        },
+        "latency_ms": null
+       },
+       "verdict": "fail",
+       "delta": {
+        "constant": 0,
+        "per_item": 1
+       },
+       "notes": [
+        "over budget: per_item 1 > budget 0",
+        "over budget: N=3: 5 statements > allowed 2",
+        "over budget: N=7: 9 statements > allowed 2",
+        "database: clickhouse (container lattice-perf-clickhouse-f14982d4); statements from system.query_log (initial queries finished or failed in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      },
+      {
+       "budget_id": "n1",
+       "endpoint": "GET /items_n1",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+         ],
+         "latency_ms": {
+          "min": 4.689,
+          "median": 4.834,
+          "max": 5.741
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          },
+          {
+           "count": 3,
+           "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+          }
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9
+         ],
+         "latency_ms": {
+          "min": 7.367,
+          "median": 7.748,
+          "max": 14.717
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          },
+          {
+           "count": 7,
+           "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+          }
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 2,
+        "per_item": 1,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 2,
+         "per_item": 1
+        },
+        "latency_ms": null
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: clickhouse (container lattice-perf-clickhouse-f14982d4); statements from system.query_log (initial queries finished or failed in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      },
+      {
+       "budget_id": "nodb",
+       "endpoint": "GET /nodb",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ],
+         "latency_ms": {
+          "min": 0.429,
+          "median": 0.53,
+          "max": 0.802
+         },
+         "shapes": []
+        },
+        {
+         "n": 7,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ],
+         "latency_ms": {
+          "min": 0.433,
+          "median": 0.449,
+          "max": 0.546
+         },
+         "shapes": []
+        }
+       ],
+       "fit": {
+        "constant": 0,
+        "per_item": 0,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 0,
+         "per_item": 0
+        },
+        "latency_ms": null
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: clickhouse (container lattice-perf-clickhouse-f14982d4); statements from system.query_log (initial queries finished or failed in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      }
+     ]
+    }
+   },
+   "process": {
+    "check_rc": 1,
+    "measure_rc": 0,
+    "ok": 80,
+    "total": 80,
+    "problems": [],
+    "stderr": "",
+    "raw": {
+     "version": 1,
+     "command": "check",
+     "project": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/probes/project-22",
+     "budget_file": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/probes/project-22/perf.budget.json",
+     "verdict": "fail",
+     "reports": [
+      {
+       "budget_id": "items",
+       "endpoint": "GET /items",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+         ],
+         "latency_ms": {
+          "min": 2.884,
+          "median": 3.075,
+          "max": 4.156
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          }
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+         ],
+         "latency_ms": {
+          "min": 2.833,
+          "median": 3.042,
+          "max": 4.507
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          }
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 2,
+        "per_item": 0,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 2,
+         "per_item": 0
+        },
+        "latency_ms": null
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: clickhouse (container lattice-perf-clickhouse-a34c4425); statements from system.query_log (initial queries finished or failed in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      },
+      {
+       "budget_id": "n1-tight",
+       "endpoint": "GET /items_n1",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+         ],
+         "latency_ms": {
+          "min": 5.153,
+          "median": 5.551,
+          "max": 6.284
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          },
+          {
+           "count": 3,
+           "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+          }
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9
+         ],
+         "latency_ms": {
+          "min": 7.944,
+          "median": 8.444,
+          "max": 9.616
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          },
+          {
+           "count": 7,
+           "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+          }
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 2,
+        "per_item": 1,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 2,
+         "per_item": 0
+        },
+        "latency_ms": null
+       },
+       "verdict": "fail",
+       "delta": {
+        "constant": 0,
+        "per_item": 1
+       },
+       "notes": [
+        "over budget: per_item 1 > budget 0",
+        "over budget: N=3: 5 statements > allowed 2",
+        "over budget: N=7: 9 statements > allowed 2",
+        "database: clickhouse (container lattice-perf-clickhouse-a34c4425); statements from system.query_log (initial queries finished or failed in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      },
+      {
+       "budget_id": "n1",
+       "endpoint": "GET /items_n1",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+         ],
+         "latency_ms": {
+          "min": 5.164,
+          "median": 5.489,
+          "max": 6.115
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          },
+          {
+           "count": 3,
+           "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+          }
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9,
+          9
+         ],
+         "latency_ms": {
+          "min": 7.964,
+          "median": 8.189,
+          "max": 10.188
+         },
+         "shapes": [
+          {
+           "count": 1,
+           "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+          },
+          {
+           "count": 1,
+           "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+          },
+          {
+           "count": 7,
+           "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+          }
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 2,
+        "per_item": 1,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 2,
+         "per_item": 1
+        },
+        "latency_ms": null
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: clickhouse (container lattice-perf-clickhouse-a34c4425); statements from system.query_log (initial queries finished or failed in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      },
+      {
+       "budget_id": "nodb",
+       "endpoint": "GET /nodb",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ],
+         "latency_ms": {
+          "min": 0.643,
+          "median": 0.726,
+          "max": 0.833
+         },
+         "shapes": []
+        },
+        {
+         "n": 7,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ],
+         "latency_ms": {
+          "min": 0.658,
+          "median": 0.709,
+          "max": 0.832
+         },
+         "shapes": []
+        }
+       ],
+       "fit": {
+        "constant": 0,
+        "per_item": 0,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 0,
+         "per_item": 0
+        },
+        "latency_ms": null
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: clickhouse (container lattice-perf-clickhouse-a34c4425); statements from system.query_log (initial queries finished or failed in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "hash": {
+   "inproc": {
+    "version": 1,
+    "command": "check",
+    "verdict": "fail",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         }
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "n1-tight",
+      "endpoint": "GET /items_n1",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         },
+         {
+          "count": 3,
+          "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+         }
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         },
+         {
+          "count": 7,
+          "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 1,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "fail",
+      "delta": {
+       "constant": 0,
+       "per_item": 1
+      },
+      "notes": [
+       "over budget: per_item 1 > budget 0",
+       "over budget: N=3: 5 statements > allowed 2",
+       "over budget: N=7: 9 statements > allowed 2",
+       "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "n1",
+      "endpoint": "GET /items_n1",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         },
+         {
+          "count": 3,
+          "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+         }
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         },
+         {
+          "count": 7,
+          "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 1,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 1
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "nodb",
+      "endpoint": "GET /nodb",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "shapes": []
+       },
+       {
+        "n": 7,
+        "statements": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "shapes": []
+       }
+      ],
+      "fit": {
+       "constant": 0,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 0,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     }
+    ]
+   },
+   "process": {
+    "version": 1,
+    "command": "check",
+    "verdict": "fail",
+    "reports": [
+     {
+      "budget_id": "items",
+      "endpoint": "GET /items",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         }
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2,
+         2
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "n1-tight",
+      "endpoint": "GET /items_n1",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         },
+         {
+          "count": 3,
+          "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+         }
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         },
+         {
+          "count": 7,
+          "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 1,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 0
+       }
+      },
+      "verdict": "fail",
+      "delta": {
+       "constant": 0,
+       "per_item": 1
+      },
+      "notes": [
+       "over budget: per_item 1 > budget 0",
+       "over budget: N=3: 5 statements > allowed 2",
+       "over budget: N=7: 9 statements > allowed 2",
+       "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "n1",
+      "endpoint": "GET /items_n1",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5,
+         5
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         },
+         {
+          "count": 3,
+          "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+         }
+        ]
+       },
+       {
+        "n": 7,
+        "statements": [
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9,
+         9
+        ],
+        "shapes": [
+         {
+          "count": 1,
+          "sql": "SELECT id FROM users WHERE token = ? FORMAT Native"
+         },
+         {
+          "count": 1,
+          "sql": "SELECT * FROM items WHERE user_id = ? ORDER BY id FORMAT Native"
+         },
+         {
+          "count": 7,
+          "sql": "SELECT name FROM users WHERE id = ? FORMAT Native"
+         }
+        ]
+       }
+      ],
+      "fit": {
+       "constant": 2,
+       "per_item": 1,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 2,
+        "per_item": 1
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     },
+     {
+      "budget_id": "nodb",
+      "endpoint": "GET /nodb",
+      "sizes": [
+       {
+        "n": 3,
+        "statements": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "shapes": []
+       },
+       {
+        "n": 7,
+        "statements": [
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0,
+         0
+        ],
+        "shapes": []
+       }
+      ],
+      "fit": {
+       "constant": 0,
+       "per_item": 0,
+       "exact": true
+      },
+      "budget": {
+       "queries": {
+        "constant": 0,
+        "per_item": 0
+       }
+      },
+      "verdict": "pass",
+      "delta": {
+       "constant": 0,
+       "per_item": 0
+      },
+      "notes": [
+       "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+       "10 run(s) per size, one fresh app and database per size"
+      ]
+     }
+    ]
+   }
+  },
+  "same_across_variants": true,
+  "left": []
+ }
+}

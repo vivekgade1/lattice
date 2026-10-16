@@ -1,0 +1,286 @@
+{
+ "id": "P-excl(a)",
+ "status": "RAN",
+ "title": "reset/mark/flush/read never counted (nodb = 0)",
+ "predicted": "nodb = 0 in every run on both engines",
+ "observed": "nodb = 0 in 800/800 runs",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "c21e52142c9dcb7e",
+  "c21e52142c9dcb7e",
+  "c21e52142c9dcb7e",
+  "c21e52142c9dcb7e",
+  "c21e52142c9dcb7e",
+  "c21e52142c9dcb7e",
+  "c21e52142c9dcb7e",
+  "c21e52142c9dcb7e",
+  "c21e52142c9dcb7e",
+  "c21e52142c9dcb7e"
+ ],
+ "distinct_hashes": 1,
+ "seconds": 71.7,
+ "error": null,
+ "facts": {
+  "hash": {
+   "postgres": {
+    "inproc": {
+     "version": 1,
+     "command": "check",
+     "verdict": "pass",
+     "reports": [
+      {
+       "budget_id": "nodb",
+       "endpoint": "GET /nodb",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 0,
+        "per_item": 0,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 0,
+         "per_item": 0
+        }
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: postgres (container <container>); statements from pg_stat_statements (top-level statement executions in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      }
+     ]
+    },
+    "process": {
+     "version": 1,
+     "command": "check",
+     "verdict": "pass",
+     "reports": [
+      {
+       "budget_id": "nodb",
+       "endpoint": "GET /nodb",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 0,
+        "per_item": 0,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 0,
+         "per_item": 0
+        }
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: postgres (container <container>); statements from pg_stat_statements (top-level statement executions in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      }
+     ]
+    }
+   },
+   "clickhouse": {
+    "inproc": {
+     "version": 1,
+     "command": "check",
+     "verdict": "pass",
+     "reports": [
+      {
+       "budget_id": "nodb",
+       "endpoint": "GET /nodb",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 0,
+        "per_item": 0,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 0,
+         "per_item": 0
+        }
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      }
+     ]
+    },
+    "process": {
+     "version": 1,
+     "command": "check",
+     "verdict": "pass",
+     "reports": [
+      {
+       "budget_id": "nodb",
+       "endpoint": "GET /nodb",
+       "sizes": [
+        {
+         "n": 3,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ]
+        },
+        {
+         "n": 7,
+         "statements": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+         ]
+        }
+       ],
+       "fit": {
+        "constant": 0,
+        "per_item": 0,
+        "exact": true
+       },
+       "budget": {
+        "queries": {
+         "constant": 0,
+         "per_item": 0
+        }
+       },
+       "verdict": "pass",
+       "delta": {
+        "constant": 0,
+        "per_item": 0
+       },
+       "notes": [
+        "database: clickhouse (container <container>); statements from system.query_log (initial queries finished or failed in the measured database)",
+        "10 run(s) per size, one fresh app and database per size"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "zeros": 80,
+  "runs": 80
+ }
+}

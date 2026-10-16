@@ -1,0 +1,35 @@
+{
+ "id": "P-down(b)",
+ "status": "RAN",
+ "title": "a given URL at a closed port",
+ "predicted": "exit 2 within 40 s, stderr 'did not answer within 30s'",
+ "observed": "exit 2 in 30.47 s; stderr: ' failed: connection to server at \"127.0.0.1\", port 56919 failed: could not receive data from server: Connection refused)'",
+ "pass": true,
+ "repetitions": 10,
+ "hashes": [
+  "3e4ef972bc3be242",
+  "fb45bc847860dc7b",
+  "2b835e51160d6055",
+  "75de29e01743a6df",
+  "8cb4217212795420",
+  "9d6b86a632faf994",
+  "5faac1eca1d8d338",
+  "844eeae5dca84811",
+  "ff75cba090002c77",
+  "e7a39f067a5a941d"
+ ],
+ "distinct_hashes": 10,
+ "seconds": 303.1,
+ "error": null,
+ "facts": {
+  "hash": {
+   "rc": 2,
+   "err": [
+    "lattice perf: postgres at postgresql://lattice:***@127.0.0.1:56919/postgres?sslmode=disable did not answer within 30s (last: cannot connect to postgresql://lattice:***@127.0.0.1:56919/postgres?sslmode=disable: connection failed: connection to server at \"127.0.0.1\", port 56919 failed: could not receive data from server: Connection refused)"
+   ]
+  },
+  "rc": 2,
+  "seconds": 30.25,
+  "stderr": "attice:***@127.0.0.1:56919/postgres?sslmode=disable did not answer within 30s (last: cannot connect to postgresql://lattice:***@127.0.0.1:56919/postgres?sslmode=disable: connection failed: connection to server at \"127.0.0.1\", port 56919 failed: could not receive data from server: Connection refused)"
+ }
+}
