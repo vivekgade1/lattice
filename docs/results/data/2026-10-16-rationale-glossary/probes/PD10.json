@@ -1,0 +1,26 @@
+{
+ "id": "PD10",
+ "observed": {
+  "canonical_sha256": "ffd7276f5448121c2c51deb16f81847936b8ca21587dc08069dc9ea3d832083b",
+  "identical": 10,
+  "runs": 10,
+  "second_root": true,
+  "seeds": [
+   "1566947660",
+   "3133383463",
+   "1676968495",
+   "2343575613",
+   "1497642980",
+   "3153272773",
+   "2406350121",
+   "734166611",
+   "2762608885",
+   "2832248195"
+  ]
+ },
+ "pass": true,
+ "predicted": "identical 10/10 + root",
+ "probe": "10 processes (random PYTHONHASHSEED) + a second archive root: PS outputs (25 cases), PR, PC, PG, PA answers, PI report, PM outputs",
+ "ran": true,
+ "seconds": 21.1
+}

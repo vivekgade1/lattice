@@ -1,0 +1,20 @@
+{
+ "id": "PB",
+ "observed": {
+  "checks": {
+   "capture_identical": true,
+   "keys": true,
+   "mcp_instructions_tools_list_identical": true,
+   "report_hashes_expected": true
+  },
+  "differing": [],
+  "keys_compared": 90,
+  "mcp_differing": []
+ },
+ "output_sha256": "87a09271118750f01670d1c000464e8264651b4cf601a8a2e60c0d59bd61f84c",
+ "pass": true,
+ "predicted": "all identical",
+ "probe": "byte-compat, files absent, new code vs 8931d46 on S, S4 and the unit fixtures: lint, digest, core, retrieve, answers, report, MCP, Studio, files_hash, sessions, rebuild, guard, check --help",
+ "ran": true,
+ "seconds": 6.2
+}

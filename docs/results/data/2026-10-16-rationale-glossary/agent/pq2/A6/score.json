@@ -1,0 +1,27 @@
+{
+ "items": {
+  "E1": true,
+  "E2": false,
+  "E3": null,
+  "E4": false,
+  "E5": null,
+  "E6": true
+ },
+ "applicable": [
+  "E1",
+  "E2",
+  "E4",
+  "E6"
+ ],
+ "pass": false,
+ "labels": [
+  "RATIONALE-PROPOSED-ONLY"
+ ],
+ "citations": [
+  {
+   "kind": "rationale",
+   "id": "R26",
+   "quote": "hard delete"
+  }
+ ]
+}

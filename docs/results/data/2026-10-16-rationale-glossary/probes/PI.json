@@ -1,0 +1,55 @@
+{
+ "checks": {
+  "R145_past_period": true,
+  "R97_active_window": true,
+  "base_report_sha_84624894": true,
+  "every_rule_has_keys": true,
+  "rationale_states": true,
+  "report_minus_keys_is_base": true,
+  "two_glossary_terms": true
+ },
+ "id": "PI",
+ "observed": {
+  "R145_terms": [
+   "past-period"
+  ],
+  "R97_terms": [
+   "active-window"
+  ],
+  "every_rule_has_keys": true,
+  "glossary": {
+   "active-window": {
+    "definition": "The active window is `as = max(period_start, start_date)` to `ae = min(period_end, end_date)` (`ae = period_end` when `end_date` is null), and `A = ae - as + 1` is its number of days.",
+    "term": "active window"
+   },
+   "past-period": {
+    "definition": "A past period is one whose last day is before the user's today, from the period containing `start_date` up to the last period before the current one, and never after the period containing `end_date`.",
+    "term": "past period"
+   }
+  },
+  "plain_sha": "84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84",
+  "rationale": {
+   "R132": "none",
+   "R26": "proposed_only",
+   "R56": "current",
+   "R63": "current",
+   "R70": "stale",
+   "R8": "stale"
+  },
+  "stripped_equals_plain": true,
+  "terms_used_by": [
+   "R106",
+   "R144",
+   "R145",
+   "R146",
+   "R148",
+   "R97"
+  ]
+ },
+ "output_sha256": "aaeb94285fc0baebac78e259a70aae2781590616ff3a2c29c8742c65982ba309",
+ "pass": true,
+ "predicted": "terms and rationale on rules, top-level glossary with 2 terms; minus keys = base",
+ "probe": "implementation report with the S-dyn inventory + W",
+ "ran": true,
+ "seconds": 0.0
+}

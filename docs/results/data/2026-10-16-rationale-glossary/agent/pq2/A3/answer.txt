@@ -1,0 +1,11 @@
+RATIONALE-APPROVED
+
+**Rule:** R75 says "A check-in `date` more than 60 days before the user's today (earlier than `t - 60`) answers 422 with code `date_too_old`; `t - 60` itself is accepted."
+
+**Owner-approved rationale (rationale:R75):** "FIXTURE: check-ins older than 60 days would rewrite long-closed history periods."
+
+**Trade-off the owner accepted:** "FIXTURE: a user returning after two months cannot back-fill."
+
+The owner approved this rationale (approved_by fixture-owner), and it is current for R75's present wording. R75 also has an open question, Q19. It asks which error code wins when several date rules apply at once. The default is `date_in_future`, then `date_out_of_range`, then `date_too_old`, as R76 states. No answer has been recorded.
+
+I changed nothing.

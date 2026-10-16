@@ -1,0 +1,52 @@
+{
+ "id": "Q2",
+ "question": "Can a user have 51 active habits?",
+ "status": "RAN",
+ "reason": null,
+ "cost_usd": 0.035602,
+ "kind": "no",
+ "citations": [
+  "invariant:at_most_50_active_habits",
+  "rule:R56",
+  "rule:R69"
+ ],
+ "rationale": [
+  {
+   "rule": "R56",
+   "status": "approved",
+   "via": null,
+   "why": "FIXTURE: the home screen returns every active habit in one unpaginated response, so the count is capped.",
+   "tradeoff": "FIXTURE: heavy users must archive habits to add more.",
+   "owner": "fixture-owner",
+   "approved_by": "fixture-owner"
+  },
+  {
+   "rule": "R69",
+   "status": "none",
+   "via": null
+  }
+ ],
+ "expected_rationale": [
+  {
+   "rule": "R56",
+   "status": "approved",
+   "via": null,
+   "why": "FIXTURE: the home screen returns every active habit in one unpaginated response, so the count is capped.",
+   "tradeoff": "FIXTURE: heavy users must archive habits to add more.",
+   "owner": "fixture-owner",
+   "approved_by": "fixture-owner"
+  },
+  {
+   "rule": "R69",
+   "status": "none",
+   "via": null
+  }
+ ],
+ "key_equals_function": true,
+ "leaked": false,
+ "world_unchanged": true,
+ "cited_referent": true,
+ "answer": "No. A user can have at most 50 active (non-archived, non-deleted) habits.",
+ "explanation": "The invariant caps active habits at 50, and creating or restoring a habit beyond that is refused with 409 `habit_limit`.",
+ "gated_ok": true
+}

@@ -1,0 +1,394 @@
+{
+ "answers": {
+  "bad_quote": {
+   "answer": "a",
+   "citations": [],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "not_specified",
+   "rationale": [],
+   "rejected_citations": [
+    {
+     "reason": "the quote is not in the note's text: \"FIXTURE: a habit's period is fixed so that its history and its habit_targets rows never mix weeks, months and years.\"",
+     "target": "rationale:R63"
+    }
+   ],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 2,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "cite_rule_R132": {
+   "answer": "a",
+   "citations": [
+    {
+     "quote": "Delivery rule 5: if the user's",
+     "step": null,
+     "target": "rule:R132"
+    }
+   ],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "value",
+   "rationale": [
+    {
+     "rule": "R132",
+     "status": "none",
+     "via": null
+    }
+   ],
+   "rejected_citations": [],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 1,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "cite_rule_R26": {
+   "answer": "a",
+   "citations": [
+    {
+     "quote": "`DELETE /v1/me` answers 204 an",
+     "step": null,
+     "target": "rule:R26"
+    }
+   ],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "value",
+   "rationale": [
+    {
+     "rule": "R26",
+     "status": "proposed_only",
+     "via": null
+    }
+   ],
+   "rejected_citations": [],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 1,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "cite_rule_R63": {
+   "answer": "a",
+   "citations": [
+    {
+     "quote": "A `PATCH` body that contains `",
+     "step": null,
+     "target": "rule:R63"
+    }
+   ],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "value",
+   "rationale": [
+    {
+     "approved_by": "fixture-owner",
+     "owner": "fixture-owner",
+     "rule": "R63",
+     "status": "approved",
+     "tradeoff": "FIXTURE: a user who wants another period must create a new habit.",
+     "via": null,
+     "why": "FIXTURE: a habit's period is fixed so that its history and its habit_targets rows never mix weeks, months and years."
+    }
+   ],
+   "rejected_citations": [],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 1,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "cite_rule_R8": {
+   "answer": "a",
+   "citations": [
+    {
+     "quote": "`POST /v1/auth/register` takes",
+     "step": null,
+     "target": "rule:R8"
+    }
+   ],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "value",
+   "rationale": [
+    {
+     "rule": "R8",
+     "status": "stale",
+     "via": null
+    }
+   ],
+   "rejected_citations": [],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 1,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "files_absent": {
+   "answer": "a",
+   "citations": [
+    {
+     "quote": "A `PATCH` body that contains `",
+     "step": null,
+     "target": "rule:R63"
+    }
+   ],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "value",
+   "rejected_citations": [],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 253,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 1,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "no_valid_citation": {
+   "answer": "a",
+   "citations": [],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "not_specified",
+   "rationale": [],
+   "rejected_citations": [],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 1,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "rationale_R26_no_element": {
+   "answer": "a",
+   "citations": [],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "not_specified",
+   "rationale": [],
+   "rejected_citations": [
+    {
+     "reason": "no element 'rationale:R26' in the spec",
+     "target": "rationale:R26"
+    }
+   ],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 2,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "scenario_via_R56": {
+   "answer": "a",
+   "citations": [
+    {
+     "quote": "the_51st_active_habit_is_refused",
+     "step": null,
+     "target": "scenario:the_51st_active_habit_is_refused"
+    }
+   ],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "value",
+   "rationale": [
+    {
+     "approved_by": "fixture-owner",
+     "owner": "fixture-owner",
+     "rule": "R56",
+     "status": "approved",
+     "tradeoff": "FIXTURE: heavy users must archive habits to add more.",
+     "via": "scenario:the_51st_active_habit_is_refused",
+     "why": "FIXTURE: the home screen returns every active habit in one unpaginated response, so the count is capped."
+    }
+   ],
+   "rejected_citations": [],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 1,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "term_daily_pass_no_element": {
+   "answer": "a",
+   "citations": [],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "not_specified",
+   "rationale": [],
+   "rejected_citations": [
+    {
+     "reason": "no element 'term:daily-pass' in the spec",
+     "target": "term:daily-pass"
+    }
+   ],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 2,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "valid_rationale_R63": {
+   "answer": "a",
+   "citations": [
+    {
+     "quote": "FIXTURE: a habit's period is fixed",
+     "step": null,
+     "target": "rationale:R63"
+    }
+   ],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "not_specified",
+   "rationale": [],
+   "rejected_citations": [],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 1,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "valid_term_active_window": {
+   "answer": "a",
+   "citations": [
+    {
+     "quote": "The active window is `as = max",
+     "step": null,
+     "target": "term:active-window"
+    }
+   ],
+   "citations_checked": true,
+   "explanation": "e",
+   "kind": "not_specified",
+   "rationale": [],
+   "rejected_citations": [],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 1,
+    "tokens": 0
+   },
+   "verified": null
+  },
+  "yes_rationale_only": {
+   "answer": "Not specified: the answer could not be grounded in the spec.",
+   "citations": [
+    {
+     "quote": "FIXTURE: a habit's period is fixed",
+     "step": null,
+     "target": "rationale:R63"
+    }
+   ],
+   "citations_checked": true,
+   "explanation": "The model answered yes ('a'), but it cited only the owner's rationale or glossary, which settle no fact, so the answer is not grounded in the spec.",
+   "kind": "not_specified",
+   "rationale": [],
+   "rejected_citations": [],
+   "usage": {
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "digest_elements": 260,
+    "input_tokens": 0,
+    "model": "m",
+    "output_tokens": 0,
+    "rounds": 2,
+    "tokens": 0
+   },
+   "verified": null
+  }
+ },
+ "checks": {
+  "10_term_daily_pass_no_element": true,
+  "11_yes_rationale_only_downgraded": true,
+  "12_no_valid_citation_attachment_empty": true,
+  "13_files_absent_no_key_and_equals_base": true,
+  "1_cite_R63_approved_with_text": true,
+  "2_R26_proposed_only_no_text": true,
+  "3_R8_stale_no_text": true,
+  "4_R132_none": true,
+  "5_scenario_via_R56": true,
+  "6_valid_rationale_quote": true,
+  "7_bad_quote_rejected": true,
+  "8_rationale_R26_no_element": true,
+  "9_valid_term": true,
+  "no_proposal_or_stale_text": true
+ },
+ "id": "PA",
+ "observed": "13/13",
+ "output_sha256": "7661d9f5baa14d31aa1d7e95eef3f27c30bbfc8f5d80f6637c1fc2a720bcfb44",
+ "pass": true,
+ "predicted": "13/13 as stated",
+ "probe": "chat with a stub generator on W, 13 cases",
+ "ran": true,
+ "seconds": 0.3
+}

@@ -1,0 +1,40 @@
+{
+ "rule": "R29",
+ "status": "RAN",
+ "reason": null,
+ "exit": 0,
+ "cost_usd": 0.0178,
+ "stopped": null,
+ "authoritative_absent": true,
+ "others_unchanged": true,
+ "entry": {
+  "rule": "R29",
+  "anchor": "fc006a57e4c7ec501a7e2023a23f653a665e8b082d9a44c403c1d1400b13386a",
+  "why": "A per-user cap keeps one signed-in client from overloading the service or crowding out others. A fixed clock-minute window is simple to implement and predictable, and Retry-After tells clients exactly when to retry. Writing nothing on a rejected request means throttled calls have no side effects and are safe to retry.",
+  "tradeoff": "Fixed windows are cheap and easy to reason about but allow bursts across a window boundary (up to 240 requests in a short span). Legitimate heavy clients may hit 429s, and batch or sync requests are the way to do more work per request.",
+  "owner": null,
+  "status": "proposed",
+  "author": "llm:sonnet",
+  "approved_by": null,
+  "approved_sha": null,
+  "basis": [
+   {
+    "target": "scenario:rate_limit_120_per_minute",
+    "quote": "POST /v1/habits as ann -> 429 -- body {\"error\": {\"code\": \"rate_limited\"}}; habits where {'name': 'one more'} count=0"
+   },
+   {
+    "target": "scenario:rate_limit_120_per_minute",
+    "quote": "GET /v1/me as ben -> 200"
+   }
+  ],
+  "refs": [],
+  "rejected_basis": [],
+  "dropped": []
+ },
+ "stderr": "",
+ "gated_ok": true,
+ "basis": 2,
+ "rejected_basis": 0,
+ "valid_basis": true,
+ "basis_empty": false
+}

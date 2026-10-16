@@ -1,0 +1,193 @@
+{
+ "id": "PV",
+ "observed": "14/14 exact",
+ "pass": true,
+ "predicted": "each answers its bad_* code; exit 2; 422",
+ "probe": "14 invalid-file fixtures (D14) through the CLIs, ask, implementation, MCP, Studio",
+ "ran": true,
+ "rows": [
+  {
+   "code": "bad_rationale",
+   "id": "VR1",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_rationale",
+   "id": "VR2",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_rationale",
+   "id": "VR3",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_rationale",
+   "id": "VR4",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_rationale",
+   "id": "VR5",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_rationale",
+   "id": "VR6",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_rationale",
+   "id": "VR7",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_glossary",
+   "id": "VG1",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_glossary",
+   "id": "VG2",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_glossary",
+   "id": "VG3",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_glossary",
+   "id": "VG4",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_glossary",
+   "id": "VG5",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_glossary",
+   "id": "VG6",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  },
+  {
+   "code": "bad_glossary",
+   "id": "VG7",
+   "ok": true,
+   "surfaces": {
+    "ask": true,
+    "cli": true,
+    "implementation": true,
+    "mcp": true,
+    "studio_ask": true,
+    "studio_model": true
+   }
+  }
+ ],
+ "seconds": 2.4
+}

@@ -1,0 +1,13 @@
+RATIONALE-APPROVED
+
+**The rule.** R63 says: "A `PATCH` body that contains `period` answers 422 `validation_failed` with field `period` and changes nothing." The spec's guarantee G6 says the same thing: "The period (week/month/year) cannot be changed after creation (422)."
+
+**Why.** The owner approved a rationale for R63, recorded as rationale:R63:
+
+> "a habit's period is fixed so that its history and its habit_targets rows never mix weeks, months and years."
+
+The history and `habit_targets` rows (R39 area) are tied to calendar periods. Per the spec, a weekly period runs Monday to Sunday, a monthly one covers a calendar month, and a yearly one covers a calendar year. If the period could change, one habit's history and targets would mix periods of different lengths.
+
+**Trade-off.** The owner's note records the cost as: "a user who wants another period must create a new habit."
+
+I didn't change anything. The glossary has no entry for "period" (`unknown_term`), so only the rationale applies here.

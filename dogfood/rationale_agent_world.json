@@ -1,0 +1,34 @@
+{
+ "approved": {
+  "R133": {"approved_by": "fixture-owner", "owner": "fixture-owner", "tradeoff": "FIXTURE: a user with many habits misses some pushes (they stay in-app).", "why": "FIXTURE: more than three pushes a day reads as spam and gets the app's notifications turned off."},
+  "R29": {"approved_by": "fixture-owner", "owner": "fixture-owner", "tradeoff": "FIXTURE: a sync burst can hit 429 and must retry after the window.", "why": "FIXTURE: one signed-in client must not starve the API for everyone else."},
+  "R56": {"approved_by": "fixture-owner", "owner": "fixture-owner", "tradeoff": "FIXTURE: heavy users must archive habits to add more.", "why": "FIXTURE: the home screen returns every active habit in one unpaginated response, so the count is capped."},
+  "R63": {"approved_by": "fixture-owner", "owner": "fixture-owner", "tradeoff": "FIXTURE: a user who wants another period must create a new habit.", "why": "FIXTURE: a habit's period is fixed so that its history and its habit_targets rows never mix weeks, months and years."},
+  "R75": {"approved_by": "fixture-owner", "owner": "fixture-owner", "tradeoff": "FIXTURE: a user returning after two months cannot back-fill.", "why": "FIXTURE: check-ins older than 60 days would rewrite long-closed history periods."}
+ },
+ "proposed": {
+  "R20": {"why": "FIXTURE PROPOSAL: reuse of a rotated refresh token signals a stolen token."},
+  "R26": {"why": "FIXTURE PROPOSAL: account deletion is hard so that erasure requests are met."}
+ },
+ "questions": [
+  {"id": "A1", "key": "RATIONALE-APPROVED", "referent": "R63", "text": "Why can't the period of a habit be changed after it is created?"},
+  {"id": "A2", "key": "RATIONALE-APPROVED", "referent": "R56", "text": "Why is a user limited to 50 active habits?"},
+  {"id": "A3", "key": "RATIONALE-APPROVED", "referent": "R75", "text": "Why are check-ins dated more than 60 days ago refused?"},
+  {"id": "A4", "key": "RATIONALE-APPROVED", "referent": "R29", "text": "Why is a signed-in user limited to 120 requests per minute?"},
+  {"id": "A5", "key": "RATIONALE-APPROVED", "referent": "R133", "text": "Why does a user get at most 3 pushes per local day?"},
+  {"id": "A6", "key": "RATIONALE-PROPOSED-ONLY", "referent": "R26", "text": "Why is deleting an account a hard delete?"},
+  {"id": "A7", "key": "RATIONALE-PROPOSED-ONLY", "referent": "R20", "text": "Why does reusing a rotated refresh token revoke the whole session?"},
+  {"id": "A8", "key": "RATIONALE-STALE", "referent": "R8", "text": "Why is the email stored lower-cased at registration?"},
+  {"id": "A9", "key": "RATIONALE-STALE", "referent": "R70", "text": "Why does deleting a habit keep its rows in the database?"},
+  {"id": "A10", "key": "NO-RATIONALE", "referent": "R132", "text": "Why do quiet hours suppress a nudge's push?"},
+  {"id": "A11", "key": "NO-RATIONALE", "referent": "R139", "text": "Why does dismissing a nudge apply to every device of the user?"},
+  {"id": "A12", "key": "TERM-DEFINED", "referent": "term:active-window", "text": "What does \"active window\" mean in this spec?"},
+  {"id": "A13", "key": "TERM-UNDEFINED", "referent": "daily pass", "text": "What does \"daily pass\" mean in this spec?"}
+ ],
+ "stale": {
+  "R70": {"anchor_text": "DELETE /v1/habits/{id} answers 204 and removes the habit.", "approved_by": "fixture-owner", "owner": "fixture-owner", "why": "FIXTURE: soft deletes let the user's other devices sync tombstones."},
+  "R8": {"anchor_text": "The email is stored as given.", "approved_by": "fixture-owner", "owner": "fixture-owner", "why": "FIXTURE: emails are compared case-insensitively everywhere."}
+ },
+ "terms": {"active window": "R97", "past period": "R145"},
+ "world": "streak@a0679e9 + fixture REQUIREMENTS.rationale.json / .rationale.proposed.json / .glossary.json"
+}

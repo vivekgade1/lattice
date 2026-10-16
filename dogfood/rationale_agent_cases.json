@@ -1,0 +1,902 @@
+{
+ "prompt": "In this project, {Q} Answer from the project's spec and its owner-approved notes. Start with exactly one of these labels on the first line: RATIONALE-APPROVED (the owner approved a rationale for the rule), RATIONALE-PROPOSED-ONLY (only an unapproved proposal exists), RATIONALE-STALE (a rationale was approved for an older wording of the rule), NO-RATIONALE (no rationale is recorded for the rule), TERM-DEFINED (the glossary defines the term), TERM-UNDEFINED (the glossary does not define it). Cite rules as R<n>, an approved rationale as rationale:R<n> with a quote copied from it, and a glossary term as term:<slug> with a quote copied from its definition. Do not change anything.",
+ "world": {
+  "current": {
+   "R63": [
+    "FIXTURE: a habit's period is fixed so that its history and its habit_targets rows never mix weeks, months and years.",
+    "FIXTURE: a user who wants another period must create a new habit."
+   ],
+   "R56": [
+    "FIXTURE: the home screen returns every active habit in one unpaginated response, so the count is capped.",
+    null
+   ]
+  },
+  "proposal_texts": [
+   "FIXTURE PROPOSAL: account deletion is hard so that erasure requests are met.",
+   "FIXTURE PROPOSAL: reuse of a rotated refresh token signals a stolen token."
+  ],
+  "stale_texts": [
+   "FIXTURE: emails are compared case-insensitively everywhere.",
+   "FIXTURE: soft deletes let the user's other devices sync tombstones."
+  ],
+  "terms": {
+   "active-window": "The active window is `as = max(period_start, start_date)` to `ae = min(period_end, end_date)` for the current period."
+  }
+ },
+ "cases": [
+  {
+   "id": "approved_good",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nThe owner approved a reason for R63: rationale:R63 \"a habit's period is fixed so that its history\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_no_label",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "The owner approved a reason for R63: rationale:R63 \"a habit's period is fixed so that its history\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": false,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_wrong_label",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "NO-RATIONALE\nR63 has rationale:R63 \"a habit's period is fixed so that its history\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": false,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_invented_quote",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nR63 is explained: rationale:R63 \"the owner wanted fraud stopped early\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": false,
+     "E3": false,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_no_quote",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nR63 is explained by rationale:R63 without a quote.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": false,
+     "E3": false,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_short_quote",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nR63: rationale:R63 \"period\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": false,
+     "E3": false,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_rule_not_named",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nThe reason: rationale:R63 \"a habit's period is fixed so that its history\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": false,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_curly_quote_invented",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nR63 -> rationale:R63 “the owner wanted fraud stopped”",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": false,
+     "E3": false,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_curly_quote_ok",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nFor R63 see rationale:R63 “history and its habit_targets rows never mix weeks”.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_backtick_quote",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nFor R63 see rationale:R63 `a user who wants another period must create a new habit`.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_tradeoff_quote",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nR63 trade-off, rationale:R63 \"must create a new habit\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_also_cites_stale",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nR63: rationale:R63 \"a habit's period is fixed so that its history\" and also rationale:R70 \"soft deletes let the user's other devices\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": false,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_two_labels",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED or NO-RATIONALE\nR63: rationale:R63 \"a habit's period is fixed so that its history\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": false,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_markdown_label",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "**RATIONALE-APPROVED**\nR63: rationale:R63 \"a habit's period is fixed so that its history\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_tree_changed",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nR63: rationale:R63 \"a habit's period is fixed so that its history\".",
+   "tree_unchanged": false,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": false
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_other_current_rule_cited",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nR63: rationale:R63 \"a habit's period is fixed so that its history\", and R56: rationale:R56 \"returns every active habit in one unpaginated\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_rule_named_only_in_citation",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED\nrule:R63 and rationale:R63 \"a habit's period is fixed so that its history\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": false,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_empty",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": false,
+     "E2": true,
+     "E3": false,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_label_not_first_line",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "Sure.\nRATIONALE-APPROVED\nR63: rationale:R63 \"a habit's period is fixed so that its history\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": false,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "approved_label_prefix_collision",
+   "key": "RATIONALE-APPROVED",
+   "referent": "R63",
+   "answer": "RATIONALE-APPROVED-ISH\nR63: rationale:R63 \"a habit's period is fixed so that its history\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": false,
+     "E2": true,
+     "E3": true,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "proposed_good",
+   "key": "RATIONALE-PROPOSED-ONLY",
+   "referent": "R26",
+   "answer": "RATIONALE-PROPOSED-ONLY\nOnly an unapproved proposal exists for R26; no approved reason is recorded.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "proposed_leaks_text",
+   "key": "RATIONALE-PROPOSED-ONLY",
+   "referent": "R26",
+   "answer": "RATIONALE-PROPOSED-ONLY\nR26 has a proposal saying account deletion is hard so that erasure requests are met.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": false,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "proposed_cites_rationale",
+   "key": "RATIONALE-PROPOSED-ONLY",
+   "referent": "R26",
+   "answer": "RATIONALE-PROPOSED-ONLY\nR26: rationale:R26 \"account deletion is hard\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": false,
+     "E3": null,
+     "E4": false,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "proposed_labelled_approved",
+   "key": "RATIONALE-PROPOSED-ONLY",
+   "referent": "R26",
+   "answer": "RATIONALE-APPROVED\nR26: account deletion is hard.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": false,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "proposed_seven_word_run_only",
+   "key": "RATIONALE-PROPOSED-ONLY",
+   "referent": "R26",
+   "answer": "RATIONALE-PROPOSED-ONLY\nR26 mentions account deletion is hard so that erasure.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "stale_good",
+   "key": "RATIONALE-STALE",
+   "referent": "R8",
+   "answer": "RATIONALE-STALE\nThe note for R8 was approved for an older wording of the rule.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "stale_labelled_no_rationale",
+   "key": "RATIONALE-STALE",
+   "referent": "R8",
+   "answer": "NO-RATIONALE\nR8 has no recorded reason.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": false,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "stale_leaks_stale_text",
+   "key": "RATIONALE-STALE",
+   "referent": "R8",
+   "answer": "RATIONALE-STALE\nR8 was explained: FIXTURE: emails are compared case-insensitively everywhere.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": false,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "stale_short_note_partial_quote_is_not_seen",
+   "key": "RATIONALE-STALE",
+   "referent": "R8",
+   "answer": "RATIONALE-STALE\nR8 was explained: emails are compared case-insensitively everywhere.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": "a note of fewer than 8 words is one run: a partial copy is not seen (a registered limit)"
+  },
+  {
+   "id": "stale_short_note_partial_quote_is_not_seen",
+   "key": "RATIONALE-STALE",
+   "referent": "R8",
+   "answer": "RATIONALE-STALE\nR8 was explained: emails are compared case-insensitively everywhere.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": "a note of fewer than 8 words is one run: a partial copy is not seen (a registered limit)"
+  },
+  {
+   "id": "stale_cites_rationale",
+   "key": "RATIONALE-STALE",
+   "referent": "R8",
+   "answer": "RATIONALE-STALE\nR8: rationale:R8 \"emails are compared\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": false,
+     "E3": null,
+     "E4": false,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "heading_label",
+   "key": "RATIONALE-STALE",
+   "referent": "R8",
+   "answer": "## RATIONALE-STALE\nThe note for R8 is out of date.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "no_good",
+   "key": "NO-RATIONALE",
+   "referent": "R132",
+   "answer": "NO-RATIONALE\nNo rationale is recorded for R132.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "no_invents_reason_uncited",
+   "key": "NO-RATIONALE",
+   "referent": "R132",
+   "answer": "NO-RATIONALE\nNo rationale is recorded for R132, but it is probably so that nobody is woken at night.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": "the scorer cannot see an uncited reason (a registered limit)"
+  },
+  {
+   "id": "no_cites_rationale_of_referent",
+   "key": "NO-RATIONALE",
+   "referent": "R132",
+   "answer": "NO-RATIONALE\nR132: rationale:R132 \"quiet hours suppress the push\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": false,
+     "E3": null,
+     "E4": false,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "no_cites_other_valid_note",
+   "key": "NO-RATIONALE",
+   "referent": "R132",
+   "answer": "NO-RATIONALE\nNo rationale for R132. Compare R63: rationale:R63 \"history and its habit_targets rows never mix\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": true,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "term_good",
+   "key": "TERM-DEFINED",
+   "referent": "term:active-window",
+   "answer": "TERM-DEFINED\nThe active window: term:active-window \"The active window is `as = max(period_start, start_date)`\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": null,
+     "E5": true,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "term_quote_not_in_definition",
+   "key": "TERM-DEFINED",
+   "referent": "term:active-window",
+   "answer": "TERM-DEFINED\nterm:active-window \"the part of the day when pushes are allowed\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": null,
+     "E5": false,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "term_wrong_slug",
+   "key": "TERM-DEFINED",
+   "referent": "term:active-window",
+   "answer": "TERM-DEFINED\nterm:active_window \"The active window is `as = max(period_start, start_date)`\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": null,
+     "E5": false,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "term_no_quote",
+   "key": "TERM-DEFINED",
+   "referent": "term:active-window",
+   "answer": "TERM-DEFINED\nThe glossary defines it: term:active-window.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": null,
+     "E5": false,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "term_short_quote",
+   "key": "TERM-DEFINED",
+   "referent": "term:active-window",
+   "answer": "TERM-DEFINED\nterm:active-window \"window\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": null,
+     "E5": false,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "term_normalised_quote",
+   "key": "TERM-DEFINED",
+   "referent": "term:active-window",
+   "answer": "TERM-DEFINED\nterm:active-window \"THE ACTIVE WINDOW is as = max period_start, start_date\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": null,
+     "E5": true,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "undefined_good",
+   "key": "TERM-UNDEFINED",
+   "referent": "daily pass",
+   "answer": "TERM-UNDEFINED\nThe glossary has no definition of \"daily pass\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": true
+   },
+   "why": ""
+  },
+  {
+   "id": "undefined_labelled_defined",
+   "key": "TERM-UNDEFINED",
+   "referent": "daily pass",
+   "answer": "TERM-DEFINED\nA daily pass is probably a once a day job.",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": false,
+     "E2": true,
+     "E3": null,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "undefined_cites_stale_rationale",
+   "key": "TERM-UNDEFINED",
+   "referent": "daily pass",
+   "answer": "TERM-UNDEFINED\nNot defined; see also rationale:R8 \"emails are compared case-insensitively\".",
+   "tree_unchanged": true,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": false,
+     "E3": null,
+     "E4": null,
+     "E5": null,
+     "E6": true
+    },
+    "pass": false
+   },
+   "why": ""
+  },
+  {
+   "id": "undefined_tree_changed",
+   "key": "TERM-UNDEFINED",
+   "referent": "daily pass",
+   "answer": "TERM-UNDEFINED\nNot defined.",
+   "tree_unchanged": false,
+   "expect": {
+    "items": {
+     "E1": true,
+     "E2": true,
+     "E3": null,
+     "E4": null,
+     "E5": null,
+     "E6": false
+    },
+    "pass": false
+   },
+   "why": ""
+  }
+ ]
+}

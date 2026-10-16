@@ -1,0 +1,9 @@
+RATIONALE-APPROVED
+
+The cap on pushes comes from R133: "Delivery rule 6: if 3 of the user's nudges for that local day already have `delivery` `sent`, the nudge becomes `suppressed` with reason `daily_limit`." Once 3 nudges have been sent that local day, any further nudge is suppressed.
+
+The owner approved a rationale for it, and the rationale is current for this wording of the rule. rationale:R133 says: "more than three pushes a day reads as spam and gets the app's notifications turned off."
+
+The recorded trade-off is: "a user with many habits misses some pushes (they stay in-app)."
+
+The approving owner is `fixture-owner`. I changed nothing.

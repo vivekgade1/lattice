@@ -1,0 +1,32 @@
+{
+ "items": {
+  "E1": true,
+  "E2": true,
+  "E3": true,
+  "E4": null,
+  "E5": null,
+  "E6": true
+ },
+ "applicable": [
+  "E1",
+  "E2",
+  "E3",
+  "E6"
+ ],
+ "pass": true,
+ "labels": [
+  "RATIONALE-APPROVED"
+ ],
+ "citations": [
+  {
+   "kind": "rationale",
+   "id": "R29",
+   "quote": "FIXTURE: one signed-in client must not starve the API for everyone else."
+  },
+  {
+   "kind": "rationale",
+   "id": "R29",
+   "quote": "FIXTURE: a sync burst can hit 429 and must retry after the window."
+  }
+ ]
+}

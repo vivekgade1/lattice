@@ -799,10 +799,11 @@ class Toolbox:
                 raise ToolError(f"no rule {rid!r}; ids look like R12")
             cl = code_links(self.root, v, f"rule:{rid}")
             return {
-                **r,
+                **{k: x for k, x in r.items() if k != "rationale_status"},  # rationale has it
                 "question_details": [v.questions[q] for q in r["questions"] if q in v.questions],
                 "code_links": cl["links"][:10],
                 "code_links_source": cl["source"],
+                **self._rule_notes(rid),
             }
 
         self._reg(
@@ -999,6 +1000,194 @@ class Toolbox:
         self._reg("change_list", "The change sets: id, request, status.", {}, [], change_list)
         if _has_implementation_table(self.root):
             self._build_implementation()
+        self._build_notes()
+
+    # -- the owner's rationale and glossary (Spike G): read-only, only when a file exists
+    def _notes_paths(self) -> Any:
+        """The four rationale / glossary files beside the project's trace (None: no trace)."""
+        from lattice.spec.rationale import notes_paths
+
+        return notes_paths(self.root / "spec.trace.json")
+
+    def _notes(self, *, rationale: bool = True, glossary: bool = True) -> tuple[Any, Any]:
+        """(Trace, Notes or None) of the project, loading only the requested files;
+        ``bad_rationale`` / ``bad_glossary`` / ``no_spec`` become tool errors (D14)."""
+        from lattice.spec.glossary import Notes, load_glossary
+        from lattice.spec.rationale import NotesError, load_set
+        from lattice.spec.rules import Trace
+
+        try:
+            trace = Trace.from_json((self.root / "spec.trace.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError, KeyError, TypeError) as e:
+            raise ToolError(f"no_spec: cannot read the project's trace ({e})") from None
+        paths = self._notes_paths()
+        if paths is None or not paths.any:
+            return trace, None
+        try:
+            return trace, Notes(
+                paths,
+                load_set(trace, paths) if rationale else None,
+                load_glossary(paths) if glossary else None,
+            )
+        except NotesError as e:
+            raise ToolError(str(e)) from None
+
+    def _rule_notes(self, rid: str) -> dict[str, Any]:
+        """rule_get's extra keys: ``rationale`` (state; why / tradeoff / owner when approved) and
+        ``terms`` (the approved terms the rule uses). Empty without any rationale / glossary
+        file."""
+        paths = self._notes_paths()
+        if paths is None or not paths.any:
+            return {}
+        trace, notes = self._notes(rationale=paths.has_rationale, glossary=paths.has_glossary)
+        out: dict[str, Any] = {}
+        if notes is not None and notes.rationale is not None:
+            rs = notes.rationale
+            ap = rs.approved_for(rid)
+            out["rationale"] = {"state": rs.status(rid)}
+            if ap is not None:
+                n = ap.note
+                out["rationale"].update(
+                    why=n.why, tradeoff=n.tradeoff, owner=n.owner, approved_by=n.approved_by
+                )
+        if notes is not None and notes.glossary is not None:
+            from lattice.spec.glossary import analyse, term_view, terms_by_rule
+
+            spec, _trace = self._spec_trace()
+            used = terms_by_rule(analyse(spec, trace), notes.glossary)
+            out["terms"] = [
+                {k: term_view(t)[k] for k in ("term", "slug", "definition")}
+                for t in used.get(rid, [])
+            ]
+        return out
+
+    def _build_notes(self) -> None:
+        paths = self._notes_paths()
+        if paths is None:
+            return
+        S = {"type": "string"}
+        RO = "Read-only: nothing is written, approved or rejected from here."
+
+        def limit_of(a: Mapping[str, Any]) -> int:
+            limit = a.get("limit", 50)
+            if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 200:
+                raise ToolError("bad_limit: limit must be an integer 1..200")
+            return limit
+
+        if paths.has_rationale:
+
+            def rationale_get(a: Mapping[str, Any]) -> dict[str, Any]:
+                from lattice.spec.rationale import STATES, empty_set, note_view
+
+                limit = limit_of(a)
+                rule = canon_target(_str(a, "rule", required=False)).removeprefix("rule:")
+                state = _str(a, "state", required=False)
+                if state and state not in STATES:
+                    raise ToolError(f"bad_state: state must be one of {', '.join(STATES)}")
+                trace, notes = self._notes(glossary=False)
+                rs = notes.rationale if notes is not None and notes.rationale else None
+                rs = rs or empty_set(trace)
+                if rule and rule not in {r.id for r in trace.rules}:
+                    raise ToolError(f"unknown_rule: no rule {rule!r}; ids look like R12")
+                rows = [
+                    note_view(r)
+                    for r in rs.resolved
+                    if (not rule or rule in (r.note.rule, r.rule))
+                    and (not state or r.state == state)
+                ]
+                m = rs.metrics()
+                out: dict[str, Any] = {
+                    "file": m["file"],
+                    "metrics": m,
+                    "total": len(rows),
+                    "returned": min(len(rows), limit),
+                    "notes": rows[:limit],
+                    "proposals": {
+                        "proposed": sum(1 for p in rs.proposals if p.status == "proposed"),
+                        "rejected": sum(1 for p in rs.proposals if p.status == "rejected"),
+                    },
+                    "note": "only current or moved notes carry the owner's reason; proposals are "
+                    "counted, never shown. " + RO,
+                }
+                if rule:
+                    out["rule"] = rule
+                    out["rule_state"] = rs.status(rule)
+                return out
+
+            self._reg(
+                "rationale_get",
+                "The owner's approved rationale (why a rule exists, its trade-off, who decided): "
+                "notes with their state (current|moved|edited|ambiguous|stale; only current or "
+                "moved carry text), coverage metrics (RC, RN, RP) and the proposals as counts, "
+                "never as text. `rule` shows one rule's state (approved|proposed_only|stale|"
+                "ambiguous|edited|none). If a rule has none, say no rationale is recorded: never "
+                "offer a reason as the owner's. " + RO,
+                {
+                    "rule": {**S, "description": "a rule id, e.g. R63"},
+                    "state": {"type": "string", "enum": ["current", "moved", "edited",
+                                                          "ambiguous", "stale"]},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 200},
+                },
+                [],
+                rationale_get,
+            )  # fmt: skip
+
+        if paths.has_glossary:
+
+            def glossary_get(a: Mapping[str, Any]) -> dict[str, Any]:
+                from lattice.spec.glossary import run_lint, term_view
+
+                limit = limit_of(a)
+                lint = a.get("lint", False)
+                if not isinstance(lint, bool):
+                    raise ToolError("argument 'lint' must be a boolean")
+                name = _str(a, "term", required=False)
+                spec, _t = self._spec_trace()
+                trace, notes = self._notes()
+                gset = notes.glossary if notes is not None else None
+                if name:
+                    t = gset.term_by(name) if gset is not None else None
+                    if t is None:
+                        raise ToolError(f"unknown_term: no approved term {name!r}")
+                    return {"term": term_view(t), "note": RO}
+                res = run_lint(spec, trace, notes, self._notes_paths())
+                if lint:
+                    return {
+                        "file": res.metrics["file"],
+                        "metrics": res.metrics,
+                        "total": len(res.findings),
+                        "returned": min(len(res.findings), limit),
+                        "findings": res.findings[:limit],
+                        "note": "G001 undefined term, G002 unused approved term, G003 a note or "
+                        "term that is not current, G004 a proposal pending. " + RO,
+                    }
+                terms = [term_view(t) for t in (gset.defining if gset is not None else [])]
+                return {
+                    "file": res.metrics["file"],
+                    "metrics": res.metrics,
+                    "total": len(terms),
+                    "returned": min(len(terms), limit),
+                    "terms": terms[:limit],
+                    "ignore": list(gset.ignore) if gset is not None else [],
+                    "proposals": {"proposed": res.metrics["GP"]},
+                    "note": "only owner-approved terms define a word; proposals are counted, "
+                    "never shown. " + RO,
+                }
+
+            self._reg(
+                "glossary_get",
+                "The owner's approved business glossary: the terms with their definitions and "
+                "coverage metrics (GU, GT, GR, GC, GA, GP, GX); with `lint` the findings (G001 "
+                "undefined term, G002 unused term, G003 not current, G004 proposal pending); with "
+                "`term` one approved term. Proposals are counted, never shown. " + RO,
+                {
+                    "term": {**S, "description": "a term, alias or slug, e.g. active-window"},
+                    "lint": {"type": "boolean"},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 200},
+                },
+                [],
+                glossary_get,
+            )
 
     # -- the implementation diff (Spike C): three read-only tools, only with [implementation]
     def _spec_trace(self) -> tuple[Any, Any]:

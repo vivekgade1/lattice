@@ -1,0 +1,98 @@
+{
+ "checks": {
+  "S_GA": true,
+  "S_RC": true,
+  "W_GA": true,
+  "W_RC": true,
+  "W_RP": true,
+  "W_stale": true,
+  "exit_ok": true
+ },
+ "glossary_metrics": {
+  "S": {
+   "G003": 0,
+   "GA": 0,
+   "GC": {
+    "d": 116,
+    "n": 0,
+    "pct": 0.0
+   },
+   "GP": 0,
+   "GR": 116,
+   "GT": 37,
+   "GU": 293,
+   "GX": 0,
+   "file": null
+  },
+  "W": {
+   "G003": 2,
+   "GA": 2,
+   "GC": {
+    "d": 116,
+    "n": 1,
+    "pct": 0.9
+   },
+   "GP": 0,
+   "GR": 115,
+   "GT": 35,
+   "GU": 286,
+   "GX": 0,
+   "file": "REQUIREMENTS.glossary.json"
+  }
+ },
+ "id": "PC",
+ "observed": {
+  "S": {
+   "RC": {
+    "d": 146,
+    "n": 0,
+    "pct": 0.0
+   },
+   "RC_all": {
+    "d": 148,
+    "n": 0,
+    "pct": 0.0
+   },
+   "RN": {
+    "ambiguous": 0,
+    "current": 0,
+    "edited": 0,
+    "moved": 0,
+    "stale": 0
+   },
+   "RP": 0,
+   "file": null,
+   "proposals": 0,
+   "proposals_file": null
+  },
+  "W": {
+   "RC": {
+    "d": 146,
+    "n": 5,
+    "pct": 3.4
+   },
+   "RC_all": {
+    "d": 148,
+    "n": 5,
+    "pct": 3.4
+   },
+   "RN": {
+    "ambiguous": 0,
+    "current": 5,
+    "edited": 0,
+    "moved": 0,
+    "stale": 2
+   },
+   "RP": 2,
+   "file": "REQUIREMENTS.rationale.json",
+   "proposals": 2,
+   "proposals_file": "REQUIREMENTS.rationale.proposed.json"
+  }
+ },
+ "output_sha256": "61762aa441a2070de5817142d94af86f88e514a55791bc4c42d586f51edb020e",
+ "pass": true,
+ "predicted": "W: RC 5/146 = 3.4%, RP 2, stale 2, GA 2; S: RC 0/146, file null",
+ "probe": "metrics on W and S",
+ "ran": true,
+ "seconds": 0.0
+}

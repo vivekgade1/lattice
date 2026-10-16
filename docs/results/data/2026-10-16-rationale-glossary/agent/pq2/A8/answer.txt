@@ -1,0 +1,13 @@
+RATIONALE-STALE
+
+The rule is R8: "`POST /v1/auth/register` takes `{email, password, timezone?}` and answers 201 `{id, email, timezone}`; the email is stored lower-cased and `timezone` defaults to `"UTC"`."
+
+The owner approved a rationale for R8, but it was written against an older wording of the rule. The rationale index marks it `stale`, so its text is withheld and I can't tell you the owner's reason. I won't offer a reason of my own.
+
+What the spec does say, without giving a reason, is how the lower-casing is used:
+- R10 says an email that is already registered, "compared case-insensitively", answers 409 `email_taken`.
+- R35 says `users.email` is unique.
+
+Those rules show the lower-casing is connected to case-insensitive uniqueness. They don't record why the owner chose it.
+
+The owner would need to re-approve a rationale against R8's current wording before one can be cited. I changed nothing.

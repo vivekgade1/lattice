@@ -1,0 +1,21 @@
+{
+ "items": {
+  "E1": true,
+  "E2": true,
+  "E3": null,
+  "E4": true,
+  "E5": null,
+  "E6": true
+ },
+ "applicable": [
+  "E1",
+  "E2",
+  "E4",
+  "E6"
+ ],
+ "pass": true,
+ "labels": [
+  "NO-RATIONALE"
+ ],
+ "citations": []
+}

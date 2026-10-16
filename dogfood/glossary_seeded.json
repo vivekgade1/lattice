@@ -1,0 +1,32 @@
+{
+ "G0": ["user", "notification prefs", "device", "refresh token", "habit", "habit target", "completion", "nudge", "test clock", "achieved", "after_daily_pass", "android", "behind", "daily_limit", "dismissed", "failed", "in_app_only", "ios", "month", "no_device", "on_track", "pending", "push_disabled", "quiet_hours", "sent", "suppressed", "unreachable", "week", "year", "today", "password", "access token", "habit name", "current period", "active window", "dismissed nudge", "past period", "nudger"],
+ "cases": [
+  {"id": "B0", "ops": {}, "plant": [], "truth": []},
+  {"id": "SR1", "ops": {"remove": ["quiet_hours"]}, "plant": [], "truth": [["R42", "quiet_hours"], ["R132", "quiet_hours"]]},
+  {"id": "SR2", "ops": {"remove": ["active window"]}, "plant": [], "truth": [["R97", "active window"], ["R106", "active window"], ["R146", "active window"]]},
+  {"id": "SR3", "ops": {"remove": ["nudger"]}, "plant": [], "truth": [["R126", "nudger"]]},
+  {"id": "SR4", "ops": {"remove": ["habit target"]}, "plant": [], "truth": [["R26", "habit target"], ["R40", "habit target"], ["R57", "habit target"], ["R65", "habit target"], ["R67", "habit target"], ["R146", "habit target"]]},
+  {"id": "SR5", "ops": {"remove": ["unreachable"]}, "plant": [], "truth": [["R42", "unreachable"], ["R106", "unreachable"], ["R108", "unreachable"], ["R111", "unreachable"], ["R118", "unreachable"]]},
+  {"id": "SR6", "ops": {"remove": ["past period"]}, "plant": [], "truth": [["R144", "past period"], ["R145", "past period"], ["R146", "past period"], ["R148", "past period"]]},
+  {"id": "SR7", "ops": {"remove": ["today"]}, "plant": [], "truth": [["R45", "today"], ["R47", "today"], ["R50", "today"], ["R65", "today"], ["R67", "today"], ["R73", "today"], ["R75", "today"], ["R96", "today"], ["R100", "today"], ["R108", "today"], ["R109", "today"], ["R114", "today"], ["R121", "today"], ["R122", "today"], ["R126", "today"], ["R127", "today"], ["R137", "today"], ["R145", "today"], ["R148", "today"]]},
+  {"id": "SR8", "ops": {"remove": ["failed"]}, "plant": [], "truth": [["R42", "failed"], ["R134", "failed"]]},
+  {"id": "SP1", "ops": {}, "plant": ["A \"grace day\" lets a user miss one day per week without the habit counting as behind."], "truth": [["R149", "grace day"]]},
+  {"id": "SP2", "ops": {}, "plant": ["A *streak freeze* keeps a habit's history unchanged for one period."], "truth": [["R149", "streak freeze"]]},
+  {"id": "SP3", "ops": {}, "plant": ["A habit marked “paused” gets no nudges."], "truth": [["R149", "paused"]]},
+  {"id": "SP4", "ops": {}, "plant": ["A focus habit is a habit the user pins to the top of the home screen.", "A user has at most 3 focus habits."], "truth": [["R149", "focus habit"], ["R150", "focus habit"]]},
+  {"id": "SP5", "ops": {}, "plant": ["A user on a vacation pause receives no pushes."], "truth": [["R149", "vacation pause"]]},
+  {"id": "SP6", "ops": {}, "plant": ["A habit in `snoozed` state gets no nudge."], "truth": [["R149", "snoozed"]]},
+  {"id": "SP7", "ops": {}, "plant": ["Each habit belongs to exactly one _category_ chosen by the user."], "truth": [["R149", "category"]]},
+  {"id": "SP8", "ops": {}, "plant": ["The streak length is the number of consecutive periods whose target was achieved."], "truth": [["R149", "streak length"]]},
+  {"id": "SN1", "ops": {}, "plant": ["The error message says \"try again later\" while the server restarts."], "truth": []},
+  {"id": "SN2", "ops": {}, "plant": ["A login answers {\"token_type\": \"bearer\"} as JSON."], "truth": []},
+  {"id": "SN3", "ops": {"remove": ["failed"]}, "plant": ["A request that failed validation writes nothing."], "truth": [["R42", "failed"], ["R134", "failed"]]},
+  {"id": "SN4", "ops": {}, "plant": ["The user's *own* habits are listed first."], "truth": []},
+  {"id": "SN5", "ops": {"ignore": ["grace day"]}, "plant": ["A \"grace day\" lets a user miss one day per week without the habit counting as behind."], "truth": []},
+  {"id": "SN6", "ops": {"add": [{"aliases": ["grace day"], "term": "allowance day"}]}, "plant": ["A user may take two \"grace days\" per month."], "truth": []},
+  {"id": "SN7", "ops": {"add": [{"aliases": [], "term": "focus habit"}]}, "plant": ["A focus habit is a habit the user pins to the top of the home screen.", "A user has at most 3 focus habits."], "truth": []},
+  {"id": "SN8", "ops": {"add": [{"aliases": [], "term": "grace day"}]}, "plant": ["A \"Grace Day\" never counts as a check-in."], "truth": []}
+ ],
+ "corpus": "streak@a0679e9 spec.trace.json",
+ "planted_ids_from": "R149"
+}

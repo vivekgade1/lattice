@@ -63,6 +63,14 @@ against the files, and the answer may carry two optional keys, ``implementation`
 ``implementation_basis``, downgraded deterministically; ``kind`` is unchanged. Without an inventory
 nothing here applies and the prompt, digest, citation results and answer are as before.
 
+**Rationale and glossary** (Spike G, ``notes=``). With the owner's approved notes beside the trace
+(``lattice.spec.glossary.discover_notes``: ``<stem>.rationale.json`` / ``<stem>.glossary.json``) the
+digest ends with two sections of ``rationale:<Rn>`` and ``term:<slug>`` elements (current or moved
+approved notes and approved terms only; proposals and non-current notes are never shown), the
+prompt gains one paragraph, such citations are checked against the note's text but never ground a
+yes / no / value answer, and the answer may carry a ``rationale`` key (attached by code, never
+written by the model). Without any such file nothing here applies.
+
 CLI (wired as ``python -m lattice.spec ask``)::
 
     ask --spec MOD:SPEC [--trace T.json] "question" [--selected TARGET ...]
@@ -70,6 +78,7 @@ CLI (wired as ``python -m lattice.spec ask``)::
          [--runtime REF] [--services MOD:SERVICES] [--database D] [--database-url URL]
          [--engine-file FILE ...] [--modules DIR]]
         [--model sonnet] [--json] [--inventory DIR [--app-root DIR]]
+        [--rationale PATH] [--glossary PATH]
 
 ``--engine-file`` and ``--modules`` register a project's engine descriptors and installed
 modules before ``--database`` is read (as ``lattice spec check`` does); they matter only with
@@ -98,6 +107,13 @@ from lattice.spec.rules import Trace
 KINDS = ("yes", "no", "value", "not_specified")
 METHODS = ("GET", "POST", "PUT", "PATCH", "DELETE")
 NOT_GROUNDED = "Not specified: the answer could not be grounded in the spec."
+NOTE_KINDS = ("rationale", "term")  # Spike G: the owner's notes; they never ground an answer
+NOTES_CORE_BUDGET = 3000  # tokens: both sections go in the core when together they fit
+NOTES_BUDGET = 1500  # tokens of notes sent with one question when they do not
+NOTES_ATTACH_MAX = 5
+NOTE_MIN_QUOTE = 8
+RATIONALE_HEADER = "## Rationale (owner-approved: why a rule exists; cite rationale:<Rn>)"
+GLOSSARY_HEADER = "## Glossary (owner-approved definitions; cite term:<slug>)"
 
 
 # ---- the digest ---------------------------------------------------------------------------
@@ -122,7 +138,7 @@ class Element:
         `plain`: the head is ``[target] content`` even for a rule)."""
         out = [
             f"[{self.target}] {self.content}"
-            if plain
+            if plain and self.kind not in NOTE_KINDS
             else (self.line or f"[{self.target}] {self.content}")
         ]
         if note:
@@ -159,6 +175,7 @@ class Digest:
     users: tuple[str, ...] = ()
     with_rules: bool = False
     impl: Any = field(default=None, compare=False, hash=False)  # an ImplContext (Spike C)
+    notes: Any = field(default=None, compare=False, hash=False)  # a glossary.Notes (Spike G)
 
     def lines_for(self, targets: Iterable[str]) -> list[str]:
         """The digest lines of the given targets (unknown ones skipped)."""
@@ -192,10 +209,14 @@ def _cell_statuses(text: str) -> frozenset[int]:
     return frozenset(int(s) for s in re.findall(r"\b[1-5]\d\d\b", text))
 
 
-def build_digest(spec: Spec, trace: Trace | None = None, inventory: Any = None) -> Digest:
+def build_digest(
+    spec: Spec, trace: Trace | None = None, inventory: Any = None, notes: Any = None
+) -> Digest:
     """The spec digest (see the module docstring). Deterministic: the same spec and
     trace always give the same text, in the spec's own order. `inventory` (an
-    ``lattice.spec.implementation.Inventory``): adds the ``impl:`` elements and their section."""
+    ``lattice.spec.implementation.Inventory``): adds the ``impl:`` elements and their section.
+    `notes` (a ``lattice.spec.glossary.Notes``): adds the rationale and glossary sections at the
+    very end, so the digest without them is an exact prefix."""
     data = _build(spec, trace or Trace(source="", rules=[]), None, None, "spec")
     elements: dict[str, Element] = {}
 
@@ -277,6 +298,8 @@ def build_digest(spec: Spec, trace: Trace | None = None, inventory: Any = None) 
     d = replace(d, text="\n".join(lines).rstrip() + "\n")
     if inventory is not None:
         d = _with_impl(d, spec, trace, inventory)
+    if notes is not None:
+        d = _with_notes(d, notes)
     return d
 
 
@@ -337,6 +360,10 @@ def check_citation(digest: Digest, citation: Mapping[str, Any]) -> str | None:
         return f"no element {target!r} in the spec"
     if not quote:
         return "the quote is empty"
+    if el.kind in NOTE_KINDS:
+        if step is not None:
+            return "a step number is only for a scenario target"
+        return _check_note_quote(el, quote)
     if step is not None:
         if el.kind != "scenario":
             return "a step number is only for a scenario target"
@@ -385,10 +412,12 @@ class Answer:
     # Spike C: only with an inventory, left out of to_dict() when None
     implementation: str | None = None
     implementation_basis: str | None = None
+    # Spike G: only with a rationale or proposals file, left out of to_dict() when None
+    rationale: list[dict[str, Any]] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
-        for k in ("implementation", "implementation_basis"):
+        for k in ("implementation", "implementation_basis", "rationale"):
             if d[k] is None:
                 del d[k]
         return d
@@ -400,6 +429,11 @@ class Answer:
             out.append(f"  cites {c['target']}{step}: {c.get('quote', '')}")
         for c in self.rejected_citations:
             out.append(f"  rejected {c['target']}: {c['reason']}")
+        for r in self.rationale or ():
+            if r["status"] == "approved":
+                out.append(f"why ({r['rule']}, approved by {r['approved_by']}): {r['why']}")
+            else:
+                out.append(f"why ({r['rule']}): no approved rationale ({r['status']})")
         if self.implementation:
             out.append(f"implementation: {self.implementation} ({self.implementation_basis})")
         if self.verified:
@@ -605,6 +639,202 @@ def _impl_flows_for(
         lambda t: approx_tokens("\n".join(digest.elements[t].lines(plain=True))),
         IMPL_BUDGET,
     )
+
+
+# ---- the owner's notes (Spike G; only with notes=) ------------------------------------------
+
+SYSTEM_NOTES = (
+    "[rationale:Rn] elements are the owner's approved reasons for a rule and [term:x] the "
+    "owner's definitions. When asked why, cite the rationale; if the rule has none, say no "
+    "rationale is recorded and do not offer one as the owner's. Rationale and term citations "
+    "never ground a yes/no/value answer by themselves.\n"
+)
+
+
+def _note_line_rationale(rid: str, note: Any) -> str:
+    who = f"owner {note.owner}; approved by {note.approved_by}"
+    trade = f" trade-off: {note.tradeoff}" if note.tradeoff else ""
+    return f"[rationale:{rid}] ({who}) why: {note.why}{trade}"
+
+
+def _note_line_term(t: Any) -> str:
+    also = f" (also: {', '.join(t.aliases)})" if t.aliases else ""
+    return f"[term:{t.slug}] {t.term}{also}: {t.definition}"
+
+
+def _with_notes(d: Digest, notes: Any) -> Digest:
+    """The digest with the rationale and glossary sections appended at the very end (one element
+    per current or moved note and per approved term), and `notes` kept for the answer's key."""
+    elements = dict(d.elements)
+    lines: list[str] = []
+    paths = notes.paths
+    if paths.rationale.is_file() and notes.rationale is not None:
+        rs = notes.rationale
+        body = []
+        for r in sorted(rs.resolved, key=lambda r: _rule_no(r.rule)):
+            if r.state not in ("current", "moved"):
+                continue
+            n = r.note
+            t = f"rationale:{r.rule}"
+            line = _note_line_rationale(r.rule, n)
+            elements[t] = Element(
+                t, "rationale", n.why, raw=tuple(x for x in (n.why, n.tradeoff) if x), line=line
+            )
+            body.append(line)
+        lines += ["", RATIONALE_HEADER, "", *(body or ["(none)"])]
+    if paths.glossary.is_file() and notes.glossary is not None:
+        body = []
+        for t in sorted(notes.glossary.defining, key=lambda t: t.slug):
+            line = _note_line_term(t)
+            tg = f"term:{t.slug}"
+            elements[tg] = Element(tg, "term", t.definition, raw=(t.definition,), line=line)
+            body.append(line)
+        lines += ["", GLOSSARY_HEADER, "", *(body or ["(none)"])]
+    text = d.text
+    if lines:
+        text = text.rstrip("\n") + "\n" + "\n".join(lines) + "\n"
+    return replace(d, text=text, elements=elements, notes=notes)
+
+
+def _rule_no(rid: str) -> int:
+    m = re.fullmatch(r"R(\d+)", rid)
+    return int(m.group(1)) if m else 10**9
+
+
+def _check_note_quote(el: Element, quote: str) -> str | None:
+    """Why `quote` does not match a rationale or term element (None: it does): at least 8
+    non-space characters, and a normalised substring of its why / trade-off or definition."""
+    if len(re.sub(r"\s", "", quote)) < NOTE_MIN_QUOTE:
+        return f"the quote is shorter than {NOTE_MIN_QUOTE} characters"
+    q = _norm(quote)
+    if q and any(q in _norm(part) for part in el.raw or ()):
+        return None
+    return f"the quote is not in the note's text: {el.content!r}"
+
+
+def _note_elements(digest: Digest) -> list[Element]:
+    return [e for e in digest.elements.values() if e.kind in NOTE_KINDS]
+
+
+def _note_section_lines(digest: Digest, els: Iterable[Element] | None = None) -> list[str]:
+    """The note sections' lines (all notes, or only `els`); a section with none is left out of a
+    subset and reads ``(none)`` in the full set."""
+    pool = _note_elements(digest) if els is None else list(els)
+    paths = digest.notes.paths
+    out: list[str] = []
+    for kind, header, present in (
+        ("rationale", RATIONALE_HEADER, paths.rationale.is_file()),
+        ("term", GLOSSARY_HEADER, paths.glossary.is_file()),
+    ):
+        mine = [e for e in pool if e.kind == kind]
+        if els is not None and not mine:
+            continue
+        if els is None and not present:
+            continue
+        out += [header, "", *([e.line for e in mine] or ["(none)"]), ""]
+    return out
+
+
+def _notes_in_core(digest: Digest) -> bool:
+    """Whether the note sections (when there are any) fit in the core together."""
+    lines = _note_section_lines(digest) if digest.notes is not None else []
+    return bool(lines) and approx_tokens("\n".join(lines)) <= NOTES_CORE_BUDGET
+
+
+def notes_core(digest: Digest) -> list[str]:
+    """The notes sections of the core (empty without notes, or when they are too large for it)."""
+    return _note_section_lines(digest) if _notes_in_core(digest) else []
+
+
+def _has_note_sections(digest: Digest) -> bool:
+    return digest.notes is not None and bool(_note_section_lines(digest))
+
+
+def _notes_for(
+    digest: Digest, index: Index, query: set[str], question: str, selected: Sequence[str],
+    picked: Sequence[str],
+) -> list[str]:  # fmt: skip
+    """The note targets for a question when the notes are not in the core: those of the rules
+    in the retrieved set (selected rules, rules that link the picked scenarios, the best-scoring
+    rules) and the terms the question uses, within `NOTES_BUDGET` tokens."""
+    from lattice.spec.glossary import find_terms
+
+    rules = [t for t in selected if t.startswith("rule:")]
+    for t in picked:
+        rules += index.linked_by.get(t, [])
+    scored = sorted(
+        ((index.score(t, query), t) for t in index.links),
+        key=lambda p: (-p[0], index.order[p[1]]),
+    )
+    rules += [t for s, t in scored if s > 0][:10]
+    cands = [f"rationale:{t[5:]}" for t in dict.fromkeys(rules)]
+    gset = digest.notes.glossary
+    if gset is not None:
+        cands += [f"term:{t.slug}" for t in find_terms(question, gset)]
+    return _fill(
+        (t for t in cands if t in digest.elements),
+        lambda t: approx_tokens(digest.elements[t].line),
+        NOTES_BUDGET,
+    )
+
+
+def rationale_attachment(digest: Digest, citations: Sequence[Mapping[str, Any]]) -> list[dict]:
+    """The answer's ``rationale`` key (D10), from the VALID citations only: at most 5 entries
+    ``{rule, status, via}``. Order: rules cited directly as ``rule:Rn`` in citation order, then
+    rules the trace links to a cited scenario, invariant, machine, service or profile target
+    (``via`` names it), by rule number. Only an ``approved`` entry carries text; a proposal's or a
+    non-current note's text is never put in an answer."""
+    rs = digest.notes.rationale
+    seen: set[str] = set()
+    entries: list[tuple[str, str | None]] = []
+    for c in citations:
+        t = str(c.get("target") or "")
+        if t.startswith("rule:") and t in digest.elements and t[5:] not in seen:
+            seen.add(t[5:])
+            entries.append((t[5:], None))
+    cited = [
+        str(c.get("target"))
+        for c in citations
+        if str(c.get("target") or "").partition(":")[0]
+        in ("scenario", "invariant", "machine", "service", "profile")
+    ]
+
+    def linked(link: str, target: str) -> bool:
+        return link == target or (
+            target.startswith("profile:")
+            and "." not in target
+            and link.partition(".")[0] == target
+        )
+
+    via = []
+    for e in digest.of_kind("rule"):
+        rid = e.target[5:]
+        if rid in seen:
+            continue
+        for t in cited:
+            if any(linked(link, t) for link in e.raw or ()):
+                via.append((_rule_no(rid), rid, t))
+                break
+    for _n, rid, t in sorted(via):
+        entries.append((rid, t))
+    out = []
+    for rid, via_t in entries[:NOTES_ATTACH_MAX]:
+        status = rs.status(rid)
+        item: dict[str, Any] = {"rule": rid, "status": status, "via": via_t}
+        if status == "approved":
+            n = rs.approved_for(rid).note  # type: ignore[union-attr]
+            item.update(why=n.why, tradeoff=n.tradeoff, owner=n.owner, approved_by=n.approved_by)
+        out.append(item)
+    return out
+
+
+def _grounding(digest: Digest, cites: Sequence[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
+    """The valid citations that can ground a yes / no / value answer: all but the owner's
+    rationale and term citations."""
+    return [
+        c for c in cites
+        if getattr(digest.elements.get(str(c.get("target"))), "kind", "") not in NOTE_KINDS
+    ]  # fmt: skip
 
 
 # ---- retrieval: the core digest and the scenarios relevant to a question -------------------
@@ -853,6 +1083,7 @@ def core_text(digest: Digest) -> str:
             continue
         lines += digest.section(kind)
     lines += impl_core(digest)
+    lines += notes_core(digest)
     names = [e.target.removeprefix("scenario:") for e in digest.of_kind("scenario")]
     lines += [
         f"## Scenario index ({len(names)} scenarios; target = scenario:<name>; the "
@@ -906,8 +1137,9 @@ def retrieve(
     sent = {
         e.target
         for e in digest.elements.values()
-        if e.kind not in ("scenario", "cell", "impl_flow")
+        if (e.kind not in ("scenario", "cell", "impl_flow") and e.kind not in NOTE_KINDS)
         or (e.kind == "cell" and _cells_in_core(digest))
+        or (e.kind in NOTE_KINDS and _notes_in_core(digest))
     }
     parts: list[str] = []
     if not _cells_in_core(digest):
@@ -950,6 +1182,17 @@ def retrieve(
         parts += digest.lines_for(flows) or ["(none matched the question)"]
         parts.append("")
         sent |= set(flows)
+    if _has_note_sections(digest) and not _notes_in_core(digest):
+        picked_notes = _notes_for(digest, index, query, question, selected, picked)
+        parts += [
+            "## Owner-approved rationale and glossary relevant to the question (a subset)",
+            "",
+            *(digest.elements[t].line for t in picked_notes),
+        ]
+        if not picked_notes:
+            parts.append("(none matched the question)")
+        parts.append("")
+        sent |= set(picked_notes)
     sel = digest.lines_for(selected)
     if sel:
         parts += [
@@ -960,6 +1203,8 @@ def retrieve(
         sent |= {t for t in selected if t in digest.elements}
     sent |= set(picked)
     system = SYSTEM + ("\n" + SYSTEM_IMPL if digest.impl is not None else "")
+    if _has_note_sections(digest):
+        system += "\n" + SYSTEM_NOTES
     return Retrieval(system + "\n" + core_text(digest), "\n".join(parts), picked, sent)
 
 
@@ -1122,7 +1367,9 @@ class _Meter:
         return out
 
 
-def _repair_message(parse_error: str | None, bad: list, kind: str | None, n_good: int) -> str:
+def _repair_message(
+    parse_error: str | None, bad: list, kind: str | None, n_good: int, note_only: bool = False
+) -> str:
     lines = ["Your answer failed the mechanical citation check."]
     if parse_error:
         lines.append(f"- {parse_error}")
@@ -1131,6 +1378,11 @@ def _repair_message(parse_error: str | None, bad: list, kind: str | None, n_good
         lines.append(f"- {b['target']}{step} (quote {b['quote']!r}): {b['reason']}")
     if kind in ("yes", "no", "value") and n_good == 0 and not bad and not parse_error:
         lines.append("- a yes / no / value answer needs at least one citation")
+        if note_only:
+            lines.append(
+                "- rationale and term citations do not ground a yes / no / value answer; "
+                "cite the rule, scenario or cell that settles it"
+            )
     lines.append(
         "Fix the citations: use exact targets and step numbers from the digest and copy "
         "the quote from the element. If the digest does not settle the question, answer "
@@ -1151,15 +1403,17 @@ def ask(
     digest: Digest | None = None,
     index: Index | None = None,
     inventory: Any = None,
+    notes: Any = None,
 ) -> Answer:
     """Answer `question` from `spec` (see the module docstring). `digest` / `index`: a
     prebuilt `build_digest(spec, trace)` and its `Index` (`ask_many` reuses them).
     `inventory`: an ``lattice.spec.implementation.Inventory`` (Spike C); None: as before.
+    `notes`: a ``lattice.spec.glossary.Notes`` (Spike G); None: as before.
 
     Rounds: the answer; at most one "need more" round (the model asked for elements it
     was not shown); at most one citation-repair round. Citations are always checked
     against the FULL digest, whatever was sent."""
-    digest = digest or build_digest(spec, trace, inventory)
+    digest = digest or build_digest(spec, trace, inventory, notes)
     index = index or Index(digest)
     meter = _Meter()
     with_impl = digest.impl is not None
@@ -1182,13 +1436,16 @@ def ask(
         text = meter.call(generator, system, messages)
     parsed, err = _parse_answer(text, with_impl)
     good, bad = _split(digest, parsed["citations"]) if parsed else ([], [])
-    needs = parsed is None or bool(bad) or (parsed["kind"] != "not_specified" and not good)
+    ground = _grounding(digest, good)
+    needs = parsed is None or bool(bad) or (parsed["kind"] != "not_specified" and not ground)
     if needs:
         messages += [
             {"role": "assistant", "content": text},
             {
                 "role": "user",
-                "content": _repair_message(err, bad, parsed and parsed["kind"], len(good)),
+                "content": _repair_message(
+                    err, bad, parsed and parsed["kind"], len(ground), len(ground) < len(good)
+                ),
             },
         ]
         text = meter.call(generator, system, messages)
@@ -1196,6 +1453,7 @@ def ask(
         if parsed2 is not None or parsed is None:
             parsed, err = parsed2, err2
             good, bad = _split(digest, parsed["citations"]) if parsed else ([], [])
+            ground = _grounding(digest, good)
 
     if parsed is None:
         answer = Answer(
@@ -1210,10 +1468,12 @@ def ask(
             True,
             [{"target": b["target"], "reason": b["reason"]} for b in bad],
         )
-        if parsed["kind"] != "not_specified" and not good:
+        if parsed["kind"] != "not_specified" and not ground:
             why = (
                 "none of its citations matched the spec" if bad else "it cited nothing in the spec"
             )
+            if not bad and good:
+                why = "it cited only the owner's rationale or glossary, which settle no fact"
             answer.kind = "not_specified"
             answer.answer = NOT_GROUNDED
             answer.explanation = (
@@ -1228,6 +1488,8 @@ def ask(
         answer.implementation, answer.implementation_basis = settle_implementation(
             label, good, digest.impl
         )
+    if digest.notes is not None and digest.notes.rationale is not None:
+        answer.rationale = rationale_attachment(digest, answer.citations)
     if verify is not None:
         answer.verified = _verify(
             spec, digest, index, question, answer, r.scenarios, verify, generator, meter
@@ -1245,9 +1507,10 @@ def ask_many(
     model: str = "",
     verify: VerifyConfig | None = None,
     inventory: Any = None,
+    notes: Any = None,
 ) -> list[Answer]:
     """`ask` each question in turn, on one digest (and so one cached system prompt)."""
-    digest = build_digest(spec, trace, inventory)
+    digest = build_digest(spec, trace, inventory, notes)
     index = Index(digest)
     return [
         ask(
@@ -1795,6 +2058,18 @@ def _parser() -> argparse.ArgumentParser:
         "code implements",
     )
     p.add_argument("--app-root", type=Path, default=Path("."), help="--inventory: the app's root")
+    p.add_argument(
+        "--rationale",
+        type=Path,
+        metavar="PATH",
+        help="the owner's approved rationale file (default: beside --trace, named from its source)",
+    )
+    p.add_argument(
+        "--glossary",
+        type=Path,
+        metavar="PATH",
+        help="the owner's approved glossary file (default: beside --trace)",
+    )
     return p
 
 
@@ -1824,6 +2099,13 @@ def main(argv: Sequence[str] | None = None, *, generator: Generator | None = Non
         if not isinstance(spec, Spec):
             raise ValueError(f"{args.spec} is not a Spec")
         trace = Trace.load(args.trace) if args.trace else None
+        notes = None
+        if trace is not None:  # Spike G: the owner's rationale and glossary beside the trace
+            from lattice.spec.glossary import discover_notes
+
+            notes = discover_notes(
+                trace, args.trace, rationale=args.rationale, glossary=args.glossary
+            )
         inventory = None
         if args.inventory:
             from lattice.spec.implementation import load_inventory
@@ -1856,9 +2138,15 @@ def main(argv: Sequence[str] | None = None, *, generator: Generator | None = Non
             model=args.model,
             verify=cfg,
             inventory=inventory,
+            **({"notes": notes} if notes is not None else {}),
         )
     except Exception as err:  # noqa: BLE001 -- any failure to ask is exit 2
-        print(f"error: {type(err).__name__}: {err}", file=sys.stderr)
+        from lattice.spec.rationale import NotesError
+
+        if isinstance(err, NotesError):  # bad_rationale / bad_glossary (D14)
+            print(f"error: {err}", file=sys.stderr)
+        else:
+            print(f"error: {type(err).__name__}: {err}", file=sys.stderr)
         return 2
     print(json.dumps(answer.to_dict(), indent=2, default=str) if args.json else answer.render())
     return 0
@@ -1875,6 +2163,7 @@ __all__ = [
     "ask",
     "ask_many",
     "build_digest",
+    "rationale_attachment",
     "check_citation",
     "core_text",
     "main",

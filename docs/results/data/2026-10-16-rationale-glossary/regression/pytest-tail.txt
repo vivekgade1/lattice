@@ -1,0 +1,4 @@
+SKIPPED [1] tests/spec/test_draft.py:413: live LLM smoke test: set LATTICE_LIVE_LLM=1
+SKIPPED [1] tests/spec/test_incremental.py:664: live LLM run: set LATTICE_LIVE_LLM=1
+SKIPPED [1] tests/studio/test_server.py:689: live LLM run: set LATTICE_LIVE_LLM=1
+2 failed, 2935 passed, 5 skipped, 4 deselected, 414 warnings, 29 errors in 849.47s (0:14:09)
