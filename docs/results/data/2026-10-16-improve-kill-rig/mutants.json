@@ -1,0 +1,666 @@
+{
+ "mutants_killed": 10,
+ "mutants_total": 10,
+ "all_caught_by_predicted": true,
+ "elapsed_s": 123.7,
+ "results": {
+  "unmutated": {
+   "pass": true,
+   "failing": [],
+   "table": [
+    [
+     "E-null",
+     "2/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.1328 s"
+    ],
+    [
+     "E-kill2",
+     "10/10 runs pass; INVALID 0; kills confirmed 50/50; unparseable 40 (matching a journal prefix 40 of 40), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 6000; stop-to-kill max 0.03 ms; max survivor append 0.0732 s"
+    ],
+    [
+     "E-kill2s",
+     "3/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 12 (matching a journal prefix 12 of 12), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 2400; stop-to-kill max 0.02 ms; max survivor append 0.0745 s"
+    ],
+    [
+     "E-kill-import",
+     "5/5 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 5 (equal to the journal prefix 5); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     "20/20 trials pass; INVALID 0; B's write seen in the window 0/20 (after 201.36-217.56 ms); unparseable 0, blank 0, events lost 0; warnings 0; B append wall min 0.201 s"
+    ],
+    [
+     "E-interleave-p",
+     "20/20 trials pass; INVALID 0; B done inside the 0.2 s window 0/20 (go-to-done 0.2060-0.2177 s); unparseable 0, blank 0, events lost 0, warnings 0"
+    ],
+    [
+     "E-split-stress",
+     "2/2 runs pass; INVALID 0; lines [4000]; unparseable (glued) 0 and spliced-but-parseable 0, per run [0, 0]; blank 0; lost 0; duplicated 0; lock warnings 0"
+    ],
+    [
+     "E-sync",
+     "1/1 runs pass; INVALID 0; traces {'WF': 1000}"
+    ]
+   ]
+  },
+  "IK1": {
+   "what": "flock call removed",
+   "predicted_catchers": [
+    "E-interleave-t",
+    "E-interleave-p",
+    "E-split-stress"
+   ],
+   "failing_probes": [
+    "E-kill2",
+    "E-kill2s",
+    "E-interleave-t",
+    "E-interleave-p",
+    "E-split-stress"
+   ],
+   "failing_with_invalid_runs": [],
+   "killed": true,
+   "caught_by_predicted": true,
+   "table": [
+    [
+     "E-null",
+     true,
+     "2/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.0009 s"
+    ],
+    [
+     "E-kill2",
+     false,
+     "0/10 runs pass; INVALID 0; kills confirmed 50/50; unparseable 40 (matching a journal prefix 16 of 40), glued 24, spliced-but-parseable 0, blank 19; lost events 24 (runs with a loss 10), duplicated 0; lock warnings 0; shim writes seen by survivors 6000; stop-to-kill max 0.04 ms; max survivor append 0.0111 s"
+    ],
+    [
+     "E-kill2s",
+     false,
+     "0/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 1619 (matching a journal prefix 3 of 12), glued 1616, spliced-but-parseable 19, blank 739; lost events 1480 (runs with a loss 3), duplicated 0; lock warnings 0; shim writes seen by survivors 2400; stop-to-kill max 0.07 ms; max survivor append 0.0013 s"
+    ],
+    [
+     "E-kill-import",
+     true,
+     "5/5 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 5 (equal to the journal prefix 5); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     false,
+     "0/20 trials pass; INVALID 0; B's write seen in the window 20/20 (after 0.07-0.17 ms); unparseable 40, blank 0, events lost 20; warnings 0; B append wall min 0.000 s"
+    ],
+    [
+     "E-interleave-p",
+     false,
+     "0/20 trials pass; INVALID 0; B done inside the 0.2 s window 20/20 (go-to-done 0.0003-0.0003 s); unparseable 40, blank 0, events lost 20, warnings 0"
+    ],
+    [
+     "E-split-stress",
+     false,
+     "0/2 runs pass; INVALID 0; lines [6207, 6342]; unparseable (glued) 9749 and spliced-but-parseable 419, per run [5046, 4703]; blank 333; lost 5952; duplicated 0; lock warnings 0"
+    ],
+    [
+     "E-sync",
+     true,
+     "1/1 runs pass; INVALID 0; traces {'WF': 1000}"
+    ]
+   ],
+   "wall_s": 5.6
+  },
+  "IK2": {
+   "what": "no heal",
+   "predicted_catchers": [
+    "E-kill2",
+    "E-kill2s",
+    "E-kill-import"
+   ],
+   "failing_probes": [
+    "E-kill2",
+    "E-kill2s",
+    "E-kill-import"
+   ],
+   "failing_with_invalid_runs": [],
+   "killed": true,
+   "caught_by_predicted": true,
+   "table": [
+    [
+     "E-null",
+     true,
+     "2/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.0974 s"
+    ],
+    [
+     "E-kill2",
+     false,
+     "0/10 runs pass; INVALID 0; kills confirmed 50/50; unparseable 40 (matching a journal prefix 0 of 40), glued 40, spliced-but-parseable 0, blank 0; lost events 38 (runs with a loss 10), duplicated 0; lock warnings 0; shim writes seen by survivors 6000; stop-to-kill max 0.02 ms; max survivor append 0.0715 s"
+    ],
+    [
+     "E-kill2s",
+     false,
+     "0/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 12 (matching a journal prefix 0 of 12), glued 12, spliced-but-parseable 0, blank 0; lost events 10 (runs with a loss 3), duplicated 0; lock warnings 0; shim writes seen by survivors 2400; stop-to-kill max 0.03 ms; max survivor append 0.0511 s"
+    ],
+    [
+     "E-kill-import",
+     false,
+     "0/5 runs pass; INVALID 0; parseable events [26] (missing 5); unparseable 5 (equal to the journal prefix 0); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     true,
+     "20/20 trials pass; INVALID 0; B's write seen in the window 0/20 (after 202.43-217.25 ms); unparseable 0, blank 0, events lost 0; warnings 0; B append wall min 0.203 s"
+    ],
+    [
+     "E-interleave-p",
+     true,
+     "20/20 trials pass; INVALID 0; B done inside the 0.2 s window 0/20 (go-to-done 0.2049-0.2181 s); unparseable 0, blank 0, events lost 0, warnings 0"
+    ],
+    [
+     "E-split-stress",
+     true,
+     "2/2 runs pass; INVALID 0; lines [4000]; unparseable (glued) 0 and spliced-but-parseable 0, per run [0, 0]; blank 0; lost 0; duplicated 0; lock warnings 0"
+    ],
+    [
+     "E-sync",
+     true,
+     "1/1 runs pass; INVALID 0; traces {'WF': 1000}"
+    ]
+   ],
+   "wall_s": 14.4
+  },
+  "IK3": {
+   "what": "os.fsync removed",
+   "predicted_catchers": [
+    "E-sync"
+   ],
+   "failing_probes": [
+    "E-kill2",
+    "E-sync"
+   ],
+   "failing_with_invalid_runs": [
+    "E-kill2"
+   ],
+   "killed": true,
+   "caught_by_predicted": true,
+   "table": [
+    [
+     "E-null",
+     true,
+     "2/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.0438 s"
+    ],
+    [
+     "E-kill2",
+     false,
+     "4/10 runs pass; INVALID 6; kills confirmed 44/50; unparseable 40 (matching a journal prefix 40 of 40), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 7200; stop-to-kill max 0.02 ms; max survivor append 0.0527 s"
+    ],
+    [
+     "E-kill2s",
+     true,
+     "3/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 12 (matching a journal prefix 12 of 12), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 2400; stop-to-kill max 0.02 ms; max survivor append 0.0588 s"
+    ],
+    [
+     "E-kill-import",
+     true,
+     "5/5 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 5 (equal to the journal prefix 5); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     true,
+     "20/20 trials pass; INVALID 0; B's write seen in the window 0/20 (after 203.57-217.55 ms); unparseable 0, blank 0, events lost 0; warnings 0; B append wall min 0.204 s"
+    ],
+    [
+     "E-interleave-p",
+     true,
+     "20/20 trials pass; INVALID 0; B done inside the 0.2 s window 0/20 (go-to-done 0.2028-0.2167 s); unparseable 0, blank 0, events lost 0, warnings 0"
+    ],
+    [
+     "E-split-stress",
+     true,
+     "2/2 runs pass; INVALID 0; lines [4000]; unparseable (glued) 0 and spliced-but-parseable 0, per run [0, 0]; blank 0; lost 0; duplicated 0; lock warnings 0"
+    ],
+    [
+     "E-sync",
+     false,
+     "0/1 runs pass; INVALID 0; traces {'W': 1000}"
+    ]
+   ],
+   "wall_s": 13.8
+  },
+  "IK4": {
+   "what": "heal reads byte `size` not `size-1` (always a prefix)",
+   "predicted_catchers": [
+    "E-null",
+    "E-kill2"
+   ],
+   "failing_probes": [
+    "E-null",
+    "E-kill2",
+    "E-kill2s",
+    "E-interleave-t",
+    "E-interleave-p",
+    "E-split-stress"
+   ],
+   "failing_with_invalid_runs": [],
+   "killed": true,
+   "caught_by_predicted": true,
+   "table": [
+    [
+     "E-null",
+     false,
+     "0/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 3200; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.0949 s"
+    ],
+    [
+     "E-kill2",
+     false,
+     "0/10 runs pass; INVALID 0; kills confirmed 50/50; unparseable 40 (matching a journal prefix 40 of 40), glued 0, spliced-but-parseable 0, blank 10637; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 6000; stop-to-kill max 0.03 ms; max survivor append 0.0741 s"
+    ],
+    [
+     "E-kill2s",
+     false,
+     "0/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 12 (matching a journal prefix 12 of 12), glued 0, spliced-but-parseable 0, blank 3331; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 2400; stop-to-kill max 0.02 ms; max survivor append 0.0933 s"
+    ],
+    [
+     "E-kill-import",
+     true,
+     "5/5 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 5 (equal to the journal prefix 5); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     false,
+     "0/20 trials pass; INVALID 0; B's write seen in the window 0/20 (after 202.09-217.44 ms); unparseable 0, blank 20, events lost 0; warnings 0; B append wall min 0.202 s"
+    ],
+    [
+     "E-interleave-p",
+     false,
+     "0/20 trials pass; INVALID 0; B done inside the 0.2 s window 0/20 (go-to-done 0.2092-0.2174 s); unparseable 0, blank 20, events lost 0, warnings 0"
+    ],
+    [
+     "E-split-stress",
+     false,
+     "0/2 runs pass; INVALID 0; lines [7999]; unparseable (glued) 0 and spliced-but-parseable 0, per run [0, 0]; blank 7998; lost 0; duplicated 0; lock warnings 0"
+    ],
+    [
+     "E-sync",
+     true,
+     "1/1 runs pass; INVALID 0; traces {'WF': 1000}"
+    ]
+   ],
+   "wall_s": 14.4
+  },
+  "IK5": {
+   "what": "LOCK_UN right after the lock is taken",
+   "predicted_catchers": [
+    "E-interleave-t",
+    "E-interleave-p"
+   ],
+   "failing_probes": [
+    "E-kill2",
+    "E-kill2s",
+    "E-interleave-t",
+    "E-interleave-p",
+    "E-split-stress"
+   ],
+   "failing_with_invalid_runs": [],
+   "killed": true,
+   "caught_by_predicted": true,
+   "table": [
+    [
+     "E-null",
+     true,
+     "2/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.0152 s"
+    ],
+    [
+     "E-kill2",
+     false,
+     "4/10 runs pass; INVALID 0; kills confirmed 50/50; unparseable 40 (matching a journal prefix 32 of 40), glued 8, spliced-but-parseable 0, blank 0; lost events 8 (runs with a loss 6), duplicated 0; lock warnings 0; shim writes seen by survivors 6000; stop-to-kill max 0.03 ms; max survivor append 0.0152 s"
+    ],
+    [
+     "E-kill2s",
+     false,
+     "0/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 465 (matching a journal prefix 6 of 12), glued 459, spliced-but-parseable 0, blank 366; lost events 447 (runs with a loss 3), duplicated 0; lock warnings 0; shim writes seen by survivors 2400; stop-to-kill max 0.03 ms; max survivor append 0.0087 s"
+    ],
+    [
+     "E-kill-import",
+     true,
+     "5/5 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 5 (equal to the journal prefix 5); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     false,
+     "0/20 trials pass; INVALID 0; B's write seen in the window 20/20 (after 0.05-0.13 ms); unparseable 40, blank 0, events lost 20; warnings 0; B append wall min 0.000 s"
+    ],
+    [
+     "E-interleave-p",
+     false,
+     "0/20 trials pass; INVALID 0; B done inside the 0.2 s window 20/20 (go-to-done 0.0003-0.0004 s); unparseable 40, blank 0, events lost 20, warnings 0"
+    ],
+    [
+     "E-split-stress",
+     false,
+     "0/2 runs pass; INVALID 0; lines [6288, 6299]; unparseable (glued) 9752 and spliced-but-parseable 481, per run [4903, 4849]; blank 217; lost 5863; duplicated 0; lock warnings 0"
+    ],
+    [
+     "E-sync",
+     true,
+     "1/1 runs pass; INVALID 0; traces {'WF': 1000}"
+    ]
+   ],
+   "wall_s": 5.9
+  },
+  "IK6": {
+   "what": "size/pread (torn?) decided before the lock loop",
+   "predicted_catchers": [
+    "E-interleave-t",
+    "E-interleave-p"
+   ],
+   "failing_probes": [
+    "E-kill2",
+    "E-kill2s",
+    "E-interleave-t",
+    "E-interleave-p",
+    "E-split-stress"
+   ],
+   "failing_with_invalid_runs": [],
+   "killed": true,
+   "caught_by_predicted": true,
+   "table": [
+    [
+     "E-null",
+     true,
+     "2/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.0863 s"
+    ],
+    [
+     "E-kill2",
+     false,
+     "0/10 runs pass; INVALID 0; kills confirmed 50/50; unparseable 40 (matching a journal prefix 3 of 40), glued 37, spliced-but-parseable 0, blank 0; lost events 37 (runs with a loss 10), duplicated 0; lock warnings 0; shim writes seen by survivors 6000; stop-to-kill max 0.03 ms; max survivor append 0.0602 s"
+    ],
+    [
+     "E-kill2s",
+     false,
+     "0/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 12 (matching a journal prefix 3 of 12), glued 9, spliced-but-parseable 0, blank 10; lost events 9 (runs with a loss 3), duplicated 0; lock warnings 0; shim writes seen by survivors 2400; stop-to-kill max 0.02 ms; max survivor append 0.0634 s"
+    ],
+    [
+     "E-kill-import",
+     true,
+     "5/5 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 5 (equal to the journal prefix 5); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     false,
+     "0/20 trials pass; INVALID 0; B's write seen in the window 0/20 (after 203.64-217.66 ms); unparseable 0, blank 20, events lost 0; warnings 0; B append wall min 0.204 s"
+    ],
+    [
+     "E-interleave-p",
+     false,
+     "0/20 trials pass; INVALID 0; B done inside the 0.2 s window 0/20 (go-to-done 0.2060-0.2256 s); unparseable 0, blank 20, events lost 0, warnings 0"
+    ],
+    [
+     "E-split-stress",
+     false,
+     "0/2 runs pass; INVALID 0; lines [4034, 4055]; unparseable (glued) 0 and spliced-but-parseable 0, per run [0, 0]; blank 89; lost 0; duplicated 0; lock warnings 0"
+    ],
+    [
+     "E-sync",
+     true,
+     "1/1 runs pass; INVALID 0; traces {'WF': 1000}"
+    ]
+   ],
+   "wall_s": 14.6
+  },
+  "IK7": {
+   "what": "LOCK_SH instead of LOCK_EX",
+   "predicted_catchers": [
+    "E-interleave-t",
+    "E-interleave-p"
+   ],
+   "failing_probes": [
+    "E-kill2",
+    "E-kill2s",
+    "E-interleave-t",
+    "E-interleave-p",
+    "E-split-stress"
+   ],
+   "failing_with_invalid_runs": [],
+   "killed": true,
+   "caught_by_predicted": true,
+   "table": [
+    [
+     "E-null",
+     true,
+     "2/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.0013 s"
+    ],
+    [
+     "E-kill2",
+     false,
+     "0/10 runs pass; INVALID 0; kills confirmed 50/50; unparseable 40 (matching a journal prefix 14 of 40), glued 26, spliced-but-parseable 0, blank 37; lost events 26 (runs with a loss 10), duplicated 0; lock warnings 0; shim writes seen by survivors 6000; stop-to-kill max 0.12 ms; max survivor append 0.0049 s"
+    ],
+    [
+     "E-kill2s",
+     false,
+     "0/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 1630 (matching a journal prefix 3 of 12), glued 1627, spliced-but-parseable 26, blank 698; lost events 1481 (runs with a loss 3), duplicated 0; lock warnings 0; shim writes seen by survivors 2400; stop-to-kill max 0.03 ms; max survivor append 0.001 s"
+    ],
+    [
+     "E-kill-import",
+     true,
+     "5/5 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 5 (equal to the journal prefix 5); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     false,
+     "0/20 trials pass; INVALID 0; B's write seen in the window 20/20 (after 0.05-0.18 ms); unparseable 40, blank 0, events lost 20; warnings 0; B append wall min 0.000 s"
+    ],
+    [
+     "E-interleave-p",
+     false,
+     "0/20 trials pass; INVALID 0; B done inside the 0.2 s window 20/20 (go-to-done 0.0003-0.0004 s); unparseable 40, blank 0, events lost 20, warnings 0"
+    ],
+    [
+     "E-split-stress",
+     false,
+     "0/2 runs pass; INVALID 0; lines [6197, 6284]; unparseable (glued) 9718 and spliced-but-parseable 444, per run [4756, 4962]; blank 385; lost 6066; duplicated 0; lock warnings 0"
+    ],
+    [
+     "E-sync",
+     true,
+     "1/1 runs pass; INVALID 0; traces {'WF': 1000}"
+    ]
+   ],
+   "wall_s": 5.7
+  },
+  "IK8": {
+   "what": "_write_all ignores the count",
+   "predicted_catchers": [
+    "E-kill2s"
+   ],
+   "failing_probes": [
+    "E-kill2s"
+   ],
+   "failing_with_invalid_runs": [],
+   "killed": true,
+   "caught_by_predicted": true,
+   "table": [
+    [
+     "E-null",
+     true,
+     "2/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.0846 s"
+    ],
+    [
+     "E-kill2",
+     true,
+     "10/10 runs pass; INVALID 0; kills confirmed 50/50; unparseable 40 (matching a journal prefix 40 of 40), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 6000; stop-to-kill max 0.03 ms; max survivor append 0.063 s"
+    ],
+    [
+     "E-kill2s",
+     false,
+     "0/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 2412 (matching a journal prefix 12 of 12), glued 2400, spliced-but-parseable 0, blank 0; lost events 2400 (runs with a loss 3), duplicated 0; lock warnings 0; shim writes seen by survivors 2400; stop-to-kill max 0.02 ms; max survivor append 0.0672 s"
+    ],
+    [
+     "E-kill-import",
+     true,
+     "5/5 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 5 (equal to the journal prefix 5); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     true,
+     "20/20 trials pass; INVALID 0; B's write seen in the window 0/20 (after 205.55-216.82 ms); unparseable 0, blank 0, events lost 0; warnings 0; B append wall min 0.206 s"
+    ],
+    [
+     "E-interleave-p",
+     true,
+     "20/20 trials pass; INVALID 0; B done inside the 0.2 s window 0/20 (go-to-done 0.2081-0.2177 s); unparseable 0, blank 0, events lost 0, warnings 0"
+    ],
+    [
+     "E-split-stress",
+     true,
+     "2/2 runs pass; INVALID 0; lines [4000]; unparseable (glued) 0 and spliced-but-parseable 0, per run [0, 0]; blank 0; lost 0; duplicated 0; lock warnings 0"
+    ],
+    [
+     "E-sync",
+     true,
+     "1/1 runs pass; INVALID 0; traces {'WF': 1000}"
+    ]
+   ],
+   "wall_s": 14.5
+  },
+  "IK9": {
+   "what": "LOCK_TIMEOUT_S = 0.0",
+   "predicted_catchers": [
+    "E-interleave-t",
+    "E-interleave-p",
+    "E-kill2"
+   ],
+   "failing_probes": [
+    "E-null",
+    "E-kill2",
+    "E-kill2s",
+    "E-interleave-t",
+    "E-interleave-p",
+    "E-split-stress"
+   ],
+   "failing_with_invalid_runs": [],
+   "killed": true,
+   "caught_by_predicted": true,
+   "table": [
+    [
+     "E-null",
+     false,
+     "0/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 2456; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.001 s"
+    ],
+    [
+     "E-kill2",
+     false,
+     "0/10 runs pass; INVALID 0; kills confirmed 50/50; unparseable 40 (matching a journal prefix 15 of 40), glued 25, spliced-but-parseable 0, blank 21; lost events 25 (runs with a loss 10), duplicated 0; lock warnings 3659; shim writes seen by survivors 6000; stop-to-kill max 0.04 ms; max survivor append 0.0009 s"
+    ],
+    [
+     "E-kill2s",
+     false,
+     "0/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 1523 (matching a journal prefix 4 of 12), glued 1519, spliced-but-parseable 19, blank 658; lost events 1427 (runs with a loss 3), duplicated 0; lock warnings 1617; shim writes seen by survivors 2400; stop-to-kill max 0.06 ms; max survivor append 0.0017 s"
+    ],
+    [
+     "E-kill-import",
+     true,
+     "5/5 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 5 (equal to the journal prefix 5); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     false,
+     "0/20 trials pass; INVALID 0; B's write seen in the window 20/20 (after 0.05-0.18 ms); unparseable 40, blank 0, events lost 20; warnings 20; B append wall min 0.000 s"
+    ],
+    [
+     "E-interleave-p",
+     false,
+     "0/20 trials pass; INVALID 0; B done inside the 0.2 s window 20/20 (go-to-done 0.0003-0.0004 s); unparseable 40, blank 0, events lost 20, warnings 20"
+    ],
+    [
+     "E-split-stress",
+     false,
+     "0/2 runs pass; INVALID 0; lines [6123, 6253]; unparseable (glued) 9377 and spliced-but-parseable 499, per run [4788, 4589]; blank 409; lost 5909; duplicated 0; lock warnings 6886"
+    ],
+    [
+     "E-sync",
+     true,
+     "1/1 runs pass; INVALID 0; traces {'WF': 1000}"
+    ]
+   ],
+   "wall_s": 5.7
+  },
+  "IK10": {
+   "what": "fsync moved before the write loop",
+   "predicted_catchers": [
+    "E-sync"
+   ],
+   "failing_probes": [
+    "E-kill2",
+    "E-sync"
+   ],
+   "failing_with_invalid_runs": [],
+   "killed": true,
+   "caught_by_predicted": true,
+   "table": [
+    [
+     "E-null",
+     true,
+     "2/2 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 3200; stop-to-kill max n/a ms; max survivor append 0.0876 s"
+    ],
+    [
+     "E-kill2",
+     false,
+     "4/10 runs pass; INVALID 0; kills confirmed 50/50; unparseable 40 (matching a journal prefix 40 of 40), glued 0, spliced-but-parseable 0, blank 0; lost events 6 (runs with a loss 6), duplicated 0; lock warnings 0; shim writes seen by survivors 6000; stop-to-kill max 0.02 ms; max survivor append 0.0649 s"
+    ],
+    [
+     "E-kill2s",
+     true,
+     "3/3 runs pass; INVALID 0; kills confirmed 12/12; unparseable 12 (matching a journal prefix 12 of 12), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 2400; stop-to-kill max 0.02 ms; max survivor append 0.0716 s"
+    ],
+    [
+     "E-kill-import",
+     true,
+     "5/5 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 5 (equal to the journal prefix 5); re-import line as wanted 5/5"
+    ],
+    [
+     "E-interleave-t",
+     true,
+     "20/20 trials pass; INVALID 0; B's write seen in the window 0/20 (after 204.03-215.85 ms); unparseable 0, blank 0, events lost 0; warnings 0; B append wall min 0.204 s"
+    ],
+    [
+     "E-interleave-p",
+     true,
+     "20/20 trials pass; INVALID 0; B done inside the 0.2 s window 0/20 (go-to-done 0.2040-0.2178 s); unparseable 0, blank 0, events lost 0, warnings 0"
+    ],
+    [
+     "E-split-stress",
+     true,
+     "2/2 runs pass; INVALID 0; lines [4000]; unparseable (glued) 0 and spliced-but-parseable 0, per run [0, 0]; blank 0; lost 0; duplicated 0; lock warnings 0"
+    ],
+    [
+     "E-sync",
+     false,
+     "0/1 runs pass; INVALID 0; traces {'FW': 1000}"
+    ]
+   ],
+   "wall_s": 14.6
+  }
+ },
+ "decisions": [
+  "K is the 0-based index of the log write (the K-th line the shim sees, counting a continuation write of a short write as part of its line): K lines are complete before it, so acked == K and, for a stop in write K, m == K; the prereg's formulas need this reading.",
+  "k (the cut of P1 and S) is drawn over the line WITHOUT its newline, 1..len(body)-1: with the prereg's literal 1..len(line)-1 the largest k would write a complete JSON object without its newline, which parses and is not a fragment. The heal newline, when present, is extra.",
+  "A planned stop that never happens (the shim never reached its point, e.g. a mutant that removes the fsync the P2/P3 stop waits on), a kill that is not preceded by WIFSTOPPED, a worker that exits non-zero or whose shim count is below its appends is INVALID (reported, never a pass).",
+  "The log file is created empty by the parent before the writers are spawned (the shim matches it by device and inode); the writers open it O_CREAT as usual.",
+  "'max survivor append wall while a holder was stopped' is the largest append wall of any survivor in the run (the run contains every holder stop); it is not split per stop.",
+  "E-interleave-t: the 0.2 s window starts after B has entered append (B signals first), so B's append wall is >= 0.2 s by construction when the lock holds; B's wall is measured in B.",
+  "E-interleave-p: B's go-to-done wall is measured by the parent; 'B done in the window' means its done line arrived within 0.2 s of the go line.",
+  "E-kill-import: K ~ U{1..25} is the 0-based write index, so K events are complete and the re-import writes 27-K events.",
+  "The control is built by 'git archive a4ab4a1 lattice' into <scratch>/control (not the shared clone of round 1); the tested arm's workers run with PYTHONPATH=this checkout."
+ ],
+ "post_hoc_script_corrections": [
+  {
+   "when": "after the first --mutants run (aborted at IK7; log kept as run-mutants-aborted.txt, no mutants.json written)",
+   "old": "IK4 hunk new text 'os.pread(fd, 1, size)  # MUTANT IK4' and IK7 hunk new text 'fcntl.LOCK_SH | fcntl.LOCK_NB  # MUTANT IK7' (trailing comments in mid-expression)",
+   "new": "no trailing comment in either hunk: the comment swallowed the rest of the line, so IK4 became 'torn = size > 0 and b\"\"' (no heal at all: IK2's semantics, not the intended always-a-prefix) and IK7 did not compile; the aborted run's IK4 verdict is void. make_mutant also now runs inside the per-mutant try (an uncompilable mutant is reported as an error, not a crash)"
+  },
+  {
+   "when": "smoke trial (--quick, scratch out) before any recorded run",
+   "old": "Shim._stop printed the stop line with print(...) to sys.stdout",
+   "new": "print(..., file=sys.__stdout__): an import-plan worker redirects sys.stdout while the CLI runs, so the stop line went into a StringIO and the parent never saw it (a stopped worker hung the trial; killed by hand)"
+  },
+  {
+   "when": "control smoke trial before any recorded run",
+   "old": "E-split-stress / E-kill2 analysis indexed e['w'], e['seq'] of every parsed event",
+   "new": "an event lacking them is counted as 'malformed_parseable' (a glued head with a foreign tail that still parses as JSON, a control-arm phenomenon) and excluded from the (w, t, seq) sets; the old code raised KeyError and reported the probe as ERROR"
+  }
+ ]
+}

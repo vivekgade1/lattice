@@ -1,0 +1,1036 @@
+{
+ "id": "E-null",
+ "predicted": "10/10: 1600 events, 0 unparseable, 0 blank, intercepted writes = 1600 (both arms)",
+ "observed": "10/10 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 16000; stop-to-kill max n/a ms; max survivor append 0.0033 s",
+ "pass": true,
+ "runs": [
+  {
+   "seed": 0,
+   "plans": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "stops": [],
+   "writers": [
+    {
+     "w": 0,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    }
+   ],
+   "kills": 0,
+   "kills_confirmed": 0,
+   "unparseable": 0,
+   "fragments_expected": 0,
+   "fragments_matched": 0,
+   "glued": 0,
+   "blank": 0,
+   "tail_open": false,
+   "events": 1601,
+   "lost": 0,
+   "duplicated": 0,
+   "dup_ids": 0,
+   "malformed_parseable": 0,
+   "fresh_present": true,
+   "fresh_s": 0.0003,
+   "lock_warnings": 0,
+   "intercepted": 1600,
+   "max_latency_ms": null,
+   "max_survivor_append_s": 0.0022,
+   "slow_kills": [],
+   "invalid": [],
+   "clauses": {
+    "c2_killed": true,
+    "c3_survivors": true,
+    "c4_lines": true,
+    "c5_tail_fresh": true,
+    "c6_no_lock_warning": true
+   },
+   "pass": true
+  },
+  {
+   "seed": 1,
+   "plans": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "stops": [],
+   "writers": [
+    {
+     "w": 0,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    }
+   ],
+   "kills": 0,
+   "kills_confirmed": 0,
+   "unparseable": 0,
+   "fragments_expected": 0,
+   "fragments_matched": 0,
+   "glued": 0,
+   "blank": 0,
+   "tail_open": false,
+   "events": 1601,
+   "lost": 0,
+   "duplicated": 0,
+   "dup_ids": 0,
+   "malformed_parseable": 0,
+   "fresh_present": true,
+   "fresh_s": 0.0003,
+   "lock_warnings": 0,
+   "intercepted": 1600,
+   "max_latency_ms": null,
+   "max_survivor_append_s": 0.0027,
+   "slow_kills": [],
+   "invalid": [],
+   "clauses": {
+    "c2_killed": true,
+    "c3_survivors": true,
+    "c4_lines": true,
+    "c5_tail_fresh": true,
+    "c6_no_lock_warning": true
+   },
+   "pass": true
+  },
+  {
+   "seed": 2,
+   "plans": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "stops": [],
+   "writers": [
+    {
+     "w": 0,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    }
+   ],
+   "kills": 0,
+   "kills_confirmed": 0,
+   "unparseable": 0,
+   "fragments_expected": 0,
+   "fragments_matched": 0,
+   "glued": 0,
+   "blank": 0,
+   "tail_open": false,
+   "events": 1601,
+   "lost": 0,
+   "duplicated": 0,
+   "dup_ids": 0,
+   "malformed_parseable": 0,
+   "fresh_present": true,
+   "fresh_s": 0.0003,
+   "lock_warnings": 0,
+   "intercepted": 1600,
+   "max_latency_ms": null,
+   "max_survivor_append_s": 0.0029,
+   "slow_kills": [],
+   "invalid": [],
+   "clauses": {
+    "c2_killed": true,
+    "c3_survivors": true,
+    "c4_lines": true,
+    "c5_tail_fresh": true,
+    "c6_no_lock_warning": true
+   },
+   "pass": true
+  },
+  {
+   "seed": 3,
+   "plans": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "stops": [],
+   "writers": [
+    {
+     "w": 0,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    }
+   ],
+   "kills": 0,
+   "kills_confirmed": 0,
+   "unparseable": 0,
+   "fragments_expected": 0,
+   "fragments_matched": 0,
+   "glued": 0,
+   "blank": 0,
+   "tail_open": false,
+   "events": 1601,
+   "lost": 0,
+   "duplicated": 0,
+   "dup_ids": 0,
+   "malformed_parseable": 0,
+   "fresh_present": true,
+   "fresh_s": 0.0003,
+   "lock_warnings": 0,
+   "intercepted": 1600,
+   "max_latency_ms": null,
+   "max_survivor_append_s": 0.0027,
+   "slow_kills": [],
+   "invalid": [],
+   "clauses": {
+    "c2_killed": true,
+    "c3_survivors": true,
+    "c4_lines": true,
+    "c5_tail_fresh": true,
+    "c6_no_lock_warning": true
+   },
+   "pass": true
+  },
+  {
+   "seed": 4,
+   "plans": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "stops": [],
+   "writers": [
+    {
+     "w": 0,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    }
+   ],
+   "kills": 0,
+   "kills_confirmed": 0,
+   "unparseable": 0,
+   "fragments_expected": 0,
+   "fragments_matched": 0,
+   "glued": 0,
+   "blank": 0,
+   "tail_open": false,
+   "events": 1601,
+   "lost": 0,
+   "duplicated": 0,
+   "dup_ids": 0,
+   "malformed_parseable": 0,
+   "fresh_present": true,
+   "fresh_s": 0.0003,
+   "lock_warnings": 0,
+   "intercepted": 1600,
+   "max_latency_ms": null,
+   "max_survivor_append_s": 0.0033,
+   "slow_kills": [],
+   "invalid": [],
+   "clauses": {
+    "c2_killed": true,
+    "c3_survivors": true,
+    "c4_lines": true,
+    "c5_tail_fresh": true,
+    "c6_no_lock_warning": true
+   },
+   "pass": true
+  },
+  {
+   "seed": 5,
+   "plans": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "stops": [],
+   "writers": [
+    {
+     "w": 0,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    }
+   ],
+   "kills": 0,
+   "kills_confirmed": 0,
+   "unparseable": 0,
+   "fragments_expected": 0,
+   "fragments_matched": 0,
+   "glued": 0,
+   "blank": 0,
+   "tail_open": false,
+   "events": 1601,
+   "lost": 0,
+   "duplicated": 0,
+   "dup_ids": 0,
+   "malformed_parseable": 0,
+   "fresh_present": true,
+   "fresh_s": 0.0003,
+   "lock_warnings": 0,
+   "intercepted": 1600,
+   "max_latency_ms": null,
+   "max_survivor_append_s": 0.0008,
+   "slow_kills": [],
+   "invalid": [],
+   "clauses": {
+    "c2_killed": true,
+    "c3_survivors": true,
+    "c4_lines": true,
+    "c5_tail_fresh": true,
+    "c6_no_lock_warning": true
+   },
+   "pass": true
+  },
+  {
+   "seed": 6,
+   "plans": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "stops": [],
+   "writers": [
+    {
+     "w": 0,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    }
+   ],
+   "kills": 0,
+   "kills_confirmed": 0,
+   "unparseable": 0,
+   "fragments_expected": 0,
+   "fragments_matched": 0,
+   "glued": 0,
+   "blank": 0,
+   "tail_open": false,
+   "events": 1601,
+   "lost": 0,
+   "duplicated": 0,
+   "dup_ids": 0,
+   "malformed_parseable": 0,
+   "fresh_present": true,
+   "fresh_s": 0.0003,
+   "lock_warnings": 0,
+   "intercepted": 1600,
+   "max_latency_ms": null,
+   "max_survivor_append_s": 0.0007,
+   "slow_kills": [],
+   "invalid": [],
+   "clauses": {
+    "c2_killed": true,
+    "c3_survivors": true,
+    "c4_lines": true,
+    "c5_tail_fresh": true,
+    "c6_no_lock_warning": true
+   },
+   "pass": true
+  },
+  {
+   "seed": 7,
+   "plans": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "stops": [],
+   "writers": [
+    {
+     "w": 0,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    }
+   ],
+   "kills": 0,
+   "kills_confirmed": 0,
+   "unparseable": 0,
+   "fragments_expected": 0,
+   "fragments_matched": 0,
+   "glued": 0,
+   "blank": 0,
+   "tail_open": false,
+   "events": 1601,
+   "lost": 0,
+   "duplicated": 0,
+   "dup_ids": 0,
+   "malformed_parseable": 0,
+   "fresh_present": true,
+   "fresh_s": 0.0003,
+   "lock_warnings": 0,
+   "intercepted": 1600,
+   "max_latency_ms": null,
+   "max_survivor_append_s": 0.0007,
+   "slow_kills": [],
+   "invalid": [],
+   "clauses": {
+    "c2_killed": true,
+    "c3_survivors": true,
+    "c4_lines": true,
+    "c5_tail_fresh": true,
+    "c6_no_lock_warning": true
+   },
+   "pass": true
+  },
+  {
+   "seed": 8,
+   "plans": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "stops": [],
+   "writers": [
+    {
+     "w": 0,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    }
+   ],
+   "kills": 0,
+   "kills_confirmed": 0,
+   "unparseable": 0,
+   "fragments_expected": 0,
+   "fragments_matched": 0,
+   "glued": 0,
+   "blank": 0,
+   "tail_open": false,
+   "events": 1601,
+   "lost": 0,
+   "duplicated": 0,
+   "dup_ids": 0,
+   "malformed_parseable": 0,
+   "fresh_present": true,
+   "fresh_s": 0.0003,
+   "lock_warnings": 0,
+   "intercepted": 1600,
+   "max_latency_ms": null,
+   "max_survivor_append_s": 0.0007,
+   "slow_kills": [],
+   "invalid": [],
+   "clauses": {
+    "c2_killed": true,
+    "c3_survivors": true,
+    "c4_lines": true,
+    "c5_tail_fresh": true,
+    "c6_no_lock_warning": true
+   },
+   "pass": true
+  },
+  {
+   "seed": 9,
+   "plans": [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {}
+   ],
+   "stops": [],
+   "writers": [
+    {
+     "w": 0,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 1,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 2,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 3,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 4,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 5,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 6,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    },
+    {
+     "w": 7,
+     "role": "survivor",
+     "acked": 200,
+     "m": 200,
+     "ok": true
+    }
+   ],
+   "kills": 0,
+   "kills_confirmed": 0,
+   "unparseable": 0,
+   "fragments_expected": 0,
+   "fragments_matched": 0,
+   "glued": 0,
+   "blank": 0,
+   "tail_open": false,
+   "events": 1601,
+   "lost": 0,
+   "duplicated": 0,
+   "dup_ids": 0,
+   "malformed_parseable": 0,
+   "fresh_present": true,
+   "fresh_s": 0.0003,
+   "lock_warnings": 0,
+   "intercepted": 1600,
+   "max_latency_ms": null,
+   "max_survivor_append_s": 0.0008,
+   "slow_kills": [],
+   "invalid": [],
+   "clauses": {
+    "c2_killed": true,
+    "c3_survivors": true,
+    "c4_lines": true,
+    "c5_tail_fresh": true,
+    "c6_no_lock_warning": true
+   },
+   "pass": true
+  }
+ ],
+ "invalid": 0,
+ "totals": {
+  "kills": 0,
+  "kills_confirmed": 0,
+  "unparseable": 0,
+  "fragments_expected": 0,
+  "fragments_matched": 0,
+  "malformed_parseable": 0,
+  "glued": 0,
+  "blank": 0,
+  "lost": 0,
+  "duplicated": 0,
+  "dup_ids": 0,
+  "lock_warnings": 0,
+  "intercepted": 16000
+ },
+ "wall_s": 1.9,
+ "count": 10
+}
