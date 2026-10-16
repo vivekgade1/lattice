@@ -1,0 +1,13 @@
+unmutated copy: pass
+IK1: killed by ['E-kill2', 'E-kill2s', 'E-interleave-t', 'E-interleave-p', 'E-split-stress'] (predicted ['E-interleave-t', 'E-interleave-p', 'E-split-stress']) [5.6 s]
+IK2: killed by ['E-kill2', 'E-kill2s', 'E-kill-import'] (predicted ['E-kill2', 'E-kill2s', 'E-kill-import']) [14.4 s]
+IK3: killed by ['E-kill2', 'E-sync'] (predicted ['E-sync']) [13.8 s]
+IK4: killed by ['E-null', 'E-kill2', 'E-kill2s', 'E-interleave-t', 'E-interleave-p', 'E-split-stress'] (predicted ['E-null', 'E-kill2']) [14.4 s]
+IK5: killed by ['E-kill2', 'E-kill2s', 'E-interleave-t', 'E-interleave-p', 'E-split-stress'] (predicted ['E-interleave-t', 'E-interleave-p']) [5.9 s]
+IK6: killed by ['E-kill2', 'E-kill2s', 'E-interleave-t', 'E-interleave-p', 'E-split-stress'] (predicted ['E-interleave-t', 'E-interleave-p']) [14.6 s]
+IK7: killed by ['E-kill2', 'E-kill2s', 'E-interleave-t', 'E-interleave-p', 'E-split-stress'] (predicted ['E-interleave-t', 'E-interleave-p']) [5.7 s]
+IK8: killed by ['E-kill2s'] (predicted ['E-kill2s']) [14.5 s]
+IK9: killed by ['E-null', 'E-kill2', 'E-kill2s', 'E-interleave-t', 'E-interleave-p', 'E-split-stress'] (predicted ['E-interleave-t', 'E-interleave-p', 'E-kill2']) [5.7 s]
+IK10: killed by ['E-kill2', 'E-sync'] (predicted ['E-sync']) [14.6 s]
+mutants: 10/10 killed
+uv run python dogfood/improve_kill_rig_probes.py --mutants --scratch  --out   112.86s user 48.82s system 130% cpu 2:03.76 total

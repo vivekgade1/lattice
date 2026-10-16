@@ -1,0 +1,115 @@
+{
+ "arm": "control",
+ "tree": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/ekill/run/control",
+ "base_ref": "a4ab4a1",
+ "mode": "full",
+ "ran": {
+  "E-null": "RAN",
+  "E-kill2": "RAN",
+  "E-kill2s": "RAN",
+  "E-kill-import": "RAN",
+  "E-interleave-t": "RAN",
+  "E-interleave-p": "RAN",
+  "E-split-stress": "RAN",
+  "E-sync": "RAN"
+ },
+ "table": [
+  {
+   "id": "E-null",
+   "predicted": "10/10: 1600 events, 0 unparseable, 0 blank, intercepted writes = 1600 (both arms)",
+   "observed": "10/10 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 16000; stop-to-kill max n/a ms; max survivor append 0.0033 s",
+   "pass": true,
+   "count": 10,
+   "wall_s": 1.9
+  },
+  {
+   "id": "E-kill2",
+   "predicted": "tested 50/50: 5/5 kills confirmed per run, 4 unparseable = the 4 P1 journal prefixes, 0 lost/duplicated, fresh append present, 0 lock warnings, stop-to-kill < 50 ms; control 0/N: >= 1 lost event in every run (3-4), >= 150 lost in total, 3-4 unparseable per run, each glued",
+   "observed": "0/50 runs pass; INVALID 0; kills confirmed 250/250; unparseable 199 (matching a journal prefix 0 of 200), glued 199, spliced-but-parseable 0, blank 0; lost events 199 (runs with a loss 50), duplicated 0; lock warnings 0; shim writes seen by survivors 30000; stop-to-kill max 0.08 ms; max survivor append 0.0056 s",
+   "pass": false,
+   "count": 50,
+   "wall_s": 8.3
+  },
+  {
+   "id": "E-kill2s",
+   "predicted": "tested 10/10: 4 kills per run, 4 fragments = journal prefixes, survivors complete; control 0/N (round 1's short-write defect: ~800 of 800 survivor lines lost or glued per run)",
+   "observed": "0/10 runs pass; INVALID 0; kills confirmed 40/40; unparseable 2600 (matching a journal prefix 0 of 40), glued 2600, spliced-but-parseable 0, blank 0; lost events 10590 (runs with a loss 10), duplicated 0; lock warnings 0; shim writes seen by survivors 8000; stop-to-kill max 0.06 ms; max survivor append 0.0032 s",
+   "pass": false,
+   "count": 10,
+   "wall_s": 1.6
+  },
+  {
+   "id": "E-kill-import",
+   "predicted": "tested 20/20: parseable = the 27 clean-import ids once each, one unparseable line = the journal prefix, re-import prints '<27-K> event(s) written' rc 0; control 0/N (event K glued to its fragment: 26 events after the re-import)",
+   "observed": "0/20 runs pass; INVALID 0; parseable events [26] (missing 20); unparseable 20 (equal to the journal prefix 0); re-import line as wanted 20/20",
+   "pass": false,
+   "count": 20,
+   "wall_s": 2.3
+  },
+  {
+   "id": "E-interleave-t",
+   "predicted": "tested 100/100: B's write not seen in the 0.2 s window, file = A's line then B's, 0 unparseable, 0 blank, B append >= 0.2 s, 0 warnings; control: B's write seen within 5 ms, 'A1 B / A2' = 2 unparseable lines, both events lost, 100/100",
+   "observed": "0/100 trials pass; INVALID 0; B's write seen in the window 100/100 (after 0.04-0.10 ms); unparseable 200, blank 0, events lost 200; warnings 0; B append wall min 0.000 s",
+   "pass": false,
+   "count": 100,
+   "wall_s": 0.1
+  },
+  {
+   "id": "E-interleave-p",
+   "predicted": "tested 100/100: B's done only after A resumes, file = A's line then B's, 0 unparseable, 0 blank, 0 warnings; control: B done within the window, 'A1 B / A2' corrupt 100/100",
+   "observed": "0/100 trials pass; INVALID 0; B done inside the 0.2 s window 100/100 (go-to-done 0.0002-0.0005 s); unparseable 200, blank 0, events lost 200, warnings 0",
+   "pass": false,
+   "count": 100,
+   "wall_s": 5.3
+  },
+  {
+   "id": "E-split-stress",
+   "predicted": "tested 10/10: 4000 lines, 0 unparseable, 0 blank, 0 lost/duplicated, order kept, 0 lock warnings; control (diagnostic, stochastic, not a rule): >= 1 glued line in every run, >= 10 per run (~85% confident)",
+   "observed": "0/10 runs pass; INVALID 0; lines [4000]; unparseable (glued) 37361 and spliced-but-parseable 485, per run [3780, 3733, 3737, 3731, 3727, 3758, 3743, 3718, 3745, 3689]; blank 0; lost 37846; duplicated 0; lock warnings 0",
+   "pass": false,
+   "count": 10,
+   "wall_s": 3.1
+  },
+  {
+   "id": "E-sync",
+   "predicted": "1/1: between two append returns the trace is exactly W F, 1000/1000 (both arms)",
+   "observed": "1/1 runs pass; INVALID 0; traces {'WF': 1000}",
+   "pass": true,
+   "count": 1,
+   "wall_s": 0.1
+  }
+ ],
+ "probes_passed": 2,
+ "probes_total": 8,
+ "elapsed_s": 22.6,
+ "findings": [],
+ "post_hoc_script_corrections": [
+  {
+   "when": "smoke trial (--quick, scratch out) before any recorded run",
+   "old": "Shim._stop printed the stop line with print(...) to sys.stdout",
+   "new": "print(..., file=sys.__stdout__): an import-plan worker redirects sys.stdout while the CLI runs, so the stop line went into a StringIO and the parent never saw it (a stopped worker hung the trial; killed by hand)"
+  },
+  {
+   "when": "control smoke trial before any recorded run",
+   "old": "E-split-stress / E-kill2 analysis indexed e['w'], e['seq'] of every parsed event",
+   "new": "an event lacking them is counted as 'malformed_parseable' (a glued head with a foreign tail that still parses as JSON, a control-arm phenomenon) and excluded from the (w, t, seq) sets; the old code raised KeyError and reported the probe as ERROR"
+  }
+ ],
+ "decisions": [
+  "K is the 0-based index of the log write (the K-th line the shim sees, counting a continuation write of a short write as part of its line): K lines are complete before it, so acked == K and, for a stop in write K, m == K; the prereg's formulas need this reading.",
+  "k (the cut of P1 and S) is drawn over the line WITHOUT its newline, 1..len(body)-1: with the prereg's literal 1..len(line)-1 the largest k would write a complete JSON object without its newline, which parses and is not a fragment. The heal newline, when present, is extra.",
+  "A planned stop that never happens (the shim never reached its point, e.g. a mutant that removes the fsync the P2/P3 stop waits on), a kill that is not preceded by WIFSTOPPED, a worker that exits non-zero or whose shim count is below its appends is INVALID (reported, never a pass).",
+  "The log file is created empty by the parent before the writers are spawned (the shim matches it by device and inode); the writers open it O_CREAT as usual.",
+  "'max survivor append wall while a holder was stopped' is the largest append wall of any survivor in the run (the run contains every holder stop); it is not split per stop.",
+  "E-interleave-t: the 0.2 s window starts after B has entered append (B signals first), so B's append wall is >= 0.2 s by construction when the lock holds; B's wall is measured in B.",
+  "E-interleave-p: B's go-to-done wall is measured by the parent; 'B done in the window' means its done line arrived within 0.2 s of the go line.",
+  "E-kill-import: K ~ U{1..25} is the 0-based write index, so K events are complete and the re-import writes 27-K events.",
+  "The control is built by 'git archive a4ab4a1 lattice' into <scratch>/control (not the shared clone of round 1); the tested arm's workers run with PYTHONPATH=this checkout."
+ ],
+ "control_must_fail": {
+  "E-kill2": "FAILED (discriminates)",
+  "E-kill-import": "FAILED (discriminates)",
+  "E-interleave-t": "FAILED (discriminates)",
+  "E-interleave-p": "FAILED (discriminates)"
+ }
+}

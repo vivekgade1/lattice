@@ -1,0 +1,11 @@
+  [E-null 2.6 s] pass: 10/10 runs pass; INVALID 0; kills confirmed 0/0; unparseable 0 (matching a journal prefix 0 of 0), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 16000; stop-to-kill max n/a ms; max survivor append 0.0902 s
+  [E-kill2 12.4 s] pass: 50/50 runs pass; INVALID 0; kills confirmed 250/250; unparseable 200 (matching a journal prefix 200 of 200), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 30000; stop-to-kill max 0.03 ms; max survivor append 0.1203 s
+  [E-kill2s 2.5 s] pass: 10/10 runs pass; INVALID 0; kills confirmed 40/40; unparseable 40 (matching a journal prefix 40 of 40), glued 0, spliced-but-parseable 0, blank 0; lost events 0 (runs with a loss 0), duplicated 0; lock warnings 0; shim writes seen by survivors 8000; stop-to-kill max 0.03 ms; max survivor append 0.0895 s
+  [E-kill-import 2.4 s] pass: 20/20 runs pass; INVALID 0; parseable events [27] (missing 0); unparseable 20 (equal to the journal prefix 20); re-import line as wanted 20/20
+  [E-interleave-t 5.4 s] pass: 100/100 trials pass; INVALID 0; B's write seen in the window 0/100 (after 201.29-217.30 ms); unparseable 0, blank 0, events lost 0; warnings 0; B append wall min 0.201 s
+  [E-interleave-p 26.9 s] pass: 100/100 trials pass; INVALID 0; B done inside the 0.2 s window 0/100 (go-to-done 0.2030-0.2245 s); unparseable 0, blank 0, events lost 0, warnings 0
+  [E-split-stress 17.2 s] pass: 10/10 runs pass; INVALID 0; lines [4000]; unparseable (glued) 0 and spliced-but-parseable 0, per run [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; blank 0; lost 0; duplicated 0; lock warnings 0
+  [E-sync 0.1 s] pass: 1/1 runs pass; INVALID 0; traces {'WF': 1000}
+arm: tested   tree: /Users/vivekgade/Documents/lattice-ekill
+probes passing the tested-arm rule: 8/8
+uv run python dogfood/improve_kill_rig_probes.py --arm tested --scratch  --ou  45.09s user 17.61s system 90% cpu 1:09.66 total

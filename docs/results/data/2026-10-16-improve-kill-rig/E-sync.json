@@ -1,0 +1,21 @@
+{
+ "id": "E-sync",
+ "predicted": "1/1: between two append returns the trace is exactly W F, 1000/1000 (both arms)",
+ "observed": "1/1 runs pass; INVALID 0; traces {'WF': 1000}",
+ "pass": true,
+ "runs": [
+  {
+   "seed": 0,
+   "traces": {
+    "WF": 1000
+   },
+   "w_f": 1000,
+   "invalid": [],
+   "events": 1000,
+   "pass": true
+  }
+ ],
+ "invalid": 0,
+ "wall_s": 0.1,
+ "count": 1
+}

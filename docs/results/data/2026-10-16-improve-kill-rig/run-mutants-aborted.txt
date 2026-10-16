@@ -1,0 +1,40 @@
+unmutated copy: pass
+IK1: killed by ['E-kill2', 'E-kill2s', 'E-interleave-t', 'E-interleave-p', 'E-split-stress'] (predicted ['E-interleave-t', 'E-interleave-p', 'E-split-stress']) [5.2 s]
+IK2: killed by ['E-kill2', 'E-kill2s', 'E-kill-import'] (predicted ['E-kill2', 'E-kill2s', 'E-kill-import']) [14.4 s]
+IK3: killed by ['E-kill2', 'E-sync'] (predicted ['E-sync']) [13.5 s]
+IK4: killed by ['E-kill2', 'E-kill2s', 'E-kill-import'] (predicted ['E-null', 'E-kill2']) [14.5 s]
+IK5: killed by ['E-kill2', 'E-kill2s', 'E-interleave-t', 'E-interleave-p', 'E-split-stress'] (predicted ['E-interleave-t', 'E-interleave-p']) [5.5 s]
+IK6: killed by ['E-kill2', 'E-kill2s', 'E-interleave-t', 'E-interleave-p', 'E-split-stress'] (predicted ['E-interleave-t', 'E-interleave-p']) [14.7 s]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/py_compile.py", line 144, in compile
+    code = loader.source_to_code(source_bytes, dfile or file,
+                                 _optimize=optimize)
+  File "<frozen importlib._bootstrap_external>", line 826, in source_to_code
+  File "<frozen importlib._bootstrap>", line 491, in _call_with_frames_removed
+  File "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/ekill/run/mut/IK7/lattice/improve/events.py", line 193
+    fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB  # MUTANT IK7)
+               ^
+SyntaxError: '(' was never closed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/vivekgade/Documents/lattice-ekill/dogfood/improve_kill_rig_probes.py", line 1407, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/Users/vivekgade/Documents/lattice-ekill/dogfood/improve_kill_rig_probes.py", line 1349, in main
+    return run_mutants(args.mutant_ids, args.out, scratch)
+  File "/Users/vivekgade/Documents/lattice-ekill/dogfood/improve_kill_rig_probes.py", line 1266, in run_mutants
+    STATE["tree"] = make_mutant(mid, scratch)
+                    ~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Users/vivekgade/Documents/lattice-ekill/dogfood/improve_kill_rig_probes.py", line 1240, in make_mutant
+    py_compile.compile(str(target), cfile=str(dst / "events.pyc"), doraise=True)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/py_compile.py", line 150, in compile
+    raise py_exc
+py_compile.PyCompileError:   File "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/ekill/run/mut/IK7/lattice/improve/events.py", line 193
+    fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB  # MUTANT IK7)
+               ^
+SyntaxError: '(' was never closed
+
+uv run python dogfood/improve_kill_rig_probes.py --mutants --scratch  --out   68.64s user 28.36s system 118% cpu 1:22.14 total
