@@ -118,3 +118,30 @@ check in a habit?" -> implemented, verified by a run.
 LLM extraction (deferred by decision); non-Gin Go frameworks; Studio screens; races/concurrency.
 Main risk: extractor tied to Streak idioms (mitigated by held-out app + `unread`). A replica is only as good as
 the extraction: every statement carries evidence and an inferred/observed label.
+
+## Addendum 2026-10-16: spikes D, E, F, G (owner requests after A-C were built)
+
+**D, change impact (pre-registration in progress, branch np-impact).** For a requirement added or changed:
+Tier 1 observed (the candidate spec's scenarios, flows, invariants and machines run against today's app on a
+throwaway database; every failing check is a fact), Tier 2 determined (spec-level contradictions decided from the
+spec alone), Tier 3 static (code locations via trace links, routes/workflows, code evidence and the call
+closure; unread idioms listed, never guessed), Tier 4 observed after change (filled by E). The owner's rule:
+which workflows fail is never predicted, only observed or logically determined. Gates: a >= 15-change set on
+Streak written and hashed by a separate agent with reference implementation diffs and independent ground truth.
+
+**E, implement with verification.** Drive the existing rebuild loop from the impact report on a branch in an
+isolated worktree; gate on before/after workflow results: intended workflows change as reported, 0 unexpected
+regressions; never merges; fills Tier 4.
+
+**F, the go-to place.** An app map (rules, workflows, machines, access, each with status and evidence), chat
+that answers "what breaks if ..." from the impact engine, and a Studio view (a revisit of the 'no screen'
+decision), checked in a real browser.
+
+**G, rationale and glossary (added on the owner's yes).** Close the gap that a blueprint of behaviour does not
+say why: (1) a short rationale note per rule (why it exists, the trade-off, the owner), stored with the
+requirements and the trace; LLM-drafted notes are proposals the owner approves, never auto-accepted; (2) a
+glossary of business terms with definitions that the rules, the report and the chat digest use, with a lint that
+flags a rule using an undefined term. Deterministic coverage metrics (percentage of rules with a rationale,
+undefined terms); byte-identical behaviour when absent; the chat cites the rationale beside the rule. The
+marketplace is not required for G; shared rule packs and moving the language front ends behind the module
+interface remain possible later work.
