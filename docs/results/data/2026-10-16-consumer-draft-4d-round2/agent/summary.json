@@ -1,0 +1,484 @@
+{
+ "experiment": "2026-10-16-consumer-draft-4d round 2",
+ "claude_version": "2.1.299 (Claude Code)",
+ "freeze": {
+  "frozen_at_utc": "2026-10-16T17:44:19+00:00",
+  "files": {
+   "draft_agent2_scorer.py": "79e546f1cfdbd7f581b54c04c12be52c2eddb5e10a43ad8e9c123267e79b2379",
+   "draft_agent2_scorer_cases.json": "4593f645e559758c67836ad0611b0fe4d22991810d370f3c690460d8d0e62c12",
+   "draft_agent2_check.py": "32ad83f508a93bb0ee146e32b24af3fb1ffd9aa6ab599ac6d63fb6842b6c37ee",
+   "draft_agent2.py": "c639426584eb185c4408821c533caa18a03c14a11fc7b32a989c0b9d3de32945",
+   "draft_agent.py": "f4eebedf57c86e236d37ae4f0db852a31d4f697b58ecb0976f69a81970c944cf",
+   "draft_agent_scorer.py": "97395b9e5007ceb32e7cabd45f610525561858e2e8fc64efc470b055613b20ad",
+   "draft_agent_scorer_cases.json": "32201ba412ebe0ec682a6778ac4458276ab7513621948ecd2aad2d4abcc0581a",
+   "draft_agent_check.py": "46b667681b9271122794518686e3dda9e727aead78648ebbbbf0c9b97c5fcbfe",
+   "agent_scorer.py": "92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08",
+   "agent_probes.py": "bbd1fed1e0631492e4636a1fab5d3e110b61cac3e52446dd01c0882194fa0509",
+   "draft_probes.py": "3782b11bb7a555f2540cc0501ccbe1f3dc0c337f5785c432b74fb0ef4347b0fb"
+  },
+  "info_only": {
+   "draft_agent2_mutants.py": "b92ddfe23201995d7b7f9e95a49ea9e1c492d3d22fb38c3ed582bd62381d7823"
+  },
+  "git_head": "3f2c0ee06617a690a010cd723ad8c375f276d3b5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "case_table": "cases: 86/86 as expected",
+  "case_table_rc": 0,
+  "round1_case_table": "cases: 37/37 as expected",
+  "round1_case_table_rc": 0
+ },
+ "hashes_now": {
+  "draft_agent2_scorer.py": "79e546f1cfdbd7f581b54c04c12be52c2eddb5e10a43ad8e9c123267e79b2379",
+  "draft_agent2_scorer_cases.json": "4593f645e559758c67836ad0611b0fe4d22991810d370f3c690460d8d0e62c12",
+  "draft_agent2_check.py": "32ad83f508a93bb0ee146e32b24af3fb1ffd9aa6ab599ac6d63fb6842b6c37ee",
+  "draft_agent2.py": "c639426584eb185c4408821c533caa18a03c14a11fc7b32a989c0b9d3de32945",
+  "draft_agent.py": "f4eebedf57c86e236d37ae4f0db852a31d4f697b58ecb0976f69a81970c944cf",
+  "draft_agent_scorer.py": "97395b9e5007ceb32e7cabd45f610525561858e2e8fc64efc470b055613b20ad",
+  "draft_agent_scorer_cases.json": "32201ba412ebe0ec682a6778ac4458276ab7513621948ecd2aad2d4abcc0581a",
+  "draft_agent_check.py": "46b667681b9271122794518686e3dda9e727aead78648ebbbbf0c9b97c5fcbfe",
+  "agent_scorer.py": "92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08",
+  "agent_probes.py": "bbd1fed1e0631492e4636a1fab5d3e110b61cac3e52446dd01c0882194fa0509",
+  "draft_probes.py": "3782b11bb7a555f2540cc0501ccbe1f3dc0c337f5785c432b74fb0ef4347b0fb"
+ },
+ "sessions": [
+  {
+   "sid": "r2-sonnet-WD2-1",
+   "world": "W-D2",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.34231789999999995,
+   "tokens": 76265,
+   "tokens_incl_cache_reads": 363124,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:56:17+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": true,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!"
+   ],
+   "nonlattice": []
+  },
+  {
+   "sid": "r2-sonnet-WS6-1",
+   "world": "W-S6",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.1027564,
+   "tokens": 12629,
+   "tokens_incl_cache_reads": 438673,
+   "turns": 8,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:56:43+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": false,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!",
+    "project_status",
+    "Bash!"
+   ],
+   "nonlattice": [
+    {
+     "name": "Bash",
+     "input": {
+      "command": "cd \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget\" && ls -a && grep -rn \"next_cursor\\|cursor\" --exclude-dir=.lattice --exclude-dir=.git . | head -30; cat lattice.imports.toml"
+     },
+     "executed": false,
+     "result": "<tool_use_error>Error: No such tool available: Bash. Bash is disabled for this session, in subagents as well as here.</tool_use_error>"
+    }
+   ]
+  },
+  {
+   "sid": "r2-sonnet-WD2-2",
+   "world": "W-D2",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.09205669999999999,
+   "tokens": 11954,
+   "tokens_incl_cache_reads": 363181,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:57:08+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": true,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!"
+   ],
+   "nonlattice": []
+  },
+  {
+   "sid": "r2-sonnet-WS6-2",
+   "world": "W-S6",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.0795426,
+   "tokens": 11027,
+   "tokens_incl_cache_reads": 287893,
+   "turns": 5,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:57:27+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": true,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft"
+   ],
+   "nonlattice": []
+  },
+  {
+   "sid": "r2-sonnet-WD2-3",
+   "world": "W-D2",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.0905267,
+   "tokens": 11804,
+   "tokens_incl_cache_reads": 363031,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:57:52+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "info": {
+    "A3": true,
+    "A3b-strict": true
+   },
+   "pass": true,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!"
+   ],
+   "nonlattice": []
+  },
+  {
+   "sid": "r2-sonnet-WS6-3",
+   "world": "W-S6",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.0936369,
+   "tokens": 12316,
+   "tokens_incl_cache_reads": 363305,
+   "turns": 7,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:58:18+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": false,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": false,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!",
+    "project_status"
+   ],
+   "nonlattice": []
+  },
+  {
+   "sid": "r2-ablation-WD2-1",
+   "world": "W-D2",
+   "with_tool": false,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.33622689999999994,
+   "tokens": 74729,
+   "tokens_incl_cache_reads": 358938,
+   "turns": 7,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:58:44+00:00",
+   "items": {
+    "A1": null,
+    "A2": false,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": false,
+    "A6": true
+   },
+   "info": {
+    "A3": true,
+    "A3b-strict": true
+   },
+   "pass": false,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "code_links!",
+    "project_status",
+    "mcp__claude_ai_Claude_Docs__read!"
+   ],
+   "nonlattice": [
+    {
+     "name": "mcp__claude_ai_Claude_Docs__read",
+     "input": {
+      "ref": {
+       "object": "file",
+       "id": "x"
+      }
+     },
+     "executed": false,
+     "result": "Permission to use mcp__claude_ai_Claude_Docs__read has been denied because Claude Code is running in don't ask mode. IMPORTANT: You *may* attempt to accomplish this action using other tools that might naturally be used to accomplish this goal, e.g. using head instead of cat. But you *should not* att"
+    }
+   ]
+  },
+  {
+   "sid": "r2-ablation-WD2-2",
+   "world": "W-D2",
+   "with_tool": false,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.0770458,
+   "tokens": 10339,
+   "tokens_incl_cache_reads": 285737,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:59:10+00:00",
+   "items": {
+    "A1": null,
+    "A2": false,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": false,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": false,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "model_get!",
+    "code_links!"
+   ],
+   "nonlattice": []
+  }
+ ],
+ "scored": 8,
+ "tool_sessions_scored": 6,
+ "items_with_tool": {
+  "A1": "6/6",
+  "A2": "6/6",
+  "A3b": "6/6",
+  "A4": "5/6",
+  "A5": "6/6",
+  "A6": "6/6",
+  "A7": "3/3"
+ },
+ "info_with_tool": {
+  "A3": "1/6",
+  "A3b-strict": "6/6"
+ },
+ "items_ablation": {
+  "A2": "0/2",
+  "A3b": "2/2",
+  "A4": "2/2",
+  "A5": "2/2",
+  "A6": "2/2",
+  "A7": "0/2"
+ },
+ "info_ablation": {
+  "A3": "1/2",
+  "A3b-strict": "2/2"
+ },
+ "tool_sessions_pass_every_item_and_no_nonlattice": 4,
+ "tool_sessions_pass_every_item_ignoring_nonlattice": 5,
+ "tool_sessions_pass_every_item_ignoring_denied_attempts": 5,
+ "A6": "8/8",
+ "pass_rule_evaluated": true,
+ "pass_rule_met": false,
+ "pass_rule_met_ignoring_denied_attempts": true,
+ "total_cost_usd": 1.2141,
+ "total_tokens": 221063,
+ "token_definition": "input + output + cache creation (cache reads excluded); cap 400000",
+ "total_tokens_incl_cache_reads": 2823882,
+ "stop": null,
+ "wall_s": 198.5
+}

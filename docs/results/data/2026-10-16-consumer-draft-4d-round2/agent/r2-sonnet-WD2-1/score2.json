@@ -1,0 +1,112 @@
+{
+ "items": {
+  "A1": true,
+  "A2": true,
+  "A3b": true,
+  "A4": true,
+  "A5": true,
+  "A7": true,
+  "A6": true
+ },
+ "info": {
+  "A3": false,
+  "A3b-strict": true
+ },
+ "applicable": [
+  "A1",
+  "A2",
+  "A3b",
+  "A4",
+  "A5",
+  "A6",
+  "A7"
+ ],
+ "detail": {
+  "A1": {
+   "pass": true,
+   "calls": [
+    {
+     "id": "toolu_01TPvHs76t7oYqhvaS9VxUPi",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "A2": {
+   "pass": true,
+   "endpoint": true,
+   "number": true,
+   "others": []
+  },
+  "A3b": {
+   "pass": true,
+   "invented": [],
+   "proposals": [
+    "Scheduler now returns **200** instead of **201** from `POST /applications/{app}/jobs/{job}/runs`, and ci-bot still expects 201.",
+    "The changes below are what to make, in this order.",
+    "**What to change, in order**",
+    "Change it to accept 200.",
+    "In `[[import]]` #4, `POST /applications/{}/jobs/{}/runs`, change `status = [201]` to `status = [200]`.",
+    "**ci-bot spec, rule R3.** Change the text to: \"It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status.\"",
+    "If R3 lives in `REQUIREMENTS.md`, edit it there.",
+    "Then run `lattice spec draft` so the spec files exist and the change can go through `lattice:change` or Studio."
+   ]
+  },
+  "A4": {
+   "pass": true,
+   "advice": []
+  },
+  "A5": {
+   "pass": true,
+   "r6": true,
+   "proposed": []
+  },
+  "A7": {
+   "pass": true,
+   "R3": true,
+   "R4_affirmed": []
+  },
+  "A3": {
+   "pass": false,
+   "invented": [
+    {
+     "kind": "field",
+     "item": "ef17cf88",
+     "sentence": "Your pin (`ef17cf88`) has `[201, 401, 404, 409]`."
+    },
+    {
+     "kind": "field",
+     "item": "contract_check",
+     "sentence": "- `contract_check` still reports `ok`, because it compares the pin against the current scheduler spec and the scheduler repo is still at the pinned commit."
+    },
+    {
+     "kind": "field",
+     "item": "ok",
+     "sentence": "- `contract_check` still reports `ok`, because it compares the pin against the current scheduler spec and the scheduler repo is still at the pinned commit."
+    }
+   ]
+  },
+  "A3b-strict": {
+   "pass": true,
+   "invented": [],
+   "proposals": [
+    "Scheduler now returns **200** instead of **201** from `POST /applications/{app}/jobs/{job}/runs`, and ci-bot still expects 201.",
+    "The changes below are what to make, in this order.",
+    "**What to change, in order**",
+    "Change it to accept 200.",
+    "In `[[import]]` #4, `POST /applications/{}/jobs/{}/runs`, change `status = [201]` to `status = [200]`.",
+    "**ci-bot spec, rule R3.** Change the text to: \"It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status.\"",
+    "If R3 lives in `REQUIREMENTS.md`, edit it there.",
+    "Then run `lattice spec draft` so the spec files exist and the change can go through `lattice:change` or Studio."
+   ]
+  },
+  "A6": {
+   "world_changed": [],
+   "outside_same": true
+  }
+ },
+ "pass": true,
+ "pass_items": true,
+ "nonlattice_fail": false
+}

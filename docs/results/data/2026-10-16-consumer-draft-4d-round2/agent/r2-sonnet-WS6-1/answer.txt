@@ -1,0 +1,31 @@
+The one thing to change is the `next_cursor` response field, which the provider `streak` renamed to `next`. I changed nothing. I couldn't open the streak-widget source here (I had no file or shell access), so I haven't located the code that reads this field. You'll need to find it.
+
+## What broke
+
+`contract_check` reports the link as `ok`, but that is stale. It compares your pin against the provider's version at the same commit as the pin. The accepted change from `streak` (commit `168e2a03`) is recorded as open question `lq1`, labelled "contradiction".
+
+On `GET /v1/habits`, the response used to have `items`, `has_more` and `next_cursor`. It now has `items`, `has_more` and `next`.
+
+## What to change in streak-widget
+
+1. **Code**: wherever the widget reads `next_cursor` from the `GET /v1/habits` response, read `next` instead.
+   - Keep sending `limit` and `cursor` as request fields. Those are unchanged.
+   - Make this change first. The import table below must only be edited once the code is right.
+2. **Import table**: in `lattice.imports.toml`, import #4 (`GET /v1/habits`) changes as follows. Only this line changes, and nothing is removed.
+   ```toml
+   response_fields = ["items", "has_more", "next_cursor"]
+   # becomes
+   response_fields = ["items", "has_more", "next"]
+   ```
+3. **Spec**: there is nothing to edit.
+   - streak-widget has no Lattice spec (`REQUIREMENTS.md`, `spec.py` and `spec.trace.json` are all missing), and no rule names this endpoint.
+   - You don't need a spec for the contract to work. If you want one later, write `REQUIREMENTS.md` and run `lattice spec draft`.
+4. **Re-pin and verify**:
+   - Run `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.
+   - Then run `lattice contracts questions resolve streak-widget lq1`.
+
+## Other things to know
+
+- **Rename or revert**: `streak`'s owner may not have meant to rename the field. If you'd rather not adapt, ask them to revert. Dismissing `lq1` without fixing the code would hide a real break.
+- **Unobserved fields**: the check also flags two fields the provider's spec never shows. These are the request field `cursor` on `GET /v1/habits` and the response field `access_token` on `POST /v1/auth/login`. They aren't broken, but they are unverified.
+- **Other changes**: the check found 4 other changed items on this endpoint that your imports don't rely on. They need no action, but I didn't see what they are.

@@ -1,0 +1,41 @@
+[
+ {
+  "name": "mcp__lattice__project_list",
+  "is_error": false,
+  "input": {},
+  "result": "{\"active\":\"ci-bot\",\"projects\":[{\"name\":\"ci-bot\",\"path\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/j/contracts-probes-99737/w/A-r2-sonnet-WD2-1/ci-bot\",\"spec\":\"missing\",\"active\":true,\"source\":\"explicit\",\"role\":\"consumer\",\"links\":[{\"from\":\"ci-bot\",\"to\":\"scheduler\",\"kind\":\"uses\",\"note\":\"\",\"contract\":\"static\"}]},{\"name\":\"scheduler\",\"path\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/j/contracts-probes-99737/w/shared/scheduler\",\"spec\":\"missing\",\"active\":false"
+ },
+ {
+  "name": "mcp__lattice__contract_check",
+  "is_error": false,
+  "input": {
+   "consumer": "ci-bot"
+  },
+  "result": "{\"workspace\":\"probe\",\"consumer\":\"ci-bot\",\"checked\":1,\"links\":[{\"consumer\":\"ci-bot\",\"provider\":\"scheduler\",\"contract\":\"static\",\"status\":\"ok\",\"error\":null,\"imports\":7,\"pinned\":{\"spec_ref\":\"spec.tickets:t5\",\"spec_hash\":\"9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6\",\"git_ref\":\"ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d\",\"dirty\":false},\"current\":{\"spec_ref\":\"spec.tickets:t5\",\"spec_hash\":\"9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6\",\"git_ref\":\"ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d\",\"dirty\":false},\"version_changed\":false,\"spec_hash_changed\":false,\"spec_ref_ch"
+ },
+ {
+  "name": "mcp__lattice__linked_question_list",
+  "is_error": false,
+  "input": {
+   "consumer": "ci-bot"
+  },
+  "result": "{\"format\":1,\"consumer\":\"ci-bot\",\"state\":\"present\",\"state_dir\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/j/contracts-probes-99737/w/A-r2-sonnet-WD2-1/ci-bot/.lattice/state/ci-bot\",\"questions\":[{\"format\":1,\"id\":\"lq1\",\"key\":\"sha256:5fe5883b18acdfdb3509c8abeb087e2fbe530c48017d2162dea1e24e64f3b1c2\",\"kind\":\"linked_question\",\"workspace\":\"probe\",\"provider\":\"scheduler\",\"consumer\":\"ci-bot\",\"contract\":\"static\",\"status\":\"open\",\"label\":\"contradiction\",\"pinned\":{\"spec_ref\":\"spec.tickets:t5\",\"spec_hash\":\"9bcae0e24da96eab8eea3e4acad0535c"
+ },
+ {
+  "name": "mcp__lattice__linked_question_draft",
+  "is_error": false,
+  "input": {
+   "id": "lq1",
+   "consumer": "ci-bot"
+  },
+  "result": "{\"format\":1,\"kind\":\"consumer_draft\",\"applied\":false,\"consumer\":\"ci-bot\",\"provider\":\"scheduler\",\"contract\":\"static\",\"question\":{\"id\":\"lq1\",\"status\":\"open\",\"label\":\"contradiction\",\"superseded\":null},\"pinned_spec_hash\":\"9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6\",\"provider_after_spec_hash\":\"24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc\",\"before_note\":null,\"findings\":[{\"line\":\"  BROKEN   status_not_observed  201  @ POST /applications/{}/jobs/{}/runs\",\"endpoint\":\"POST /applications/{}/jobs/{}/runs\",\"class\":\"BROKEN\",\"kind\":\"status_not_observed\",\"item\":\"201\",\""
+ },
+ {
+  "name": "mcp__lattice__code_links",
+  "is_error": true,
+  "input": {
+   "target": "R3"
+  },
+  "result": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/j/contracts-probes-99737/w/A-r2-sonnet-WD2-1/ci-bot is not a Lattice project yet (missing: spec.py). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspace, contract_check and linked_question_lis"
+ }
+]

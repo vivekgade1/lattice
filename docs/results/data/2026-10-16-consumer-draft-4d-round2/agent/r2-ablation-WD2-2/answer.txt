@@ -1,0 +1,30 @@
+The scheduler's change broke ci-bot at one endpoint. I can't tell you exact lines or file names, because ci-bot has no spec yet and I have no file-reading tool here. Nothing was changed.
+
+## What broke
+
+Open question `lq1` records that scheduler's accepted contract (commit `c73bea6e`, spec hash `24c5fd8f4800`) contradicts ci-bot's pin (commit `ef17cf88`, hash `9bcae0e24da9`). One import is affected: `POST /applications/{}/jobs/{}/runs`.
+
+| Class | Finding |
+|---|---|
+| **BROKEN** | Status `201` is no longer observed. Scheduler's spec now shows `[200, 401, 404, 409]`. |
+| **CHANGED** (relied on) | Status `200` is now observed. |
+
+`contract_check` still reports `ok`. It compares ci-bot's pin against scheduler's pinned spec, and that spec hasn't changed. The break only appears in the open question and in `contract_impact` against scheduler's new commit.
+
+## What to change in ci-bot
+
+1. **Code:** every place ci-bot calls `POST /applications/{}/jobs/{}/runs` must treat `200` as the success status for creating a run. Where it checks for `201`, accept `200`. I'd accept `200` only, since scheduler no longer returns `201`.
+2. **Imports file:** `lattice.imports.toml` declares what ci-bot relies on for this endpoint. Replace the `201` claim with `200`. I couldn't read the file, so I can't give you the exact key. Keep the existing handling of `401`, `404` and `409`, which are unchanged.
+3. **Spec:** there is nothing to edit, because ci-bot has no `spec.py`, `REQUIREMENTS.md` or `spec.trace.json`. Its contracts don't need one. If you want a spec, write `REQUIREMENTS.md` first and run `lattice spec draft`. If you do, any rule saying a run is created with `201` should say `200`.
+4. **Re-pin and clear the question:** once the code and imports are updated, run these in order:
+   - `lattice contracts pin ci-bot`
+   - `lattice contracts check ci-bot`
+   - `lattice contracts questions resolve ci-bot lq1`
+
+   If the change was unintended, you could instead ask scheduler's owner to revert it. Then dismiss the question.
+
+## Not part of this break
+
+`contract_check` also reports a gap on `POST /auth/login`. ci-bot reads `access_token`, but scheduler's spec never shows that field. It's unrelated to this change, but you may want to ask scheduler to document it.
+
+If you point me at the ci-bot source files, I can name the exact lines to change.

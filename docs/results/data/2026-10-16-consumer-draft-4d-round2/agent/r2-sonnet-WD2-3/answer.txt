@@ -1,0 +1,26 @@
+Scheduler now returns **200** instead of **201** from `POST /applications/{app}/jobs/{job}/runs`, and that breaks ci-bot. This is open linked question lq1, caused by scheduler commit `c73bea6e`.
+
+I haven't changed anything.
+
+**What changed**
+- ci-bot's pin (`spec_hash 9bcae0e24da9`) records the endpoint's statuses as `[201, 401, 404, 409]`.
+- Scheduler's accepted spec (`spec_hash 24c5fd8f4800`) now shows `[200, 401, 404, 409]`.
+- ci-bot's import #4 claims status `[201]`, so that claim no longer holds (BROKEN).
+- The new 200 is on an endpoint ci-bot imports (CHANGED, relied).
+
+**What to change in ci-bot, in this order**
+
+1. **Code.** Find where ci-bot starts a run. It posts to `/applications/{app}/jobs/{job}/runs` as the token user `eve`, and the scenario is `start_run`. Make it treat **200** as success instead of 201. Still read `id` and `status` from the response. Check for any `== 201` or "created" assumption in that path. I couldn't locate the call site because ci-bot has no `spec.py` yet, so `code_links` doesn't work. Grep for the path instead.
+
+2. **`lattice.imports.toml`, `[[import]]` #4.** This is the `POST /applications/{}/jobs/{}/runs` table. Change `status = [201]` to `status = [200]`. Leave `auth`, `as_user = "eve"`, `request_fields = []` and `response_fields = ["id","status"]` as they are. Replace the claim rather than deleting it. Dropping it would make `check` pass without the code being right.
+
+3. **Spec, rule R3.** Reword it from "...and expects 201 with id and status." to "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status." Propose this through the lattice change flow or Studio. Check that the `start_run` scenario also expects 200.
+
+4. **Re-pin and verify.**
+   - Run `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`. It should come back `ok` with no BROKEN findings.
+   - Run `lattice contracts questions resolve ci-bot lq1`.
+
+**Before you start**
+- Ask scheduler's owner whether 200 is intended. If it was accidental, they can revert, and you wouldn't need the changes above.
+- `check` also reports one non-blocking gap. `POST /auth/login` returns an `access_token` that scheduler's spec never shows. You don't need to act on it for this fix.
+- ci-bot currently has no `spec.py` or `spec.trace.json`. Step 3 needs those first: write `REQUIREMENTS.md` and run `lattice spec draft`. Steps 1, 2 and 4 don't depend on them.

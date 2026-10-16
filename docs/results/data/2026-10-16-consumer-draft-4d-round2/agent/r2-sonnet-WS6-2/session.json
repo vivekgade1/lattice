@@ -1,0 +1,159 @@
+{
+ "sid": "r2-sonnet-WS6-2",
+ "world": "W-S6",
+ "with_tool": true,
+ "status": "SCORED",
+ "reason": null,
+ "pre": {
+  "action": "created",
+  "question": "lq1",
+  "draft_rc": 0
+ },
+ "argv_equals_round1": true,
+ "child_env_has_anthropic_key": false,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 17.1
+ },
+ "cost_usd": 0.0795426,
+ "tokens": 11027,
+ "tokens_incl_cache_reads": 287893,
+ "turns": 5,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": [],
+ "outside_same": true,
+ "started_utc": "2026-10-16T17:57:27+00:00",
+ "score": {
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": null,
+   "A6": true
+  },
+  "info": {
+   "A3": false,
+   "A3b-strict": true
+  },
+  "applicable": [
+   "A1",
+   "A2",
+   "A3b",
+   "A4",
+   "A5",
+   "A6"
+  ],
+  "detail": {
+   "A1": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_016iFcKFZK4YpSTv8evC7JvE",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "A2": {
+    "pass": true,
+    "endpoint": true,
+    "number": true,
+    "others": []
+   },
+   "A3b": {
+    "pass": true,
+    "invented": [],
+    "proposals": [
+     "**What to change**",
+     "**Contract import:** after the code is fixed, edit `[[import]]` #4 for `GET /v1/habits`.",
+     "Change `response_fields` from `[\"items\", \"has_more\", \"next_cursor\"]` to `[\"items\", \"has_more\", \"next\"]`.",
+     "Don't delete the field to make the check pass.",
+     "If you do add or keep a rule that says the widget pages through habits using `next_cursor`, reword it to say `next`.",
+     "You can ask streak's owner to revert it instead of adapting.",
+     "In that case you would dismiss lq1 and change nothing."
+    ]
+   },
+   "A4": {
+    "pass": true,
+    "advice": []
+   },
+   "A5": {
+    "pass": true,
+    "r6": true,
+    "proposed": []
+   },
+   "A7": {
+    "pass": false,
+    "R3": false,
+    "R4_affirmed": []
+   },
+   "A3": {
+    "pass": false,
+    "invented": [
+     {
+      "kind": "field",
+      "item": "a0db033a",
+      "sentence": "streak's accepted change (commit `168e2a03`) conflicts with the version streak-widget is pinned to (`a0db033a`)."
+     }
+    ]
+   },
+   "A3b-strict": {
+    "pass": true,
+    "invented": [],
+    "proposals": [
+     "**What to change**",
+     "**Contract import:** after the code is fixed, edit `[[import]]` #4 for `GET /v1/habits`.",
+     "Change `response_fields` from `[\"items\", \"has_more\", \"next_cursor\"]` to `[\"items\", \"has_more\", \"next\"]`.",
+     "Don't delete the field to make the check pass.",
+     "If you do add or keep a rule that says the widget pages through habits using `next_cursor`, reword it to say `next`.",
+     "You can ask streak's owner to revert it instead of adapting.",
+     "In that case you would dismiss lq1 and change nothing."
+    ]
+   },
+   "A6": {
+    "world_changed": [],
+    "outside_same": true
+   }
+  },
+  "pass": true,
+  "pass_items": true,
+  "nonlattice_fail": false
+ },
+ "nonlattice": [],
+ "tools": [
+  {
+   "name": "mcp__lattice__project_list",
+   "is_error": false,
+   "input": {}
+  },
+  {
+   "name": "mcp__lattice__contract_check",
+   "is_error": false,
+   "input": {
+    "consumer": "streak-widget"
+   }
+  },
+  {
+   "name": "mcp__lattice__linked_question_list",
+   "is_error": false,
+   "input": {
+    "consumer": "streak-widget"
+   }
+  },
+  {
+   "name": "mcp__lattice__linked_question_draft",
+   "is_error": false,
+   "input": {
+    "id": "lq1",
+    "consumer": "streak-widget"
+   }
+  }
+ ]
+}

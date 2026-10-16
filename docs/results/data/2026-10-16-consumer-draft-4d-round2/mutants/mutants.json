@@ -1,0 +1,376 @@
+{
+ "control_ok": true,
+ "mutants": 19,
+ "killed": 19,
+ "rows": [
+  {
+   "id": "control",
+   "what": "no patch",
+   "catchers": [],
+   "mismatches": [],
+   "catcher_hit": [],
+   "killed": null,
+   "check_line": "cases: 86/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM1",
+   "what": "allow-list removed (tools, tokens, hex)",
+   "catchers": [
+    "G4-1",
+    "G4-2",
+    "G4-3",
+    "G4-4",
+    "G4-5",
+    "G4-6"
+   ],
+   "mismatches": [
+    "G2-1c",
+    "G4-1",
+    "G4-2",
+    "G4-3",
+    "G4-4",
+    "G8-3"
+   ],
+   "catcher_hit": [
+    "G4-1",
+    "G4-2",
+    "G4-3",
+    "G4-4"
+   ],
+   "killed": true,
+   "check_line": "cases: 80/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM2",
+   "what": "tool names not allowed",
+   "catchers": [
+    "G4-1"
+   ],
+   "mismatches": [
+    "G2-1c",
+    "G4-1",
+    "G4-2"
+   ],
+   "catcher_hit": [
+    "G4-1"
+   ],
+   "killed": true,
+   "check_line": "cases: 83/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM3",
+   "what": "verdict tokens not allowed",
+   "catchers": [
+    "G4-2"
+   ],
+   "mismatches": [
+    "G2-1c",
+    "G4-2"
+   ],
+   "catcher_hit": [
+    "G4-2"
+   ],
+   "killed": true,
+   "check_line": "cases: 84/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM4",
+   "what": "commit-id rule removed (hex treated as a field)",
+   "catchers": [
+    "G4-3",
+    "G4-4"
+   ],
+   "mismatches": [
+    "G3-4",
+    "G3-9",
+    "G4-3"
+   ],
+   "catcher_hit": [
+    "G4-3"
+   ],
+   "killed": true,
+   "check_line": "cases: 83/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM5",
+   "what": "any 7+ hex accepted without lookup",
+   "catchers": [
+    "G3-4"
+   ],
+   "mismatches": [
+    "G3-4",
+    "G3-9"
+   ],
+   "catcher_hit": [
+    "G3-4"
+   ],
+   "killed": true,
+   "check_line": "cases: 84/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM6",
+   "what": "hex prefix match -> substring",
+   "catchers": [
+    "G3-9"
+   ],
+   "mismatches": [
+    "G3-9"
+   ],
+   "catcher_hit": [
+    "G3-9"
+   ],
+   "killed": true,
+   "check_line": "cases: 85/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM7",
+   "what": "import numbers unchecked",
+   "catchers": [
+    "G3-1",
+    "G4-7"
+   ],
+   "mismatches": [
+    "T25",
+    "G3-1",
+    "G4-7",
+    "G5-4"
+   ],
+   "catcher_hit": [
+    "G3-1",
+    "G4-7"
+   ],
+   "killed": true,
+   "check_line": "cases: 82/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM8",
+   "what": "rule ids unchecked",
+   "catchers": [
+    "G3-2",
+    "G3-8"
+   ],
+   "mismatches": [
+    "T22",
+    "G3-2",
+    "G3-8"
+   ],
+   "catcher_hit": [
+    "G3-2",
+    "G3-8"
+   ],
+   "killed": true,
+   "check_line": "cases: 83/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM9",
+   "what": "statuses unchecked",
+   "catchers": [
+    "G3-3",
+    "G3-5",
+    "G7-2"
+   ],
+   "mismatches": [
+    "T21",
+    "G3-3",
+    "G3-5",
+    "G4-8",
+    "G7-2"
+   ],
+   "catcher_hit": [
+    "G3-3",
+    "G3-5",
+    "G7-2"
+   ],
+   "killed": true,
+   "check_line": "cases: 81/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM10",
+   "what": "fields unchecked",
+   "catchers": [
+    "G3-6"
+   ],
+   "mismatches": [
+    "T23",
+    "G3-6",
+    "G3-7",
+    "G3-10",
+    "G4-9",
+    "G4-10",
+    "G5-5",
+    "G5-6",
+    "G5-7",
+    "G6-2"
+   ],
+   "catcher_hit": [
+    "G3-6"
+   ],
+   "killed": true,
+   "check_line": "cases: 76/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM11",
+   "what": "quoted-list extraction removed",
+   "catchers": [
+    "G3-7"
+   ],
+   "mismatches": [
+    "G3-7"
+   ],
+   "catcher_hit": [
+    "G3-7"
+   ],
+   "killed": true,
+   "check_line": "cases: 85/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM12",
+   "what": "proposal filter removed (every sentence checked, round-1 negation)",
+   "catchers": [
+    "G5-2",
+    "G5-3"
+   ],
+   "mismatches": [
+    "G5-1",
+    "G5-2",
+    "G5-3",
+    "G6-2"
+   ],
+   "catcher_hit": [
+    "G5-2",
+    "G5-3"
+   ],
+   "killed": true,
+   "check_line": "cases: 82/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM13",
+   "what": "negation anywhere in the sentence voids it (round-1 scope)",
+   "catchers": [
+    "G6-2"
+   ],
+   "mismatches": [
+    "G6-2"
+   ],
+   "catcher_hit": [
+    "G6-2"
+   ],
+   "killed": true,
+   "check_line": "cases: 85/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM14",
+   "what": "negation ignored",
+   "catchers": [
+    "G6-1"
+   ],
+   "mismatches": [
+    "G6-1",
+    "G6-3"
+   ],
+   "catcher_hit": [
+    "G6-1"
+   ],
+   "killed": true,
+   "check_line": "cases: 84/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM15",
+   "what": "contract-surface gate removed",
+   "catchers": [
+    "G7-1"
+   ],
+   "mismatches": [
+    "G7-1"
+   ],
+   "catcher_hit": [
+    "G7-1"
+   ],
+   "killed": true,
+   "check_line": "cases: 85/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM16",
+   "what": "tokens from every string value of a result",
+   "catchers": [
+    "G8-2"
+   ],
+   "mismatches": [
+    "G8-2"
+   ],
+   "catcher_hit": [
+    "G8-2"
+   ],
+   "killed": true,
+   "check_line": "cases: 85/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM17",
+   "what": "noun guard removed",
+   "catchers": [
+    "G5-1"
+   ],
+   "mismatches": [
+    "G5-1"
+   ],
+   "catcher_hit": [
+    "G5-1"
+   ],
+   "killed": true,
+   "check_line": "cases: 85/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM18",
+   "what": "tokens and tools from non-lattice tools too",
+   "catchers": [
+    "G8-1",
+    "G8-4"
+   ],
+   "mismatches": [
+    "G8-1",
+    "G8-4"
+   ],
+   "catcher_hit": [
+    "G8-1",
+    "G8-4"
+   ],
+   "killed": true,
+   "check_line": "cases: 84/86 as expected",
+   "ok": true
+  },
+  {
+   "id": "SM19",
+   "what": "rule ids from the corpus text only (round 1)",
+   "catchers": [
+    "G4-6"
+   ],
+   "mismatches": [
+    "G4-6"
+   ],
+   "catcher_hit": [
+    "G4-6"
+   ],
+   "killed": true,
+   "check_line": "cases: 85/86 as expected",
+   "ok": true
+  }
+ ]
+}

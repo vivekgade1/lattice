@@ -1,0 +1,10 @@
+[
+ {
+  "name": "Bash",
+  "input": {
+   "command": "cd \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget\" && ls -a && grep -rn \"next_cursor\\|cursor\" --exclude-dir=.lattice --exclude-dir=.git . | head -30; cat lattice.imports.toml"
+  },
+  "executed": false,
+  "result": "<tool_use_error>Error: No such tool available: Bash. Bash is disabled for this session, in subagents as well as here.</tool_use_error>"
+ }
+]

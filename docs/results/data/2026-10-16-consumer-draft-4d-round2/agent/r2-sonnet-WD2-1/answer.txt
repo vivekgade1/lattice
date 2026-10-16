@@ -1,0 +1,27 @@
+Scheduler now returns **200** instead of **201** from `POST /applications/{app}/jobs/{job}/runs`, and ci-bot still expects 201. I changed nothing. The changes below are what to make, in this order.
+
+**What broke**
+- Linked question `lq1` is open. Scheduler's accepted spec (commit `c73bea6e`) lists statuses `[200, 401, 404, 409]` for that endpoint. Your pin (`ef17cf88`) has `[201, 401, 404, 409]`.
+- That is one BROKEN finding (201 is no longer observed) and one CHANGED finding (200 is now observed). The second one is on an endpoint ci-bot imports.
+- `contract_check` still reports `ok`, because it compares the pin against the current scheduler spec and the scheduler repo is still at the pinned commit. The break only shows up in `lq1`.
+
+**What to change, in order**
+
+1. **ci-bot code.** Find where ci-bot starts a run and treats a 201 response as success. Change it to accept 200.
+   - I couldn't locate that code because the code index needs a spec, and ci-bot doesn't have one yet.
+   - Don't just add 200 next to 201. Scheduler no longer returns 201, and declaring both would hide that.
+   - Keep reading `id` and `status` from the response.
+   - The request still sends no fields and still authenticates with a token as `eve`. None of that changed.
+
+2. **ci-bot import table** (`lattice.imports.toml`). In `[[import]]` #4, `POST /applications/{}/jobs/{}/runs`, change `status = [201]` to `status = [200]`. Leave the other fields as they are: `auth = "token"`, `as_user = "eve"`, `request_fields = []`, `response_fields = ["id", "status"]`.
+
+3. **ci-bot spec, rule R3.** Change the text to: "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status."
+   - Only the number changes.
+   - Scenario `start_run` traces to R3, so check that its expected status becomes 200 too.
+   - ci-bot's spec files (`spec.py`, `spec.trace.json`) are missing, so Lattice can't see R3 or `start_run` as a spec. If R3 lives in `REQUIREMENTS.md`, edit it there. Then run `lattice spec draft` so the spec files exist and the change can go through `lattice:change` or Studio. Don't edit `spec.py` or `spec.trace.json` by hand.
+
+4. **Re-pin and verify.** Run `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`. Then run `lattice contracts questions resolve ci-bot lq1`.
+
+**Before you start**
+- Ask scheduler's owner whether the 200 is intended. If it was a mistake and they revert it, none of the above is needed. Dismiss or resolve `lq1` instead.
+- `check` also shows a gap on `POST /auth/login`: scheduler's spec never shows the `access_token` response field. It isn't caused by this change and nothing is broken there, but scheduler's spec should document that field.

@@ -1,0 +1,111 @@
+{
+ "items": {
+  "A1": true,
+  "A2": true,
+  "A3b": true,
+  "A4": true,
+  "A5": true,
+  "A7": true,
+  "A6": true
+ },
+ "info": {
+  "A3": false,
+  "A3b-strict": true
+ },
+ "applicable": [
+  "A1",
+  "A2",
+  "A3b",
+  "A4",
+  "A5",
+  "A6",
+  "A7"
+ ],
+ "detail": {
+  "A1": {
+   "pass": true,
+   "calls": [
+    {
+     "id": "toolu_01TEVeRCFPRKD1E72VrzAuyB",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "A2": {
+   "pass": true,
+   "endpoint": true,
+   "number": true,
+   "others": []
+  },
+  "A3b": {
+   "pass": true,
+   "invented": [],
+   "proposals": [
+    "Scheduler changed `POST /applications/{app}/jobs/{job}/runs` to return **200** instead of **201**.",
+    "## What to change in ci-bot",
+    "- Change any check that requires `201` to accept `200`.",
+    "- Change `status = [201]` to `status = [200]`.",
+    "- Don't delete the status claim to make the check pass.",
+    "If that scenario asserts 201, change it to 200 as well.",
+    "- Propose the rule edit through `lattice:change` or in Studio.",
+    "Ask scheduler's owner whether the 201 to 200 change was intentional.",
+    "If it wasn't, they can revert it and you change nothing.",
+    "`contract_check` also reports one gap, `POST /auth/login` \u2192 `access_token`."
+   ]
+  },
+  "A4": {
+   "pass": true,
+   "advice": []
+  },
+  "A5": {
+   "pass": true,
+   "r6": true,
+   "proposed": []
+  },
+  "A7": {
+   "pass": true,
+   "R3": true,
+   "R4_affirmed": []
+  },
+  "A3": {
+   "pass": false,
+   "invented": [
+    {
+     "kind": "field",
+     "item": "raise_for_status",
+     "sentence": "This includes `== 201`, `status_code == 201` and `raise_for_status` assumptions about \"Created\"."
+    },
+    {
+     "kind": "field",
+     "item": "contract_check",
+     "sentence": "`contract_check` also reports one gap, `POST /auth/login` \u2192 `access_token`."
+    }
+   ]
+  },
+  "A3b-strict": {
+   "pass": true,
+   "invented": [],
+   "proposals": [
+    "Scheduler changed `POST /applications/{app}/jobs/{job}/runs` to return **200** instead of **201**.",
+    "## What to change in ci-bot",
+    "- Change any check that requires `201` to accept `200`.",
+    "- Change `status = [201]` to `status = [200]`.",
+    "- Don't delete the status claim to make the check pass.",
+    "If that scenario asserts 201, change it to 200 as well.",
+    "- Propose the rule edit through `lattice:change` or in Studio.",
+    "Ask scheduler's owner whether the 201 to 200 change was intentional.",
+    "If it wasn't, they can revert it and you change nothing.",
+    "`contract_check` also reports one gap, `POST /auth/login` \u2192 `access_token`."
+   ]
+  },
+  "A6": {
+   "world_changed": [],
+   "outside_same": true
+  }
+ },
+ "pass": true,
+ "pass_items": true,
+ "nonlattice_fail": false
+}

@@ -1,0 +1,189 @@
+{
+ "sid": "r2-sonnet-WS6-1",
+ "world": "W-S6",
+ "with_tool": true,
+ "status": "SCORED",
+ "reason": null,
+ "pre": {
+  "action": "created",
+  "question": "lq1",
+  "draft_rc": 0
+ },
+ "argv_equals_round1": true,
+ "child_env_has_anthropic_key": false,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 23.9
+ },
+ "cost_usd": 0.1027564,
+ "tokens": 12629,
+ "tokens_incl_cache_reads": 438673,
+ "turns": 8,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": [],
+ "outside_same": true,
+ "started_utc": "2026-10-16T17:56:43+00:00",
+ "score": {
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": null,
+   "A6": true
+  },
+  "info": {
+   "A3": false,
+   "A3b-strict": true
+  },
+  "applicable": [
+   "A1",
+   "A2",
+   "A3b",
+   "A4",
+   "A5",
+   "A6"
+  ],
+  "detail": {
+   "A1": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_015wLAast5LsTQxc34PbjCMU",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "A2": {
+    "pass": true,
+    "endpoint": true,
+    "number": true,
+    "others": []
+   },
+   "A3b": {
+    "pass": true,
+    "invented": [],
+    "proposals": [
+     "The one thing to change is the `next_cursor` response field, which the provider `streak` renamed to `next`.",
+     "## What to change in streak-widget",
+     "- Make this change first.",
+     "- **Rename or revert**: `streak`'s owner may not have meant to rename the field."
+    ]
+   },
+   "A4": {
+    "pass": true,
+    "advice": []
+   },
+   "A5": {
+    "pass": true,
+    "r6": true,
+    "proposed": []
+   },
+   "A7": {
+    "pass": false,
+    "R3": false,
+    "R4_affirmed": []
+   },
+   "A3": {
+    "pass": false,
+    "invented": [
+     {
+      "kind": "field",
+      "item": "contract_check",
+      "sentence": "`contract_check` reports the link as `ok`, but that is stale."
+     },
+     {
+      "kind": "field",
+      "item": "ok",
+      "sentence": "`contract_check` reports the link as `ok`, but that is stale."
+     }
+    ]
+   },
+   "A3b-strict": {
+    "pass": true,
+    "invented": [],
+    "proposals": [
+     "The one thing to change is the `next_cursor` response field, which the provider `streak` renamed to `next`.",
+     "## What to change in streak-widget",
+     "- Make this change first.",
+     "- **Rename or revert**: `streak`'s owner may not have meant to rename the field."
+    ]
+   },
+   "A6": {
+    "world_changed": [],
+    "outside_same": true
+   }
+  },
+  "pass": false,
+  "pass_items": true,
+  "nonlattice_fail": true
+ },
+ "nonlattice": [
+  {
+   "name": "Bash",
+   "input": {
+    "command": "cd \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget\" && ls -a && grep -rn \"next_cursor\\|cursor\" --exclude-dir=.lattice --exclude-dir=.git . | head -30; cat lattice.imports.toml"
+   },
+   "executed": false,
+   "result": "<tool_use_error>Error: No such tool available: Bash. Bash is disabled for this session, in subagents as well as here.</tool_use_error>"
+  }
+ ],
+ "tools": [
+  {
+   "name": "mcp__lattice__project_list",
+   "is_error": false,
+   "input": {}
+  },
+  {
+   "name": "mcp__lattice__contract_check",
+   "is_error": false,
+   "input": {
+    "consumer": "streak-widget"
+   }
+  },
+  {
+   "name": "mcp__lattice__linked_question_list",
+   "is_error": false,
+   "input": {
+    "consumer": "streak-widget"
+   }
+  },
+  {
+   "name": "mcp__lattice__linked_question_draft",
+   "is_error": false,
+   "input": {
+    "id": "lq1",
+    "consumer": "streak-widget"
+   }
+  },
+  {
+   "name": "mcp__lattice__code_links",
+   "is_error": true,
+   "input": {
+    "target": "GET /v1/habits",
+    "project": "streak-widget"
+   }
+  },
+  {
+   "name": "mcp__lattice__project_status",
+   "is_error": false,
+   "input": {
+    "project": "streak-widget"
+   }
+  },
+  {
+   "name": "Bash",
+   "is_error": true,
+   "input": {
+    "command": "cd \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget\" && ls -a && grep -rn \"next_cursor\\|cursor\" --exclude-dir=.lattice --exclude-dir=.git . | head -30; cat lattice.imports.toml"
+   }
+  }
+ ]
+}

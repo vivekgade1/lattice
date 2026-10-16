@@ -1,0 +1,98 @@
+{
+ "items": {
+  "A1": true,
+  "A2": true,
+  "A3b": true,
+  "A4": true,
+  "A5": true,
+  "A7": null,
+  "A6": true
+ },
+ "info": {
+  "A3": false,
+  "A3b-strict": true
+ },
+ "applicable": [
+  "A1",
+  "A2",
+  "A3b",
+  "A4",
+  "A5",
+  "A6"
+ ],
+ "detail": {
+  "A1": {
+   "pass": true,
+   "calls": [
+    {
+     "id": "toolu_015wLAast5LsTQxc34PbjCMU",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "A2": {
+   "pass": true,
+   "endpoint": true,
+   "number": true,
+   "others": []
+  },
+  "A3b": {
+   "pass": true,
+   "invented": [],
+   "proposals": [
+    "The one thing to change is the `next_cursor` response field, which the provider `streak` renamed to `next`.",
+    "## What to change in streak-widget",
+    "- Make this change first.",
+    "- **Rename or revert**: `streak`'s owner may not have meant to rename the field."
+   ]
+  },
+  "A4": {
+   "pass": true,
+   "advice": []
+  },
+  "A5": {
+   "pass": true,
+   "r6": true,
+   "proposed": []
+  },
+  "A7": {
+   "pass": false,
+   "R3": false,
+   "R4_affirmed": []
+  },
+  "A3": {
+   "pass": false,
+   "invented": [
+    {
+     "kind": "field",
+     "item": "contract_check",
+     "sentence": "`contract_check` reports the link as `ok`, but that is stale."
+    },
+    {
+     "kind": "field",
+     "item": "ok",
+     "sentence": "`contract_check` reports the link as `ok`, but that is stale."
+    }
+   ]
+  },
+  "A3b-strict": {
+   "pass": true,
+   "invented": [],
+   "proposals": [
+    "The one thing to change is the `next_cursor` response field, which the provider `streak` renamed to `next`.",
+    "## What to change in streak-widget",
+    "- Make this change first.",
+    "- **Rename or revert**: `streak`'s owner may not have meant to rename the field."
+   ]
+  },
+  "A6": {
+   "world_changed": [],
+   "outside_same": true
+  }
+ },
+ "pass": false,
+ "pass_items": true,
+ "nonlattice_fail": true
+}

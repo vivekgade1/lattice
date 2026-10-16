@@ -1,0 +1,972 @@
+{
+ "spec": "Cases of the round-2 scorer (A3b), docs/results/2026-10-16-consumer-draft-4d-round2-prereg.md section 3 V1: the 37 round-1 cases unchanged in text and verdict (the a3 ones scored by A3b with an empty allow-list) and 49 new cases (G1-G8). `a3b` cases name a corpus and an allow-list of `fixtures`; `allow_from` cases check the derivation.",
+ "fixtures": {
+  "corpora": {
+   "C-D2": {
+    "world": "W-D2",
+    "text": "# Draft: adapt ci-bot to scheduler (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in ci-bot; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash 9bcae0e24da9; scheduler now spec_hash 24c5fd8f4800 (commit c73bea6e)\n  BROKEN   status_not_observed  201  @ POST /applications/{}/jobs/{}/runs\n    before: statuses [201, 401, 404, 409]\n    after: the spec now shows statuses [200, 401, 404, 409]\n  CHANGED* status_added  200  @ POST /applications/{}/jobs/{}/runs\n    before: statuses [201, 401, 404, 409]\n    after: status 200 is now observed\n\n## 2. Imports that rely on it\nimport #4: POST /applications/{}/jobs/{}/runs  status [201], auth token as eve, request_fields [], response_fields [id, status]\n    broken claim: status_not_observed 201\n    relied change: status_added 200\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #4: status = [201] -> [200]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nR3: It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 201 with id and status.\n    names: POST /applications/{}/jobs/{}/runs\n    scenarios: start_run\n    suggested wording: It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 200 with id and status.\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve ci-bot lq1`.\n\n## Not decided here\n- Whether scheduler's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n# What ci-bot (client.py) relies on from the job scheduler: one table per call I1-I7, each\n# listing exactly the fields its line reads or sends. Checked by `lattice contracts check`.\n\n[[import]]\nprovider = \"scheduler\"\nendpoint = \"POST /auth/login\"\nstatus = [200]\nauth = \"public\"\nrequest_fields = [\"email\", \"password\"]\nresponse_fields = [\"access_token\"]\n\n[[import]]\nprovider = \"scheduler\"\nendpoint = \"GET /applications\"\nstatus = [200]\nauth = \"token\"\nas_user = \"eve\"\nresponse_fields = [\"id\", \"name\"]\n\n[[import]]\nprovider = \"scheduler\"\nendpoint = \"GET /applications/{}/jobs\"\nstatus = [200]\nauth = \"token\"\nas_user = \"eve\"\nresponse_fields = [\"id\", \"job_name\", \"version\"]\n\n[[import]]\nprovider = \"scheduler\"\nendpoint = \"POST /applications/{}/jobs/{}/runs\"\nstatus = [201]\nauth = \"token\"\nas_user = \"eve\"\nresponse_fields = [\"id\", \"status\"]\n\n[[import]]\nprovider = \"scheduler\"\nendpoint = \"GET /applications/{}/runs/{}\"\nstatus = [200]\nauth = \"token\"\nas_user = \"eve\"\nresponse_fields = [\"status\", \"exit_code\"]\n\n[[import]]\nprovider = \"scheduler\"\nendpoint = \"GET /applications/{}/jobs/{}/runs\"\nstatus = [200]\nauth = \"token\"\nas_user = \"eve\"\nresponse_fields = [\"id\", \"status\"]\n\n[[import]]\nprovider = \"scheduler\"\nendpoint = \"POST /applications/{}/runs/{}/cancel\"\nstatus = [200]\nauth = \"token\"\nas_user = \"eve\"\nresponse_fields = [\"status\"]\n\n# ci-bot requirements\n\n- ci-bot logs in with POST /auth/login using email and password and keeps the access_token.\n- It finds the application named alpha through GET /applications.\n- It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 201 with id and status.\n- On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading status.\n- It polls /applications/{app}/runs/{run} every 5 seconds until a final status.\n- The bot never changes a job.\n",
+    "rules": [
+     "R1",
+     "R2",
+     "R3",
+     "R4",
+     "R5",
+     "R6"
+    ],
+    "from": "round-1 draft-text.txt of sonnet-WD2-1 + imports + REQUIREMENTS.md"
+   },
+   "C-S6": {
+    "world": "W-S6",
+    "text": "# Draft: adapt streak-widget to streak (linked question lq1)\nQuestion lq1, contradiction, open\nNOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.\n\n## 1. What changed\npinned spec_hash d44b738522ea; streak now spec_hash cad3bbb9e0af (commit 168e2a03)\n  BROKEN   response_field_missing  next_cursor  @ GET /v1/habits\n    before: response fields [has_more, items, next_cursor]\n    after: the spec now shows response fields ['has_more', 'items', 'next']\n  CHANGED* field_added  response  next  @ GET /v1/habits\n    before: response fields [has_more, items, next_cursor]\n    after: response field next is now shown\n\n## 2. Imports that rely on it\nimport #4: GET /v1/habits  status [200], auth token as ann, request_fields [limit, cursor], response_fields [items, has_more, next_cursor]\n    broken claim: response_field_missing next_cursor\n    relied change: field_added next\n\n## 3. Suggested edits (verify in the code first)\n- change the code that sends/reads it first, then import #4: response_fields = [\"items\", \"has_more\", \"next_cursor\"] -> [\"items\", \"has_more\", \"next\"]\n- A claim is never removed here: declaring less would make `check` pass without the code being right.\n\n## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)\nstreak-widget has no Lattice spec: no rule to edit\n\n## 5. Then\n1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.\n2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.\n3. Propose any rule edit with `lattice:change` or in Studio.\n4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.\n\n## Not decided here\n- Whether streak's change is intended (its owner may revert it).\n- Where in the code each call lives.\n- Whether a rule's behaviour really depends on the endpoint.\n# streak-widget (client.py) relies on Streak: one table per call W1-W7, top-level keys only.\n# Not expressible (nested): W3 nudges[].id; W4 items[].id, items[].name.\n\n[[import]]\nprovider = \"streak\"\nendpoint = \"POST /v1/auth/login\"\nstatus = [200]\nauth = \"public\"\nrequest_fields = [\"email\", \"password\", \"installation_id\"]\nresponse_fields = [\"access_token\", \"expires_in\"]\n\n[[import]]\nprovider = \"streak\"\nendpoint = \"GET /v1/me\"\nstatus = [200]\nauth = \"token\"\nas_user = \"ann\"\nresponse_fields = [\"id\", \"timezone\"]\n\n[[import]]\nprovider = \"streak\"\nendpoint = \"GET /v1/home\"\nstatus = [200]\nauth = \"token\"\nas_user = \"ann\"\nresponse_fields = [\"today\", \"nudges\"]\n\n[[import]]\nprovider = \"streak\"\nendpoint = \"GET /v1/habits\"\nstatus = [200]\nauth = \"token\"\nas_user = \"ann\"\nrequest_fields = [\"limit\", \"cursor\"]\nresponse_fields = [\"items\", \"has_more\", \"next_cursor\"]\n\n[[import]]\nprovider = \"streak\"\nendpoint = \"GET /v1/habits/{id}/progress\"\nstatus = [200]\nauth = \"token\"\nas_user = \"ann\"\nresponse_fields = [\"done\", \"target\", \"status\"]\n\n[[import]]\nprovider = \"streak\"\nendpoint = \"POST /v1/habits/{habit_id}/completions\"\nstatus = [200, 201]\nauth = \"token\"\nas_user = \"ann\"\nrequest_fields = [\"id\", \"date\"]\nresponse_fields = [\"id\", \"date\"]\n\n[[import]]\nprovider = \"streak\"\nendpoint = \"POST /v1/nudges/{id}/dismiss\"\nstatus = [200]\nauth = \"token\"\nas_user = \"ann\"\nresponse_fields = [\"id\"]\n\n",
+    "rules": [],
+    "from": "round-1 draft-text.txt of sonnet-WS6-3 + imports + REQUIREMENTS.md"
+   }
+  },
+  "allow": {
+   "L-D2": {
+    "tools": [
+     "change_get",
+     "change_list",
+     "code_links",
+     "contract_check",
+     "contract_impact",
+     "graph_get",
+     "linked_question_draft",
+     "linked_question_list",
+     "mcp__lattice__change_get",
+     "mcp__lattice__change_list",
+     "mcp__lattice__code_links",
+     "mcp__lattice__contract_check",
+     "mcp__lattice__contract_impact",
+     "mcp__lattice__graph_get",
+     "mcp__lattice__linked_question_draft",
+     "mcp__lattice__linked_question_list",
+     "mcp__lattice__model_get",
+     "mcp__lattice__project_list",
+     "mcp__lattice__project_set_active",
+     "mcp__lattice__project_status",
+     "mcp__lattice__rule_get",
+     "mcp__lattice__spec_lint",
+     "mcp__lattice__workspace_impact",
+     "model_get",
+     "project_list",
+     "project_set_active",
+     "project_status",
+     "rule_get",
+     "spec_lint",
+     "workspace_impact"
+    ],
+    "tokens": [
+     "BROKEN",
+     "CHANGED",
+     "GAP",
+     "broken",
+     "changed",
+     "consumer",
+     "consumer_draft",
+     "contradiction",
+     "gap",
+     "linked_question",
+     "missing",
+     "ok",
+     "open",
+     "present",
+     "provider",
+     "ref",
+     "response_field_unobserved",
+     "static",
+     "status_added",
+     "status_not_observed",
+     "uses"
+    ],
+    "words": [
+     "check",
+     "contracts",
+     "delete",
+     "dismiss",
+     "draft",
+     "false",
+     "get",
+     "import",
+     "imports",
+     "json",
+     "lattice",
+     "lq1",
+     "none",
+     "null",
+     "patch",
+     "pin",
+     "post",
+     "put",
+     "questions",
+     "resolve",
+     "true"
+    ],
+    "hex": [
+     "24c5fd8f4800",
+     "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc",
+     "5fe5883b18acdfdb3509c8abeb087e2fbe530c48017d2162dea1e24e64f3b1c2",
+     "9bcae0e24da9",
+     "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6",
+     "c73bea6e",
+     "c73bea6e05b1497dd7e17aabd05e2252f969faac",
+     "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d"
+    ],
+    "from": "allow_from on the round-1 transcript of sonnet-WD2-1 and the rebuilt lock/question"
+   },
+   "L-S6": {
+    "tools": [
+     "change_get",
+     "change_list",
+     "code_links",
+     "contract_check",
+     "contract_impact",
+     "graph_get",
+     "linked_question_draft",
+     "linked_question_list",
+     "mcp__lattice__change_get",
+     "mcp__lattice__change_list",
+     "mcp__lattice__code_links",
+     "mcp__lattice__contract_check",
+     "mcp__lattice__contract_impact",
+     "mcp__lattice__graph_get",
+     "mcp__lattice__linked_question_draft",
+     "mcp__lattice__linked_question_list",
+     "mcp__lattice__model_get",
+     "mcp__lattice__project_list",
+     "mcp__lattice__project_set_active",
+     "mcp__lattice__project_status",
+     "mcp__lattice__rule_get",
+     "mcp__lattice__spec_lint",
+     "mcp__lattice__workspace_impact",
+     "model_get",
+     "project_list",
+     "project_set_active",
+     "project_status",
+     "rule_get",
+     "spec_lint",
+     "workspace_impact"
+    ],
+    "tokens": [
+     "BROKEN",
+     "CHANGED",
+     "GAP",
+     "broken",
+     "changed",
+     "consumer",
+     "consumer_draft",
+     "contradiction",
+     "field_added",
+     "gap",
+     "linked_question",
+     "missing",
+     "ok",
+     "open",
+     "present",
+     "provider",
+     "ref",
+     "request_field_unobserved",
+     "response_field_missing",
+     "response_field_unobserved",
+     "static",
+     "uses"
+    ],
+    "words": [
+     "check",
+     "contracts",
+     "delete",
+     "dismiss",
+     "draft",
+     "false",
+     "get",
+     "import",
+     "imports",
+     "json",
+     "lattice",
+     "lq1",
+     "none",
+     "null",
+     "patch",
+     "pin",
+     "post",
+     "put",
+     "questions",
+     "resolve",
+     "true"
+    ],
+    "hex": [
+     "168e2a03",
+     "168e2a03ed39a9cd6e804fd556dd9a7489f52c71",
+     "44e54cb90f14334eb4a2a0e292924da639a59a0fd6cc8b3d92f0a4a696588693",
+     "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+     "cad3bbb9e0af",
+     "cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab",
+     "d44b738522ea",
+     "d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c"
+    ],
+    "from": "allow_from on the round-1 transcript of sonnet-WS6-3 and the rebuilt lock/question"
+   }
+  }
+ },
+ "cases": [
+  {
+   "id": "T01",
+   "kind": "a1",
+   "tools": [
+    "project_list",
+    "linked_question_list",
+    "linked_question_draft"
+   ],
+   "expected": "pass"
+  },
+  {
+   "id": "T02",
+   "kind": "a1",
+   "tools": [
+    "linked_question_list",
+    "contract_check"
+   ],
+   "expected": "fail"
+  },
+  {
+   "id": "T03",
+   "kind": "a1",
+   "tools": [
+    "linked_question_draft!"
+   ],
+   "expected": "fail"
+  },
+  {
+   "id": "T04",
+   "kind": "a1",
+   "tools": [
+    "linked_question_draft!",
+    "linked_question_draft"
+   ],
+   "expected": "pass"
+  },
+  {
+   "id": "T10",
+   "kind": "a2",
+   "world": "W-D2",
+   "expected": "pass",
+   "text": "The break is in import #4: POST /applications/{app}/jobs/{job}/runs no longer answers 201."
+  },
+  {
+   "id": "T11",
+   "kind": "a2",
+   "world": "W-D2",
+   "expected": "pass",
+   "text": "Import #4 (POST /applications/{}/jobs/{}/runs) expects status 201 but the provider now returns 200. The other imports are fine."
+  },
+  {
+   "id": "T12",
+   "kind": "a2",
+   "world": "W-D2",
+   "expected": "fail",
+   "text": "Import #4 (POST /applications/{}/jobs/{}/runs, 201) and import #6 are affected."
+  },
+  {
+   "id": "T13",
+   "kind": "a2",
+   "world": "W-D2",
+   "expected": "fail",
+   "text": "The start-run call is affected."
+  },
+  {
+   "id": "T14",
+   "kind": "a2",
+   "world": "W-D2",
+   "expected": "fail",
+   "text": "Import #4 is broken. Import #2 is broken too."
+  },
+  {
+   "id": "T15",
+   "kind": "a2",
+   "world": "W-D2",
+   "expected": "pass",
+   "text": "Import #4, POST /applications/{}/jobs/{}/runs, is the only affected table. Imports #1 to #3 are not affected."
+  },
+  {
+   "id": "T16",
+   "kind": "a2",
+   "world": "W-S6",
+   "expected": "pass",
+   "text": "Import #4 (GET /v1/habits) relies on the response field next_cursor, which the provider renamed to next."
+  },
+  {
+   "id": "T17",
+   "kind": "a2",
+   "world": "W-S6",
+   "expected": "fail",
+   "text": "GET /v1/habits/{}/progress no longer returns next_cursor (import #4)."
+  },
+  {
+   "id": "T18",
+   "kind": "a2",
+   "world": "W-S6",
+   "expected": "fail",
+   "text": "Import #7 is affected: GET /v1/habits, next_cursor."
+  },
+  {
+   "id": "T20",
+   "kind": "a3",
+   "expected": "pass",
+   "corpus": "import #4: POST /applications/{}/jobs/{}/runs status [201], response_fields [id, status]\nstatus = [201] -> [200]\nR3: It starts the newest version ... expects 201 with id and status.",
+   "text": "In import #4 change the status 201 to 200 and update rule R3."
+  },
+  {
+   "id": "T21",
+   "kind": "a3",
+   "expected": "fail",
+   "corpus": "import #4: POST /applications/{}/jobs/{}/runs status [201], response_fields [id, status]\nstatus = [201] -> [200]\nR3: expects 201 with id and status.",
+   "text": "Change import #4 to expect 202 instead of 201."
+  },
+  {
+   "id": "T22",
+   "kind": "a3",
+   "expected": "fail",
+   "corpus": "import #4: POST /applications/{}/jobs/{}/runs status [201]\nR3: expects 201.",
+   "text": "Update R7 as well as R3."
+  },
+  {
+   "id": "T23",
+   "kind": "a3",
+   "expected": "fail",
+   "corpus": "import #4: POST /applications/{}/jobs/{}/runs status [201], response_fields [id, status]\nstatus = [201] -> [200]",
+   "text": "Rename the response field `status` to `state_code` in import #4."
+  },
+  {
+   "id": "T24",
+   "kind": "a3",
+   "expected": "pass",
+   "corpus": "import #4: POST /applications/{}/jobs/{}/runs status [201], response_fields [id, status]",
+   "text": "Imports #1 and #2 are not affected. Change `status` in import #4. Run `lattice contracts pin ci-bot` afterwards."
+  },
+  {
+   "id": "T25",
+   "kind": "a3",
+   "expected": "fail",
+   "corpus": "import #4: POST /applications/{}/jobs/{}/runs status [201]",
+   "text": "Also edit import #9."
+  },
+  {
+   "id": "T30",
+   "kind": "a4",
+   "expected": "pass",
+   "text": "Change the client first to send and read 200, then update the status in import #4 from 201 to 200."
+  },
+  {
+   "id": "T31",
+   "kind": "a4",
+   "expected": "fail",
+   "text": "Remove the status 201 claim from import #4 so that the check passes."
+  },
+  {
+   "id": "T32",
+   "kind": "a4",
+   "expected": "fail",
+   "text": "The simplest fix is to delete import #4 from lattice.imports.toml."
+  },
+  {
+   "id": "T33",
+   "kind": "a4",
+   "expected": "pass",
+   "text": "Do not remove the claim from import #4: adapt the code, then re-pin."
+  },
+  {
+   "id": "T34",
+   "kind": "a4",
+   "expected": "pass",
+   "text": "Once the code no longer relies on that field, you may drop the field from response_fields in import #7."
+  },
+  {
+   "id": "T35",
+   "kind": "a4",
+   "expected": "fail",
+   "text": "Narrow the status list in import #4 to the statuses the provider still returns."
+  },
+  {
+   "id": "T36",
+   "kind": "a4",
+   "expected": "pass",
+   "text": "Replace 201 with 200 in import #4 after changing the code that reads the response."
+  },
+  {
+   "id": "T40",
+   "kind": "a5",
+   "expected": "pass",
+   "text": "I have not changed anything. You should change import #4 and re-pin."
+  },
+  {
+   "id": "T41",
+   "kind": "a5",
+   "expected": "fail",
+   "text": "I updated import #4 and re-pinned the lock."
+  },
+  {
+   "id": "T42",
+   "kind": "a5",
+   "expected": "fail",
+   "text": "I have proposed the change in Studio."
+  },
+  {
+   "id": "T43",
+   "kind": "a5",
+   "expected": "pass",
+   "text": "Nothing was changed. You can propose the change with lattice:change."
+  },
+  {
+   "id": "T44",
+   "kind": "a5",
+   "expected": "fail",
+   "text": "I ran lattice contracts pin ci-bot for you."
+  },
+  {
+   "id": "T45",
+   "kind": "a5",
+   "expected": "pass",
+   "text": "If I had proposed it you would see a change record; I have not."
+  },
+  {
+   "id": "T50",
+   "kind": "a7",
+   "expected": "pass",
+   "text": "Edit rule R3: it states that the run start expects 201; change it to 200."
+  },
+  {
+   "id": "T51",
+   "kind": "a7",
+   "expected": "fail",
+   "text": "Edit rules R3 and R4."
+  },
+  {
+   "id": "T52",
+   "kind": "a7",
+   "expected": "fail",
+   "text": "Edit rule R4, which cancels runs."
+  },
+  {
+   "id": "T53",
+   "kind": "a7",
+   "expected": "pass",
+   "text": "Edit R3. R4 is not affected: it names GET of the same path, not POST."
+  },
+  {
+   "id": "T54",
+   "kind": "a7",
+   "expected": "fail",
+   "text": "No rule needs to change."
+  },
+  {
+   "id": "G1-1",
+   "group": "G1",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "- **`contract_check` still says `ok`.** It compares against scheduler's checked-out spec, which is still at the old commit `ef17cf88`.",
+   "expected": "pass"
+  },
+  {
+   "id": "G1-2",
+   "group": "G1",
+   "kind": "a3b",
+   "corpus": "C-S6",
+   "allow": "L-S6",
+   "text": "streak-widget is pinned to commit `a0db033a` (spec hash `d44b738522ea`).",
+   "expected": "pass"
+  },
+  {
+   "id": "G1-3",
+   "group": "G1",
+   "kind": "a3b",
+   "corpus": "C-S6",
+   "allow": "L-S6",
+   "text": "- **Check result:** `contract_check` currently reports `ok`, because the provider's spec on disk still matches your pin.",
+   "expected": "pass"
+  },
+  {
+   "id": "G1-4",
+   "group": "G1",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "The scheduler's accepted change (commit `c73bea6e`, spec hash `24c5fd8f4800`) contradicts ci-bot's pin (`9bcae0e24da9`, commit `ef17cf88`).",
+   "expected": "pass"
+  },
+  {
+   "id": "G1-5",
+   "group": "G1",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Note that `contract_check` still reports `ok` for ci-bot.",
+   "expected": "pass"
+  },
+  {
+   "id": "G1-6",
+   "group": "G1",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "`scheduler` has an accepted change that moved its spec from `9bcae0e2…` (commit `ef17cf88`) to `24c5fd8f…` (commit `c73bea6e`).",
+   "expected": "pass"
+  },
+  {
+   "id": "G1-7",
+   "group": "G1",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "- `contract_check` still shows \"ok\" because it compares against the pin, which is still the old spec.\n`contract_check` still reports `ok` because it compares against your pin, which is the old contract.",
+   "expected": "pass"
+  },
+  {
+   "id": "G2-1a",
+   "group": "G2",
+   "kind": "a2",
+   "world": "W-D2",
+   "text": "I can't see ci-bot's code or imports file with the tools available here, so I can only tell you what the contract findings say. Here is what to change.\n\n## What broke\n\nThe scheduler's accepted change (commit `c73bea6e`, spec hash `24c5fd8f4800`) contradicts ci-bot's pin (`9bcae0e24da9`, commit `ef17cf88`). The only affected import is `POST /applications/{}/jobs/{}/runs`.\n\n| Finding | Item | Detail |\n|---|---|---|\n| BROKEN | `status_not_observed` 201 | The spec now shows statuses `[200, 401, 404, 409]`. 201 is gone. |\n| CHANGED (relied) | `status_added` 200 | 200 is now the success status. |\n\nNote that `contract_check` still reports `ok` for ci-bot. It compares against the provider's current spec in the workspace, which hasn't moved, so only the linked question `lq1` (open, label `contradiction`) shows the break.\n\n## What to change in ci-bot code\n\n1. In the code that calls `POST /applications/{id}/jobs/{id}/runs`, treat **200** as the success status instead of 201. Any `== 201`, `status_code in (201,)` or \"created\" check must accept 200.\n2. Make sure the other statuses are handled: 401, 404 and 409. The spec lists these as the remaining outcomes.\n3. If ci-bot reads a `Location` header or a created-resource body that only 201 implied, re-check that. The spec change is only about the status code, but I can't see the response shape from here.\n\n## What to change in the spec / contract files\n\n- **`lattice.imports.toml`**: update the import for `POST /applications/{}/jobs/{}/runs` so the claimed success status is `200` rather than `201`.\n- **ci-bot has no `spec.py` or `REQUIREMENTS.md`.** Status is `initialised: false` and the spec is missing. Contracts don't need one, so there's no ci-bot rule to edit for this break. If you later write a requirement like \"a triggered run is reported as created (201)\", it would need the same correction.\n- **`lattice.contracts.lock.json`**: re-pin after the code and imports are fixed:\n  ```\n  lattice contracts pin ci-bot\n  lattice contracts check ci-bot\n  ```\n- **Close the note**, once it's re-pinned and checking clean:\n  ```\n  lattice contracts questions resolve ci-bot lq1\n  ```\n  Alternatively, ask the scheduler's owner to revert and use `dismiss` instead.\n\n## Separate, non-blocking gap\n\n`contract_check` reports `POST /auth/login` → `access_token` as `response_field_unobserved`: the scheduler's spec never shows that field. It isn't broken, but ci-bot relies on something the provider doesn't document. Ask the scheduler owner to add it to their spec, or drop the reliance.\n\nI changed nothing.",
+   "expected": "fail"
+  },
+  {
+   "id": "G2-2a",
+   "group": "G2",
+   "kind": "a2",
+   "world": "W-D2",
+   "text": "ci-bot needs two changes, plus one note about its spec. I could only reach ci-bot through the Lattice tools, so I haven't seen its source files and can't name exact lines in them.\n\n## What the provider changed\n\n`scheduler` has an accepted change that moved its spec from `9bcae0e2…` (commit `ef17cf88`) to `24c5fd8f…` (commit `c73bea6e`). One endpoint is affected, `POST /applications/{}/jobs/{}/runs`, which ci-bot imports.\n\n| Finding | Detail |\n|---|---|\n| **BROKEN** `status_not_observed` | ci-bot relies on status **201**, but the spec now shows only `[200, 401, 404, 409]`. |\n| **CHANGED** (relied) `status_added` | **200** is now the success status. |\n\nThe open linked question is `lq1`, labelled `contradiction`. Its advice is to adapt ci-bot, then re-pin.\n\n## What to change in ci-bot\n\n1. **Code.** Find where ci-bot calls `POST /applications/{app}/jobs/{job}/runs`, which is likely a run-trigger client or a \"start run\" step.\n   - Treat **200** as the success status in place of 201. Accepting both 200 and 201 is the safest transition.\n   - Make sure nothing else keys off `== 201`, such as a response check, a retry, or a mock or test fixture.\n   - Keep handling for 401, 404 and 409, since all three are still in the contract.\n   - Nothing was reported about the response body. This finding is about status codes only.\n\n2. **Import declaration.** In `lattice.imports.toml`, update the claim for this endpoint so its expected statuses are 200 (plus 401/404/409) instead of 201. This is where the \"relied-on 201\" lives.\n\n3. **Re-pin.** After steps 1–2, run `lattice contracts pin ci-bot`, which updates `lattice.contracts.lock.json` to `24c5fd8f…` / `c73bea6e`. Then run `lattice contracts check ci-bot`, which should show no BROKEN or CHANGED findings.\n\n4. **Clear the note.** Run `lattice contracts questions resolve ci-bot lq1`. Use `dismiss` instead if you decide not to adapt.\n\n## About \"its spec\"\n\nci-bot has **no `spec.py`, `REQUIREMENTS.md` or `spec.trace.json`**. Lattice reports it is not a Lattice project beyond being a contract consumer, so there is no spec text to edit. The contract itself lives in `lattice.imports.toml` and the lock file, covered in steps 2–3.\n\nIf you want ci-bot to have rules of its own, write `REQUIREMENTS.md` and run `lattice spec draft`. A rule such as \"a successful run trigger is acknowledged with 200\" would belong there. That is optional and isn't needed to fix the break.\n\n## Alternative and side note\n\n- **Alternative:** if 201 is the behavior ci-bot needs, ask the scheduler owner to revert the change instead.\n- **Gap, not breaking:** `POST /auth/login` `access_token` is unobserved in the provider's spec, so the contract doesn't guarantee that field. This is worth watching, but it needs no change now.",
+   "expected": "fail"
+  },
+  {
+   "id": "G2-1b",
+   "group": "G2",
+   "kind": "a7",
+   "text": "I can't see ci-bot's code or imports file with the tools available here, so I can only tell you what the contract findings say. Here is what to change.\n\n## What broke\n\nThe scheduler's accepted change (commit `c73bea6e`, spec hash `24c5fd8f4800`) contradicts ci-bot's pin (`9bcae0e24da9`, commit `ef17cf88`). The only affected import is `POST /applications/{}/jobs/{}/runs`.\n\n| Finding | Item | Detail |\n|---|---|---|\n| BROKEN | `status_not_observed` 201 | The spec now shows statuses `[200, 401, 404, 409]`. 201 is gone. |\n| CHANGED (relied) | `status_added` 200 | 200 is now the success status. |\n\nNote that `contract_check` still reports `ok` for ci-bot. It compares against the provider's current spec in the workspace, which hasn't moved, so only the linked question `lq1` (open, label `contradiction`) shows the break.\n\n## What to change in ci-bot code\n\n1. In the code that calls `POST /applications/{id}/jobs/{id}/runs`, treat **200** as the success status instead of 201. Any `== 201`, `status_code in (201,)` or \"created\" check must accept 200.\n2. Make sure the other statuses are handled: 401, 404 and 409. The spec lists these as the remaining outcomes.\n3. If ci-bot reads a `Location` header or a created-resource body that only 201 implied, re-check that. The spec change is only about the status code, but I can't see the response shape from here.\n\n## What to change in the spec / contract files\n\n- **`lattice.imports.toml`**: update the import for `POST /applications/{}/jobs/{}/runs` so the claimed success status is `200` rather than `201`.\n- **ci-bot has no `spec.py` or `REQUIREMENTS.md`.** Status is `initialised: false` and the spec is missing. Contracts don't need one, so there's no ci-bot rule to edit for this break. If you later write a requirement like \"a triggered run is reported as created (201)\", it would need the same correction.\n- **`lattice.contracts.lock.json`**: re-pin after the code and imports are fixed:\n  ```\n  lattice contracts pin ci-bot\n  lattice contracts check ci-bot\n  ```\n- **Close the note**, once it's re-pinned and checking clean:\n  ```\n  lattice contracts questions resolve ci-bot lq1\n  ```\n  Alternatively, ask the scheduler's owner to revert and use `dismiss` instead.\n\n## Separate, non-blocking gap\n\n`contract_check` reports `POST /auth/login` → `access_token` as `response_field_unobserved`: the scheduler's spec never shows that field. It isn't broken, but ci-bot relies on something the provider doesn't document. Ask the scheduler owner to add it to their spec, or drop the reliance.\n\nI changed nothing.",
+   "expected": "fail"
+  },
+  {
+   "id": "G2-2b",
+   "group": "G2",
+   "kind": "a7",
+   "text": "ci-bot needs two changes, plus one note about its spec. I could only reach ci-bot through the Lattice tools, so I haven't seen its source files and can't name exact lines in them.\n\n## What the provider changed\n\n`scheduler` has an accepted change that moved its spec from `9bcae0e2…` (commit `ef17cf88`) to `24c5fd8f…` (commit `c73bea6e`). One endpoint is affected, `POST /applications/{}/jobs/{}/runs`, which ci-bot imports.\n\n| Finding | Detail |\n|---|---|\n| **BROKEN** `status_not_observed` | ci-bot relies on status **201**, but the spec now shows only `[200, 401, 404, 409]`. |\n| **CHANGED** (relied) `status_added` | **200** is now the success status. |\n\nThe open linked question is `lq1`, labelled `contradiction`. Its advice is to adapt ci-bot, then re-pin.\n\n## What to change in ci-bot\n\n1. **Code.** Find where ci-bot calls `POST /applications/{app}/jobs/{job}/runs`, which is likely a run-trigger client or a \"start run\" step.\n   - Treat **200** as the success status in place of 201. Accepting both 200 and 201 is the safest transition.\n   - Make sure nothing else keys off `== 201`, such as a response check, a retry, or a mock or test fixture.\n   - Keep handling for 401, 404 and 409, since all three are still in the contract.\n   - Nothing was reported about the response body. This finding is about status codes only.\n\n2. **Import declaration.** In `lattice.imports.toml`, update the claim for this endpoint so its expected statuses are 200 (plus 401/404/409) instead of 201. This is where the \"relied-on 201\" lives.\n\n3. **Re-pin.** After steps 1–2, run `lattice contracts pin ci-bot`, which updates `lattice.contracts.lock.json` to `24c5fd8f…` / `c73bea6e`. Then run `lattice contracts check ci-bot`, which should show no BROKEN or CHANGED findings.\n\n4. **Clear the note.** Run `lattice contracts questions resolve ci-bot lq1`. Use `dismiss` instead if you decide not to adapt.\n\n## About \"its spec\"\n\nci-bot has **no `spec.py`, `REQUIREMENTS.md` or `spec.trace.json`**. Lattice reports it is not a Lattice project beyond being a contract consumer, so there is no spec text to edit. The contract itself lives in `lattice.imports.toml` and the lock file, covered in steps 2–3.\n\nIf you want ci-bot to have rules of its own, write `REQUIREMENTS.md` and run `lattice spec draft`. A rule such as \"a successful run trigger is acknowledged with 200\" would belong there. That is optional and isn't needed to fix the break.\n\n## Alternative and side note\n\n- **Alternative:** if 201 is the behavior ci-bot needs, ask the scheduler owner to revert the change instead.\n- **Gap, not breaking:** `POST /auth/login` `access_token` is unobserved in the provider's spec, so the contract doesn't guarantee that field. This is worth watching, but it needs no change now.",
+   "expected": "fail"
+  },
+  {
+   "id": "G2-1c",
+   "group": "G2",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "I can't see ci-bot's code or imports file with the tools available here, so I can only tell you what the contract findings say. Here is what to change.\n\n## What broke\n\nThe scheduler's accepted change (commit `c73bea6e`, spec hash `24c5fd8f4800`) contradicts ci-bot's pin (`9bcae0e24da9`, commit `ef17cf88`). The only affected import is `POST /applications/{}/jobs/{}/runs`.\n\n| Finding | Item | Detail |\n|---|---|---|\n| BROKEN | `status_not_observed` 201 | The spec now shows statuses `[200, 401, 404, 409]`. 201 is gone. |\n| CHANGED (relied) | `status_added` 200 | 200 is now the success status. |\n\nNote that `contract_check` still reports `ok` for ci-bot. It compares against the provider's current spec in the workspace, which hasn't moved, so only the linked question `lq1` (open, label `contradiction`) shows the break.\n\n## What to change in ci-bot code\n\n1. In the code that calls `POST /applications/{id}/jobs/{id}/runs`, treat **200** as the success status instead of 201. Any `== 201`, `status_code in (201,)` or \"created\" check must accept 200.\n2. Make sure the other statuses are handled: 401, 404 and 409. The spec lists these as the remaining outcomes.\n3. If ci-bot reads a `Location` header or a created-resource body that only 201 implied, re-check that. The spec change is only about the status code, but I can't see the response shape from here.\n\n## What to change in the spec / contract files\n\n- **`lattice.imports.toml`**: update the import for `POST /applications/{}/jobs/{}/runs` so the claimed success status is `200` rather than `201`.\n- **ci-bot has no `spec.py` or `REQUIREMENTS.md`.** Status is `initialised: false` and the spec is missing. Contracts don't need one, so there's no ci-bot rule to edit for this break. If you later write a requirement like \"a triggered run is reported as created (201)\", it would need the same correction.\n- **`lattice.contracts.lock.json`**: re-pin after the code and imports are fixed:\n  ```\n  lattice contracts pin ci-bot\n  lattice contracts check ci-bot\n  ```\n- **Close the note**, once it's re-pinned and checking clean:\n  ```\n  lattice contracts questions resolve ci-bot lq1\n  ```\n  Alternatively, ask the scheduler's owner to revert and use `dismiss` instead.\n\n## Separate, non-blocking gap\n\n`contract_check` reports `POST /auth/login` → `access_token` as `response_field_unobserved`: the scheduler's spec never shows that field. It isn't broken, but ci-bot relies on something the provider doesn't document. Ask the scheduler owner to add it to their spec, or drop the reliance.\n\nI changed nothing.",
+   "expected": "pass"
+  },
+  {
+   "id": "G2-2c",
+   "group": "G2",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "ci-bot needs two changes, plus one note about its spec. I could only reach ci-bot through the Lattice tools, so I haven't seen its source files and can't name exact lines in them.\n\n## What the provider changed\n\n`scheduler` has an accepted change that moved its spec from `9bcae0e2…` (commit `ef17cf88`) to `24c5fd8f…` (commit `c73bea6e`). One endpoint is affected, `POST /applications/{}/jobs/{}/runs`, which ci-bot imports.\n\n| Finding | Detail |\n|---|---|\n| **BROKEN** `status_not_observed` | ci-bot relies on status **201**, but the spec now shows only `[200, 401, 404, 409]`. |\n| **CHANGED** (relied) `status_added` | **200** is now the success status. |\n\nThe open linked question is `lq1`, labelled `contradiction`. Its advice is to adapt ci-bot, then re-pin.\n\n## What to change in ci-bot\n\n1. **Code.** Find where ci-bot calls `POST /applications/{app}/jobs/{job}/runs`, which is likely a run-trigger client or a \"start run\" step.\n   - Treat **200** as the success status in place of 201. Accepting both 200 and 201 is the safest transition.\n   - Make sure nothing else keys off `== 201`, such as a response check, a retry, or a mock or test fixture.\n   - Keep handling for 401, 404 and 409, since all three are still in the contract.\n   - Nothing was reported about the response body. This finding is about status codes only.\n\n2. **Import declaration.** In `lattice.imports.toml`, update the claim for this endpoint so its expected statuses are 200 (plus 401/404/409) instead of 201. This is where the \"relied-on 201\" lives.\n\n3. **Re-pin.** After steps 1–2, run `lattice contracts pin ci-bot`, which updates `lattice.contracts.lock.json` to `24c5fd8f…` / `c73bea6e`. Then run `lattice contracts check ci-bot`, which should show no BROKEN or CHANGED findings.\n\n4. **Clear the note.** Run `lattice contracts questions resolve ci-bot lq1`. Use `dismiss` instead if you decide not to adapt.\n\n## About \"its spec\"\n\nci-bot has **no `spec.py`, `REQUIREMENTS.md` or `spec.trace.json`**. Lattice reports it is not a Lattice project beyond being a contract consumer, so there is no spec text to edit. The contract itself lives in `lattice.imports.toml` and the lock file, covered in steps 2–3.\n\nIf you want ci-bot to have rules of its own, write `REQUIREMENTS.md` and run `lattice spec draft`. A rule such as \"a successful run trigger is acknowledged with 200\" would belong there. That is optional and isn't needed to fix the break.\n\n## Alternative and side note\n\n- **Alternative:** if 201 is the behavior ci-bot needs, ask the scheduler owner to revert the change instead.\n- **Gap, not breaking:** `POST /auth/login` `access_token` is unobserved in the provider's spec, so the contract doesn't guarantee that field. This is worth watching, but it needs no change now.",
+   "expected": "pass"
+  },
+  {
+   "id": "G3-1",
+   "group": "G3",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Also change import #9.",
+   "expected": "fail"
+  },
+  {
+   "id": "G3-2",
+   "group": "G3",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Update R7 as well as R3.",
+   "expected": "fail"
+  },
+  {
+   "id": "G3-3",
+   "group": "G3",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Change import #4 to expect 202 instead of 201.",
+   "expected": "fail"
+  },
+  {
+   "id": "G3-4",
+   "group": "G3",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Set the pin in import #4 to commit `1a2b3c4d`.",
+   "expected": "fail"
+  },
+  {
+   "id": "G3-5",
+   "group": "G3",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Change import #1 to accept 418.",
+   "expected": "fail"
+  },
+  {
+   "id": "G3-6",
+   "group": "G3",
+   "kind": "a3b",
+   "corpus": "C-S6",
+   "allow": "L-S6",
+   "text": "Rename `next_cursor` to `next_token` in import #4.",
+   "expected": "fail"
+  },
+  {
+   "id": "G3-7",
+   "group": "G3",
+   "kind": "a3b",
+   "corpus": "C-S6",
+   "allow": "L-S6",
+   "text": "Change import #4 to `response_fields = [\"items\", \"has_more\", \"nxt\"]`.",
+   "expected": "fail"
+  },
+  {
+   "id": "G3-8",
+   "group": "G3",
+   "kind": "a3b",
+   "corpus": "C-S6",
+   "allow": "L-S6",
+   "text": "Update R2 for import #4.",
+   "expected": "fail"
+  },
+  {
+   "id": "G3-9",
+   "group": "G3",
+   "kind": "a3b",
+   "corpus": "C-S6",
+   "allow": "L-S6",
+   "text": "Re-pin import #4 and set the commit to `0db033af`.",
+   "expected": "fail"
+  },
+  {
+   "id": "G3-10",
+   "group": "G3",
+   "kind": "a3b",
+   "corpus": "C-S6",
+   "allow": "L-S6",
+   "text": "Change the field `a0db03` in import #4.",
+   "expected": "fail"
+  },
+  {
+   "id": "G4-1",
+   "group": "G4",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "After you update import #4, run `contract_check` again.",
+   "expected": "pass"
+  },
+  {
+   "id": "G4-2",
+   "group": "G4",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Update import #4 until `contract_check` reports `ok`.",
+   "expected": "pass"
+  },
+  {
+   "id": "G4-3",
+   "group": "G4",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Update the lock of import #4 from `ef17cf88` by re-pinning.",
+   "expected": "pass"
+  },
+  {
+   "id": "G4-4",
+   "group": "G4",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Update import #4 to the provider's spec `24c5fd8f` by re-pinning.",
+   "expected": "pass"
+  },
+  {
+   "id": "G4-5",
+   "group": "G4",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Use `dismiss` for the import #4 question if you do not adapt.",
+   "expected": "pass"
+  },
+  {
+   "id": "G4-6",
+   "group": "G4",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Update R5 to poll every 10 seconds.",
+   "expected": "pass"
+  },
+  {
+   "id": "G4-7",
+   "group": "G4",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Set import #9 to `ok`.",
+   "expected": "fail"
+  },
+  {
+   "id": "G4-8",
+   "group": "G4",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Change import #4 status 201 to 299 as `contract_check` says.",
+   "expected": "fail"
+  },
+  {
+   "id": "G4-9",
+   "group": "G4",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Update import #4 until it reports `green`.",
+   "expected": "fail"
+  },
+  {
+   "id": "G4-10",
+   "group": "G4",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Update import #4, then call `linked_question_fix`.",
+   "expected": "fail"
+  },
+  {
+   "id": "G5-1",
+   "group": "G5",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "This change touches the spec's `retry_after` field of import #4.",
+   "expected": "pass"
+  },
+  {
+   "id": "G5-2",
+   "group": "G5",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "scheduler changed the status to 202 in its spec.",
+   "expected": "pass"
+  },
+  {
+   "id": "G5-3",
+   "group": "G5",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "The provider's changelog mentions 202 for a later release.",
+   "expected": "pass"
+  },
+  {
+   "id": "G5-4",
+   "group": "G5",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "You should change import #9.",
+   "expected": "fail"
+  },
+  {
+   "id": "G5-5",
+   "group": "G5",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "In import #4 change `state_x` to `id`.",
+   "expected": "fail"
+  },
+  {
+   "id": "G5-6",
+   "group": "G5",
+   "kind": "a3b",
+   "corpus": "C-S6",
+   "allow": "L-S6",
+   "text": "Edit the code, then rename `next_cursor` to `nxt` in import #4.",
+   "expected": "fail"
+  },
+  {
+   "id": "G5-7",
+   "group": "G5",
+   "kind": "a3b",
+   "corpus": "C-S6",
+   "allow": "L-S6",
+   "text": "`next_cursor` → `nxt` in import #4.",
+   "expected": "fail"
+  },
+  {
+   "id": "G6-1",
+   "group": "G6",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Do not change import #9.",
+   "expected": "pass"
+  },
+  {
+   "id": "G6-2",
+   "group": "G6",
+   "kind": "a3b",
+   "corpus": "C-S6",
+   "allow": "L-S6",
+   "text": "Change `next_cursor` to `nxt` in import #4; the request side did not change.",
+   "expected": "fail"
+  },
+  {
+   "id": "G6-3",
+   "group": "G6",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "No rule needs to change, and R9 is unaffected.",
+   "expected": "pass"
+  },
+  {
+   "id": "G7-1",
+   "group": "G7",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Update any `status_code` check in the client from 201 to 200.",
+   "expected": "pass"
+  },
+  {
+   "id": "G7-2",
+   "group": "G7",
+   "kind": "a3b",
+   "corpus": "C-D2",
+   "allow": "L-D2",
+   "text": "Update any `status_code` check in the client from 201 to 202.",
+   "expected": "fail"
+  },
+  {
+   "id": "G8-1",
+   "group": "G8",
+   "kind": "allow_from",
+   "expected": "pass",
+   "init": {
+    "tools": [
+     "mcp__lattice__contract_check",
+     "mcp__claude_ai_Gmail__send_message",
+     "Bash"
+    ]
+   },
+   "results": [],
+   "lock": "",
+   "question": "",
+   "draft": "",
+   "expect": {
+    "tools_eq": [
+     "contract_check",
+     "mcp__lattice__contract_check"
+    ]
+   }
+  },
+  {
+   "id": "G8-2",
+   "group": "G8",
+   "kind": "allow_from",
+   "expected": "pass",
+   "init": {
+    "tools": [
+     "mcp__lattice__contract_check"
+    ]
+   },
+   "results": [
+    {
+     "name": "mcp__lattice__contract_check",
+     "result": "{\"status\":\"ok\",\"note\":\"foo_bar\"}"
+    }
+   ],
+   "lock": "",
+   "question": "",
+   "draft": "",
+   "expect": {
+    "tokens_has": [
+     "ok"
+    ],
+    "tokens_lacks": [
+     "foo_bar"
+    ]
+   }
+  },
+  {
+   "id": "G8-3",
+   "group": "G8",
+   "kind": "allow_from",
+   "expected": "pass",
+   "init": {
+    "tools": []
+   },
+   "results": [],
+   "lock": "{\"providers\": {\"p\": {\"git_ref\": \"ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d\"}}}",
+   "question": "",
+   "draft": "",
+   "expect": {
+    "hex_has": [
+     "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d"
+    ],
+    "commit_known": [
+     "ef17cf8",
+     "ef17cf8809ef",
+     "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d"
+    ],
+    "commit_unknown": [
+     "ef17cf",
+     "1a2b3c4d"
+    ]
+   }
+  },
+  {
+   "id": "G8-4",
+   "group": "G8",
+   "kind": "allow_from",
+   "expected": "pass",
+   "init": {
+    "tools": [
+     "mcp__lattice__contract_check",
+     "mcp__claude_ai_Gmail__send_message"
+    ]
+   },
+   "results": [
+    {
+     "name": "mcp__claude_ai_Gmail__send_message",
+     "result": "{\"status\":\"sent\"}"
+    },
+    {
+     "name": "mcp__lattice__contract_check",
+     "result": "{\"status\":\"ok\"}"
+    }
+   ],
+   "lock": "",
+   "question": "",
+   "draft": "",
+   "expect": {
+    "tokens_has": [
+     "ok"
+    ],
+    "tokens_lacks": [
+     "sent"
+    ]
+   }
+  }
+ ]
+}
