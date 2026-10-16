@@ -145,3 +145,22 @@ flags a rule using an undefined term. Deterministic coverage metrics (percentage
 undefined terms); byte-identical behaviour when absent; the chat cites the rationale beside the rule. The
 marketplace is not required for G; shared rule packs and moving the language front ends behind the module
 interface remain possible later work.
+
+## Addendum 2026-10-16 (later): Spike H, a typed condition form for common rule shapes (owner agreed)
+
+**H, typed rule conditions.** Not a general rule language. A small typed condition form for the most common rule
+shapes: bounds on a field, limits on a count of rows, ownership, and state transitions (trigger, condition,
+outcome as nodes). Lattice generates the scenario and the invariant for such a rule **from the form**, so the
+two cannot disagree, and spec-level contradictions between two forms are decided logically (widening Spike D's
+Tier 2). Everything else stays as English rules, scenarios and invariants. It is optional per rule; with no forms
+present every existing output is byte-identical. Authoring: a model may draft a form from a rule, the owner
+approves it (same approval rule as Spike G); nothing is auto-accepted.
+
+Registered test (to be pre-registered, opus, before any code): on Streak, the checks generated from the forms must
+match the hand-written scenarios and invariants for the covered rules (same pass/fail on today's app and on the
+mutated apps of the kill rig), with a hash-frozen set of rule shapes written by a separate agent and a stated
+expectation of what the form cannot express (time, money, rate limits, external services, cross-request flows are
+out of scope and reported as `not expressible`, never guessed). Order: after D, E and F have landed (it consumes
+D's contradiction machinery and E's before/after runs). Risks: expressiveness creep into a programming language
+(mitigated by a closed node set and an `unread/not expressible` list); mapping forms to code conditions is a
+separate, later question and is not claimed here.
