@@ -404,3 +404,16 @@ via the `claude` CLI, and only in the agent exercise.
 - **Q6.** Before scoring, should the owner be asked to connect Chrome so PBR can run? Without a browser, PBR is NOT RUN.
 - **Q7 (R6).** Dispatch the separate question-set agent after this commit, and record `freeze.sha256` for `qset.json`
   and `goto_score.py` before the build node's gated probes.
+
+## Amendment 1 (orchestrator rulings, 2026-10-16, before any code)
+- **Q1:** F is built only after Spike D is merged into `next-phases`; the build branch is rebased/merged onto that tip.
+- **Q2:** approved, the optional `[impact] reports` key; absent = no saved tier-1 report shown (state "tier 1 not run").
+- **Q3:** the App group is always listed (empty states carry the explanation).
+- **Q4:** approved: the model-free router and the optional `impact` answer key; the answer kind keeps its four values.
+- **Q5:** the agent budget stands: USD 6 cap, 44 questions plus 2 tier-1 runs, claude CLI only, NOT RUN on a usage limit.
+- **Q6:** Chrome connection is requested from the owner before scoring; with no browser the browser gate stays NOT RUN.
+- **Q7:** the question-set agent is dispatched after D's engine is merged (the I and H questions need D's CLI
+  report on the 6 dev candidates); sha256 of the question set and scorer are recorded in `freeze.sha256` by the
+  orchestrator before the builder runs any gated probe.
+- The standing rule stays binding: no predicted failures; the forbidden-word scan and the unsupported-claim gate
+  are not relaxed.
