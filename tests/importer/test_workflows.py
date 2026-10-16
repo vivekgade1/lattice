@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import sys
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -962,3 +963,92 @@ def test_an_unverified_flow_shows_no_value_taken_from_an_answer(plan):
     body = {"subject": "sent-before", "project_id": "from-an-answer", "other": "x"}
     masked = R._mask_body(rec, body, ["sent-before"])
     assert masked == {"subject": "sent-before", "project_id": None, "other": "x"}
+
+
+# ---- round 2: no silent id (R2-D4), the list rule, the run keys ---------------------------
+
+
+def test_an_unbound_path_param_is_never_filled_the_step_is_not_sent(plan, tmp_path):
+    import dataclasses
+
+    ex, _ = executor(plan, tmp_path)
+    f = flow_of(plan, "POST /api/projects", "GET /api/projects/{}", kind="pair")
+    steps = [*f.steps[:-1], dataclasses.replace(f.steps[-1], bindings=[])]
+    out = ex.run(dataclasses.replace(f, steps=steps))
+    assert not out.ok and out.failed_at == 1
+    rec = out.runs[-1]
+    assert rec.status is None and rec.attempts == 0
+    assert rec.reason == "unbound path param id: no producer"
+    assert [r["path"] for r in out.requests] == ["/api/projects"]  # nothing like /api/projects/1
+    status, reason = _pipeline(plan)._status(out, None, f)
+    assert status == "failed" and "unbound path param id: no producer" in reason
+    assert "was not sent" in reason
+
+
+def test_render_has_no_default_for_a_missing_value(plan):
+    route = plan.view.by_key["GET /api/projects/{id}"]
+    assert R.Executor.render(route, {"id": 7}) == "/api/projects/7"
+    with pytest.raises(KeyError):
+        R.Executor.render(route, {})
+
+
+def test_the_list_rule_defaults_to_specific_and_first_is_kept(plan, tmp_path):
+    assert R.DEFAULT_LIST_RULE == "specific" and R.LIST_RULES == ("specific", "first")
+    args = R.parser().parse_args(["root", "--out", "o"])
+    assert args.list_rule == "specific"
+    assert (
+        R.parser().parse_args(["root", "--out", "o", "--list-rule", "first"]).list_rule == "first"
+    )
+    ex, _ = executor(plan, tmp_path)
+    assert ex.list_rule == "specific"
+    for rule in R.LIST_RULES:  # the fixture has one list route per table: both rules agree
+        provider = FakeProvider()
+        h = R.Harness(lambda ref: FakeApp(ref), lambda ref: None, None, {}, FakeRuntime(), "x")
+        e = R.Executor(
+            plan.view, h, provider, h.runtime, USERS, tmp_path,
+            W.Planner(plan.view, plan.edges, USERS), [], rule,
+        )  # fmt: skip
+        out = e.run(flow_of(plan, "DELETE /api/tickets/{}", kind="pair"))
+        assert out.ok and out.runs[-1].bound[0]["id_source"] == "list"
+
+
+def test_the_run_block_names_the_harness_source_the_reason_the_rule_and_the_database(tmp_path):
+    out = tmp_path / "o"
+    assert R.main([str(FIXTURE), "--user", "ann", "--static", "--out", str(out)]) == 0
+    run = json.loads((out / "workflows.json").read_text())["run"]
+    assert run["mode"] == "static" and run["harness"] is None and run["harness_file"] is None
+    assert run["harness_reason"] == "static run requested (--static)"
+    assert run["list_rule"] == "specific" and run["database"] is None
+
+    app = tmp_path / "app"
+    shutil.copytree(FIXTURE, app)  # no studio.toml, check.sh or harness.py: static with a reason
+    assert R.main([str(app), "--user", "ann", "--out", str(tmp_path / "o2")]) == 0
+    run = json.loads((tmp_path / "o2" / "workflows.json").read_text())["run"]
+    assert run["mode"] == "static" and run["harness"] is None and run["database"] is None
+    for part in ("studio.toml", "check.sh", "harness.py", "gate file"):
+        assert part in run["harness_reason"]
+    assert (
+        R.main([str(app), "--static", "--list-rule", "first", "--out", str(tmp_path / "o3")]) == 0
+    )
+    first = json.loads((tmp_path / "o3" / "workflows.json").read_text())["run"]
+    assert first["list_rule"] == "first"
+
+
+def test_a_database_the_layer_does_not_run_makes_the_run_static_with_the_reason(tmp_path):
+    app = tmp_path / "pg"
+    shutil.copytree(FIXTURE, app)
+    (app / "check.sh").write_text(
+        "#!/bin/sh\nexec python -m lattice.spec check --app harness:make_app --db harness:build_db"
+        " --database postgres\n"
+    )
+    (app / "harness.py").write_text(
+        "def make_app(db):\n    return 1\n\n\ndef build_db(db):\n    return 2\n"
+    )
+    out = tmp_path / "o"
+    try:
+        assert R.main([str(app), "--user", "ann", "--out", str(out)]) == 0
+    finally:
+        sys.modules.pop("harness", None)
+    run = json.loads((out / "workflows.json").read_text())["run"]
+    assert run["mode"] == "static" and run["harness"] is None and run["database"] is None
+    assert "check.sh" in run["harness_reason"] and "postgres" in run["harness_reason"]

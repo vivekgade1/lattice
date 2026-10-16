@@ -1,0 +1,2 @@
+[rebuild]
+gates = ["pytest -q", "./ci/gate.sh --layers CD"]

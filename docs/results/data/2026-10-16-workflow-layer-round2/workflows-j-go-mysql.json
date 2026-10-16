@@ -1,0 +1,1070 @@
+{
+  "app": {
+    "extract_sha256": "7f8ba7bdf2259348569c742882845117f7ad72c31f1d14e24ef47fd0d55ecee7",
+    "framework": "gin",
+    "module": "jobscheduler",
+    "workflow_extract_sha256": "511be1742303a2aff6edcad0bc5c9b082d7e9e2328e0ab20bafea15494606b51"
+  },
+  "capped": [
+    {
+      "id": "wf-bf44561cf5",
+      "kind": "lifecycle",
+      "reason": "more than 8 requests",
+      "skeleton": [
+        "POST /applications",
+        "POST /applications/{}/jobs/{}/runs",
+        "POST /users",
+        "PUT /applications/{}/members/{}",
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/deactivate",
+        "POST /applications/{}/runs/{}/cancel",
+        "DELETE /applications/{}/members/{}"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "alternatives": [],
+      "consumer": "DELETE /applications/{id}/members/{user_id}",
+      "evidence": [
+        {
+          "at": "internal/app/handlers.go:284",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-f39d87cea2",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}",
+      "evidence": [
+        {
+          "at": "internal/app/handlers.go:182",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-5a7fea9ca0",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/jobs",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:92",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-d79a4d0666",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/jobs/{job_id}",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:109",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-7c072cfb4a",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/jobs/{job_id}/runs",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:63",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-ac4f4abe5d",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/members",
+      "evidence": [
+        {
+          "at": "internal/app/handlers.go:190",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-dbef7808aa",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/members/{user_id}",
+      "evidence": [
+        {
+          "at": "internal/app/handlers.go:207",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-a016ea2e04",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/runs/{run_id}",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:99",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-6e6782adce",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:26",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-e353d38af5",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs/{job_id}/activate",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:171",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-193f2da149",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs/{job_id}/deactivate",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:172",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-a05bcdf734",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs/{job_id}/runs",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:16",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-be0fcf5f2c",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/runs/{run_id}/cancel",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:126",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-33c203709f",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "PUT /applications/{id}/members/{user_id}",
+      "evidence": [
+        {
+          "at": "internal/app/handlers.go:226",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:149",
+          "what": "create"
+        }
+      ],
+      "id": "we-0ba3765561",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/runs/{run_id}",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:103",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/runs.go:46",
+          "what": "create"
+        }
+      ],
+      "id": "we-6e555f0f1b",
+      "id_source": "response",
+      "key": "id",
+      "param": "run_id",
+      "param_source": "path",
+      "producer": "POST /applications/{id}/jobs/{job_id}/runs",
+      "table": "job_runs"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/runs/{run_id}/cancel",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:130",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/runs.go:46",
+          "what": "create"
+        }
+      ],
+      "id": "we-fcdf6acac1",
+      "id_source": "response",
+      "key": "id",
+      "param": "run_id",
+      "param_source": "path",
+      "producer": "POST /applications/{id}/jobs/{job_id}/runs",
+      "table": "job_runs"
+    },
+    {
+      "alternatives": [],
+      "consumer": "PUT /applications/{id}/members/{user_id}",
+      "evidence": [
+        {
+          "at": "internal/app/handlers.go:248",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/handlers.go:112",
+          "what": "create"
+        }
+      ],
+      "id": "we-c97baacbe2",
+      "id_source": "response",
+      "key": "id",
+      "param": "user_id",
+      "param_source": "path",
+      "producer": "POST /users",
+      "table": "users"
+    }
+  ],
+  "flows": [
+    {
+      "edge_refs": [
+        "we-f39d87cea2"
+      ],
+      "focus_from": 0,
+      "id": "wf-7cb160fc2a",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications",
+      "reason": "step 0 POST /applications answered 422: status 422",
+      "routes": [
+        "POST /applications"
+      ],
+      "skeleton": [
+        "POST /applications"
+      ],
+      "source": "observed",
+      "status": "failed",
+      "steps": [
+        {
+          "attempts": 1,
+          "bindings": [],
+          "caller": "root",
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/app.go:161",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/handlers.go:125",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/handlers.go:149",
+              "what": "create"
+            },
+            {
+              "at": "internal/app/handlers.go:132",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:136",
+              "what": "raise"
+            }
+          ],
+          "expect_from": "observed",
+          "expect_status": 422,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": {
+            "code": null,
+            "status": 422
+          },
+          "role": "focus",
+          "route": "POST /applications",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 0,
+      "id": "wf-7c6c9c92a6",
+      "inferred_name": true,
+      "kind": "lifecycle",
+      "machine_refs": [],
+      "name": "create users",
+      "reason": "step 0 POST /users answered 422: status 422",
+      "routes": [
+        "POST /users"
+      ],
+      "skeleton": [
+        "POST /users"
+      ],
+      "source": "observed",
+      "status": "failed",
+      "steps": [
+        {
+          "attempts": 1,
+          "bindings": [],
+          "caller": "root",
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/app.go:160",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/handlers.go:70",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/handlers.go:112",
+              "what": "create"
+            },
+            {
+              "at": "internal/app/handlers.go:80",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:84",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:88",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:93",
+              "what": "raise"
+            }
+          ],
+          "expect_from": "observed",
+          "expect_status": 422,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/users",
+          "refusal": {
+            "code": null,
+            "status": 422
+          },
+          "role": "focus",
+          "route": "POST /users",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-f39d87cea2"
+      ],
+      "focus_from": 0,
+      "id": "wf-5482cd7dd4",
+      "inferred_name": true,
+      "kind": "owner_guard",
+      "machine_refs": [],
+      "name": "create applications",
+      "reason": "step 0 POST /applications answered 422: status 422",
+      "routes": [
+        "POST /applications"
+      ],
+      "skeleton": [
+        "POST /applications"
+      ],
+      "source": "observed",
+      "status": "failed",
+      "steps": [
+        {
+          "attempts": 1,
+          "bindings": [],
+          "caller": "root",
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/app.go:161",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/handlers.go:125",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/handlers.go:149",
+              "what": "create"
+            },
+            {
+              "at": "internal/app/handlers.go:132",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:136",
+              "what": "raise"
+            }
+          ],
+          "expect_from": "observed",
+          "expect_status": 422,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": {
+            "code": null,
+            "status": 422
+          },
+          "role": "focus",
+          "route": "POST /applications",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 0,
+      "id": "wf-7c04d07ed0",
+      "inferred_name": true,
+      "kind": "after_delete",
+      "machine_refs": [],
+      "merged_kinds": [
+        "effect"
+      ],
+      "name": "create applications",
+      "reason": "step 0 POST /applications answered 422: status 422",
+      "routes": [
+        "POST /applications"
+      ],
+      "skeleton": [
+        "POST /applications"
+      ],
+      "source": "observed",
+      "status": "failed",
+      "steps": [
+        {
+          "attempts": 1,
+          "bindings": [],
+          "caller": "root",
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/app.go:161",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/handlers.go:125",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/handlers.go:149",
+              "what": "create"
+            },
+            {
+              "at": "internal/app/handlers.go:132",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:136",
+              "what": "raise"
+            }
+          ],
+          "expect_from": "observed",
+          "expect_status": 422,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": {
+            "code": null,
+            "status": 422
+          },
+          "role": "focus",
+          "route": "POST /applications",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 0,
+      "id": "wf-44e8cb7c50",
+      "inferred_name": true,
+      "kind": "guard",
+      "machine_refs": [],
+      "name": "create applications",
+      "reason": "",
+      "routes": [
+        "POST /applications"
+      ],
+      "skeleton": [
+        "POST /applications"
+      ],
+      "source": "observed",
+      "status": "verified",
+      "steps": [
+        {
+          "attempts": 1,
+          "bindings": [],
+          "caller": "root",
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/app.go:161",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/handlers.go:125",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/handlers.go:149",
+              "what": "create"
+            },
+            {
+              "at": "internal/app/handlers.go:132",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:136",
+              "what": "raise"
+            }
+          ],
+          "expect_from": "observed",
+          "expect_status": 422,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": {
+            "code": null,
+            "status": 422
+          },
+          "role": "focus",
+          "route": "POST /applications",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 0,
+      "id": "wf-3c6b69f30d",
+      "inferred_name": true,
+      "kind": "guard",
+      "machine_refs": [],
+      "name": "create users",
+      "reason": "",
+      "routes": [
+        "POST /users"
+      ],
+      "skeleton": [
+        "POST /users"
+      ],
+      "source": "observed",
+      "status": "verified",
+      "steps": [
+        {
+          "attempts": 1,
+          "bindings": [],
+          "caller": "root",
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/app.go:160",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/handlers.go:70",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/handlers.go:112",
+              "what": "create"
+            },
+            {
+              "at": "internal/app/handlers.go:80",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:84",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:88",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:93",
+              "what": "raise"
+            }
+          ],
+          "expect_from": "observed",
+          "expect_status": 422,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/users",
+          "refusal": {
+            "code": null,
+            "status": 422
+          },
+          "role": "focus",
+          "route": "POST /users",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 1,
+      "id": "wf-04826ee44c",
+      "inferred_name": true,
+      "kind": "effect",
+      "machine_refs": [],
+      "name": "create applications",
+      "reason": "step 0 POST /applications answered 422: status 422",
+      "routes": [
+        "POST /applications"
+      ],
+      "skeleton": [
+        "POST /applications"
+      ],
+      "source": "observed",
+      "status": "failed",
+      "steps": [
+        {
+          "attempts": 1,
+          "bindings": [],
+          "caller": "root",
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/app.go:161",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/handlers.go:125",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/handlers.go:149",
+              "what": "create"
+            },
+            {
+              "at": "internal/app/handlers.go:132",
+              "what": "raise"
+            },
+            {
+              "at": "internal/app/handlers.go:136",
+              "what": "raise"
+            }
+          ],
+          "expect_from": "observed",
+          "expect_status": 422,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": {
+            "code": null,
+            "status": 422
+          },
+          "role": "setup",
+          "route": "POST /applications",
+          "value_sources": {}
+        }
+      ]
+    }
+  ],
+  "machines": [
+    {
+      "column": "status",
+      "edges": [
+        {
+          "evidence": [
+            {
+              "at": "internal/app/worker.go:60",
+              "what": "from"
+            },
+            {
+              "at": "internal/app/worker.go:61",
+              "what": "write"
+            }
+          ],
+          "from": "queued",
+          "observed": 0,
+          "source": "static",
+          "to": "running"
+        },
+        {
+          "evidence": [
+            {
+              "at": "internal/app/worker.go:216",
+              "what": "from"
+            },
+            {
+              "at": "internal/app/worker.go:217",
+              "what": "write"
+            }
+          ],
+          "from": "running",
+          "observed": 0,
+          "source": "static",
+          "to": "failed"
+        },
+        {
+          "evidence": [
+            {
+              "at": "internal/app/worker.go:216",
+              "what": "from"
+            },
+            {
+              "at": "internal/app/worker.go:217",
+              "what": "write"
+            }
+          ],
+          "from": "running",
+          "observed": 0,
+          "source": "static",
+          "to": "succeeded"
+        }
+      ],
+      "id": "wm-836675e71c",
+      "initial": [
+        "queued"
+      ],
+      "model": "JobRun",
+      "observed_initial": [],
+      "spec_object": {
+        "column": "status",
+        "edges": [
+          [
+            "queued",
+            "running"
+          ],
+          [
+            "running",
+            "failed"
+          ],
+          [
+            "running",
+            "succeeded"
+          ]
+        ],
+        "initial": [
+          "queued"
+        ],
+        "table": "JobRun"
+      },
+      "states": [
+        "cancelled",
+        "failed",
+        "queued",
+        "running",
+        "succeeded"
+      ],
+      "status": "static",
+      "sweeps": [],
+      "table": "job_runs",
+      "unread": [
+        {
+          "file": "internal/app/runs.go",
+          "line": 118,
+          "reason": "the state cancelled is written from an unknown state: no static map",
+          "what": "edge"
+        }
+      ]
+    }
+  ],
+  "run": {
+    "caps": {
+      "max_flows": 96,
+      "max_steps": 8
+    },
+    "database": "mysql",
+    "harness": "check.sh",
+    "harness_file": "check.sh",
+    "harness_reason": null,
+    "list_rule": "specific",
+    "mode": "observed",
+    "services_swept": [],
+    "users": [
+      "root",
+      "ann"
+    ]
+  },
+  "schema": "lattice.workflows/1",
+  "summary": {
+    "edges": 17,
+    "failed": 5,
+    "flows": 7,
+    "machines": 1,
+    "unverified": 0,
+    "verified": 2
+  },
+  "unread": [
+    {
+      "file": "",
+      "line": 0,
+      "reason": "no public POST creates the users table and a login route together",
+      "what": "account"
+    },
+    {
+      "file": "internal/app/jobs.go",
+      "line": 113,
+      "reason": "GET /applications/{id}/jobs/{job_id} job_id is compared to job_configs.id but no route creates it (no producer)",
+      "what": "edge"
+    },
+    {
+      "file": "internal/app/jobs.go",
+      "line": 171,
+      "reason": "POST /applications/{id}/jobs/{job_id}/activate job_id is compared to job_configs.id but no route creates it (no producer)",
+      "what": "edge"
+    },
+    {
+      "file": "internal/app/jobs.go",
+      "line": 172,
+      "reason": "POST /applications/{id}/jobs/{job_id}/deactivate job_id is compared to job_configs.id but no route creates it (no producer)",
+      "what": "edge"
+    },
+    {
+      "file": "internal/app/runs.go",
+      "line": 20,
+      "reason": "POST /applications/{id}/jobs/{job_id}/runs job_id is compared to job_configs.id but no route creates it (no producer)",
+      "what": "edge"
+    },
+    {
+      "file": "internal/app/runs.go",
+      "line": 67,
+      "reason": "GET /applications/{id}/jobs/{job_id}/runs job_id is compared to job_configs.id but no route creates it (no producer)",
+      "what": "edge"
+    },
+    {
+      "file": "internal/app/runs.go",
+      "line": 118,
+      "reason": "the state job_runs.status is written from is not read: an update with no enclosing test of the column and no query pinning it",
+      "what": "status_write"
+    }
+  ]
+}

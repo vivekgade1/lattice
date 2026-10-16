@@ -46,6 +46,10 @@ SWEEP_POLL_S = 0.5
 AWAIT_WITHIN_S = 10.0
 # flows whose last step is expected to be refused (the flow documents the refusal)
 REFUSAL_KINDS = ("owner_guard", "after_delete", "guard")
+# which GET over a table lists its ids (D2): `specific` (the one touching the fewest tables,
+# round 2) or `first` (the first in registration order, round 1)
+LIST_RULES = ("specific", "first")
+DEFAULT_LIST_RULE = "specific"
 
 
 class WorkflowError(RuntimeError):
@@ -62,43 +66,38 @@ class Harness:
     login: Callable[..., Any] | None
     services: Mapping[str, Callable[..., Any]]
     runtime: Any
-    source: str  # studio.toml | harness.py
+    source: str  # studio.toml | check.sh | harness.py
+    file: str | None = None  # the file it came from, relative to the root
+    database: str | None = None  # the database the project names (None: the extract's dialect)
+
+
+def discover_harness(root: Path) -> tuple[Harness | None, str | None]:
+    """(harness, reason): the app's harness found by :func:`check_invocation.discover`
+    (``studio.toml`` ``[app]``, then the project's own check invocation, then a root
+    ``harness.py``), or None and why the run is static. Nothing is executed but the imports."""
+    from lattice.importer.check_invocation import discover
+
+    d = discover(root)
+    if not d.found:
+        return None, d.reason or "no harness found"
+    return (
+        Harness(
+            make_app=d.make_app,
+            build_db=d.build_db,
+            login=d.login,
+            services=dict(d.services),
+            runtime=d.runtime,
+            source=d.source or "",
+            file=d.file,
+            database=d.database,
+        ),
+        None,
+    )
 
 
 def find_harness(root: Path) -> Harness | None:
-    """The app's harness: ``studio.toml`` ``[app]`` (``app``, ``db``, ``login``, ``runtime``,
-    ``services``), else a root ``harness.py`` (``make_app``, ``build_db``, optional
-    ``login``, ``SERVICES``, ``RUNTIME``). Imported with no bytecode written."""
-    from lattice.importer.frontends.go_gin import _harness_attr, _studio_app
-
-    cfg = _studio_app(root)
-    if "app" in cfg and "db" in cfg:
-        return Harness(
-            make_app=_harness_attr(root, cfg["app"]),
-            build_db=_harness_attr(root, cfg["db"]),
-            login=_harness_attr(root, cfg["login"]) if "login" in cfg else None,
-            services=dict(_harness_attr(root, cfg["services"])) if "services" in cfg else {},
-            runtime=_harness_attr(root, cfg["runtime"]) if "runtime" in cfg else None,
-            source="studio.toml",
-        )
-    if (root / "harness.py").is_file():
-        got: dict[str, Any] = {}
-        for attr in ("make_app", "build_db", "login", "SERVICES", "RUNTIME"):
-            try:
-                got[attr] = _harness_attr(root, f"harness:{attr}")
-            except AttributeError:
-                got[attr] = None
-        if got["make_app"] is None or got["build_db"] is None:
-            return None
-        return Harness(
-            make_app=got["make_app"],
-            build_db=got["build_db"],
-            login=got["login"],
-            services=dict(got["SERVICES"] or {}),
-            runtime=got["RUNTIME"],
-            source="harness.py",
-        )
-    return None
+    """The app's harness (:func:`discover_harness` without the reason)."""
+    return discover_harness(root)[0]
 
 
 # ---- databases ----------------------------------------------------------------------------
@@ -318,7 +317,7 @@ class Executor:
         scratch: Path,
         planner: W.Planner,
         sweeps: list[dict[str, Any]],
-        list_rule: str = "first",
+        list_rule: str = DEFAULT_LIST_RULE,
     ) -> None:
         self.view = view
         self.harness = harness
@@ -354,9 +353,11 @@ class Executor:
 
     @staticmethod
     def render(route: W.RouteV, values: Mapping[str, Any]) -> str:
+        """The path with its parameters filled; a parameter with no value is a KeyError (it is
+        never filled with a guess: R2-D4, :meth:`_step` refuses the step first)."""
         path = route.path
         for name in route.path_params:
-            path = path.replace("{" + name + "}", str(values.get(name, 1)))
+            path = path.replace("{" + name + "}", str(values[name]))
         return path
 
     def _producer(self, out: FlowOutcome, table: str) -> StepRun | None:
@@ -503,6 +504,11 @@ class Executor:
                     "from_run": out.runs.index(prod) if prod in out.runs else None,
                 }
             )
+        for name in route.path_params:
+            if name not in path_values:
+                # R2-D4: no silent id. The step is not sent and the flow fails, naming it.
+                rec.reason = f"unbound path param {name}: no producer"
+                return
         rec.path = self.render(route, path_values)
         creates = view.creates.get(route.key, [])
         key_fields = {c["key_from"] for c in creates if c["key_from"] != "server"}
@@ -888,7 +894,7 @@ class Pipeline:
         max_steps: int = W.MAX_STEPS,
         services: bool = True,
         database: str = "auto",
-        list_rule: str = "first",
+        list_rule: str = DEFAULT_LIST_RULE,
     ) -> None:
         self.root = Path(root).resolve()
         self.out_dir = Path(out_dir).resolve()
@@ -930,8 +936,18 @@ class Pipeline:
         self.wall["plan"] = round(time.perf_counter() - t1, 3)
         view = plan.view
         harness: Harness | None = None
+        reason: str | None = "static run requested (--static)"
+        dialect: str | None = None
         if not self.static:
-            harness = find_harness(self.root)
+            harness, reason = discover_harness(self.root)
+            if harness is not None:
+                from lattice.importer.check_invocation import choose_database
+
+                dialect, why = choose_database(
+                    harness.database, self.database, x.get("dialect") or None
+                )
+                if dialect is None:
+                    harness, reason = None, f"{harness.file}: {why}"
         doc: dict[str, Any] = {"schema": W.SCHEMA}
         doc["app"] = {
             "module": x["module"],
@@ -953,15 +969,22 @@ class Pipeline:
             self.out_dir.mkdir(parents=True, exist_ok=True)
             self.scratch.mkdir(parents=True, exist_ok=True)
             try:
-                flows_out, machines_out, id_sources, swept = self._dynamic(plan, pl, harness)
+                flows_out, machines_out, id_sources, swept = self._dynamic(
+                    plan, pl, harness, dialect or "mysql"
+                )
             finally:
                 shutil.rmtree(self.scratch, ignore_errors=True)
+        observed = harness is not None and mode == "observed"
         doc["run"] = {
             "mode": mode,
-            "harness": harness.source if harness is not None and mode == "observed" else None,
+            "harness": harness.source if harness is not None and observed else None,
+            "harness_file": harness.file if harness is not None and observed else None,
+            "harness_reason": None if observed else reason,
             "users": list(self.users),
             "services_swept": sorted(swept),
             "caps": {"max_flows": self.max_flows, "max_steps": self.max_steps},
+            "list_rule": self.list_rule,
+            "database": dialect if observed else None,
         }
         doc["edges"] = [
             W.edge_row(
@@ -1017,7 +1040,7 @@ class Pipeline:
     # -- the dynamic run
 
     def _dynamic(
-        self, plan: W.Plan, pl: W.Planner, h: Harness
+        self, plan: W.Plan, pl: W.Planner, h: Harness, dialect: str
     ) -> tuple[
         list[dict[str, Any]], list[dict[str, Any]], dict[tuple[str, str, str], str], list[str]
     ]:
@@ -1028,7 +1051,6 @@ class Pipeline:
         runtime = h.runtime
         if runtime is None:
             runtime = GoGinFrontEnd().runtime(self.root, self.package, model=model_from_extract(x))
-        dialect = (x.get("dialect") or "mysql") if self.database == "auto" else self.database
         provider: Any
         if dialect == "sqlite":
             provider = SqliteProvider(h.build_db, self.scratch)
@@ -1641,10 +1663,10 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--database", default="auto", choices=("auto", "mysql", "sqlite"))
     p.add_argument(
         "--list-rule",
-        default="first",
-        choices=("first", "specific"),
-        help="which GET over a table lists its ids: the first in registration order (D2) or "
-        "the one touching the fewest tables (a post-hoc variant)",
+        default=DEFAULT_LIST_RULE,
+        choices=LIST_RULES,
+        help="which GET over a table lists its ids: the one touching the fewest tables "
+        "(default, round 2) or the first in registration order (round 1, D2)",
     )
     return p
 

@@ -1,0 +1,28 @@
+control-r1: {"id": "control-r1", "failing": [], "rc": 0, "probes": 17, "passes": true, "containers_before": [], "containers_after": [], "stderr": ""}
+control-r2: {"id": "control-r2", "failing": [], "rc": 0, "probes": 6, "passes": true, "containers_before": [], "containers_after": [], "stderr": ""}
+WR1: killed=True by ['PH'] (expected PH)
+WR2: killed=True by ['PH'] (expected PH)
+WR3: killed=True by ['PH'] (expected PH)
+WR4: killed=True by ['PH'] (expected PH)
+WR5: killed=True by ['PH'] (expected PH)
+WR6: killed=True by ['PH'] (expected PH)
+WR7: killed=True by ['PH'] (expected PH)
+WR8: killed=True by ['PL'] (expected PL)
+WR9: killed=True by ['PL1'] (expected PL1)
+WR10: killed=True by ['unit: tests/importer/test_workflows.py -k unbound_path_param or render_has_no_default'] (expected PU)
+WR11: killed=True by ['PH'] (expected PH)
+WF1: killed=True by ['PE', 'PF', 'PK', 'PS'] (expected PE)
+WF2: killed=True by ['PF', 'PK', 'PS'] (expected PF)
+WF3: killed=True by ['PD', 'PR'] (expected PR)
+WF4: killed=True by ['PF', 'PK'] (expected PF)
+WF5: killed=True by ['PM'] (expected PM)
+WF6: killed=True by ['PM'] (expected PM)
+WF7: killed=True by ['PD'] (expected PD)
+WF8: killed=True by ['PK'] (expected PF)
+WF9: killed=True by ['PF', 'PK', 'PS'] (expected PV)
+WF10: killed=True by ['unit: tests/importer/test_workflows.py -k not_in_the_code_evidence'] (expected PG)
+WF11: killed=True by ['PB-extract', 'unit: tests/gocheck/test_goextract_workflow.py -k default_output_has_no_workflow_key'] (expected PB-extract)
+WF12: killed=True by ['PW'] (expected PW)
+WF13: killed=True by ['PT'] (expected PT)
+killed 24/24
+$DRV dogfood/workflow_mutants.py --scratch $B2/m --out $B2/m-data    484.96s user 211.28s system 40% cpu 28:36.89 total

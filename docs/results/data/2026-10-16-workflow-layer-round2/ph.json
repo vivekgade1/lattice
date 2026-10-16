@@ -1,0 +1,687 @@
+{
+  "id": "PH",
+  "observed": {
+    "apps": {
+      "S": {
+        "database": "mysql",
+        "database_choice": [
+          "mysql",
+          null
+        ],
+        "file": "studio.toml",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": "harness:login",
+          "runtime": "harness:RUNTIME",
+          "services": "harness:SERVICES"
+        },
+        "resolved": [
+          "app",
+          "db",
+          "login",
+          "runtime"
+        ],
+        "services": [
+          "nudger"
+        ],
+        "source": "studio.toml"
+      },
+      "S-prime": {
+        "database": "mysql",
+        "database_choice": [
+          "mysql",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": "harness:login",
+          "runtime": "harness:RUNTIME",
+          "services": "harness:SERVICES"
+        },
+        "resolved": [
+          "app",
+          "db",
+          "login",
+          "runtime"
+        ],
+        "services": [
+          "nudger"
+        ],
+        "source": "check.sh"
+      },
+      "base": {
+        "cli_run": {
+          "caps": {
+            "max_flows": 96,
+            "max_steps": 8
+          },
+          "database": null,
+          "harness": null,
+          "harness_file": null,
+          "harness_reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+          "list_rule": "specific",
+          "mode": "static",
+          "services_swept": [],
+          "users": [
+            "root",
+            "ann"
+          ]
+        },
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "go": {
+        "database": "sqlite",
+        "database_choice": [
+          "sqlite",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_seed_db",
+          "login": "spec.seed:login",
+          "runtime": "harness:RUNTIME",
+          "services": "harness:SERVICES"
+        },
+        "resolved": [
+          "app",
+          "db",
+          "login",
+          "runtime"
+        ],
+        "services": [
+          "scheduler",
+          "worker"
+        ],
+        "source": "check.sh"
+      },
+      "mbo": {
+        "cli_run": {
+          "caps": {
+            "max_flows": 96,
+            "max_steps": 8
+          },
+          "database": null,
+          "harness": null,
+          "harness_file": null,
+          "harness_reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+          "list_rule": "specific",
+          "mode": "static",
+          "services_swept": [],
+          "users": [
+            "root",
+            "ann"
+          ]
+        },
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "mbs": {
+        "cli_run": {
+          "caps": {
+            "max_flows": 96,
+            "max_steps": 8
+          },
+          "database": null,
+          "harness": null,
+          "harness_file": null,
+          "harness_reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+          "list_rule": "specific",
+          "mode": "static",
+          "services_swept": [],
+          "users": [
+            "root",
+            "ann"
+          ]
+        },
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "mso": {
+        "database": "sqlite",
+        "database_choice": [
+          "sqlite",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_seed_db",
+          "login": "spec.seed:login",
+          "runtime": "harness:RUNTIME",
+          "services": null
+        },
+        "resolved": [
+          "app",
+          "db",
+          "login",
+          "runtime"
+        ],
+        "services": [],
+        "source": "check.sh"
+      },
+      "mss": {
+        "database": "sqlite",
+        "database_choice": [
+          "sqlite",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_seed_db",
+          "login": "spec.seed:login",
+          "runtime": "harness:RUNTIME",
+          "services": null
+        },
+        "resolved": [
+          "app",
+          "db",
+          "login",
+          "runtime"
+        ],
+        "services": [],
+        "source": "check.sh"
+      }
+    },
+    "fixtures": {
+      "bad_toml": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "studio.toml: cannot be read (TOMLDecodeError)",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "comments_and_strings": {
+        "database": "sqlite",
+        "database_choice": [
+          "sqlite",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": null,
+          "runtime": null,
+          "services": null
+        },
+        "resolved": [
+          "app",
+          "db"
+        ],
+        "services": [],
+        "source": "check.sh"
+      },
+      "disagree": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "ambiguous: the check invocations of check.sh and check.sh disagree on --db",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "dollar_database": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "check.sh: --database '$DB' holds a shell variable or substitution: it is not resolved",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "dollar_var": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "check.sh: --app '$APP' holds a shell variable or substitution: it is not resolved",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "equals_form": {
+        "database": "sqlite",
+        "database_choice": [
+          "sqlite",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": "harness:login",
+          "runtime": null,
+          "services": "harness:SERVICES"
+        },
+        "resolved": [
+          "app",
+          "db",
+          "login"
+        ],
+        "services": [
+          "scheduler",
+          "worker"
+        ],
+        "source": "check.sh"
+      },
+      "exec_continuation": {
+        "database": "sqlite",
+        "database_choice": [
+          "sqlite",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_seed_db",
+          "login": "seedmod:login",
+          "runtime": "harness:RUNTIME",
+          "services": null
+        },
+        "resolved": [
+          "app",
+          "db",
+          "login",
+          "runtime"
+        ],
+        "services": [],
+        "source": "check.sh"
+      },
+      "gate_file": {
+        "database": "mysql",
+        "database_choice": [
+          "mysql",
+          null
+        ],
+        "file": "ci/gate.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": null,
+          "runtime": null,
+          "services": null
+        },
+        "resolved": [
+          "app",
+          "db"
+        ],
+        "services": [],
+        "source": "check.sh"
+      },
+      "harness_py_only": {
+        "database": null,
+        "database_choice": [
+          "mysql",
+          null
+        ],
+        "file": "harness.py",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": "harness:login",
+          "runtime": "harness:RUNTIME",
+          "services": "harness:SERVICES"
+        },
+        "resolved": [
+          "app",
+          "db",
+          "login",
+          "runtime"
+        ],
+        "services": [
+          "scheduler",
+          "worker"
+        ],
+        "source": "harness.py"
+      },
+      "harness_seed_only": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "harness.py has no build_db (make_app and build_db are both required; no other names are tried)",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "import_error": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "check.sh: `harness:make_app` cannot be imported: ModuleNotFoundError",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "incomplete_app": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "studio.toml [app] names login, runtime but lacks app and db: app and db are both required",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "login_path_only": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "check.sh: the invocation logs in with --login-path and has no --login",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "mint_token_only": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "check.sh: the invocation logs in with --mint-token and has no --login",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "missing_db": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "check.sh: the invocation has no --db",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "no_invocation": {
+        "database": null,
+        "database_choice": [
+          "mysql",
+          null
+        ],
+        "file": "harness.py",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": "harness:login",
+          "runtime": "harness:RUNTIME",
+          "services": "harness:SERVICES"
+        },
+        "resolved": [
+          "app",
+          "db",
+          "login",
+          "runtime"
+        ],
+        "services": [
+          "scheduler",
+          "worker"
+        ],
+        "source": "harness.py"
+      },
+      "nope_ref": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "check.sh: `harness:nope` cannot be imported: AttributeError",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "nothing": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "postgres": {
+        "database": "postgres",
+        "database_choice": [
+          null,
+          "unsupported database 'postgres': the layer runs mysql and sqlite"
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": null,
+          "runtime": null,
+          "services": null
+        },
+        "resolved": [
+          "app",
+          "db"
+        ],
+        "services": [],
+        "source": "check.sh"
+      },
+      "runtime_go": {
+        "database": "sqlite",
+        "database_choice": [
+          "sqlite",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": null,
+          "runtime": "go",
+          "services": null
+        },
+        "resolved": [
+          "app",
+          "db",
+          "runtime"
+        ],
+        "services": [],
+        "source": "check.sh"
+      },
+      "runtime_process": {
+        "database": "sqlite",
+        "database_choice": [
+          "sqlite",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": null,
+          "runtime": "process",
+          "services": null
+        },
+        "resolved": [
+          "app",
+          "db",
+          "runtime"
+        ],
+        "services": [],
+        "source": "check.sh"
+      },
+      "services_not_mapping": {
+        "database": null,
+        "database_choice": [
+          null,
+          null
+        ],
+        "file": null,
+        "reason": "check.sh: `harness:RUNTIME` is not a mapping of service name -> command",
+        "refs": {},
+        "resolved": [],
+        "services": [],
+        "source": null
+      },
+      "services_undeclared": {
+        "database": "sqlite",
+        "database_choice": [
+          "sqlite",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": null,
+          "runtime": null,
+          "services": null
+        },
+        "resolved": [
+          "app",
+          "db"
+        ],
+        "services": [],
+        "source": "check.sh"
+      },
+      "streak_form": {
+        "database": "mysql",
+        "database_choice": [
+          "mysql",
+          null
+        ],
+        "file": "check.sh",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": "harness:login",
+          "runtime": "harness:RUNTIME",
+          "services": "harness:SERVICES"
+        },
+        "resolved": [
+          "app",
+          "db",
+          "login",
+          "runtime"
+        ],
+        "services": [
+          "scheduler",
+          "worker"
+        ],
+        "source": "check.sh"
+      },
+      "studio_wins": {
+        "database": "mysql",
+        "database_choice": [
+          "mysql",
+          null
+        ],
+        "file": "studio.toml",
+        "reason": null,
+        "refs": {
+          "app": "harness:make_app",
+          "db": "harness:build_db",
+          "login": null,
+          "runtime": null,
+          "services": null
+        },
+        "resolved": [
+          "app",
+          "db"
+        ],
+        "services": [],
+        "source": "studio.toml"
+      }
+    },
+    "mismatch": []
+  },
+  "pass": true,
+  "predicted": "all exact",
+  "probe": "discovery per app and per fixture: source, file, resolved refs, services, database, reason",
+  "ran": true
+}

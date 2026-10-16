@@ -1,0 +1,30 @@
+PH: True {"apps": {"S": {"database": "mysql", "database_choice": ["mysql", null], "file": "studio.toml", "reason": null, "refs": {"app": "harness:make_app", "db": "harness:build_db", "login": "harness:login", "runtime": "harness:
+PL: True {"flows": 69, "verified": 58, "unverified": 5, "failed": 6, "verified_fraction": 0.841, "list_routes": {"GET /v1/nudges": 5}, "home_bindings": 0, "s_prime": {"run": {"caps": {"max_flows": 96, "max_steps": 8}, "database":
+PL1: True {"byte_identical": true, "summary": {"edges": 12, "failed": 8, "flows": 68, "machines": 1, "unverified": 1, "verified": 59}, "run": {"caps": {"max_flows": 96, "max_steps": 8}, "database": "mysql", "harness": "studio.toml
+PE: True {"hit": "11/11", "missing": [], "extra": [], "id_source": {"completions": ["client"], "devices": ["response"], "habits": ["client"], "nudges": ["list"]}, "body_edges": [{"table": "habits", "producer": "POST /v1/habits", 
+PS: True {"lenient": "3/20", "strict": "1/20", "lenient_verified_only": "3/20", "strict_verified_only": "1/20", "matched_lenient": [["PATCH /v1/habits/{}", "GET /v1/habits/{}/progress"], ["POST /v1/habits", "POST /v1/habits/{}/co
+PS2: None {"lenient": 0.058, "strict": 0.0145, "flows": 69}
+PK: True {"synthesised": "3/3", "verified": "2/3", "synth": {"K1": true, "K2": true, "K3": true}, "status": {"K1": ["verified", "verified"], "K2": "failed", "K3": "verified"}, "k2_reason": "step 1 POST /v1/completions/batch answe
+PF: True {"count": 69, "counts": {"verified": 58, "unverified": 5, "failed": 6}, "fractions": {"verified": 0.8406, "unverified": 0.0725, "failed": 0.087}, "by_kind": {"pair": {"verified": 9, "failed": 1, "unverified": 1}, "lifecy
+PG: True {"route": "21/21", "handler": "21/21", "binding": "113/113", "status": "20/20", "param_use_line": "150/150"}
+PM: True {"states": ["failed", "pending", "sent", "suppressed"], "edges": [["pending", "failed"], ["pending", "sent"], ["pending", "suppressed"]], "initial": ["pending", "suppressed"], "observed_initial": ["pending"], "observed_m
+PV: None {"sources": {"timezone": "probe", "period": "literal", "date": "bound", "email": "probe", "installation_id": "probe"}, "values": {"timezone": "UTC", "period": "week", "date": "2026-03-04", "email": "wf2@example.test", "i
+PJs: True {"base": {"identical_to_round1": true, "run": {"caps": {"max_flows": 96, "max_steps": 8}, "database": null, "harness": null, "harness_file": null, "harness_reason": "no harness found; looked for studio.toml [app] (app an
+PJ: True {"go": {"predicted": {"flows": "80 (75-100)", "verified": "0.20 (0.05-0.40)", "failed": "0.70 (0.45-0.90)", "slots": "16/24", "skeletons": "lenient 0 (0-2) / strict 0 (0-1)", "jobrun": "5/5 states, 3/5 static, initial ex
+PJ-my: None {"run": {"caps": {"max_flows": 96, "max_steps": 8}, "database": "mysql", "harness": "check.sh", "harness_file": "check.sh", "harness_reason": null, "list_rule": "specific", "mode": "observed", "services_swept": [], "user
+PU: True {"sent_unbound": {"S": 0, "S-prime": 0, "go": 0, "mso": 0, "mss": 0}, "examples": {}, "failed_reasons_by_param": {"S": {}, "S-prime": {}, "go": {}, "mso": {}, "mss": {}}, "planned_unbound_in_static_go": {"steps_with_unbo
+PD: True {"static": "11/11", "dynamic": "10/10", "leaks": [], "j_dynamic": {"go": "10/10", "mso": "10/10", "mss": "10/10"}, "j_leaks": []}
+PR: True {"S": {"observed": {"scenarios": 58, "failures": 0, "failed": {}}, "pass": true}, "go": {"observed": {"scenarios": 2, "failures": 0, "failed": {}}, "pass": true}, "mso": {"observed": {"scenarios": 2, "failures": 0, "fail
+PG-J: NOT RUN (report-only on J would need the runner to open the apps' .go files (R2-D7))
+PT: True {"containers_after_each_run": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "names": [], "now": [], "app_processes": []}
+PT-sigint: True {"containers": 0, "names": [], "apps": 0, "interrupted_mid_flow": true, "container_seen": true, "snapshots_when_interrupted": 12, "exited": true, "returncode": 0, "scratch_removed": true}
+PT-sigint-go: True {"containers": 0, "names": [], "apps": 0, "interrupted_mid_flow": true, "container_seen": true, "snapshots_when_interrupted": 6, "exited": true, "returncode": 0, "scratch_removed": true}
+PX: True {"S_static_median_s": 0.27, "S_dynamic_s": [35.4, 34.3, 30.9, 31.3, 35.0, 31.6, 31.5, 31.4, 33.9, 33.2], "J_run_max_s": 5.0, "J_median_s": {"go": 4.8, "mso": 4.5, "mss": 1.4}, "J_my_s": 18.2, "stage_s": 590.9}
+PW: True {"archives": {"S": {"changed": 0, "new": 0}, "go": {"changed": 0, "new": 0}, "mso": {"changed": 0, "new": 0}, "mss": {"changed": 0, "new": 0}, "base": {"changed": 0, "new": 0}, "mbo": {"changed": 0, "new": 0}, "mbs": {"c
+PB-extract: True {"identical": "4/4", "different": [], "committed_equal": {"S": true, "S4": true, "S model.to_json": true}}
+PB-gocheck: True {"changed": ["lattice/gocheck/src/goextract.go", "lattice/gocheck/src/goextract_assemble.go", "lattice/gocheck/src/goextract_closure.go", "lattice/gocheck/src/goextract_owner.go", "lattice/gocheck/src/goextract_raise.go"
+PB-diff: True {"foreign": [], "frozen_diff": [], "scorer_unchanged": {"score_held_out": true, "spec_truth": true}, "changed": ["dogfood/workflow_mutants.py", "dogfood/workflow_probes.py", "lattice/importer/check_invocation.py", "latti
+PB-lint: True {"go_vet_rc": 0, "gofmt": [], "ruff_rc": 0, "ruff_format_rc": 0, "ruff_out": "All checks passed!\n31 files already formatted\n", "files": ["dogfood/workflow_mutants.py", "dogfood/workflow_probes.py", "lattice/importer/ch
+PB-spike-a: True {"ran": ["LEAK", "PA", "PA2", "PD", "PE", "PE2", "PF", "PF2", "PM", "PO", "PR1", "PR2", "PR3", "PS", "PT", "PU", "PW"], "failed": [], "rc": 0}
+LEAK: True 0
+$DRV dogfood/workflow_probes.py --round2 --streak-ref a0679e9 --users ann,ben  161.59s user 65.07s system 38% cpu 9:55.72 total

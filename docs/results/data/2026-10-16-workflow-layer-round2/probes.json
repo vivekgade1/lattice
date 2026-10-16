@@ -1,0 +1,2297 @@
+{
+  "round": 2,
+  "streak_ref": "a0679e9",
+  "users": [
+    "ann",
+    "ben"
+  ],
+  "j_users": [
+    "root",
+    "ann"
+  ],
+  "static_runs": 10,
+  "runs": 10,
+  "j_runs": 10,
+  "ran": [
+    "LEAK",
+    "PB-diff",
+    "PB-extract",
+    "PB-gocheck",
+    "PB-lint",
+    "PB-spike-a",
+    "PD",
+    "PE",
+    "PF",
+    "PG",
+    "PH",
+    "PJ",
+    "PJ-my",
+    "PJs",
+    "PK",
+    "PL",
+    "PL1",
+    "PM",
+    "PR",
+    "PS",
+    "PS2",
+    "PT",
+    "PT-sigint",
+    "PT-sigint-go",
+    "PU",
+    "PV",
+    "PW",
+    "PX"
+  ],
+  "not_run": {
+    "PG-J": "report-only on J would need the runner to open the apps' .go files (R2-D7)"
+  },
+  "results": [
+    {
+      "id": "PH",
+      "probe": "discovery per app and per fixture: source, file, resolved refs, services, database, reason",
+      "ran": true,
+      "predicted": "all exact",
+      "observed": {
+        "apps": {
+          "S": {
+            "database": "mysql",
+            "database_choice": [
+              "mysql",
+              null
+            ],
+            "file": "studio.toml",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": "harness:login",
+              "runtime": "harness:RUNTIME",
+              "services": "harness:SERVICES"
+            },
+            "resolved": [
+              "app",
+              "db",
+              "login",
+              "runtime"
+            ],
+            "services": [
+              "nudger"
+            ],
+            "source": "studio.toml"
+          },
+          "S-prime": {
+            "database": "mysql",
+            "database_choice": [
+              "mysql",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": "harness:login",
+              "runtime": "harness:RUNTIME",
+              "services": "harness:SERVICES"
+            },
+            "resolved": [
+              "app",
+              "db",
+              "login",
+              "runtime"
+            ],
+            "services": [
+              "nudger"
+            ],
+            "source": "check.sh"
+          },
+          "go": {
+            "database": "sqlite",
+            "database_choice": [
+              "sqlite",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_seed_db",
+              "login": "spec.seed:login",
+              "runtime": "harness:RUNTIME",
+              "services": "harness:SERVICES"
+            },
+            "resolved": [
+              "app",
+              "db",
+              "login",
+              "runtime"
+            ],
+            "services": [
+              "scheduler",
+              "worker"
+            ],
+            "source": "check.sh"
+          },
+          "mso": {
+            "database": "sqlite",
+            "database_choice": [
+              "sqlite",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_seed_db",
+              "login": "spec.seed:login",
+              "runtime": "harness:RUNTIME",
+              "services": null
+            },
+            "resolved": [
+              "app",
+              "db",
+              "login",
+              "runtime"
+            ],
+            "services": [],
+            "source": "check.sh"
+          },
+          "mss": {
+            "database": "sqlite",
+            "database_choice": [
+              "sqlite",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_seed_db",
+              "login": "spec.seed:login",
+              "runtime": "harness:RUNTIME",
+              "services": null
+            },
+            "resolved": [
+              "app",
+              "db",
+              "login",
+              "runtime"
+            ],
+            "services": [],
+            "source": "check.sh"
+          },
+          "base": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null,
+            "cli_run": {
+              "caps": {
+                "max_flows": 96,
+                "max_steps": 8
+              },
+              "database": null,
+              "harness": null,
+              "harness_file": null,
+              "harness_reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+              "list_rule": "specific",
+              "mode": "static",
+              "services_swept": [],
+              "users": [
+                "root",
+                "ann"
+              ]
+            }
+          },
+          "mbo": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null,
+            "cli_run": {
+              "caps": {
+                "max_flows": 96,
+                "max_steps": 8
+              },
+              "database": null,
+              "harness": null,
+              "harness_file": null,
+              "harness_reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+              "list_rule": "specific",
+              "mode": "static",
+              "services_swept": [],
+              "users": [
+                "root",
+                "ann"
+              ]
+            }
+          },
+          "mbs": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null,
+            "cli_run": {
+              "caps": {
+                "max_flows": 96,
+                "max_steps": 8
+              },
+              "database": null,
+              "harness": null,
+              "harness_file": null,
+              "harness_reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+              "list_rule": "specific",
+              "mode": "static",
+              "services_swept": [],
+              "users": [
+                "root",
+                "ann"
+              ]
+            }
+          }
+        },
+        "fixtures": {
+          "streak_form": {
+            "database": "mysql",
+            "database_choice": [
+              "mysql",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": "harness:login",
+              "runtime": "harness:RUNTIME",
+              "services": "harness:SERVICES"
+            },
+            "resolved": [
+              "app",
+              "db",
+              "login",
+              "runtime"
+            ],
+            "services": [
+              "scheduler",
+              "worker"
+            ],
+            "source": "check.sh"
+          },
+          "exec_continuation": {
+            "database": "sqlite",
+            "database_choice": [
+              "sqlite",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_seed_db",
+              "login": "seedmod:login",
+              "runtime": "harness:RUNTIME",
+              "services": null
+            },
+            "resolved": [
+              "app",
+              "db",
+              "login",
+              "runtime"
+            ],
+            "services": [],
+            "source": "check.sh"
+          },
+          "equals_form": {
+            "database": "sqlite",
+            "database_choice": [
+              "sqlite",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": "harness:login",
+              "runtime": null,
+              "services": "harness:SERVICES"
+            },
+            "resolved": [
+              "app",
+              "db",
+              "login"
+            ],
+            "services": [
+              "scheduler",
+              "worker"
+            ],
+            "source": "check.sh"
+          },
+          "runtime_go": {
+            "database": "sqlite",
+            "database_choice": [
+              "sqlite",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": null,
+              "runtime": "go",
+              "services": null
+            },
+            "resolved": [
+              "app",
+              "db",
+              "runtime"
+            ],
+            "services": [],
+            "source": "check.sh"
+          },
+          "runtime_process": {
+            "database": "sqlite",
+            "database_choice": [
+              "sqlite",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": null,
+              "runtime": "process",
+              "services": null
+            },
+            "resolved": [
+              "app",
+              "db",
+              "runtime"
+            ],
+            "services": [],
+            "source": "check.sh"
+          },
+          "comments_and_strings": {
+            "database": "sqlite",
+            "database_choice": [
+              "sqlite",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": null,
+              "runtime": null,
+              "services": null
+            },
+            "resolved": [
+              "app",
+              "db"
+            ],
+            "services": [],
+            "source": "check.sh"
+          },
+          "services_undeclared": {
+            "database": "sqlite",
+            "database_choice": [
+              "sqlite",
+              null
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": null,
+              "runtime": null,
+              "services": null
+            },
+            "resolved": [
+              "app",
+              "db"
+            ],
+            "services": [],
+            "source": "check.sh"
+          },
+          "studio_wins": {
+            "database": "mysql",
+            "database_choice": [
+              "mysql",
+              null
+            ],
+            "file": "studio.toml",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": null,
+              "runtime": null,
+              "services": null
+            },
+            "resolved": [
+              "app",
+              "db"
+            ],
+            "services": [],
+            "source": "studio.toml"
+          },
+          "gate_file": {
+            "database": "mysql",
+            "database_choice": [
+              "mysql",
+              null
+            ],
+            "file": "ci/gate.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": null,
+              "runtime": null,
+              "services": null
+            },
+            "resolved": [
+              "app",
+              "db"
+            ],
+            "services": [],
+            "source": "check.sh"
+          },
+          "no_invocation": {
+            "database": null,
+            "database_choice": [
+              "mysql",
+              null
+            ],
+            "file": "harness.py",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": "harness:login",
+              "runtime": "harness:RUNTIME",
+              "services": "harness:SERVICES"
+            },
+            "resolved": [
+              "app",
+              "db",
+              "login",
+              "runtime"
+            ],
+            "services": [
+              "scheduler",
+              "worker"
+            ],
+            "source": "harness.py"
+          },
+          "harness_py_only": {
+            "database": null,
+            "database_choice": [
+              "mysql",
+              null
+            ],
+            "file": "harness.py",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": "harness:login",
+              "runtime": "harness:RUNTIME",
+              "services": "harness:SERVICES"
+            },
+            "resolved": [
+              "app",
+              "db",
+              "login",
+              "runtime"
+            ],
+            "services": [
+              "scheduler",
+              "worker"
+            ],
+            "source": "harness.py"
+          },
+          "postgres": {
+            "database": "postgres",
+            "database_choice": [
+              null,
+              "unsupported database 'postgres': the layer runs mysql and sqlite"
+            ],
+            "file": "check.sh",
+            "reason": null,
+            "refs": {
+              "app": "harness:make_app",
+              "db": "harness:build_db",
+              "login": null,
+              "runtime": null,
+              "services": null
+            },
+            "resolved": [
+              "app",
+              "db"
+            ],
+            "services": [],
+            "source": "check.sh"
+          },
+          "nothing": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "dollar_var": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "check.sh: --app '$APP' holds a shell variable or substitution: it is not resolved",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "dollar_database": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "check.sh: --database '$DB' holds a shell variable or substitution: it is not resolved",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "nope_ref": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "check.sh: `harness:nope` cannot be imported: AttributeError",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "import_error": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "check.sh: `harness:make_app` cannot be imported: ModuleNotFoundError",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "login_path_only": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "check.sh: the invocation logs in with --login-path and has no --login",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "mint_token_only": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "check.sh: the invocation logs in with --mint-token and has no --login",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "incomplete_app": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "studio.toml [app] names login, runtime but lacks app and db: app and db are both required",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "harness_seed_only": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "harness.py has no build_db (make_app and build_db are both required; no other names are tried)",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "disagree": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "ambiguous: the check invocations of check.sh and check.sh disagree on --db",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "missing_db": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "check.sh: the invocation has no --db",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "services_not_mapping": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "check.sh: `harness:RUNTIME` is not a mapping of service name -> command",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          },
+          "bad_toml": {
+            "database": null,
+            "database_choice": [
+              null,
+              null
+            ],
+            "file": null,
+            "reason": "studio.toml: cannot be read (TOMLDecodeError)",
+            "refs": {},
+            "resolved": [],
+            "services": [],
+            "source": null
+          }
+        },
+        "mismatch": []
+      },
+      "pass": true
+    },
+    {
+      "id": "PL",
+      "probe": "list rule on S, default (specific): flows, statuses, the nudge list route, no /v1/home id binding",
+      "ran": true,
+      "predicted": {
+        "flows": "69 (65-75)",
+        "verified": "58 (>= 0.80)",
+        "unverified": 5,
+        "failed": "6 (<= 6)",
+        "list_routes": [
+          "GET /v1/nudges"
+        ],
+        "home_bindings": 0
+      },
+      "observed": {
+        "flows": 69,
+        "verified": 58,
+        "unverified": 5,
+        "failed": 6,
+        "verified_fraction": 0.841,
+        "list_routes": {
+          "GET /v1/nudges": 5
+        },
+        "home_bindings": 0,
+        "s_prime": {
+          "run": {
+            "caps": {
+              "max_flows": 96,
+              "max_steps": 8
+            },
+            "database": "mysql",
+            "harness": "check.sh",
+            "harness_file": "check.sh",
+            "harness_reason": null,
+            "list_rule": "specific",
+            "mode": "observed",
+            "services_swept": [
+              "nudger"
+            ],
+            "users": [
+              "ann",
+              "ben"
+            ]
+          },
+          "flows_and_statuses_equal_S": true,
+          "equal_after_dropping_harness_keys": true
+        }
+      },
+      "pass": true,
+      "run": {
+        "caps": {
+          "max_flows": 96,
+          "max_steps": 8
+        },
+        "database": "mysql",
+        "harness": "studio.toml",
+        "harness_file": "studio.toml",
+        "harness_reason": null,
+        "list_rule": "specific",
+        "mode": "observed",
+        "services_swept": [
+          "nudger"
+        ],
+        "users": [
+          "ann",
+          "ben"
+        ]
+      },
+      "failed_reasons": {
+        "wf-7f0f99bdcf": "step 1 POST /v1/completions/batch answered 422 (validation_failed): status 422",
+        "wf-6f92837afc": "step 3 POST /v1/nudges/{id}/dismiss was not sent: id: no id: the producer's answer has none and no list route yields one",
+        "wf-b2ee5de88e": "step 2 GET /v1/habits/{id} answered 404 (not_found): status 404",
+        "wf-ebadb4a811": "step 2 GET /v1/habits/{id}/history answered 404 (not_found): status 404",
+        "wf-da24bc5b11": "step 2 GET /v1/habits/{id}/progress answered 404 (not_found): status 404",
+        "wf-9523e7a835": "step 1 POST /v1/completions/batch answered 422 (validation_failed): status 422"
+      }
+    },
+    {
+      "id": "PL1",
+      "probe": "--list-rule first on S equals the round-1 workflows.json after dropping the 4 new run keys (68 / 59 / 1 / 8)",
+      "ran": true,
+      "predicted": "byte-identical",
+      "observed": {
+        "byte_identical": true,
+        "summary": {
+          "edges": 12,
+          "failed": 8,
+          "flows": 68,
+          "machines": 1,
+          "unverified": 1,
+          "verified": 59
+        },
+        "run": {
+          "caps": {
+            "max_flows": 96,
+            "max_steps": 8
+          },
+          "database": "mysql",
+          "harness": "studio.toml",
+          "harness_file": "studio.toml",
+          "harness_reason": null,
+          "list_rule": "first",
+          "mode": "observed",
+          "services_swept": [
+            "nudger"
+          ],
+          "users": [
+            "ann",
+            "ben"
+          ]
+        },
+        "static_equals_round1_static": true
+      },
+      "pass": true
+    },
+    {
+      "id": "PE",
+      "probe": "dependency edges vs the 11 spec-implied; extras; id sources; the batch body edge",
+      "ran": true,
+      "predicted": {
+        "hit": "11/11 (9-11)",
+        "extra": "0 (0-2)",
+        "id_source": {
+          "habits": "client",
+          "completions": "client",
+          "devices": "response",
+          "nudges": "list"
+        }
+      },
+      "observed": {
+        "hit": "11/11",
+        "missing": [],
+        "extra": [],
+        "id_source": {
+          "completions": [
+            "client"
+          ],
+          "devices": [
+            "response"
+          ],
+          "habits": [
+            "client"
+          ],
+          "nudges": [
+            "list"
+          ]
+        },
+        "body_edges": [
+          {
+            "table": "habits",
+            "producer": "POST /v1/habits",
+            "consumer": "POST /v1/completions/batch",
+            "param": "habit_id",
+            "id_source": "client"
+          }
+        ],
+        "static_equals_dynamic": true,
+        "mode": "observed"
+      },
+      "pass": true
+    },
+    {
+      "id": "PS",
+      "probe": "structural recall vs the 20 multi-route spec skeletons (strict, lenient)",
+      "ran": true,
+      "predicted": {
+        "lenient (the gate, R4)": "3/20 (1-5)",
+        "verified-only lenient": "1-3"
+      },
+      "observed": {
+        "lenient": "3/20",
+        "strict": "1/20",
+        "lenient_verified_only": "3/20",
+        "strict_verified_only": "1/20",
+        "matched_lenient": [
+          [
+            "PATCH /v1/habits/{}",
+            "GET /v1/habits/{}/progress"
+          ],
+          [
+            "POST /v1/habits",
+            "POST /v1/habits/{}/completions",
+            "GET /v1/habits/{}/completions"
+          ],
+          [
+            "POST /v1/habits/{}/completions",
+            "DELETE /v1/habits/{}/completions/{}"
+          ]
+        ],
+        "matched_strict": [
+          [
+            "POST /v1/habits",
+            "POST /v1/habits/{}/completions",
+            "GET /v1/habits/{}/completions"
+          ]
+        ]
+      },
+      "pass": true,
+      "rows": [
+        {
+          "skeleton": [
+            "DELETE /v1/habits/{}",
+            "GET /v1/habits/{}",
+            "POST /v1/habits/{}/completions",
+            "DELETE /v1/habits/{}"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "DELETE /v1/me",
+            "GET /v1/me",
+            "POST /v1/auth/login"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "GET /v1/habits/{}",
+            "PATCH /v1/habits/{}",
+            "DELETE /v1/habits/{}",
+            "POST /v1/habits/{}/completions",
+            "GET /v1/habits/{}/progress",
+            "POST /v1/nudges/{}/dismiss",
+            "DELETE /v1/devices/{}"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "GET /v1/habits/{}/progress",
+            "POST /v1/habits/{}/completions"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "GET /v1/me",
+            "POST /v1/completions/batch",
+            "GET /v1/me",
+            "POST /v1/habits",
+            "GET /v1/me"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "GET /v1/me",
+            "POST /v1/habits"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "GET /v1/nudges",
+            "POST /v1/nudges/{}/dismiss",
+            "GET /v1/nudges",
+            "GET /v1/home",
+            "GET /v1/sync"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "PATCH /v1/habits/{}",
+            "GET /v1/habits",
+            "PATCH /v1/habits/{}"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "PATCH /v1/habits/{}",
+            "GET /v1/habits/{}/progress"
+          ],
+          "strict": 0,
+          "lenient": 1,
+          "strict_verified": 0,
+          "lenient_verified": 1
+        },
+        {
+          "skeleton": [
+            "POST /v1/habits",
+            "PATCH /v1/habits/{}",
+            "POST /v1/habits",
+            "PATCH /v1/habits/{}",
+            "POST /v1/habits"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "POST /v1/habits",
+            "POST /v1/habits/{}/completions",
+            "GET /v1/habits/{}/completions"
+          ],
+          "strict": 1,
+          "lenient": 1,
+          "strict_verified": 1,
+          "lenient_verified": 1
+        },
+        {
+          "skeleton": [
+            "POST /v1/habits",
+            "POST /v1/habits/{}/completions",
+            "GET /v1/sync",
+            "DELETE /v1/habits/{}",
+            "GET /v1/sync"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "POST /v1/habits",
+            "POST /v1/habits/{}/completions",
+            "PATCH /v1/habits/{}",
+            "DELETE /v1/habits/{}"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "POST /v1/habits/{}/completions",
+            "DELETE /v1/habits/{}/completions/{}"
+          ],
+          "strict": 0,
+          "lenient": 2,
+          "strict_verified": 0,
+          "lenient_verified": 2
+        },
+        {
+          "skeleton": [
+            "POST /v1/habits/{}/completions",
+            "DELETE /v1/habits/{}/completions/{}",
+            "POST /v1/habits/{}/completions"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "POST /v1/nudges/{}/dismiss",
+            "GET /v1/nudges",
+            "POST /v1/nudges/{}/dismiss"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "POST /v1/nudges/{}/dismiss",
+            "PUT /v1/me"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "PUT /v1/me",
+            "GET /v1/nudges"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "PUT /v1/me",
+            "POST /v1/habits",
+            "POST /v1/habits/{}/completions"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        },
+        {
+          "skeleton": [
+            "PUT /v1/me",
+            "POST /v1/habits/{}/completions"
+          ],
+          "strict": 0,
+          "lenient": 0,
+          "strict_verified": 0,
+          "lenient_verified": 0
+        }
+      ]
+    },
+    {
+      "id": "PS2",
+      "probe": "spec precision: flows matching any spec skeleton / flows (report only)",
+      "ran": true,
+      "predicted": "0.03-0.15",
+      "observed": {
+        "lenient": 0.058,
+        "strict": 0.0145,
+        "flows": 69
+      },
+      "pass": null
+    },
+    {
+      "id": "PK",
+      "probe": "the plan's known flows: K1 account + habit, K2 batch, K3 device",
+      "ran": true,
+      "predicted": {
+        "synthesised": "3/3",
+        "verified": "K1 and K3; K2 failed (nested items, 422)"
+      },
+      "observed": {
+        "synthesised": "3/3",
+        "verified": "2/3",
+        "synth": {
+          "K1": true,
+          "K2": true,
+          "K3": true
+        },
+        "status": {
+          "K1": [
+            "verified",
+            "verified"
+          ],
+          "K2": "failed",
+          "K3": "verified"
+        },
+        "k2_reason": "step 1 POST /v1/completions/batch answered 422 (validation_failed): status 422"
+      },
+      "pass": true,
+      "flows": {
+        "K1_account": [
+          "wf-a8966be4b8"
+        ],
+        "K1_habit": [
+          "wf-5eebdfc88b"
+        ],
+        "K2": [
+          "wf-7f0f99bdcf",
+          "wf-9523e7a835"
+        ],
+        "K3": [
+          "wf-801d529a0f"
+        ]
+      }
+    },
+    {
+      "id": "PF",
+      "probe": "flows on S: count; verified / unverified / failed fractions",
+      "ran": true,
+      "predicted": {
+        "count": "69 (65-75)",
+        "verified": 0.841,
+        "unverified": 0.072,
+        "failed": 0.087
+      },
+      "observed": {
+        "count": 69,
+        "counts": {
+          "verified": 58,
+          "unverified": 5,
+          "failed": 6
+        },
+        "fractions": {
+          "verified": 0.8406,
+          "unverified": 0.0725,
+          "failed": 0.087
+        },
+        "by_kind": {
+          "pair": {
+            "verified": 9,
+            "failed": 1,
+            "unverified": 1
+          },
+          "lifecycle": {
+            "verified": 1
+          },
+          "account": {
+            "verified": 1,
+            "unverified": 1
+          },
+          "owner_guard": {
+            "verified": 10,
+            "failed": 1
+          },
+          "after_delete": {
+            "verified": 2
+          },
+          "guard": {
+            "verified": 4
+          },
+          "effect": {
+            "verified": 31,
+            "failed": 4,
+            "unverified": 3
+          }
+        },
+        "in_range": {
+          "count": true,
+          "verified": true,
+          "unverified": true,
+          "failed": true
+        }
+      },
+      "pass": true,
+      "reasons": {
+        "wf-7f0f99bdcf": "step 1 POST /v1/completions/batch answered 422 (validation_failed): status 422",
+        "wf-2c45912421": "replay failed at step 4: [\"status: expected 200, got 404\"]",
+        "wf-0da61e11ce": "replay failed at step 3: [\"status: expected 200, got 401\"]",
+        "wf-6f92837afc": "step 3 POST /v1/nudges/{id}/dismiss was not sent: id: no id: the producer's answer has none and no list route yields one",
+        "wf-b2ee5de88e": "step 2 GET /v1/habits/{id} answered 404 (not_found): status 404",
+        "wf-ebadb4a811": "step 2 GET /v1/habits/{id}/history answered 404 (not_found): status 404",
+        "wf-da24bc5b11": "step 2 GET /v1/habits/{id}/progress answered 404 (not_found): status 404",
+        "wf-9523e7a835": "step 1 POST /v1/completions/batch answered 422 (validation_failed): status 422",
+        "wf-18953344c4": "replay failed at step 4: [\"status: expected 200, got 404\"]",
+        "wf-13a3a4463a": "replay failed at step 4: [\"status: expected 200, got 404\"]",
+        "wf-88f64dcd3c": "replay failed at step 4: [\"status: expected 200, got 404\"]"
+      }
+    },
+    {
+      "id": "PG",
+      "probe": "evidence: route and handler lines hold the symbol; bindings have param_uses; statuses >= 400 are in raises/guards",
+      "ran": true,
+      "predicted": "100%",
+      "observed": {
+        "route": "21/21",
+        "handler": "21/21",
+        "binding": "113/113",
+        "status": "20/20",
+        "param_use_line": "150/150"
+      },
+      "pass": true,
+      "bad": {}
+    },
+    {
+      "id": "PM",
+      "probe": "Nudge.delivery: states, static edges, initial vs the spec's Machine; observed",
+      "ran": true,
+      "predicted": {
+        "states": "4/4",
+        "edges": "pending->{sent,failed,suppressed} exactly",
+        "initial": "{pending, suppressed}",
+        "observed_initial": ">= {pending}",
+        "observed_moves": "0 (0-1)",
+        "status": "static",
+        "refuted": 0
+      },
+      "observed": {
+        "states": [
+          "failed",
+          "pending",
+          "sent",
+          "suppressed"
+        ],
+        "edges": [
+          [
+            "pending",
+            "failed"
+          ],
+          [
+            "pending",
+            "sent"
+          ],
+          [
+            "pending",
+            "suppressed"
+          ]
+        ],
+        "initial": [
+          "pending",
+          "suppressed"
+        ],
+        "observed_initial": [
+          "pending"
+        ],
+        "observed_moves": 0,
+        "status": "static",
+        "sweeps": [
+          {
+            "moved": false,
+            "service": "nudger"
+          }
+        ],
+        "mode": "observed",
+        "spec": {
+          "states": [
+            "failed",
+            "pending",
+            "sent",
+            "suppressed"
+          ],
+          "edges": [
+            [
+              "pending",
+              "failed"
+            ],
+            [
+              "pending",
+              "sent"
+            ],
+            [
+              "pending",
+              "suppressed"
+            ]
+          ],
+          "initial": [
+            "pending",
+            "suppressed"
+          ]
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "PV",
+      "probe": "value sources: period (literal), installation_id / timezone / email (probe), date (bound)",
+      "ran": true,
+      "predicted": {
+        "period": "literal",
+        "installation_id": "probe",
+        "timezone": "probe",
+        "email": "probe",
+        "date": "bound"
+      },
+      "observed": {
+        "sources": {
+          "timezone": "probe",
+          "period": "literal",
+          "date": "bound",
+          "email": "probe",
+          "installation_id": "probe"
+        },
+        "values": {
+          "timezone": "UTC",
+          "period": "week",
+          "date": "2026-03-04",
+          "email": "wf2@example.test",
+          "installation_id": "00000000-0000-4000-8000-000000000003"
+        },
+        "matches": {
+          "period": true,
+          "installation_id": true,
+          "timezone": true,
+          "email": true,
+          "date": true
+        },
+        "mode": "observed"
+      },
+      "pass": null
+    },
+    {
+      "id": "PJs",
+      "probe": "the 3 harness-less apps: static, workflows.json = round 1 minus the new run keys",
+      "ran": true,
+      "predicted": "3/3 identical",
+      "observed": {
+        "base": {
+          "identical_to_round1": true,
+          "run": {
+            "caps": {
+              "max_flows": 96,
+              "max_steps": 8
+            },
+            "database": null,
+            "harness": null,
+            "harness_file": null,
+            "harness_reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+            "list_rule": "specific",
+            "mode": "static",
+            "services_swept": [],
+            "users": [
+              "root",
+              "ann"
+            ]
+          },
+          "rc": 0,
+          "containers": []
+        },
+        "mbo": {
+          "identical_to_round1": true,
+          "run": {
+            "caps": {
+              "max_flows": 96,
+              "max_steps": 8
+            },
+            "database": null,
+            "harness": null,
+            "harness_file": null,
+            "harness_reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+            "list_rule": "specific",
+            "mode": "static",
+            "services_swept": [],
+            "users": [
+              "root",
+              "ann"
+            ]
+          },
+          "rc": 0,
+          "containers": []
+        },
+        "mbs": {
+          "identical_to_round1": true,
+          "run": {
+            "caps": {
+              "max_flows": 96,
+              "max_steps": 8
+            },
+            "database": null,
+            "harness": null,
+            "harness_file": null,
+            "harness_reason": "no harness found; looked for studio.toml [app] (app and db), a [rebuild] gate file with a `python -m lattice.spec check` invocation, check.sh with one, harness.py (make_app and build_db)",
+            "list_rule": "specific",
+            "mode": "static",
+            "services_swept": [],
+            "users": [
+              "root",
+              "ann"
+            ]
+          },
+          "rc": 0,
+          "containers": []
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "PJ",
+      "probe": "J dynamic run per harness app (development set): mode, harness, flows, statuses, slots, skeletons, JobRun machine, sweeps",
+      "ran": true,
+      "predicted": "mode observed and harness check.sh 3/3; crashes 0/3 (values report-only)",
+      "observed": {
+        "go": {
+          "predicted": {
+            "flows": "80 (75-100)",
+            "verified": "0.20 (0.05-0.40)",
+            "failed": "0.70 (0.45-0.90)",
+            "slots": "16/24",
+            "skeletons": "lenient 0 (0-2) / strict 0 (0-1)",
+            "jobrun": "5/5 states, 3/5 static, initial exact",
+            "observed": "0/5 (0-1); static",
+            "sweeps": "none run (0-2)"
+          },
+          "rc": 0,
+          "mode": "observed",
+          "harness": "check.sh",
+          "harness_file": "check.sh",
+          "harness_reason": null,
+          "database": "sqlite",
+          "list_rule": "specific",
+          "flows": 7,
+          "summary": {
+            "edges": 17,
+            "failed": 5,
+            "flows": 7,
+            "machines": 1,
+            "unverified": 0,
+            "verified": 2
+          },
+          "verified_fraction": 0.286,
+          "failed_fraction": 0.714,
+          "slot_recall": "16/24",
+          "skeletons_lenient": "0/19",
+          "skeletons_strict": "0/19",
+          "skeletons_lenient_verified": "0/19",
+          "skeletons_strict_verified": "0/19",
+          "machines": [
+            {
+              "table": "JobRun",
+              "found": true,
+              "states": "5/5",
+              "static_edges": "3/5",
+              "observed_edges": "0/5",
+              "initial_exact": true,
+              "status": "static"
+            }
+          ],
+          "services_swept": [],
+          "list_id_sources": 0,
+          "refusal_statuses": {
+            "422": 7
+          },
+          "non_verified_reasons": {
+            "step N POST /applications answered N": 4,
+            "step N POST /users answered N": 1
+          },
+          "wall_s": [
+            5.0,
+            4.8,
+            4.8,
+            4.8,
+            4.7,
+            4.7,
+            4.8,
+            4.7,
+            4.7,
+            4.7
+          ],
+          "wall_median_s": 4.8,
+          "runs": 10,
+          "crashed": false
+        },
+        "mso": {
+          "predicted": {
+            "flows": "74 (70-95)",
+            "verified": "0.50 (0.15-0.80)",
+            "failed": "0.40 (0.10-0.80)",
+            "slots": "21/24",
+            "skeletons": "lenient 3 (1-6) / strict 0 (0-2)",
+            "jobrun": "5/5 states, 3/5 static, initial exact",
+            "observed": "1/5 queued->cancelled (0-1); observed",
+            "sweeps": "none"
+          },
+          "rc": 0,
+          "mode": "observed",
+          "harness": "check.sh",
+          "harness_file": "check.sh",
+          "harness_reason": null,
+          "database": "sqlite",
+          "list_rule": "specific",
+          "flows": 7,
+          "summary": {
+            "edges": 22,
+            "failed": 5,
+            "flows": 7,
+            "machines": 2,
+            "unverified": 0,
+            "verified": 2
+          },
+          "verified_fraction": 0.286,
+          "failed_fraction": 0.714,
+          "slot_recall": "21/24",
+          "skeletons_lenient": "0/19",
+          "skeletons_strict": "0/19",
+          "skeletons_lenient_verified": "0/19",
+          "skeletons_strict_verified": "0/19",
+          "machines": [
+            {
+              "table": "JobRun",
+              "found": true,
+              "states": "5/5",
+              "static_edges": "3/5",
+              "observed_edges": "0/5",
+              "initial_exact": true,
+              "status": "static"
+            }
+          ],
+          "services_swept": [],
+          "list_id_sources": 0,
+          "refusal_statuses": {
+            "422": 7
+          },
+          "non_verified_reasons": {
+            "step N POST /applications answered N": 4,
+            "step N POST /users answered N": 1
+          },
+          "wall_s": [
+            4.8,
+            4.7,
+            4.4,
+            4.4,
+            4.4,
+            4.4,
+            4.5,
+            4.4,
+            4.5,
+            4.6
+          ],
+          "wall_median_s": 4.5,
+          "runs": 10,
+          "crashed": false
+        },
+        "mss": {
+          "predicted": {
+            "flows": "15 (15-25)",
+            "verified": "0.50 (0.15-0.85)",
+            "failed": "0.40 (0.10-0.80)",
+            "slots": "21/24",
+            "skeletons": "lenient 3 (1-6) / strict 0 (0-2)",
+            "jobrun": "3/5 states, 1/5 static, initial exact",
+            "observed": "1/5 (0-1); observed",
+            "sweeps": "none"
+          },
+          "rc": 0,
+          "mode": "observed",
+          "harness": "check.sh",
+          "harness_file": "check.sh",
+          "harness_reason": null,
+          "database": "sqlite",
+          "list_rule": "specific",
+          "flows": 5,
+          "summary": {
+            "edges": 21,
+            "failed": 3,
+            "flows": 5,
+            "machines": 2,
+            "unverified": 0,
+            "verified": 2
+          },
+          "verified_fraction": 0.4,
+          "failed_fraction": 0.6,
+          "slot_recall": "21/24",
+          "skeletons_lenient": "0/19",
+          "skeletons_strict": "0/19",
+          "skeletons_lenient_verified": "0/19",
+          "skeletons_strict_verified": "0/19",
+          "machines": [
+            {
+              "table": "JobRun",
+              "found": true,
+              "states": "3/5",
+              "static_edges": "1/5",
+              "observed_edges": "0/5",
+              "initial_exact": true,
+              "status": "static"
+            }
+          ],
+          "services_swept": [],
+          "list_id_sources": 0,
+          "refusal_statuses": {
+            "401": 5
+          },
+          "non_verified_reasons": {
+            "step N POST /applications answered N (Not authenticated)": 2,
+            "step N POST /users answered N (Not authenticated)": 1
+          },
+          "wall_s": [
+            1.7,
+            1.4,
+            1.4,
+            1.4,
+            1.4,
+            1.4,
+            1.4,
+            1.4,
+            1.4,
+            1.4
+          ],
+          "wall_median_s": 1.4,
+          "runs": 10,
+          "crashed": false
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "PJ-my",
+      "probe": "go on MySQL (report only): flows and statuses vs its SQLite run",
+      "ran": true,
+      "predicted": "same flows and statuses as the SQLite run; 0 containers left",
+      "observed": {
+        "run": {
+          "caps": {
+            "max_flows": 96,
+            "max_steps": 8
+          },
+          "database": "mysql",
+          "harness": "check.sh",
+          "harness_file": "check.sh",
+          "harness_reason": null,
+          "list_rule": "specific",
+          "mode": "observed",
+          "services_swept": [],
+          "users": [
+            "root",
+            "ann"
+          ]
+        },
+        "summary": {
+          "edges": 17,
+          "failed": 5,
+          "flows": 7,
+          "machines": 1,
+          "unverified": 0,
+          "verified": 2
+        },
+        "same_flow_statuses": true,
+        "wall_s": 18.2,
+        "containers_left": []
+      },
+      "pass": null
+    },
+    {
+      "id": "PU",
+      "probe": "sent requests with an unbound path parameter (S, S', J dynamic)",
+      "ran": true,
+      "predicted": {
+        "sent_unbound": 0,
+        "go_failed_reasons": "name job_id / user_id"
+      },
+      "observed": {
+        "sent_unbound": {
+          "S": 0,
+          "S-prime": 0,
+          "go": 0,
+          "mso": 0,
+          "mss": 0
+        },
+        "examples": {},
+        "failed_reasons_by_param": {
+          "S": {},
+          "S-prime": {},
+          "go": {},
+          "mso": {},
+          "mss": {}
+        },
+        "planned_unbound_in_static_go": {
+          "steps_with_unbound_param": 75,
+          "flows": 60
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "PD",
+      "probe": "static runs (+1 from a second clone path) and dynamic runs byte-identical; no absolute path / port / container / timestamp outside values",
+      "ran": true,
+      "predicted": {
+        "S static": "11/11",
+        "S dynamic": "10/10",
+        "J dynamic": "10/10 x3",
+        "leaks": []
+      },
+      "observed": {
+        "static": "11/11",
+        "dynamic": "10/10",
+        "leaks": [],
+        "j_dynamic": {
+          "go": "10/10",
+          "mso": "10/10",
+          "mss": "10/10"
+        },
+        "j_leaks": []
+      },
+      "pass": true,
+      "sha256_static": "d3e47ae61b6a80876bf1d0a045ff2da0b6530a0f4849de3f656245884c1a881e",
+      "sha256_dynamic": "1dd7ed7ddc396e0dc6fb7dc1293857123585a27736b847ffe48526d5f4592c1b"
+    },
+    {
+      "id": "PR",
+      "probe": "independent replay: a separate process rebuilds each verified flow's Scenario from workflows.json and runs check(layers='D') on a fresh container",
+      "ran": true,
+      "predicted": {
+        "S": "58 scenarios, 0 failures",
+        "J": "0 failures"
+      },
+      "observed": {
+        "S": {
+          "observed": {
+            "scenarios": 58,
+            "failures": 0,
+            "failed": {}
+          },
+          "pass": true
+        },
+        "go": {
+          "observed": {
+            "scenarios": 2,
+            "failures": 0,
+            "failed": {}
+          },
+          "pass": true
+        },
+        "mso": {
+          "observed": {
+            "scenarios": 2,
+            "failures": 0,
+            "failed": {}
+          },
+          "pass": true
+        },
+        "mss": {
+          "observed": {
+            "scenarios": 2,
+            "failures": 0,
+            "failed": {}
+          },
+          "pass": true
+        }
+      },
+      "pass": true,
+      "wall_s": 11.8
+    },
+    {
+      "id": "PT",
+      "probe": "containers lattice-wf-* and app processes after every run",
+      "ran": true,
+      "predicted": 0,
+      "observed": {
+        "containers_after_each_run": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "names": [],
+        "now": [],
+        "app_processes": []
+      },
+      "pass": true
+    },
+    {
+      "id": "PT-sigint",
+      "probe": "containers lattice-wf-* (and app processes) after a run killed with SIGINT mid-flow",
+      "ran": true,
+      "predicted": {
+        "containers": 0,
+        "apps": 0
+      },
+      "observed": {
+        "containers": 0,
+        "names": [],
+        "apps": 0,
+        "interrupted_mid_flow": true,
+        "container_seen": true,
+        "snapshots_when_interrupted": 12,
+        "exited": true,
+        "returncode": 0,
+        "scratch_removed": true
+      },
+      "pass": true
+    },
+    {
+      "id": "PT-sigint-go",
+      "probe": "containers lattice-wf-* (and app processes) after a run killed with SIGINT mid-flow",
+      "ran": true,
+      "predicted": {
+        "containers": 0,
+        "apps": 0
+      },
+      "observed": {
+        "containers": 0,
+        "names": [],
+        "apps": 0,
+        "interrupted_mid_flow": true,
+        "container_seen": true,
+        "snapshots_when_interrupted": 6,
+        "exited": true,
+        "returncode": 0,
+        "scratch_removed": true
+      },
+      "pass": true
+    },
+    {
+      "id": "PX",
+      "probe": "wall: S static / dynamic; J dynamic per run; J-my",
+      "ran": true,
+      "predicted": {
+        "S_static_s": "0.2-0.3 (<= 5)",
+        "S_dynamic_s": "25-45 (<= 30 min)",
+        "J_run_s": "20-150 (<= 10 min)",
+        "J_my_s": "30-240"
+      },
+      "observed": {
+        "S_static_median_s": 0.27,
+        "S_dynamic_s": [
+          35.4,
+          34.3,
+          30.9,
+          31.3,
+          35.0,
+          31.6,
+          31.5,
+          31.4,
+          33.9,
+          33.2
+        ],
+        "J_run_max_s": 5.0,
+        "J_median_s": {
+          "go": 4.8,
+          "mso": 4.5,
+          "mss": 1.4
+        },
+        "J_my_s": 18.2,
+        "stage_s": 590.9
+      },
+      "pass": true
+    },
+    {
+      "id": "PW",
+      "probe": "archives (tree + sha256 after the build vs after all runs) and the real checkouts (porcelain + listing before vs after)",
+      "ran": true,
+      "predicted": {
+        "changed": 0,
+        "new": 0
+      },
+      "observed": {
+        "archives": {
+          "S": {
+            "changed": 0,
+            "new": 0
+          },
+          "go": {
+            "changed": 0,
+            "new": 0
+          },
+          "mso": {
+            "changed": 0,
+            "new": 0
+          },
+          "mss": {
+            "changed": 0,
+            "new": 0
+          },
+          "base": {
+            "changed": 0,
+            "new": 0
+          },
+          "mbo": {
+            "changed": 0,
+            "new": 0
+          },
+          "mbs": {
+            "changed": 0,
+            "new": 0
+          }
+        },
+        "targets": {
+          "streak": {
+            "porcelain_equal": true,
+            "listing_equal": true,
+            "changed": [],
+            "new": []
+          },
+          "go": {
+            "porcelain_equal": true,
+            "listing_equal": true,
+            "changed": [],
+            "new": []
+          },
+          "mso": {
+            "porcelain_equal": true,
+            "listing_equal": true,
+            "changed": [],
+            "new": []
+          },
+          "mss": {
+            "porcelain_equal": true,
+            "listing_equal": true,
+            "changed": [],
+            "new": []
+          },
+          "base": {
+            "porcelain_equal": true,
+            "listing_equal": true,
+            "changed": [],
+            "new": []
+          },
+          "mbo": {
+            "porcelain_equal": true,
+            "listing_equal": true,
+            "changed": [],
+            "new": []
+          },
+          "mbs": {
+            "porcelain_equal": true,
+            "listing_equal": true,
+            "changed": [],
+            "new": []
+          },
+          "job-scheduler": {
+            "porcelain_equal": true,
+            "listing_equal": true,
+            "changed": [],
+            "new": []
+          }
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "PB-extract",
+      "probe": "default gocheck extract on S, S4 and the fixtures: byte-identical to a5fed2e's binary and to the committed Spike A output (sidecar and to_json sha256)",
+      "ran": true,
+      "predicted": {
+        "identical": "all",
+        "committed": "equal"
+      },
+      "observed": {
+        "identical": "4/4",
+        "different": [],
+        "committed_equal": {
+          "S": true,
+          "S4": true,
+          "S model.to_json": true
+        }
+      },
+      "pass": true,
+      "sha256": {
+        "S": "5b473b1e3be0c440a016050ffabe1724f74711c934f9e05eb94c0612eb58aaac",
+        "S4": "71dd679e986dd70040b0d21926f2519eb5e03ac4587111c93f26107676321e0d",
+        "fixture:goextract": "f74727094a25cc1dd1b5acd33cbc85414e57d2d733fde66679f33c8d0ed755dc",
+        "fixture:goextract_workflow": "ee3b906bd4e4e79950886eaf87291d6467428980148e6a25228fd30cb5e6d14f"
+      }
+    },
+    {
+      "id": "PB-gocheck",
+      "probe": "gocheck sources changed only in main.go + goextract*.go; old and new findings byte-identical",
+      "ran": true,
+      "predicted": {
+        "changed": "main.go + new goextract*.go",
+        "findings": "identical"
+      },
+      "observed": {
+        "changed": [
+          "lattice/gocheck/src/goextract.go",
+          "lattice/gocheck/src/goextract_assemble.go",
+          "lattice/gocheck/src/goextract_closure.go",
+          "lattice/gocheck/src/goextract_owner.go",
+          "lattice/gocheck/src/goextract_raise.go",
+          "lattice/gocheck/src/goextract_routes.go",
+          "lattice/gocheck/src/goextract_tables.go",
+          "lattice/gocheck/src/goextract_workflow.go",
+          "lattice/gocheck/src/main.go"
+        ],
+        "owned_only": true,
+        "identical": "23/23",
+        "different": []
+      },
+      "pass": true,
+      "evidence": {
+        "sizes": {
+          "app:empty": 630,
+          "bounds:empty": 1230,
+          "boundsets:empty": 1064,
+          "clean:empty": 25,
+          "clean2:empty": 25,
+          "goextract:empty": 25,
+          "goextract_workflow:empty": 25,
+          "machine:empty": 25,
+          "owner:empty": 25,
+          "partial:empty": 7760,
+          "private:empty": 25,
+          "runs:empty": 1909,
+          "txflag:empty": 2494,
+          "private:test-policy": 2586,
+          "owner:test-policy": 2875,
+          "app:test-policy": 1697,
+          "runs:test-policy": 6073,
+          "clean:test-policy": 25,
+          "clean2:test-policy": 25,
+          "partial:GO807": 7760,
+          "app:tasks-spec": 1697,
+          "streak:from_spec": 25,
+          "streak:empty": 25
+        }
+      }
+    },
+    {
+      "id": "PB-diff",
+      "probe": "changes against HEAD: owned files only (section 7); frozen modules, gocheck, goldens, round-1 data untouched; score_held_out and spec_truth byte-identical",
+      "ran": true,
+      "predicted": {
+        "foreign": [],
+        "frozen_diff": [],
+        "scorer_unchanged": true
+      },
+      "observed": {
+        "foreign": [],
+        "frozen_diff": [],
+        "scorer_unchanged": {
+          "score_held_out": true,
+          "spec_truth": true
+        },
+        "changed": [
+          "dogfood/workflow_mutants.py",
+          "dogfood/workflow_probes.py",
+          "lattice/importer/check_invocation.py",
+          "lattice/importer/workflow_run.py",
+          "tests/importer/fixtures/check_invocation/bad_toml/harness.py",
+          "tests/importer/fixtures/check_invocation/bad_toml/studio.toml",
+          "tests/importer/fixtures/check_invocation/comments_and_strings/check.sh",
+          "tests/importer/fixtures/check_invocation/comments_and_strings/harness.py",
+          "tests/importer/fixtures/check_invocation/disagree/check.sh",
+          "tests/importer/fixtures/check_invocation/disagree/harness.py",
+          "tests/importer/fixtures/check_invocation/dollar_database/check.sh",
+          "tests/importer/fixtures/check_invocation/dollar_database/harness.py",
+          "tests/importer/fixtures/check_invocation/dollar_var/check.sh",
+          "tests/importer/fixtures/check_invocation/dollar_var/harness.py",
+          "tests/importer/fixtures/check_invocation/equals_form/check.sh",
+          "tests/importer/fixtures/check_invocation/equals_form/harness.py",
+          "tests/importer/fixtures/check_invocation/exec_continuation/check.sh",
+          "tests/importer/fixtures/check_invocation/exec_continuation/harness.py",
+          "tests/importer/fixtures/check_invocation/exec_continuation/seedmod.py",
+          "tests/importer/fixtures/check_invocation/gate_file/ci/gate.sh",
+          "tests/importer/fixtures/check_invocation/gate_file/harness.py",
+          "tests/importer/fixtures/check_invocation/gate_file/studio.toml",
+          "tests/importer/fixtures/check_invocation/harness_py_only/harness.py",
+          "tests/importer/fixtures/check_invocation/harness_seed_only/harness.py",
+          "tests/importer/fixtures/check_invocation/import_error/check.sh",
+          "tests/importer/fixtures/check_invocation/import_error/harness.py",
+          "tests/importer/fixtures/check_invocation/incomplete_app/check.sh",
+          "tests/importer/fixtures/check_invocation/incomplete_app/harness.py",
+          "tests/importer/fixtures/check_invocation/incomplete_app/studio.toml",
+          "tests/importer/fixtures/check_invocation/login_path_only/check.sh",
+          "tests/importer/fixtures/check_invocation/login_path_only/harness.py",
+          "tests/importer/fixtures/check_invocation/mint_token_only/check.sh",
+          "tests/importer/fixtures/check_invocation/mint_token_only/harness.py",
+          "tests/importer/fixtures/check_invocation/missing_db/check.sh",
+          "tests/importer/fixtures/check_invocation/missing_db/harness.py",
+          "tests/importer/fixtures/check_invocation/no_invocation/check.sh",
+          "tests/importer/fixtures/check_invocation/no_invocation/harness.py",
+          "tests/importer/fixtures/check_invocation/nope_ref/check.sh",
+          "tests/importer/fixtures/check_invocation/nope_ref/harness.py",
+          "tests/importer/fixtures/check_invocation/nothing/README.md",
+          "tests/importer/fixtures/check_invocation/postgres/check.sh",
+          "tests/importer/fixtures/check_invocation/postgres/harness.py",
+          "tests/importer/fixtures/check_invocation/runtime_go/check.sh",
+          "tests/importer/fixtures/check_invocation/runtime_go/harness.py",
+          "tests/importer/fixtures/check_invocation/runtime_process/check.sh",
+          "tests/importer/fixtures/check_invocation/runtime_process/harness.py",
+          "tests/importer/fixtures/check_invocation/services_not_mapping/check.sh",
+          "tests/importer/fixtures/check_invocation/services_not_mapping/harness.py",
+          "tests/importer/fixtures/check_invocation/services_undeclared/check.sh",
+          "tests/importer/fixtures/check_invocation/services_undeclared/harness.py",
+          "tests/importer/fixtures/check_invocation/streak_form/check.sh",
+          "tests/importer/fixtures/check_invocation/streak_form/harness.py",
+          "tests/importer/fixtures/check_invocation/studio_wins/check.sh",
+          "tests/importer/fixtures/check_invocation/studio_wins/harness.py",
+          "tests/importer/fixtures/check_invocation/studio_wins/studio.toml",
+          "tests/importer/test_check_invocation.py",
+          "tests/importer/test_workflows.py"
+        ]
+      },
+      "pass": true
+    },
+    {
+      "id": "PB-lint",
+      "probe": "go vet, gofmt -l, ruff check and ruff format --check on every changed .py",
+      "ran": true,
+      "predicted": "clean",
+      "observed": {
+        "go_vet_rc": 0,
+        "gofmt": [],
+        "ruff_rc": 0,
+        "ruff_format_rc": 0,
+        "ruff_out": "All checks passed!\n31 files already formatted\n",
+        "files": [
+          "dogfood/workflow_mutants.py",
+          "dogfood/workflow_probes.py",
+          "lattice/importer/check_invocation.py",
+          "lattice/importer/workflow_run.py",
+          "tests/importer/fixtures/check_invocation/bad_toml/harness.py",
+          "tests/importer/fixtures/check_invocation/comments_and_strings/harness.py",
+          "tests/importer/fixtures/check_invocation/disagree/harness.py",
+          "tests/importer/fixtures/check_invocation/dollar_database/harness.py",
+          "tests/importer/fixtures/check_invocation/dollar_var/harness.py",
+          "tests/importer/fixtures/check_invocation/equals_form/harness.py",
+          "tests/importer/fixtures/check_invocation/exec_continuation/harness.py",
+          "tests/importer/fixtures/check_invocation/exec_continuation/seedmod.py",
+          "tests/importer/fixtures/check_invocation/gate_file/harness.py",
+          "tests/importer/fixtures/check_invocation/harness_py_only/harness.py",
+          "tests/importer/fixtures/check_invocation/harness_seed_only/harness.py",
+          "tests/importer/fixtures/check_invocation/import_error/harness.py",
+          "tests/importer/fixtures/check_invocation/incomplete_app/harness.py",
+          "tests/importer/fixtures/check_invocation/login_path_only/harness.py",
+          "tests/importer/fixtures/check_invocation/mint_token_only/harness.py",
+          "tests/importer/fixtures/check_invocation/missing_db/harness.py",
+          "tests/importer/fixtures/check_invocation/no_invocation/harness.py",
+          "tests/importer/fixtures/check_invocation/nope_ref/harness.py",
+          "tests/importer/fixtures/check_invocation/postgres/harness.py",
+          "tests/importer/fixtures/check_invocation/runtime_go/harness.py",
+          "tests/importer/fixtures/check_invocation/runtime_process/harness.py",
+          "tests/importer/fixtures/check_invocation/services_not_mapping/harness.py",
+          "tests/importer/fixtures/check_invocation/services_undeclared/harness.py",
+          "tests/importer/fixtures/check_invocation/streak_form/harness.py",
+          "tests/importer/fixtures/check_invocation/studio_wins/harness.py",
+          "tests/importer/test_check_invocation.py",
+          "tests/importer/test_workflows.py"
+        ]
+      },
+      "pass": true
+    },
+    {
+      "id": "PB-spike-a",
+      "probe": "Spike A probes PR1-PU, PD, PW against the changed extractor",
+      "ran": true,
+      "predicted": "all pass",
+      "observed": {
+        "ran": [
+          "LEAK",
+          "PA",
+          "PA2",
+          "PD",
+          "PE",
+          "PE2",
+          "PF",
+          "PF2",
+          "PM",
+          "PO",
+          "PR1",
+          "PR2",
+          "PR3",
+          "PS",
+          "PT",
+          "PU",
+          "PW"
+        ],
+        "failed": [],
+        "rc": 0
+      },
+      "pass": true,
+      "wall_s": 1.5
+    },
+    {
+      "id": "LEAK",
+      "probe": "lattice-wf- containers after the stage",
+      "ran": true,
+      "predicted": 0,
+      "observed": 0,
+      "pass": true,
+      "names": []
+    }
+  ]
+}
