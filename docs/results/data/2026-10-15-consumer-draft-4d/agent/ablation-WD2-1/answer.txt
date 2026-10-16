@@ -1,0 +1,39 @@
+I can't see ci-bot's code or imports file with the tools available here, so I can only tell you what the contract findings say. Here is what to change.
+
+## What broke
+
+The scheduler's accepted change (commit `c73bea6e`, spec hash `24c5fd8f4800`) contradicts ci-bot's pin (`9bcae0e24da9`, commit `ef17cf88`). The only affected import is `POST /applications/{}/jobs/{}/runs`.
+
+| Finding | Item | Detail |
+|---|---|---|
+| BROKEN | `status_not_observed` 201 | The spec now shows statuses `[200, 401, 404, 409]`. 201 is gone. |
+| CHANGED (relied) | `status_added` 200 | 200 is now the success status. |
+
+Note that `contract_check` still reports `ok` for ci-bot. It compares against the provider's current spec in the workspace, which hasn't moved, so only the linked question `lq1` (open, label `contradiction`) shows the break.
+
+## What to change in ci-bot code
+
+1. In the code that calls `POST /applications/{id}/jobs/{id}/runs`, treat **200** as the success status instead of 201. Any `== 201`, `status_code in (201,)` or "created" check must accept 200.
+2. Make sure the other statuses are handled: 401, 404 and 409. The spec lists these as the remaining outcomes.
+3. If ci-bot reads a `Location` header or a created-resource body that only 201 implied, re-check that. The spec change is only about the status code, but I can't see the response shape from here.
+
+## What to change in the spec / contract files
+
+- **`lattice.imports.toml`**: update the import for `POST /applications/{}/jobs/{}/runs` so the claimed success status is `200` rather than `201`.
+- **ci-bot has no `spec.py` or `REQUIREMENTS.md`.** Status is `initialised: false` and the spec is missing. Contracts don't need one, so there's no ci-bot rule to edit for this break. If you later write a requirement like "a triggered run is reported as created (201)", it would need the same correction.
+- **`lattice.contracts.lock.json`**: re-pin after the code and imports are fixed:
+  ```
+  lattice contracts pin ci-bot
+  lattice contracts check ci-bot
+  ```
+- **Close the note**, once it's re-pinned and checking clean:
+  ```
+  lattice contracts questions resolve ci-bot lq1
+  ```
+  Alternatively, ask the scheduler's owner to revert and use `dismiss` instead.
+
+## Separate, non-blocking gap
+
+`contract_check` reports `POST /auth/login` → `access_token` as `response_field_unobserved`: the scheduler's spec never shows that field. It isn't broken, but ci-bot relies on something the provider doesn't document. Ask the scheduler owner to add it to their spec, or drop the reliance.
+
+I changed nothing.

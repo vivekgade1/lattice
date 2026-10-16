@@ -1,0 +1,17 @@
+{
+ "id": "S",
+ "prediction": "the real job-scheduler (HEAD ef17cf8, ' M uv.lock') and Streak (HEAD a0db033, ' M studio.toml') have the same HEAD and git status before and after the run, and 0 files newer than the start marker",
+ "observed": "job-scheduler: ef17cf8 ' M uv.lock' -> ef17cf8 ' M uv.lock', 0 newer files []; streak: a0db033 ' M studio.toml' -> a0db033 ' M studio.toml', 0 newer files []",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "job-scheduler_head": true,
+  "job-scheduler_status_expected": true,
+  "job-scheduler_no_newer_file": true,
+  "streak_head": true,
+  "streak_status_expected": true,
+  "streak_no_newer_file": true
+ },
+ "extra": {}
+}

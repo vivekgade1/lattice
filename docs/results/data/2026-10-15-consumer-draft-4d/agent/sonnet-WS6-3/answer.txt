@@ -1,0 +1,34 @@
+Streak's accepted change renamed one response field on `GET /v1/habits`: `next_cursor` is now `next`. That breaks streak-widget's import #4. Nothing has been changed.
+
+## What broke
+- **Provider:** `streak`, now at commit `168e2a03` (spec hash `cad3bbb9e0af`). streak-widget is pinned to commit `a0db033a` (spec hash `d44b738522ea`).
+- **BROKEN:** `GET /v1/habits` no longer returns `next_cursor`. Its response fields are now `items`, `has_more` and `next`.
+- **CHANGED (relied on):** the new field `next` is the replacement.
+- **Open question:** this is `lq1`, a contradiction.
+
+## What to change in streak-widget
+
+**1. Code that calls `GET /v1/habits`**
+- Read the pagination cursor from `response.next` instead of `response.next_cursor`.
+- Keep sending `cursor` as the request parameter. The request side did not change.
+- I couldn't locate the call site, because streak-widget has no Lattice spec or code index. Search the widget code for `next_cursor`.
+
+**2. `lattice.imports.toml`, import #4 (`GET /v1/habits`)**
+- Change `response_fields = ["items", "has_more", "next_cursor"]` to `response_fields = ["items", "has_more", "next"]`.
+- Do this after the code change, so the claim matches what the code does.
+- Leave `request_fields = ["limit", "cursor"]` unchanged.
+- Don't remove the field claim. The draft never suggests removing a claim, because that would make `check` pass without the code being right.
+
+**3. Spec rules**
+- streak-widget has no Lattice spec (`REQUIREMENTS.md`, `spec.py` and `spec.trace.json` are all missing), so there are no rules to edit.
+- If you later write a rule about pagination, such as "the widget follows `next` until `has_more` is false", it should use the new name.
+
+**4. Re-pin and verify** (these write to your project, so run them yourself)
+1. `lattice contracts pin streak-widget`
+2. `lattice contracts check streak-widget`
+3. `lattice contracts questions resolve streak-widget lq1`
+
+## Caveats
+- **Revert option:** whether the rename is intended is streak's owner's call. If it's unintended, ask them to revert instead and skip all of the above.
+- **Check result:** `contract_check` currently reports `ok`, because the provider's spec on disk still matches your pin. The break only shows in the linked question, so don't rely on the check alone.
+- **Spec gaps (not caused by this change):** the provider's spec never shows the `cursor` request field on `GET /v1/habits`, or `access_token` in the `POST /v1/auth/login` response. You can't verify those two claims against the provider.

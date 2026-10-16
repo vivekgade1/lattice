@@ -1,0 +1,93 @@
+{
+ "id": "T",
+ "prediction": "median wall per preview over 10 runs <= 10 s (predicted <= 2 s job-scheduler, <= 3 s Streak)",
+ "observed": "job-scheduler median 0.44 s wall (0.38 s elapsed_s), Streak median 0.43 s wall (0.37 s elapsed_s)",
+ "pass": true,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "job_scheduler_median_le_10s": true,
+  "streak_median_le_10s": true,
+  "job_scheduler_prediction_le_2s": true,
+  "streak_prediction_le_3s": true
+ },
+ "extra": {
+  "job_scheduler_wall_s": [
+   0.448,
+   0.432,
+   0.427,
+   0.432,
+   0.426,
+   0.425,
+   0.444,
+   0.442,
+   0.44,
+   0.442
+  ],
+  "streak_wall_s": [
+   0.419,
+   0.425,
+   0.426,
+   0.421,
+   0.425,
+   0.432,
+   0.475,
+   0.44,
+   0.429,
+   0.429
+  ],
+  "job_scheduler_elapsed_s": [
+   0.391,
+   0.379,
+   0.376,
+   0.378,
+   0.373,
+   0.373,
+   0.392,
+   0.389,
+   0.389,
+   0.39
+  ],
+  "streak_elapsed_s": [
+   0.366,
+   0.373,
+   0.372,
+   0.368,
+   0.372,
+   0.378,
+   0.42,
+   0.375,
+   0.376,
+   0.376
+  ],
+  "note": "timing is not deterministic; 'identical' n/a"
+ },
+ "runs": [
+  {
+   "job_scheduler": [
+    0.4480423340573907,
+    0.4320453330874443,
+    0.42720395885407925,
+    0.43225112510845065,
+    0.425833374960348,
+    0.4248149998020381,
+    0.4442246670369059,
+    0.4421748339664191,
+    0.44036237499676645,
+    0.4415590420830995
+   ],
+   "streak": [
+    0.41914666700176895,
+    0.4250901660416275,
+    0.4255950420629233,
+    0.42091029207222164,
+    0.42523829196579754,
+    0.4320515829604119,
+    0.47547216690145433,
+    0.43965241708792746,
+    0.4287577918730676,
+    0.4291306671220809
+   ]
+  }
+ ]
+}

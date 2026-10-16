@@ -1,0 +1,98 @@
+{
+ "id": "I6",
+ "prediction": "over every traced call of I0-I5, I7: (1) sha256 of the workspace, consumers (locks), provider clones and the lattice-impact worktree unchanged and 0 files newer; (2) TMPDIR empty after each call; (3) 0 socket connects, every argv git {rev-parse, ls-tree, cat-file, status} or the export child, 2 export children per call (0 for I4-i and I5-d, 1 for I5-f), no claude, no ANTHROPIC variable; (4) the real job-scheduler (ef17cf8, ' M uv.lock') and Streak (a0db033, ' M studio.toml') unchanged, 0 newer files",
+ "observed": "1220 traced calls; tree changed 0, newer 0, tmp left 0, bad argv 0, connects 0, export-children mismatches 0, claude/ANTHROPIC 0; real repos: job-scheduler: ef17cf8 ' M uv.lock' -> ef17cf8 ' M uv.lock', 0 newer files []; streak: a0db033 ' M studio.toml' -> a0db033 ' M studio.toml', 0 newer files []; worktree newer since marker 0",
+ "pass": true,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "calls_traced_gt_0": true,
+  "1_tree_unchanged_every_call": true,
+  "1_no_file_newer_than_a_call": true,
+  "2_tmpdir_empty_after_every_call": true,
+  "3_only_allowed_argv": true,
+  "3_zero_connects": true,
+  "3_export_children_as_predicted": true,
+  "3_no_claude_no_anthropic": true,
+  "3_no_x_to_git": true,
+  "4_real_repos_unchanged": true,
+  "worktree_newer_since_marker_0": true
+ },
+ "extra": {
+  "summary": {
+   "calls": 1220,
+   "tree_changed": [],
+   "newer": [],
+   "tmp_left": [],
+   "bad_popen": [],
+   "connects": 0,
+   "children_mismatch": [],
+   "claude_or_anthropic": [],
+   "by_probe": {
+    "I0a": 20,
+    "I0b": 20,
+    "I0c": 20,
+    "I1": 200,
+    "I2": 260,
+    "I3": 240,
+    "I4": 220,
+    "I5": 160,
+    "I7": 60,
+    "T": 20
+   }
+  },
+  "real_repos": [
+   {
+    "repo": "job-scheduler",
+    "before": {
+     "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+     "status": " M uv.lock"
+    },
+    "after": {
+     "head": "ef17cf8809ef7aa2ed5c73ff5e71c4a44702e79d",
+     "status": " M uv.lock"
+    },
+    "newer": []
+   },
+   {
+    "repo": "streak",
+    "before": {
+     "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+     "status": " M studio.toml"
+    },
+    "after": {
+     "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+     "status": " M studio.toml"
+    },
+    "newer": []
+   }
+  ],
+  "marker": {
+   "newer": []
+  }
+ },
+ "runs": [
+  {
+   "calls": 1220,
+   "tree_changed": [],
+   "newer": [],
+   "tmp_left": [],
+   "bad_popen": [],
+   "connects": 0,
+   "children_mismatch": [],
+   "claude_or_anthropic": [],
+   "by_probe": {
+    "I0a": 20,
+    "I0b": 20,
+    "I0c": 20,
+    "I1": 200,
+    "I2": 260,
+    "I3": 240,
+    "I4": 220,
+    "I5": 160,
+    "I7": 60,
+    "T": 20
+   }
+  }
+ ]
+}

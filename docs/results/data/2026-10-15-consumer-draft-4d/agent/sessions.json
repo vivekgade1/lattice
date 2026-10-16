@@ -1,0 +1,1050 @@
+[
+ {
+  "sid": "sonnet-WD2-1",
+  "world": "W-D2",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 17.8
+  },
+  "cost_usd": 0.0956036,
+  "tokens": 12377,
+  "tokens_incl_cache_reads": 364693,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T00:16:03+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3": false,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6",
+    "A7"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_016gq2FEhL7Shdhni2RGidsv",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3": {
+     "pass": false,
+     "invented": [
+      {
+       "kind": "field",
+       "item": "contract_check",
+       "sentence": "- **`contract_check` still says `ok`.** It compares against scheduler's checked-out spec, which is still at the old commit `ef17cf88`."
+      },
+      {
+       "kind": "field",
+       "item": "ok",
+       "sentence": "- **`contract_check` still says `ok`.** It compares against scheduler's checked-out spec, which is still at the old commit `ef17cf88`."
+      },
+      {
+       "kind": "field",
+       "item": "ef17cf88",
+       "sentence": "- **`contract_check` still says `ok`.** It compares against scheduler's checked-out spec, which is still at the old commit `ef17cf88`."
+      }
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": true,
+     "R3": true,
+     "R4_affirmed": []
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "R3"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "sonnet-WS6-1",
+  "world": "W-S6",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 16.6
+  },
+  "cost_usd": 0.1006042,
+  "tokens": 12100,
+  "tokens_incl_cache_reads": 438922,
+  "turns": 7,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T00:16:20+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3": true,
+    "A4": true,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_01DdeoivjW8bTn8eaFn7bVrm",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3": {
+     "pass": true,
+     "invented": []
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": false,
+     "R3": false,
+     "R4_affirmed": []
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__project_status",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "Bash",
+    "is_error": true,
+    "input": {
+     "command": "cd /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/agent-scratch2/s/contracts-probes-89327/w/A-sonnet-WS6-1/streak-widget && ls -la && grep -rn \"next_cursor\\|import\\]\\]\" --exclude-dir=.lattice --exclude-dir=node_modules . | head -30"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "sonnet-WD2-2",
+  "world": "W-D2",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 11.9
+  },
+  "cost_usd": 0.0789704,
+  "tokens": 11102,
+  "tokens_incl_cache_reads": 288846,
+  "turns": 5,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T00:16:33+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6",
+    "A7"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_01DsfWUYtppJTWtyALuS5p9C",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3": {
+     "pass": true,
+     "invented": []
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": true,
+     "R3": true,
+     "R4_affirmed": []
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "ci-bot"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "sonnet-WS6-2",
+  "world": "W-S6",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 13.6
+  },
+  "cost_usd": 0.09188640000000001,
+  "tokens": 12094,
+  "tokens_incl_cache_reads": 364178,
+  "turns": 7,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T00:16:48+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3": true,
+    "A4": true,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_01CubuYVsVJMvCq1A9oRnqvi",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3": {
+     "pass": true,
+     "invented": []
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": false,
+     "R3": false,
+     "R4_affirmed": []
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "GET /v1/habits",
+     "project": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__project_status",
+    "is_error": false,
+    "input": {
+     "project": "streak-widget"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "sonnet-WD2-3",
+  "world": "W-D2",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 14.2
+  },
+  "cost_usd": 0.0903373,
+  "tokens": 11763,
+  "tokens_incl_cache_reads": 364056,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T00:17:03+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6",
+    "A7"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_013GijnwZqf8c9dKYgiZ81vA",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3": {
+     "pass": true,
+     "invented": []
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": true,
+     "R3": true,
+     "R4_affirmed": []
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "R3"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "sonnet-WS6-3",
+  "world": "W-S6",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 15.1
+  },
+  "cost_usd": 0.0920055,
+  "tokens": 11956,
+  "tokens_incl_cache_reads": 364031,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T00:17:19+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3": false,
+    "A4": true,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_01VDJ9gSyTraaHq3gZoBpSYR",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3": {
+     "pass": false,
+     "invented": [
+      {
+       "kind": "field",
+       "item": "a0db033a",
+       "sentence": "streak-widget is pinned to commit `a0db033a` (spec hash `d44b738522ea`)."
+      },
+      {
+       "kind": "field",
+       "item": "contract_check",
+       "sentence": "- **Check result:** `contract_check` currently reports `ok`, because the provider's spec on disk still matches your pin."
+      },
+      {
+       "kind": "field",
+       "item": "ok",
+       "sentence": "- **Check result:** `contract_check` currently reports `ok`, because the provider's spec on disk still matches your pin."
+      }
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": false,
+     "R3": false,
+     "R4_affirmed": []
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "cell:row|GET /v1/habits",
+     "project": "streak-widget"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "ablation-WD2-1",
+  "world": "W-D2",
+  "with_tool": false,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 15.4
+  },
+  "cost_usd": 0.3271305,
+  "tokens": 74443,
+  "tokens_incl_cache_reads": 286468,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T00:17:35+00:00",
+  "score": {
+   "items": {
+    "A1": null,
+    "A2": false,
+    "A3": false,
+    "A4": true,
+    "A5": true,
+    "A7": false,
+    "A6": true
+   },
+   "applicable": [
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6",
+    "A7"
+   ],
+   "detail": {
+    "A1": {
+     "pass": false,
+     "calls": []
+    },
+    "A2": {
+     "pass": false,
+     "endpoint": true,
+     "number": false,
+     "others": []
+    },
+    "A3": {
+     "pass": false,
+     "invented": [
+      {
+       "kind": "field",
+       "item": "ef17cf88",
+       "sentence": "The scheduler's accepted change (commit `c73bea6e`, spec hash `24c5fd8f4800`) contradicts ci-bot's pin (`9bcae0e24da9`, commit `ef17cf88`)."
+      },
+      {
+       "kind": "field",
+       "item": "contract_check",
+       "sentence": "Note that `contract_check` still reports `ok` for ci-bot."
+      },
+      {
+       "kind": "field",
+       "item": "ok",
+       "sentence": "Note that `contract_check` still reports `ok` for ci-bot."
+      }
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": false,
+     "R3": false,
+     "R4_affirmed": []
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "POST /applications/{}/jobs/{}/runs"
+    }
+   },
+   {
+    "name": "mcp__lattice__project_status",
+    "is_error": false,
+    "input": {}
+   }
+  ]
+ },
+ {
+  "sid": "ablation-WD2-2",
+  "world": "W-D2",
+  "with_tool": false,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 14.8
+  },
+  "cost_usd": 0.0720906,
+  "tokens": 10529,
+  "tokens_incl_cache_reads": 216555,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T00:17:51+00:00",
+  "score": {
+   "items": {
+    "A1": null,
+    "A2": false,
+    "A3": false,
+    "A4": true,
+    "A5": true,
+    "A7": false,
+    "A6": true
+   },
+   "applicable": [
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6",
+    "A7"
+   ],
+   "detail": {
+    "A1": {
+     "pass": false,
+     "calls": []
+    },
+    "A2": {
+     "pass": false,
+     "endpoint": true,
+     "number": false,
+     "others": []
+    },
+    "A3": {
+     "pass": false,
+     "invented": [
+      {
+       "kind": "field",
+       "item": "ef17cf88",
+       "sentence": "`scheduler` has an accepted change that moved its spec from `9bcae0e2\u2026` (commit `ef17cf88`) to `24c5fd8f\u2026` (commit `c73bea6e`)."
+      }
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": false,
+     "R3": false,
+     "R4_affirmed": []
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__model_get",
+    "is_error": true,
+    "input": {
+     "project": "ci-bot",
+     "section": "rules"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "project": "ci-bot",
+     "target": "POST /applications/{}/jobs/{}/runs"
+    }
+   }
+  ]
+ }
+]

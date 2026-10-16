@@ -1,0 +1,35 @@
+# Draft: adapt streak-widget to streak (linked question lq1)
+Question lq1, contradiction, open
+NOT APPLIED: this draft changes nothing in streak-widget; its owner decides and proposes any spec edit through the change flow.
+
+## 1. What changed
+pinned spec_hash d44b738522ea; streak now spec_hash cad3bbb9e0af (commit 168e2a03)
+  BROKEN   response_field_missing  next_cursor  @ GET /v1/habits
+    before: response fields [has_more, items, next_cursor]
+    after: the spec now shows response fields ['has_more', 'items', 'next']
+  CHANGED* field_added  response  next  @ GET /v1/habits
+    before: response fields [has_more, items, next_cursor]
+    after: response field next is now shown
+
+## 2. Imports that rely on it
+import #4: GET /v1/habits  status [200], auth token as ann, request_fields [limit, cursor], response_fields [items, has_more, next_cursor]
+    broken claim: response_field_missing next_cursor
+    relied change: field_added next
+
+## 3. Suggested edits (verify in the code first)
+- change the code that sends/reads it first, then import #4: response_fields = ["items", "has_more", "next_cursor"] -> ["items", "has_more", "next"]
+- A claim is never removed here: declaring less would make `check` pass without the code being right.
+
+## 4. Consumer spec rules that name the endpoint (text match, not verified reliance)
+streak-widget has no Lattice spec: no rule to edit
+
+## 5. Then
+1. Edit the code that calls the endpoint(s) above, then the matching [[import]] tables.
+2. `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`.
+3. Propose any rule edit with `lattice:change` or in Studio.
+4. Clear this question with `lattice contracts questions resolve streak-widget lq1`.
+
+## Not decided here
+- Whether streak's change is intended (its owner may revert it).
+- Where in the code each call lives.
+- Whether a rule's behaviour really depends on the endpoint.

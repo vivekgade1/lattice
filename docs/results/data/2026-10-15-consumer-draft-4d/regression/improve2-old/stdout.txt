@@ -1,0 +1,41 @@
+id | predicted | observed | pass
+V1a | improved rc0, 3/3, 119.51->58.50 s, delta -61.01 (-0.510, separated), predicted -71.7, error 0.149 | rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149 | pass
+V1b | not_enough_data rc1, 2/3, at_close 1, predicted -71.7, error null | rc1 not_enough_data n2/3 119.53->58.5 dNone p-71.7 eNone | pass
+V1c | not_enough_data rc1, 3/2, at_close 1, predicted -71.7, error null | rc1 not_enough_data n3/2 119.51->58.47 dNone p-71.7 eNone | pass
+V1d | not_enough_data rc1, 6/0, predicted null (repeats tie 5/2), error null | rc1 not_enough_data n6/0 89.01->None dNone pNone eNone | pass
+V1e | not_improved (no material change) rc1, 3/3, 22.52->22.31, delta -0.21 (-0.009, flat, separated), predicted null | rc1 not_improved n3/3 22.52->22.31 d-0.21 pNone eNone | pass
+V1f | improved rc0, 3/3, 4 keys summed, 142.46->81.19, delta -61.27 (-0.430), predicted null | rc0 improved n3/3 142.46->81.19 d-61.27 pNone eNone | pass
+V1g | = V1a: improved rc0, 3/3, 119.51->58.50, error 0.149; source --at + override warning | rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149 | pass
+V1h | rc3 bad_at; rc3 not_closed | rc3 refused:bad_at ; rc3 refused:not_closed | pass
+V2 | 11 of 11 rows exact (a-j; d' is two sub-rows, h three checks) | 12 of 12 sub-rows exact | pass
+  V2a | improved rc0, 100.00->40.00, delta -60.00 (-0.600), predicted -60.0, error 0.000 | rc0 improved n3/3 100.0->40.0 d-60.0 p-60.0 e0.0 | pass
+  V2b | not_improved rc1, delta 0.00, flat, error 1.000 | rc1 not_improved n3/3 100.0->100.0 d0.0 p-60.0 e1.0 | pass
+  V2c | not_improved (cost rose) rc1, delta +10.00 (+0.100, up), error 1.167 | rc1 not_improved n3/3 100.0->110.0 d10.0 p-60.0 e1.167 | pass
+  V2d | recurred rc1, f 3->1, exposure 5->4 | rc1 recurred n3/1 600.0->600.0 d-2.0 pNone eNone | pass
+  V2d'a | improved rc0, exposure_after 3 | rc0 improved n3/0 600.0->None d-3.0 pNone eNone | pass
+  V2d'b | not_enough_data rc1, exposure_after 2 | rc1 not_enough_data n3/0 600.0->None d-3.0 pNone eNone | pass
+  V2e | not_enough_data rc1, n_after 0, predicted -60.0, error null | rc1 not_enough_data n3/0 100.0->None dNone p-60.0 eNone | pass
+  V2f | not_enough_data rc1, n_after 1 | rc1 not_enough_data n3/1 100.0->40.0 dNone p-60.0 eNone | pass
+  V2g | as V2a; keys [X]; D and lint absent | rc0 improved n3/3 100.0->40.0 d-60.0 p-60.0 e0.0 | pass
+  V2h | (ii) improved usd 0.50->null; (iii) improved unit null; (iv) recurred unit s, after null | rc0 improved n3/0 0.5->None d-3.0 pNone eNone ; rc0 improved n3/0 None->None d-3.0 pNone eNone ; rc1 recurred n3/1 600.0->None d-2.0 pNone eNone | pass
+  V2i | as V2a; at_close 1, means unchanged | rc0 improved n3/3 100.0->40.0 d-60.0 p-60.0 e0.0 | pass
+  V2j | as V2a; undated 1 | rc0 improved n3/3 100.0->40.0 d-60.0 p-60.0 e0.0 | pass
+V3 | 7 of 7 rows exact | 7 of 7 sub-rows exact | pass
+  V3a | rc3 not_closed | rc3 refused:not_closed | pass
+  V3b | rc3 not_closed | rc3 refused:not_closed | pass
+  V3c | rc3 unknown_id (I-99, imp-00000000) | rc3 refused:unknown_id ; rc3 refused:unknown_id | pass
+  V3d | rc0, V1a's numbers, warning no commit recorded | rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149 | pass
+  V3e | rc0, closing point 23:08:00, V1a's numbers, warning closed 2 times in a row | rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149 | pass
+  V3f | rc3 no_closing_point | rc3 refused:no_closing_point | pass
+  V3g | rc0, V1a's numbers (id null, by imp-3e1cd7f9) | rc0 improved n3/3 119.51->58.5 d-61.01 p-71.7 e0.149 | pass
+D1 | 6 of 6 drafts hold every required heading in order and every key line | 6 of 6: D1a change_request, D1b config, D1c module, D1d prereg, D1e prereg, D1f config | pass
+D2 | 5 of 5 refusals (rc3, reasons needs_owner x2 logs, needs_owner model.py, closed, unknown_id, out_in_project); no --out file after any | 5 of 5 rows as predicted, --out files left: 0 | pass
+D3 | 0 file changes over every V and D call (refusals included); --out adds exactly one file; imports stdlib + lattice.improve only; 0 literals | 0 changes over 307 guarded calls; 0 issues; literals {'71.7': 0, '119.5': 0, '61.01': 0, '3e1cd7f9': 0} | pass
+D4 | 0 differing bytes over 10 runs (1.1 s gap, two cwds, a state copy) for V1a, V2a, D1b, D2-checker x text/json/out | 0 differing bytes over 12 case/mode x 3 runs | pass
+D5 | verify/draft --help rc0 listing every option; report/ledger/import-plan/--help byte-identical to 7358be2; report = committed reports | 12 byte-identical comparisons; 0 issues | pass
+finding: V1g: the prereg says the output differs from V1a in two fields only (closing_point.source and the override warning); observed leaf differences: ['closing_point.source', 'entry.ts', 'warnings']. entry.ts echoes the ledger line's own ts, and V1g's ledger line (ts 23:12:00) is V1d's, not V1a's (23:08:00); every number is V1a's.
+probes: 15/15 pass
+real 30.74
+user 13.77
+sys 3.18
+exit 0

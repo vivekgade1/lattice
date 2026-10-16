@@ -1,0 +1,397 @@
+{
+ "id": "T-basis",
+ "prediction": "`contracts export ci-bot` with the scheduler clone at HEAD and at each of d1..d5 (outside any impact call): spec_hash identical 6 of 6 (ci-bot's export does not depend on the scheduler)",
+ "observed": "ci-bot spec_hash identical 6/6 (9d3d965a8aa7); the scheduler's own spec_hash takes 6 distinct values over the same 6 checkouts",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "all_exports_ok": true,
+  "six_of_six_identical_spec_hash": true,
+  "six_of_six_identical_stdout": true,
+  "scheduler_export_does_move": true
+ },
+ "extra": {},
+ "runs": [
+  {
+   "HEAD": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+   },
+   "D1": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4"
+   },
+   "D2": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc"
+   },
+   "D3": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30"
+   },
+   "D4": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0"
+   },
+   "D5": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece"
+   }
+  },
+  {
+   "HEAD": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+   },
+   "D1": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4"
+   },
+   "D2": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc"
+   },
+   "D3": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30"
+   },
+   "D4": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0"
+   },
+   "D5": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece"
+   }
+  },
+  {
+   "HEAD": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+   },
+   "D1": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4"
+   },
+   "D2": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc"
+   },
+   "D3": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30"
+   },
+   "D4": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0"
+   },
+   "D5": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece"
+   }
+  },
+  {
+   "HEAD": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+   },
+   "D1": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4"
+   },
+   "D2": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc"
+   },
+   "D3": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30"
+   },
+   "D4": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0"
+   },
+   "D5": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece"
+   }
+  },
+  {
+   "HEAD": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+   },
+   "D1": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4"
+   },
+   "D2": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc"
+   },
+   "D3": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30"
+   },
+   "D4": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0"
+   },
+   "D5": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece"
+   }
+  },
+  {
+   "HEAD": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+   },
+   "D1": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4"
+   },
+   "D2": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc"
+   },
+   "D3": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30"
+   },
+   "D4": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0"
+   },
+   "D5": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece"
+   }
+  },
+  {
+   "HEAD": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+   },
+   "D1": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4"
+   },
+   "D2": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc"
+   },
+   "D3": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30"
+   },
+   "D4": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0"
+   },
+   "D5": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece"
+   }
+  },
+  {
+   "HEAD": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+   },
+   "D1": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4"
+   },
+   "D2": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc"
+   },
+   "D3": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30"
+   },
+   "D4": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0"
+   },
+   "D5": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece"
+   }
+  },
+  {
+   "HEAD": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+   },
+   "D1": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4"
+   },
+   "D2": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc"
+   },
+   "D3": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30"
+   },
+   "D4": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0"
+   },
+   "D5": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece"
+   }
+  },
+  {
+   "HEAD": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "9bcae0e24da96eab8eea3e4acad0535c899b15050aebaf0f400659e25ea769a6"
+   },
+   "D1": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4"
+   },
+   "D2": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "24c5fd8f480089fc4436b6752b017dda77f55c30c656ee6945afb3b8d88588dc"
+   },
+   "D3": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "799527061f009a39abb58edad5bd6b8372f435385a7d07b96a73c93fe7220e30"
+   },
+   "D4": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "ad33f739200dddc9bb41dea66c54d307df7ad4aa4c3846840f6e813975a6c0b0"
+   },
+   "D5": {
+    "rc": 0,
+    "spec_hash": "9d3d965a8aa7eb479c59c8b70a1ed68f64083c6a57f45e9ab26a712e5ed74941",
+    "stdout_sha": "d2d363ea8f4eb9006793330e9e07b7298cd3630e809f25a1a182e8961f112395",
+    "scheduler_spec_hash": "bd8b0798044b40a7ec4dc17c34bcff43f32a52e3a5e3ead09d3ce87f64b01ece"
+   }
+  }
+ ]
+}

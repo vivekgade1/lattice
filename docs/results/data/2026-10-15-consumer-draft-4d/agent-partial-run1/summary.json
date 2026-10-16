@@ -1,0 +1,181 @@
+{
+ "experiment": "2026-10-15-consumer-draft-4d P3",
+ "claude_version": "2.1.299 (Claude Code)",
+ "freeze": {
+  "frozen_at_utc": "2026-10-15T23:48:45+00:00",
+  "files": {
+   "draft_agent_scorer.py": "97395b9e5007ceb32e7cabd45f610525561858e2e8fc64efc470b055613b20ad",
+   "draft_agent_scorer_cases.json": "32201ba412ebe0ec682a6778ac4458276ab7513621948ecd2aad2d4abcc0581a",
+   "draft_agent_check.py": "46b667681b9271122794518686e3dda9e727aead78648ebbbbf0c9b97c5fcbfe"
+  },
+  "runner_info_only": {
+   "draft_agent.py": "6192b58a64b18927ce9c50fd5cb6b31141340ce2008aa2869f918c29bfc69790",
+   "draft_probes.py": "3782b11bb7a555f2540cc0501ccbe1f3dc0c337f5785c432b74fb0ef4347b0fb"
+  },
+  "claude_version": "2.1.299 (Claude Code)",
+  "scorer_cases": "cases: 37/37 as expected",
+  "scorer_cases_rc": 0
+ },
+ "scorer_hashes_now": {
+  "draft_agent_scorer.py": "97395b9e5007ceb32e7cabd45f610525561858e2e8fc64efc470b055613b20ad",
+  "draft_agent_scorer_cases.json": "32201ba412ebe0ec682a6778ac4458276ab7513621948ecd2aad2d4abcc0581a",
+  "draft_agent_check.py": "46b667681b9271122794518686e3dda9e727aead78648ebbbbf0c9b97c5fcbfe"
+ },
+ "sessions": [
+  {
+   "sid": "sonnet-WD2-1",
+   "world": "W-D2",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "cost_usd": 0.3420886,
+   "tokens": 364059,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T00:12:09+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3": false,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!"
+   ]
+  },
+  {
+   "sid": "sonnet-WS6-1",
+   "world": "W-S6",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "cost_usd": 0.0725279,
+   "tokens": 218420,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T00:12:21+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3": false,
+    "A4": true,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "model_get!"
+   ]
+  },
+  {
+   "sid": "sonnet-WD2-2",
+   "world": "W-D2",
+   "with_tool": true,
+   "status": "NOT RUN",
+   "reason": "tokens 582479 > 400000",
+   "items": null,
+   "tools": []
+  },
+  {
+   "sid": "sonnet-WS6-2",
+   "world": "W-S6",
+   "with_tool": true,
+   "status": "NOT RUN",
+   "reason": "tokens 582479 > 400000",
+   "items": null,
+   "tools": []
+  },
+  {
+   "sid": "sonnet-WD2-3",
+   "world": "W-D2",
+   "with_tool": true,
+   "status": "NOT RUN",
+   "reason": "tokens 582479 > 400000",
+   "items": null,
+   "tools": []
+  },
+  {
+   "sid": "sonnet-WS6-3",
+   "world": "W-S6",
+   "with_tool": true,
+   "status": "NOT RUN",
+   "reason": "tokens 582479 > 400000",
+   "items": null,
+   "tools": []
+  },
+  {
+   "sid": "ablation-WD2-1",
+   "world": "W-D2",
+   "with_tool": false,
+   "status": "NOT RUN",
+   "reason": "tokens 582479 > 400000",
+   "items": null,
+   "tools": []
+  },
+  {
+   "sid": "ablation-WD2-2",
+   "world": "W-D2",
+   "with_tool": false,
+   "status": "NOT RUN",
+   "reason": "tokens 582479 > 400000",
+   "items": null,
+   "tools": []
+  }
+ ],
+ "scored": 2,
+ "tool_sessions_scored": 2,
+ "tool_sessions_pass": 0,
+ "items_with_tool": {
+  "A1": "2/2",
+  "A2": "2/2",
+  "A3": "0/2",
+  "A4": "2/2",
+  "A5": "2/2",
+  "A7": "1/1"
+ },
+ "items_ablation": {
+  "A2": "0/0",
+  "A3": "0/0",
+  "A4": "0/0",
+  "A5": "0/0",
+  "A7": "0/0"
+ },
+ "A6": "2/2",
+ "pass_rule_evaluated": false,
+ "pass_rule_met": null,
+ "total_cost_usd": 0.4146,
+ "total_tokens": 582479,
+ "stop": "tokens 582479 > 400000",
+ "wall_s": 27.9
+}

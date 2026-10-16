@@ -1,0 +1,118 @@
+{
+ "id": "D5",
+ "predicted": "verify/draft --help rc0 listing every option; report/ledger/import-plan/--help byte-identical to 7358be2; report = committed reports",
+ "observed": "12 byte-identical comparisons; 0 issues",
+ "pass": true,
+ "checks": [],
+ "comparisons": [
+  {
+   "label": "report text, I-3 9 events",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "096c5b190680c011",
+   "equals_committed": true
+  },
+  {
+   "label": "report --json, I-3 9 events",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "24a4eaf9e2f90c99"
+  },
+  {
+   "label": "report text, I-3 18 events",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "2c7d15639288d7e1"
+  },
+  {
+   "label": "report --json, I-3 18 events",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "3f3d7cde9145e853"
+  },
+  {
+   "label": "report text, I-R",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "2a5fa9e3cc1393b4",
+   "equals_committed": true
+  },
+  {
+   "label": "report --json, I-R",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "9a7108115e95941a"
+  },
+  {
+   "label": "ledger text, I-R",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "fcc0e8760d2e22e9"
+  },
+  {
+   "label": "ledger --json, I-R",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "68bd4e3c8e352217"
+  },
+  {
+   "label": "report --help",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "9862c08da7c8ddd1"
+  },
+  {
+   "label": "import-plan --help",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "d1359de1e246cd1c"
+  },
+  {
+   "label": "ledger --help",
+   "rc": 0,
+   "identical_to_base": true,
+   "digest": "ccf69d9eb52fb1c8"
+  },
+  {
+   "label": "verify --help",
+   "rc": 0,
+   "options_missing": []
+  },
+  {
+   "label": "draft --help",
+   "rc": 0,
+   "options_missing": []
+  },
+  {
+   "label": "import-plan x2 (base)",
+   "r1": {
+    "rc": 0,
+    "out": "{\"plan\": \"p2\", \"events\": 27, \"written\": 27, \"skipped\": 0, \"log\": \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/im2-old/d5/state/events.jsonl\"}\n",
+    "err": ""
+   },
+   "r2": {
+    "rc": 0,
+    "out": "{\"plan\": \"p2\", \"events\": 27, \"written\": 0, \"skipped\": 27, \"log\": \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/im2-old/d5/state/events.jsonl\"}\n",
+    "err": ""
+   }
+  },
+  {
+   "label": "import-plan x2 (branch)",
+   "r1": {
+    "rc": 0,
+    "out": "{\"plan\": \"p2\", \"events\": 27, \"written\": 27, \"skipped\": 0, \"log\": \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/im2-old/d5/state/events.jsonl\"}\n",
+    "err": ""
+   },
+   "r2": {
+    "rc": 0,
+    "out": "{\"plan\": \"p2\", \"events\": 27, \"written\": 0, \"skipped\": 27, \"log\": \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/im2-old/d5/state/events.jsonl\"}\n",
+    "err": ""
+   }
+  },
+  {
+   "label": "import-plan base == branch",
+   "identical_to_base": true
+  }
+ ],
+ "issues": []
+}

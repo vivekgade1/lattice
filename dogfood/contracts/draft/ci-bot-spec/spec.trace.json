@@ -1,0 +1,62 @@
+{
+  "source": "REQUIREMENTS.md",
+  "rules": [
+    {
+      "id": "R1",
+      "text": "ci-bot logs in with POST /auth/login using email and password and keeps the access_token.",
+      "section": "ci-bot requirements",
+      "line": 3
+    },
+    {
+      "id": "R2",
+      "text": "It finds the application named alpha through GET /applications.",
+      "section": "ci-bot requirements",
+      "line": 4
+    },
+    {
+      "id": "R3",
+      "text": "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 201 with id and status.",
+      "section": "ci-bot requirements",
+      "line": 5
+    },
+    {
+      "id": "R4",
+      "text": "On a timeout it lists the job's runs (GET /applications/{app}/jobs/{job}/runs) and cancels its own run with POST /applications/{app}/runs/{run}/cancel, reading status.",
+      "section": "ci-bot requirements",
+      "line": 6
+    },
+    {
+      "id": "R5",
+      "text": "It polls /applications/{app}/runs/{run} every 5 seconds until a final status.",
+      "section": "ci-bot requirements",
+      "line": 7
+    },
+    {
+      "id": "R6",
+      "text": "The bot never changes a job.",
+      "section": "ci-bot requirements",
+      "line": 8
+    }
+  ],
+  "links": {
+    "R1": [
+      "scenario:login"
+    ],
+    "R3": [
+      "scenario:start_run"
+    ],
+    "R4": [
+      "scenario:timeout_cancel"
+    ],
+    "R5": [
+      "scenario:poll"
+    ]
+  },
+  "unchecked": {
+    "R2": "which application is named alpha is seed data the bot cannot observe"
+  },
+  "context": [
+    "R6"
+  ],
+  "questions": []
+}

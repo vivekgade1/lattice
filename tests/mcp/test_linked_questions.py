@@ -84,7 +84,8 @@ def test_no_tool_resolves_or_dismisses_a_question(world: World) -> None:
     for readonly in (False, True):
         r = router(world, readonly=readonly)
         ours = [n for n in r.names() if "question" in n or "linked" in n]
-        assert ours == ["linked_question_list"]
+        # slice 4d (disclosed): the one added tool is the read-only draft, which clears nothing
+        assert ours == ["linked_question_list", "linked_question_draft"]
         assert not [n for n in r.names() if "resolve" in n or "dismiss" in n]
         for name in ("linked_question_resolve", "linked_question_dismiss", "questions_resolve"):
             with pytest.raises(KeyError):

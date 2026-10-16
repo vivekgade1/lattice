@@ -1,0 +1,120 @@
+{
+ "id": "T-flagoff",
+ "prediction": "without the flag the worktree's `impact` text and --json are byte-identical to a4ab4a1's (git archive a4ab4a1 lattice): T-chain D1..D10, T-diamond a..e, T-edge c, e, f, the regenerated 4a I4 rows, and `notify --dry-run --json` on T-chain D1; plus (--regression) impact_probes.py --runs 10 12/12, linkedq_probes.py as committed and pytest tests/contracts tests/workspace tests/mcp tests/studio 0 failures",
+ "observed": "0/19 cases byte-identical to a4ab4a1 (10 runs each); regression suites: not run yet",
+ "pass": false,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "no_case_missing": false,
+  "regression_run": false
+ },
+ "extra": {
+  "missing": [
+   "T-chain/D1",
+   "T-chain/D2",
+   "T-chain/D3",
+   "T-chain/D4",
+   "T-chain/D5",
+   "T-chain/D6",
+   "T-chain/D7",
+   "T-chain/D8",
+   "T-chain/D9",
+   "T-chain/D10",
+   "T-diamond/a",
+   "T-diamond/b",
+   "T-diamond/c",
+   "T-diamond/d",
+   "T-diamond/e",
+   "T-edge/c",
+   "T-edge/e",
+   "T-edge/f",
+   "notify/T-chain/D1"
+  ],
+  "cases": [
+   "T-chain/D1",
+   "T-chain/D2",
+   "T-chain/D3",
+   "T-chain/D4",
+   "T-chain/D5",
+   "T-chain/D6",
+   "T-chain/D7",
+   "T-chain/D8",
+   "T-chain/D9",
+   "T-chain/D10",
+   "T-diamond/a",
+   "T-diamond/b",
+   "T-diamond/c",
+   "T-diamond/d",
+   "T-diamond/e",
+   "T-edge/c",
+   "T-edge/e",
+   "T-edge/f",
+   "notify/T-chain/D1"
+  ]
+ },
+ "runs": [
+  {
+   "notify": {
+    "json": {
+     "rc": 1,
+     "err": "",
+     "doc": {
+      "format": 1,
+      "workspace": "probe",
+      "provider": "scheduler",
+      "candidate": {
+       "input": "d1",
+       "kind": "ref",
+       "resolved": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+       "spec_ref": "spec.tickets:t5",
+       "version": {
+        "spec_hash": "8c2b202396dec79df049da24e1d55518ad7154c703e3cfc20367a6e285f778f4",
+        "git_ref": "fca2bdf92c22c3ea961349783967fd680c95ccb3",
+        "dirty": false
+       },
+       "endpoints": 19
+      },
+      "source": {
+       "via": "cli",
+       "change": null,
+       "commit": "fca2bdf92c22c3ea961349783967fd680c95ccb3"
+      },
+      "advisory": true,
+      "dry_run": true,
+      "consumers": [
+       {
+        "consumer": "ci-bot",
+        "contract": "static",
+        "label": "contradiction",
+        "error": null,
+        "action": "undelivered",
+        "question": null,
+        "current": null,
+        "state_dir": "$WORK_J/w/T-notify/ci-bot/.lattice/state/ci-bot",
+        "warning": {
+         "code": "consumer_state_missing",
+         "message": "ci-bot has no state directory ($WORK_J/w/T-notify/ci-bot/.lattice/state/ci-bot); its owner creates it with `lattice contracts questions init ci-bot`"
+        }
+       }
+      ],
+      "counts": {
+       "created": 0,
+       "existing": 0,
+       "none": 0,
+       "undelivered": 1,
+       "skipped": 0
+      },
+      "problems": [],
+      "exit_code": 1
+     }
+    },
+    "text": {
+     "rc": 1,
+     "out": "",
+     "err": ""
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,37 @@
+ci-bot needs two changes, plus one note about its spec. I could only reach ci-bot through the Lattice tools, so I haven't seen its source files and can't name exact lines in them.
+
+## What the provider changed
+
+`scheduler` has an accepted change that moved its spec from `9bcae0e2…` (commit `ef17cf88`) to `24c5fd8f…` (commit `c73bea6e`). One endpoint is affected, `POST /applications/{}/jobs/{}/runs`, which ci-bot imports.
+
+| Finding | Detail |
+|---|---|
+| **BROKEN** `status_not_observed` | ci-bot relies on status **201**, but the spec now shows only `[200, 401, 404, 409]`. |
+| **CHANGED** (relied) `status_added` | **200** is now the success status. |
+
+The open linked question is `lq1`, labelled `contradiction`. Its advice is to adapt ci-bot, then re-pin.
+
+## What to change in ci-bot
+
+1. **Code.** Find where ci-bot calls `POST /applications/{app}/jobs/{job}/runs`, which is likely a run-trigger client or a "start run" step.
+   - Treat **200** as the success status in place of 201. Accepting both 200 and 201 is the safest transition.
+   - Make sure nothing else keys off `== 201`, such as a response check, a retry, or a mock or test fixture.
+   - Keep handling for 401, 404 and 409, since all three are still in the contract.
+   - Nothing was reported about the response body. This finding is about status codes only.
+
+2. **Import declaration.** In `lattice.imports.toml`, update the claim for this endpoint so its expected statuses are 200 (plus 401/404/409) instead of 201. This is where the "relied-on 201" lives.
+
+3. **Re-pin.** After steps 1–2, run `lattice contracts pin ci-bot`, which updates `lattice.contracts.lock.json` to `24c5fd8f…` / `c73bea6e`. Then run `lattice contracts check ci-bot`, which should show no BROKEN or CHANGED findings.
+
+4. **Clear the note.** Run `lattice contracts questions resolve ci-bot lq1`. Use `dismiss` instead if you decide not to adapt.
+
+## About "its spec"
+
+ci-bot has **no `spec.py`, `REQUIREMENTS.md` or `spec.trace.json`**. Lattice reports it is not a Lattice project beyond being a contract consumer, so there is no spec text to edit. The contract itself lives in `lattice.imports.toml` and the lock file, covered in steps 2–3.
+
+If you want ci-bot to have rules of its own, write `REQUIREMENTS.md` and run `lattice spec draft`. A rule such as "a successful run trigger is acknowledged with 200" would belong there. That is optional and isn't needed to fix the break.
+
+## Alternative and side note
+
+- **Alternative:** if 201 is the behavior ci-bot needs, ask the scheduler owner to revert the change instead.
+- **Gap, not breaking:** `POST /auth/login` `access_token` is unobserved in the provider's spec, so the contract doesn't guarantee that field. This is worth watching, but it needs no change now.

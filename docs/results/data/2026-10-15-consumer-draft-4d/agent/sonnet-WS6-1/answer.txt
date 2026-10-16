@@ -1,0 +1,48 @@
+Here's what to change in streak-widget. I changed nothing, and I couldn't read its files (no shell or file access in this session), so you'll need to locate the exact lines yourself.
+
+## What broke
+
+The `streak` provider's accepted change (commit `168e2a03`) renamed a pagination field on `GET /v1/habits`:
+
+| | Before (your pin) | Now |
+|---|---|---|
+| Response fields | `items`, `has_more`, `next_cursor` | `items`, `has_more`, `next` |
+
+- **BROKEN:** `next_cursor` is no longer in the response.
+- **CHANGED (relied on):** `next` is now shown.
+- Nothing else you import is affected. The request fields `limit` and `cursor` are unchanged, and the other 6 imports are fine.
+
+This is open question `lq1` on streak-widget.
+
+## 1. Code change (do this first)
+
+Wherever the widget calls `GET /v1/habits` and handles pagination:
+
+- Read `response.next` instead of `response.next_cursor`.
+- Keep sending the value back as the `cursor` request parameter (unchanged).
+- Keep using `items` and `has_more` as they are.
+
+I don't know the file or line. A grep for `next_cursor` across the widget source will find every use, including types, fixtures and mocks.
+
+## 2. Spec change: import table #4
+
+streak-widget has no Lattice spec of its own (`REQUIREMENTS.md`, `spec.py` and `spec.trace.json` are all missing). There are therefore no rules to edit. The only spec-level change is the `[[import]]` table for `GET /v1/habits` (import #4, in the workspace/contract declaration):
+
+```toml
+response_fields = ["items", "has_more", "next_cursor"]
+# becomes
+response_fields = ["items", "has_more", "next"]
+```
+
+Leave `status = [200]`, `auth = "token"`, `as_user = "ann"` and `request_fields = ["limit", "cursor"]` as they are. Don't delete the claim to make the check pass. That would hide the break without the code being right.
+
+## 3. Then
+
+1. `lattice contracts pin streak-widget`
+2. `lattice contracts check streak-widget` (should report `ok` with no BROKEN findings)
+3. `lattice contracts questions resolve streak-widget lq1`
+
+## Notes
+
+- **Alternative:** if the rename wasn't intended, ask streak's owner to revert it instead. Then no change is needed here, and you'd dismiss `lq1`.
+- **Gaps (not breakage):** the check also reports two claims the provider's spec never shows: request field `cursor` on `GET /v1/habits`, and response field `access_token` on `POST /v1/auth/login`. These were already there and don't need action for this fix.

@@ -1,0 +1,47 @@
+{
+ "id": "T-additive",
+ "prediction": "every flagged call of the run: flag-on JSON minus `transitive` == flag-off JSON (elapsed_s dropped), flag-on text = the flag-off bytes + a block starting `downstream (`, exit codes equal",
+ "observed": "28/28 pairs additive",
+ "pass": true,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "every_pair_additive": true,
+  "pairs_gt_0": true
+ },
+ "extra": {
+  "failing": []
+ },
+ "runs": [
+  [
+   "T-chain/D1",
+   "T-chain/D10",
+   "T-chain/D2",
+   "T-chain/D3",
+   "T-chain/D4",
+   "T-chain/D5",
+   "T-chain/D6",
+   "T-chain/D7",
+   "T-chain/D8",
+   "T-chain/D9",
+   "T-cycle/a",
+   "T-cycle/b",
+   "T-cycle/c",
+   "T-cycle/d",
+   "T-diamond/a",
+   "T-diamond/b",
+   "T-diamond/c",
+   "T-diamond/d",
+   "T-diamond/e",
+   "T-edge/a",
+   "T-edge/b",
+   "T-edge/c",
+   "T-edge/d",
+   "T-edge/e",
+   "T-edge/f",
+   "T-edge/g",
+   "T-long/D1",
+   "T-long/D6"
+  ]
+ ]
+}

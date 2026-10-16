@@ -1,0 +1,151 @@
+{
+ "id": "Q7",
+ "prediction": "probes.py --runs 10 35/35, streak_probes.py --allow-code-diff 32/32, exclude_probes.py 12/12, impact_probes.py --runs 10 12/12; pytest tests/contracts tests/workspace tests/mcp tests/studio 0 failures; dogfood/studio/check.sh PASS (422 + R96/R97's steps); restart_drill.py A B C F; on the Q1 workspace workspace show|validate|impact, contracts export|check|impact (text, --json) and the pin lock byte-identical to 33d8de1; state_dir_for paths equal",
+ "observed": "byte-identical 12/12; state_dir_for equal yes; runners/pytest/check.sh/drill SKIPPED (--skip-regression)",
+ "pass": false,
+ "identical": true,
+ "n_runs": 1,
+ "checks": {
+  "old_code_materialised_from_33d8de1": true,
+  "bytes_identical_to_33d8de1": true,
+  "pin_lock_equals_golden": true,
+  "state_dir_for_paths_equal_33d8de1": true,
+  "regression_run": false
+ },
+ "extra": {
+  "old_code": {
+   "ref": "33d8de1",
+   "root": "scratch/old-code-33d8de1"
+  },
+  "byte_comparison": [
+   {
+    "argv": "lattice.workspace show",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace show --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts export scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts impact scheduler --candidate d2 --json",
+    "equal": true,
+    "rc": 1
+   },
+   {
+    "argv": "lattice.contracts impact scheduler --candidate d2",
+    "equal": true,
+    "rc": 1
+   },
+   {
+    "argv": "contracts pin ci-bot (lock bytes)",
+    "equal": true,
+    "rc": 0
+   }
+  ],
+  "state_dir_for": {
+   "new": "[\"$WORK_J/w/Q7-sd-0/.lattice/state/notes\", \"$WORK_J/w/Q7-sd-1/st\", \"$WORK_J/w/Q7-sd-2/.lattice/state/y\"]",
+   "old": "[\"$WORK_J/w/Q7-sd-0/.lattice/state/notes\", \"$WORK_J/w/Q7-sd-1/st\", \"$WORK_J/w/Q7-sd-2/.lattice/state/y\"]"
+  }
+ },
+ "runs": [
+  [
+   {
+    "argv": "lattice.workspace show",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace show --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace validate --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.workspace impact scheduler --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts export scheduler",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot --json",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts check ci-bot",
+    "equal": true,
+    "rc": 0
+   },
+   {
+    "argv": "lattice.contracts impact scheduler --candidate d2 --json",
+    "equal": true,
+    "rc": 1
+   },
+   {
+    "argv": "lattice.contracts impact scheduler --candidate d2",
+    "equal": true,
+    "rc": 1
+   },
+   {
+    "argv": "contracts pin ci-bot (lock bytes)",
+    "equal": true,
+    "rc": 0
+   }
+  ]
+ ]
+}

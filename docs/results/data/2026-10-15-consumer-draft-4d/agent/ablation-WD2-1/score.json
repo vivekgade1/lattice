@@ -1,0 +1,70 @@
+{
+ "items": {
+  "A1": null,
+  "A2": false,
+  "A3": false,
+  "A4": true,
+  "A5": true,
+  "A7": false,
+  "A6": true
+ },
+ "applicable": [
+  "A2",
+  "A3",
+  "A4",
+  "A5",
+  "A6",
+  "A7"
+ ],
+ "detail": {
+  "A1": {
+   "pass": false,
+   "calls": []
+  },
+  "A2": {
+   "pass": false,
+   "endpoint": true,
+   "number": false,
+   "others": []
+  },
+  "A3": {
+   "pass": false,
+   "invented": [
+    {
+     "kind": "field",
+     "item": "ef17cf88",
+     "sentence": "The scheduler's accepted change (commit `c73bea6e`, spec hash `24c5fd8f4800`) contradicts ci-bot's pin (`9bcae0e24da9`, commit `ef17cf88`)."
+    },
+    {
+     "kind": "field",
+     "item": "contract_check",
+     "sentence": "Note that `contract_check` still reports `ok` for ci-bot."
+    },
+    {
+     "kind": "field",
+     "item": "ok",
+     "sentence": "Note that `contract_check` still reports `ok` for ci-bot."
+    }
+   ]
+  },
+  "A4": {
+   "pass": true,
+   "advice": []
+  },
+  "A5": {
+   "pass": true,
+   "r6": true,
+   "proposed": []
+  },
+  "A7": {
+   "pass": false,
+   "R3": false,
+   "R4_affirmed": []
+  },
+  "A6": {
+   "world_changed": [],
+   "outside_same": true
+  }
+ },
+ "pass": false
+}

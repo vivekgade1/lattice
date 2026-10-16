@@ -1,0 +1,762 @@
+{
+ "id": "Q3",
+ "prediction": "(a) outside linked_questions/ every consumer file byte- and mtime-identical, new files only at D3.3's paths (.git/info/exclude included); (b) a real StateStore dir's meta.json, plans/, builds/, changes/ byte-identical and the next allocate is c2; (c) a read-only state dir: undelivered consumer_state_unwritable, exit 1, others delivered; (d) missing: consumer_state_missing, nothing created; (e) [state] dir lands in st/, enabled = false is _disabled; (f) 0 parse errors and 0 partial objects under 200 notifications and 200 resolves; (g) ids unique and contiguous, no file overwritten over 50 rounds; (h) held lock: consumer_state_busy after <= 6 s",
+ "observed": "a outside 0 / changed 6; b identical yes next c2; c {'ci-bot': 'undelivered', 'ci-bot-2': 'created'}; d consumer_state_missing find []; e created/consumer_state_disabled; f 200 ids, reader {'seen': 91862, 'parse_errors': 0, 'partial': 0}; g 50/50 rounds clean, hammer ids 200; h consumer_state_busy elapsed 5.438 s (wall 5.49 s)",
+ "pass": true,
+ "identical": true,
+ "n_runs": 10,
+ "checks": {
+  "a_only_allowed_paths": true,
+  "b_statestore_untouched": true,
+  "c_readonly_undelivered_others_delivered": true,
+  "d_missing_nothing_created": true,
+  "e_state_dir_and_disabled": true,
+  "f_no_torn_reads": true,
+  "g_ids_unique_and_contiguous_50_rounds": true,
+  "g_hammer_200_ids_unique_and_contiguous": true,
+  "h_busy_within_6s": true
+ },
+ "extra": {
+  "f": {
+   "writer_rc": 0,
+   "ids": 200,
+   "reader": {
+    "seen": 91862,
+    "parse_errors": 0,
+    "partial": 0
+   },
+   "resolved": 200,
+   "tmp": []
+  },
+  "g_rounds": [
+   {
+    "ids": [
+     "lq1.json",
+     "lq2.json"
+    ],
+    "providers": [
+     "scheduler",
+     "streak"
+    ],
+    "actions": [
+     "created",
+     "created"
+    ]
+   },
+   {
+    "ids": [
+     "lq1.json",
+     "lq2.json"
+    ],
+    "providers": [
+     "scheduler",
+     "streak"
+    ],
+    "actions": [
+     "created",
+     "created"
+    ]
+   },
+   {
+    "ids": [
+     "lq1.json",
+     "lq2.json"
+    ],
+    "providers": [
+     "scheduler",
+     "streak"
+    ],
+    "actions": [
+     "created",
+     "created"
+    ]
+   }
+  ],
+  "g_all_clean": true,
+  "g_hammer": {
+   "ids": 200,
+   "files": 200
+  },
+  "h": {
+   "rc": 1,
+   "action": "undelivered",
+   "warning": "consumer_state_busy",
+   "elapsed_s": 5.438,
+   "wall_s": 5.49,
+   "names": []
+  },
+  "timings_note": "(f), (g), (h) ran once"
+ },
+ "runs": [
+  {
+   "a": {
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "names": [
+     ".lock",
+     "links",
+     "links/scheduler.static.json",
+     "lq1.json",
+     "lq2.json",
+     "lq3.json"
+    ]
+   },
+   "b": {
+    "action": "created",
+    "identical": true,
+    "next_changes_id": 2,
+    "top": [
+     "builds",
+     "changes",
+     "linked_questions",
+     "meta.json",
+     "plans"
+    ]
+   },
+   "c": {
+    "rc": 1,
+    "actions": {
+     "ci-bot": "undelivered",
+     "ci-bot-2": "created"
+    },
+    "warning": "consumer_state_unwritable",
+    "ci_bot_names": [],
+    "ci_bot_2": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ]
+   },
+   "d": {
+    "rc": 1,
+    "action": "undelivered",
+    "warning": "consumer_state_missing",
+    "find": [],
+    "unchanged": true
+   },
+   "e_dir": {
+    "action": "created",
+    "names": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ],
+    "no_lattice": true,
+    "state_dir_ok": true
+   },
+   "e_off": {
+    "action": "undelivered",
+    "warning": "consumer_state_disabled",
+    "no_lattice": true
+   }
+  },
+  {
+   "a": {
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "names": [
+     ".lock",
+     "links",
+     "links/scheduler.static.json",
+     "lq1.json",
+     "lq2.json",
+     "lq3.json"
+    ]
+   },
+   "b": {
+    "action": "created",
+    "identical": true,
+    "next_changes_id": 2,
+    "top": [
+     "builds",
+     "changes",
+     "linked_questions",
+     "meta.json",
+     "plans"
+    ]
+   },
+   "c": {
+    "rc": 1,
+    "actions": {
+     "ci-bot": "undelivered",
+     "ci-bot-2": "created"
+    },
+    "warning": "consumer_state_unwritable",
+    "ci_bot_names": [],
+    "ci_bot_2": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ]
+   },
+   "d": {
+    "rc": 1,
+    "action": "undelivered",
+    "warning": "consumer_state_missing",
+    "find": [],
+    "unchanged": true
+   },
+   "e_dir": {
+    "action": "created",
+    "names": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ],
+    "no_lattice": true,
+    "state_dir_ok": true
+   },
+   "e_off": {
+    "action": "undelivered",
+    "warning": "consumer_state_disabled",
+    "no_lattice": true
+   }
+  },
+  {
+   "a": {
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "names": [
+     ".lock",
+     "links",
+     "links/scheduler.static.json",
+     "lq1.json",
+     "lq2.json",
+     "lq3.json"
+    ]
+   },
+   "b": {
+    "action": "created",
+    "identical": true,
+    "next_changes_id": 2,
+    "top": [
+     "builds",
+     "changes",
+     "linked_questions",
+     "meta.json",
+     "plans"
+    ]
+   },
+   "c": {
+    "rc": 1,
+    "actions": {
+     "ci-bot": "undelivered",
+     "ci-bot-2": "created"
+    },
+    "warning": "consumer_state_unwritable",
+    "ci_bot_names": [],
+    "ci_bot_2": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ]
+   },
+   "d": {
+    "rc": 1,
+    "action": "undelivered",
+    "warning": "consumer_state_missing",
+    "find": [],
+    "unchanged": true
+   },
+   "e_dir": {
+    "action": "created",
+    "names": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ],
+    "no_lattice": true,
+    "state_dir_ok": true
+   },
+   "e_off": {
+    "action": "undelivered",
+    "warning": "consumer_state_disabled",
+    "no_lattice": true
+   }
+  },
+  {
+   "a": {
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "names": [
+     ".lock",
+     "links",
+     "links/scheduler.static.json",
+     "lq1.json",
+     "lq2.json",
+     "lq3.json"
+    ]
+   },
+   "b": {
+    "action": "created",
+    "identical": true,
+    "next_changes_id": 2,
+    "top": [
+     "builds",
+     "changes",
+     "linked_questions",
+     "meta.json",
+     "plans"
+    ]
+   },
+   "c": {
+    "rc": 1,
+    "actions": {
+     "ci-bot": "undelivered",
+     "ci-bot-2": "created"
+    },
+    "warning": "consumer_state_unwritable",
+    "ci_bot_names": [],
+    "ci_bot_2": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ]
+   },
+   "d": {
+    "rc": 1,
+    "action": "undelivered",
+    "warning": "consumer_state_missing",
+    "find": [],
+    "unchanged": true
+   },
+   "e_dir": {
+    "action": "created",
+    "names": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ],
+    "no_lattice": true,
+    "state_dir_ok": true
+   },
+   "e_off": {
+    "action": "undelivered",
+    "warning": "consumer_state_disabled",
+    "no_lattice": true
+   }
+  },
+  {
+   "a": {
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "names": [
+     ".lock",
+     "links",
+     "links/scheduler.static.json",
+     "lq1.json",
+     "lq2.json",
+     "lq3.json"
+    ]
+   },
+   "b": {
+    "action": "created",
+    "identical": true,
+    "next_changes_id": 2,
+    "top": [
+     "builds",
+     "changes",
+     "linked_questions",
+     "meta.json",
+     "plans"
+    ]
+   },
+   "c": {
+    "rc": 1,
+    "actions": {
+     "ci-bot": "undelivered",
+     "ci-bot-2": "created"
+    },
+    "warning": "consumer_state_unwritable",
+    "ci_bot_names": [],
+    "ci_bot_2": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ]
+   },
+   "d": {
+    "rc": 1,
+    "action": "undelivered",
+    "warning": "consumer_state_missing",
+    "find": [],
+    "unchanged": true
+   },
+   "e_dir": {
+    "action": "created",
+    "names": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ],
+    "no_lattice": true,
+    "state_dir_ok": true
+   },
+   "e_off": {
+    "action": "undelivered",
+    "warning": "consumer_state_disabled",
+    "no_lattice": true
+   }
+  },
+  {
+   "a": {
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "names": [
+     ".lock",
+     "links",
+     "links/scheduler.static.json",
+     "lq1.json",
+     "lq2.json",
+     "lq3.json"
+    ]
+   },
+   "b": {
+    "action": "created",
+    "identical": true,
+    "next_changes_id": 2,
+    "top": [
+     "builds",
+     "changes",
+     "linked_questions",
+     "meta.json",
+     "plans"
+    ]
+   },
+   "c": {
+    "rc": 1,
+    "actions": {
+     "ci-bot": "undelivered",
+     "ci-bot-2": "created"
+    },
+    "warning": "consumer_state_unwritable",
+    "ci_bot_names": [],
+    "ci_bot_2": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ]
+   },
+   "d": {
+    "rc": 1,
+    "action": "undelivered",
+    "warning": "consumer_state_missing",
+    "find": [],
+    "unchanged": true
+   },
+   "e_dir": {
+    "action": "created",
+    "names": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ],
+    "no_lattice": true,
+    "state_dir_ok": true
+   },
+   "e_off": {
+    "action": "undelivered",
+    "warning": "consumer_state_disabled",
+    "no_lattice": true
+   }
+  },
+  {
+   "a": {
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "names": [
+     ".lock",
+     "links",
+     "links/scheduler.static.json",
+     "lq1.json",
+     "lq2.json",
+     "lq3.json"
+    ]
+   },
+   "b": {
+    "action": "created",
+    "identical": true,
+    "next_changes_id": 2,
+    "top": [
+     "builds",
+     "changes",
+     "linked_questions",
+     "meta.json",
+     "plans"
+    ]
+   },
+   "c": {
+    "rc": 1,
+    "actions": {
+     "ci-bot": "undelivered",
+     "ci-bot-2": "created"
+    },
+    "warning": "consumer_state_unwritable",
+    "ci_bot_names": [],
+    "ci_bot_2": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ]
+   },
+   "d": {
+    "rc": 1,
+    "action": "undelivered",
+    "warning": "consumer_state_missing",
+    "find": [],
+    "unchanged": true
+   },
+   "e_dir": {
+    "action": "created",
+    "names": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ],
+    "no_lattice": true,
+    "state_dir_ok": true
+   },
+   "e_off": {
+    "action": "undelivered",
+    "warning": "consumer_state_disabled",
+    "no_lattice": true
+   }
+  },
+  {
+   "a": {
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "names": [
+     ".lock",
+     "links",
+     "links/scheduler.static.json",
+     "lq1.json",
+     "lq2.json",
+     "lq3.json"
+    ]
+   },
+   "b": {
+    "action": "created",
+    "identical": true,
+    "next_changes_id": 2,
+    "top": [
+     "builds",
+     "changes",
+     "linked_questions",
+     "meta.json",
+     "plans"
+    ]
+   },
+   "c": {
+    "rc": 1,
+    "actions": {
+     "ci-bot": "undelivered",
+     "ci-bot-2": "created"
+    },
+    "warning": "consumer_state_unwritable",
+    "ci_bot_names": [],
+    "ci_bot_2": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ]
+   },
+   "d": {
+    "rc": 1,
+    "action": "undelivered",
+    "warning": "consumer_state_missing",
+    "find": [],
+    "unchanged": true
+   },
+   "e_dir": {
+    "action": "created",
+    "names": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ],
+    "no_lattice": true,
+    "state_dir_ok": true
+   },
+   "e_off": {
+    "action": "undelivered",
+    "warning": "consumer_state_disabled",
+    "no_lattice": true
+   }
+  },
+  {
+   "a": {
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "names": [
+     ".lock",
+     "links",
+     "links/scheduler.static.json",
+     "lq1.json",
+     "lq2.json",
+     "lq3.json"
+    ]
+   },
+   "b": {
+    "action": "created",
+    "identical": true,
+    "next_changes_id": 2,
+    "top": [
+     "builds",
+     "changes",
+     "linked_questions",
+     "meta.json",
+     "plans"
+    ]
+   },
+   "c": {
+    "rc": 1,
+    "actions": {
+     "ci-bot": "undelivered",
+     "ci-bot-2": "created"
+    },
+    "warning": "consumer_state_unwritable",
+    "ci_bot_names": [],
+    "ci_bot_2": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ]
+   },
+   "d": {
+    "rc": 1,
+    "action": "undelivered",
+    "warning": "consumer_state_missing",
+    "find": [],
+    "unchanged": true
+   },
+   "e_dir": {
+    "action": "created",
+    "names": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ],
+    "no_lattice": true,
+    "state_dir_ok": true
+   },
+   "e_off": {
+    "action": "undelivered",
+    "warning": "consumer_state_disabled",
+    "no_lattice": true
+   }
+  },
+  {
+   "a": {
+    "changed": [
+     ".lattice/state/ci-bot/linked_questions/.lock",
+     ".lattice/state/ci-bot/linked_questions/links",
+     ".lattice/state/ci-bot/linked_questions/links/scheduler.static.json",
+     ".lattice/state/ci-bot/linked_questions/lq1.json",
+     ".lattice/state/ci-bot/linked_questions/lq2.json",
+     ".lattice/state/ci-bot/linked_questions/lq3.json"
+    ],
+    "outside": [],
+    "names": [
+     ".lock",
+     "links",
+     "links/scheduler.static.json",
+     "lq1.json",
+     "lq2.json",
+     "lq3.json"
+    ]
+   },
+   "b": {
+    "action": "created",
+    "identical": true,
+    "next_changes_id": 2,
+    "top": [
+     "builds",
+     "changes",
+     "linked_questions",
+     "meta.json",
+     "plans"
+    ]
+   },
+   "c": {
+    "rc": 1,
+    "actions": {
+     "ci-bot": "undelivered",
+     "ci-bot-2": "created"
+    },
+    "warning": "consumer_state_unwritable",
+    "ci_bot_names": [],
+    "ci_bot_2": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ]
+   },
+   "d": {
+    "rc": 1,
+    "action": "undelivered",
+    "warning": "consumer_state_missing",
+    "find": [],
+    "unchanged": true
+   },
+   "e_dir": {
+    "action": "created",
+    "names": [
+     "links/scheduler.static.json",
+     "lq1.json"
+    ],
+    "no_lattice": true,
+    "state_dir_ok": true
+   },
+   "e_off": {
+    "action": "undelivered",
+    "warning": "consumer_state_disabled",
+    "no_lattice": true
+   }
+  }
+ ]
+}

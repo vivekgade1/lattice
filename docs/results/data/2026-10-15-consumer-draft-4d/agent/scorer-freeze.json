@@ -1,0 +1,15 @@
+{
+ "frozen_at_utc": "2026-10-15T23:48:45+00:00",
+ "files": {
+  "draft_agent_scorer.py": "97395b9e5007ceb32e7cabd45f610525561858e2e8fc64efc470b055613b20ad",
+  "draft_agent_scorer_cases.json": "32201ba412ebe0ec682a6778ac4458276ab7513621948ecd2aad2d4abcc0581a",
+  "draft_agent_check.py": "46b667681b9271122794518686e3dda9e727aead78648ebbbbf0c9b97c5fcbfe"
+ },
+ "runner_info_only": {
+  "draft_agent.py": "6192b58a64b18927ce9c50fd5cb6b31141340ce2008aa2869f918c29bfc69790",
+  "draft_probes.py": "3782b11bb7a555f2540cc0501ccbe1f3dc0c337f5785c432b74fb0ef4347b0fb"
+ },
+ "claude_version": "2.1.299 (Claude Code)",
+ "scorer_cases": "cases: 37/37 as expected",
+ "scorer_cases_rc": 0
+}
