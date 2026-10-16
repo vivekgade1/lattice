@@ -250,3 +250,18 @@ reported as they are (n < 6 is stated, and the pass rule is then not evaluated).
 **D. Order.** Deterministic probes (P1, P2 no-write, byte-compat, mutants) first and independent of P3; the
 build node reports P3 separately so a quota stop does not hide them.
 **E. No UI, no API route** (as decided); any pressure to add one is a report item.
+
+## Amendment 2 (orchestrator ruling, 2026-10-15, after 2 of 8 P3 sessions and before any further session)
+
+The 400k-token abort rule fired at 582,479 tokens after 2 sessions at **USD 0.41**. The runner counted
+input + cache creation + cache read + output; ~94% of each session was cache reads over 6 turns of a 60-75k
+context, so the section-3 estimate (20-60k per session) was wrong under that definition. The cost caps
+(USD 0.50 and 8 turns per session, USD 3 total, the first-three-above-USD-1 abort) are the real budget guards
+and were nowhere near. **Ruling:** the token abort counts input + output + cache creation only (cache reads
+excluded); the cap stays 400k on that definition. All 8 sessions are run fresh (the scorer frozen by the hashes
+already recorded; no scorer edit); the first partial run is kept as `agent-partial-run1/` and reported
+beside the full run. A usage-limit error still gives NOT RUN, never a miss.
+**A3 scorer false positives are not fixed here.** Two sessions failed A3 under the frozen scorer because it
+flagged a backticked tool name and the token `ok` in sentences that propose no change. The frozen scorer's
+verdict stands in the scored table; the by-hand reading is reported beside it. A scorer fix is a separate,
+pre-registered round (as agent-run round 2 was), not an edit now.
