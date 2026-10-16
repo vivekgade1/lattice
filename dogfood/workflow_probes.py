@@ -707,11 +707,15 @@ def replay_worker(args: argparse.Namespace) -> int:
     root = Path(args.root)
     doc = json.loads(Path(args.doc).read_text())
     cfg = _studio_app(root)
+    if getattr(args, "refs_json", None):
+        # round 2: references hard-coded from the project's check.sh text, not discovered
+        cfg = json.loads(args.refs_json)
     make_app = _harness_attr(root, cfg["app"])
     build_db = _harness_attr(root, cfg["db"])
     login = _harness_attr(root, cfg["login"]) if "login" in cfg else None
     runtime = _harness_attr(root, cfg["runtime"]) if "runtime" in cfg else None
     services = dict(_harness_attr(root, cfg["services"])) if "services" in cfg else {}
+    dialect = getattr(args, "database", None) or "mysql"
     scenarios, users = [], set()
     for f in doc["flows"]:
         if f["status"] != "verified":
@@ -748,7 +752,9 @@ def replay_worker(args: argparse.Namespace) -> int:
     saved = {k: v for k, v in os.environ.items() if k.startswith("LATTICE_") and k.endswith("_URL")}
     for k in saved:
         del os.environ[k]
-    server, _ = dbserver.server_for("mysql", None, name_prefix=CONTAINER)
+    server = None
+    if dialect == "mysql":
+        server, _ = dbserver.server_for("mysql", None, name_prefix=CONTAINER)
     failures: dict[str, str] = {}
     try:
         report = check(
@@ -759,8 +765,8 @@ def replay_worker(args: argparse.Namespace) -> int:
             runtime=runtime,
             login=login,
             services=services or None,
-            database="mysql",
-            database_url=server.url,
+            database=dialect,
+            database_url=server.url if server is not None else None,
         )
         for fd in report.findings:
             if fd.layer == "D" and fd.rule.startswith("scenario: "):
@@ -768,14 +774,21 @@ def replay_worker(args: argparse.Namespace) -> int:
                     fd.rule[len("scenario: ") :], json.dumps(fd.details, default=str)[:200]
                 )
     finally:
-        server.stop()
+        if server is not None:
+            server.stop()
     print(
         json.dumps({"scenarios": len(scenarios), "failures": failures, "n_failures": len(failures)})
     )
     return 0
 
 
-def probe_pr(root: Path, doc_path: Path, scratch: Path) -> dict[str, Any]:
+def probe_pr(
+    root: Path,
+    doc_path: Path,
+    scratch: Path,
+    refs: dict[str, str] | None = None,
+    database: str = "mysql",
+) -> dict[str, Any]:
     tmp = fresh_tmp(scratch, "replay")
     t0 = time.perf_counter()
     proc = subprocess.run(
@@ -787,6 +800,7 @@ def probe_pr(root: Path, doc_path: Path, scratch: Path) -> dict[str, Any]:
             str(root),
             "--doc",
             str(doc_path),
+            *(["--refs-json", json.dumps(refs), "--database", database] if refs else []),
         ],
         capture_output=True,
         text=True,
@@ -811,7 +825,7 @@ def probe_pr(root: Path, doc_path: Path, scratch: Path) -> dict[str, Any]:
         "workflows.json and runs check(layers='D') on a fresh container",
         "0 failures",
         {"scenarios": got["scenarios"], "failures": got["n_failures"], "failed": got["failures"]},
-        got["n_failures"] == 0 and got["scenarios"] > 0,
+        got["n_failures"] == 0 and (got["scenarios"] > 0 or refs is not None),
         wall_s=round(wall, 1),
     )
 
@@ -819,8 +833,18 @@ def probe_pr(root: Path, doc_path: Path, scratch: Path) -> dict[str, Any]:
 # ---- containers, interrupts ---------------------------------------------------------------
 
 
-def probe_pt_sigint(root: Path, scratch: Path, extra: Sequence[str]) -> dict[str, Any]:
-    """A run killed with SIGINT mid-flow leaves no ``lattice-wf-`` container and no app."""
+def probe_pt_sigint(
+    root: Path,
+    scratch: Path,
+    extra: Sequence[str],
+    *,
+    containers: bool = True,
+    min_snaps: int = 12,
+    label: str = "PT-sigint",
+) -> dict[str, Any]:
+    """A run killed with SIGINT mid-flow leaves no ``lattice-wf-`` container and no app.
+    ``containers=False`` (a SQLite run) waits for ``min_snaps`` snapshots instead of a
+    container."""
     out = scratch / "sigint-out"
     shutil.rmtree(out, ignore_errors=True)
     tmp = fresh_tmp(scratch, "sigint")
@@ -846,13 +870,13 @@ def probe_pt_sigint(root: Path, scratch: Path, extra: Sequence[str]) -> dict[str
     snaps = 0
     deadline = time.monotonic() + 120
     while time.monotonic() < deadline and proc.poll() is None:
-        if wf_containers():
+        if not containers or wf_containers():
             seen = True
             sc = out / ".scratch"
             snaps = len(list(sc.glob("snap-*.db"))) if sc.is_dir() else 0
-            if snaps >= 12:
+            if snaps >= min_snaps:
                 break
-        time.sleep(0.2)
+        time.sleep(0.05 if not containers else 0.2)
     mid_flow = proc.poll() is None
     if mid_flow:
         proc.send_signal(signal.SIGINT)
@@ -869,7 +893,7 @@ def probe_pt_sigint(root: Path, scratch: Path, extra: Sequence[str]) -> dict[str
         ["pgrep", "-f", str(root / "bin")], capture_output=True, text=True, check=False
     ).stdout.split()
     return result(
-        "PT-sigint",
+        label,
         "containers lattice-wf-* (and app processes) after a run killed with SIGINT mid-flow",
         {"containers": 0, "apps": 0},
         {
@@ -1580,6 +1604,1121 @@ def run_held_out(args: argparse.Namespace) -> int:
     return 0
 
 
+# ---- round 2: harness discovery, list rule, dev-set dynamic run ---------------------------
+# (docs/results/2026-10-16-workflow-layer-round2-prereg.md, section 3). The ground truth below
+# is written from the pre-registration, not from the layer's output.
+
+ROUND1_DATA = "docs/results/data/2026-10-15-workflow-layer"
+NEW_RUN_KEYS = ("harness_file", "harness_reason", "list_rule", "database")
+FOUR_SOURCES = ("studio.toml", "gate file", "check.sh", "harness.py")
+STREAK_REFS = {
+    "app": "harness:make_app",
+    "db": "harness:build_db",
+    "login": "harness:login",
+    "runtime": "harness:RUNTIME",
+    "services": "harness:SERVICES",
+}
+J_REFS = {
+    "app": "harness:make_app",
+    "db": "harness:build_seed_db",
+    "login": "spec.seed:login",
+    "runtime": "harness:RUNTIME",
+    "services": "harness:SERVICES",
+}
+J_NAMES = {
+    "go": "job-scheduler-go",
+    "mso": "job-scheduler-go-min-spec-opus",
+    "mss": "job-scheduler-go-min-spec-sonnet",
+    "base": "job-scheduler-go-baseline",
+    "mbo": "job-scheduler-go-min-base-opus",
+    "mbs": "job-scheduler-go-min-base-sonnet",
+}
+J_HARNESS = ("go", "mso", "mss")
+J_STATIC = ("base", "mbo", "mbs")
+# PH: what discovery must say per app: (source, file, refs, services, database)
+PH_APPS: dict[str, dict[str, Any]] = {
+    "S": dict(
+        source="studio.toml", file="studio.toml", refs=STREAK_REFS, services=["nudger"],
+        database="mysql",
+    ),
+    "S-prime": dict(
+        source="check.sh", file="check.sh", refs=STREAK_REFS, services=["nudger"],
+        database="mysql",
+    ),
+    "go": dict(
+        source="check.sh", file="check.sh", refs=J_REFS, services=["scheduler", "worker"],
+        database="sqlite",
+    ),
+    "mso": dict(
+        source="check.sh", file="check.sh", refs={**J_REFS, "services": None}, services=[],
+        database="sqlite",
+    ),
+    "mss": dict(
+        source="check.sh", file="check.sh", refs={**J_REFS, "services": None}, services=[],
+        database="sqlite",
+    ),
+}  # fmt: skip
+# the J refs hard-coded from each check.sh text (PR must not use the layer's discovery)
+J_PR_REFS = {
+    "go": {**J_REFS},
+    "mso": {k: v for k, v in J_REFS.items() if k != "services"},
+    "mss": {k: v for k, v in J_REFS.items() if k != "services"},
+}
+# PH fixtures: case -> (found, source, file, database, services, words in the reason)
+PH_FIXTURES: dict[str, tuple[bool, str | None, str | None, str | None, list[str], list[str]]] = {
+    "streak_form": (True, "check.sh", "check.sh", "mysql", ["scheduler", "worker"], []),
+    "exec_continuation": (True, "check.sh", "check.sh", "sqlite", [], []),
+    "equals_form": (True, "check.sh", "check.sh", "sqlite", ["scheduler", "worker"], []),
+    "runtime_go": (True, "check.sh", "check.sh", "sqlite", [], []),
+    "runtime_process": (True, "check.sh", "check.sh", "sqlite", [], []),
+    "comments_and_strings": (True, "check.sh", "check.sh", "sqlite", [], []),
+    "services_undeclared": (True, "check.sh", "check.sh", "sqlite", [], []),
+    "studio_wins": (True, "studio.toml", "studio.toml", "mysql", [], []),
+    "gate_file": (True, "check.sh", "ci/gate.sh", "mysql", [], []),
+    "no_invocation": (True, "harness.py", "harness.py", None, ["scheduler", "worker"], []),
+    "harness_py_only": (True, "harness.py", "harness.py", None, ["scheduler", "worker"], []),
+    "postgres": (True, "check.sh", "check.sh", "postgres", [], []),
+    "nothing": (False, None, None, None, [], list(FOUR_SOURCES)),
+    "dollar_var": (False, None, None, None, [], ["--app", "$APP", "shell variable"]),
+    "dollar_database": (False, None, None, None, [], ["--database", "$DB", "shell variable"]),
+    "nope_ref": (False, None, None, None, [], ["harness:nope", "AttributeError"]),
+    "import_error": (False, None, None, None, [], ["harness:make_app", "ModuleNotFoundError"]),
+    "login_path_only": (False, None, None, None, [], ["--login-path", "no --login"]),
+    "mint_token_only": (False, None, None, None, [], ["--mint-token", "no --login"]),
+    "incomplete_app": (False, None, None, None, [], ["studio.toml", "lacks app and db"]),
+    "harness_seed_only": (False, None, None, None, [], ["harness.py", "no build_db"]),
+    "disagree": (False, None, None, None, [], ["ambiguous", "--db"]),
+    "missing_db": (False, None, None, None, [], ["no --db"]),
+    "services_not_mapping": (False, None, None, None, [], ["harness:RUNTIME", "not a mapping"]),
+    "bad_toml": (False, None, None, None, [], ["studio.toml", "TOMLDecodeError"]),
+}  # fmt: skip
+# PJ predictions (registered, report-only): flows, verified, failed, slot recall, skeletons,
+# JobRun states / static edges, observed edges, sweeps
+PJ_PRED = {
+    "go": dict(flows="80 (75-100)", verified="0.20 (0.05-0.40)", failed="0.70 (0.45-0.90)",
+               slots="16/24", skeletons="lenient 0 (0-2) / strict 0 (0-1)",
+               jobrun="5/5 states, 3/5 static, initial exact", observed="0/5 (0-1); static",
+               sweeps="none run (0-2)"),
+    "mso": dict(flows="74 (70-95)", verified="0.50 (0.15-0.80)", failed="0.40 (0.10-0.80)",
+                slots="21/24", skeletons="lenient 3 (1-6) / strict 0 (0-2)",
+                jobrun="5/5 states, 3/5 static, initial exact",
+                observed="1/5 queued->cancelled (0-1); observed", sweeps="none"),
+    "mss": dict(flows="15 (15-25)", verified="0.50 (0.15-0.85)", failed="0.40 (0.10-0.80)",
+                slots="21/24", skeletons="lenient 3 (1-6) / strict 0 (0-2)",
+                jobrun="3/5 states, 1/5 static, initial exact",
+                observed="1/5 (0-1); observed", sweeps="none"),
+}  # fmt: skip
+
+
+def discover_worker(args: argparse.Namespace) -> int:
+    """A separate process per app: the layer's discovery on ``--root``, as plain data."""
+    sys.dont_write_bytecode = True
+    from lattice.importer.check_invocation import choose_database, discover  # noqa: PLC0415
+
+    d = discover(Path(args.root))
+    out = d.describe()
+    chosen, why = choose_database(d.database, "auto", None) if d.found else (None, None)
+    out["database_choice"] = [chosen, why]
+    print(json.dumps(out, sort_keys=True))
+    return 0
+
+
+def run_discover(root: Path, scratch: Path, label: str) -> dict[str, Any]:
+    tmp = fresh_tmp(scratch, f"disc-{label}")
+    proc = subprocess.run(
+        [sys.executable, str(Path(__file__).resolve()), "--discover-worker", "--root", str(root)],
+        capture_output=True,
+        text=True,
+        env=cli_env(tmp),
+        cwd=REPO,
+        check=False,
+    )
+    if proc.returncode != 0:
+        return {"error": proc.stderr[-400:]}
+    return json.loads(proc.stdout.strip().splitlines()[-1])
+
+
+def reason_clean(reason: str | None, root: Path) -> bool:
+    return reason is None or ("Traceback" not in reason and str(root) not in reason)
+
+
+def probe_ph(
+    scratch: Path,
+    roots: dict[str, Path],
+    static_roots: dict[str, Path],
+    cli_runs: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Discovery per app and per fixture, exact against the pre-registered table."""
+    rows: dict[str, Any] = {}
+    bad: list[str] = []
+    for name, want in PH_APPS.items():
+        got = run_discover(roots[name], scratch, name)
+        rows[name] = got
+        ok = (
+            got.get("source") == want["source"]
+            and got.get("file") == want["file"]
+            and got.get("reason") is None
+            and {k: v for k, v in (got.get("refs") or {}).items() if v is not None}
+            == {k: v for k, v in want["refs"].items() if v is not None}
+            and got.get("services") == want["services"]
+            and got.get("database") == want["database"]
+            and got.get("resolved") == ["app", "db", "login", "runtime"]
+        )
+        if not ok:
+            bad.append(name)
+    for name, root in static_roots.items():
+        got = run_discover(root, scratch, name)
+        rows[name] = got
+        reason = got.get("reason") or ""
+        ok = (
+            got.get("source") is None
+            and got.get("file") is None
+            and all(w in reason for w in FOUR_SOURCES)
+            and reason_clean(reason, root)
+        )
+        run = cli_runs.get(name) or {}
+        reason_cli = run.get("harness_reason") or ""
+        rows[name]["cli_run"] = run
+        if not (
+            run.get("mode") == "static"
+            and run.get("harness") is None
+            and run.get("harness_file") is None
+            and run.get("database") is None
+            and all(w in reason_cli for w in FOUR_SOURCES)
+            and reason_clean(reason_cli, root)
+        ):
+            ok = False
+        if not ok:
+            bad.append(name)
+    fx_root = scratch / "ph-fixtures"
+    shutil.rmtree(fx_root, ignore_errors=True)
+    shutil.copytree(REPO / "tests/importer/fixtures/check_invocation", fx_root)
+    fixtures: dict[str, Any] = {}
+    for case, (found, source, file, db, services, words) in PH_FIXTURES.items():
+        root = fx_root / case
+        got = run_discover(root, scratch, f"fx-{case}")
+        fixtures[case] = got
+        reason = got.get("reason")
+        ok = (
+            (got.get("reason") is None) == found
+            and got.get("source") == source
+            and got.get("file") == file
+            and got.get("database") == db
+            and got.get("services") == services
+            and all(w in (reason or "") for w in words)
+            and reason_clean(reason, root)
+        )
+        if case == "postgres":
+            choice = got.get("database_choice") or [None, None]
+            ok = ok and choice[0] is None and "postgres" in (choice[1] or "")
+        if not ok:
+            bad.append(f"fixture:{case}")
+    return result(
+        "PH",
+        "discovery per app and per fixture: source, file, resolved refs, services, database, "
+        "reason",
+        "all exact",
+        {"apps": rows, "fixtures": fixtures, "mismatch": bad},
+        not bad,
+    )
+
+
+def strip_new_keys(doc: dict[str, Any]) -> dict[str, Any]:
+    out = json.loads(json.dumps(doc))
+    for k in NEW_RUN_KEYS:
+        out["run"].pop(k, None)
+    return out
+
+
+def canonical(doc: dict[str, Any]) -> str:
+    from lattice.importer import workflows as W  # noqa: PLC0415
+
+    return W.to_json(doc)
+
+
+def unbound_sent(doc: dict[str, Any]) -> list[str]:
+    """Steps that were sent (attempts > 0) while a path parameter of their route has no path
+    binding: the layer filled it with a guess."""
+    bad: list[str] = []
+    for f in doc["flows"]:
+        for st in f["steps"]:
+            if st["kind"] != "request" or not st["attempts"]:
+                continue
+            params = re.findall(r"\{([^}]*)\}", st["route"].partition(" ")[2])
+            bound = {b["param"] for b in st["bindings"] if b["source"] == "path"}
+            bad += [f"{f['id']} {st['route']} {p}" for p in params if p not in bound]
+    return bad
+
+
+def unbound_reasons(doc: dict[str, Any]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for f in doc["flows"]:
+        m = re.search(r"unbound path param (\w+): no producer", f.get("reason") or "")
+        if m:
+            counts[m.group(1)] = counts.get(m.group(1), 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def unbound_planned(doc: dict[str, Any]) -> dict[str, int]:
+    """Static plan: steps of the flows whose route has a path parameter with no path binding."""
+    n = 0
+    flows = 0
+    for f in doc["flows"]:
+        hit = False
+        for st in f["steps"]:
+            if st["kind"] != "request":
+                continue
+            params = re.findall(r"\{([^}]*)\}", st["route"].partition(" ")[2])
+            bound = {b["param"] for b in st["bindings"] if b["source"] == "path"}
+            n += sum(1 for p in params if p not in bound)
+            hit = hit or any(p not in bound for p in params)
+        flows += hit
+    return {"steps_with_unbound_param": n, "flows": flows}
+
+
+def listed(doc: dict[str, Any]) -> dict[str, Any]:
+    """Which GET routes served as id lists, and how many bindings came from a list."""
+    routes: dict[str, int] = {}
+    for f in doc["flows"]:
+        for st in f["steps"]:
+            if st["kind"] == "request" and st["inserted"] == "id_source":
+                routes[st["route"]] = routes.get(st["route"], 0) + 1
+    return dict(sorted(routes.items()))
+
+
+def probe_pl(doc: dict[str, Any]) -> dict[str, Any]:
+    n = len(doc["flows"])
+    c = {"verified": 0, "unverified": 0, "failed": 0}
+    for f in doc["flows"]:
+        c[f["status"]] += 1
+    routes = listed(doc)
+    home = routes.get("GET /v1/home", 0)
+    frac = round(c["verified"] / n, 3) if n else 0.0
+    return result(
+        "PL",
+        "list rule on S, default (specific): flows, statuses, the nudge list route, no "
+        "/v1/home id binding",
+        {
+            "flows": "69 (65-75)",
+            "verified": "58 (>= 0.80)",
+            "unverified": 5,
+            "failed": "6 (<= 6)",
+            "list_routes": ["GET /v1/nudges"],
+            "home_bindings": 0,
+        },
+        {"flows": n, **c, "verified_fraction": frac, "list_routes": routes, "home_bindings": home},
+        65 <= n <= 75 and frac >= 0.80 and c["failed"] <= 6 and home == 0,
+        run=doc["run"],
+        failed_reasons={f["id"]: f["reason"] for f in doc["flows"] if f["status"] == "failed"},
+    )
+
+
+def probe_pl1(doc: dict[str, Any], static_doc: dict[str, Any] | None) -> dict[str, Any]:
+    """--list-rule first on S equals the committed round-1 workflows.json once the four new
+    run keys are dropped, byte for byte."""
+    old = (REPO / ROUND1_DATA / "workflows.json").read_text()
+    new = canonical(strip_new_keys(doc))
+    static_ok = None
+    if static_doc is not None:
+        old_static = (REPO / ROUND1_DATA / "static-workflows.json").read_text()
+        static_ok = canonical(strip_new_keys(static_doc)) == old_static
+    return result(
+        "PL1",
+        "--list-rule first on S equals the round-1 workflows.json after dropping the 4 new run "
+        "keys (68 / 59 / 1 / 8)",
+        "byte-identical",
+        {
+            "byte_identical": new == old,
+            "summary": doc["summary"],
+            "run": doc["run"],
+            "static_equals_round1_static": static_ok,
+        },
+        new == old,
+    )
+
+
+def probe_pu(docs: dict[str, dict[str, Any]], static_go: dict[str, Any] | None) -> dict[str, Any]:
+    sent = {k: unbound_sent(d) for k, d in docs.items()}
+    total = sum(len(v) for v in sent.values())
+    return result(
+        "PU",
+        "sent requests with an unbound path parameter (S, S', J dynamic)",
+        {"sent_unbound": 0, "go_failed_reasons": "name job_id / user_id"},
+        {
+            "sent_unbound": {k: len(v) for k, v in sent.items()},
+            "examples": {k: v[:3] for k, v in sent.items() if v},
+            "failed_reasons_by_param": {k: unbound_reasons(d) for k, d in docs.items()},
+            "planned_unbound_in_static_go": unbound_planned(static_go) if static_go else None,
+        },
+        total == 0,
+    )
+
+
+def strip_run_harness(doc: dict[str, Any]) -> str:
+    d = json.loads(json.dumps(doc))
+    for k in ("harness", "harness_file"):
+        d["run"].pop(k, None)
+    return canonical(d)
+
+
+def second_dyn(args: argparse.Namespace) -> bool:
+    return args.runs > 0 and not args.no_docker
+
+
+def listing(root: Path) -> dict[str, str]:
+    """A cheap, read-only listing (path -> size:mtime) of a checkout, ``.git`` excluded."""
+    out: dict[str, str] = {}
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d != ".git"]
+        for f in filenames:
+            p = Path(dirpath) / f
+            try:
+                st = p.lstat()
+            except OSError:
+                continue
+            out[p.relative_to(root).as_posix()] = f"{st.st_size}:{st.st_mtime_ns}"
+    return out
+
+
+def porcelain(root: Path) -> list[str]:
+    proc = subprocess.run(
+        ["git", "--no-optional-locks", "-C", str(root), "status", "--porcelain"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return sorted(proc.stdout.splitlines())
+
+
+def target_state(roots: dict[str, Path]) -> dict[str, Any]:
+    return {k: {"porcelain": porcelain(v), "listing": listing(v)} for k, v in roots.items()}
+
+
+def app_processes(scratch: Path) -> list[str]:
+    """Leftover app binaries started from a scratch archive (``streak-api`` / ``bin/server``)."""
+    proc = subprocess.run(
+        ["pgrep", "-f", f"{re.escape(str(scratch))}/.*/bin/(server|streak-api)"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    me = str(os.getpid())
+    return [p for p in proc.stdout.split() if p != me]
+
+
+def scorer_unchanged() -> dict[str, Any]:
+    """`score_held_out` and `spec_truth` have byte-identical source to the committed ones."""
+    import ast  # noqa: PLC0415
+
+    now = Path(__file__).read_text()
+    old = subprocess.run(
+        ["git", "-C", str(REPO), "show", "HEAD:dogfood/workflow_probes.py"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+
+    def seg(src: str, name: str) -> str | None:
+        for node in ast.parse(src).body:
+            if isinstance(node, ast.FunctionDef) and node.name == name:
+                return ast.get_source_segment(src, node)
+        return None
+
+    same = {n: seg(now, n) == seg(old, n) and seg(now, n) is not None for n in
+            ("score_held_out", "spec_truth")}  # fmt: skip
+    return same
+
+
+R2_OWNED_EXACT = {
+    "lattice/importer/check_invocation.py",
+    "tests/importer/test_check_invocation.py",
+    "lattice/importer/workflow_run.py",
+    "tests/importer/test_workflows.py",
+    "dogfood/workflow_probes.py",
+    "dogfood/workflow_mutants.py",
+    "docs/results/2026-10-16-workflow-layer-round2-results.md",
+}
+R2_OWNED_PREFIX = (
+    "tests/importer/fixtures/check_invocation/",
+    "docs/results/data/2026-10-16-workflow-layer-round2/",
+)
+R2_FROZEN = [
+    *FROZEN,
+    "lattice/gocheck/src",
+    "lattice/importer/frontends/go_gin.py",
+    "lattice/importer/cli.py",
+    "lattice/importer/workflows.py",
+]
+
+
+def probe_pb_diff_r2() -> dict[str, Any]:
+    changed = sorted(
+        {x.split("\t")[-1] for x in git("diff", "HEAD", "--name-status")}
+        | set(git("ls-files", "--others", "--exclude-standard"))
+    )
+    foreign = [c for c in changed if c not in R2_OWNED_EXACT and not c.startswith(R2_OWNED_PREFIX)]
+    frozen = git("diff", "HEAD", "--stat", "--", *R2_FROZEN)
+    scorer = scorer_unchanged()
+    return result(
+        "PB-diff",
+        "changes against HEAD: owned files only (section 7); frozen modules, gocheck, goldens, "
+        "round-1 data untouched; score_held_out and spec_truth byte-identical",
+        {"foreign": [], "frozen_diff": [], "scorer_unchanged": True},
+        {"foreign": foreign, "frozen_diff": frozen, "scorer_unchanged": scorer, "changed": changed},
+        not foreign and not frozen and all(scorer.values()),
+    )
+
+
+def probe_lint_r2() -> dict[str, Any]:
+    env = dict(os.environ, **GO_ENV)
+    src = REPO / "lattice/gocheck/src"
+    vet = subprocess.run(["go", "vet", "./..."], cwd=src, env=env, capture_output=True, text=True)
+    fmt = subprocess.run(["gofmt", "-l", "."], cwd=src, capture_output=True, text=True)
+    pys = sorted(
+        {
+            c
+            for c in git("diff", "HEAD", "--name-only")
+            + git("ls-files", "--others", "--exclude-standard")
+            if c.endswith(".py") and (REPO / c).is_file()
+        }
+    )
+    ruff = subprocess.run(
+        [sys.executable, "-m", "ruff", "check", *pys], cwd=REPO, capture_output=True, text=True
+    )
+    fmt_py = subprocess.run(
+        [sys.executable, "-m", "ruff", "format", "--check", *pys],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+    )
+    return result(
+        "PB-lint",
+        "go vet, gofmt -l, ruff check and ruff format --check on every changed .py",
+        "clean",
+        {
+            "go_vet_rc": vet.returncode,
+            "gofmt": fmt.stdout.split(),
+            "ruff_rc": ruff.returncode,
+            "ruff_format_rc": fmt_py.returncode,
+            "ruff_out": (ruff.stdout + fmt_py.stdout)[-400:],
+            "files": pys,
+        },
+        vet.returncode == 0
+        and not fmt.stdout.strip()
+        and ruff.returncode == 0
+        and fmt_py.returncode == 0,
+    )
+
+
+def parse_app_args(items: Sequence[str]) -> dict[str, tuple[Path, str]]:
+    out: dict[str, tuple[Path, str]] = {}
+    for item in items:
+        name, _, rest = item.partition("=")
+        src, _, ref = rest.partition("@")
+        out[name] = (Path(src), ref or "HEAD")
+    return out
+
+
+def series(root: Path, out: Path, scratch: Path, label: str, extra: Sequence[str], n: int):
+    """``n`` CLI runs: blobs, walls, containers after each, the first rc != 0 stops it."""
+    blobs: list[bytes] = []
+    walls: list[float] = []
+    left: list[list[str]] = []
+    stderr = ""
+    rc = 0
+    for i in range(n):
+        r = run_cli(root, out, scratch, f"{label}-{i}", extra)
+        left.append(r["containers_after"])
+        walls.append(r["wall"])
+        if r["rc"] != 0:
+            rc, stderr = r["rc"], r["stderr"]
+            break
+        blobs.append(r["bytes"])
+    return {"blobs": blobs, "walls": walls, "containers": left, "rc": rc, "stderr": stderr}
+
+
+def run_round2(args: argparse.Namespace) -> int:
+    scratch, out = Path(args.scratch).resolve(), Path(args.out).resolve()
+    scratch.mkdir(parents=True, exist_ok=True)
+    out.mkdir(parents=True, exist_ok=True)
+    only = set(args.only.split(",")) if args.only else None
+    not_run: list[tuple[str, str]] = []
+    results: list[dict[str, Any]] = []
+    users = [u for u in args.users.split(",") if u]
+    user_args = [a for u in users for a in ("--user", u)]
+    j_users = [u for u in args.j_users.split(",") if u]
+    j_user_args = [a for u in j_users for a in ("--user", u)]
+    t_stage = time.perf_counter()
+
+    def want(*ids: str) -> bool:
+        return only is None or any(i in only for i in ids)
+
+    def record(r: dict[str, Any] | list[dict[str, Any]]) -> None:
+        for item in r if isinstance(r, list) else [r]:
+            results.append(item)
+            print(
+                f"{item['id']}: {item['pass']} {json.dumps(item['observed'], default=str)[:220]}",
+                flush=True,
+            )
+
+    def skip(pid: str, why: str) -> None:
+        not_run.append((pid, why))
+        print(f"{pid}: NOT RUN ({why})", flush=True)
+
+    # ---- the targets that must stay untouched (listing + porcelain, before)
+    apps = parse_app_args(args.app)
+    target_dirs = {"streak": STREAK, **{n: p for n, (p, _) in apps.items()}}
+    spec_dir = None
+    if args.spec:
+        spec_dir = Path(args.spec.partition(":")[0].partition("@")[0])
+        target_dirs["job-scheduler"] = spec_dir
+    targets_before = target_state(target_dirs) if want("PW") else None
+
+    # ---- archives
+    s_root, s_prime, s_second = scratch / "S", scratch / "S-prime", scratch / "S2" / "deeper" / "S"
+    s4_root = scratch / "S4"
+    G.archive(STREAK, args.streak_ref, s_root)
+    G.archive(STREAK, args.streak_ref, s_prime)
+    (s_prime / "studio.toml").unlink()
+    s_second.parent.mkdir(parents=True, exist_ok=True)
+    G.archive(STREAK, args.streak_ref, s_second)
+    G.archive(STREAK, args.streak_ref2, s4_root)
+    for r in (s_root, s_prime):
+        G.go_build(r)
+    jroots: dict[str, Path] = {}
+    for name, (src, ref) in apps.items():
+        dest = scratch / f"j-{name}"
+        G.archive(src, ref, dest)
+        jroots[name] = dest
+    builds = dict(b.partition("=")[::2] for b in args.build)
+    for name, cmd in builds.items():
+        subprocess.run(
+            cmd,
+            shell=True,
+            cwd=jroots[name],
+            check=True,
+            capture_output=True,
+            env=dict(os.environ, **GO_ENV),
+        )
+    digest0 = {
+        "S": G.tree_digest(s_root),
+        **{n: G.tree_digest(p) for n, p in jroots.items()},
+    }
+    binary = G._gocheck_binary()
+    extract = json.loads(G.extract_bytes(binary, s_root)[0])
+
+    # ---- freeze: the hashes of the changed files and the scorer, before the J stage
+    freeze_files = [
+        "lattice/importer/check_invocation.py",
+        "lattice/importer/workflow_run.py",
+        "lattice/importer/workflows.py",
+        "lattice/importer/frontends/go_gin.py",
+        "lattice/importer/cli.py",
+        "dogfood/workflow_probes.py",
+    ]
+    (out / "freeze.sha256").write_text(
+        "".join(
+            f"{hashlib.sha256((REPO / f).read_bytes()).hexdigest()}  {f}\n" for f in freeze_files
+        )
+        + "".join(
+            f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(REPO).as_posix()}\n"
+            for p in sorted((REPO / "lattice/gocheck/src").glob("goextract*.go"))
+        )
+    )
+
+    # ---- PH
+    if want("PH"):
+        static_roots = {n: jroots[n] for n in J_STATIC if n in jroots}
+        roots_ph = {
+            "S": s_root,
+            "S-prime": s_prime,
+            **{n: jroots[n] for n in J_HARNESS if n in jroots},
+        }
+        if len(roots_ph) == 5:
+            cli_runs: dict[str, dict[str, Any]] = {}
+            for n, root in static_roots.items():
+                c = run_cli(root, out / f"ph-{n}", scratch, f"ph-{n}", j_user_args)
+                cli_runs[n] = json.loads(c["bytes"])["run"] if c["rc"] == 0 else {}
+            r = probe_ph(scratch, roots_ph, static_roots, cli_runs)
+            (out / "ph.json").write_text(json.dumps(r, indent=2, sort_keys=True) + "\n")
+            record(r)
+        else:
+            skip("PH", "the J apps were not all given")
+
+    # ---- S static (PD, PL1's static half)
+    static_blobs: list[bytes] = []
+    static_walls: list[float] = []
+    static_doc: dict[str, Any] | None = None
+    if want("PD", "PE", "PX", "PL1"):
+        ser = series(s_root, out / "static-run", scratch, "static", ["--static", *user_args],
+                     args.static_runs)  # fmt: skip
+        if ser["rc"] != 0:
+            record(result("PD", "static run", "exit 0", ser["stderr"], False))
+            return 1
+        static_blobs, static_walls = ser["blobs"], ser["walls"]
+        r2 = run_cli(s_second, out / "static-run2", scratch, "static-second",
+                     ["--static", *user_args])  # fmt: skip
+        static_blobs.append(r2["bytes"])
+        static_doc = json.loads(static_blobs[0])
+        (out / "static-workflows.json").write_bytes(static_blobs[0])
+
+    # ---- S dynamic (default list rule): N runs; S' once; --list-rule first once
+    docker = not args.no_docker and args.runs > 0
+    dyn_blobs: list[bytes] = []
+    dyn_walls: list[float] = []
+    leaked: list[list[str]] = []
+    dyn_doc: dict[str, Any] | None = None
+    need_s_dyn = want("PL", "PE", "PS", "PK", "PF", "PG", "PM", "PV", "PR", "PU", "PD", "PX", "PT")
+    if need_s_dyn and docker:
+        ser = series(s_root, out / "dyn-run", scratch, "dyn", user_args, args.runs)
+        dyn_blobs, dyn_walls, leaked = ser["blobs"], ser["walls"], ser["containers"]
+        if ser["rc"] != 0:
+            record(result("PD", "dynamic run", "exit 0", ser["stderr"], False))
+            return 1
+        dyn_doc = json.loads(dyn_blobs[0])
+        (out / "workflows.json").write_bytes(dyn_blobs[0])
+    sp_doc: dict[str, Any] | None = None
+    if want("PL", "PH", "PU") and docker:
+        r = run_cli(s_prime, out / "sp-run", scratch, "sprime", user_args)
+        leaked.append(r["containers_after"])
+        if r["rc"] == 0:
+            sp_doc = json.loads(r["bytes"])
+            (out / "workflows-S-prime.json").write_bytes(r["bytes"])
+    first_doc: dict[str, Any] | None = None
+    if want("PL1") and docker:
+        r = run_cli(
+            s_root, out / "first-run", scratch, "first", ["--list-rule", "first", *user_args]
+        )
+        leaked.append(r["containers_after"])
+        if r["rc"] == 0:
+            first_doc = json.loads(r["bytes"])
+            (out / "workflows-S-first.json").write_bytes(r["bytes"])
+        else:
+            record(result("PL1", "--list-rule first", "exit 0", r["stderr"], False))
+    doc = dyn_doc or static_doc
+    if dyn_doc is not None and want("PL"):
+        pl = probe_pl(dyn_doc)
+        if sp_doc is not None:
+            pl["observed"]["s_prime"] = {
+                "run": sp_doc["run"],
+                "flows_and_statuses_equal_S": (
+                    [(f["id"], f["status"]) for f in sp_doc["flows"]]
+                    == [(f["id"], f["status"]) for f in dyn_doc["flows"]]
+                ),
+                "equal_after_dropping_harness_keys": strip_run_harness(sp_doc)
+                == strip_run_harness(dyn_doc),
+            }
+            pl["pass"] = (
+                bool(pl["pass"]) and pl["observed"]["s_prime"]["flows_and_statuses_equal_S"]
+            )
+        record(pl)
+    elif want("PL"):
+        skip("PL", "no S dynamic run (docker off or --runs 0)")
+    if first_doc is not None and want("PL1"):
+        record(probe_pl1(first_doc, static_doc))
+    elif want("PL1"):
+        skip("PL1", "no --list-rule first dynamic run")
+    if static_doc is not None and want("PE") and dyn_doc is not None:
+        r = probe_pe(static_doc, dyn_doc)
+        record(r)
+    if doc is not None and want("PS"):
+        record(probe_ps(doc))
+    if doc is not None and want("PK"):
+        record(probe_pk(doc))
+    if doc is not None and want("PF"):
+        r = probe_pf(doc)
+        r["predicted"] = {"count": "69 (65-75)", "verified": 0.841, "unverified": 0.072,
+                          "failed": 0.087}  # fmt: skip
+        record(r)
+    if doc is not None and want("PG"):
+        record(probe_pg(s_root, doc, extract))
+    if doc is not None and want("PM"):
+        record(probe_pm(s_root, doc))
+    if doc is not None and want("PV"):
+        record(probe_pv(doc))
+
+    # ---- J: dynamic runs per harness app, static for the others
+    j_docs: dict[str, dict[str, Any]] = {}
+    j_blobs: dict[str, list[bytes]] = {}
+    j_walls: dict[str, list[float]] = {}
+    j_rc: dict[str, int] = {}
+    j_stderr: dict[str, str] = {}
+    truth = None
+    if args.spec and want("PJ", "PJs", "PU"):
+        sref, _, rest = args.spec.partition(":")
+        sdir, _, sver = sref.partition("@")
+        spec_scratch = scratch / "spec"
+        G.archive(Path(sdir), sver or "HEAD", spec_scratch)
+        saved_path = list(sys.path)
+        truth = spec_truth(load_spec(f"{spec_scratch}:{rest}"))
+        sys.path[:] = saved_path
+        for m in [m for m in sys.modules if m == "spec" or m.startswith("spec.")]:
+            sys.modules.pop(m, None)
+    for name in J_HARNESS:
+        if name not in jroots or not want("PJ", "PU", "PD", "PR"):
+            continue
+        ser = series(jroots[name], out / f"j-{name}-run", scratch, f"j-{name}", j_user_args,
+                     args.j_runs)  # fmt: skip
+        j_rc[name], j_stderr[name] = ser["rc"], ser["stderr"]
+        j_blobs[name], j_walls[name] = ser["blobs"], ser["walls"]
+        leaked.append([c for lst in ser["containers"] for c in lst])
+        if ser["blobs"]:
+            j_docs[name] = json.loads(ser["blobs"][0])
+            (out / f"workflows-j-{name}.json").write_bytes(ser["blobs"][0])
+    # J-my: -go on MySQL, one run, report only
+    jmy_doc = None
+    jmy_wall = None
+    jmy_left: list[str] = []
+    if args.j_mysql and args.j_mysql in jroots and docker and want("PJ"):
+        r = run_cli(jroots[args.j_mysql], out / "jmy-run", scratch, "jmy",
+                    ["--database", "mysql", *j_user_args])  # fmt: skip
+        jmy_wall, jmy_left = r["wall"], r["containers_after"]
+        if r["rc"] == 0:
+            jmy_doc = json.loads(r["bytes"])
+            (out / f"workflows-j-{args.j_mysql}-mysql.json").write_bytes(r["bytes"])
+        else:
+            jmy_doc = {"error": r["stderr"]}
+    # harness-less apps: discovery must make them static, identical to round 1
+    pjs_rows: dict[str, Any] = {}
+    if want("PJs"):
+        for name in J_STATIC:
+            if name not in jroots:
+                continue
+            r = run_cli(jroots[name], out / f"j-{name}-run", scratch, f"js-{name}", j_user_args)
+            old_p = REPO / ROUND1_DATA / "held-out" / f"h-{J_NAMES[name]}.workflows.json"
+            same = None
+            run = None
+            if r["rc"] == 0:
+                d = json.loads(r["bytes"])
+                run = d["run"]
+                same = canonical(strip_new_keys(d)) == old_p.read_text()
+                (out / f"workflows-j-{name}.json").write_bytes(r["bytes"])
+                j_docs[name] = d
+            pjs_rows[name] = {"identical_to_round1": same, "run": run, "rc": r["rc"],
+                              "containers": r["containers_after"]}  # fmt: skip
+        record(
+            result(
+                "PJs",
+                "the 3 harness-less apps: static, workflows.json = round 1 minus the new run keys",
+                "3/3 identical",
+                pjs_rows,
+                len(pjs_rows) == 3
+                and all(
+                    v["identical_to_round1"] is True
+                    and v["run"]["mode"] == "static"
+                    and v["run"]["harness"] is None
+                    for v in pjs_rows.values()
+                ),
+            )
+        )
+
+    if want("PJ") and truth is not None:
+        rows: dict[str, Any] = {}
+        for name in J_HARNESS:
+            if name not in jroots:
+                continue
+            d = j_docs.get(name)
+            row: dict[str, Any] = {"predicted": PJ_PRED[name], "rc": j_rc.get(name)}
+            if d is None:
+                row.update(crashed=True, stderr=j_stderr.get(name, ""))
+                rows[name] = row
+                continue
+            sc = score_held_out(d, truth)
+            statuses: dict[str, int] = {}
+            first_fail: dict[str, int] = {}
+            for f in d["flows"]:
+                if f["status"] != "verified":
+                    key = re.sub(r"\d+", "N", f["reason"].split(":")[0])[:90]
+                    first_fail[key] = first_fail.get(key, 0) + 1
+                for st in f["steps"]:
+                    if st["kind"] == "request" and st["refusal"]:
+                        k = str(st["refusal"]["status"])
+                        statuses[k] = statuses.get(k, 0) + 1
+            list_edges = [e for e in d["edges"] if e["id_source"] == "list"]
+            walls = j_walls[name]
+            row.update(
+                mode=d["run"]["mode"],
+                harness=d["run"]["harness"],
+                harness_file=d["run"]["harness_file"],
+                harness_reason=d["run"]["harness_reason"],
+                database=d["run"]["database"],
+                list_rule=d["run"]["list_rule"],
+                flows=sc["flows"],
+                summary=d["summary"],
+                verified_fraction=sc["verified_fraction"],
+                failed_fraction=round(d["summary"]["failed"] / sc["flows"], 3)
+                if sc["flows"]
+                else None,
+                slot_recall=sc["slot_recall"],
+                skeletons_lenient=sc["structural_lenient"],
+                skeletons_strict=sc["structural_strict"],
+                skeletons_lenient_verified=sc["structural_lenient_verified"],
+                skeletons_strict_verified=sc["structural_strict_verified"],
+                machines=sc["machines"],
+                services_swept=d["run"]["services_swept"],
+                list_id_sources=len(list_edges),
+                refusal_statuses=dict(sorted(statuses.items())),
+                non_verified_reasons=dict(sorted(first_fail.items())),
+                wall_s=[round(w, 1) for w in walls],
+                wall_median_s=round(sorted(walls)[len(walls) // 2], 1) if walls else None,
+                runs=len(walls),
+                crashed=False,
+            )
+            rows[name] = row
+        gate = (
+            all(
+                r.get("mode") == "observed" and r.get("harness") == "check.sh"
+                for r in rows.values()
+            )
+            and len(rows) == 3
+            and not any(r.get("crashed") for r in rows.values())
+        )
+        record(
+            result(
+                "PJ",
+                "J dynamic run per harness app (development set): mode, harness, flows, "
+                "statuses, slots, skeletons, JobRun machine, sweeps",
+                "mode observed and harness check.sh 3/3; crashes 0/3 (values report-only)",
+                rows,
+                gate,
+            )
+        )
+        if jmy_doc is not None and "error" not in jmy_doc and args.j_mysql in j_docs:
+            a, b = jmy_doc, j_docs[args.j_mysql]
+            record(
+                result(
+                    "PJ-my",
+                    f"{args.j_mysql} on MySQL (report only): flows and statuses vs its SQLite run",
+                    "same flows and statuses as the SQLite run; 0 containers left",
+                    {
+                        "run": a["run"],
+                        "summary": a["summary"],
+                        "same_flow_statuses": [(f["id"], f["status"]) for f in a["flows"]]
+                        == [(f["id"], f["status"]) for f in b["flows"]],
+                        "wall_s": round(jmy_wall or 0, 1),
+                        "containers_left": jmy_left,
+                    },
+                    None,
+                )
+            )
+        elif want("PJ") and args.j_mysql:
+            skip(
+                "PJ-my",
+                "no docker, or the run failed: " + str((jmy_doc or {}).get("error", ""))[:200],
+            )
+    elif want("PJ"):
+        skip("PJ", "no --spec / --app given")
+
+    # ---- PU over S, S', J
+    if want("PU"):
+        docs = {k: v for k, v in {"S": dyn_doc, "S-prime": sp_doc, **j_docs}.items() if v}
+        docs = {k: v for k, v in docs.items() if v["run"]["mode"] == "observed"}
+        static_go = None
+        p = out / "workflows-j-go-static-plan.json"
+        if "go" in jroots:
+            r = run_cli(jroots["go"], out / "go-static", scratch, "go-static",
+                        ["--static", *j_user_args])  # fmt: skip
+            if r["rc"] == 0:
+                static_go = json.loads(r["bytes"])
+                p.write_bytes(r["bytes"])
+        if docs:
+            record(probe_pu(docs, static_go))
+        else:
+            skip("PU", "no dynamic document")
+
+    # ---- PD
+    if want("PD") and static_blobs:
+        docs_pd = [json.loads(b) for b in {*static_blobs, *dyn_blobs}]
+        r = probe_pd(static_blobs, dyn_blobs, docs_pd)
+        j_same = {n: f"{sum(1 for b in bl if b == bl[0])}/{len(bl)}" for n, bl in j_blobs.items()}
+        j_leaks: list[str] = []
+        for n, bl in j_blobs.items():
+            for pth, text in walk_strings(
+                json.loads(bl[0]),
+                lambda p: (
+                    p.endswith(".json") or p.endswith("bindings[].value") or ".expect_db" in p
+                ),  # fmt: skip
+            ):
+                if STRICT_SENT.search(text) or PORT.search(text) or ISO_STAMP.search(text):
+                    j_leaks.append(f"{n}{pth}: {text[:80]}")
+        r["predicted"] = {"S static": "11/11", "S dynamic": "10/10", "J dynamic": "10/10 x3",
+                          "leaks": []}  # fmt: skip
+        r["observed"]["j_dynamic"] = j_same
+        r["observed"]["j_leaks"] = sorted(set(j_leaks))[:20]
+        r["pass"] = bool(
+            r["pass"]
+            and all(v.split("/")[0] == v.split("/")[1] and v != "0/0" for v in j_same.values())
+            and not j_leaks
+        )
+        record(r)
+    elif want("PD"):
+        skip("PD", "no static runs")
+
+    # ---- PR: independent replay (S on MySQL; each J harness app with refs from check.sh text)
+    if want("PR") and dyn_doc is not None and docker:
+        r = probe_pr(s_root, out / "workflows.json", scratch)
+        r["id"] = "PR"
+        pr_rows = {"S": {"observed": r["observed"], "pass": r["pass"]}}
+        ok = r["pass"]
+        for name in J_HARNESS:
+            if name in j_docs and name in jroots:
+                jr = probe_pr(jroots[name], out / f"workflows-j-{name}.json", scratch,
+                              refs=J_PR_REFS[name], database="sqlite")  # fmt: skip
+                pr_rows[name] = {"observed": jr["observed"], "pass": jr["pass"]}
+                ok = ok and bool(jr["pass"])
+        r["observed"] = pr_rows
+        r["pass"] = ok
+        r["predicted"] = {"S": "58 scenarios, 0 failures", "J": "0 failures"}
+        record(r)
+    elif want("PR"):
+        skip("PR", "no S dynamic run")
+
+    # ---- PG: S gated; J not run (it would open .go files: R2-D7)
+    if want("PG"):
+        skip("PG-J", "report-only on J would need the runner to open the apps' .go files (R2-D7)")
+
+    # ---- PT
+    if want("PT"):
+        flat = sorted({c for lst in leaked for c in lst})
+        record(
+            result(
+                "PT",
+                "containers lattice-wf-* and app processes after every run",
+                0,
+                {
+                    "containers_after_each_run": [len(x) for x in leaked],
+                    "names": flat,
+                    "now": wf_containers(),
+                    "app_processes": app_processes(scratch),
+                },
+                not flat and not wf_containers() and not app_processes(scratch),
+            )
+        )
+        if docker:
+            record(probe_pt_sigint(s_root, scratch, user_args))
+        else:
+            skip("PT-sigint-S", "no docker")
+        if "go" in jroots:
+            record(probe_pt_sigint(jroots["go"], scratch, j_user_args, containers=False,
+                                   min_snaps=4, label="PT-sigint-go"))  # fmt: skip
+
+    # ---- PX
+    if want("PX"):
+        med = sorted(static_walls)[len(static_walls) // 2] if static_walls else None
+        jmax = max((w for ws in j_walls.values() for w in ws), default=None)
+        record(
+            result(
+                "PX",
+                "wall: S static / dynamic; J dynamic per run; J-my",
+                {
+                    "S_static_s": "0.2-0.3 (<= 5)",
+                    "S_dynamic_s": "25-45 (<= 30 min)",
+                    "J_run_s": "20-150 (<= 10 min)",
+                    "J_my_s": "30-240",
+                },  # fmt: skip
+                {
+                    "S_static_median_s": round(med, 2) if med is not None else None,
+                    "S_dynamic_s": [round(w, 1) for w in dyn_walls],
+                    "J_run_max_s": round(jmax, 1) if jmax is not None else None,
+                    "J_median_s": {
+                        n: round(sorted(w)[len(w) // 2], 1) for n, w in j_walls.items() if w
+                    },
+                    "J_my_s": round(jmy_wall, 1) if jmy_wall else None,
+                    "stage_s": round(time.perf_counter() - t_stage, 1),
+                },
+                (med is not None and med <= 5.0)
+                and all(w <= 1800 for w in dyn_walls)
+                and (jmax is None or jmax <= 600),
+            )
+        )
+
+    # ---- PW
+    if want("PW") and targets_before is not None:
+        digest1 = {
+            "S": G.tree_digest(s_root),
+            **{n: G.tree_digest(p) for n, p in jroots.items()},
+        }
+        rows_w = {}
+        for k in digest0:
+            rows_w[k] = probe_pw(digest0[k], digest1[k])["observed"]
+        after = target_state(target_dirs)
+        t_rows = {}
+        for k, v in targets_before.items():
+            t_rows[k] = {
+                "porcelain_equal": v["porcelain"] == after[k]["porcelain"],
+                "listing_equal": v["listing"] == after[k]["listing"],
+                "changed": sorted(
+                    p for p in v["listing"] if after[k]["listing"].get(p) != v["listing"][p]
+                )[:10],  # fmt: skip
+                "new": sorted(set(after[k]["listing"]) - set(v["listing"]))[:10],
+            }
+        ok = all(not r["changed"] and not r["new"] for r in rows_w.values()) and all(
+            r["porcelain_equal"] and r["listing_equal"] for r in t_rows.values()
+        )
+        record(
+            result(
+                "PW",
+                "archives (tree + sha256 after the build vs after all runs) and the real "
+                "checkouts (porcelain + listing before vs after)",
+                {"changed": 0, "new": 0},
+                {"archives": rows_w, "targets": t_rows},
+                ok,
+            )
+        )
+
+    # ---- PB
+    def want_pb(sub: str) -> bool:
+        return only is None or "PB" in only or sub in only
+
+    if want_pb("PB-extract"):
+        record(probe_pb_extract(scratch, binary, s_root, s4_root))
+    if want_pb("PB-gocheck"):
+        record(G.probe_pb(scratch, binary, s_root))
+    if want_pb("PB-diff"):
+        record(probe_pb_diff_r2())
+    if want_pb("PB-lint"):
+        record(probe_lint_r2())
+    if args.spike_a and want_pb("PB-spike-a"):
+        record(run_spike_a(scratch, out))
+    final_left = wf_containers()
+    record(result("LEAK", "lattice-wf- containers after the stage", 0, len(final_left),
+                  not final_left, names=final_left))  # fmt: skip
+
+    ran = sorted({r["id"] for r in results})
+    all_ids = ["PH", "PL", "PL1", "PU", "PE", "PS", "PK", "PM", "PF", "PR", "PG", "PJ", "PJs",
+               "PD", "PW", "PT", "PT-sigint", "PT-sigint-go", "PB-extract", "PB-gocheck",
+               "PB-diff", "PB-lint", "PB-spike-a", "PX"]  # fmt: skip
+    nr = {pid: why for pid, why in not_run}
+    for pid in all_ids:
+        if pid not in ran and pid not in nr:
+            nr[pid] = "not selected (--only) or its inputs were not given"
+    doc_out = {
+        "round": 2,
+        "streak_ref": args.streak_ref,
+        "users": users,
+        "j_users": j_users,
+        "static_runs": args.static_runs,
+        "runs": args.runs,
+        "j_runs": args.j_runs,
+        "ran": ran,
+        "not_run": nr,
+        "results": results,
+    }
+    (out / "probes.json").write_text(json.dumps(doc_out, indent=2, default=str) + "\n")
+    lines = ["# Workflow layer round 2 probes", ""]
+    for r in results:
+        verdict = {True: "PASS", False: "FAIL", None: "REPORT"}[r["pass"]]
+        lines.append(
+            f"- RAN {r['id']}: {verdict} -- {r['probe']}: observed "
+            f"{json.dumps(r['observed'], default=str)[:400]}"
+        )
+    for pid, why in sorted(nr.items()):
+        lines.append(f"- NOT RUN {pid}: {why}")
+    (out / "summary.md").write_text("\n".join(lines) + "\n")
+    bad = [r for r in results if r["pass"] is False]
+    return 0 if not bad else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--streak-ref", default="a0679e9")
@@ -1601,11 +2740,24 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--replay-worker", action="store_true")
     ap.add_argument("--root")
     ap.add_argument("--doc")
+    ap.add_argument("--refs-json", help="replay worker: harness references (round 2)")
+    ap.add_argument(
+        "--round2", action="store_true", help="the round-2 stage (discovery, list rule, J)"
+    )
+    ap.add_argument("--discover-worker", action="store_true")
+    ap.add_argument("--j-users", default="root,ann")
+    ap.add_argument("--j-runs", type=int, default=10)
+    ap.add_argument("--j-mysql", default="", help="round 2: the app to also run on MySQL once")
+    ap.add_argument("--database", help="replay worker: mysql | sqlite (round 2)")
     args = ap.parse_args(argv)
     if args.replay_worker:
         return replay_worker(args)
+    if args.discover_worker:
+        return discover_worker(args)
     if not args.scratch or not args.out:
         ap.error("--scratch and --out are required")
+    if args.round2:
+        return run_round2(args)
     return run_held_out(args) if args.held_out else run_streak(args)
 
 

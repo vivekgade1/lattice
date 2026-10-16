@@ -1,0 +1,2 @@
+uv run pytest tests/gocheck tests/importer -q -p no:cacheprovider >  2>&1  237.75s user 9.59s system 169% cpu 2:26.23 total
+uv run pytest tests/importer tests/gocheck tests/spec tests/mcp -q -rs -p  >   392.04s user 34.26s system 117% cpu 6:02.43 total
