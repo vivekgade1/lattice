@@ -1,0 +1,506 @@
+{
+  "apps": {
+    "job-scheduler-go": {
+      "containers_after": [],
+      "rc": 0,
+      "score": {
+        "flows": 80,
+        "machines": [
+          {
+            "found": true,
+            "initial_exact": true,
+            "observed_edges": "0/5",
+            "states": "5/5",
+            "static_edges": "3/5",
+            "status": "static",
+            "table": "JobRun"
+          }
+        ],
+        "mode": "static",
+        "slot_recall": "16/24",
+        "slot_recall_value": 0.667,
+        "structural_lenient": "0/19",
+        "structural_lenient_verified": "0/19",
+        "structural_strict": "0/19",
+        "structural_strict_verified": "0/19",
+        "summary": {
+          "edges": 17,
+          "failed": 0,
+          "flows": 80,
+          "machines": 1,
+          "unverified": 80,
+          "verified": 0
+        },
+        "verified_fraction": 0.0
+      },
+      "static": false,
+      "stderr": "",
+      "wall_s": 0.2
+    },
+    "job-scheduler-go-baseline": {
+      "containers_after": [],
+      "rc": 0,
+      "score": {
+        "flows": 74,
+        "machines": [
+          {
+            "found": false,
+            "table": "JobRun"
+          }
+        ],
+        "mode": "static",
+        "slot_recall": "21/24",
+        "slot_recall_value": 0.875,
+        "structural_lenient": "2/19",
+        "structural_lenient_verified": "0/19",
+        "structural_strict": "0/19",
+        "structural_strict_verified": "0/19",
+        "summary": {
+          "edges": 22,
+          "failed": 0,
+          "flows": 74,
+          "machines": 0,
+          "unverified": 74,
+          "verified": 0
+        },
+        "verified_fraction": 0.0
+      },
+      "static": true,
+      "stderr": "",
+      "wall_s": 0.2
+    },
+    "job-scheduler-go-min-base-opus": {
+      "containers_after": [],
+      "rc": 0,
+      "score": {
+        "flows": 69,
+        "machines": [
+          {
+            "found": true,
+            "initial_exact": false,
+            "observed_edges": "0/5",
+            "states": "3/5",
+            "static_edges": "2/5",
+            "status": "static",
+            "table": "JobRun"
+          }
+        ],
+        "mode": "static",
+        "slot_recall": "19/24",
+        "slot_recall_value": 0.792,
+        "structural_lenient": "2/19",
+        "structural_lenient_verified": "0/19",
+        "structural_strict": "0/19",
+        "structural_strict_verified": "0/19",
+        "summary": {
+          "edges": 19,
+          "failed": 0,
+          "flows": 69,
+          "machines": 1,
+          "unverified": 69,
+          "verified": 0
+        },
+        "verified_fraction": 0.0
+      },
+      "static": true,
+      "stderr": "",
+      "wall_s": 0.2
+    },
+    "job-scheduler-go-min-base-sonnet": {
+      "containers_after": [],
+      "rc": 0,
+      "score": {
+        "flows": 65,
+        "machines": [
+          {
+            "found": true,
+            "initial_exact": true,
+            "observed_edges": "0/5",
+            "states": "5/5",
+            "static_edges": "3/5",
+            "status": "static",
+            "table": "JobRun"
+          }
+        ],
+        "mode": "static",
+        "slot_recall": "21/24",
+        "slot_recall_value": 0.875,
+        "structural_lenient": "2/19",
+        "structural_lenient_verified": "0/19",
+        "structural_strict": "0/19",
+        "structural_strict_verified": "0/19",
+        "summary": {
+          "edges": 21,
+          "failed": 0,
+          "flows": 65,
+          "machines": 2,
+          "unverified": 65,
+          "verified": 0
+        },
+        "verified_fraction": 0.0
+      },
+      "static": true,
+      "stderr": "",
+      "wall_s": 0.2
+    },
+    "job-scheduler-go-min-spec-opus": {
+      "containers_after": [],
+      "rc": 0,
+      "score": {
+        "flows": 74,
+        "machines": [
+          {
+            "found": true,
+            "initial_exact": true,
+            "observed_edges": "0/5",
+            "states": "5/5",
+            "static_edges": "3/5",
+            "status": "static",
+            "table": "JobRun"
+          }
+        ],
+        "mode": "static",
+        "slot_recall": "21/24",
+        "slot_recall_value": 0.875,
+        "structural_lenient": "2/19",
+        "structural_lenient_verified": "0/19",
+        "structural_strict": "0/19",
+        "structural_strict_verified": "0/19",
+        "summary": {
+          "edges": 22,
+          "failed": 0,
+          "flows": 74,
+          "machines": 2,
+          "unverified": 74,
+          "verified": 0
+        },
+        "verified_fraction": 0.0
+      },
+      "static": false,
+      "stderr": "",
+      "wall_s": 0.2
+    },
+    "job-scheduler-go-min-spec-sonnet": {
+      "containers_after": [],
+      "rc": 0,
+      "score": {
+        "flows": 15,
+        "machines": [
+          {
+            "found": true,
+            "initial_exact": true,
+            "observed_edges": "0/5",
+            "states": "3/5",
+            "static_edges": "1/5",
+            "status": "static",
+            "table": "JobRun"
+          }
+        ],
+        "mode": "static",
+        "slot_recall": "21/24",
+        "slot_recall_value": 0.875,
+        "structural_lenient": "2/19",
+        "structural_lenient_verified": "0/19",
+        "structural_strict": "0/19",
+        "structural_strict_verified": "0/19",
+        "summary": {
+          "edges": 21,
+          "failed": 0,
+          "flows": 15,
+          "machines": 2,
+          "unverified": 15,
+          "verified": 0
+        },
+        "verified_fraction": 0.0
+      },
+      "static": false,
+      "stderr": "",
+      "wall_s": 0.2
+    }
+  },
+  "containers_left": [],
+  "crashes": 0,
+  "freeze": {
+    "lattice/gocheck/src/goextract.go": "e97fa18e13cbb08f1b2dbd6f4e3c107caf3ecf00f543a9e928c92c8afe06df2e",
+    "lattice/gocheck/src/goextract_assemble.go": "8061f875ad063d07e45b02380f9c974c6f00075fa4db520b49f6323cba5e6607",
+    "lattice/gocheck/src/goextract_closure.go": "ed95d0fb9d93b6f9ae903f298340bed4877c6a9f122817e4fe6cff7f04361a4e",
+    "lattice/gocheck/src/goextract_owner.go": "bd358798d9854264bda77e62227c44be2e87cbc4ec15f6732ab22c64b598e086",
+    "lattice/gocheck/src/goextract_raise.go": "1f8db0956e87bcc5392f4c08fb38d525267b0280733463b04acd7197a9d8e5ad",
+    "lattice/gocheck/src/goextract_routes.go": "4441d0e3f0ffecc7ffd6d68375278fe0013f4b20827cab7a2b6b2c2e00a7ee72",
+    "lattice/gocheck/src/goextract_tables.go": "45339c5eb1c97c0aa9f55ff0640a92224fdc6f19bd2daf4a2038ab16021d4702",
+    "lattice/gocheck/src/goextract_workflow.go": "3eb32761adfb313dc4ced351f62ad85aeb98110c86c43257ef0e212668385a42",
+    "lattice/importer/frontends/go_gin.py": "9f24e9bb5ac8b442cb92cc47ce1b66424b082d728f48e56579783c1bf038a913",
+    "lattice/importer/workflow_run.py": "edb2fd460b5ea130324fdd361c5b5213ba1e1a20916c6b63675d5268da089cd1",
+    "lattice/importer/workflows.py": "beb576d70e0e742047e63554821692d6540a69eb3ad00d01dadfb12ccbd5dd3a"
+  },
+  "scorer_sha256": "4b6b60ce835dd0ab6665c3a692bde1e8127e69d0f0351804b79285fa2c215c69",
+  "truth": {
+    "machines": [
+      {
+        "column": "status",
+        "edges": [
+          [
+            "queued",
+            "cancelled"
+          ],
+          [
+            "queued",
+            "running"
+          ],
+          [
+            "running",
+            "cancelled"
+          ],
+          [
+            "running",
+            "failed"
+          ],
+          [
+            "running",
+            "succeeded"
+          ]
+        ],
+        "initial": [
+          "queued"
+        ],
+        "states": [
+          "cancelled",
+          "failed",
+          "queued",
+          "running",
+          "succeeded"
+        ],
+        "table": "JobRun"
+      }
+    ],
+    "services": [
+      "worker",
+      "scheduler"
+    ],
+    "skeletons": [
+      [
+        "GET /applications",
+        "GET /applications/{}",
+        "GET /applications"
+      ],
+      [
+        "GET /applications/{}/members",
+        "PUT /applications/{}/members/{}",
+        "DELETE /applications/{}/members/{}"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "GET /applications/{}/jobs",
+        "GET /applications/{}/jobs/{}",
+        "GET /applications/{}/jobs",
+        "GET /applications/{}/jobs/{}",
+        "PATCH /applications/{}/jobs/{}"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/deactivate",
+        "POST /applications/{}/jobs/{}/activate"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/runs"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/runs",
+        "GET /applications/{}/jobs/{}/runs",
+        "GET /applications/{}/runs/{}"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/runs",
+        "GET /applications/{}/runs/{}",
+        "POST /applications/{}/runs/{}/cancel",
+        "POST /applications/{}/jobs/{}/runs"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/runs",
+        "POST /applications/{}/runs/{}/cancel"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/runs",
+        "POST /applications/{}/runs/{}/cancel",
+        "POST /applications/{}/jobs/{}/runs"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/runs",
+        "POST /applications/{}/runs/{}/cancel",
+        "POST /worker/run-once",
+        "GET /applications/{}/runs/{}"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/runs",
+        "POST /worker/run-once",
+        "GET /applications/{}/runs/{}"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/runs",
+        "POST /worker/run-once",
+        "GET /applications/{}/runs/{}",
+        "POST /applications/{}/jobs/{}/runs"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /worker/schedule-tick"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /worker/schedule-tick",
+        "GET /applications/{}/runs/{}",
+        "POST /worker/schedule-tick"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /worker/schedule-tick",
+        "POST /applications/{}/runs/{}/cancel",
+        "POST /worker/schedule-tick"
+      ],
+      [
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/runs"
+      ],
+      [
+        "PUT /applications/{}/members/{}",
+        "DELETE /applications/{}/members/{}"
+      ],
+      [
+        "PUT /applications/{}/members/{}",
+        "GET /applications/{}/members",
+        "PUT /applications/{}/members/{}",
+        "DELETE /applications/{}/members/{}"
+      ]
+    ],
+    "slots": [
+      [
+        "DELETE /applications/{}/members/{}",
+        0
+      ],
+      [
+        "DELETE /applications/{}/members/{}",
+        1
+      ],
+      [
+        "GET /applications/{}",
+        0
+      ],
+      [
+        "GET /applications/{}/jobs",
+        0
+      ],
+      [
+        "GET /applications/{}/jobs/{}",
+        0
+      ],
+      [
+        "GET /applications/{}/jobs/{}",
+        1
+      ],
+      [
+        "GET /applications/{}/jobs/{}/runs",
+        0
+      ],
+      [
+        "GET /applications/{}/jobs/{}/runs",
+        1
+      ],
+      [
+        "GET /applications/{}/members",
+        0
+      ],
+      [
+        "GET /applications/{}/runs/{}",
+        0
+      ],
+      [
+        "GET /applications/{}/runs/{}",
+        1
+      ],
+      [
+        "PATCH /applications/{}/jobs/{}",
+        0
+      ],
+      [
+        "PATCH /applications/{}/jobs/{}",
+        1
+      ],
+      [
+        "POST /applications/{}/jobs",
+        0
+      ],
+      [
+        "POST /applications/{}/jobs/{}/activate",
+        0
+      ],
+      [
+        "POST /applications/{}/jobs/{}/activate",
+        1
+      ],
+      [
+        "POST /applications/{}/jobs/{}/deactivate",
+        0
+      ],
+      [
+        "POST /applications/{}/jobs/{}/deactivate",
+        1
+      ],
+      [
+        "POST /applications/{}/jobs/{}/runs",
+        0
+      ],
+      [
+        "POST /applications/{}/jobs/{}/runs",
+        1
+      ],
+      [
+        "POST /applications/{}/runs/{}/cancel",
+        0
+      ],
+      [
+        "POST /applications/{}/runs/{}/cancel",
+        1
+      ],
+      [
+        "PUT /applications/{}/members/{}",
+        0
+      ],
+      [
+        "PUT /applications/{}/members/{}",
+        1
+      ]
+    ],
+    "users": [
+      "root",
+      "ann",
+      "eve",
+      "bob",
+      "zed",
+      "ina"
+    ]
+  }
+}

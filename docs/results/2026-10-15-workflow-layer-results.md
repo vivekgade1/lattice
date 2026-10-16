@@ -39,3 +39,28 @@ failing an independent replay, and the exact Nudge.delivery machine (statically;
 because the nudger does nothing at the seeded time, so its status is `static`, not `observed`).
 Known finding: the registered list rule picks `GET /v1/home` for the nudge id, so the nudge flows fail (8
 failed flows); the post hoc `--list-rule specific` run gets 58 verified and 6 failed. Not the registered result.
+
+## Held-out stage H (run once by the orchestrator at 0f851fe; report-only; not re-scored)
+Apps: the job-scheduler Go port (multidb 00dd1de) and its five variants; the comparison is the job-scheduler
+spec `spec.tickets:t5` (24 path-param slots, 19 distinct multi-route skeletons, the JobRun.status machine with
+5 states and 5 edges). The builder never read these apps; freeze hashes in `held-out/freeze.sha256`.
+
+| app | flows | slot recall | skeleton recall lenient / strict | JobRun machine (states, static edges) | verified |
+|---|---|---|---|---|---|
+| job-scheduler-go | 80 | 16/24 (0.67) | 0/19 / 0/19 | found, 5/5, 3/5, initial exact | 0 |
+| baseline | 74 | 21/24 (0.88) | 2/19 / 0/19 | not found | 0 |
+| min-base-opus | 69 | 19/24 (0.79) | 2/19 / 0/19 | found, 3/5, 2/5, initial not exact | 0 |
+| min-base-sonnet | 65 | 21/24 (0.88) | 2/19 / 0/19 | found, 5/5, 3/5, initial exact | 0 |
+| min-spec-opus | 74 | 21/24 (0.88) | 2/19 / 0/19 | found, 5/5, 3/5, initial exact | 0 |
+| min-spec-sonnet | 15 | 21/24 (0.88) | 2/19 / 0/19 | found, 3/5, 1/5, initial exact | 0 |
+
+0 crashes of 6; no `lattice-wf-` container left. **The dynamic half was effectively NOT RUN on the held-out
+apps.** For the three apps that have a harness, the run reported `harness: null, mode: static`: the layer did
+not find a usable harness, so every flow is `unverified` (static) and the observed machine edges are 0/5. The
+cause is a generality limit of the harness fallback (R2): it looks for the Streak harness names
+(`harness:build_db`, `harness:login`), while job-scheduler's harness exposes `build_seed_db` and takes its
+login from `spec.seed:login`. This is a finding, not a pass; it is not fixed and re-scored as blind (a later
+fix would be a new, labelled round). What the held-out table does show: the static machine and dependency-edge
+extraction transfers (machine found in 5 of 6 apps, edges 17-22), slot recall 0.67-0.88, and structural recall
+against the spec's multi-route skeletons is near zero (as it is on Streak, by construction). Replay-verified
+flows are demonstrated on Streak only.

@@ -1,0 +1,3074 @@
+{
+  "app": {
+    "extract_sha256": "bfcaeaeb3f1b5e921198584bea546437278e0959b3153379d4e37b06dd5f2bf8",
+    "framework": "gin",
+    "module": "jobscheduler",
+    "workflow_extract_sha256": "856d32c50a2ca4108d3dd35d578255a3e8d1abad28c5979348d28136555a92b4"
+  },
+  "capped": [
+    {
+      "id": "wf-0c5002c6f8",
+      "kind": "lifecycle",
+      "reason": "more than 8 requests",
+      "skeleton": [
+        "POST /applications",
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/runs",
+        "POST /users",
+        "PUT /applications/{}/members/{}",
+        "POST /applications/{}/jobs/{}/activate",
+        "POST /applications/{}/jobs/{}/deactivate",
+        "POST /applications/{}/runs/{}/cancel",
+        "DELETE /applications/{}/members/{}"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "alternatives": [],
+      "consumer": "DELETE /applications/{id}/members/{user_id}",
+      "evidence": [
+        {
+          "at": "internal/app/applications.go:214",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-f39d87cea2",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}",
+      "evidence": [
+        {
+          "at": "internal/app/applications.go:131",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-5a7fea9ca0",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/jobs",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:205",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-d79a4d0666",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/jobs/{job_id}",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:223",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-7c072cfb4a",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/jobs/{job_id}/runs",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:94",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-ac4f4abe5d",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/members",
+      "evidence": [
+        {
+          "at": "internal/app/applications.go:143",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-dbef7808aa",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/runs/{run_id}",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:116",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-6e6782adce",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:138",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-e353d38af5",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs/{job_id}/activate",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:245",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-193f2da149",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs/{job_id}/deactivate",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:282",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-a05bcdf734",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs/{job_id}/runs",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:45",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-be0fcf5f2c",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/runs/{run_id}/cancel",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:137",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-33c203709f",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "PUT /applications/{id}/members/{user_id}",
+      "evidence": [
+        {
+          "at": "internal/app/applications.go:168",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/applications.go:97",
+          "what": "create"
+        }
+      ],
+      "id": "we-0ba3765561",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /applications",
+      "table": "applications"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/jobs/{job_id}",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:227",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/jobs.go:193",
+          "what": "create"
+        }
+      ],
+      "id": "we-14adda1e30",
+      "id_source": "response",
+      "key": "id",
+      "param": "job_id",
+      "param_source": "path",
+      "producer": "POST /applications/{id}/jobs",
+      "table": "job_configs"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /applications/{id}/jobs/{job_id}/runs",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:98",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/jobs.go:193",
+          "what": "create"
+        }
+      ],
+      "id": "we-fc80359ca5",
+      "id_source": "response",
+      "key": "id",
+      "param": "job_id",
+      "param_source": "path",
+      "producer": "POST /applications/{id}/jobs",
+      "table": "job_configs"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs/{job_id}/activate",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:252",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/jobs.go:193",
+          "what": "create"
+        }
+      ],
+      "id": "we-0d3ad5155b",
+      "id_source": "response",
+      "key": "id",
+      "param": "job_id",
+      "param_source": "path",
+      "producer": "POST /applications/{id}/jobs",
+      "table": "job_configs"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs/{job_id}/deactivate",
+      "evidence": [
+        {
+          "at": "internal/app/jobs.go:289",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/jobs.go:193",
+          "what": "create"
+        }
+      ],
+      "id": "we-a43a7d8e61",
+      "id_source": "response",
+      "key": "id",
+      "param": "job_id",
+      "param_source": "path",
+      "producer": "POST /applications/{id}/jobs",
+      "table": "job_configs"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /applications/{id}/jobs/{job_id}/runs",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:49",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/jobs.go:193",
+          "what": "create"
+        }
+      ],
+      "id": "we-44ac82554e",
+      "id_source": "response",
+      "key": "id",
+      "param": "job_id",
+      "param_source": "path",
+      "producer": "POST /applications/{id}/jobs",
+      "table": "job_configs"
+    },
+    {
+      "alternatives": [
+        "POST /worker/schedule-tick"
+      ],
+      "consumer": "GET /applications/{id}/runs/{run_id}",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:120",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/runs.go:76",
+          "what": "create"
+        }
+      ],
+      "id": "we-6e555f0f1b",
+      "id_source": "response",
+      "key": "id",
+      "param": "run_id",
+      "param_source": "path",
+      "producer": "POST /applications/{id}/jobs/{job_id}/runs",
+      "table": "job_runs"
+    },
+    {
+      "alternatives": [
+        "POST /worker/schedule-tick"
+      ],
+      "consumer": "POST /applications/{id}/runs/{run_id}/cancel",
+      "evidence": [
+        {
+          "at": "internal/app/runs.go:141",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/runs.go:76",
+          "what": "create"
+        }
+      ],
+      "id": "we-fcdf6acac1",
+      "id_source": "response",
+      "key": "id",
+      "param": "run_id",
+      "param_source": "path",
+      "producer": "POST /applications/{id}/jobs/{job_id}/runs",
+      "table": "job_runs"
+    },
+    {
+      "alternatives": [],
+      "consumer": "PUT /applications/{id}/members/{user_id}",
+      "evidence": [
+        {
+          "at": "internal/app/applications.go:190",
+          "what": "param_use"
+        },
+        {
+          "at": "internal/app/users.go:87",
+          "what": "create"
+        }
+      ],
+      "id": "we-c97baacbe2",
+      "id_source": "response",
+      "key": "id",
+      "param": "user_id",
+      "param_source": "path",
+      "producer": "POST /users",
+      "table": "users"
+    }
+  ],
+  "flows": [
+    {
+      "edge_refs": [
+        "we-f39d87cea2"
+      ],
+      "focus_from": 0,
+      "id": "wf-ded520b3ea",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > delete members",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "DELETE /applications/{id}/members/{user_id}"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "DELETE /applications/{}/members/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            204,
+            401,
+            403,
+            404,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:18",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:209",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:214",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 1,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "DELETE",
+          "path": "/applications/{id}/members/{user_id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "DELETE /applications/{id}/members/{user_id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-5a7fea9ca0"
+      ],
+      "focus_from": 0,
+      "id": "wf-044efafab4",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > read applications",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "GET /applications/{id}"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "GET /applications/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:15",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:126",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:131",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 1,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/applications/{id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /applications/{id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-d79a4d0666"
+      ],
+      "focus_from": 0,
+      "id": "wf-ebcc3ace1d",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > read jobs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "GET /applications/{id}/jobs"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "GET /applications/{}/jobs"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:21",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:200",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:205",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 1,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/applications/{id}/jobs",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /applications/{id}/jobs",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-dbef7808aa"
+      ],
+      "focus_from": 0,
+      "id": "wf-f5e3eb611a",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > read members",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "GET /applications/{id}/members"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "GET /applications/{}/members"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:16",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:138",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:143",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 1,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/applications/{id}/members",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /applications/{id}/members",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-e353d38af5"
+      ],
+      "focus_from": 0,
+      "id": "wf-a57472a982",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > jobs applications",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "POST /applications/{id}/jobs"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "POST /applications/{}/jobs"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:20",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:133",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:138",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:193",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "code_path": "..",
+            "command": "wfa57472-command",
+            "job_name": "wfa57472-job_name",
+            "name": "wfa57472-name",
+            "version": "wfa57472-version"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications/{id}/jobs",
+          "value_sources": {
+            "code_path": "literal",
+            "command": "default",
+            "job_name": "default",
+            "name": "default",
+            "version": "default"
+          }
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-14adda1e30",
+        "we-7c072cfb4a"
+      ],
+      "focus_from": 1,
+      "id": "wf-f0458deaaa",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > jobs applications > read jobs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "POST /applications/{id}/jobs",
+        "GET /applications/{id}/jobs/{job_id}"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "POST /applications/{}/jobs",
+        "GET /applications/{}/jobs/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:20",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:133",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:138",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:193",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "code_path": "..",
+            "command": "wff0458d-command",
+            "job_name": "wff0458d-job_name",
+            "name": "wff0458d-name",
+            "version": "wff0458d-version"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications/{id}/jobs",
+          "value_sources": {
+            "code_path": "literal",
+            "command": "default",
+            "job_name": "default",
+            "name": "default",
+            "version": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "job_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:22",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:218",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:223",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:227",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/applications/{id}/jobs/{job_id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /applications/{id}/jobs/{job_id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-ac4f4abe5d",
+        "we-fc80359ca5"
+      ],
+      "focus_from": 1,
+      "id": "wf-3e4d2abfec",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > jobs applications > read runs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "POST /applications/{id}/jobs",
+        "GET /applications/{id}/jobs/{job_id}/runs"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "POST /applications/{}/jobs",
+        "GET /applications/{}/jobs/{}/runs"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:20",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:133",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:138",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:193",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "code_path": "..",
+            "command": "wf3e4d2a-command",
+            "job_name": "wf3e4d2a-job_name",
+            "name": "wf3e4d2a-name",
+            "version": "wf3e4d2a-version"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications/{id}/jobs",
+          "value_sources": {
+            "code_path": "literal",
+            "command": "default",
+            "job_name": "default",
+            "name": "default",
+            "version": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "job_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:29",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/runs.go:89",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/runs.go:94",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/runs.go:98",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/applications/{id}/jobs/{job_id}/runs",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /applications/{id}/jobs/{job_id}/runs",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-0d3ad5155b",
+        "we-193f2da149"
+      ],
+      "focus_from": 1,
+      "id": "wf-937c2ec7c2",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > jobs applications > activate jobs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "POST /applications/{id}/jobs",
+        "POST /applications/{id}/jobs/{job_id}/activate"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/activate"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:20",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:133",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:138",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:193",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "code_path": "..",
+            "command": "wf937c2e-command",
+            "job_name": "wf937c2e-job_name",
+            "name": "wf937c2e-name",
+            "version": "wf937c2e-version"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications/{id}/jobs",
+          "value_sources": {
+            "code_path": "literal",
+            "command": "default",
+            "job_name": "default",
+            "name": "default",
+            "version": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "job_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:25",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:240",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:245",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:252",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs/{job_id}/activate",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications/{id}/jobs/{job_id}/activate",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-a05bcdf734",
+        "we-a43a7d8e61"
+      ],
+      "focus_from": 1,
+      "id": "wf-2e29d81465",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > jobs applications > deactivate jobs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "POST /applications/{id}/jobs",
+        "POST /applications/{id}/jobs/{job_id}/deactivate"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/deactivate"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:20",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:133",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:138",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:193",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "code_path": "..",
+            "command": "wf2e29d8-command",
+            "job_name": "wf2e29d8-job_name",
+            "name": "wf2e29d8-name",
+            "version": "wf2e29d8-version"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications/{id}/jobs",
+          "value_sources": {
+            "code_path": "literal",
+            "command": "default",
+            "job_name": "default",
+            "name": "default",
+            "version": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "job_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:26",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:277",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:282",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:289",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs/{job_id}/deactivate",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications/{id}/jobs/{job_id}/deactivate",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-44ac82554e",
+        "we-be0fcf5f2c"
+      ],
+      "focus_from": 1,
+      "id": "wf-24685c2a04",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > jobs applications > runs jobs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "POST /applications/{id}/jobs",
+        "POST /applications/{id}/jobs/{job_id}/runs"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/runs"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:20",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:133",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:138",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:193",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "code_path": "..",
+            "command": "wf24685c-command",
+            "job_name": "wf24685c-job_name",
+            "name": "wf24685c-name",
+            "version": "wf24685c-version"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications/{id}/jobs",
+          "value_sources": {
+            "code_path": "literal",
+            "command": "default",
+            "job_name": "default",
+            "name": "default",
+            "version": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "job_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:28",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/runs.go:40",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/runs.go:45",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/runs.go:49",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/runs.go:76",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 2,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs/{job_id}/runs",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications/{id}/jobs/{job_id}/runs",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-6e555f0f1b",
+        "we-6e6782adce"
+      ],
+      "focus_from": 2,
+      "id": "wf-c4d6e441bc",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > jobs applications > runs jobs > read runs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "POST /applications/{id}/jobs",
+        "POST /applications/{id}/jobs/{job_id}/runs",
+        "GET /applications/{id}/runs/{run_id}"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/runs",
+        "GET /applications/{}/runs/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:20",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:133",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:138",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:193",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "code_path": "..",
+            "command": "wfc4d6e4-command",
+            "job_name": "wfc4d6e4-job_name",
+            "name": "wfc4d6e4-name",
+            "version": "wfc4d6e4-version"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications/{id}/jobs",
+          "value_sources": {
+            "code_path": "literal",
+            "command": "default",
+            "job_name": "default",
+            "name": "default",
+            "version": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "job_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:28",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/runs.go:40",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/runs.go:45",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/runs.go:49",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/runs.go:76",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 2,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs/{job_id}/runs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications/{id}/jobs/{job_id}/runs",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 2,
+              "id_source": "response",
+              "param": "run_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:30",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/runs.go:111",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/runs.go:116",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/runs.go:120",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 3,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/applications/{id}/runs/{run_id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /applications/{id}/runs/{run_id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-33c203709f",
+        "we-fcdf6acac1"
+      ],
+      "focus_from": 2,
+      "id": "wf-4c15491c0c",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > jobs applications > runs jobs > cancel runs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "POST /applications/{id}/jobs",
+        "POST /applications/{id}/jobs/{job_id}/runs",
+        "POST /applications/{id}/runs/{run_id}/cancel"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "POST /applications/{}/jobs",
+        "POST /applications/{}/jobs/{}/runs",
+        "POST /applications/{}/runs/{}/cancel"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:20",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/jobs.go:133",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/jobs.go:138",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/jobs.go:193",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "code_path": "..",
+            "command": "wf4c1549-command",
+            "job_name": "wf4c1549-job_name",
+            "name": "wf4c1549-name",
+            "version": "wf4c1549-version"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications/{id}/jobs",
+          "value_sources": {
+            "code_path": "literal",
+            "command": "default",
+            "job_name": "default",
+            "name": "default",
+            "version": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "job_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            404,
+            409,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:28",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/runs.go:40",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/runs.go:45",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/runs.go:49",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/runs.go:76",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 2,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/jobs/{job_id}/runs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications/{id}/jobs/{job_id}/runs",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 2,
+              "id_source": "response",
+              "param": "run_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404,
+            409,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:31",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/runs.go:132",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/runs.go:137",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/runs.go:141",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 3,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications/{id}/runs/{run_id}/cancel",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications/{id}/runs/{run_id}/cancel",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-0ba3765561",
+        "we-c97baacbe2"
+      ],
+      "focus_from": 1,
+      "id": "wf-e2d4a7be7c",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create applications > create users > update members",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "POST /users",
+        "PUT /applications/{id}/members/{user_id}"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "POST /users",
+        "PUT /applications/{}/members/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:11",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/users.go:54",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/users.go:87",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/users",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /users",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "user_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:17",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:163",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:168",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/applications.go:190",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/applications.go:198",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "PUT",
+          "path": "/applications/{id}/members/{user_id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "PUT /applications/{id}/members/{user_id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 0,
+      "id": "wf-4ddd18e1de",
+      "inferred_name": true,
+      "kind": "lifecycle",
+      "machine_refs": [],
+      "name": "create users > create applications > update members",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /users",
+        "POST /applications",
+        "PUT /applications/{id}/members/{user_id}"
+      ],
+      "skeleton": [
+        "POST /users",
+        "POST /applications",
+        "PUT /applications/{}/members/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:11",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/users.go:54",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/users.go:87",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/users",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /users",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            },
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "user_id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404,
+            422,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:17",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:163",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:168",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/applications.go:190",
+              "what": "param_use"
+            },
+            {
+              "at": "internal/app/applications.go:198",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "PUT",
+          "path": "/applications/{id}/members/{user_id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "PUT /applications/{id}/members/{user_id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 0,
+      "id": "wf-0f48344f64",
+      "inferred_name": true,
+      "kind": "after_delete",
+      "machine_refs": [],
+      "name": "create applications > delete members > read applications",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /applications",
+        "DELETE /applications/{id}/members/{user_id}",
+        "GET /applications/{id}"
+      ],
+      "skeleton": [
+        "POST /applications",
+        "DELETE /applications/{}/members/{}",
+        "GET /applications/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": null,
+          "code_statuses": [
+            201,
+            401,
+            403,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:13",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:73",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:97",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/applications",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /applications",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            204,
+            401,
+            403,
+            404,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:18",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:209",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:214",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 1,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "DELETE",
+          "path": "/applications/{id}/members/{user_id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "DELETE /applications/{id}/members/{user_id}",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": null,
+          "code_statuses": [
+            200,
+            401,
+            403,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "internal/app/routes.go:15",
+              "what": "route"
+            },
+            {
+              "at": "internal/app/applications.go:126",
+              "what": "handler"
+            },
+            {
+              "at": "internal/app/applications.go:131",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/applications/{id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /applications/{id}",
+          "value_sources": {}
+        }
+      ]
+    }
+  ],
+  "machines": [
+    {
+      "column": "status",
+      "edges": [
+        {
+          "evidence": [
+            {
+              "at": "internal/app/worker.go:53",
+              "what": "from"
+            },
+            {
+              "at": "internal/app/worker.go:54",
+              "what": "write"
+            }
+          ],
+          "from": "queued",
+          "observed": 0,
+          "source": "static",
+          "to": "running"
+        }
+      ],
+      "id": "wm-836675e71c",
+      "initial": [
+        "queued"
+      ],
+      "model": "JobRun",
+      "observed_initial": [],
+      "spec_object": {
+        "column": "status",
+        "edges": [
+          [
+            "queued",
+            "running"
+          ]
+        ],
+        "initial": [
+          "queued"
+        ],
+        "table": "JobRun"
+      },
+      "states": [
+        "cancelled",
+        "queued",
+        "running"
+      ],
+      "status": "static",
+      "sweeps": [],
+      "table": "job_runs",
+      "unread": [
+        {
+          "file": "internal/app/runs.go",
+          "line": 157,
+          "reason": "the state cancelled is written from an unknown state: no static map",
+          "what": "edge"
+        },
+        {
+          "file": "internal/app/runs.go",
+          "line": 171,
+          "reason": "the state cancelled is written from an unknown state: no static map",
+          "what": "edge"
+        }
+      ]
+    },
+    {
+      "column": "trigger",
+      "edges": [],
+      "id": "wm-bd44fff17f",
+      "initial": [
+        "cron",
+        "manual"
+      ],
+      "model": "JobRun",
+      "observed_initial": [],
+      "spec_object": {
+        "column": "trigger",
+        "edges": [],
+        "initial": [
+          "cron",
+          "manual"
+        ],
+        "table": "JobRun"
+      },
+      "states": [
+        "cron",
+        "manual"
+      ],
+      "status": "static",
+      "sweeps": [],
+      "table": "job_runs",
+      "unread": []
+    }
+  ],
+  "run": {
+    "caps": {
+      "max_flows": 96,
+      "max_steps": 8
+    },
+    "harness": null,
+    "mode": "static",
+    "services_swept": [],
+    "users": [
+      "root",
+      "ann"
+    ]
+  },
+  "schema": "lattice.workflows/1",
+  "summary": {
+    "edges": 21,
+    "failed": 0,
+    "flows": 15,
+    "machines": 2,
+    "unverified": 15,
+    "verified": 0
+  },
+  "unread": [
+    {
+      "file": "",
+      "line": 0,
+      "reason": "no public POST creates the users table and a login route together",
+      "what": "account"
+    },
+    {
+      "file": "internal/app/runs.go",
+      "line": 157,
+      "reason": "the state job_runs.status is written from is not read: an update with no enclosing test of the column and no query pinning it",
+      "what": "status_write"
+    },
+    {
+      "file": "internal/app/runs.go",
+      "line": 171,
+      "reason": "the state job_runs.status is written from is not read: an update with no enclosing test of the column and no query pinning it",
+      "what": "status_write"
+    }
+  ]
+}
