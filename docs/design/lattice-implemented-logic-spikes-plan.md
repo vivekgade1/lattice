@@ -200,3 +200,40 @@ scored once after the freeze; rpc recall/precision, code mapping, flows replayed
 Docker/process orchestration are new surface; streaming and interceptor-heavy auth will be partial first.
 Order: after Spikes D, E, F and H have landed (it extends the spec language, the importer and the checker); its
 pre-registration may be written earlier and is independent of the others' builds.
+
+## Addendum 2026-10-16 (later): Spike J, .NET (ASP.NET Core) at parity with Python and Go (owner request)
+
+**J, .NET as a first-class stack, equal support across Python, Go and .NET.** "Equal" is made measurable:
+
+1. **Parity matrix first (node J0).** Built from the repository, not memory. Rows are every capability supported
+   for Python apps today: importer front end, candidate-spec emission, layer A static checks (`pycheck`, `gocheck`),
+   the runtime harness, layers B, C, D, X, R, the workflow layer, implementation report and chat, change impact and
+   implement, perf engines, contracts, the improve loop, build-from-spec, and (decision below) code generation.
+   Columns are Python, Go and .NET. Each cell is `supported`, `partial` (with the gap named), or `absent`, with the
+   file that proves it. **Where Go is behind Python, that gap is part of this spike's scope**: equal support means all
+   three columns reach the same row set, not only that .NET catches up to Go.
+2. **.NET stack.** ASP.NET Core (controllers and minimal APIs), EF Core models and migrations, MySQL first (Pomelo),
+   gRPC via Spike I. Deterministic extraction by a Roslyn-based helper beside `goextract` (no LLM; unreadable idioms
+   are listed, never guessed): routes and route groups, filters/middleware/`[Authorize]` as auth evidence, model
+   binding and data annotations / FluentValidation as bounds, `DbContext` entities, status/state writes, ownership
+   conditions in LINQ, call closure. Output is the same framework-neutral `RepoModel`. A `FrontEnd` shim
+   (`detect`: `*.csproj` with `Microsoft.AspNetCore`; `extract`; `runtime`: process runtime via the project's
+   harness) is registered like the others. A layer A checker for .NET provides the findings `pycheck`/`gocheck` give.
+3. **Language rules hold** (`docs/lattice-language-rules.md`): each construct is gated per target with an exit
+   condition; nothing is cut to the lowest common denominator. **Open decision for the pre-registration: whether the
+   Lattice-language generators (today Python and Go targets) also gain a C# target.** It is a very large, separate
+   piece of work (runtime library, T2 calls, differential tests) and is not assumed; the spike delivers import,
+   check, workflow, impact and build-from-spec for existing .NET apps first.
+4. **Registered test (opus pre-registration before any code):** development corpus (Streak reproduced as an
+   ASP.NET Core app, written by a separate agent against the Streak spec) and a held-out .NET app with independent
+   ground truth, scored once after the freeze; route and table recall/precision, workflows replayed, the parity
+   matrix re-measured at the end with each previously `absent`/`partial` Python-vs-Go cell either closed or listed
+   with a reason; byte-identical Python and Go outputs; 10 identical runs; >= 10 mutants.
+
+**Environment blocker (checked 2026-10-16):** the .NET SDK is not installed on this machine (`dotnet` not found; Go
+and Python are). Building the Roslyn helper and running .NET apps needs it, so installing the SDK (and a pinned
+version) is a prerequisite decision for the owner, and Docker images for .NET are an alternative. Without it the
+extractor cannot be built or verified, and any .NET result would be reported NOT RUN.
+
+**Order:** J0 (the parity matrix, read-only, can start now) -> pre-registration -> after Spikes D, E, F, H and I.
+Closing the Go-versus-Python gaps found by J0 may be split into their own nodes and can run before .NET.
