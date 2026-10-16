@@ -17,10 +17,11 @@ Findings from exploration (2026-10-15, next-phases 8e5e31f):
   tags (`bounds.go`), owner evidence (`owner.go`), status writes/guards (`machine.go`), call closure
   (`reach.go`). It is the foundation to extend.
 - Streak's working tree on `main` is a skeleton. The implementation is `build/streak` a0679e9 (also present as
-  a Studio rebuild under `.lattice/rebuilds/streak-b4-a93dcb`): ~3.7k Go lines, 20 route registrations
-  (17 `/v1` product routes), 8 GORM tables, 1 state machine (Nudge.delivery). Its spec has ~25 endpoints, so
-  4 spec'd routes (home, sync, nudges, dismiss) are NOT implemented: a ready "required but not implemented"
-  ground-truth case.
+  a Studio rebuild under `.lattice/rebuilds/streak-b4-a93dcb`, which is an OLDER level-1 build): measured by
+  Spike A at a0679e9: 26 route registrations (24 under `/v1`), 10 GORM tables (8 models + schema_migrations +
+  test_clock), 1 state machine (Nudge.delivery); its spec has 26 endpoints, all implemented (0 spec-only). The
+  spec-only case is commit 1d00ede (20 routes, 6 spec-only: home, sync, nudges, dismiss, both devices routes).
+  (Corrected 2026-10-16; the first version of this plan said 20/17/4 from the older rebuild.)
 - Streak idioms the extractor must handle (not textbook Gin): routes registered through
   `Routes{Public, Member}` struct fields and a `features ...Register` slice, handlers wrapped by
   `httpapi.Handle(h.create)`, validation via a hand-rolled `Body` map accessor + comparison guards (no
