@@ -1,0 +1,166 @@
+{
+ "new_identical_across_runs": true,
+ "new_output": {
+  "a": {
+   "describe": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   <fixed>/a\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---",
+   "entry": null
+  },
+  "b": {
+   "describe": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   <fixed>/b\n  sha256:   46571795e426be696f0f7e7f2f75fa9bea4747aedd99a22877a4c11955183e87\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter evil:Adapter (CODE: imported into the checker when the engine is used)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---",
+   "entry": null
+  },
+  "c": {
+   "describe": "module audit 1 (custom)\n  source:   <fixed>/c\n  sha256:   87ad8d7d73f9fc550a250f337605c9c0c8fce0c071b9b60a7985c0e801f59a7d\n  files:    1\n  provides: audit\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"audit\"\nversion = \"1\"\nkind = \"custom\"\nprovides = [\"audit\"]\n---",
+   "entry": null
+  },
+  "d": {
+   "describe": "module plain 1 (custom)\n  a described module\n  source:   <fixed>/d\n  sha256:   b09acfd02559ef265ade544ca1f183634c73eaf98a18dfe68dd5185a49552ee1\n  files:    1\n  provides: (nothing)\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"plain\"\nversion = \"1\"\nkind = \"custom\"\ndescription = \"a described module\"\n---",
+   "entry": null
+  },
+  "e": {
+   "describe": "module mariadb-e 0.1.0 (engine)\n  MariaDB for the checker\n  source:   <fixed>/e\n  commit:   0123456789abcdef (pinned fixture commit)\n  dropped:  x.txt, y.txt\n  sha256:   8a4940c0bd1c7c930526fa3ec58cae487192cf55695e2e9346e385f65872418f\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-e\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---",
+   "entry": null
+  },
+  "f": {
+   "describe": "module security 0.1.0 (custom)\n  Spec-driven security attack swarm (authz, auth, bounds, mass, state, leak). Separate module; not a build gate. For the owner's own systems only.\n  source:   <fixed>/f\n  sha256:   8ddf0891e9ddd43722f5f3b7d47ada360ea3fb3e190bc7befc1b3b58869a1e56\n  files:    2\n  provides: attack\n  requires: (nothing) (pip; not installed by Lattice)\n  entry:    lattice.security (CODE: a Python module, main(argv); not imported by install)\n\n--- lattice-module.toml ---\nname = \"security\"\nversion = \"0.1.0\"\nkind = \"custom\"\ndescription = \"Spec-driven security attack swarm (authz, auth, bounds, mass, state, leak). Separate module; not a build gate. For the owner's own systems only.\"\nprovides = [\"attack\"]\nentry = \"lattice.security\"\n---",
+   "entry": "lattice.security"
+  },
+  "g": {
+   "describe": "module custom-mod 1 (custom)\n  source:   <fixed>/g\n  sha256:   3e097a5f32ccc6ba7a782262a07f1e07e6877acdff99c40d2f78e805c787ad14\n  files:    2\n  provides: (nothing)\n  requires: (nothing) (pip; not installed by Lattice)\n  entry:    evilentry (CODE: a Python module, main(argv); not imported by install)\n\n--- lattice-module.toml ---\nname = \"custom-mod\"\nversion = \"1\"\nkind = \"custom\"\nentry = \"evilentry\"\n---",
+   "entry": "evilentry"
+  },
+  "h": {
+   "describe": "module weird 1 (custom)\n  source:   <fixed>/h\n  sha256:   d910cd63f19aa8c4b34b110fcb1d0fdef35ae419316839936456ce546aed9e5a\n  files:    1\n  provides: (nothing)\n  requires: (nothing) (pip; not installed by Lattice)\n  entry:    \"a\\nb\" (CODE: a Python module, main(argv); not imported by install)\n\n--- lattice-module.toml ---\nname = \"weird\"\nversion = \"1\"\nkind = \"custom\"\nentry = \"a\\nb\"\n---",
+   "entry": "a\nb"
+  },
+  "i": {
+   "describe": "module emptyentry 1 (custom)\n  source:   <fixed>/i\n  sha256:   3cae69311d1c3b58bfd041ad6db9dd6e94b4066ef6119ee54e14b12393b07b05\n  files:    1\n  provides: (nothing)\n  requires: (nothing) (pip; not installed by Lattice)\n  entry:    \"\" (CODE: a Python module, main(argv); not imported by install)\n\n--- lattice-module.toml ---\nname = \"emptyentry\"\nversion = \"1\"\nkind = \"custom\"\nentry = \"\"\n---",
+   "entry": ""
+  },
+  "install-a": {
+   "out": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   <src>\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---",
+   "questions": [
+    "Install mariadb-engine 0.1.0 into <proj>? [y/N] "
+   ],
+   "refused": "not installed: mariadb-engine 0.1.0 was not confirmed (give --yes, or answer y at a terminal)"
+  },
+  "install-c": {
+   "out": "module audit 1 (custom)\n  source:   <src>\n  sha256:   87ad8d7d73f9fc550a250f337605c9c0c8fce0c071b9b60a7985c0e801f59a7d\n  files:    1\n  provides: audit\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"audit\"\nversion = \"1\"\nkind = \"custom\"\nprovides = [\"audit\"]\n---",
+   "questions": [
+    "Install audit 1 into <proj>? [y/N] "
+   ],
+   "refused": "not installed: audit 1 was not confirmed (give --yes, or answer y at a terminal)"
+  }
+ },
+ "new_sha256": "9f0a5da49229d72b51710073b0b4c1e109dde5d6ca37ca8e13271fae6fae70cf",
+ "old_identical_across_runs": true,
+ "old_output": {
+  "a": {
+   "describe": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   <fixed>/a\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---",
+   "entry": null
+  },
+  "b": {
+   "describe": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   <fixed>/b\n  sha256:   46571795e426be696f0f7e7f2f75fa9bea4747aedd99a22877a4c11955183e87\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter evil:Adapter (CODE: imported into the checker when the engine is used)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---",
+   "entry": null
+  },
+  "c": {
+   "describe": "module audit 1 (custom)\n  source:   <fixed>/c\n  sha256:   87ad8d7d73f9fc550a250f337605c9c0c8fce0c071b9b60a7985c0e801f59a7d\n  files:    1\n  provides: audit\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"audit\"\nversion = \"1\"\nkind = \"custom\"\nprovides = [\"audit\"]\n---",
+   "entry": null
+  },
+  "d": {
+   "describe": "module plain 1 (custom)\n  a described module\n  source:   <fixed>/d\n  sha256:   b09acfd02559ef265ade544ca1f183634c73eaf98a18dfe68dd5185a49552ee1\n  files:    1\n  provides: (nothing)\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"plain\"\nversion = \"1\"\nkind = \"custom\"\ndescription = \"a described module\"\n---",
+   "entry": null
+  },
+  "e": {
+   "describe": "module mariadb-e 0.1.0 (engine)\n  MariaDB for the checker\n  source:   <fixed>/e\n  commit:   0123456789abcdef (pinned fixture commit)\n  dropped:  x.txt, y.txt\n  sha256:   8a4940c0bd1c7c930526fa3ec58cae487192cf55695e2e9346e385f65872418f\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-e\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---",
+   "entry": null
+  },
+  "f": {
+   "describe": "module security 0.1.0 (custom)\n  Spec-driven security attack swarm (authz, auth, bounds, mass, state, leak). Separate module; not a build gate. For the owner's own systems only.\n  source:   <fixed>/f\n  sha256:   8ddf0891e9ddd43722f5f3b7d47ada360ea3fb3e190bc7befc1b3b58869a1e56\n  files:    2\n  provides: attack\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"security\"\nversion = \"0.1.0\"\nkind = \"custom\"\ndescription = \"Spec-driven security attack swarm (authz, auth, bounds, mass, state, leak). Separate module; not a build gate. For the owner's own systems only.\"\nprovides = [\"attack\"]\nentry = \"lattice.security\"\n---",
+   "entry": "lattice.security"
+  },
+  "g": {
+   "describe": "module custom-mod 1 (custom)\n  source:   <fixed>/g\n  sha256:   3e097a5f32ccc6ba7a782262a07f1e07e6877acdff99c40d2f78e805c787ad14\n  files:    2\n  provides: (nothing)\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"custom-mod\"\nversion = \"1\"\nkind = \"custom\"\nentry = \"evilentry\"\n---",
+   "entry": "evilentry"
+  },
+  "h": {
+   "describe": "module weird 1 (custom)\n  source:   <fixed>/h\n  sha256:   d910cd63f19aa8c4b34b110fcb1d0fdef35ae419316839936456ce546aed9e5a\n  files:    1\n  provides: (nothing)\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"weird\"\nversion = \"1\"\nkind = \"custom\"\nentry = \"a\\nb\"\n---",
+   "entry": "a\nb"
+  },
+  "i": {
+   "describe": "module emptyentry 1 (custom)\n  source:   <fixed>/i\n  sha256:   3cae69311d1c3b58bfd041ad6db9dd6e94b4066ef6119ee54e14b12393b07b05\n  files:    1\n  provides: (nothing)\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"emptyentry\"\nversion = \"1\"\nkind = \"custom\"\nentry = \"\"\n---",
+   "entry": ""
+  },
+  "install-a": {
+   "out": "module mariadb-engine 0.1.0 (engine)\n  MariaDB for the checker\n  source:   <src>\n  sha256:   0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9\n  files:    3\n  provides: engine:mariadb\n  requires: pymysql>=1.1 (pip; not installed by Lattice)\n  engine:   mariadb (--database mariadb), adapter mysql (no code: a built-in adapter)\n  server:   docker image mariadb:11, port 3306\n\n--- lattice-module.toml ---\nname = \"mariadb-engine\"\nversion = \"0.1.0\"\nkind = \"engine\"\ndescription = \"MariaDB for the checker\"\ndescriptor = \"engine.toml\"\n---",
+   "questions": [
+    "Install mariadb-engine 0.1.0 into <proj>? [y/N] "
+   ],
+   "refused": "not installed: mariadb-engine 0.1.0 was not confirmed (give --yes, or answer y at a terminal)"
+  },
+  "install-c": {
+   "out": "module audit 1 (custom)\n  source:   <src>\n  sha256:   87ad8d7d73f9fc550a250f337605c9c0c8fce0c071b9b60a7985c0e801f59a7d\n  files:    1\n  provides: audit\n  requires: (nothing) (pip; not installed by Lattice)\n\n--- lattice-module.toml ---\nname = \"audit\"\nversion = \"1\"\nkind = \"custom\"\nprovides = [\"audit\"]\n---",
+   "questions": [
+    "Install audit 1 into <proj>? [y/N] "
+   ],
+   "refused": "not installed: audit 1 was not confirmed (give --yes, or answer y at a terminal)"
+  }
+ },
+ "old_sha256": "e712d28e11a489b293778dd36a7a7fc2bcfe74638b5ad1b7dcd5895fc95cb82c",
+ "pass": true,
+ "rows": {
+  "a": {
+   "expect": "byte-identical",
+   "ok": true
+  },
+  "b": {
+   "expect": "byte-identical",
+   "ok": true
+  },
+  "c": {
+   "expect": "byte-identical",
+   "ok": true
+  },
+  "d": {
+   "expect": "byte-identical",
+   "ok": true
+  },
+  "e": {
+   "expect": "byte-identical",
+   "ok": true
+  },
+  "f": {
+   "expect": "old + exactly the D2 line after requires:",
+   "new_line": "  entry:    lattice.security (CODE: a Python module, main(argv); not imported by install)",
+   "ok": true,
+   "old_has_no_entry_line": true
+  },
+  "g": {
+   "expect": "old + exactly the D2 line after requires:",
+   "new_line": "  entry:    evilentry (CODE: a Python module, main(argv); not imported by install)",
+   "ok": true,
+   "old_has_no_entry_line": true
+  },
+  "h": {
+   "expect": "old + exactly the D2 line after requires:",
+   "new_line": "  entry:    \"a\\nb\" (CODE: a Python module, main(argv); not imported by install)",
+   "ok": true,
+   "old_has_no_entry_line": true
+  },
+  "i": {
+   "expect": "old + exactly the D2 line after requires:",
+   "new_line": "  entry:    \"\" (CODE: a Python module, main(argv); not imported by install)",
+   "ok": true,
+   "old_has_no_entry_line": true
+  },
+  "install-a": {
+   "expect": "byte-identical",
+   "ok": true
+  },
+  "install-c": {
+   "expect": "byte-identical",
+   "ok": true
+  }
+ },
+ "runs": 10
+}

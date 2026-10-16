@@ -1,0 +1,36 @@
+{
+ "runs": [
+  {
+   "run": 1,
+   "sha256": "e6b9c393fc45b69a7b7dad08e8fa7f64a03dbb9d70c1d609758a17e34f4120d8",
+   "checks": 223,
+   "failing": [
+    "I1.3.body",
+    "I11.warn",
+    "I3.1.body",
+    "I5.warn",
+    "env.extra_absent",
+    "env.no_g9wide",
+    "env.wide_absent"
+   ],
+   "seconds": 4.9,
+   "instance_seconds": {
+    "I0": 0.9,
+    "I1": 0.48,
+    "I2": 0.36,
+    "I3": 0.35,
+    "I4": 0.34,
+    "I5": 0.37,
+    "I6": 0.31,
+    "I7": 0.35,
+    "I8": 0.39,
+    "I9": 0.29,
+    "I10": 0.37,
+    "I11": 0.37
+   }
+  }
+ ],
+ "identical": true,
+ "all_checks_pass": false,
+ "n_runs": 1
+}

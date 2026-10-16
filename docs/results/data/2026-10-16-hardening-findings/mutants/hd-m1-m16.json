@@ -1,0 +1,446 @@
+{
+ "hashes": {
+  "lattice/llm/cli_client.py": "bd3871e795ddef9a",
+  "lattice/studio/mcp_intake.py": "39c0688f9381c8e9",
+  "lattice/studio/server.py": "daa63886ce05b556",
+  "lattice/modules/__init__.py": "40814511a6e03017",
+  "tests/studio/test_mcp_intake_http.py": "022c95146a8773e4",
+  "tests/llm/test_cli_env_scrub.py": "f8e43842ef53c933",
+  "tests/modules/test_entry_summary.py": "3c3d450c72d2c3e5",
+  "tests/studio/test_mcp_allow_writes_warn.py": "51fe0075b63f510c",
+  "tests/studio/test_hardening_mutants.py": "48db835dcdd1fb10"
+ },
+ "runs": {
+  "control": {
+   "pytest": {
+    "exit": 0,
+    "failed": [],
+    "summary": "98 passed in 5.58s",
+    "seconds": 5.8,
+    "tail": "........................................................................ [ 73%]\n..........................                                               [100%]\n98 passed in 5.58s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [],
+   "verdict": "PASS (control)"
+  },
+  "HD-M2": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order",
+     "tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment",
+     "tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude"
+    ],
+    "summary": "6 failed, 92 passed in 5.60s",
+    "seconds": 5.8,
+    "tail": "K' != 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Left contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:138: AssertionError\n____________ test_the_table_holds_through_the_discovery_environment ____________\n\n    def test_the_table_holds_through_the_discovery_environment() -> None:\n        out = discovery_env(planted())\n>       assert [k for k in planted() if k in out] == EXPECTED_KEPT\nE       AssertionError: assert ['CLAUDE_CODE..., 'HOME', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 8 diff: 'AWS_BEARER_TOKEN_BEDROCK' != 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Left contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:144: AssertionError\n__________ test_the_table_holds_through_the_rebuild_gate_environment ___________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-3/test_the_table_holds_through_t1')\n\n    def test_the_table_holds_through_the_rebuild_gate_environment(tmp_path: Path) -> None:\n        out = gate_env(planted(), repo=tmp_path, worktree=tmp_path, project_rel=\".\")\n        # gate_env adds PYTHONPATH & co. and rewrites PATH/HOME-independent variables; of the 23 the\n        # kept names stay, the dropped never appear\n>       assert [k for k in planted() if k in out] == EXPECTED_KEPT\nE       AssertionError: assert ['CLAUDE_CODE..., 'HOME', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 8 diff: 'AWS_BEARER_TOKEN_BEDROCK' != 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Left contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:151: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude\nFAILED tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order\nFAILED tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment\n6 failed, 92 passed in 5.60s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M3": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order",
+     "tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment",
+     "tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude"
+    ],
+    "summary": "6 failed, 92 passed in 5.64s",
+    "seconds": 5.9,
+    "tail": ": 'AWS_ACCESS_KEY_ID' != 'CLAUDE_CODE_OAUTH_TOKEN'\nE         Right contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:138: AssertionError\n____________ test_the_table_holds_through_the_discovery_environment ____________\n\n    def test_the_table_holds_through_the_discovery_environment() -> None:\n        out = discovery_env(planted())\n>       assert [k for k in planted() if k in out] == EXPECTED_KEPT\nE       AssertionError: assert ['AWS_ACCESS_..., 'PATH', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 0 diff: 'AWS_ACCESS_KEY_ID' != 'CLAUDE_CODE_OAUTH_TOKEN'\nE         Right contains 2 more items, first extra item: 'CLAUDE_CONFIG_DIR'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:144: AssertionError\n__________ test_the_table_holds_through_the_rebuild_gate_environment ___________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-2/test_the_table_holds_through_t1')\n\n    def test_the_table_holds_through_the_rebuild_gate_environment(tmp_path: Path) -> None:\n        out = gate_env(planted(), repo=tmp_path, worktree=tmp_path, project_rel=\".\")\n        # gate_env adds PYTHONPATH & co. and rewrites PATH/HOME-independent variables; of the 23 the\n        # kept names stay, the dropped never appear\n>       assert [k for k in planted() if k in out] == EXPECTED_KEPT\nE       AssertionError: assert ['AWS_ACCESS_..., 'PATH', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 0 diff: 'AWS_ACCESS_KEY_ID' != 'CLAUDE_CODE_OAUTH_TOKEN'\nE         Right contains 2 more items, first extra item: 'CLAUDE_CONFIG_DIR'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:151: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude\nFAILED tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order\nFAILED tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment\n6 failed, 92 passed in 5.64s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M1": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order",
+     "tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment",
+     "tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded",
+     "tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude"
+    ],
+    "summary": "7 failed, 91 passed in 5.70s",
+    "seconds": 5.9,
+    "tail": "ore items, first extra item: 'CLAUDE_CONFIG_DIR'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:138: AssertionError\n____________ test_the_table_holds_through_the_discovery_environment ____________\n\n    def test_the_table_holds_through_the_discovery_environment() -> None:\n        out = discovery_env(planted())\n>       assert [k for k in planted() if k in out] == EXPECTED_KEPT\nE       AssertionError: assert ['CLAUDE_CODE..., 'HOME', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 6 diff: 'ANTHROPIC_CUSTOM_HEADERS' != 'PATH'\nE         Left contains 8 more items, first extra item: 'CLAUDE_CONFIG_DIR'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:144: AssertionError\n__________ test_the_table_holds_through_the_rebuild_gate_environment ___________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-1/test_the_table_holds_through_t1')\n\n    def test_the_table_holds_through_the_rebuild_gate_environment(tmp_path: Path) -> None:\n        out = gate_env(planted(), repo=tmp_path, worktree=tmp_path, project_rel=\".\")\n        # gate_env adds PYTHONPATH & co. and rewrites PATH/HOME-independent variables; of the 23 the\n        # kept names stay, the dropped never appear\n>       assert [k for k in planted() if k in out] == EXPECTED_KEPT\nE       AssertionError: assert ['CLAUDE_CODE..., 'HOME', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 8 diff: 'AWS_BEARER_TOKEN_BEDROCK' != 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Left contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:151: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude\nFAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded\nFAILED tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order\nFAILED tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment\n7 failed, 91 passed in 5.70s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M5": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order",
+     "tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment"
+    ],
+    "summary": "5 failed, 93 passed in 5.58s",
+    "seconds": 5.8,
+    "tail": "EPT\nE       AssertionError: assert ['CLAUDE_CODE..., 'PATH', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 3 diff: 'ANTHROPIC' != 'anthropic_api_key'\nE         Right contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:138: AssertionError\n____________ test_the_table_holds_through_the_discovery_environment ____________\n\n    def test_the_table_holds_through_the_discovery_environment() -> None:\n        out = discovery_env(planted())\n>       assert [k for k in planted() if k in out] == EXPECTED_KEPT\nE       AssertionError: assert ['CLAUDE_CODE..., 'PATH', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 3 diff: 'ANTHROPIC' != 'anthropic_api_key'\nE         Right contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:144: AssertionError\n__________ test_the_table_holds_through_the_rebuild_gate_environment ___________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-5/test_the_table_holds_through_t1')\n\n    def test_the_table_holds_through_the_rebuild_gate_environment(tmp_path: Path) -> None:\n        out = gate_env(planted(), repo=tmp_path, worktree=tmp_path, project_rel=\".\")\n        # gate_env adds PYTHONPATH & co. and rewrites PATH/HOME-independent variables; of the 23 the\n        # kept names stay, the dropped never appear\n>       assert [k for k in planted() if k in out] == EXPECTED_KEPT\nE       AssertionError: assert ['CLAUDE_CODE..., 'PATH', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 3 diff: 'ANTHROPIC' != 'anthropic_api_key'\nE         Right contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:151: AssertionError\n=========================== short test summary info ============================\nFAILED tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order\nFAILED tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment\n5 failed, 93 passed in 5.58s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M6": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/modules/test_entry_summary.py::test_a_dotted_entry_is_announced_as_code_right_after_requires",
+     "tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[_x.y_2.Z]",
+     "tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[a]",
+     "tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[lattice.security]",
+     "tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[pkg.mod]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\"-\"\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"1abc\"-\"1abc\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\\xe9\"-\"\\\\u00e9\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a..b\"-\"a..b\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a\\\\nb\"-\"a\\\\nb\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"pkg.\"-\"pkg.\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"x\\\\n",
+     "tests/modules/test_entry_summary.py::test_install_prints_the_entry_line_and_still_asks",
+     "tests/modules/test_entry_summary.py::test_the_security_module_summary_gains_exactly_one_line"
+    ],
+    "summary": "15 failed, 83 passed in 5.59s",
+    "seconds": 5.8,
+    "tail": "ce:   /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758...8fd2fe085a7ae', '  files:    1', '  provides: (nothing)', '  requires: (nothing) (pip; not installed by Lattice)', ...]\nE        +  where ['module custom-mod 1 (custom)', '  source:   /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758...8fd2fe085a7ae', '  files:    1', '  provides: (nothing)', '  requires: (nothing) (pip; not installed by Lattice)', ...] = <built-in method split of str object at 0x753ea60500>('\\n')\nE        +    where <built-in method split of str object at 0x753ea60500> = 'module custom-mod 1 (custom)\\n  source:   /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4a...Lattice)\\n\\n--- lattice-module.toml ---\\nname = \"custom-mod\"\\nversion = \"1\"\\nkind = \"custom\"\\nentry = \"evilentry\"\\n---'.split\n\ntests/modules/test_entry_summary.py:124: AssertionError\n=========================== short test summary info ============================\nFAILED tests/modules/test_entry_summary.py::test_a_dotted_entry_is_announced_as_code_right_after_requires\nFAILED tests/modules/test_entry_summary.py::test_the_security_module_summary_gains_exactly_one_line\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a\\\\nb\"-\"a\\\\nb\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\"-\"\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"x\\\\n  files:    99\"-\"x\\\\n  files:    99\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a b\"-\"a b\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"pkg.\"-\"pkg.\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"1abc\"-\"1abc\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a..b\"-\"a..b\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\\xe9\"-\"\\\\u00e9\"]\nFAILED tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[a]\nFAILED tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[pkg.mod]\nFAILED tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[_x.y_2.Z]\nFAILED tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[lattice.security]\nFAILED tests/modules/test_entry_summary.py::test_install_prints_the_entry_line_and_still_asks\n15 failed, 83 passed in 5.59s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M4": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order",
+     "tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment",
+     "tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment",
+     "tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude"
+    ],
+    "summary": "6 failed, 92 passed in 5.71s",
+    "seconds": 5.9,
+    "tail": "PPLICATION_CREDENTIALS' != 'AWS_ACCESS_KEY_ID'\nE         Right contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:138: AssertionError\n____________ test_the_table_holds_through_the_discovery_environment ____________\n\n    def test_the_table_holds_through_the_discovery_environment() -> None:\n        out = discovery_env(planted())\n>       assert [k for k in planted() if k in out] == EXPECTED_KEPT\nE       AssertionError: assert ['CLAUDE_CODE..., 'PATH', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 1 diff: 'GOOGLE_APPLICATION_CREDENTIALS' != 'AWS_ACCESS_KEY_ID'\nE         Right contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:144: AssertionError\n__________ test_the_table_holds_through_the_rebuild_gate_environment ___________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-4/test_the_table_holds_through_t1')\n\n    def test_the_table_holds_through_the_rebuild_gate_environment(tmp_path: Path) -> None:\n        out = gate_env(planted(), repo=tmp_path, worktree=tmp_path, project_rel=\".\")\n        # gate_env adds PYTHONPATH & co. and rewrites PATH/HOME-independent variables; of the 23 the\n        # kept names stay, the dropped never appear\n>       assert [k for k in planted() if k in out] == EXPECTED_KEPT\nE       AssertionError: assert ['CLAUDE_CODE..., 'PATH', ...] == ['CLAUDE_CODE..., 'HOME', ...]\nE         \nE         At index 1 diff: 'GOOGLE_APPLICATION_CREDENTIALS' != 'AWS_ACCESS_KEY_ID'\nE         Right contains one more item: 'CLAUDE_CODE_MAX_OUTPUT_TOKENS'\nE         Use -v to get more diff\n\ntests/llm/test_cli_env_scrub.py:151: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude\nFAILED tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order\nFAILED tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment\nFAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment\n6 failed, 92 passed in 5.71s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M7": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/modules/test_entry_summary.py::test_a_manifest_without_entry_prints_exactly_as_before",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\"-\"\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"1abc\"-\"1abc\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\\xe9\"-\"\\\\u00e9\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a..b\"-\"a..b\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a\\\\nb\"-\"a\\\\nb\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"pkg.\"-\"pkg.\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"x\\\\n"
+    ],
+    "summary": "9 failed, 89 passed in 5.71s",
+    "seconds": 6.0,
+    "tail": "summary.py:92: AssertionError\n_________ test_a_non_identifier_entry_is_json_quoted[\"\\xe9\"-\"\\\\u00e9\"] _________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-7/test_a_non_identifier_entry_is7')\ntoml_value = '\"\u00e9\"', shown = '\"\\\\u00e9\"'\n\n    @pytest.mark.parametrize(\n        (\"toml_value\", \"shown\"),\n        [\n            ('\"a\\\\nb\"', '\"a\\\\nb\"'),  # a newline\n            ('\"\"', '\"\"'),  # empty\n            ('\"x\\\\n  files:    99\"', '\"x\\\\n  files:    99\"'),  # forged summary line\n            ('\"a b\"', '\"a b\"'),\n            ('\"pkg.\"', '\"pkg.\"'),\n            ('\"1abc\"', '\"1abc\"'),\n            ('\"a..b\"', '\"a..b\"'),\n            ('\"\u00e9\"', '\"\\\\u00e9\"'),\n        ],\n    )\n    def test_a_non_identifier_entry_is_json_quoted(tmp_path: Path, toml_value: str, shown: str) -> None:\n        lines = summary(custom(tmp_path, f\"entry = {toml_value}\\n\"))\n        entries = [ln for ln in lines if ln.startswith(\"  entry:\")]\n>       assert entries == [f\"  entry:    {shown} {CODE}\"]\nE       assert ['  entry:   ... by install)'] == ['  entry:   ... by install)']\nE         \nE         At index 0 diff: '  entry:    \u00e9 (CODE: a Python module, main(argv); not imported by install)' != '  entry:    \"\\\\u00e9\" (CODE: a Python module, main(argv); not imported by install)'\nE         Use -v to get more diff\n\ntests/modules/test_entry_summary.py:92: AssertionError\n=========================== short test summary info ============================\nFAILED tests/modules/test_entry_summary.py::test_a_manifest_without_entry_prints_exactly_as_before\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a\\\\nb\"-\"a\\\\nb\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\"-\"\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"x\\\\n  files:    99\"-\"x\\\\n  files:    99\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a b\"-\"a b\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"pkg.\"-\"pkg.\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"1abc\"-\"1abc\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a..b\"-\"a..b\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\\xe9\"-\"\\\\u00e9\"]\n9 failed, 89 passed in 5.71s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M8": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/modules/test_entry_summary.py::test_a_dotted_entry_is_announced_as_code_right_after_requires",
+     "tests/modules/test_entry_summary.py::test_the_security_module_summary_gains_exactly_one_line"
+    ],
+    "summary": "2 failed, 96 passed in 5.65s",
+    "seconds": 5.9,
+    "tail": ".......................................................FF............... [ 73%]\n..........................                                               [100%]\n=================================== FAILURES ===================================\n________ test_a_dotted_entry_is_announced_as_code_right_after_requires _________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-8/test_a_dotted_entry_is_announc0')\n\n    def test_a_dotted_entry_is_announced_as_code_right_after_requires(tmp_path: Path) -> None:\n        lines = summary(custom(tmp_path, 'entry = \"evilentry\"\\n'))\n        i = next(n for n, ln in enumerate(lines) if ln.startswith(\"  requires:\"))\n>       assert lines[i + 1] == f\"  entry:    evilentry {CODE}\"\nE       AssertionError: assert '' == '  entry:    ...d by install)'\nE         \nE         -   entry:    evilentry (CODE: a Python module, main(argv); not imported by install)\n\ntests/modules/test_entry_summary.py:39: AssertionError\n___________ test_the_security_module_summary_gains_exactly_one_line ____________\n\n    def test_the_security_module_summary_gains_exactly_one_line() -> None:\n        d = ROOT / \"lattice/security/module\"\n        lines = summary(d)\n        i = next(n for n, ln in enumerate(lines) if ln.startswith(\"  requires:\"))\n        assert lines[i] == \"  requires: (nothing) (pip; not installed by Lattice)\"\n>       assert lines[i + 1] == f\"  entry:    lattice.security {CODE}\"\nE       AssertionError: assert '' == '  entry:    ...d by install)'\nE         \nE         -   entry:    lattice.security (CODE: a Python module, main(argv); not imported by install)\n\ntests/modules/test_entry_summary.py:49: AssertionError\n=========================== short test summary info ============================\nFAILED tests/modules/test_entry_summary.py::test_a_dotted_entry_is_announced_as_code_right_after_requires\nFAILED tests/modules/test_entry_summary.py::test_the_security_module_summary_gains_exactly_one_line\n2 failed, 96 passed in 5.65s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M9": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\"-\"\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"1abc\"-\"1abc\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\\xe9\"-\"\\\\u00e9\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a..b\"-\"a..b\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a\\\\nb\"-\"a\\\\nb\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"pkg.\"-\"pkg.\"]",
+     "tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"x\\\\n"
+    ],
+    "summary": "8 failed, 90 passed in 5.65s",
+    "seconds": 5.9,
+    "tail": " main(argv); not imported by install)'\nE         Use -v to get more diff\n\ntests/modules/test_entry_summary.py:92: AssertionError\n_________ test_a_non_identifier_entry_is_json_quoted[\"\\xe9\"-\"\\\\u00e9\"] _________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-9/test_a_non_identifier_entry_is7')\ntoml_value = '\"\u00e9\"', shown = '\"\\\\u00e9\"'\n\n    @pytest.mark.parametrize(\n        (\"toml_value\", \"shown\"),\n        [\n            ('\"a\\\\nb\"', '\"a\\\\nb\"'),  # a newline\n            ('\"\"', '\"\"'),  # empty\n            ('\"x\\\\n  files:    99\"', '\"x\\\\n  files:    99\"'),  # forged summary line\n            ('\"a b\"', '\"a b\"'),\n            ('\"pkg.\"', '\"pkg.\"'),\n            ('\"1abc\"', '\"1abc\"'),\n            ('\"a..b\"', '\"a..b\"'),\n            ('\"\u00e9\"', '\"\\\\u00e9\"'),\n        ],\n    )\n    def test_a_non_identifier_entry_is_json_quoted(tmp_path: Path, toml_value: str, shown: str) -> None:\n        lines = summary(custom(tmp_path, f\"entry = {toml_value}\\n\"))\n        entries = [ln for ln in lines if ln.startswith(\"  entry:\")]\n>       assert entries == [f\"  entry:    {shown} {CODE}\"]\nE       assert ['  entry:   ... by install)'] == ['  entry:   ... by install)']\nE         \nE         At index 0 diff: '  entry:    \u00e9 (CODE: a Python module, main(argv); not imported by install)' != '  entry:    \"\\\\u00e9\" (CODE: a Python module, main(argv); not imported by install)'\nE         Use -v to get more diff\n\ntests/modules/test_entry_summary.py:92: AssertionError\n=========================== short test summary info ============================\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a\\\\nb\"-\"a\\\\nb\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\"-\"\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"x\\\\n  files:    99\"-\"x\\\\n  files:    99\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a b\"-\"a b\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"pkg.\"-\"pkg.\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"1abc\"-\"1abc\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"a..b\"-\"a..b\"]\nFAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[\"\\xe9\"-\"\\\\u00e9\"]\n8 failed, 90 passed in 5.65s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M12": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded",
+     "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I11]",
+     "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]"
+    ],
+    "summary": "3 failed, 95 passed in 5.79s",
+    "seconds": 6.0,
+    "tail": "are case-sensitive)\",\nE            \"studio.toml: [mcp] allow_writes names \\\"claude_ai_linear\\\", which matches no server the discovery listed (names are case-sensitive)\",\nE            \"studio.toml: [mcp] allow_writes names \\\"claude.ai Linear\\\", which matches no server the discovery listed (names are case-sensitive)\"\nE           ],\nE           \"observed\": []\nE          }\nE         }\nE       assert not {'I11.warn': {'ok': False, 'expected': ['studio.toml: [mcp] allow_writes names \"claude.ai Nope\", which matches no serv...s names \"claude.ai Linear\", which matches no server the discovery listed (names are case-sensitive)'], 'observed': []}}\n\ntests/studio/test_mcp_intake_http.py:1221: AssertionError\n______________________ test_findings_evidence_is_recorded ______________________\n\npassed = {'exchanges': [{'instance': 'I0', 'label': '1', 'method': 'GET', 'path': '/api/mcp', ...}, {'instance': 'I0', 'label':...'I0.1.body': {'ok': True}, 'I0.1.disc': {'ok': True}, 'I0.2.bytes': {'ok': True}, 'I0.2.disc': {'ok': True}, ...}, ...}\n\n    def test_findings_evidence_is_recorded(passed: dict[str, Any]) -> None:\n        \"\"\"F1-F5 are reported, not pass/fail: this only pins the evidence's current values (after\n        the hardening: F2 scrubbed in 36 of 36 calls, F3 a failed server is not writable, F5 warned).\"\"\"\n        f = passed[\"findings\"]\n        assert f[\"F1_stub_note_says_no_claude_session\"] is True\n        assert f[\"F1_stub_chat_turns_that_ran_claude\"] == 2\n        assert (f[\"F2_wide_set_present_in_calls\"], f[\"F2_calls\"]) == (0, 36)\n        assert f[\"F3_notion_status\"] == \"failed\" and f[\"F3_notion_writes_allowed\"] is False\n        assert f[\"F3_notion_allowed_in\"] == {\"ask\": 0, \"explain\": 0, \"change\": 0}\n        assert set(f[\"F4_edge_reads\"]) >= {\n            X + \"search_and_replace\",\n            X + \"get_or_insert_row\",\n            X + \"fetch_and_archive\",\n        }\n        assert f[\"F5_linear_writes_allowed_with_wrong_case\"] is False\n>       assert f[\"F5_stderr_mentions_allow_writes_or_linear\"] is True\nE       assert False is True\n\ntests/studio/test_mcp_intake_http.py:1265: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]\nFAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I11]\nFAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded\n3 failed, 95 passed in 5.79s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M10": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[failed-True]",
+     "tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[needs-auth-True]",
+     "tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[pending-True]",
+     "tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded",
+     "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]",
+     "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I3]"
+    ],
+    "summary": "6 failed, 92 passed in 5.79s",
+    "seconds": 6.0,
+    "tail": "th', listed = True\n\n    @pytest.mark.parametrize(\"listed\", [True, False])\n    @pytest.mark.parametrize(\"status\", [\"connected\", \"pending\", \"needs-auth\", \"failed\"])\n    def test_writes_allowed_is_true_only_for_a_connected_listed_server(\n        tmp_path: Path, status: str, listed: bool\n    ) -> None:\n        it = intake(Fake(answer(srv(LINEAR, status))), [LINEAR] if listed else [], [], tmp_path)\n        view = it.view()\n        row = view[\"servers\"][0]\n>       assert row[\"writes_allowed\"] is (status == \"connected\" and listed)\nE       AssertionError: assert True is (('needs-auth' == 'connected'\nE         \nE         - connected\nE         + needs-auth))\n\ntests/studio/test_mcp_allow_writes_warn.py:215: AssertionError\n_ test_writes_allowed_is_true_only_for_a_connected_listed_server[failed-True] __\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-11/test_writes_allowed_is_true_on6')\nstatus = 'failed', listed = True\n\n    @pytest.mark.parametrize(\"listed\", [True, False])\n    @pytest.mark.parametrize(\"status\", [\"connected\", \"pending\", \"needs-auth\", \"failed\"])\n    def test_writes_allowed_is_true_only_for_a_connected_listed_server(\n        tmp_path: Path, status: str, listed: bool\n    ) -> None:\n        it = intake(Fake(answer(srv(LINEAR, status))), [LINEAR] if listed else [], [], tmp_path)\n        view = it.view()\n        row = view[\"servers\"][0]\n>       assert row[\"writes_allowed\"] is (status == \"connected\" and listed)\nE       AssertionError: assert True is (('failed' == 'connected'\nE         \nE         - connected\nE         + failed))\n\ntests/studio/test_mcp_allow_writes_warn.py:215: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]\nFAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I3]\nFAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[pending-True]\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[needs-auth-True]\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[failed-True]\n6 failed, 92 passed in 5.79s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M11": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[needs-auth-True]",
+     "tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[pending-True]",
+     "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]"
+    ],
+    "summary": "3 failed, 95 passed in 5.81s",
+    "seconds": 6.0,
+    "tail": "test_writes_allowed_is_true_only_for_a_connected_listed_server[pending-True] _\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-12/test_writes_allowed_is_true_on2')\nstatus = 'pending', listed = True\n\n    @pytest.mark.parametrize(\"listed\", [True, False])\n    @pytest.mark.parametrize(\"status\", [\"connected\", \"pending\", \"needs-auth\", \"failed\"])\n    def test_writes_allowed_is_true_only_for_a_connected_listed_server(\n        tmp_path: Path, status: str, listed: bool\n    ) -> None:\n        it = intake(Fake(answer(srv(LINEAR, status))), [LINEAR] if listed else [], [], tmp_path)\n        view = it.view()\n        row = view[\"servers\"][0]\n>       assert row[\"writes_allowed\"] is (status == \"connected\" and listed)\nE       AssertionError: assert True is (('pending' == 'connected'\nE         \nE         - connected\nE         + pending))\n\ntests/studio/test_mcp_allow_writes_warn.py:215: AssertionError\n_ test_writes_allowed_is_true_only_for_a_connected_listed_server[needs-auth-True] _\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-12/test_writes_allowed_is_true_on4')\nstatus = 'needs-auth', listed = True\n\n    @pytest.mark.parametrize(\"listed\", [True, False])\n    @pytest.mark.parametrize(\"status\", [\"connected\", \"pending\", \"needs-auth\", \"failed\"])\n    def test_writes_allowed_is_true_only_for_a_connected_listed_server(\n        tmp_path: Path, status: str, listed: bool\n    ) -> None:\n        it = intake(Fake(answer(srv(LINEAR, status))), [LINEAR] if listed else [], [], tmp_path)\n        view = it.view()\n        row = view[\"servers\"][0]\n>       assert row[\"writes_allowed\"] is (status == \"connected\" and listed)\nE       AssertionError: assert True is (('needs-auth' == 'connected'\nE         \nE         - connected\nE         + needs-auth))\n\ntests/studio/test_mcp_allow_writes_warn.py:215: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[pending-True]\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[needs-auth-True]\n3 failed, 95 passed in 5.81s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M15": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_mcp_allow_writes_warn.py::test_no_line_on_error_empty_or_pending[a-pending-server]"
+    ],
+    "summary": "1 failed, 97 passed in 5.67s",
+    "seconds": 5.9,
+    "tail": "........................................................................ [ 73%]\n........F.................                                               [100%]\n=================================== FAILURES ===================================\n___________ test_no_line_on_error_empty_or_pending[a-pending-server] ___________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-13/test_no_line_on_error_empty_or3')\nd = {'servers': [{'name': 'claude.ai Linear', 'status': 'connected', 'source': 'claudeai', 'tools': {'read': ['mcp__claude...ng', 'source': 'claudeai', 'tools': {'read': [], 'write': [], 'unknown': []}}], 'refreshed_at': '2026-10-16T00:00:00Z'}\n\n    @pytest.mark.parametrize(\n        \"d\",\n        [\n            answer(srv(LINEAR), error=\"boom\"),\n            answer(error=\"no init record (the claude process ended or timed out first)\"),\n            answer(),\n            answer(srv(LINEAR), srv(\"claude.ai Gmail\", \"pending\")),\n        ],\n        ids=[\"error-with-servers\", \"error\", \"no-servers\", \"a-pending-server\"],\n    )\n    def test_no_line_on_error_empty_or_pending(tmp_path: Path, d: dict[str, Any]) -> None:\n        lines: list[str] = []\n        intake(Fake(d), [\"claude.ai linear\", \"nope\"], lines, tmp_path).view()\n>       assert lines == []\nE       assert ['studio.toml...e-sensitive)'] == []\nE         \nE         Left contains 2 more items, first extra item: 'studio.toml: [mcp] allow_writes names \"claude.ai linear\", which matches no server the discovery listed (names are case-sensitive; did you mean \"claude.ai Linear\"?)'\nE         Use -v to get more diff\n\ntests/studio/test_mcp_allow_writes_warn.py:129: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_no_line_on_error_empty_or_pending[a-pending-server]\n1 failed, 97 passed in 5.67s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M13": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_mcp_allow_writes_warn.py::test_a_matching_name_and_its_prefix_form_do_not_warn",
+     "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]"
+    ],
+    "summary": "2 failed, 96 passed in 5.71s",
+    "seconds": 5.9,
+    "tail": "_intake_http.py:1227: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nchecks = {'I2.1.body': {'ok': True}, 'I2.1.disc': {'ok': True}, 'I2.warn': {'ok': False, 'expected': [], 'observed': ['studio.t..._Linear\", which matches no server the discovery listed (names are case-sensitive; did you mean \"claude.ai Linear\"?)']}}\nat_least = 2\n\n    def _assert_ok(checks: Mapping[str, Any], at_least: int) -> None:\n        bad = {k: v for k, v in checks.items() if not v[\"ok\"]}\n        assert len(checks) >= at_least, f\"only {len(checks)} checks ran\"\n>       assert not bad, json.dumps(bad, indent=1)[:4000]\nE       AssertionError: {\nE          \"I2.warn\": {\nE           \"ok\": false,\nE           \"expected\": [],\nE           \"observed\": [\nE            \"studio.toml: [mcp] allow_writes names \\\"claude_ai_Linear\\\", which matches no server the discovery listed (names are case-sensitive; did you mean \\\"claude.ai Linear\\\"?)\"\nE           ]\nE          }\nE         }\nE       assert not {'I2.warn': {'ok': False, 'expected': [], 'observed': ['studio.toml: [mcp] allow_writes names \"claude_ai_Linear\", which matches no server the discovery listed (names are case-sensitive; did you mean \"claude.ai Linear\"?)']}}\n\ntests/studio/test_mcp_intake_http.py:1221: AssertionError\n_____________ test_a_matching_name_and_its_prefix_form_do_not_warn _____________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-14/test_a_matching_name_and_its_p0')\n\n    def test_a_matching_name_and_its_prefix_form_do_not_warn(tmp_path: Path) -> None:\n        lines: list[str] = []\n        it = intake(Fake(answer(srv(LINEAR))), [LINEAR, \"claude_ai_Linear\"], lines, tmp_path)\n        it.view()\n>       assert lines == []\nE       assert ['studio.toml...ai Linear\"?)'] == []\nE         \nE         Left contains one more item: 'studio.toml: [mcp] allow_writes names \"claude_ai_Linear\", which matches no server the discovery listed (names are case-sensitive; did you mean \"claude.ai Linear\"?)'\nE         Use -v to get more diff\n\ntests/studio/test_mcp_allow_writes_warn.py:102: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_a_matching_name_and_its_prefix_form_do_not_warn\n2 failed, 96 passed in 5.71s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M14": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_mcp_allow_writes_warn.py::test_a_changed_listed_set_warns_again_and_a_back_and_forth_does_not",
+     "tests/studio/test_mcp_allow_writes_warn.py::test_concurrent_discoveries_report_a_name_once",
+     "tests/studio/test_mcp_allow_writes_warn.py::test_the_listed_set_is_the_names_not_their_order_or_status",
+     "tests/studio/test_mcp_allow_writes_warn.py::test_the_same_discovery_three_times_gives_one_line",
+     "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I11]",
+     "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]"
+    ],
+    "summary": "6 failed, 92 passed in 5.81s",
+    "seconds": 6.0,
+    "tail": "def test_the_listed_set_is_the_names_not_their_order_or_status(tmp_path: Path) -> None:\n        lines: list[str] = []\n        fake = Fake(answer(srv(LINEAR), srv(\"claude.ai Gmail\")))\n        it = intake(fake, [\"nope\"], lines, tmp_path)\n        it.view()\n        fake.d = answer(srv(\"claude.ai Gmail\", \"failed\"), srv(LINEAR, \"needs-auth\"))\n        it.view()\n>       assert lines == [line(\"nope\")]\nE       assert ['studio.toml...e-sensitive)'] == ['studio.toml...e-sensitive)']\nE         \nE         Left contains one more item: 'studio.toml: [mcp] allow_writes names \"nope\", which matches no server the discovery listed (names are case-sensitive)'\nE         Use -v to get more diff\n\ntests/studio/test_mcp_allow_writes_warn.py:167: AssertionError\n________________ test_concurrent_discoveries_report_a_name_once ________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-15/test_concurrent_discoveries_re0')\n\n    def test_concurrent_discoveries_report_a_name_once(tmp_path: Path) -> None:\n        lines: list[str] = []\n        it = intake(Fake(answer(srv(LINEAR))), [\"nope\"], lines, tmp_path)\n        ts = [threading.Thread(target=it.view) for _ in range(8)]\n        for t in ts:\n            t.start()\n        for t in ts:\n            t.join()\n>       assert lines == [line(\"nope\")]\nE       assert ['studio.toml...sitive)', ...] == ['studio.toml...e-sensitive)']\nE         \nE         Left contains 7 more items, first extra item: 'studio.toml: [mcp] allow_writes names \"nope\", which matches no server the discovery listed (names are case-sensitive)'\nE         Use -v to get more diff\n\ntests/studio/test_mcp_allow_writes_warn.py:197: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]\nFAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I11]\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_the_same_discovery_three_times_gives_one_line\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_a_changed_listed_set_warns_again_and_a_back_and_forth_does_not\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_the_listed_set_is_the_names_not_their_order_or_status\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_concurrent_discoveries_report_a_name_once\n6 failed, 92 passed in 5.81s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  },
+  "HD-M16": {
+   "pytest": {
+    "exit": 1,
+    "failed": [
+     "tests/studio/test_mcp_allow_writes_warn.py::test_matching_stays_exact_so_a_wrong_case_name_opens_nothing",
+     "tests/studio/test_mcp_allow_writes_warn.py::test_the_exact_line_with_and_without_a_hint",
+     "tests/studio/test_mcp_allow_writes_warn.py::test_the_first_listed_display_name_is_the_hint",
+     "tests/studio/test_mcp_allow_writes_warn.py::test_the_hint_comes_from_the_prefix_form",
+     "tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded",
+     "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I11]",
+     "tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]",
+     "tests/studio/test_mcp_intake_http.py::test_h_argv_invariant_holds_on_every_turn[allowed_external_read]",
+     "tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]"
+    ],
+    "summary": "9 failed, 89 passed in 5.56s",
+    "seconds": 5.8,
+    "tail": "nt ________________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-16/test_the_first_listed_display_0')\n\n    def test_the_first_listed_display_name_is_the_hint(tmp_path: Path) -> None:\n        lines: list[str] = []\n        two = answer(srv(\"claude.ai LINEAR\"), srv(LINEAR))\n        intake(Fake(two), [\"claude.ai linear\"], lines, tmp_path).view()\n>       assert lines == [line(\"claude.ai linear\", \"claude.ai LINEAR\")]\nE       assert [] == ['studio.toml...ai LINEAR\"?)']\nE         \nE         Right contains one more item: 'studio.toml: [mcp] allow_writes names \"claude.ai linear\", which matches no server the discovery listed (names are case-sensitive; did you mean \"claude.ai LINEAR\"?)'\nE         Use -v to get more diff\n\ntests/studio/test_mcp_allow_writes_warn.py:95: AssertionError\n_________ test_matching_stays_exact_so_a_wrong_case_name_opens_nothing _________\n\ntmp_path = PosixPath('/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/tmp/pytest-of-vivekgade/pytest-16/test_matching_stays_exact_so_a0')\n\n    def test_matching_stays_exact_so_a_wrong_case_name_opens_nothing(tmp_path: Path) -> None:\n        it = intake(Fake(answer(srv(LINEAR))), [\"claude.ai linear\"], [], tmp_path)\n>       assert it.view()[\"servers\"][0][\"writes_allowed\"] is False\nE       assert True is False\n\ntests/studio/test_mcp_allow_writes_warn.py:202: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]\nFAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I11]\nFAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]\nFAILED tests/studio/test_mcp_intake_http.py::test_h_argv_invariant_holds_on_every_turn[allowed_external_read]\nFAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_the_exact_line_with_and_without_a_hint\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_the_hint_comes_from_the_prefix_form\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_the_first_listed_display_name_is_the_hint\nFAILED tests/studio/test_mcp_allow_writes_warn.py::test_matching_stays_exact_so_a_wrong_case_name_opens_nothing\n9 failed, 89 passed in 5.56s\n"
+   },
+   "dogfood": {
+    "exit": 0,
+    "seconds": 0,
+    "summary": "not run (not a catcher)",
+    "first_failures": []
+   },
+   "caught_by": [
+    "pytest"
+   ],
+   "verdict": "caught"
+  }
+ }
+}

@@ -1,0 +1,112 @@
+hashes: {"lattice/llm/cli_client.py": "bd3871e795ddef9a", "lattice/studio/mcp_intake.py": "39c0688f9381c8e9", "lattice/studio/server.py": "daa63886ce05b556", "lattice/modules/__init__.py": "40814511a6e03017", "tests/studio/test_mcp_intake_http.py": "022c95146a8773e4", "tests/llm/test_cli_env_scrub.py": "f8e43842ef53c933", "tests/modules/test_entry_summary.py": "3c3d450c72d2c3e5", "tests/studio/test_mcp_allow_writes_warn.py": "51fe0075b63f510c", "tests/studio/test_hardening_mutants.py": "48db835dcdd1fb10"}
+control: PASS (control)
+HD-M2: caught by ['pytest']; pytest exit 1 (6 failed, 92 passed in 5.60s; 5.8s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order
+    FAILED tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude
+HD-M3: caught by ['pytest']; pytest exit 1 (6 failed, 92 passed in 5.64s; 5.9s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order
+    FAILED tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude
+HD-M1: caught by ['pytest']; pytest exit 1 (7 failed, 91 passed in 5.70s; 5.9s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order
+    FAILED tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment
+    FAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude
+HD-M5: caught by ['pytest']; pytest exit 1 (5 failed, 93 passed in 5.58s; 5.8s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order
+    FAILED tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment
+HD-M6: caught by ['pytest']; pytest exit 1 (15 failed, 83 passed in 5.59s; 5.8s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/modules/test_entry_summary.py::test_a_dotted_entry_is_announced_as_code_right_after_requires
+    FAILED tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[_x.y_2.Z]
+    FAILED tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[a]
+    FAILED tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[lattice.security]
+    FAILED tests/modules/test_entry_summary.py::test_a_dotted_name_is_shown_bare[pkg.mod]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[""-""]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["1abc"-"1abc"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["\xe9"-"\\u00e9"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["a
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["a..b"-"a..b"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["a\\nb"-"a\\nb"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["pkg."-"pkg."]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["x\\n
+    FAILED tests/modules/test_entry_summary.py::test_install_prints_the_entry_line_and_still_asks
+    FAILED tests/modules/test_entry_summary.py::test_the_security_module_summary_gains_exactly_one_line
+HD-M4: caught by ['pytest']; pytest exit 1 (6 failed, 92 passed in 5.71s; 5.9s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/llm/test_cli_env_scrub.py::test_cli_env_keeps_exactly_the_kept_names_in_input_order
+    FAILED tests/llm/test_cli_env_scrub.py::test_cli_env_matches_case_sensitively_and_by_prefix
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_client
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_discovery_environment
+    FAILED tests/llm/test_cli_env_scrub.py::test_the_table_holds_through_the_rebuild_gate_environment
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_env_no_credentials_reach_claude
+HD-M7: caught by ['pytest']; pytest exit 1 (9 failed, 89 passed in 5.71s; 6.0s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/modules/test_entry_summary.py::test_a_manifest_without_entry_prints_exactly_as_before
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[""-""]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["1abc"-"1abc"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["\xe9"-"\\u00e9"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["a
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["a..b"-"a..b"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["a\\nb"-"a\\nb"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["pkg."-"pkg."]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["x\\n
+HD-M8: caught by ['pytest']; pytest exit 1 (2 failed, 96 passed in 5.65s; 5.9s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/modules/test_entry_summary.py::test_a_dotted_entry_is_announced_as_code_right_after_requires
+    FAILED tests/modules/test_entry_summary.py::test_the_security_module_summary_gains_exactly_one_line
+HD-M9: caught by ['pytest']; pytest exit 1 (8 failed, 90 passed in 5.65s; 5.9s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted[""-""]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["1abc"-"1abc"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["\xe9"-"\\u00e9"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["a
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["a..b"-"a..b"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["a\\nb"-"a\\nb"]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["pkg."-"pkg."]
+    FAILED tests/modules/test_entry_summary.py::test_a_non_identifier_entry_is_json_quoted["x\\n
+HD-M12: caught by ['pytest']; pytest exit 1 (3 failed, 95 passed in 5.79s; 6.0s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I11]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]
+HD-M10: caught by ['pytest']; pytest exit 1 (6 failed, 92 passed in 5.79s; 6.0s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[failed-True]
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[needs-auth-True]
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[pending-True]
+    FAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I3]
+HD-M11: caught by ['pytest']; pytest exit 1 (3 failed, 95 passed in 5.81s; 6.0s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[needs-auth-True]
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_writes_allowed_is_true_only_for_a_connected_listed_server[pending-True]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I1]
+HD-M15: caught by ['pytest']; pytest exit 1 (1 failed, 97 passed in 5.67s; 5.9s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_no_line_on_error_empty_or_pending[a-pending-server]
+HD-M13: caught by ['pytest']; pytest exit 1 (2 failed, 96 passed in 5.71s; 5.9s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_a_matching_name_and_its_prefix_form_do_not_warn
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I2]
+HD-M14: caught by ['pytest']; pytest exit 1 (6 failed, 92 passed in 5.81s; 6.0s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_a_changed_listed_set_warns_again_and_a_back_and_forth_does_not
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_concurrent_discoveries_report_a_name_once
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_the_listed_set_is_the_names_not_their_order_or_status
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_the_same_discovery_three_times_gives_one_line
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I11]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]
+HD-M16: caught by ['pytest']; pytest exit 1 (9 failed, 89 passed in 5.56s; 5.8s); dogfood exit 0 (not run (not a catcher); 0s)
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_matching_stays_exact_so_a_wrong_case_name_opens_nothing
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_the_exact_line_with_and_without_a_hint
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_the_first_listed_display_name_is_the_hint
+    FAILED tests/studio/test_mcp_allow_writes_warn.py::test_the_hint_comes_from_the_prefix_form
+    FAILED tests/studio/test_mcp_intake_http.py::test_findings_evidence_is_recorded
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I11]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_api_instance_bodies_and_discovery_counts[I5]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_invariant_holds_on_every_turn[allowed_external_read]
+    FAILED tests/studio/test_mcp_intake_http.py::test_h_argv_turn_lists_are_exact[I5.change]

@@ -1,0 +1,33 @@
+=================================== FAILURES ===================================
+___________________ test_prefix_routing_and_the_bare_default ___________________
+
+two = ('http://127.0.0.1:54679', <lattice.studio.server.StudioServer object at 0x10ccd9c10>, PosixPath('/private/tmp/claude-...kgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/pt-post/test_prefix_routing_and_the_ba0/b'))
+
+    def test_prefix_routing_and_the_bare_default(two) -> None:
+        base, srv, a, _b = two
+        status, m_bare = request("GET", base + "/api/model")
+        status2, m_a = request("GET", base + "/p/a/api/model")
+        assert status == status2 == 200
+        assert m_bare == m_a and m_a["project"]["name"] == "a"
+        assert srv.hub.loaded("b") is None, "only the touched project is built"
+        _, m_b = request("GET", base + "/p/b/api/model")
+>       assert m_b["project"] == {**m_a["project"], "name": "b", "root": m_b["project"]["root"]}
+E       AssertionError: assert {'name': 'b',...d': 'd4dcfce'} == {'name': 'b',...d': '85a067f'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'git_head': 'd4dcfce'} != {'git_head': '85a067f'}
+E         Use -v to get more diff
+
+tests/studio/test_projects.py:234: AssertionError
+----------------------------- Captured stderr call -----------------------------
+[studio 12:54:51] model built in 0.01s
+[studio 12:54:51] model built in 0.01s
+=========================== short test summary info ============================
+FAILED tests/studio/test_projects.py::test_prefix_routing_and_the_bare_default
+1 failed, 1237 passed, 1 skipped, 4 deselected in 457.53s (0:07:37)
+pytest-post exit 1 458s
+check-post exit 0 59s
+mh exit 1 0s
+hdm exit 0 44s
+done

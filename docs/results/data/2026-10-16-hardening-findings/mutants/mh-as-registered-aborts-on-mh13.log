@@ -1,0 +1,2 @@
+hashes: {"lattice/studio/mcp_intake.py": "39c0688f9381c8e9", "lattice/studio/session.py": "2079d71ee794bf0e", "lattice/studio/server.py": "daa63886ce05b556", "dogfood/studio/spec.py": "04e57c878978831c", "dogfood/studio/spec.trace.json": "0ca8804fca5db711", "tests/studio/test_mcp_intake_http.py": "022c95146a8773e4", "tests/studio/test_mcp_intake_mutants.py": "53897482c9c7bb57"}
+MH-13: the patched text occurs 0 times in lattice/studio/session.py (must be once)

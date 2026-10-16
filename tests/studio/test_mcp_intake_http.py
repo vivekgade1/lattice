@@ -10,10 +10,17 @@ can see. No real ``claude``, no API key, no connector, nothing beyond 127.0.0.1.
 What it pins (pre-registered in ``docs/results/2026-10-15-mcp-http-prereg.md``, with its
 Amendment 1):
 
-* H-api: ``GET /api/mcp`` bodies and discovery counts, instances I0-I10;
-* H-argv: the exact ``--allowedTools`` / ``--disallowedTools`` of every chat turn (17 turns),
+* H-api: ``GET /api/mcp`` bodies and discovery counts, instances I0-I11;
+* H-argv: the exact ``--allowedTools`` / ``--disallowedTools`` of every chat turn (18 turns),
   and the invariants of every chat argv;
-* H-env: no credential reaches the fake, in the 32 calls (15 discoveries, 17 turns) of a pass.
+* H-env: no credential reaches the fake, in the 36 calls (18 discoveries, 18 turns) of a pass;
+* H-warn: the unmatched ``[mcp] allow_writes`` warning lines on stderr, per instance.
+
+Hardening (``docs/results/2026-10-16-hardening-findings-prereg.md``, with its Amendment 1):
+every server also gets EXTRA (``ANTHROPIC_*`` names beyond the old three, scrubbed) and KEEP
+(``CLAUDE_CODE_OAUTH_TOKEN``, ``AWS_ACCESS_KEY_ID``, ``GOOGLE_APPLICATION_CREDENTIALS``,
+deliberately kept); a listed server that is not connected shows ``writes_allowed: false``
+(instances I1, I3); instance I11 exercises the once-per-(name, listed set) warning.
 
 The tool lists of ``lattice`` (L_ASK, L_CHG) are the ones at ``a4ab4a1`` (Amendment 1.B). The
 fake does not enforce ``--allowedTools``: it shows the list Studio computes, not what the real
@@ -103,6 +110,32 @@ WIDE_ENV = {
     "ANTHROPIC_FOUNDRY_API_KEY": "G9WIDE",
     "AWS_BEARER_TOKEN_BEDROCK": "G9WIDE",
 }
+# hardening (HD-1): the rest of the ANTHROPIC_ namespace is scrubbed too ...
+EXTRA_ENV = {
+    "ANTHROPIC_VERTEX_PROJECT_ID": "G9WIDE-vertex",
+    "ANTHROPIC_BEDROCK_BASE_URL": "http://127.0.0.1:9/G9WIDE",
+    "ANTHROPIC_FOUNDRY_RESOURCE": "G9WIDE-foundry",
+    "ANTHROPIC_MODEL": "G9WIDE-model",
+    "ANTHROPIC_G9_UNLISTED": "G9WIDE-unlisted",
+}
+# ... and these are kept, by decision D1 (subscription login, generic cloud credentials)
+KEEP_ENV = {
+    "CLAUDE_CODE_OAUTH_TOKEN": "G9KEEP-oauth",
+    "AWS_ACCESS_KEY_ID": "G9KEEP-aws",
+    "GOOGLE_APPLICATION_CREDENTIALS": "/nonexistent/G9KEEP.json",
+}
+
+# the unmatched-allow_writes warning (HD-4, decision D4), as it appears after the log prefix
+WARN_HEAD = "studio.toml: [mcp] allow_writes names "
+WARN_MARK = 'allow_writes names "'
+_WARN_PREFIX = re.compile(r"^\[studio \d\d:\d\d:\d\d\] ")
+
+
+def warn_line(name: str, hint: str | None = None) -> str:
+    """The exact warning for an unmatched `name` (written out, not computed by Studio)."""
+    tail = "names are case-sensitive" + (f'; did you mean "{hint}"?' if hint else "")
+    return f'{WARN_HEAD}"{name}", which matches no server the discovery listed ({tail})'
+
 
 # ---- the fixtures ---------------------------------------------------------------------------
 
@@ -224,12 +257,8 @@ R_DRIVE = row("claude.ai Google Drive", "needs-auth", [], [], [], (0, 0, 0))
 R_NOTION = row(
     "claude.ai Notion", "failed", names(N, "search"), names(N, "create_page"), [], (0, 0, 0)
 )
-R_NOTION_W = row(
-    "claude.ai Notion", "failed", names(N, "search"), names(N, "create_page"), [], (0, 0, 0), True
-)
 R_GITHUB = row("plugin:github:github", "failed", [], [], [], (0, 0, 0))
 R_LINEAR_AUTH = row("claude.ai Linear", "needs-auth", [], [], [], (0, 0, 0))
-R_LINEAR_AUTH_W = row("claude.ai Linear", "needs-auth", [], [], [], (0, 0, 0), True)
 R_GMAIL_PENDING = row("claude.ai Gmail", "pending", [], [], [], (0, 0, 0))
 R_EDGE = row(
     "claude.ai Edge",
@@ -252,9 +281,7 @@ def body(servers: list[dict[str, Any]], a: int, e: int, c: int, **extra: Any) ->
 
 A0 = body([R_GMAIL, R_LINEAR, R_DOCS, R_DRIVE, R_NOTION, R_GITHUB], 7, 7, 7)
 A1 = body([R_GMAIL, R_LINEAR_W, R_DOCS, R_DRIVE, R_NOTION, R_GITHUB], 7, 7, 10)
-A3 = body([R_GMAIL, R_LINEAR, R_DOCS, R_DRIVE, R_NOTION_W, R_GITHUB], 7, 7, 7)
 B0 = body([R_GMAIL, R_LINEAR_AUTH, R_DOCS, R_DRIVE, R_NOTION, R_GITHUB], 5, 5, 5)
-B1 = body([R_GMAIL, R_LINEAR_AUTH_W, R_DOCS, R_DRIVE, R_NOTION, R_GITHUB], 5, 5, 5)
 P0 = body([R_GMAIL_PENDING, R_LINEAR, R_DOCS, R_DRIVE, R_NOTION, R_GITHUB], 5, 5, 5)
 D0 = body([R_EDGE], 4, 4, 4)
 E0 = body([], 0, 0, 0, error="no init record (the claude process ended or timed out first)")
@@ -345,10 +372,11 @@ TURNS: dict[str, tuple[str, str, list[str], list[str], int, int]] = {
     "I8.ask": ("I8", "ask", L_ASK, BD, 17, 5),
     "I10.ask": ("I10", "ask", L_ASK, BD, 17, 5),
     "I10.change": ("I10", "change", L_CHG, BD, 20, 5),
+    "I11.change": ("I11", "change", L_CHG + X4, BD + X3, 24, 8),
 }
 for _tid, (_i, _m, _a, _d, _na, _nd) in TURNS.items():
     assert (len(_a), len(_d)) == (_na, _nd), _tid
-assert len(TURNS) == 17
+assert len(TURNS) == 18
 
 # instance -> prefixes of the connected servers whose write tools [mcp] allow_writes opens
 OPENED = {"I1": {L}, "I2": {L}}
@@ -370,7 +398,7 @@ INVARIANTS = (
     "studio_url",
     "prompt_data_not_instructions",
 )
-GROUPS = tuple(f"I{i}" for i in range(11))
+GROUPS = tuple(f"I{i}" for i in range(12))
 
 # ---- the HTTP client and the instance -------------------------------------------------------
 
@@ -437,8 +465,10 @@ class Instance:
         noinit: bool = False,
         stub: bool = False,
         missing_claude: bool = False,
+        warn: Sequence[str] = (),
     ) -> None:
         self.ctx, self.name, self.stub = ctx, name, stub
+        self.expect_warn = list(warn)  # the unmatched-allow_writes lines, in order
         self.fixture = fixture
         self.scratch = ctx.dir / name
         self.bin = self.scratch / "bin" / "claude"
@@ -488,6 +518,8 @@ class Instance:
             "FAKE_CLAUDE_INIT": str(self.init),
             **CORE_ENV,
             **WIDE_ENV,
+            **EXTRA_ENV,
+            **KEEP_ENV,
         }
         if self.noinit:
             env["FAKE_CLAUDE_MODE"] = "noinit"
@@ -535,6 +567,9 @@ class Instance:
                 self.proc.wait()
         self.ctx.timing[self.name] = round(time.monotonic() - self.t0, 2)
         self.ctx.calls.extend(self.calls())
+        got = self.warnings()
+        self.ctx.notes.setdefault("warnings", {})[self.name] = got
+        self.ctx.check(f"{self.name}.warn", got == self.expect_warn, self.expect_warn, got)
 
     @property
     def base(self) -> str:
@@ -558,6 +593,15 @@ class Instance:
 
     def stderr(self) -> str:
         return self.stderr_path.read_text(errors="replace")
+
+    def warnings(self) -> list[str]:
+        """The unmatched-allow_writes lines on stderr, without the ``[studio hh:mm:ss]``
+        prefix (a line without that prefix is returned whole, so a malformed one fails)."""
+        return [
+            _WARN_PREFIX.sub("", ln, count=1)
+            for ln in self.stderr().splitlines()
+            if WARN_MARK in ln
+        ]
 
     # -- requests
     def req(self, label: str, method: str, path: str, body_obj: Any = None) -> tuple[int, bytes]:
@@ -789,7 +833,7 @@ def probe_i1(ctx: Ctx) -> None:
         disc_is(ctx, "I1.2.disc", s, 1)
         s.set_fixture(FIXTURE_B)
         st, r = s.req("3", "GET", "/api/mcp?refresh=1")
-        exact(ctx, "I1.3.body", r, st, 200, B1)
+        exact(ctx, "I1.3.body", r, st, 200, B0)  # needs-auth: writes_allowed false
         disc_is(ctx, "I1.3.disc", s, 2)
         s.turn("I1.change_B", "change")
 
@@ -805,7 +849,7 @@ def probe_i2(ctx: Ctx) -> None:
 def probe_i3(ctx: Ctx) -> None:
     with ctx.instance("I3", fixture=FIXTURE_A, allow_writes=["claude.ai Notion"]) as s:
         st, r = s.req("1", "GET", "/api/mcp")
-        exact(ctx, "I3.1.body", r, st, 200, A3)
+        exact(ctx, "I3.1.body", r, st, 200, A0)  # a failed server shows writes_allowed false
         disc_is(ctx, "I3.1.disc", s, 1)
         s.turn("I3.change", "change")
 
@@ -820,7 +864,8 @@ def probe_i4(ctx: Ctx) -> None:
 
 
 def probe_i5(ctx: Ctx) -> None:
-    with ctx.instance("I5", fixture=FIXTURE_A, allow_writes=["claude.ai linear"]) as s:
+    one = [warn_line("claude.ai linear", "claude.ai Linear")]
+    with ctx.instance("I5", fixture=FIXTURE_A, allow_writes=["claude.ai linear"], warn=one) as s:
         st, r = s.req("1", "GET", "/api/mcp")
         exact(ctx, "I5.1.body", r, st, 200, A0)
         disc_is(ctx, "I5.1.disc", s, 1)
@@ -893,6 +938,33 @@ def probe_i10(ctx: Ctx) -> None:
         ctx.notes["F1_stub_chat_turns_that_ran_claude"] = n_turn
 
 
+def probe_i11(ctx: Ctx) -> None:
+    """A wrong name, a prefix-form name in the wrong case, a right name and a duplicate: the
+    warning is once per (name, listed set), with the hint only when a listed name matches
+    case-insensitively."""
+    allow = ["claude.ai Nope", "claude_ai_linear", "claude.ai Linear", "claude.ai Linear"]
+    want = [
+        warn_line("claude.ai Nope"),  # discovery 1 (fixture A)
+        warn_line("claude_ai_linear", "claude.ai Linear"),
+        warn_line("claude.ai Nope"),  # discovery 3 (fixture D: another listed set)
+        warn_line("claude_ai_linear"),
+        warn_line("claude.ai Linear"),
+    ]
+    with ctx.instance("I11", fixture=FIXTURE_A, allow_writes=allow, warn=want) as s:
+        st, r = s.req("1", "GET", "/api/mcp")
+        exact(ctx, "I11.1.body", r, st, 200, A1)
+        disc_is(ctx, "I11.1.disc", s, 1)
+        st, r = s.req("2", "GET", "/api/mcp?refresh=1")
+        exact(ctx, "I11.2.body", r, st, 200, A1)
+        disc_is(ctx, "I11.2.disc", s, 2)
+        s.set_fixture(FIXTURE_D)
+        st, r = s.req("3", "GET", "/api/mcp?refresh=1")
+        exact(ctx, "I11.3.body", r, st, 200, D0)
+        disc_is(ctx, "I11.3.disc", s, 3)
+        s.turn("I11.change", "change")
+        disc_is(ctx, "I11.4.disc", s, 3)
+
+
 PROBES = (
     probe_i0,
     probe_i1,
@@ -905,6 +977,7 @@ PROBES = (
     probe_i8,
     probe_i9,
     probe_i10,
+    probe_i11,
 )
 
 
@@ -921,8 +994,12 @@ def call_summary(ctx: Ctx, c: Mapping[str, Any]) -> dict[str, Any]:
         == str((ctx.dir / c["instance"] / PROJECT).resolve()),
         "core_present": sorted(k for k in CORE_ENV if k in env),
         "wide_present": sorted(k for k in WIDE_ENV if k in env),
+        "extra_present": sorted(k for k in EXTRA_ENV if k in env),
+        "keep_kept": sorted(k for k, v in KEEP_ENV.items() if env.get(k) == v),
         "g9probe_in_env": any("G9PROBE" in str(v) for v in env.values()),
         "g9probe_in_argv": any("G9PROBE" in a for a in c["argv"]),
+        "g9wide_in_env": any("G9WIDE" in str(v) for v in env.values()),
+        "g9wide_in_argv": any("G9WIDE" in a for a in c["argv"]),
         "nonblocking_is_false": env.get("MCP_CONNECTION_NONBLOCKING") == "false",
         "max_output_present": "CLAUDE_CODE_MAX_OUTPUT_TOKENS" in env,
         "max_output_is_32000": env.get("CLAUDE_CODE_MAX_OUTPUT_TOKENS") == "32000",
@@ -936,9 +1013,9 @@ def finalize(ctx: Ctx) -> None:
     ctx.notes["call_summaries"] = sums
     turns = [s for s in sums if s["kind"] == "turn"]
     discs = [s for s in sums if s["kind"] == "discovery"]
-    ctx.check("count.turns", len(turns) == 17, 17, len(turns))
-    ctx.check("count.discoveries", len(discs) == 15, 15, len(discs))
-    ctx.check("count.calls", len(sums) == 32, 32, len(sums))
+    ctx.check("count.turns", len(turns) == 18, 18, len(turns))
+    ctx.check("count.discoveries", len(discs) == 18, 18, len(discs))
+    ctx.check("count.calls", len(sums) == 36, 36, len(sums))
     ctx.check(
         "count.turn_ids", sorted(ctx.turn_ids) == sorted(TURNS), sorted(TURNS), sorted(ctx.turn_ids)
     )
@@ -951,39 +1028,63 @@ def finalize(ctx: Ctx) -> None:
         [s["core_present"] for s in sums if s["core_present"]],
     )
     ctx.check(
+        "env.wide_absent",
+        all(not s["wide_present"] for s in sums),
+        0,
+        [s["wide_present"] for s in sums if s["wide_present"]],
+    )
+    ctx.check(
+        "env.extra_absent",
+        all(not s["extra_present"] for s in sums),
+        0,
+        [s["extra_present"] for s in sums if s["extra_present"]],
+    )
+    ctx.check(
         "env.no_g9probe",
         not any(s["g9probe_in_env"] or s["g9probe_in_argv"] for s in sums),
         False,
         True,
     )
     ctx.check(
+        "env.no_g9wide",
+        not any(s["g9wide_in_env"] or s["g9wide_in_argv"] for s in sums),
+        False,
+        True,
+    )
+    ctx.check(
+        "env.keep_present",
+        all(s["keep_kept"] == sorted(KEEP_ENV) for s in sums),
+        sorted(KEEP_ENV),
+        [s["keep_kept"] for s in sums if s["keep_kept"] != sorted(KEEP_ENV)],
+    )
+    ctx.check(
         "env.nonblocking_false",
         all(s["nonblocking_is_false"] for s in sums),
-        32,
+        36,
         sum(s["nonblocking_is_false"] for s in sums),
     )
     ctx.check(
         "env.cwd_is_project",
         all(s["cwd_is_project"] for s in sums),
-        32,
+        36,
         sum(s["cwd_is_project"] for s in sums),
     )
     ctx.check(
         "env.turn_max_tokens",
         all(s["max_output_is_32000"] for s in turns),
-        17,
+        18,
         sum(s["max_output_is_32000"] for s in turns),
     )
     ctx.check(
         "env.turn_pythonpath_root_first",
         all(s["root_first_on_pythonpath"] for s in turns),
-        17,
+        18,
         sum(s["root_first_on_pythonpath"] for s in turns),
     )
     ctx.check(
         "env.disc_no_max_tokens",
         all(not s["max_output_present"] for s in discs),
-        15,
+        18,
         sum(not s["max_output_present"] for s in discs),
     )
     alive = []
@@ -1034,6 +1135,9 @@ def findings(ctx: Ctx) -> dict[str, Any]:
             "I5_stderr_mentions_allow_writes_or_linear"
         ),
         "C4_string_value_logged_as_not_a_list": ctx.notes.get("I4_stderr_says_not_a_list"),
+        "HD4_unmatched_allow_writes_warnings": {
+            k: v for k, v in ctx.notes.get("warnings", {}).items() if v
+        },
     }
 
 
@@ -1135,7 +1239,7 @@ def test_h_argv_invariant_holds_on_every_turn(passed: dict[str, Any], name: str)
 
 
 def test_h_env_no_credentials_reach_claude(passed: dict[str, Any]) -> None:
-    _assert_ok(_group(passed, "env."), 7)
+    _assert_ok(_group(passed, "env."), 11)
 
 
 def test_call_counts_and_no_leftover_process(passed: dict[str, Any]) -> None:
@@ -1144,12 +1248,13 @@ def test_call_counts_and_no_leftover_process(passed: dict[str, Any]) -> None:
 
 
 def test_findings_evidence_is_recorded(passed: dict[str, Any]) -> None:
-    """F1-F5 are reported, not pass/fail: this only pins the evidence's current values."""
+    """F1-F5 are reported, not pass/fail: this only pins the evidence's current values (after
+    the hardening: F2 scrubbed in 36 of 36 calls, F3 a failed server is not writable, F5 warned)."""
     f = passed["findings"]
     assert f["F1_stub_note_says_no_claude_session"] is True
     assert f["F1_stub_chat_turns_that_ran_claude"] == 2
-    assert (f["F2_wide_set_present_in_calls"], f["F2_calls"]) == (32, 32)
-    assert f["F3_notion_status"] == "failed" and f["F3_notion_writes_allowed"] is True
+    assert (f["F2_wide_set_present_in_calls"], f["F2_calls"]) == (0, 36)
+    assert f["F3_notion_status"] == "failed" and f["F3_notion_writes_allowed"] is False
     assert f["F3_notion_allowed_in"] == {"ask": 0, "explain": 0, "change": 0}
     assert set(f["F4_edge_reads"]) >= {
         X + "search_and_replace",
@@ -1157,14 +1262,14 @@ def test_findings_evidence_is_recorded(passed: dict[str, Any]) -> None:
         X + "fetch_and_archive",
     }
     assert f["F5_linear_writes_allowed_with_wrong_case"] is False
-    assert f["F5_stderr_mentions_allow_writes_or_linear"] is False
+    assert f["F5_stderr_mentions_allow_writes_or_linear"] is True
 
 
 def test_the_canonical_output_holds_no_credential_and_no_scratch_path(
     passed: dict[str, Any],
 ) -> None:
     text = canonical(passed)
-    for bad in ("G9PROBE", "G9WIDE", passed["_dir"], sys.executable):
+    for bad in ("G9PROBE", "G9WIDE", "G9KEEP", passed["_dir"], sys.executable):
         assert bad not in text, bad
 
 

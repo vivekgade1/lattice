@@ -351,7 +351,10 @@ def stub_view() -> dict[str, Any]:
 
 class McpIntake:
     """The connected servers of one project: discovery (cached), the per-mode allowlist and
-    the ``GET /api/mcp`` answer."""
+    the ``GET /api/mcp`` answer. A server's ``writes_allowed`` says what a ``change`` session
+    gets: true only for a connected server that ``allow_writes`` names; a name that matches
+    no listed server (matching is exact and case-sensitive) is reported once through
+    ``warn`` per (name, listed set)."""
 
     def __init__(
         self,
@@ -363,6 +366,7 @@ class McpIntake:
         timeout: float = DISCOVERY_TIMEOUT,
         env: Mapping[str, str] | None = None,
         discover_fn: Callable[..., dict[str, Any]] | None = None,
+        warn: Callable[[str], None] | None = None,
     ) -> None:
         self.claude_bin = claude_bin
         self.cwd = Path(cwd).resolve()
@@ -371,10 +375,52 @@ class McpIntake:
         self.timeout = timeout
         self.env = env
         self._discover = discover_fn or discover
+        self.warn = warn
+        self._warned: set[tuple[str, tuple[str, ...]]] = set()
+        self._warn_lock = threading.Lock()
 
     def discovery(self, refresh: bool = False) -> dict[str, Any]:
-        return self._discover(self.claude_bin, self.cwd, self.mcp_config, refresh=refresh,
-                              timeout=self.timeout, env=self.env)  # fmt: skip
+        d = self._discover(self.claude_bin, self.cwd, self.mcp_config, refresh=refresh,
+                           timeout=self.timeout, env=self.env)  # fmt: skip
+        self._warn_unmatched(d)
+        return d
+
+    def _warn_unmatched(self, d: Mapping[str, Any]) -> None:
+        """One line per ``allow_writes`` name that matches no server the discovery listed
+        (``_writes_ok``: exact, case-sensitive), at most once per (name, listed names). Silent
+        without ``warn``, on a discovery error, with no listed server or while one is still
+        ``pending`` (it may be the one the name means)."""
+        servers = d.get("servers") or []
+        if self.warn is None or d.get("error") or not servers:
+            return
+        if any(s.get("status") == "pending" for s in servers):
+            return
+        listed = tuple(sorted(str(s.get("name") or "") for s in servers))
+        for name in dict.fromkeys(self.allow_writes):
+            if any(_writes_ok(s, [name]) for s in servers):
+                continue
+            with self._warn_lock:
+                if (name, listed) in self._warned:
+                    continue
+                self._warned.add((name, listed))
+                hint = next(
+                    (
+                        shown
+                        for s in servers
+                        if (shown := str(s.get("name") or ""))
+                        and name.casefold()
+                        in (shown.casefold(), server_prefix(shown)[5:-2].casefold())
+                    ),
+                    None,
+                )
+                tail = "names are case-sensitive"
+                if hint is not None:
+                    tail += f"; did you mean {json.dumps(hint, ensure_ascii=False)}?"
+                self.warn(
+                    "studio.toml: [mcp] allow_writes names "
+                    f"{json.dumps(name, ensure_ascii=False)}, which matches no server the "
+                    f"discovery listed ({tail})"
+                )
 
     def tools_for(self, mode: str) -> tuple[list[str], list[str]]:
         return external_tools(self.discovery()["servers"], mode, self.allow_writes)
@@ -388,7 +434,8 @@ class McpIntake:
             for m in CHAT_MODES:
                 total[m] += per[m]
             servers.append({**s, "allowed_in": per,
-                            "writes_allowed": _writes_ok(s, self.allow_writes)})  # fmt: skip
+                            "writes_allowed": s.get("status") == "connected"
+                            and _writes_ok(s, self.allow_writes)})  # fmt: skip
         out: dict[str, Any] = {"servers": servers, "refreshed_at": d.get("refreshed_at"),
                                "allowed_in": total}  # fmt: skip
         if d.get("error"):

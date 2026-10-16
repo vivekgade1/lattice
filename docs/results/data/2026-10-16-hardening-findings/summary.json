@@ -1,0 +1,17 @@
+{
+  "branch": "np-hd",
+  "base": "bb3ff0c (prereg commit 9bf82b5 on top)",
+  "blind_baseline": {"status": "RAN", "result": "failing exactly I1.3.body, I3.1.body, I5.warn, I11.warn, env.wide_absent, env.extra_absent, env.no_g9wide (7 of 223); predicted exactly these", "data": "baseline-bb3ff0c/"},
+  "probes": {
+    "P1": {"status": "RAN", "pass": true, "detail": "10 runs, 223 checks, 0 failing, 1 canonical sha256 5e9fe9a644970bd55495adb0e044a4353ab961c229c8e26a11f915a5d4ed5dd8; 18 turns, 18 discoveries, 36 calls", "data": "h-probes/"},
+    "P2": {"status": "RAN", "pass": true, "detail": "tests/llm/test_cli_env_scrub.py 7 passed (table through cli_env, ClaudeCliClient with a fake binary, discovery_env, rebuild.gate_env)"},
+    "P3": {"status": "RAN", "pass": true, "detail": "claude auth status --json, no model call; arms a firstParty/claude.ai/loggedIn, b bedrock/third_party, c oauth_token; 10x identical", "data": "p3-auth-status.json"},
+    "P4": {"status": "RAN", "pass": true, "detail": "(a)-(e) byte-identical, (f)(g)(h) old + exactly the D2 line after requires:, extra (i) entry='' likewise; install(confirm=no) a and c byte-identical; 10x identical; module_market_probes tamper,regress --skip-heavy: M-tamper-T12 PASS, M-regress-R1 15/15 byte-identical, KNOWN_PROBE_FAILURES=(); M-regress-R4 FAILS identically at bb3ff0c (not caused by HD)", "data": "p4-install-summary.json, module-market/"},
+    "P5": {"status": "RAN", "pass": true, "detail": "I3.1=A0, I1.3=B0; warn lines I5=1, I11=5 in the predicted order, all other instances 0; 10 runs identical", "data": "h-probes/"},
+    "P6": {"status": "RAN", "pass": true, "detail": "tests/studio/test_mcp_allow_writes_warn.py 26 passed"},
+    "P7": {"status": "RAN", "pass": true, "detail": "see regression/; one unrelated flake in tests/studio/test_projects.py (commit-second boundary), 3 reruns pass; MH-13 old text stale at bb3ff0c (disclosed), post hoc corrected: MH 14/14 caught, control passes"}
+  },
+  "mutants": {"HD-M1..HD-M16": {"status": "RAN", "result": "control PASS, 16/16 caught by pytest SUITE", "data": "mutants/hd-m1-m16.json"},
+              "MH-1..MH-14": {"status": "RAN (MH-13 text post hoc)", "result": "control PASS, 14/14 caught", "data": "mutants/mh-1-14-posthoc-mh13.json"},
+              "MG1-22, MM1-5": {"status": "RAN", "result": "27/27 killed; control NOT CLEAN only through M-regress-R4 (pre-existing)", "data": "module-market/mutants-MG-MM.json"}}
+}

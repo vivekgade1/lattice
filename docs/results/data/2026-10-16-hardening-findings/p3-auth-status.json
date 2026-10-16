@@ -1,0 +1,72 @@
+{
+ "arms": {
+  "a": {
+   "env_names_sorted": [
+    "HOME",
+    "PATH",
+    "TMPDIR",
+    "USER"
+   ],
+   "identical_across_runs": true,
+   "observed": {
+    "apiProvider": "firstParty",
+    "authMethod": "claude.ai",
+    "loggedIn": true
+   },
+   "pass": true
+  },
+  "b": {
+   "env_names_sorted": [
+    "ANTHROPIC_API_KEY",
+    "ANTHROPIC_AUTH_TOKEN",
+    "ANTHROPIC_BASE_URL",
+    "ANTHROPIC_BEDROCK_BASE_URL",
+    "ANTHROPIC_CUSTOM_HEADERS",
+    "ANTHROPIC_FOUNDRY_API_KEY",
+    "ANTHROPIC_FOUNDRY_RESOURCE",
+    "ANTHROPIC_G9_UNLISTED",
+    "ANTHROPIC_MODEL",
+    "ANTHROPIC_VERTEX_PROJECT_ID",
+    "AWS_BEARER_TOKEN_BEDROCK",
+    "CLAUDE_CODE_USE_BEDROCK",
+    "CLAUDE_CODE_USE_FOUNDRY",
+    "CLAUDE_CODE_USE_VERTEX",
+    "HOME",
+    "PATH",
+    "TMPDIR",
+    "USER"
+   ],
+   "identical_across_runs": true,
+   "observed": {
+    "apiProvider": "bedrock",
+    "authMethod": "third_party",
+    "loggedIn": true
+   },
+   "pass": true
+  },
+  "c": {
+   "env_names_sorted": [
+    "CLAUDE_CODE_OAUTH_TOKEN",
+    "HOME",
+    "PATH",
+    "TMPDIR",
+    "USER"
+   ],
+   "identical_across_runs": true,
+   "observed": {
+    "apiProvider": "firstParty",
+    "authMethod": "oauth_token",
+    "loggedIn": true
+   },
+   "pass": true
+  }
+ },
+ "claude": "/Users/vivekgade/.local/bin/claude",
+ "pass": true,
+ "reference_login_only": {
+  "apiProvider": "firstParty",
+  "authMethod": "claude.ai",
+  "loggedIn": true
+ },
+ "status": "RAN"
+}
