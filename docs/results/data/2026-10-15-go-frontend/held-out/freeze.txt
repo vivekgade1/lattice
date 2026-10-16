@@ -1,0 +1,4 @@
+62e41b39aa2c601387092155098e34c9474d145d5c4efbf0bc73f9b6f1e1a066  /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/goextract-h/freeze.sha256
+      22 /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/goextract-h/freeze.sha256
+2026-10-16T03:27:34Z
+27a20d8b64071a5da9e953c7188dca6c6ff14571

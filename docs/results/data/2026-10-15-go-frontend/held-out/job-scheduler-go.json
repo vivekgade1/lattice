@@ -1,0 +1,420 @@
+{
+ "routes": [
+  [
+   "DELETE",
+   "/applications/{}/members/{}"
+  ],
+  [
+   "GET",
+   "/applications"
+  ],
+  [
+   "GET",
+   "/applications/{}"
+  ],
+  [
+   "GET",
+   "/applications/{}/jobs"
+  ],
+  [
+   "GET",
+   "/applications/{}/jobs/{}"
+  ],
+  [
+   "GET",
+   "/applications/{}/jobs/{}/runs"
+  ],
+  [
+   "GET",
+   "/applications/{}/members"
+  ],
+  [
+   "GET",
+   "/applications/{}/members/{}"
+  ],
+  [
+   "GET",
+   "/applications/{}/runs/{}"
+  ],
+  [
+   "GET",
+   "/health"
+  ],
+  [
+   "GET",
+   "/users/me"
+  ],
+  [
+   "POST",
+   "/applications"
+  ],
+  [
+   "POST",
+   "/applications/{}/jobs"
+  ],
+  [
+   "POST",
+   "/applications/{}/jobs/{}/activate"
+  ],
+  [
+   "POST",
+   "/applications/{}/jobs/{}/deactivate"
+  ],
+  [
+   "POST",
+   "/applications/{}/jobs/{}/runs"
+  ],
+  [
+   "POST",
+   "/applications/{}/runs/{}/cancel"
+  ],
+  [
+   "POST",
+   "/auth/login"
+  ],
+  [
+   "POST",
+   "/users"
+  ],
+  [
+   "POST",
+   "/worker/run-once"
+  ],
+  [
+   "POST",
+   "/worker/schedule-tick"
+  ],
+  [
+   "PUT",
+   "/applications/{}/members/{}"
+  ]
+ ],
+ "tables": {
+  "users": {
+   "columns": {
+    "id": {
+     "nullable": true,
+     "primary_key": true,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "email": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": 1,
+     "index": 1,
+     "default": null,
+     "max_length": 254,
+     "type": "Str"
+    },
+    "hashed_password": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": 255,
+     "type": "Str"
+    },
+    "is_super_admin": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Bool"
+    },
+    "is_active": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Bool"
+    }
+   }
+  },
+  "applications": {
+   "columns": {
+    "id": {
+     "nullable": true,
+     "primary_key": true,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "name": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": 1,
+     "index": 1,
+     "default": null,
+     "max_length": 100,
+     "type": "Str"
+    }
+   }
+  },
+  "memberships": {
+   "columns": {
+    "id": {
+     "nullable": true,
+     "primary_key": true,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "user_id": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": 1,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "application_id": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": 1,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "role": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": 20,
+     "type": "Str"
+    }
+   }
+  },
+  "job_configs": {
+   "columns": {
+    "id": {
+     "nullable": true,
+     "primary_key": true,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "application_id": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": 1,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "name": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": 100,
+     "type": "Str"
+    },
+    "job_name": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": 1,
+     "default": null,
+     "max_length": 100,
+     "type": "Str"
+    },
+    "version": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": 1,
+     "default": null,
+     "max_length": 50,
+     "type": "Str"
+    },
+    "code_path": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": 500,
+     "type": "Str"
+    },
+    "command": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": 1000,
+     "type": "Str"
+    },
+    "is_cron": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Bool"
+    },
+    "cron_expr": {
+     "nullable": true,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": 100,
+     "type": "Str"
+    },
+    "is_active": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Bool"
+    },
+    "created_by": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "created_at": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "DateTime"
+    }
+   }
+  },
+  "job_runs": {
+   "columns": {
+    "id": {
+     "nullable": true,
+     "primary_key": true,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "job_config_id": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": 1,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "application_id": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": 1,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "trigger": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": 20,
+     "type": "Str"
+    },
+    "triggered_by": {
+     "nullable": true,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "status": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": 1,
+     "default": null,
+     "max_length": 20,
+     "type": "Str"
+    },
+    "created_at": {
+     "nullable": false,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "DateTime"
+    },
+    "started_at": {
+     "nullable": true,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "DateTime"
+    },
+    "finished_at": {
+     "nullable": true,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "DateTime"
+    },
+    "exit_code": {
+     "nullable": true,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "Int"
+    },
+    "scheduled_for": {
+     "nullable": true,
+     "primary_key": false,
+     "unique": false,
+     "index": false,
+     "default": null,
+     "max_length": null,
+     "type": "DateTime"
+    }
+   }
+  }
+ }
+}
