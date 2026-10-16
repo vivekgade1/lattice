@@ -1,0 +1,13 @@
+[
+ {
+  "name": "mcp__claude_ai_Claude_Docs__read",
+  "input": {
+   "ref": {
+    "object": "file",
+    "id": "x"
+   }
+  },
+  "executed": false,
+  "result": "Permission to use mcp__claude_ai_Claude_Docs__read has been denied because Claude Code is running in don't ask mode. IMPORTANT: You *may* attempt to accomplish this action using other tools that might naturally be used to accomplish this goal, e.g. using head instead of cat. But you *should not* att"
+ }
+]

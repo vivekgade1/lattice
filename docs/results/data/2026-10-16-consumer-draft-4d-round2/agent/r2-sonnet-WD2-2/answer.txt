@@ -1,0 +1,38 @@
+Scheduler changed `POST /applications/{app}/jobs/{job}/runs` to return **200** instead of **201**. ci-bot still expects 201, so that is the break. I changed nothing. This comes from open linked question `lq1` and its draft.
+
+Scheduler's new contract is commit `c73bea6e`, spec hash `24c5fd8f4800`. ci-bot is still pinned to `9bcae0e24da9`. `contract_check` still reports `ok` because it compares the pinned spec with the provider's current spec, and the pin hasn't moved. The break shows up only in `lq1`.
+
+I couldn't look at ci-bot's source. The only ci-bot files I used are its imports and the question state. I also couldn't read its rules, because `code_links` and the spec tools can't open a project without a `spec.py`. So the code location below is unverified, and R3 and the `start_run` scenario come from the draft's text match.
+
+## What to change in ci-bot
+
+Do these in order.
+
+1. **Code that calls the endpoint.**
+   - Find where ci-bot starts a run with `POST /applications/{app}/jobs/{job}/runs`.
+   - Change any check that requires `201` to accept `200`. This includes `== 201`, `status_code == 201` and `raise_for_status` assumptions about "Created".
+   - It should still read `id` and `status` from the response body.
+   - Leave the 401, 404 and 409 handling alone, because those statuses are unchanged.
+
+2. **`lattice.imports.toml`, import #4.**
+   - Endpoint: `POST /applications/{}/jobs/{}/runs`.
+   - Change `status = [201]` to `status = [200]`.
+   - Leave `auth = "token"`, `as_user = "eve"`, `request_fields = []` and `response_fields = ["id", "status"]` as they are.
+   - Don't delete the status claim to make the check pass. Declaring less would hide the problem.
+
+3. **Spec rule R3 in `REQUIREMENTS.md`.**
+   - Current text: "It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects 201 with id and status."
+   - New text: the same sentence ending "expects **200** with id and status."
+   - R3 is traced to the `start_run` scenario. If that scenario asserts 201, change it to 200 as well. I haven't seen its body, so check it.
+   - Propose the rule edit through `lattice:change` or in Studio. Don't edit `REQUIREMENTS.md`, `spec.py` or `spec.trace.json` directly.
+   - ci-bot currently has no `spec.py`, so you'd need to run `lattice spec draft` first. The imports and contract steps don't need a spec.
+
+4. **Re-pin and verify.**
+   - Run `lattice contracts pin ci-bot`, then `lattice contracts check ci-bot`. It should report no BROKEN or CHANGED findings.
+   - Then run `lattice contracts questions resolve ci-bot lq1`.
+
+## Before you do any of this
+
+Ask scheduler's owner whether the 201 to 200 change was intentional. If it wasn't, they can revert it and you change nothing. Every step above assumes 200 is the new behavior.
+
+`contract_check` also reports one gap, `POST /auth/login` → `access_token`. The provider's spec never shows that field. It isn't tied to this break, but ci-bot's login import relies on a field scheduler doesn't document.

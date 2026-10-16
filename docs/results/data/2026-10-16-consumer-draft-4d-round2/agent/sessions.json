@@ -1,0 +1,1394 @@
+[
+ {
+  "sid": "r2-sonnet-WD2-1",
+  "world": "W-D2",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "argv_equals_round1": true,
+  "child_env_has_anthropic_key": false,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 22.8
+  },
+  "cost_usd": 0.34231789999999995,
+  "tokens": 76265,
+  "tokens_incl_cache_reads": 363124,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T17:56:17+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3b",
+    "A4",
+    "A5",
+    "A6",
+    "A7"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_01TPvHs76t7oYqhvaS9VxUPi",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3b": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "Scheduler now returns **200** instead of **201** from `POST /applications/{app}/jobs/{job}/runs`, and ci-bot still expects 201.",
+      "The changes below are what to make, in this order.",
+      "**What to change, in order**",
+      "Change it to accept 200.",
+      "In `[[import]]` #4, `POST /applications/{}/jobs/{}/runs`, change `status = [201]` to `status = [200]`.",
+      "**ci-bot spec, rule R3.** Change the text to: \"It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status.\"",
+      "If R3 lives in `REQUIREMENTS.md`, edit it there.",
+      "Then run `lattice spec draft` so the spec files exist and the change can go through `lattice:change` or Studio."
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": true,
+     "R3": true,
+     "R4_affirmed": []
+    },
+    "A3": {
+     "pass": false,
+     "invented": [
+      {
+       "kind": "field",
+       "item": "ef17cf88",
+       "sentence": "Your pin (`ef17cf88`) has `[201, 401, 404, 409]`."
+      },
+      {
+       "kind": "field",
+       "item": "contract_check",
+       "sentence": "- `contract_check` still reports `ok`, because it compares the pin against the current scheduler spec and the scheduler repo is still at the pinned commit."
+      },
+      {
+       "kind": "field",
+       "item": "ok",
+       "sentence": "- `contract_check` still reports `ok`, because it compares the pin against the current scheduler spec and the scheduler repo is still at the pinned commit."
+      }
+     ]
+    },
+    "A3b-strict": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "Scheduler now returns **200** instead of **201** from `POST /applications/{app}/jobs/{job}/runs`, and ci-bot still expects 201.",
+      "The changes below are what to make, in this order.",
+      "**What to change, in order**",
+      "Change it to accept 200.",
+      "In `[[import]]` #4, `POST /applications/{}/jobs/{}/runs`, change `status = [201]` to `status = [200]`.",
+      "**ci-bot spec, rule R3.** Change the text to: \"It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status.\"",
+      "If R3 lives in `REQUIREMENTS.md`, edit it there.",
+      "Then run `lattice spec draft` so the spec files exist and the change can go through `lattice:change` or Studio."
+     ]
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": true,
+   "pass_items": true,
+   "nonlattice_fail": false
+  },
+  "nonlattice": [],
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "R3"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "r2-sonnet-WS6-1",
+  "world": "W-S6",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "argv_equals_round1": true,
+  "child_env_has_anthropic_key": false,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 23.9
+  },
+  "cost_usd": 0.1027564,
+  "tokens": 12629,
+  "tokens_incl_cache_reads": 438673,
+  "turns": 8,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T17:56:43+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3b",
+    "A4",
+    "A5",
+    "A6"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_015wLAast5LsTQxc34PbjCMU",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3b": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "The one thing to change is the `next_cursor` response field, which the provider `streak` renamed to `next`.",
+      "## What to change in streak-widget",
+      "- Make this change first.",
+      "- **Rename or revert**: `streak`'s owner may not have meant to rename the field."
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": false,
+     "R3": false,
+     "R4_affirmed": []
+    },
+    "A3": {
+     "pass": false,
+     "invented": [
+      {
+       "kind": "field",
+       "item": "contract_check",
+       "sentence": "`contract_check` reports the link as `ok`, but that is stale."
+      },
+      {
+       "kind": "field",
+       "item": "ok",
+       "sentence": "`contract_check` reports the link as `ok`, but that is stale."
+      }
+     ]
+    },
+    "A3b-strict": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "The one thing to change is the `next_cursor` response field, which the provider `streak` renamed to `next`.",
+      "## What to change in streak-widget",
+      "- Make this change first.",
+      "- **Rename or revert**: `streak`'s owner may not have meant to rename the field."
+     ]
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": false,
+   "pass_items": true,
+   "nonlattice_fail": true
+  },
+  "nonlattice": [
+   {
+    "name": "Bash",
+    "input": {
+     "command": "cd \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget\" && ls -a && grep -rn \"next_cursor\\|cursor\" --exclude-dir=.lattice --exclude-dir=.git . | head -30; cat lattice.imports.toml"
+    },
+    "executed": false,
+    "result": "<tool_use_error>Error: No such tool available: Bash. Bash is disabled for this session, in subagents as well as here.</tool_use_error>"
+   }
+  ],
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "GET /v1/habits",
+     "project": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__project_status",
+    "is_error": false,
+    "input": {
+     "project": "streak-widget"
+    }
+   },
+   {
+    "name": "Bash",
+    "is_error": true,
+    "input": {
+     "command": "cd \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget\" && ls -a && grep -rn \"next_cursor\\|cursor\" --exclude-dir=.lattice --exclude-dir=.git . | head -30; cat lattice.imports.toml"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "r2-sonnet-WD2-2",
+  "world": "W-D2",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "argv_equals_round1": true,
+  "child_env_has_anthropic_key": false,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 24.4
+  },
+  "cost_usd": 0.09205669999999999,
+  "tokens": 11954,
+  "tokens_incl_cache_reads": 363181,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T17:57:08+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3b",
+    "A4",
+    "A5",
+    "A6",
+    "A7"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_01TEVeRCFPRKD1E72VrzAuyB",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3b": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "Scheduler changed `POST /applications/{app}/jobs/{job}/runs` to return **200** instead of **201**.",
+      "## What to change in ci-bot",
+      "- Change any check that requires `201` to accept `200`.",
+      "- Change `status = [201]` to `status = [200]`.",
+      "- Don't delete the status claim to make the check pass.",
+      "If that scenario asserts 201, change it to 200 as well.",
+      "- Propose the rule edit through `lattice:change` or in Studio.",
+      "Ask scheduler's owner whether the 201 to 200 change was intentional.",
+      "If it wasn't, they can revert it and you change nothing.",
+      "`contract_check` also reports one gap, `POST /auth/login` \u2192 `access_token`."
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": true,
+     "R3": true,
+     "R4_affirmed": []
+    },
+    "A3": {
+     "pass": false,
+     "invented": [
+      {
+       "kind": "field",
+       "item": "raise_for_status",
+       "sentence": "This includes `== 201`, `status_code == 201` and `raise_for_status` assumptions about \"Created\"."
+      },
+      {
+       "kind": "field",
+       "item": "contract_check",
+       "sentence": "`contract_check` also reports one gap, `POST /auth/login` \u2192 `access_token`."
+      }
+     ]
+    },
+    "A3b-strict": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "Scheduler changed `POST /applications/{app}/jobs/{job}/runs` to return **200** instead of **201**.",
+      "## What to change in ci-bot",
+      "- Change any check that requires `201` to accept `200`.",
+      "- Change `status = [201]` to `status = [200]`.",
+      "- Don't delete the status claim to make the check pass.",
+      "If that scenario asserts 201, change it to 200 as well.",
+      "- Propose the rule edit through `lattice:change` or in Studio.",
+      "Ask scheduler's owner whether the 201 to 200 change was intentional.",
+      "If it wasn't, they can revert it and you change nothing.",
+      "`contract_check` also reports one gap, `POST /auth/login` \u2192 `access_token`."
+     ]
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": true,
+   "pass_items": true,
+   "nonlattice_fail": false
+  },
+  "nonlattice": [],
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "R3",
+     "project": "ci-bot"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "r2-sonnet-WS6-2",
+  "world": "W-S6",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "argv_equals_round1": true,
+  "child_env_has_anthropic_key": false,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 17.1
+  },
+  "cost_usd": 0.0795426,
+  "tokens": 11027,
+  "tokens_incl_cache_reads": 287893,
+  "turns": 5,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T17:57:27+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3b",
+    "A4",
+    "A5",
+    "A6"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_016iFcKFZK4YpSTv8evC7JvE",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3b": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "**What to change**",
+      "**Contract import:** after the code is fixed, edit `[[import]]` #4 for `GET /v1/habits`.",
+      "Change `response_fields` from `[\"items\", \"has_more\", \"next_cursor\"]` to `[\"items\", \"has_more\", \"next\"]`.",
+      "Don't delete the field to make the check pass.",
+      "If you do add or keep a rule that says the widget pages through habits using `next_cursor`, reword it to say `next`.",
+      "You can ask streak's owner to revert it instead of adapting.",
+      "In that case you would dismiss lq1 and change nothing."
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": false,
+     "R3": false,
+     "R4_affirmed": []
+    },
+    "A3": {
+     "pass": false,
+     "invented": [
+      {
+       "kind": "field",
+       "item": "a0db033a",
+       "sentence": "streak's accepted change (commit `168e2a03`) conflicts with the version streak-widget is pinned to (`a0db033a`)."
+      }
+     ]
+    },
+    "A3b-strict": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "**What to change**",
+      "**Contract import:** after the code is fixed, edit `[[import]]` #4 for `GET /v1/habits`.",
+      "Change `response_fields` from `[\"items\", \"has_more\", \"next_cursor\"]` to `[\"items\", \"has_more\", \"next\"]`.",
+      "Don't delete the field to make the check pass.",
+      "If you do add or keep a rule that says the widget pages through habits using `next_cursor`, reword it to say `next`.",
+      "You can ask streak's owner to revert it instead of adapting.",
+      "In that case you would dismiss lq1 and change nothing."
+     ]
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": true,
+   "pass_items": true,
+   "nonlattice_fail": false
+  },
+  "nonlattice": [],
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "streak-widget"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "r2-sonnet-WD2-3",
+  "world": "W-D2",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "argv_equals_round1": true,
+  "child_env_has_anthropic_key": false,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 23.5
+  },
+  "cost_usd": 0.0905267,
+  "tokens": 11804,
+  "tokens_incl_cache_reads": 363031,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T17:57:52+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "info": {
+    "A3": true,
+    "A3b-strict": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3b",
+    "A4",
+    "A5",
+    "A6",
+    "A7"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_01UoT9hu9eXTVgATiaqdT8Rg",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3b": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "Scheduler now returns **200** instead of **201** from `POST /applications/{app}/jobs/{job}/runs`, and that breaks ci-bot.",
+      "**What to change in ci-bot, in this order**",
+      "Make it treat **200** as success instead of 201.",
+      "Change `status = [201]` to `status = [200]`.",
+      "Replace the claim rather than deleting it.",
+      "Dropping it would make `check` pass without the code being right.",
+      "**Spec, rule R3.** Reword it from \"...and expects 201 with id and status.\" to \"It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status.\" Propose this through the lattice change flow or Studio."
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": true,
+     "R3": true,
+     "R4_affirmed": []
+    },
+    "A3": {
+     "pass": true,
+     "invented": []
+    },
+    "A3b-strict": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "Scheduler now returns **200** instead of **201** from `POST /applications/{app}/jobs/{job}/runs`, and that breaks ci-bot.",
+      "**What to change in ci-bot, in this order**",
+      "Make it treat **200** as success instead of 201.",
+      "Change `status = [201]` to `status = [200]`.",
+      "Replace the claim rather than deleting it.",
+      "Dropping it would make `check` pass without the code being right.",
+      "**Spec, rule R3.** Reword it from \"...and expects 201 with id and status.\" to \"It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status.\" Propose this through the lattice change flow or Studio."
+     ]
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": true,
+   "pass_items": true,
+   "nonlattice_fail": false
+  },
+  "nonlattice": [],
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "R3",
+     "project": "ci-bot"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "r2-sonnet-WS6-3",
+  "world": "W-S6",
+  "with_tool": true,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "argv_equals_round1": true,
+  "child_env_has_anthropic_key": false,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 25.2
+  },
+  "cost_usd": 0.0936369,
+  "tokens": 12316,
+  "tokens_incl_cache_reads": 363305,
+  "turns": 7,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T17:58:18+00:00",
+  "score": {
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": false,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "applicable": [
+    "A1",
+    "A2",
+    "A3b",
+    "A4",
+    "A5",
+    "A6"
+   ],
+   "detail": {
+    "A1": {
+     "pass": true,
+     "calls": [
+      {
+       "id": "toolu_01LrDv9zdEQMsVj9D27mn4BN",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "A2": {
+     "pass": true,
+     "endpoint": true,
+     "number": true,
+     "others": []
+    },
+    "A3b": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "## What to change in streak-widget",
+      "Change it to read `next`.",
+      "Contract file, `lattice.imports.toml`.** Edit `[[import]]` #4 (`GET /v1/habits`) so `response_fields` changes from `[\"items\", \"has_more\", \"next_cursor\"]` to `[\"items\", \"has_more\", \"next\"]`.",
+      "The draft explicitly rules out removing a claim to make the check pass.",
+      "If you add one, any rule that mentions paging habits should say `next`, not `next_cursor`.",
+      "You would dismiss `lq1` instead of resolving it."
+     ]
+    },
+    "A4": {
+     "pass": false,
+     "advice": [
+      "The draft explicitly rules out removing a claim to make the check pass."
+     ]
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": false,
+     "R3": false,
+     "R4_affirmed": []
+    },
+    "A3": {
+     "pass": false,
+     "invented": [
+      {
+       "kind": "field",
+       "item": "contract_check",
+       "sentence": "`contract_check` also reports two gaps, `cursor` on `GET /v1/habits` and `access_token` on `POST /v1/auth/login`."
+      }
+     ]
+    },
+    "A3b-strict": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "## What to change in streak-widget",
+      "Change it to read `next`.",
+      "Contract file, `lattice.imports.toml`.** Edit `[[import]]` #4 (`GET /v1/habits`) so `response_fields` changes from `[\"items\", \"has_more\", \"next_cursor\"]` to `[\"items\", \"has_more\", \"next\"]`.",
+      "The draft explicitly rules out removing a claim to make the check pass.",
+      "If you add one, any rule that mentions paging habits should say `next`, not `next_cursor`.",
+      "You would dismiss `lq1` instead of resolving it."
+     ]
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": false,
+   "pass_items": false,
+   "nonlattice_fail": false
+  },
+  "nonlattice": [],
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_draft",
+    "is_error": false,
+    "input": {
+     "id": "lq1",
+     "consumer": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "GET /v1/habits",
+     "project": "streak-widget"
+    }
+   },
+   {
+    "name": "mcp__lattice__project_status",
+    "is_error": false,
+    "input": {
+     "project": "streak-widget"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "r2-ablation-WD2-1",
+  "world": "W-D2",
+  "with_tool": false,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "argv_equals_round1": true,
+  "child_env_has_anthropic_key": false,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 23.8
+  },
+  "cost_usd": 0.33622689999999994,
+  "tokens": 74729,
+  "tokens_incl_cache_reads": 358938,
+  "turns": 7,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T17:58:44+00:00",
+  "score": {
+   "items": {
+    "A1": null,
+    "A2": false,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": false,
+    "A6": true
+   },
+   "info": {
+    "A3": true,
+    "A3b-strict": true
+   },
+   "applicable": [
+    "A2",
+    "A3b",
+    "A4",
+    "A5",
+    "A6",
+    "A7"
+   ],
+   "detail": {
+    "A1": {
+     "pass": false,
+     "calls": []
+    },
+    "A2": {
+     "pass": false,
+     "endpoint": true,
+     "number": false,
+     "others": []
+    },
+    "A3b": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "The scheduler change (commit `c73bea6e`, spec hash `24c5fd8f`) contradicts ci-bot's pin (`9bcae0e2`).",
+      "## What to change in ci-bot",
+      "- Treat `200` as the success status for starting a run.",
+      "`status == 201` or `resp.status_code == 201`, change it to `200`.",
+      "If you want to keep tolerating `201` for now, accept both.",
+      "Replace it with `200`, and add `401`, `404` and `409` if ci-bot handles them.",
+      "- If the rules live in `REQUIREMENTS.md`, edit any rule that says \"a started run returns/expects 201\" to say `200`, and add rules for the `409`, `401` and `404` behavior."
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": false,
+     "R3": false,
+     "R4_affirmed": []
+    },
+    "A3": {
+     "pass": true,
+     "invented": []
+    },
+    "A3b-strict": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "The scheduler change (commit `c73bea6e`, spec hash `24c5fd8f`) contradicts ci-bot's pin (`9bcae0e2`).",
+      "## What to change in ci-bot",
+      "- Treat `200` as the success status for starting a run.",
+      "`status == 201` or `resp.status_code == 201`, change it to `200`.",
+      "If you want to keep tolerating `201` for now, accept both.",
+      "Replace it with `200`, and add `401`, `404` and `409` if ci-bot handles them.",
+      "- If the rules live in `REQUIREMENTS.md`, edit any rule that says \"a started run returns/expects 201\" to say `200`, and add rules for the `409`, `401` and `404` behavior."
+     ]
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": false,
+   "pass_items": false,
+   "nonlattice_fail": true
+  },
+  "nonlattice": [
+   {
+    "name": "mcp__claude_ai_Claude_Docs__read",
+    "input": {
+     "ref": {
+      "object": "file",
+      "id": "x"
+     }
+    },
+    "executed": false,
+    "result": "Permission to use mcp__claude_ai_Claude_Docs__read has been denied because Claude Code is running in don't ask mode. IMPORTANT: You *may* attempt to accomplish this action using other tools that might naturally be used to accomplish this goal, e.g. using head instead of cat. But you *should not* att"
+   }
+  ],
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "target": "POST /applications/{}/jobs/{}/runs"
+    }
+   },
+   {
+    "name": "mcp__lattice__project_status",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__claude_ai_Claude_Docs__read",
+    "is_error": true,
+    "input": {
+     "ref": {
+      "object": "file",
+      "id": "x"
+     }
+    }
+   }
+  ]
+ },
+ {
+  "sid": "r2-ablation-WD2-2",
+  "world": "W-D2",
+  "with_tool": false,
+  "status": "SCORED",
+  "reason": null,
+  "pre": {
+   "action": "created",
+   "question": "lq1",
+   "draft_rc": 0
+  },
+  "argv_equals_round1": true,
+  "child_env_has_anthropic_key": false,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 24.4
+  },
+  "cost_usd": 0.0770458,
+  "tokens": 10339,
+  "tokens_incl_cache_reads": 285737,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": [],
+  "outside_same": true,
+  "started_utc": "2026-10-16T17:59:10+00:00",
+  "score": {
+   "items": {
+    "A1": null,
+    "A2": false,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": false,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "applicable": [
+    "A2",
+    "A3b",
+    "A4",
+    "A5",
+    "A6",
+    "A7"
+   ],
+   "detail": {
+    "A1": {
+     "pass": false,
+     "calls": []
+    },
+    "A2": {
+     "pass": false,
+     "endpoint": true,
+     "number": false,
+     "others": []
+    },
+    "A3b": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "## What to change in ci-bot",
+      "**Code:** every place ci-bot calls `POST /applications/{}/jobs/{}/runs` must treat `200` as the success status for creating a run.",
+      "Where it checks for `201`, accept `200`.",
+      "I'd accept `200` only, since scheduler no longer returns `201`.",
+      "Replace the `201` claim with `200`.",
+      "If you point me at the ci-bot source files, I can name the exact lines to change."
+     ]
+    },
+    "A4": {
+     "pass": true,
+     "advice": []
+    },
+    "A5": {
+     "pass": true,
+     "r6": true,
+     "proposed": []
+    },
+    "A7": {
+     "pass": false,
+     "R3": false,
+     "R4_affirmed": []
+    },
+    "A3": {
+     "pass": false,
+     "invented": [
+      {
+       "kind": "field",
+       "item": "ef17cf88",
+       "sentence": "Open question `lq1` records that scheduler's accepted contract (commit `c73bea6e`, spec hash `24c5fd8f4800`) contradicts ci-bot's pin (commit `ef17cf88`, hash `9bcae0e24da9`)."
+      },
+      {
+       "kind": "field",
+       "item": "contract_check",
+       "sentence": "`contract_check` still reports `ok`."
+      },
+      {
+       "kind": "field",
+       "item": "ok",
+       "sentence": "`contract_check` still reports `ok`."
+      },
+      {
+       "kind": "field",
+       "item": "contract_impact",
+       "sentence": "The break only appears in the open question and in `contract_impact` against scheduler's new commit."
+      },
+      {
+       "kind": "field",
+       "item": "contract_check",
+       "sentence": "`contract_check` also reports a gap on `POST /auth/login`."
+      }
+     ]
+    },
+    "A3b-strict": {
+     "pass": true,
+     "invented": [],
+     "proposals": [
+      "## What to change in ci-bot",
+      "**Code:** every place ci-bot calls `POST /applications/{}/jobs/{}/runs` must treat `200` as the success status for creating a run.",
+      "Where it checks for `201`, accept `200`.",
+      "I'd accept `200` only, since scheduler no longer returns `201`.",
+      "Replace the `201` claim with `200`.",
+      "If you point me at the ci-bot source files, I can name the exact lines to change."
+     ]
+    },
+    "A6": {
+     "world_changed": [],
+     "outside_same": true
+    }
+   },
+   "pass": false,
+   "pass_items": false,
+   "nonlattice_fail": false
+  },
+  "nonlattice": [],
+  "tools": [
+   {
+    "name": "mcp__lattice__project_list",
+    "is_error": false,
+    "input": {}
+   },
+   {
+    "name": "mcp__lattice__contract_check",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__linked_question_list",
+    "is_error": false,
+    "input": {
+     "consumer": "ci-bot"
+    }
+   },
+   {
+    "name": "mcp__lattice__model_get",
+    "is_error": true,
+    "input": {
+     "project": "ci-bot",
+     "section": "markdown"
+    }
+   },
+   {
+    "name": "mcp__lattice__code_links",
+    "is_error": true,
+    "input": {
+     "project": "ci-bot",
+     "target": "POST /applications/{}/jobs/{}/runs"
+    }
+   }
+  ]
+ }
+]

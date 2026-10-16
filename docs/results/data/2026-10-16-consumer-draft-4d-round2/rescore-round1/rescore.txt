@@ -1,0 +1,11 @@
+set                  session         status     A1 A2 A3b A4 A5 A6 A7 | A3(frozen) A3b-strict | every-item  equals-stored(A1,A2,A4,A5,A7)
+agent                sonnet-WD2-1    RESCORED     ok   ok   ok   ok   ok   ok   ok | FAIL   ok |   ok  True
+agent                sonnet-WS6-1    RESCORED     ok   ok   ok   ok   ok   ok    - |   ok   ok |   ok  True
+agent                sonnet-WD2-2    RESCORED     ok   ok   ok   ok   ok   ok   ok |   ok   ok |   ok  True
+agent                sonnet-WS6-2    RESCORED     ok   ok   ok   ok   ok   ok    - |   ok   ok |   ok  True
+agent                sonnet-WD2-3    RESCORED     ok   ok   ok   ok   ok   ok   ok |   ok   ok |   ok  True
+agent                sonnet-WS6-3    RESCORED     ok   ok   ok   ok   ok   ok    - | FAIL   ok |   ok  True
+agent                ablation-WD2-1  RESCORED      - FAIL   ok   ok   ok   ok FAIL | FAIL   ok | FAIL  True
+agent                ablation-WD2-2  RESCORED      - FAIL   ok   ok   ok   ok FAIL | FAIL   ok | FAIL  True
+agent-partial-run1   sonnet-WD2-1    RESCORED     ok   ok   ok   ok   ok   ok   ok | FAIL   ok |   ok  True
+agent-partial-run1   sonnet-WS6-1    RESCORED     ok   ok   ok   ok   ok   ok    - | FAIL   ok |   ok  True

@@ -1,0 +1,178 @@
+{
+ "sid": "r2-ablation-WD2-2",
+ "world": "W-D2",
+ "with_tool": false,
+ "status": "SCORED",
+ "reason": null,
+ "pre": {
+  "action": "created",
+  "question": "lq1",
+  "draft_rc": 0
+ },
+ "argv_equals_round1": true,
+ "child_env_has_anthropic_key": false,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 24.4
+ },
+ "cost_usd": 0.0770458,
+ "tokens": 10339,
+ "tokens_incl_cache_reads": 285737,
+ "turns": 6,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": [],
+ "outside_same": true,
+ "started_utc": "2026-10-16T17:59:10+00:00",
+ "score": {
+  "items": {
+   "A1": null,
+   "A2": false,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": false,
+   "A6": true
+  },
+  "info": {
+   "A3": false,
+   "A3b-strict": true
+  },
+  "applicable": [
+   "A2",
+   "A3b",
+   "A4",
+   "A5",
+   "A6",
+   "A7"
+  ],
+  "detail": {
+   "A1": {
+    "pass": false,
+    "calls": []
+   },
+   "A2": {
+    "pass": false,
+    "endpoint": true,
+    "number": false,
+    "others": []
+   },
+   "A3b": {
+    "pass": true,
+    "invented": [],
+    "proposals": [
+     "## What to change in ci-bot",
+     "**Code:** every place ci-bot calls `POST /applications/{}/jobs/{}/runs` must treat `200` as the success status for creating a run.",
+     "Where it checks for `201`, accept `200`.",
+     "I'd accept `200` only, since scheduler no longer returns `201`.",
+     "Replace the `201` claim with `200`.",
+     "If you point me at the ci-bot source files, I can name the exact lines to change."
+    ]
+   },
+   "A4": {
+    "pass": true,
+    "advice": []
+   },
+   "A5": {
+    "pass": true,
+    "r6": true,
+    "proposed": []
+   },
+   "A7": {
+    "pass": false,
+    "R3": false,
+    "R4_affirmed": []
+   },
+   "A3": {
+    "pass": false,
+    "invented": [
+     {
+      "kind": "field",
+      "item": "ef17cf88",
+      "sentence": "Open question `lq1` records that scheduler's accepted contract (commit `c73bea6e`, spec hash `24c5fd8f4800`) contradicts ci-bot's pin (commit `ef17cf88`, hash `9bcae0e24da9`)."
+     },
+     {
+      "kind": "field",
+      "item": "contract_check",
+      "sentence": "`contract_check` still reports `ok`."
+     },
+     {
+      "kind": "field",
+      "item": "ok",
+      "sentence": "`contract_check` still reports `ok`."
+     },
+     {
+      "kind": "field",
+      "item": "contract_impact",
+      "sentence": "The break only appears in the open question and in `contract_impact` against scheduler's new commit."
+     },
+     {
+      "kind": "field",
+      "item": "contract_check",
+      "sentence": "`contract_check` also reports a gap on `POST /auth/login`."
+     }
+    ]
+   },
+   "A3b-strict": {
+    "pass": true,
+    "invented": [],
+    "proposals": [
+     "## What to change in ci-bot",
+     "**Code:** every place ci-bot calls `POST /applications/{}/jobs/{}/runs` must treat `200` as the success status for creating a run.",
+     "Where it checks for `201`, accept `200`.",
+     "I'd accept `200` only, since scheduler no longer returns `201`.",
+     "Replace the `201` claim with `200`.",
+     "If you point me at the ci-bot source files, I can name the exact lines to change."
+    ]
+   },
+   "A6": {
+    "world_changed": [],
+    "outside_same": true
+   }
+  },
+  "pass": false,
+  "pass_items": false,
+  "nonlattice_fail": false
+ },
+ "nonlattice": [],
+ "tools": [
+  {
+   "name": "mcp__lattice__project_list",
+   "is_error": false,
+   "input": {}
+  },
+  {
+   "name": "mcp__lattice__contract_check",
+   "is_error": false,
+   "input": {
+    "consumer": "ci-bot"
+   }
+  },
+  {
+   "name": "mcp__lattice__linked_question_list",
+   "is_error": false,
+   "input": {
+    "consumer": "ci-bot"
+   }
+  },
+  {
+   "name": "mcp__lattice__model_get",
+   "is_error": true,
+   "input": {
+    "project": "ci-bot",
+    "section": "markdown"
+   }
+  },
+  {
+   "name": "mcp__lattice__code_links",
+   "is_error": true,
+   "input": {
+    "project": "ci-bot",
+    "target": "POST /applications/{}/jobs/{}/runs"
+   }
+  }
+ ]
+}

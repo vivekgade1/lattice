@@ -1,0 +1,162 @@
+{
+ "sid": "r2-sonnet-WD2-3",
+ "world": "W-D2",
+ "with_tool": true,
+ "status": "SCORED",
+ "reason": null,
+ "pre": {
+  "action": "created",
+  "question": "lq1",
+  "draft_rc": 0
+ },
+ "argv_equals_round1": true,
+ "child_env_has_anthropic_key": false,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 23.5
+ },
+ "cost_usd": 0.0905267,
+ "tokens": 11804,
+ "tokens_incl_cache_reads": 363031,
+ "turns": 6,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": [],
+ "outside_same": true,
+ "started_utc": "2026-10-16T17:57:52+00:00",
+ "score": {
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": true,
+   "A6": true
+  },
+  "info": {
+   "A3": true,
+   "A3b-strict": true
+  },
+  "applicable": [
+   "A1",
+   "A2",
+   "A3b",
+   "A4",
+   "A5",
+   "A6",
+   "A7"
+  ],
+  "detail": {
+   "A1": {
+    "pass": true,
+    "calls": [
+     {
+      "id": "toolu_01UoT9hu9eXTVgATiaqdT8Rg",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "A2": {
+    "pass": true,
+    "endpoint": true,
+    "number": true,
+    "others": []
+   },
+   "A3b": {
+    "pass": true,
+    "invented": [],
+    "proposals": [
+     "Scheduler now returns **200** instead of **201** from `POST /applications/{app}/jobs/{job}/runs`, and that breaks ci-bot.",
+     "**What to change in ci-bot, in this order**",
+     "Make it treat **200** as success instead of 201.",
+     "Change `status = [201]` to `status = [200]`.",
+     "Replace the claim rather than deleting it.",
+     "Dropping it would make `check` pass without the code being right.",
+     "**Spec, rule R3.** Reword it from \"...and expects 201 with id and status.\" to \"It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status.\" Propose this through the lattice change flow or Studio."
+    ]
+   },
+   "A4": {
+    "pass": true,
+    "advice": []
+   },
+   "A5": {
+    "pass": true,
+    "r6": true,
+    "proposed": []
+   },
+   "A7": {
+    "pass": true,
+    "R3": true,
+    "R4_affirmed": []
+   },
+   "A3": {
+    "pass": true,
+    "invented": []
+   },
+   "A3b-strict": {
+    "pass": true,
+    "invented": [],
+    "proposals": [
+     "Scheduler now returns **200** instead of **201** from `POST /applications/{app}/jobs/{job}/runs`, and that breaks ci-bot.",
+     "**What to change in ci-bot, in this order**",
+     "Make it treat **200** as success instead of 201.",
+     "Change `status = [201]` to `status = [200]`.",
+     "Replace the claim rather than deleting it.",
+     "Dropping it would make `check` pass without the code being right.",
+     "**Spec, rule R3.** Reword it from \"...and expects 201 with id and status.\" to \"It starts the newest version of the job with `POST /applications/{app}/jobs/{job}/runs` and expects **200** with id and status.\" Propose this through the lattice change flow or Studio."
+    ]
+   },
+   "A6": {
+    "world_changed": [],
+    "outside_same": true
+   }
+  },
+  "pass": true,
+  "pass_items": true,
+  "nonlattice_fail": false
+ },
+ "nonlattice": [],
+ "tools": [
+  {
+   "name": "mcp__lattice__project_list",
+   "is_error": false,
+   "input": {}
+  },
+  {
+   "name": "mcp__lattice__contract_check",
+   "is_error": false,
+   "input": {
+    "consumer": "ci-bot"
+   }
+  },
+  {
+   "name": "mcp__lattice__linked_question_list",
+   "is_error": false,
+   "input": {
+    "consumer": "ci-bot"
+   }
+  },
+  {
+   "name": "mcp__lattice__linked_question_draft",
+   "is_error": false,
+   "input": {
+    "id": "lq1",
+    "consumer": "ci-bot"
+   }
+  },
+  {
+   "name": "mcp__lattice__code_links",
+   "is_error": true,
+   "input": {
+    "target": "R3",
+    "project": "ci-bot"
+   }
+  }
+ ]
+}

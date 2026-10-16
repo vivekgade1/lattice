@@ -1,0 +1,58 @@
+[
+ {
+  "name": "mcp__lattice__project_list",
+  "is_error": false,
+  "input": {},
+  "result": "{\"active\":\"streak-widget\",\"projects\":[{\"name\":\"streak-widget\",\"path\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget\",\"spec\":\"missing\",\"active\":true,\"source\":\"explicit\",\"role\":\"consumer\",\"links\":[{\"from\":\"streak-widget\",\"to\":\"streak\",\"kind\":\"uses\",\"note\":\"\",\"contract\":\"static\"}]},{\"name\":\"streak\",\"path\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/shared/streak\",\"spec\":\"pres"
+ },
+ {
+  "name": "mcp__lattice__contract_check",
+  "is_error": false,
+  "input": {
+   "consumer": "streak-widget"
+  },
+  "result": "{\"workspace\":\"probe\",\"consumer\":\"streak-widget\",\"checked\":1,\"links\":[{\"consumer\":\"streak-widget\",\"provider\":\"streak\",\"contract\":\"static\",\"status\":\"ok\",\"error\":null,\"imports\":7,\"pinned\":{\"spec_ref\":\"spec:SPEC\",\"spec_hash\":\"d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c\",\"git_ref\":\"a0db033af7c51d90fda4ff1d35e10d2f3aa90662\",\"dirty\":false},\"current\":{\"spec_ref\":\"spec:SPEC\",\"spec_hash\":\"d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c\",\"git_ref\":\"a0db033af7c51d90fda4ff1d35e10d2f3aa90662\",\"dirty\":false},\"version_changed\":false,\"spec_hash_changed\":false,\"spec_ref_cha"
+ },
+ {
+  "name": "mcp__lattice__linked_question_list",
+  "is_error": false,
+  "input": {
+   "consumer": "streak-widget"
+  },
+  "result": "{\"format\":1,\"consumer\":\"streak-widget\",\"state\":\"present\",\"state_dir\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget/.lattice/state/streak-widget\",\"questions\":[{\"format\":1,\"id\":\"lq1\",\"key\":\"sha256:44e54cb90f14334eb4a2a0e292924da639a59a0fd6cc8b3d92f0a4a696588693\",\"kind\":\"linked_question\",\"workspace\":\"probe\",\"provider\":\"streak\",\"consumer\":\"streak-widget\",\"contract\":\"static\",\"status\":\"open\",\"label\":\"contradiction\",\"pinned\":{\"spec_ref\":\"spec:SPEC\",\"spec_hash\":\"d44b738522eac"
+ },
+ {
+  "name": "mcp__lattice__linked_question_draft",
+  "is_error": false,
+  "input": {
+   "id": "lq1",
+   "consumer": "streak-widget"
+  },
+  "result": "{\"format\":1,\"kind\":\"consumer_draft\",\"applied\":false,\"consumer\":\"streak-widget\",\"provider\":\"streak\",\"contract\":\"static\",\"question\":{\"id\":\"lq1\",\"status\":\"open\",\"label\":\"contradiction\",\"superseded\":null},\"pinned_spec_hash\":\"d44b738522eac105a01115bcf82741360fea73ab6c0e961a78c551434b00971c\",\"provider_after_spec_hash\":\"cad3bbb9e0aff5fb65271dadaa418ce55ef6fb121ea77e02b92d05b73226e2ab\",\"before_note\":null,\"findings\":[{\"line\":\"  BROKEN   response_field_missing  next_cursor  @ GET /v1/habits\",\"endpoint\":\"GET /v1/habits\",\"class\":\"BROKEN\",\"kind\":\"response_field_missing\",\"item\":\"next_cursor\",\"before\":\"respo"
+ },
+ {
+  "name": "mcp__lattice__code_links",
+  "is_error": true,
+  "input": {
+   "target": "GET /v1/habits",
+   "project": "streak-widget"
+  },
+  "result": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget is not a Lattice project yet (missing: REQUIREMENTS.md, spec.py, spec.trace.json). Write REQUIREMENTS.md (the rules in plain language), then run `lattice spec draft` in this directory to draft spec.py and spec.trace.json; after that these tools work without restarting. This directory is a contract consumer (it holds lattice.imports.toml and lattice.contracts.lock.json), which needs no spec for its contracts: with a workspac"
+ },
+ {
+  "name": "mcp__lattice__project_status",
+  "is_error": false,
+  "input": {
+   "project": "streak-widget"
+  },
+  "result": "{\"project\":\"streak-widget\",\"project_info\":\"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget\",\"initialised\":false,\"missing\":[\"REQUIREMENTS.md\",\"spec.py\",\"spec.trace.json\"],\"backend\":\"pending\",\"has_studio_toml\":false,\"next_steps\":[\"Write REQUIREMENTS.md: the rules of the app in plain language.\",\"Run `lattice spec draft` here to draft spec.py and spec.trace.json.\",\"Run `lattice studio .` to review the spec and its questions.\"]}"
+ },
+ {
+  "name": "Bash",
+  "is_error": true,
+  "input": {
+   "command": "cd \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget\" && ls -a && grep -rn \"next_cursor\\|cursor\" --exclude-dir=.lattice --exclude-dir=.git . | head -30; cat lattice.imports.toml"
+  },
+  "result": "<tool_use_error>Error: No such tool available: Bash. Bash is disabled for this session, in subagents as well as here.</tool_use_error>"
+ }
+]

@@ -239,3 +239,31 @@ is NOT added (it would change the argv); it is noted as an owner option. (4) The
 session NOT RESCORED if its rebuilt draft differs from the stored `draft-text.txt`. (5) Caps USD 0.50 and 8
 turns per session, USD 3 total, tokens = input + output + cache creation, `claude` CLI only, no API key; on a
 usage/rate limit the remaining sessions are NOT RUN and the pass rule is then not evaluated.
+
+## Addendum 1 (build node B-S4D2, 2026-10-16T17:44:19Z: the freeze, before any re-score or session)
+
+Order kept: case table (86/86, `cases.txt`), scorer mutants (19/19 killed by their catchers, control 86/86,
+`mutants.json`), then this freeze (`data/2026-10-16-consumer-draft-4d-round2/agent/freeze.json`, written by
+`draft_agent2.py --write-freeze`; git HEAD 3f2c0ee06617a690a010cd723ad8c375f276d3b5; `claude --version` 2.1.299
+(Claude Code); round-1 case table 37/37). sha256 of every frozen file:
+
+| file | sha256 |
+|---|---|
+| draft_agent2_scorer.py | 79e546f1cfdbd7f581b54c04c12be52c2eddb5e10a43ad8e9c123267e79b2379 |
+| draft_agent2_scorer_cases.json | 4593f645e559758c67836ad0611b0fe4d22991810d370f3c690460d8d0e62c12 |
+| draft_agent2_check.py | 32ad83f508a93bb0ee146e32b24af3fb1ffd9aa6ab599ac6d63fb6842b6c37ee |
+| draft_agent2.py | c639426584eb185c4408821c533caa18a03c14a11fc7b32a989c0b9d3de32945 |
+| draft_agent.py | f4eebedf57c86e236d37ae4f0db852a31d4f697b58ecb0976f69a81970c944cf |
+| draft_agent_scorer.py | 97395b9e5007ceb32e7cabd45f610525561858e2e8fc64efc470b055613b20ad |
+| draft_agent_scorer_cases.json | 32201ba412ebe0ec682a6778ac4458276ab7513621948ecd2aad2d4abcc0581a |
+| draft_agent_check.py | 46b667681b9271122794518686e3dda9e727aead78648ebbbbf0c9b97c5fcbfe |
+| agent_scorer.py | 92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08 |
+| agent_probes.py | bbd1fed1e0631492e4636a1fab5d3e110b61cac3e52446dd01c0882194fa0509 |
+| draft_probes.py | 3782b11bb7a555f2540cc0501ccbe1f3dc0c337f5785c432b74fb0ef4347b0fb |
+
+Information only (not in the refusal check): `draft_agent2_mutants.py` b92ddfe23201995d7b7f9e95a49ea9e1c492d3d22fb38c3ed582bd62381d7823.
+Two readings fixed here, before any re-score: (1) the Amendment 1 "any non-`lattice` tool call is an automatic fail"
+is applied literally (a denied attempt counts; round 1 had one denied Bash, in sonnet-WS6-1, so "none occurred in
+round 1" holds only for executed calls); the runner also reports the pass count ignoring denied attempts, beside
+the registered verdict. (2) The 19 mutants SM1-SM19 are the textual patches of `draft_agent2_mutants.py`; their
+catcher case ids are in that file.

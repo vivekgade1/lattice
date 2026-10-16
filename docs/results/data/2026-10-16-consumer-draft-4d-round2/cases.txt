@@ -1,0 +1,102 @@
+T01    a1         expected pass  got pass  ok
+T02    a1         expected fail  got fail  ok
+T03    a1         expected fail  got fail  ok
+T04    a1         expected pass  got pass  ok
+T10    a2         expected pass  got pass  ok
+T11    a2         expected pass  got pass  ok
+T12    a2         expected fail  got fail  ok
+T13    a2         expected fail  got fail  ok
+T14    a2         expected fail  got fail  ok
+T15    a2         expected pass  got pass  ok
+T16    a2         expected pass  got pass  ok
+T17    a2         expected fail  got fail  ok
+T18    a2         expected fail  got fail  ok
+T20    a3         expected pass  got pass  ok
+T21    a3         expected fail  got fail  ok
+T22    a3         expected fail  got fail  ok
+T23    a3         expected fail  got fail  ok
+T24    a3         expected pass  got pass  ok
+T25    a3         expected fail  got fail  ok
+T30    a4         expected pass  got pass  ok
+T31    a4         expected fail  got fail  ok
+T32    a4         expected fail  got fail  ok
+T33    a4         expected pass  got pass  ok
+T34    a4         expected pass  got pass  ok
+T35    a4         expected fail  got fail  ok
+T36    a4         expected pass  got pass  ok
+T40    a5         expected pass  got pass  ok
+T41    a5         expected fail  got fail  ok
+T42    a5         expected fail  got fail  ok
+T43    a5         expected pass  got pass  ok
+T44    a5         expected fail  got fail  ok
+T45    a5         expected pass  got pass  ok
+T50    a7         expected pass  got pass  ok
+T51    a7         expected fail  got fail  ok
+T52    a7         expected fail  got fail  ok
+T53    a7         expected pass  got pass  ok
+T54    a7         expected fail  got fail  ok
+G1-1   a3b        expected pass  got pass  ok
+G1-2   a3b        expected pass  got pass  ok
+G1-3   a3b        expected pass  got pass  ok
+G1-4   a3b        expected pass  got pass  ok
+G1-5   a3b        expected pass  got pass  ok
+G1-6   a3b        expected pass  got pass  ok
+G1-7   a3b        expected pass  got pass  ok
+G2-1a  a2         expected fail  got fail  ok
+G2-2a  a2         expected fail  got fail  ok
+G2-1b  a7         expected fail  got fail  ok
+G2-2b  a7         expected fail  got fail  ok
+G2-1c  a3b        expected pass  got pass  ok
+G2-2c  a3b        expected pass  got pass  ok
+G3-1   a3b        expected fail  got fail  ok
+G3-2   a3b        expected fail  got fail  ok
+G3-3   a3b        expected fail  got fail  ok
+G3-4   a3b        expected fail  got fail  ok
+G3-5   a3b        expected fail  got fail  ok
+G3-6   a3b        expected fail  got fail  ok
+G3-7   a3b        expected fail  got fail  ok
+G3-8   a3b        expected fail  got fail  ok
+G3-9   a3b        expected fail  got fail  ok
+G3-10  a3b        expected fail  got fail  ok
+G4-1   a3b        expected pass  got pass  ok
+G4-2   a3b        expected pass  got pass  ok
+G4-3   a3b        expected pass  got pass  ok
+G4-4   a3b        expected pass  got pass  ok
+G4-5   a3b        expected pass  got pass  ok
+G4-6   a3b        expected pass  got pass  ok
+G4-7   a3b        expected fail  got fail  ok
+G4-8   a3b        expected fail  got fail  ok
+G4-9   a3b        expected fail  got fail  ok
+G4-10  a3b        expected fail  got fail  ok
+G5-1   a3b        expected pass  got pass  ok
+G5-2   a3b        expected pass  got pass  ok
+G5-3   a3b        expected pass  got pass  ok
+G5-4   a3b        expected fail  got fail  ok
+G5-5   a3b        expected fail  got fail  ok
+G5-6   a3b        expected fail  got fail  ok
+G5-7   a3b        expected fail  got fail  ok
+G6-1   a3b        expected pass  got pass  ok
+G6-2   a3b        expected fail  got fail  ok
+G6-3   a3b        expected pass  got pass  ok
+G7-1   a3b        expected pass  got pass  ok
+G7-2   a3b        expected fail  got fail  ok
+G8-1   allow_from expected pass  got pass  ok
+G8-2   allow_from expected pass  got pass  ok
+G8-3   allow_from expected pass  got pass  ok
+G8-4   allow_from expected pass  got pass  ok
+G1: 7/7
+G2: 6/6
+G3: 10/10
+G4: 10/10
+G5: 7/7
+G6: 3/3
+G7: 2/2
+G8: 4/4
+r1-a1: 4/4
+r1-a2: 9/9
+r1-a3: 6/6
+r1-a4: 7/7
+r1-a5: 6/6
+r1-a7: 5/5
+cases: 86/86 as expected
+$PY dogfood/contracts/draft_agent2_check.py  0.03s user 0.01s system 96% cpu 0.039 total

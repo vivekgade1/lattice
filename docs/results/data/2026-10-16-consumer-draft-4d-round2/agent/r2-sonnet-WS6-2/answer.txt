@@ -1,0 +1,18 @@
+The provider `streak` renamed a response field on `GET /v1/habits` from `next_cursor` to `next`, and streak-widget still relies on `next_cursor`. I haven't changed anything. I also haven't read streak-widget's source, so the code locations below are for you to find.
+
+**What broke**
+- **Open question:** lq1, a contradiction. streak's accepted change (commit `168e2a03`) conflicts with the version streak-widget is pinned to (`a0db033a`).
+- **Broken:** the response of `GET /v1/habits` used to be `items`, `has_more`, `next_cursor`. It is now `items`, `has_more`, `next`.
+- **Affected import:** import #4 in streak-widget's contract, `GET /v1/habits`. It uses auth `token` as user `ann`, expects status 200, sends `limit` and `cursor`, and reads `items`, `has_more` and `next_cursor`.
+- **Unaffected:** the request side (`limit`, `cursor`) is not reported as changed.
+
+**What to change**
+1. **Code:** find every place streak-widget reads `next_cursor` from the `GET /v1/habits` response. Read `next` instead, and pass that value as the `cursor` request parameter on the following page request. The pagination loop and the check on `has_more` should be the only places affected. Start with `grep -rn next_cursor streak-widget/`.
+2. **Contract import:** after the code is fixed, edit `[[import]]` #4 for `GET /v1/habits`. Change `response_fields` from `["items", "has_more", "next_cursor"]` to `["items", "has_more", "next"]`. Don't delete the field to make the check pass.
+3. **Spec rules:** the project status says streak-widget has no Lattice spec (`spec: missing`), and the draft found no rules naming this endpoint. If you do add or keep a rule that says the widget pages through habits using `next_cursor`, reword it to say `next`. Do that through a change proposal in Lattice Studio, since the spec files aren't edited directly.
+4. **Re-pin and verify:** run `lattice contracts pin streak-widget`, then `lattice contracts check streak-widget`. It should report `ok` with no BROKEN findings.
+5. **Clear the question:** run `lattice contracts questions resolve streak-widget lq1`.
+
+**Other things to know**
+- **Revert option:** the rename may not be intended. You can ask streak's owner to revert it instead of adapting. In that case you would dismiss lq1 and change nothing.
+- **Unverified gaps:** the check also lists two items the provider's spec never shows. These are the `cursor` request field on `GET /v1/habits` and the `access_token` response field on `POST /v1/auth/login`. They aren't breakages. Confirm that they are still correct, but they don't block this fix.

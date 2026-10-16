@@ -1,0 +1,447 @@
+{
+ "experiment": "2026-10-16-consumer-draft-4d round 2",
+ "claude_version": "2.1.299 (Claude Code)",
+ "sessions": [
+  {
+   "sid": "r2-sonnet-WD2-1",
+   "world": "W-D2",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.34231789999999995,
+   "tokens": 76265,
+   "tokens_incl_cache_reads": 363124,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:56:17+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": true,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!"
+   ],
+   "nonlattice": []
+  },
+  {
+   "sid": "r2-sonnet-WS6-1",
+   "world": "W-S6",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.1027564,
+   "tokens": 12629,
+   "tokens_incl_cache_reads": 438673,
+   "turns": 8,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:56:43+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": false,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!",
+    "project_status",
+    "Bash!"
+   ],
+   "nonlattice": [
+    {
+     "name": "Bash",
+     "input": {
+      "command": "cd \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/s4d2/a/s/contracts-probes-99737/w/A-r2-sonnet-WS6-1/streak-widget\" && ls -a && grep -rn \"next_cursor\\|cursor\" --exclude-dir=.lattice --exclude-dir=.git . | head -30; cat lattice.imports.toml"
+     },
+     "executed": false,
+     "result": "<tool_use_error>Error: No such tool available: Bash. Bash is disabled for this session, in subagents as well as here.</tool_use_error>"
+    }
+   ]
+  },
+  {
+   "sid": "r2-sonnet-WD2-2",
+   "world": "W-D2",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.09205669999999999,
+   "tokens": 11954,
+   "tokens_incl_cache_reads": 363181,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:57:08+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": true,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!"
+   ],
+   "nonlattice": []
+  },
+  {
+   "sid": "r2-sonnet-WS6-2",
+   "world": "W-S6",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.0795426,
+   "tokens": 11027,
+   "tokens_incl_cache_reads": 287893,
+   "turns": 5,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:57:27+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": true,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft"
+   ],
+   "nonlattice": []
+  },
+  {
+   "sid": "r2-sonnet-WD2-3",
+   "world": "W-D2",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.0905267,
+   "tokens": 11804,
+   "tokens_incl_cache_reads": 363031,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:57:52+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": true,
+    "A6": true
+   },
+   "info": {
+    "A3": true,
+    "A3b-strict": true
+   },
+   "pass": true,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!"
+   ],
+   "nonlattice": []
+  },
+  {
+   "sid": "r2-sonnet-WS6-3",
+   "world": "W-S6",
+   "with_tool": true,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.0936369,
+   "tokens": 12316,
+   "tokens_incl_cache_reads": 363305,
+   "turns": 7,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:58:18+00:00",
+   "items": {
+    "A1": true,
+    "A2": true,
+    "A3b": true,
+    "A4": false,
+    "A5": true,
+    "A7": null,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": false,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "linked_question_draft",
+    "code_links!",
+    "project_status"
+   ],
+   "nonlattice": []
+  },
+  {
+   "sid": "r2-ablation-WD2-1",
+   "world": "W-D2",
+   "with_tool": false,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.33622689999999994,
+   "tokens": 74729,
+   "tokens_incl_cache_reads": 358938,
+   "turns": 7,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:58:44+00:00",
+   "items": {
+    "A1": null,
+    "A2": false,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": false,
+    "A6": true
+   },
+   "info": {
+    "A3": true,
+    "A3b-strict": true
+   },
+   "pass": false,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "code_links!",
+    "project_status",
+    "mcp__claude_ai_Claude_Docs__read!"
+   ],
+   "nonlattice": [
+    {
+     "name": "mcp__claude_ai_Claude_Docs__read",
+     "input": {
+      "ref": {
+       "object": "file",
+       "id": "x"
+      }
+     },
+     "executed": false,
+     "result": "Permission to use mcp__claude_ai_Claude_Docs__read has been denied because Claude Code is running in don't ask mode. IMPORTANT: You *may* attempt to accomplish this action using other tools that might naturally be used to accomplish this goal, e.g. using head instead of cat. But you *should not* att"
+    }
+   ]
+  },
+  {
+   "sid": "r2-ablation-WD2-2",
+   "world": "W-D2",
+   "with_tool": false,
+   "status": "SCORED",
+   "reason": null,
+   "pre": {
+    "action": "created",
+    "question": "lq1",
+    "draft_rc": 0
+   },
+   "argv_equals_round1": true,
+   "child_env_has_anthropic_key": false,
+   "cost_usd": 0.0770458,
+   "tokens": 10339,
+   "tokens_incl_cache_reads": 285737,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": [],
+   "outside_same": true,
+   "started_utc": "2026-10-16T17:59:10+00:00",
+   "items": {
+    "A1": null,
+    "A2": false,
+    "A3b": true,
+    "A4": true,
+    "A5": true,
+    "A7": false,
+    "A6": true
+   },
+   "info": {
+    "A3": false,
+    "A3b-strict": true
+   },
+   "pass": false,
+   "tools": [
+    "project_list",
+    "contract_check",
+    "linked_question_list",
+    "model_get!",
+    "code_links!"
+   ],
+   "nonlattice": []
+  }
+ ],
+ "scored": 8,
+ "tool_sessions_scored": 6,
+ "items_with_tool": {
+  "A1": "6/6",
+  "A2": "6/6",
+  "A3b": "6/6",
+  "A4": "5/6",
+  "A5": "6/6",
+  "A6": "6/6",
+  "A7": "3/3"
+ },
+ "info_with_tool": {
+  "A3": "1/6",
+  "A3b-strict": "6/6"
+ },
+ "items_ablation": {
+  "A2": "0/2",
+  "A3b": "2/2",
+  "A4": "2/2",
+  "A5": "2/2",
+  "A6": "2/2",
+  "A7": "0/2"
+ },
+ "info_ablation": {
+  "A3": "1/2",
+  "A3b-strict": "2/2"
+ },
+ "tool_sessions_pass_every_item_and_no_nonlattice": 4,
+ "tool_sessions_pass_every_item_ignoring_nonlattice": 5,
+ "tool_sessions_pass_every_item_ignoring_denied_attempts": 5,
+ "A6": "8/8",
+ "pass_rule_evaluated": true,
+ "pass_rule_met": false,
+ "pass_rule_met_ignoring_denied_attempts": true,
+ "total_cost_usd": 1.2141,
+ "total_tokens": 221063,
+ "token_definition": "input + output + cache creation (cache reads excluded); cap 400000",
+ "total_tokens_incl_cache_reads": 2823882,
+ "stop": null,
+ "wall_s": 198.5
+}
+$PY dogfood/contracts/draft_agent2.py --scratch $S/a --out $D/agent  19.13s user 5.37s system 12% cpu 3:18.67 total

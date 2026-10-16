@@ -1,0 +1,421 @@
+[
+ {
+  "set": "agent",
+  "sid": "sonnet-WD2-1",
+  "world": "W-D2",
+  "with_tool": true,
+  "answer_equals_stored": true,
+  "status": "RESCORED",
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": true,
+   "A6": true
+  },
+  "info": {
+   "A3": false,
+   "A3b-strict": true
+  },
+  "equals_stored_items": {
+   "A1": true,
+   "A2": true,
+   "A4": true,
+   "A5": true,
+   "A7": true
+  },
+  "stored_A3": false,
+  "A3_recomputed_equals_stored": true,
+  "every_item": true,
+  "nonlattice": [],
+  "A3b_invented": [],
+  "A3b_strict_invented": [],
+  "A3b_proposals": 11,
+  "allow_sizes": {
+   "tools": 30,
+   "tokens": 21,
+   "words": 21,
+   "hex": 8
+  }
+ },
+ {
+  "set": "agent",
+  "sid": "sonnet-WS6-1",
+  "world": "W-S6",
+  "with_tool": true,
+  "answer_equals_stored": true,
+  "status": "RESCORED",
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": null,
+   "A6": true
+  },
+  "info": {
+   "A3": true,
+   "A3b-strict": true
+  },
+  "equals_stored_items": {
+   "A1": true,
+   "A2": true,
+   "A4": true,
+   "A5": true,
+   "A7": true
+  },
+  "stored_A3": true,
+  "A3_recomputed_equals_stored": true,
+  "every_item": true,
+  "nonlattice": [
+   {
+    "name": "Bash",
+    "input": {
+     "command": "cd /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/draft4c/agent-scratch2/s/contracts-probes-89327/w/A-sonnet-WS6-1/streak-widget && ls -la && grep -rn \"next_cursor\\|import\\]\\]\" --exclude-dir=.lattice --exclude-dir=node_modules . | head -30"
+    },
+    "executed": false,
+    "result": "<tool_use_error>Error: No such tool available: Bash. Bash is disabled for this session, in subagents as well as here.</tool_use_error>"
+   }
+  ],
+  "A3b_invented": [],
+  "A3b_strict_invented": [],
+  "A3b_proposals": 4,
+  "allow_sizes": {
+   "tools": 30,
+   "tokens": 22,
+   "words": 21,
+   "hex": 8
+  }
+ },
+ {
+  "set": "agent",
+  "sid": "sonnet-WD2-2",
+  "world": "W-D2",
+  "with_tool": true,
+  "answer_equals_stored": true,
+  "status": "RESCORED",
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": true,
+   "A6": true
+  },
+  "info": {
+   "A3": true,
+   "A3b-strict": true
+  },
+  "equals_stored_items": {
+   "A1": true,
+   "A2": true,
+   "A4": true,
+   "A5": true,
+   "A7": true
+  },
+  "stored_A3": true,
+  "A3_recomputed_equals_stored": true,
+  "every_item": true,
+  "nonlattice": [],
+  "A3b_invented": [],
+  "A3b_strict_invented": [],
+  "A3b_proposals": 6,
+  "allow_sizes": {
+   "tools": 30,
+   "tokens": 21,
+   "words": 21,
+   "hex": 8
+  }
+ },
+ {
+  "set": "agent",
+  "sid": "sonnet-WS6-2",
+  "world": "W-S6",
+  "with_tool": true,
+  "answer_equals_stored": true,
+  "status": "RESCORED",
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": null,
+   "A6": true
+  },
+  "info": {
+   "A3": true,
+   "A3b-strict": true
+  },
+  "equals_stored_items": {
+   "A1": true,
+   "A2": true,
+   "A4": true,
+   "A5": true,
+   "A7": true
+  },
+  "stored_A3": true,
+  "A3_recomputed_equals_stored": true,
+  "every_item": true,
+  "nonlattice": [],
+  "A3b_invented": [],
+  "A3b_strict_invented": [],
+  "A3b_proposals": 5,
+  "allow_sizes": {
+   "tools": 30,
+   "tokens": 22,
+   "words": 21,
+   "hex": 8
+  }
+ },
+ {
+  "set": "agent",
+  "sid": "sonnet-WD2-3",
+  "world": "W-D2",
+  "with_tool": true,
+  "answer_equals_stored": true,
+  "status": "RESCORED",
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": true,
+   "A6": true
+  },
+  "info": {
+   "A3": true,
+   "A3b-strict": true
+  },
+  "equals_stored_items": {
+   "A1": true,
+   "A2": true,
+   "A4": true,
+   "A5": true,
+   "A7": true
+  },
+  "stored_A3": true,
+  "A3_recomputed_equals_stored": true,
+  "every_item": true,
+  "nonlattice": [],
+  "A3b_invented": [],
+  "A3b_strict_invented": [],
+  "A3b_proposals": 6,
+  "allow_sizes": {
+   "tools": 30,
+   "tokens": 21,
+   "words": 21,
+   "hex": 8
+  }
+ },
+ {
+  "set": "agent",
+  "sid": "sonnet-WS6-3",
+  "world": "W-S6",
+  "with_tool": true,
+  "answer_equals_stored": true,
+  "status": "RESCORED",
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": null,
+   "A6": true
+  },
+  "info": {
+   "A3": false,
+   "A3b-strict": true
+  },
+  "equals_stored_items": {
+   "A1": true,
+   "A2": true,
+   "A4": true,
+   "A5": true,
+   "A7": true
+  },
+  "stored_A3": false,
+  "A3_recomputed_equals_stored": true,
+  "every_item": true,
+  "nonlattice": [],
+  "A3b_invented": [],
+  "A3b_strict_invented": [],
+  "A3b_proposals": 5,
+  "allow_sizes": {
+   "tools": 30,
+   "tokens": 22,
+   "words": 21,
+   "hex": 8
+  }
+ },
+ {
+  "set": "agent",
+  "sid": "ablation-WD2-1",
+  "world": "W-D2",
+  "with_tool": false,
+  "answer_equals_stored": true,
+  "status": "RESCORED",
+  "items": {
+   "A1": null,
+   "A2": false,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": false,
+   "A6": true
+  },
+  "info": {
+   "A3": false,
+   "A3b-strict": true
+  },
+  "equals_stored_items": {
+   "A1": true,
+   "A2": true,
+   "A4": true,
+   "A5": true,
+   "A7": true
+  },
+  "stored_A3": false,
+  "A3_recomputed_equals_stored": true,
+  "every_item": false,
+  "nonlattice": [],
+  "A3b_invented": [],
+  "A3b_strict_invented": [],
+  "A3b_proposals": 10,
+  "allow_sizes": {
+   "tools": 28,
+   "tokens": 20,
+   "words": 21,
+   "hex": 8
+  }
+ },
+ {
+  "set": "agent",
+  "sid": "ablation-WD2-2",
+  "world": "W-D2",
+  "with_tool": false,
+  "answer_equals_stored": true,
+  "status": "RESCORED",
+  "items": {
+   "A1": null,
+   "A2": false,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": false,
+   "A6": true
+  },
+  "info": {
+   "A3": false,
+   "A3b-strict": true
+  },
+  "equals_stored_items": {
+   "A1": true,
+   "A2": true,
+   "A4": true,
+   "A5": true,
+   "A7": true
+  },
+  "stored_A3": false,
+  "A3_recomputed_equals_stored": true,
+  "every_item": false,
+  "nonlattice": [],
+  "A3b_invented": [],
+  "A3b_strict_invented": [],
+  "A3b_proposals": 5,
+  "allow_sizes": {
+   "tools": 28,
+   "tokens": 20,
+   "words": 21,
+   "hex": 8
+  }
+ },
+ {
+  "set": "agent-partial-run1",
+  "sid": "sonnet-WD2-1",
+  "world": "W-D2",
+  "with_tool": true,
+  "answer_equals_stored": true,
+  "status": "RESCORED",
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": true,
+   "A6": true
+  },
+  "info": {
+   "A3": false,
+   "A3b-strict": true
+  },
+  "equals_stored_items": {
+   "A1": true,
+   "A2": true,
+   "A4": true,
+   "A5": true,
+   "A7": true
+  },
+  "stored_A3": false,
+  "A3_recomputed_equals_stored": true,
+  "every_item": true,
+  "nonlattice": [],
+  "A3b_invented": [],
+  "A3b_strict_invented": [],
+  "A3b_proposals": 6,
+  "allow_sizes": {
+   "tools": 30,
+   "tokens": 21,
+   "words": 21,
+   "hex": 8
+  }
+ },
+ {
+  "set": "agent-partial-run1",
+  "sid": "sonnet-WS6-1",
+  "world": "W-S6",
+  "with_tool": true,
+  "answer_equals_stored": true,
+  "status": "RESCORED",
+  "items": {
+   "A1": true,
+   "A2": true,
+   "A3b": true,
+   "A4": true,
+   "A5": true,
+   "A7": null,
+   "A6": true
+  },
+  "info": {
+   "A3": false,
+   "A3b-strict": true
+  },
+  "equals_stored_items": {
+   "A1": true,
+   "A2": true,
+   "A4": true,
+   "A5": true,
+   "A7": true
+  },
+  "stored_A3": false,
+  "A3_recomputed_equals_stored": true,
+  "every_item": true,
+  "nonlattice": [],
+  "A3b_invented": [],
+  "A3b_strict_invented": [],
+  "A3b_proposals": 6,
+  "allow_sizes": {
+   "tools": 30,
+   "tokens": 22,
+   "words": 21,
+   "hex": 8
+  }
+ }
+]

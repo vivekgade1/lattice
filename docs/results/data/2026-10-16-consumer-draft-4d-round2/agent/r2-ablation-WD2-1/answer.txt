@@ -1,0 +1,32 @@
+I couldn't read ci-bot's source or its `lattice.imports.toml`. I have no file-reading tools here, and ci-bot has no `spec.py`, so the Lattice code-link tools don't work on it. Everything below comes from the contract check and the open linked question (`lq1`). The file names are the ones I'd expect, not ones I've confirmed.
+
+## What broke
+
+The scheduler change (commit `c73bea6e`, spec hash `24c5fd8f`) contradicts ci-bot's pin (`9bcae0e2`). One endpoint is affected: `POST /applications/{}/jobs/{}/runs`.
+
+- **BROKEN:** ci-bot relies on status `201`, but the scheduler's spec no longer shows it. It now shows `[200, 401, 404, 409]`.
+- **CHANGED (relied on):** status `200` is now observed on this endpoint.
+- **Gap, not a break:** `POST /auth/login` has no `access_token` in the scheduler's spec. That was already the case before the change.
+
+## What to change in ci-bot
+
+1. **Code that calls the run-creation endpoint.**
+   - Treat `200` as the success status for starting a run. Wherever the code checks for `201`, e.g. `status == 201` or `resp.status_code == 201`, change it to `200`. If you want to keep tolerating `201` for now, accept both.
+   - Handle `401` (re-authenticate or fail clearly) and `404` (unknown application or job).
+   - Handle `409` (conflict). It is probably a run already in progress; the scheduler's spec should say what it means. The bot needs an explicit behavior for it, such as skip, retry later, or report. If the old code treated every non-`201` response as a failure, `409` is the one that changes behavior.
+
+2. **ci-bot's import declaration.** `lattice.imports.toml` currently claims `201` for this endpoint. Replace it with `200`, and add `401`, `404` and `409` if ci-bot handles them.
+
+3. **ci-bot's spec.** There isn't one yet (`spec.py` is missing).
+   - If the rules live in `REQUIREMENTS.md`, edit any rule that says "a started run returns/expects 201" to say `200`, and add rules for the `409`, `401` and `404` behavior.
+   - If there is no `REQUIREMENTS.md` either, none of this applies yet. You can do the code and import changes now and write the spec later.
+   - I can't propose the spec change through Lattice, because ci-bot isn't a Lattice project yet and this server is read-only.
+
+4. **After the edits, run these in order:**
+   - `lattice contracts check ci-bot` to confirm there are no BROKEN or relied-on CHANGED findings.
+   - `lattice contracts pin ci-bot` to re-pin to `c73bea6e`.
+   - `lattice contracts questions resolve ci-bot lq1` to clear the open question.
+
+Alternatively, ask the scheduler's owner to revert to `201`. The suggestion on `lq1` offers that option, but `200` is now the accepted contract.
+
+I changed nothing.

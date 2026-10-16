@@ -1,0 +1,24 @@
+The cause is streak's `GET /v1/habits`, which now returns `next` where it used to return `next_cursor`. I changed nothing. I also didn't read streak-widget's source, so I can't give file or line numbers for the code.
+
+## What broke
+streak's accepted contract (commit `168e2a03`, spec hash `cad3bbb9e0af`) differs from streak-widget's pin (`d44b738522ea`). This is open linked question `lq1`.
+- **BROKEN:** `GET /v1/habits` no longer shows `next_cursor` in its response. It now shows `items`, `has_more` and `next`.
+- **CHANGED, and relied on:** the response field `next` is new. It appears to be the renamed `next_cursor`, but that is my inference from the field lists, not something the spec says.
+- **Unaffected:** the request side is unchanged (`limit`, `cursor`). `contract_check` also reports two gaps, `cursor` on `GET /v1/habits` and `access_token` on `POST /v1/auth/login`. The provider's spec never shows either field. They are not new, so they don't need action for this break.
+- **Why `contract_check` still says "ok":** it compares your pin against streak's current working copy, and that hasn't picked up the new commit. Only `lq1` shows the break.
+
+## What to change in streak-widget
+
+**1. Code.** Find where the widget calls `GET /v1/habits` and reads `next_cursor` from the response. Change it to read `next`. The `cursor` request parameter stays as it is. Do this before touching the import table, because the table must describe what the code really does.
+
+**2. Contract file, `lattice.imports.toml`.** Edit `[[import]]` #4 (`GET /v1/habits`) so `response_fields` changes from `["items", "has_more", "next_cursor"]` to `["items", "has_more", "next"]`. Don't delete `next_cursor` without adding `next`. The draft explicitly rules out removing a claim to make the check pass.
+
+**3. Spec.** streak-widget has no Lattice spec yet: `REQUIREMENTS.md`, `spec.py` and `spec.trace.json` are all missing. So there is no spec rule to edit for this break, and nothing in the spec is broken. Step 2 is the only contract edit. If you want a spec later, write `REQUIREMENTS.md` and run `lattice spec draft`. If you add one, any rule that mentions paging habits should say `next`, not `next_cursor`.
+
+**4. Re-pin and verify.** Run these in order:
+- `lattice contracts pin streak-widget`
+- `lattice contracts check streak-widget` (it should report no BROKEN findings)
+- `lattice contracts questions resolve streak-widget lq1`
+
+## Check with streak's owner first
+I can't tell whether the rename is intentional. If it isn't, ask streak's owner to revert it, and then streak-widget needs no change. You would dismiss `lq1` instead of resolving it.
