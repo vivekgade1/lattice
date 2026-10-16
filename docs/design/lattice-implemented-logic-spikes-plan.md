@@ -220,10 +220,10 @@ pre-registration may be written earlier and is independent of the others' builds
    (`detect`: `*.csproj` with `Microsoft.AspNetCore`; `extract`; `runtime`: process runtime via the project's
    harness) is registered like the others. A layer A checker for .NET provides the findings `pycheck`/`gocheck` give.
 3. **Language rules hold** (`docs/lattice-language-rules.md`): each construct is gated per target with an exit
-   condition; nothing is cut to the lowest common denominator. **Open decision for the pre-registration: whether the
-   Lattice-language generators (today Python and Go targets) also gain a C# target.** It is a very large, separate
-   piece of work (runtime library, T2 calls, differential tests) and is not assumed; the spike delivers import,
-   check, workflow, impact and build-from-spec for existing .NET apps first.
+   condition; nothing is cut to the lowest common denominator. **Ruled out (owner, 2026-10-16): no C# code generator.**
+   The Lattice-language generators (`gogen`, `emit`, `tsgen`) are not used by the spec checker, importer or Studio
+   (verified by imports); the spike delivers import, check, workflow, impact and build-from-spec for existing .NET
+   apps. The reference interpreter (`lattice.api`, `lattice.check`) stays the single semantics for all three stacks.
 4. **Registered test (opus pre-registration before any code):** development corpus (Streak reproduced as an
    ASP.NET Core app, written by a separate agent against the Streak spec) and a held-out .NET app with independent
    ground truth, scored once after the freeze; route and table recall/precision, workflows replayed, the parity
