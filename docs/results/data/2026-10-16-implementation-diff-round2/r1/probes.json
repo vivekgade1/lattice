@@ -1,0 +1,1055 @@
+[
+  {
+    "id": "PE",
+    "observed": {
+      "S": {
+        "implemented": 25,
+        "test_only": 1
+      },
+      "S4": {
+        "implemented": 19,
+        "spec_only": 6,
+        "test_only": 1
+      },
+      "S4_differs": {},
+      "S_differs": {}
+    },
+    "pass": true,
+    "predicted": {
+      "S": {
+        "implemented": 25,
+        "test_only": 1
+      },
+      "S4": {
+        "implemented": 19,
+        "spec_only": 6,
+        "test_only": 1
+      }
+    },
+    "probe": "endpoint statuses vs the hand-built truth (S and S4)",
+    "ran": true,
+    "seconds": 0.0
+  },
+  {
+    "id": "PR",
+    "observed": {
+      "S": {
+        "implemented_unverified": 142,
+        "implemented_verified": 0,
+        "no_element": 6,
+        "required_not_implemented": 0
+      },
+      "S4": {
+        "implemented_unverified": 113,
+        "implemented_verified": 0,
+        "no_element": 6,
+        "required_not_implemented": 29
+      },
+      "S4_partial": [
+        "R114",
+        "R125",
+        "R127",
+        "R128",
+        "R129",
+        "R132",
+        "R133",
+        "R134",
+        "R135",
+        "R143",
+        "R21",
+        "R27",
+        "R28",
+        "R32",
+        "R7",
+        "R89",
+        "R90",
+        "R91",
+        "R93"
+      ],
+      "S4_prediction_missing_from_report": [],
+      "S4_required_missing_from_prediction": [],
+      "S_no_element": [
+        "R1",
+        "R136",
+        "R142",
+        "R15",
+        "R2",
+        "R6"
+      ],
+      "checks": {
+        "S4_implemented_113": true,
+        "S4_no_element": true,
+        "S4_required_set": true,
+        "S4_table_only_unverified": true,
+        "S_implemented_142": true,
+        "S_no_element": true,
+        "S_required_empty": true,
+        "S_table_only_unverified": true
+      }
+    },
+    "pass": true,
+    "predicted": {
+      "S": "142 implemented, 0 required, no_element {R1,R2,R6,R15,R136,R142}",
+      "S4": "29 required (listed), 113 implemented, same no_element"
+    },
+    "probe": "rule statuses (S and S4) as exact sets",
+    "ran": true,
+    "seconds": 0.0
+  },
+  {
+    "id": "PV",
+    "in_predicted_range": true,
+    "observed": {
+      "machine_rules_unverified": true,
+      "routes_agree": true,
+      "routes_verified": "20/25",
+      "rules_agree": true,
+      "rules_implemented_verified": "108/142",
+      "rules_only_in_recompute": [],
+      "rules_only_in_report": [],
+      "stale_after_one_edit": true,
+      "stale_changed": [
+        "internal/habits/routes.go"
+      ],
+      "static_verified_counts [rules, routes, flows]": {
+        "S-stat": [
+          0,
+          0,
+          0
+        ],
+        "S4-stat": [
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "pass": true,
+    "predicted": {
+      "S-dyn": "routes verified 17-24/25, rules implemented_verified 50-120/142",
+      "stale": "exactly the edited path, 0 verified",
+      "static": "0 verified"
+    },
+    "probe": "verified flags vs an independent recomputation from the frozen workflows.json",
+    "ran": true,
+    "seconds": 0.1,
+    "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  {
+    "id": "PO",
+    "observed": {
+      "S_excluded": [
+        [
+          "framework",
+          "ANY *",
+          "gin NoMethod handler"
+        ],
+        [
+          "framework",
+          "ANY *",
+          "gin NoRoute handler"
+        ],
+        [
+          "route",
+          "PUT /test/clock",
+          "test_only"
+        ]
+      ],
+      "S_orphans": [],
+      "Splus_excluded": [
+        [
+          "framework",
+          "ANY *",
+          "gin NoMethod handler"
+        ],
+        [
+          "framework",
+          "ANY *",
+          "gin NoRoute handler"
+        ],
+        [
+          "route",
+          "GET /metrics",
+          "plumbing"
+        ],
+        [
+          "route",
+          "PUT /test/clock",
+          "test_only"
+        ]
+      ],
+      "Splus_orphans": [
+        "GET /v1/admin/stats"
+      ],
+      "checks": {
+        "S_health_stays_required": true,
+        "S_no_orphans": true,
+        "S_test_only": true,
+        "S_two_framework": true,
+        "Splus_metrics_not_orphan": true,
+        "Splus_metrics_plumbing": true,
+        "Splus_orphans": true
+      }
+    },
+    "pass": true,
+    "predicted": {
+      "S": "0 orphans; excluded test_only PUT /test/clock (+2 framework)",
+      "S+": "orphans exactly {GET /v1/admin/stats}; /metrics plumbing"
+    },
+    "probe": "orphans and exclusions on S and the planted S+",
+    "ran": true,
+    "seconds": 0.0
+  },
+  {
+    "id": "PC",
+    "observed": {
+      "agree": 23,
+      "cases": 23,
+      "identical_10": true,
+      "rows": [
+        {
+          "case": "registration line",
+          "got": "hold",
+          "reason": null,
+          "want": "hold"
+        },
+        {
+          "case": "handler line",
+          "got": "hold",
+          "reason": null,
+          "want": "hold"
+        },
+        {
+          "case": "whitespace variant",
+          "got": "hold",
+          "reason": null,
+          "want": "hold"
+        },
+        {
+          "case": "symbol on the line",
+          "got": "hold",
+          "reason": null,
+          "want": "hold"
+        },
+        {
+          "case": "inventory symbol (not a word on the line)",
+          "got": "hold",
+          "reason": null,
+          "want": "hold"
+        },
+        {
+          "case": "go.mod in the source set",
+          "got": "hold",
+          "reason": null,
+          "want": "hold"
+        },
+        {
+          "case": "line 0",
+          "got": "reject",
+          "reason": "'internal/habits/routes.go' has 451 lines, not line 0",
+          "want": "reject"
+        },
+        {
+          "case": "line n+1 (452)",
+          "got": "reject",
+          "reason": "'internal/habits/routes.go' has 451 lines, not line 452",
+          "want": "reject"
+        },
+        {
+          "case": "missing file",
+          "got": "reject",
+          "reason": "'internal/habits/nope.go': 'nope.go' does not exist",
+          "want": "reject"
+        },
+        {
+          "case": "empty quote",
+          "got": "reject",
+          "reason": "the quote has fewer than 8 non-space characters",
+          "want": "reject"
+        },
+        {
+          "case": "5-character quote",
+          "got": "reject",
+          "reason": "the quote has fewer than 8 non-space characters",
+          "want": "reject"
+        },
+        {
+          "case": "quote from line +1",
+          "got": "reject",
+          "reason": "the quote is not in internal/habits/routes.go:24",
+          "want": "reject"
+        },
+        {
+          "case": "wrong symbol",
+          "got": "reject",
+          "reason": "the symbol 'remove' is not on internal/habits/routes.go:24",
+          "want": "reject"
+        },
+        {
+          "case": "../ escape",
+          "got": "reject",
+          "reason": "the path '../S4/internal/habits/routes.go' is not a relative, normalised path",
+          "want": "reject"
+        },
+        {
+          "case": "absolute path",
+          "got": "reject",
+          "reason": "the path '/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/p2/r1/S/internal/habits/routes.go' is not a relative, normalised path",
+          "want": "reject"
+        },
+        {
+          "case": "symlink out of root",
+          "got": "reject",
+          "reason": "'evil/link.go': 'link.go' is a symbolic link",
+          "want": "reject"
+        },
+        {
+          "case": "case variant",
+          "got": "reject",
+          "reason": "'Internal/habits/routes.go': 'Internal' differs in case",
+          "want": "reject"
+        },
+        {
+          "case": "vendor file",
+          "got": "reject",
+          "reason": "'vendor/x/x.go' is not in the source set and is not a code file",
+          "want": "reject"
+        },
+        {
+          "case": ".git file",
+          "got": "reject",
+          "reason": "'.git/config' is not in the source set and is not a code file",
+          "want": "reject"
+        },
+        {
+          "case": ".env file",
+          "got": "reject",
+          "reason": "'.env' is not in the source set and is not a code file",
+          "want": "reject"
+        },
+        {
+          "case": "spec text quoted as code",
+          "got": "reject",
+          "reason": "'REQUIREMENTS.md' is not in the source set and is not a code file",
+          "want": "reject"
+        },
+        {
+          "case": "a.go:12:3",
+          "got": "reject",
+          "reason": "a code citation is code:<relative path>:<line> with exactly one trailing :<int>",
+          "want": "reject"
+        },
+        {
+          "case": "NUL in path",
+          "got": "reject",
+          "reason": "the path 'internal/habits/routes.go\\x00.txt' is not a relative, normalised path",
+          "want": "reject"
+        }
+      ]
+    },
+    "pass": true,
+    "predicted": "100%, 10/10 identical",
+    "probe": "the code: citation table (valid, invalid, forged), 10 runs identical",
+    "ran": true,
+    "seconds": 0.1
+  },
+  {
+    "core_tokens_in_predicted_range": false,
+    "id": "PA",
+    "observed": {
+      "a_differing": [],
+      "a_identical": true,
+      "a_keys": 18,
+      "b": {
+        "core_impl_tokens": {
+          "S-dyn": 7716,
+          "S-stat": 7435,
+          "S4-stat": 7311
+        },
+        "replies": {
+          "ambiguous_one": {
+            "got": [
+              "unsettled",
+              null
+            ],
+            "rejected": [],
+            "rounds": 1,
+            "want": [
+              "unsettled",
+              null
+            ]
+          },
+          "ambiguous_two": {
+            "got": [
+              "ambiguous",
+              "static"
+            ],
+            "rejected": [],
+            "rounds": 1,
+            "want": [
+              "ambiguous",
+              "static"
+            ]
+          },
+          "not_specified_not_implemented": {
+            "got": [
+              "not_specified_not_implemented",
+              "inferred"
+            ],
+            "rejected": [],
+            "rounds": 1,
+            "want": [
+              "not_specified_not_implemented",
+              "inferred"
+            ]
+          },
+          "required_endpoints_present": {
+            "got": [
+              "unsettled",
+              null
+            ],
+            "rejected": [],
+            "rounds": 1,
+            "want": [
+              "unsettled",
+              null
+            ]
+          },
+          "required_ok": {
+            "got": [
+              "required_not_implemented",
+              "inferred"
+            ],
+            "rejected": [],
+            "rounds": 1,
+            "want": [
+              "required_not_implemented",
+              "inferred"
+            ]
+          },
+          "unverified_without_element": {
+            "got": [
+              "unsettled",
+              null
+            ],
+            "rejected": [],
+            "rounds": 1,
+            "want": [
+              "unsettled",
+              null
+            ]
+          },
+          "verified_cites_unverified_flow": {
+            "got": [
+              "implemented_unverified",
+              "static"
+            ],
+            "rejected": [],
+            "rounds": 1,
+            "want": [
+              "implemented_unverified",
+              "static"
+            ]
+          },
+          "verified_code_not_evidence": {
+            "got": [
+              "implemented_unverified",
+              "static"
+            ],
+            "rejected": [],
+            "rounds": 1,
+            "want": [
+              "implemented_unverified",
+              "static"
+            ]
+          },
+          "verified_ok": {
+            "got": [
+              "implemented_verified",
+              "observed"
+            ],
+            "rejected": [],
+            "rounds": 1,
+            "want": [
+              "implemented_verified",
+              "observed"
+            ]
+          },
+          "verified_without_code": {
+            "got": [
+              "implemented_unverified",
+              "static"
+            ],
+            "rejected": [],
+            "rounds": 1,
+            "want": [
+              "implemented_unverified",
+              "static"
+            ]
+          }
+        }
+      }
+    },
+    "pass": true,
+    "predicted": {
+      "a": "identical to 454a8e6",
+      "b": "5-7k tokens on S, <= 8000; 10/10"
+    },
+    "probe": "ask with a stub generator: (a) no inventory identical to the base; (b) with one, the section within budget and ten scripted replies",
+    "ran": true,
+    "seconds": 1.6
+  },
+  {
+    "id": "PT",
+    "observed": {
+      "hits": "8/8",
+      "misses": [],
+      "rows": [
+        {
+          "got": "exists",
+          "id": "PT1",
+          "project": "S",
+          "question": "check in a habit",
+          "top": [
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "implemented_verified",
+              2.0091
+            ],
+            [
+              "impl:route:POST /v1/completions/batch",
+              "implemented_verified",
+              1.7122
+            ],
+            [
+              "impl:route:GET /v1/habits/{}",
+              "implemented_verified",
+              0.928
+            ]
+          ],
+          "want": "exists"
+        },
+        {
+          "got": "exists",
+          "id": "PT2",
+          "project": "S",
+          "question": "the home screen",
+          "top": [
+            [
+              "impl:route:GET /v1/home",
+              "implemented_verified",
+              1.5506
+            ],
+            [
+              "impl:route:POST /v1/nudges/{}/dismiss",
+              "implemented_verified",
+              0.4962
+            ],
+            [
+              "impl:route:DELETE /v1/habits/{}",
+              "implemented_verified",
+              0.4962
+            ]
+          ],
+          "want": "exists"
+        },
+        {
+          "got": "exists",
+          "id": "PT3",
+          "project": "S",
+          "question": "register a device",
+          "top": [
+            [
+              "impl:route:POST /v1/devices",
+              "implemented_verified",
+              2.832
+            ],
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "implemented_verified",
+              1.8245
+            ],
+            [
+              "impl:route:POST /v1/auth/logout",
+              "implemented_unverified",
+              1.3898
+            ]
+          ],
+          "want": "exists"
+        },
+        {
+          "got": "spec_only",
+          "id": "PT4",
+          "project": "S4",
+          "question": "the home screen",
+          "top": [
+            [
+              "impl:route:GET /v1/home",
+              "spec_only",
+              3.2958
+            ]
+          ],
+          "want": "spec_only"
+        },
+        {
+          "got": "spec_only",
+          "id": "PT5",
+          "project": "S4",
+          "question": "register a device",
+          "top": [
+            [
+              "impl:route:POST /v1/devices",
+              "spec_only",
+              3.1492
+            ],
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "spec_only",
+              2.0149
+            ],
+            [
+              "impl:route:POST /v1/auth/logout",
+              "implemented_unverified",
+              1.5522
+            ]
+          ],
+          "want": "spec_only"
+        },
+        {
+          "got": "no_match",
+          "id": "PT6",
+          "project": "S",
+          "question": "password reset",
+          "top": [
+            [
+              "impl:route:POST /v1/auth/register",
+              "implemented_verified",
+              1.2667
+            ],
+            [
+              "impl:route:POST /v1/auth/login",
+              "implemented_verified",
+              1.2667
+            ]
+          ],
+          "want": "no_match"
+        },
+        {
+          "got": "no_match",
+          "id": "PT7",
+          "project": "S",
+          "question": "export CSV",
+          "top": [],
+          "want": "no_match"
+        },
+        {
+          "got": "several",
+          "id": "PT8",
+          "project": "S",
+          "question": "list",
+          "top": [
+            [
+              "impl:route:GET /health",
+              "implemented_unverified",
+              0.9075
+            ],
+            [
+              "impl:route:GET /v1/habits",
+              "implemented_verified",
+              0.9075
+            ],
+            [
+              "impl:route:GET /v1/habits/{}",
+              "implemented_verified",
+              0.9075
+            ]
+          ],
+          "want": "several"
+        }
+      ]
+    },
+    "pass": true,
+    "predicted": "7/8 (6-8)",
+    "probe": "workflow_find, 8 fixed queries",
+    "ran": true,
+    "seconds": 0.2
+  },
+  {
+    "id": "PW",
+    "observed": {
+      "changed": 0,
+      "diffs": {},
+      "new": 0,
+      "pf_inside": {
+        "pass": true
+      },
+      "window": {
+        "ask_runs": 10,
+        "capture_inside_err": "8e80/scratchpad/c2/p2/r1/S/inv-out is under the app root /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/p2/r1/S: nothing is written there",
+        "capture_inside_rc": 2,
+        "report_cli_rcs": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "tool_errors": 0,
+        "tools_rcs": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "pass": true,
+    "predicted": "0 changed, 0 new; capture exit 2",
+    "probe": "no write: clone, spec files and inventories snapshot before/after report x10, tools x10 (stdio --readonly), ask x10, PF; capture with --out in the clone refused",
+    "ran": true,
+    "seconds": 26.1
+  },
+  {
+    "id": "PF",
+    "observed": {
+      "containers_after": [
+        "aetheris-alert-notifier-v64spc",
+        "aetheris-clickhouse",
+        "aetheris-console-bff",
+        "aetheris-console-mcp",
+        "aetheris-console-web",
+        "aetheris-discord-bot",
+        "aetheris-dragonfly",
+        "aetheris-ibkr-gateway",
+        "aetheris-market-context",
+        "aetheris-news-sentinel",
+        "aetheris-qdrant",
+        "aetheris-quasar-live-tod",
+        "aetheris-quasar-live-tod-v91nq95",
+        "aetheris-quasar-live-v64spc",
+        "aetheris-questdb",
+        "aetheris-simrunner",
+        "aetheris-status-digest",
+        "aetheris-strategy-regime-trail-d-ibkr",
+        "aetheris-strategy-tod-bracket",
+        "aetheris-strategy-tod-bracket-v91nq95",
+        "aetheris-strategy-tod-bracket22-cl",
+        "aetheris-strategy-tod-bracket22-gc",
+        "aetheris-strategy-tod-bracket22-gc-ibkr",
+        "aetheris-strategy-tod-bracket22-si",
+        "aetheris-strategy-tod-bracket22-si-ibkr",
+        "aetheris-strategy-tod-rsi",
+        "aetheris-strategy-tod-rsi-v91nq95",
+        "aetheris-strategy-tod-strat-d",
+        "aetheris-strategy-tod-strat-d-cl",
+        "aetheris-strategy-tod-strat-d-cl-ibkr",
+        "aetheris-strategy-tod-strat-d-gc",
+        "aetheris-strategy-tod-strat-d-si",
+        "aetheris-strategy-tod-strat-d-v91nq95",
+        "aetheris-surface-ingest",
+        "aetheris-themis-shadow-v64spc",
+        "aetheris-themis-v64-noveto",
+        "cyclops-scheduler",
+        "cyclops-stream",
+        "cyclops-ui"
+      ],
+      "containers_before": [
+        "aetheris-alert-notifier-v64spc",
+        "aetheris-clickhouse",
+        "aetheris-console-bff",
+        "aetheris-console-mcp",
+        "aetheris-console-web",
+        "aetheris-discord-bot",
+        "aetheris-dragonfly",
+        "aetheris-ibkr-gateway",
+        "aetheris-market-context",
+        "aetheris-news-sentinel",
+        "aetheris-qdrant",
+        "aetheris-quasar-live-tod",
+        "aetheris-quasar-live-tod-v91nq95",
+        "aetheris-quasar-live-v64spc",
+        "aetheris-questdb",
+        "aetheris-simrunner",
+        "aetheris-status-digest",
+        "aetheris-strategy-regime-trail-d-ibkr",
+        "aetheris-strategy-tod-bracket",
+        "aetheris-strategy-tod-bracket-v91nq95",
+        "aetheris-strategy-tod-bracket22-cl",
+        "aetheris-strategy-tod-bracket22-gc",
+        "aetheris-strategy-tod-bracket22-gc-ibkr",
+        "aetheris-strategy-tod-bracket22-si",
+        "aetheris-strategy-tod-bracket22-si-ibkr",
+        "aetheris-strategy-tod-rsi",
+        "aetheris-strategy-tod-rsi-v91nq95",
+        "aetheris-strategy-tod-strat-d",
+        "aetheris-strategy-tod-strat-d-cl",
+        "aetheris-strategy-tod-strat-d-cl-ibkr",
+        "aetheris-strategy-tod-strat-d-gc",
+        "aetheris-strategy-tod-strat-d-si",
+        "aetheris-strategy-tod-strat-d-v91nq95",
+        "aetheris-surface-ingest",
+        "aetheris-themis-shadow-v64spc",
+        "aetheris-themis-v64-noveto",
+        "cyclops-scheduler",
+        "cyclops-stream",
+        "cyclops-ui"
+      ],
+      "generator_calls": 4,
+      "rows": {
+        "device delete": {
+          "detail": "the flow replayed against the app: every step answered as recorded",
+          "flow": "wf-801d529a0f",
+          "rounds": 1,
+          "seconds": 4.8,
+          "source": "flow:wf-801d529a0f",
+          "verified": "agrees"
+        },
+        "habit check-in": {
+          "detail": "the flow replayed against the app: every step answered as recorded",
+          "flow": "wf-fc7d0a0772",
+          "rounds": 1,
+          "seconds": 5.1,
+          "source": "flow:wf-fc7d0a0772",
+          "verified": "agrees"
+        },
+        "owner guard": {
+          "detail": "the flow replayed against the app: every step answered as recorded",
+          "flow": "wf-087fea1dbb",
+          "rounds": 1,
+          "seconds": 5.6,
+          "source": "flow:wf-087fea1dbb",
+          "verified": "agrees"
+        },
+        "wrong expect_status": {
+          "detail": "step 2 (POST /v1/habits/00000000-0000-4000-8000-000000000001/completions as ann -> 418): expected 418, got 201 (body {\"id\": \"00000000-0000-4000-8000-000000000002\", \"habit_id\": \"00000000-0000-4000-8000-000000000001\", \"date\": \"2026-03-04\", \"note\": null, \"created_at\": \"2026-03-04T12:00:00Z\", \"updated_at\": \"2026-03-0...); status: expected 418, got 201",
+          "flow": "wf-fc7d0a0772-wrong",
+          "rounds": 1,
+          "source": "flow:wf-fc7d0a0772-wrong",
+          "verified": "disagrees"
+        }
+      }
+    },
+    "pass": true,
+    "predicted": "3/3 agree, 1/1 disagree, 0 generator calls for verify",
+    "probe": "verify by replay, S-dyn on Docker: 3 verified flows and a wrong-status copy",
+    "ran": true,
+    "seconds": 26.1
+  },
+  {
+    "id": "PP",
+    "observed": {
+      "change": "c1",
+      "checks": {
+        "no_accept_tool": true,
+        "not_accepted": true,
+        "only_changes_grew": true,
+        "project_identical": true,
+        "source_recorded": true
+      },
+      "project_diff": {
+        "changed": [],
+        "gone": [],
+        "new": []
+      },
+      "source": {
+        "item": "implemented_not_required:GET /v1/admin/stats",
+        "server": "extractor",
+        "title": "GET /v1/admin/stats is implemented but no requirement mentions it"
+      },
+      "state_files": [
+        "changes/c1.json",
+        "meta.json"
+      ],
+      "status": "failed"
+    },
+    "pass": true,
+    "predicted": "source {server: extractor, item}, not accepted; code and spec byte-identical; only changes/ grows",
+    "probe": "change_propose with an S+ orphan's proposal (LocalBackend, stub LLM, change-mode Toolbox)",
+    "ran": true,
+    "seconds": 0.4
+  },
+  {
+    "id": "PD",
+    "observed": {
+      "leaks": [],
+      "rows": {
+        "S-dyn": {
+          "bytes": 251016,
+          "json_identical": true,
+          "json_sha256": "84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84",
+          "text_identical": true
+        },
+        "S-plus": {
+          "bytes": 153465,
+          "json_identical": true,
+          "json_sha256": "64cc726f98f88ece99c730543371f626ccb12ec12f5793a897fb3ba78bbdc700",
+          "text_identical": true
+        },
+        "S-stat": {
+          "bytes": 264674,
+          "json_identical": true,
+          "json_sha256": "af695d4abf531170ca241402b4030c7c40081928650227f7a8adf3becd4091af",
+          "text_identical": true
+        },
+        "S4-stat": {
+          "bytes": 222330,
+          "json_identical": true,
+          "json_sha256": "80511cbb05dc3a61c04521e96555586611f2d8813d7b88dc5dcafd2cc6891df1",
+          "text_identical": true
+        }
+      },
+      "runs": 3,
+      "second_root": {
+        "S-dyn": {
+          "inventory_json_identical": true,
+          "report_identical": true
+        },
+        "S-stat": {
+          "inventory_json_identical": true,
+          "report_identical": true
+        }
+      }
+    },
+    "pass": true,
+    "predicted": "10/10 identical, second root identical, no leak",
+    "probe": "report JSON and text identical over separate processes (random hash seeds) x {S-dyn, S-stat, S4-stat, S+} and a second root; no absolute path or time",
+    "ran": true,
+    "seconds": 4.8
+  },
+  {
+    "id": "PX",
+    "observed": {
+      "digest_base_s": [
+        0.003,
+        0.003,
+        0.003,
+        0.003,
+        0.003
+      ],
+      "digest_overhead_median_s": 0.009,
+      "digest_with_inventory_s": [
+        0.012,
+        0.012,
+        0.012,
+        0.012,
+        0.012
+      ],
+      "report_cli_process_s": [
+        0.164,
+        0.168,
+        0.169
+      ],
+      "report_in_process_s": [
+        0.01,
+        0.01,
+        0.01,
+        0.009,
+        0.009
+      ],
+      "tools_s": {
+        "implementation_get": [
+          0.013,
+          0.012,
+          0.012,
+          0.012,
+          0.013
+        ],
+        "workflow_find": [
+          0.016,
+          0.017,
+          0.017,
+          0.016,
+          0.016
+        ],
+        "workflow_get": [
+          0.012,
+          0.012,
+          0.012,
+          0.013,
+          0.012
+        ]
+      }
+    },
+    "pass": true,
+    "predicted": {
+      "digest": "< 0.2 s",
+      "report": "0.1-0.6 s",
+      "tool": "< 0.3 s"
+    },
+    "probe": "wall: the report on S; each tool after load; the digest overhead",
+    "ran": true,
+    "seconds": 0.9
+  },
+  {
+    "checks": {
+      "api_identical": true,
+      "script_identical": true,
+      "sessions": true,
+      "tools_with_table": true
+    },
+    "id": "PB",
+    "observed": {
+      "api": {
+        "identical": true,
+        "via_harness": true
+      },
+      "script_differing": [],
+      "script_keys": 20,
+      "sessions": {
+        "ask": {
+          "allowed_is_base_plus_3": true,
+          "rest_identical": true
+        },
+        "change": {
+          "allowed_is_base_plus_3": true,
+          "rest_identical": true
+        },
+        "explain": {
+          "allowed_is_base_plus_3": true,
+          "rest_identical": true
+        },
+        "rebuild": {
+          "allowed_is_base_plus_3": true,
+          "rest_identical": true
+        }
+      },
+      "tools_off": [
+        "graph_get",
+        "change_propose",
+        "change_get",
+        "change_list"
+      ],
+      "tools_on": [
+        "change_get",
+        "change_list",
+        "implementation_get",
+        "workflow_get",
+        "workflow_find"
+      ]
+    },
+    "pass": true,
+    "predicted": "all identical; base + 3 after change_list; allowlists base + 3 (ask/explain/change)",
+    "probe": "byte-compat against 454a8e6: initialize instructions, tools/list, /api/ask and /api/model (dogfood), ask --json, the route table; with [implementation]: base + 3 tools and allowlists",
+    "ran": true,
+    "seconds": 3.2
+  },
+  {
+    "id": "LEAK",
+    "observed": [],
+    "pass": true,
+    "predicted": [],
+    "probe": "containers left behind by the stage",
+    "ran": true
+  }
+]

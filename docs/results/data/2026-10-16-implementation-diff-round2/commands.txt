@@ -1,0 +1,13 @@
+export UV_NO_SYNC=1 UV_PROJECT_ENVIRONMENT=/Users/vivekgade/Documents/lattice/.venv PYTHONPATH=/Users/vivekgade/Documents/lattice-c2 PYTHONDONTWRITEBYTECODE=1
+WF=docs/results/data/2026-10-15-workflow-layer/workflows.json     # sha256 af1383db...
+DRV=<scratch>/perfengines/perfvenv/bin/python                     # pymysql, read-only (round 1's PF arm)
+# baseline (before the first edit, on `git archive HEAD` of the pre-registration commit 16eb743):
+uv run pytest tests/mcp tests/studio tests/spec tests/importer tests/gocheck -q -p no:cacheprovider      # 847 s
+# probes (PT2A PT2B PTDEV PTF PT3 PD2 PX2 PB2 PR1), 60 s:
+python dogfood/implementation_probes2.py --workflows-dyn $WF --scratch $SCRATCH/p2 --out docs/results/data/2026-10-16-implementation-diff-round2 --driver-python $DRV
+# mutants, 14 + control, 191 s of probe time:
+python dogfood/implementation_mutants2.py --scratch $SCRATCH/m2 --out docs/results/data/2026-10-16-implementation-diff-round2/mutants --base2 $SCRATCH/p2/base2 --workflows-dyn $WF WM1 ... WM14
+dogfood/studio/check.sh --json                                                                        # 65.5 s
+uv run pytest tests/mcp tests/studio tests/spec tests/importer tests/gocheck -q -p no:cacheprovider      # after the build, 813 s
+python dogfood/implementation_agent2.py --write-freeze --out docs/results/data/2026-10-16-implementation-diff-round2/agent --workflows-dyn $WF
+python dogfood/implementation_agent2.py --scratch $SCRATCH/a2 --out docs/results/data/2026-10-16-implementation-diff-round2/agent --workflows-dyn $WF   # 230 s, last

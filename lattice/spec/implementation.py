@@ -1552,9 +1552,37 @@ def flow_scenario(flow: Mapping[str, Any]) -> Any:
 
 # ---- findings, lookup and find (D10) ------------------------------------------------------
 
-FIND_THRESHOLD = 0.15  # no_match: the top score is under this share of the best possible
-FIND_TIE = 0.10  # several: the second is within this share of the top
-_KIND_RANK = {"route": 0, "machine": 1, "flow": 2, "rule": 3}
+FIND_TIE = 0.10  # several: the second scores within this share of the top
+FIND_COVERAGE = 0.40  # no_match: the top candidate covers less than this share of the question
+FIND_PENALTY = 0.8  # a route whose last static path segment no query term names (D5)
+# the weight of a field: a term found in several fields counts once, at the highest (D3)
+FIND_WEIGHTS = {
+    "path": 1.0,
+    "handler": 1.0,
+    "state": 0.8,
+    "field": 0.6,
+    "code": 0.6,
+    "method": 0.5,
+    "flow": 0.4,
+    "table": 0.4,
+}
+FIND_ANCHORS = ("path", "handler", "state", "method")  # a machine's name (table) also anchors
+FIND_NOISE = ("v1", "api", "handler", "func")  # dropped from the fields of a candidate
+# words about the interface, not the thing asked about (D4)
+FIND_FILLER = (
+    "screen page endpoint route api feature function functionality option button app "
+    "application user way possible ability there request call support let since whether "
+    "several one each every also about all many much more most other own same just only very "
+    "again once still ever via using use like without"
+)
+# verb classes (D4): a verb of the question or of a path or handler word becomes its class
+FIND_VERBS = {
+    "POST": "add create new register submit post",
+    "DELETE": "delete remove unregister erase",
+    "PATCH": "update edit rename modify",
+    "PUT": "update edit modify replace",
+    "GET": "list view show see read fetch browse",
+}
 
 
 def _sid(text: str, n: int = 200) -> str:
@@ -1625,125 +1653,248 @@ def findings(ctx: ImplContext) -> list[dict[str, Any]]:
     return out
 
 
+def _find_lexicon() -> tuple[dict[str, str], frozenset[str], frozenset[str]]:
+    """(stem -> verb class token, filler stems, noise stems) of the find ranking (D4)."""
+    from lattice.spec.ask import _stem
+
+    verbs: dict[str, set[str]] = {}
+    for method, words in FIND_VERBS.items():
+        for w in words.split():
+            verbs.setdefault(_stem(w), set()).add(method)
+    classes = {w: "V:" + "/".join(sorted(ms)) for w, ms in verbs.items()}
+    filler = frozenset(_stem(w) for w in FIND_FILLER.split())
+    return classes, filler, frozenset(_stem(w) for w in FIND_NOISE)
+
+
+def _find_split(
+    text: str, lex: tuple[dict[str, str], frozenset[str], frozenset[str]]
+) -> frozenset[str]:
+    """The terms of an identifier or phrase (camelCase, ``.``, ``_`` split), noise dropped, a
+    verb as its class token."""
+    from lattice.spec.ask import terms
+
+    classes, _, noise = lex
+    spaced = re.sub(r"([a-z])([A-Z])", r"\1 \2", text or "")
+    found = terms(spaced.replace(".", " ").replace("_", " ")) - noise
+    return frozenset(classes.get(w, w) for w in found)
+
+
 def _find_docs(ctx: ImplContext) -> dict[str, dict[str, Any]]:
-    """The searchable documents: target -> {kind, status, text, keys, evidence}."""
+    """The candidates (D2) and their fielded terms (D3): target -> {kind, status, spec_only,
+    fields {name: terms}, method, last (the last static path segment's terms; None for a machine),
+    tie (the texts of the rules that link it), keys, evidence, flows, rules}."""
+    lex = _find_lexicon()
     rep = ctx.report
+    section = "rules" if "rules" in rep else "requirements"
     texts = {r.id: r.text for r in ctx.sv.rule_rows}
-    docs: dict[str, dict[str, Any]] = {}
-    flows_of_route: dict[str, list[str]] = {}
+    raw: dict[str, Mapping[str, Any]] = {}
+    for r in (ctx.inv.extract or {}).get("routes", []):
+        raw.setdefault(route_key(r["method"], r["path"]), r)
+    spec_keys: dict[str, set[str]] = {}
+    for sc in ctx.sv.spec.scenarios:
+        for s in sc.steps:
+            if isinstance(s, Step):
+                bag = spec_keys.setdefault(route_key(s.method, _normalize_path(s.path)), set())
+                for src in (s.json, s.params):
+                    if isinstance(src, dict):
+                        bag.update(src)
+    flows_of: dict[str, list[dict[str, Any]]] = {}
     for f in rep["flows"]:
         for k in f["routes"]:
-            flows_of_route.setdefault(k, []).append(f["name"])
-    for r in rep["routes"]:
-        extra = [texts.get(x, x) for x in r["rules"]] + flows_of_route.get(r["key"], [])
-        docs[f"impl:route:{r['key']}"] = {
-            "kind": "route",
-            "status": r["status"],
-            "text": " ".join([r["key"], str(r["handler"] or ""), *extra]),
-            "keys": [r["key"]],
-            "evidence": r["evidence"],
-        }
-    section = "rules" if "rules" in rep else "requirements"
+            flows_of.setdefault(k, []).append(f)
+    routes = {r["key"]: r for r in rep["routes"]}
+    docs: dict[str, dict[str, Any]] = {}
     for e in rep["endpoints"]:
-        if e["status"] != "spec_only":
+        if e["status"] not in ("implemented", "implemented_not_required", "spec_only"):
             continue
-        refs = [
-            x
+        key = e["key"]
+        method, _, path = key.partition(" ")
+        segs = [s for s in path.split("/") if s and s != "{}"]
+        fields: dict[str, frozenset[str]] = {"path": _find_split(" ".join(segs), lex)}
+        route, src = routes.get(key), raw.get(key)
+        if src is not None:
+            func = str(src["handler"]["func"])
+            pkg = func.partition(".")[0]
+            fields["handler"] = _find_split(f"{pkg} {func.split('.')[-1]}", lex)
+            names = [x["name"] for x in src["params"] if x["source"] != "path"]
+            fields["field"] = _find_split(" ".join(names), lex)
+            refusals = " ".join(str(x) for x in (route or {}).get("refusals", []))
+            fields["code"] = _find_split(refusals, lex)
+            fields["table"] = _find_split(" ".join(src.get("tables") or []), lex)
+        else:
+            fields["field"] = _find_split(" ".join(sorted(spec_keys.get(key, ()))), lex)
+        flows = flows_of.get(key, [])
+        fields["flow"] = frozenset(
+            w
+            for w in _find_split(" ".join(f["name"] for f in flows), lex)
+            if not w.startswith("V:")
+        )
+        linked = (route or {}).get("rules") or [
+            x["id"]
             for x in rep[section]
-            if f"impl:route:{e['key']}" in {el["key"] for el in x["elements"]}
+            if f"impl:route:{key}" in {el["key"] for el in x["elements"]}
         ]
-        docs[f"impl:route:{e['key']}"] = {
+        spec_only = e["status"] == "spec_only"
+        docs[f"impl:route:{key}"] = {
             "kind": "route",
-            "status": "spec_only",
-            "text": " ".join([e["key"], *[texts.get(x["id"], x["id"]) for x in refs]]),
-            "keys": [e["key"]],
-            "evidence": [],
-        }
-    for f in rep["flows"]:
-        docs[f"impl:flow:{f['id']}"] = {
-            "kind": "flow",
-            "status": f["effective"],
-            "text": " ".join([f["name"], f["kind"], *f["routes"]]),
-            "keys": f["routes"],
-            "evidence": f["evidence"][:3],
+            "status": "spec_only" if spec_only else (route or e)["status"],
+            "spec_only": spec_only,
+            "fields": fields,
+            "method": method,
+            "last": _find_split(segs[-1], lex) if segs else frozenset(),
+            "tie": " ".join(texts.get(x, "") for x in linked),
+            "keys": [key],
+            "evidence": [] if spec_only else list((route or {}).get("evidence", [])[:3]),
+            "flows": [
+                {"id": f["id"], "name": f["name"], "status": f["effective"]} for f in flows[:5]
+            ],
+            "rules": sorted(linked, key=_natural) if spec_only else None,
         }
     for m in rep["machines"]:
         docs[m["key"]] = {
             "kind": "machine",
             "status": m["status"],
-            "text": " ".join([m["key"], *m["states"], *[texts.get(x, x) for x in m["rules"]]]),
+            "spec_only": False,
+            "fields": {
+                "table": _find_split(m["key"].split(":")[-1], lex),
+                "state": _find_split(" ".join(m["states"]), lex),
+            },
+            "method": None,
+            "last": None,
+            "tie": " ".join(texts.get(x, "") for x in m["rules"]),
             "keys": [m["key"]],
-            "evidence": m["evidence"][:3],
+            "evidence": list(m["evidence"][:3]),
+            "flows": None,
+            "rules": None,
         }
-    for e in rep[section]:
-        if e["status"] == "required_not_implemented":
-            docs[f"rule:{e['id']}"] = {
-                "kind": "rule",
-                "status": "required_not_implemented",
-                "text": " ".join([texts.get(e["id"], e["id"]), *e["missing"]]),
-                "keys": [m.removeprefix("impl:route:") for m in e["missing"]],
-                "evidence": [],
-            }
     return docs
 
 
 def find_candidates(ctx: ImplContext, question: str, limit: int = 5) -> dict[str, Any]:
-    """Deterministic, lexical: exact templated ``METHOD /path`` mentions first, then the
-    IDF-weighted overlap of ``ask.terms`` with each element's document. Not understanding."""
+    """Deterministic, lexical (D3-D6): exact templated ``METHOD /path`` mentions first, then the
+    IDF-weighted, field-weighted overlap of the question's terms with each endpoint's and
+    machine's path, handler, parameter names, refusal codes, flow names and tables, and a
+    machine's states; the linked rules' texts only break ties. Not understanding."""
     import math
 
-    from lattice.spec.ask import terms
+    from lattice.spec.ask import _stem, terms
 
+    lex = _find_lexicon()
+    classes, filler, _ = lex
     docs = _find_docs(ctx)
     n = max(len(docs), 1)
-    doc_terms = {t: terms(d["text"]) for t, d in docs.items()}
+    primary = {t: frozenset().union(*d["fields"].values()) for t, d in docs.items()}
     df: dict[str, int] = {}
-    for ts in doc_terms.values():
+    for ts in primary.values():
         for w in ts:
             df[w] = df.get(w, 0) + 1
-    idf = {w: math.log(1 + n / c) for w, c in df.items()}
-    query = terms(question)
+    idf_max = math.log(1 + n)
+
+    def idf(w: str) -> float:
+        return math.log(1 + n / df[w]) if w in df else idf_max
+
+    vocab: set[str] = set()
+    for d in docs.values():
+        vocab |= d["fields"].get("path", frozenset()) | d["fields"].get("handler", frozenset())
+    words = re.findall(r"[A-Za-z]+", question)
+    compounds: set[str] = set()
+    dropped: set[str] = set()
+    for a, b in zip(words, words[1:], strict=False):
+        joined = _stem((a + b).lower())
+        if joined in vocab and len(a) > 1:
+            compounds.add(joined)
+            dropped |= terms(a) | terms(b)
+    query = sorted({classes.get(w, w) for w in (terms(question) - dropped) - filler} | compounds)
+    tie_terms = {t: terms(d["tie"]) for t, d in docs.items()}
+    tie_df: dict[str, int] = {}
+    for ts in tie_terms.values():
+        for w in ts:
+            tie_df[w] = tie_df.get(w, 0) + 1
     mentioned = set(routes_in_text(question))
-    best_possible = sum(idf.get(w, 0.0) for w in query)
-    rows = []
+    rows: list[dict[str, Any]] = []
     for t, d in docs.items():
-        hit = sorted(query & doc_terms[t])
-        score = sum(idf.get(w, 0.0) for w in hit)
+        score = 0.0
+        hit: dict[str, str] = {}
+        for w in query:
+            best, where = 0.0, ""
+            for name, ts in d["fields"].items():
+                if w in ts and FIND_WEIGHTS[name] > best:
+                    best, where = FIND_WEIGHTS[name], name
+            if (
+                w.startswith("V:")
+                and d["method"] in w[2:].split("/")
+                and (FIND_WEIGHTS["method"] > best)
+            ):
+                best, where = FIND_WEIGHTS["method"], "method"
+            if w.startswith("V:") and best:
+                best = FIND_WEIGHTS["method"]
+            if best:
+                score += best * idf(w)
+                hit[w] = where
+        if d["last"] is not None and not d["last"].intersection(query):
+            score *= FIND_PENALTY
+        shared = sorted(set(query) & tie_terms[t])
+        tie = sum(math.log(1 + n / tie_df[w]) for w in shared) / (1 + len(tie_terms[t]) / 200)
         exact = bool(mentioned & set(d["keys"])) and d["kind"] == "route"
-        rows.append((exact, score, t, d, hit))
-    rows = [r for r in rows if r[0] or r[1] > 0]
-    rows.sort(key=lambda r: (not r[0], -r[1], _KIND_RANK[r[3]["kind"]], r[2]))
-    cands = [
-        {
-            "target": t,
-            "kind": d["kind"],
-            "status": d["status"],
-            "score": round(score, 4),
-            "matched_terms": hit,
-            "exact": exact,
-            "evidence": d["evidence"][:3],
-        }
-        for exact, score, t, d, hit in rows[:limit]
-    ]
+        rows.append({"target": t, "d": d, "score": score, "tie": tie, "hit": hit, "exact": exact})
+    rows.sort(
+        key=lambda r: (not r["exact"], -round(r["score"], 6), -round(r["tie"], 6), r["target"])
+    )
+    coverage = 0.0
+    anchored = False
+    if rows:
+        top = rows[0]
+        combined = {t: primary[t] | frozenset(tie_terms[t]) for t in docs}
+        cdf: dict[str, int] = {}
+        for ts in combined.values():
+            for w in ts:
+                cdf[w] = cdf.get(w, 0) + 1
+
+        def cidf(w: str) -> float:
+            return math.log(1 + n / cdf[w]) if w in cdf else idf_max
+
+        def credit(w: str) -> float:
+            return 1.0 if w in top["hit"] else (0.5 if w in tie_terms[top["target"]] else 0.0)
+
+        coverage = sum(cidf(w) * credit(w) for w in query) / (sum(cidf(w) for w in query) or 1)
+        anchors = set(FIND_ANCHORS) | ({"table"} if top["d"]["kind"] == "machine" else set())
+        anchored = any(where in anchors for where in top["hit"].values())
     if not rows:
         hint = "no_match"
-    elif rows[0][0]:
-        hint = "spec_only" if rows[0][3]["status"] == "spec_only" else "exists"
-    elif best_possible <= 0 or rows[0][1] < FIND_THRESHOLD * best_possible:
+    elif rows[0]["exact"]:
+        hint = "spec_only" if rows[0]["d"]["spec_only"] else "exists"
+    elif not query or rows[0]["score"] == 0 or not anchored or coverage < FIND_COVERAGE:
         hint = "no_match"
-    elif len(rows) > 1 and rows[1][1] >= (1 - FIND_TIE) * rows[0][1]:
+    elif len(rows) > 1 and rows[1]["score"] >= (1 - FIND_TIE) * rows[0]["score"]:
         hint = "several"
     else:
-        top = rows[0][3]
-        hint = (
-            "spec_only" if top["status"] in ("spec_only", "required_not_implemented") else "exists"
-        )
+        hint = "spec_only" if rows[0]["d"]["spec_only"] else "exists"
+    cands = []
+    for r in [x for x in rows if x["exact"] or x["score"] > 0][:limit]:
+        d = r["d"]
+        c: dict[str, Any] = {
+            "target": r["target"],
+            "kind": d["kind"],
+            "status": d["status"],
+            "score": round(r["score"], 4),
+            "matched_terms": sorted(r["hit"]),
+            "exact": r["exact"],
+            "evidence": d["evidence"][:3],
+            "fields": dict(sorted(r["hit"].items())),
+        }
+        if d["flows"] is not None:
+            c["flows"] = d["flows"]
+        if d["rules"] is not None:
+            c["rules"] = d["rules"]
+        cands.append(c)
     return {
         "question": question,
         "hint": hint,
         "candidates": cands,
-        "note": "lexical match, not understanding: terms overlap with the keys, handlers, flow "
-        "names and the texts of the rules that link each element",
+        "coverage": round(coverage, 4),
+        "note": "lexical match, not understanding: terms overlap with the paths, handlers, "
+        "parameter names, refusal codes, flow names and tables of each endpoint and the states "
+        "of each machine; the texts of the rules that link it only break ties",
     }
 
 

@@ -1,0 +1,103 @@
+{
+ "items": {
+  "C1": true,
+  "C2": true,
+  "C3": true,
+  "C4": true,
+  "C5": true,
+  "C6": true,
+  "C7": true,
+  "C8": null
+ },
+ "detail": {
+  "C1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_01LWpJTTZna7zc9h6AbLKaQT",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01ThNtgYLnmpgyeaAp5rNY1Q",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "C2": {
+   "pass": true,
+   "label": "IMPLEMENTED-UNVERIFIED",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "labels_on_line": [
+    "IMPLEMENTED-UNVERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-UNVERIFIED"
+  },
+  "C3": {
+   "pass": true,
+   "citations": [
+    "internal/habits/routes.go:252",
+    "internal/habits/routes.go:27",
+    "internal/habits/routes.go:310",
+    "internal/habits/routes.go:262",
+    "internal/habits/routes.go:347"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/habits/routes.go:252",
+    "internal/habits/routes.go:27"
+   ],
+   "needs_evidence": true
+  },
+  "C4": {
+   "pass": true,
+   "named": [
+    "PATCH /v1/habits/{}",
+    "GET /v1/habits"
+   ],
+   "derived": {},
+   "unknown": [],
+   "registrations_cited": [
+    "PATCH /v1/habits/{}"
+   ]
+  },
+  "C5": {
+   "pass": true,
+   "named": [
+    "R60",
+    "R68",
+    "R69",
+    "R71"
+   ],
+   "unknown": [],
+   "key_rules_named": [],
+   "key_rules_cited_by_line": [],
+   "needs_key_rule": false
+  },
+  "C6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "C7": {
+   "pass": true
+  },
+  "C8": null
+ },
+ "applicable": [
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+  "C5",
+  "C6",
+  "C7"
+ ],
+ "pass": true
+}

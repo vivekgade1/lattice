@@ -1,0 +1,22 @@
+{
+ "frozen_at_utc": "2026-10-16T18:24:54+00:00",
+ "files": {
+  "implementation_agent2.py": "059dc9068c82ee2e18d3a674692888e17e51bedce70f4cb8e7c5c672aa86078f",
+  "implementation_agent2_scorer.py": "d9b1af2ad94c619dc192a94100169342038d046c971f614810304928d82aa505",
+  "implementation_agent2_check.py": "0abd6a349f6b62e5a0a0d6ce93c49fcc0bfb6e2b9d380108233af4acf74af4f0",
+  "implementation_agent2_scorer_cases.json": "e7ff38cdd6511e0e11475efe83e78bb88187ee5e24d1eedbe7255d55fac5aa8b",
+  "implementation_agent.py": "ca65bcb4a10ca1e020523c4a8fd7f4fbc76f5b5af5afa5f11f3c22411301c728",
+  "implementation_agent_scorer.py": "3be9520c6d94fe70816f11c92357be42f73f8bfc86948d51a056d3a1a20c4e7d",
+  "contracts/agent_scorer.py": "92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08",
+  "agent2_questions.json": "bf06b9e92defaa7ed38365f056492e400651ba4bd0c359100f79e37e4a21a694"
+ },
+ "workflows_dyn_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0",
+ "report_sha256": {
+  "S-dyn": "84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84",
+  "S4-stat": "80511cbb05dc3a61c04521e96555586611f2d8813d7b88dc5dcafd2cc6891df1"
+ },
+ "questions_file_problem": null,
+ "claude_version": "2.1.299 (Claude Code)",
+ "scorer_cases": "74/74 scorer cases hold",
+ "scorer_cases_rc": 0
+}

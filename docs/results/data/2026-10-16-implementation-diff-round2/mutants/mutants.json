@@ -1,0 +1,541 @@
+{
+  "WM1": {
+    "caught_by": [
+      "PT2A fails",
+      "rows differ: F:F01, F:F03, F:F04, F:F05, F:F10, F:F11, F:F12, F:F13, F:F15, F:F19, F:F20, F:F21, F:F22, F:F24, F:F27, G:G02, G:G04, G:G06, G:G07, G:G08, G:G09, G:G12, G:G14, G:G15, G:G16, G:G17, G:G18, G:G19, G:G20, G:G21, G:G22, G:G23, PT:PT1, PT:PT2, PT:PT3, PT:PT4, PT:PT5, PT:PT6, agent:Q1, agent:Q10, agent:Q11, agent:Q12, agent:Q2, agent:Q3, agent:Q4, agent:Q5, agent:Q9, agentq:Q1, agentq:Q10, agentq:Q11, agentq:Q12, agentq:Q2, agentq:Q3, agentq:Q4, agentq:Q5, agentq:Q9"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": false,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PT2, PT-dev",
+    "pt3_rows_changed": 8,
+    "rc": 1,
+    "rows_changed": [
+      "F:F01",
+      "F:F03",
+      "F:F04",
+      "F:F05",
+      "F:F10",
+      "F:F11",
+      "F:F12",
+      "F:F13",
+      "F:F15",
+      "F:F19",
+      "F:F20",
+      "F:F21",
+      "F:F22",
+      "F:F24",
+      "F:F27",
+      "G:G02",
+      "G:G04",
+      "G:G06",
+      "G:G07",
+      "G:G08",
+      "G:G09",
+      "G:G12",
+      "G:G14",
+      "G:G15",
+      "G:G16",
+      "G:G17",
+      "G:G18",
+      "G:G19",
+      "G:G20",
+      "G:G21",
+      "G:G22",
+      "G:G23",
+      "PT:PT1",
+      "PT:PT2",
+      "PT:PT3",
+      "PT:PT4",
+      "PT:PT5",
+      "PT:PT6",
+      "agent:Q1",
+      "agent:Q10",
+      "agent:Q11",
+      "agent:Q12",
+      "agent:Q2",
+      "agent:Q3",
+      "agent:Q4",
+      "agent:Q5",
+      "agent:Q9",
+      "agentq:Q1",
+      "agentq:Q10",
+      "agentq:Q11",
+      "agentq:Q12",
+      "agentq:Q2",
+      "agentq:Q3",
+      "agentq:Q4",
+      "agentq:Q5",
+      "agentq:Q9"
+    ],
+    "scorer_failures": [],
+    "seconds": 13.7,
+    "stderr_tail": "",
+    "what": "the rules' texts as a primary field (round 1's document)"
+  },
+  "WM10": {
+    "caught_by": [
+      "PTDEV fails",
+      "rows differ: F:F01, F:F04, F:F06, F:F07, F:F09, F:F10, F:F11, F:F12, F:F15, F:F20, F:F23, F:F24, G:G01, G:G02, G:G03, G:G05, G:G07, G:G09, G:G10, G:G12, G:G17, G:G19, G:G20, PT:PT1, PT:PT2, PT:PT3, PT:PT8, agent:Q1, agent:Q2, agent:Q3, agent:Q4, agent:Q7, agent:Q8, agentq:Q1, agentq:Q2, agentq:Q3, agentq:Q4, agentq:Q7, agentq:Q8"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": true,
+      "PTDEV": false
+    },
+    "killed": true,
+    "predicted_catcher": "PT2, PT-F",
+    "pt3_rows_changed": 6,
+    "rc": 1,
+    "rows_changed": [
+      "F:F01",
+      "F:F04",
+      "F:F06",
+      "F:F07",
+      "F:F09",
+      "F:F10",
+      "F:F11",
+      "F:F12",
+      "F:F15",
+      "F:F20",
+      "F:F23",
+      "F:F24",
+      "G:G01",
+      "G:G02",
+      "G:G03",
+      "G:G05",
+      "G:G07",
+      "G:G09",
+      "G:G10",
+      "G:G12",
+      "G:G17",
+      "G:G19",
+      "G:G20",
+      "PT:PT1",
+      "PT:PT2",
+      "PT:PT3",
+      "PT:PT8",
+      "agent:Q1",
+      "agent:Q2",
+      "agent:Q3",
+      "agent:Q4",
+      "agent:Q7",
+      "agent:Q8",
+      "agentq:Q1",
+      "agentq:Q2",
+      "agentq:Q3",
+      "agentq:Q4",
+      "agentq:Q7",
+      "agentq:Q8"
+    ],
+    "scorer_failures": [],
+    "seconds": 12.6,
+    "stderr_tail": "",
+    "what": "flows as separate candidates"
+  },
+  "WM11": {
+    "caught_by": [
+      "rows differ: F:F07, G:G03, G:G24"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": true,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PT2 (G24)",
+    "pt3_rows_changed": 0,
+    "rc": 0,
+    "rows_changed": [
+      "F:F07",
+      "G:G03",
+      "G:G24"
+    ],
+    "scorer_failures": [],
+    "seconds": 12.5,
+    "stderr_tail": "",
+    "what": "plumbing and test_only endpoints as candidates"
+  },
+  "WM12": {
+    "caught_by": [
+      "scorer cases flip: 5"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": true,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "scorer cases",
+    "pt3_rows_changed": 0,
+    "rc": 0,
+    "rows_changed": [],
+    "scorer_failures": [
+      "FAIL C4 group-relative without the registration citation: expected False, got True",
+      "FAIL C4 group-relative, another line cited: expected False, got True",
+      "FAIL C4 group-relative matching one of two keys, one cited: expected True, got False",
+      "FAIL C8 group-relative elements without the citations: expected False, got True",
+      "FAIL a group-relative route without its registration fails C4 only: {'C1': True, 'C2': True, 'C3': True, 'C4': True, 'C5': True, 'C6': True, 'C7': True, 'C8': None} pass=True"
+    ],
+    "seconds": 12.9,
+    "stderr_tail": "",
+    "what": "C4 accepts a group-relative path without the registration citation"
+  },
+  "WM13": {
+    "caught_by": [
+      "scorer cases flip: 5"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": true,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "scorer cases",
+    "pt3_rows_changed": 0,
+    "rc": 0,
+    "rows_changed": [],
+    "scorer_failures": [
+      "FAIL C2 an implemented label against an AMBIGUOUS key: expected False, got True",
+      "FAIL C8 one element only: expected False, got True",
+      "FAIL an implemented label on an AMBIGUOUS question fails C2 only: {'C1': True, 'C2': True, 'C3': True, 'C4': True, 'C5': True, 'C6': True, 'C7': True, 'C8': True} pass=True",
+      "FAIL round 1 Q7: expected {'C2': False, 'C4': True, 'C5': True, 'C8': True}, got {'C2': True, 'C4': True, 'C5': True, 'C8': True}",
+      "FAIL round 1 Q8: expected {'C2': False, 'C4': True, 'C5': True, 'C8': True}, got {'C2': True, 'C4': True, 'C5': True, 'C8': True}"
+    ],
+    "seconds": 12.6,
+    "stderr_tail": "",
+    "what": "C2/C8 accept an AMBIGUOUS key with an implemented label or one element"
+  },
+  "WM14": {
+    "caught_by": [
+      "PB2 fails",
+      "PB2 differs: report_pa_tools_identical, round1_freeze_list_only_implementation_py_differs, round1_frozen_files_identical"
+    ],
+    "gated": {
+      "PB2": false,
+      "PT2A": true,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PB2",
+    "pt3_rows_changed": 0,
+    "rc": 1,
+    "rows_changed": [],
+    "scorer_failures": [],
+    "seconds": 12.5,
+    "stderr_tail": "",
+    "what": "the workflow_find description edited"
+  },
+  "WM2": {
+    "caught_by": [
+      "PT2A fails",
+      "rows differ: F:F01, F:F02, F:F07, F:F08, F:F11, F:F20, F:F22, F:F23, F:F24, F:F26, G:G01, G:G02, G:G03, G:G05, G:G06, G:G07, G:G10, G:G12, G:G16, G:G17, G:G20, PT:PT3, PT:PT5, PT:PT8, agent:Q11, agent:Q2, agent:Q7, agent:Q8, agentq:Q11, agentq:Q2, agentq:Q7, agentq:Q8"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": false,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PT-dev (delete endpoint DELETE)",
+    "pt3_rows_changed": 6,
+    "rc": 1,
+    "rows_changed": [
+      "F:F01",
+      "F:F02",
+      "F:F07",
+      "F:F08",
+      "F:F11",
+      "F:F20",
+      "F:F22",
+      "F:F23",
+      "F:F24",
+      "F:F26",
+      "G:G01",
+      "G:G02",
+      "G:G03",
+      "G:G05",
+      "G:G06",
+      "G:G07",
+      "G:G10",
+      "G:G12",
+      "G:G16",
+      "G:G17",
+      "G:G20",
+      "PT:PT3",
+      "PT:PT5",
+      "PT:PT8",
+      "agent:Q11",
+      "agent:Q2",
+      "agent:Q7",
+      "agent:Q8",
+      "agentq:Q11",
+      "agentq:Q2",
+      "agentq:Q7",
+      "agentq:Q8"
+    ],
+    "scorer_failures": [],
+    "seconds": 12.6,
+    "stderr_tail": "",
+    "what": "verbs literal (no verb classes)"
+  },
+  "WM3": {
+    "caught_by": [
+      "rows differ: F:F04"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": true,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PT-F (F04)",
+    "pt3_rows_changed": 0,
+    "rc": 0,
+    "rows_changed": [
+      "F:F04"
+    ],
+    "scorer_failures": [],
+    "seconds": 12.9,
+    "stderr_tail": "",
+    "what": "no compounds"
+  },
+  "WM4": {
+    "caught_by": [
+      "PT2A fails",
+      "rows differ: F:F01, F:F02, F:F03, F:F09, F:F10, F:F12, F:F15, F:F24, F:F26, G:G01, G:G02, G:G06, G:G08, G:G09, G:G10, G:G11, G:G12, G:G17, G:G18, G:G20, agent:Q1, agent:Q11, agent:Q12, agent:Q13, agent:Q6, agentq:Q1, agentq:Q11, agentq:Q12, agentq:Q13, agentq:Q6"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": false,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PT2 (G09), PT-F (F01, F24)",
+    "pt3_rows_changed": 5,
+    "rc": 1,
+    "rows_changed": [
+      "F:F01",
+      "F:F02",
+      "F:F03",
+      "F:F09",
+      "F:F10",
+      "F:F12",
+      "F:F15",
+      "F:F24",
+      "F:F26",
+      "G:G01",
+      "G:G02",
+      "G:G06",
+      "G:G08",
+      "G:G09",
+      "G:G10",
+      "G:G11",
+      "G:G12",
+      "G:G17",
+      "G:G18",
+      "G:G20",
+      "agent:Q1",
+      "agent:Q11",
+      "agent:Q12",
+      "agent:Q13",
+      "agent:Q6",
+      "agentq:Q1",
+      "agentq:Q11",
+      "agentq:Q12",
+      "agentq:Q13",
+      "agentq:Q6"
+    ],
+    "scorer_failures": [],
+    "seconds": 12.7,
+    "stderr_tail": "",
+    "what": "no resource penalty"
+  },
+  "WM5": {
+    "caught_by": [
+      "rows differ: G:G18, G:G19, G:G23, agent:Q13, agent:Q6, agentq:Q13, agentq:Q6"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": true,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PT2 (G13-G15)",
+    "pt3_rows_changed": 2,
+    "rc": 0,
+    "rows_changed": [
+      "G:G18",
+      "G:G19",
+      "G:G23",
+      "agent:Q13",
+      "agent:Q6",
+      "agentq:Q13",
+      "agentq:Q6"
+    ],
+    "scorer_failures": [],
+    "seconds": 12.5,
+    "stderr_tail": "",
+    "what": "out-of-vocabulary terms weigh 0 in the coverage"
+  },
+  "WM6": {
+    "caught_by": [
+      "rows differ: F:F05, PT:PT6, agent:Q5, agentq:Q5"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": true,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PT-dev (agent query Q5)",
+    "pt3_rows_changed": 2,
+    "rc": 0,
+    "rows_changed": [
+      "F:F05",
+      "PT:PT6",
+      "agent:Q5",
+      "agentq:Q5"
+    ],
+    "scorer_failures": [],
+    "seconds": 12.5,
+    "stderr_tail": "",
+    "what": "the anchor rule off"
+  },
+  "WM7": {
+    "caught_by": [
+      "rows differ: F:F15, G:G04, G:G07, G:G17, PT:PT1, agent:Q1, agent:Q12, agent:Q4, agentq:Q1, agentq:Q12, agentq:Q3, agentq:Q4"
+    ],
+    "gated": {
+      "PB2": true,
+      "PT2A": true,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PT2 (G11)",
+    "pt3_rows_changed": 0,
+    "rc": 0,
+    "rows_changed": [
+      "F:F15",
+      "G:G04",
+      "G:G07",
+      "G:G17",
+      "PT:PT1",
+      "agent:Q1",
+      "agent:Q12",
+      "agent:Q4",
+      "agentq:Q1",
+      "agentq:Q12",
+      "agentq:Q3",
+      "agentq:Q4"
+    ],
+    "scorer_failures": [],
+    "seconds": 12.1,
+    "stderr_tail": "",
+    "what": "several decided on S + T"
+  },
+  "WM8": {
+    "caught_by": [
+      "PT2A fails",
+      "PB2 fails",
+      "rows differ: F:F20, F:F21, F:F22, F:F23, F:F25, G:G16, G:G17, G:G18, G:G19, PT:PT4, PT:PT5, agent:Q10, agent:Q11, agent:Q9, agentq:Q10, agentq:Q11, agentq:Q9",
+      "PB2 differs: round1_workflow_find_tests_pass"
+    ],
+    "gated": {
+      "PB2": false,
+      "PT2A": false,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PT2 (G16-G19)",
+    "pt3_rows_changed": 1,
+    "rc": 1,
+    "rows_changed": [
+      "F:F20",
+      "F:F21",
+      "F:F22",
+      "F:F23",
+      "F:F25",
+      "G:G16",
+      "G:G17",
+      "G:G18",
+      "G:G19",
+      "PT:PT4",
+      "PT:PT5",
+      "agent:Q10",
+      "agent:Q11",
+      "agent:Q9",
+      "agentq:Q10",
+      "agentq:Q11",
+      "agentq:Q9"
+    ],
+    "scorer_failures": [],
+    "seconds": 12.0,
+    "stderr_tail": "",
+    "what": "spec-only endpoints are not candidates"
+  },
+  "WM9": {
+    "caught_by": [
+      "PB2 fails",
+      "rows differ: F:F20, F:F21, F:F22, F:F23, G:G16, PT:PT4, PT:PT5, agent:Q10, agent:Q11, agent:Q9, agentq:Q10, agentq:Q11, agentq:Q9",
+      "PB2 differs: round1_workflow_find_tests_pass"
+    ],
+    "gated": {
+      "PB2": false,
+      "PT2A": true,
+      "PTDEV": true
+    },
+    "killed": true,
+    "predicted_catcher": "PT2 (G16)",
+    "pt3_rows_changed": 1,
+    "rc": 1,
+    "rows_changed": [
+      "F:F20",
+      "F:F21",
+      "F:F22",
+      "F:F23",
+      "G:G16",
+      "PT:PT4",
+      "PT:PT5",
+      "agent:Q10",
+      "agent:Q11",
+      "agent:Q9",
+      "agentq:Q10",
+      "agentq:Q11",
+      "agentq:Q9"
+    ],
+    "scorer_failures": [],
+    "seconds": 13.1,
+    "stderr_tail": "",
+    "what": "a spec-only top is answered exists (round 1's IM15)"
+  },
+  "control": {
+    "gated": {
+      "PB2": true,
+      "PT2A": true,
+      "PTDEV": true
+    },
+    "pb2_checks": {
+      "ast_only_d7_changed": true,
+      "pa_without_inventory_identical": true,
+      "pb_script_identical": true,
+      "report_pa_tools_identical": true,
+      "round1_data_untouched": true,
+      "round1_freeze_list_only_implementation_py_differs": true,
+      "round1_frozen_files_identical": true,
+      "round1_report_hashes": true,
+      "round1_workflow_find_tests_pass": true
+    },
+    "rc": 0,
+    "rows": 85,
+    "scorer_cases": "74/74 scorer cases hold",
+    "seconds": 13.4
+  },
+  "summary": {
+    "killed": 14,
+    "of": 14
+  }
+}

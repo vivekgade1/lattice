@@ -1,0 +1,13 @@
+IMPLEMENTED-VERIFIED
+
+Yes. "Check-ins" are called "completions" in this app. A habit's check-ins are under `/v1/habits/{}/completions`:
+
+- **`GET /v1/habits/{}/completions`** lists a habit's check-ins. It is paginated and can return `422 invalid_cursor`. Handler `completions.handler.list`, at code:internal/completions/routes.go:26 and code:internal/completions/routes.go:263. Spec rules: R21, R28, R43, R81.
+- **`POST /v1/habits/{}/completions`** records a check-in for a habit. It returns 200 or 201, and refusals include `409 already_checked_in`, `409 habit_archived`, and the `422 date_*` errors. Handler `completions.handler.create`, at code:internal/completions/routes.go:25 and code:internal/completions/routes.go:217. Spec rules include R43–R45, R72–R80 and R115–R125.
+- **`DELETE /v1/habits/{}/completions/{}`** removes one check-in. It returns 204. Handler `completions.handler.remove`, at code:internal/completions/routes.go:27 and code:internal/completions/routes.go:312. Spec rules include R78, R80, R82 and R116.
+
+A related route, `POST /v1/completions/batch`, creates check-ins in bulk across habits (code:internal/completions/routes.go:28, code:internal/completions/routes.go:57). It isn't the per-habit endpoint.
+
+Replayed flows verified all three per-habit routes. For example, `wf-11a98b3683` ("create habits > completions habits > read completions") is verified and covers both the list and create routes. `wf-21a2d02394` ("create habits > completions habits > delete completions > read history") is verified and covers create and delete.
+
+I didn't change anything.

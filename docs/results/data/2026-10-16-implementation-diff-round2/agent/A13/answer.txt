@@ -1,0 +1,12 @@
+IMPLEMENTED-UNVERIFIED
+
+Yes. A user archives a habit with `PATCH /v1/habits/{id}`, sending `{version, archived: true}`. The code implements this, but no replayed flow has verified it.
+
+- **Route:** the handler is `patch` at code:internal/habits/routes.go:252, registered at code:internal/habits/routes.go:27.
+- **Archive and restore:** code:internal/habits/routes.go:310-316 reads `archived` as a boolean and sets it on the habit. A non-boolean value is rejected as invalid. Sending `false` restores the habit.
+- **Version check:** `version` is required, and a mismatch returns 409 `version_conflict` (code:internal/habits/routes.go:262-265, 320-324).
+- **Restore limit:** restoring while the user already has 50 active habits is refused through `atLimit` (code:internal/habits/routes.go:347-351). The spec calls for 409 `habit_limit`.
+- **Spec:** R69 requires this behavior, and the Lattice implementation report shows it as `implemented_unverified`. That report comes from a static run, with no replayed flows. The related rules R60-R68 and R71 show the same status.
+- **Effects on archived habits:** `GET /v1/habits` hides archived habits unless `?include_archived=true` is passed. Creating or deleting a check-in on an archived habit returns 409 `habit_archived`. The spec describes these effects, but I did not check their code.
+
+There is no separate archive route. Only `PATCH /v1/habits/{id}` handles it, so the question isn't ambiguous. I didn't change anything.

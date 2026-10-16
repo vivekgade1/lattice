@@ -1,0 +1,181 @@
+{
+ "sid": "A12",
+ "question": "A12",
+ "world": "S4-stat",
+ "key": "REQUIRED-NOT-IMPLEMENTED",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 10.9
+ },
+ "cost_usd": 0.08605370000000001,
+ "tokens": 12719,
+ "tokens_incl_cache_reads": 307416,
+ "turns": 6,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T18:27:55+00:00",
+ "score": {
+  "items": {
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "C6": true,
+   "C7": true,
+   "C8": null
+  },
+  "detail": {
+   "C1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_01SSRJjkiFrXP4x5oWrFRRBQ",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_016cPxAwYRZfcXRXR9AhWrYY",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "C2": {
+    "pass": true,
+    "label": "REQUIRED-NOT-IMPLEMENTED",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "labels_on_line": [
+     "REQUIRED-NOT-IMPLEMENTED"
+    ],
+    "first_line": "REQUIRED-NOT-IMPLEMENTED"
+   },
+   "C3": {
+    "pass": true,
+    "citations": [
+     "internal/db/models.go:109",
+     "internal/db/bodies.go:75",
+     "internal/nudges/checkin.go:70",
+     "internal/nudges/doc.go:1"
+    ],
+    "invalid": [],
+    "evidence": [],
+    "needs_evidence": false
+   },
+   "C4": {
+    "pass": true,
+    "named": [
+     "POST /v1/nudges/{}/dismiss",
+     "GET /v1/nudges"
+    ],
+    "derived": {},
+    "unknown": [],
+    "registrations_cited": []
+   },
+   "C5": {
+    "pass": true,
+    "named": [
+     "R7",
+     "R21",
+     "R28",
+     "R138",
+     "R139",
+     "R140",
+     "R141",
+     "R143"
+    ],
+    "unknown": [],
+    "key_rules_named": [
+     "R7",
+     "R21",
+     "R28",
+     "R138",
+     "R139",
+     "R140",
+     "R141",
+     "R143"
+    ],
+    "key_rules_cited_by_line": [],
+    "needs_key_rule": true
+   },
+   "C6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "C7": {
+    "pass": true
+   },
+   "C8": null
+  },
+  "applicable": [
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7"
+  ],
+  "pass": true
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "dismiss a nudge"
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "routes",
+    "limit": 100
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "nudge",
+    "-i": true,
+    "glob": "*.go",
+    "output_mode": "count"
+   }
+  },
+  {
+   "name": "mcp__lattice__rule_get",
+   "is_error": false,
+   "input": {
+    "id": "R138"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "dismiss",
+    "-i": true,
+    "glob": "*.go",
+    "output_mode": "content"
+   }
+  }
+ ]
+}

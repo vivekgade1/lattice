@@ -1,0 +1,180 @@
+{
+ "sid": "ablation-A8",
+ "question": "A8",
+ "world": "S-dyn",
+ "key": "AMBIGUOUS",
+ "with_tools": false,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 20.0
+ },
+ "cost_usd": 0.3730663000000001,
+ "tokens": 86553,
+ "tokens_incl_cache_reads": 239476,
+ "turns": 7,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T18:28:36+00:00",
+ "score": {
+  "items": {
+   "C1": null,
+   "C2": false,
+   "C3": false,
+   "C4": true,
+   "C5": true,
+   "C6": true,
+   "C7": true,
+   "C8": true
+  },
+  "detail": {
+   "C1": null,
+   "C2": {
+    "pass": false,
+    "label": "IMPLEMENTED-UNVERIFIED",
+    "key": "AMBIGUOUS",
+    "labels_on_line": [
+     "IMPLEMENTED-UNVERIFIED"
+    ],
+    "first_line": "IMPLEMENTED-UNVERIFIED"
+   },
+   "C3": {
+    "pass": false,
+    "citations": [
+     "internal/habits/routes.go:217",
+     "internal/habits/routes.go:232",
+     "internal/completions/routes.go:280",
+     "internal/completions/routes.go:306",
+     "internal/completions/routes.go:297",
+     "internal/nudges/routes.go:35",
+     "internal/nudges/routes.go:51",
+     "internal/sync/routes.go:43",
+     "internal/sync/routes.go:105",
+     "internal/sync/doc.go:1",
+     "internal/httpapi/pagination.go:13",
+     "internal/httpapi/pagination.go:68",
+     "internal/httpapi/pagination.go:38",
+     "internal/httpapi/pagination.go:44",
+     "internal/httpapi/httpapi_test.go:13",
+     "internal/httpapi/httpapi_test.go:29"
+    ],
+    "invalid": [],
+    "evidence": [],
+    "needs_evidence": true
+   },
+   "C4": {
+    "pass": true,
+    "named": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/completions",
+     "GET /v1/nudges",
+     "GET /v1/sync"
+    ],
+    "derived": {},
+    "unknown": [],
+    "registrations_cited": []
+   },
+   "C5": {
+    "pass": true,
+    "named": [
+     "R86",
+     "R89",
+     "R94",
+     "R137"
+    ],
+    "unknown": [],
+    "key_rules_named": [],
+    "key_rules_cited_by_line": [],
+    "needs_key_rule": false
+   },
+   "C6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "C7": {
+    "pass": true
+   },
+   "C8": {
+    "pass": true,
+    "named": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/completions",
+     "GET /v1/nudges",
+     "GET /v1/sync"
+    ],
+    "of": 4
+   }
+  },
+  "applicable": [
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7",
+   "C8"
+  ],
+  "pass": false
+ },
+ "tools": [
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "cursor|next_cursor|page_token|after=",
+    "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S-dyn",
+    "-i": true,
+    "output_mode": "content",
+    "head_limit": 60
+   }
+  },
+  {
+   "name": "mcp__lattice__model_get",
+   "is_error": false,
+   "input": {
+    "section": "rules"
+   }
+  },
+  {
+   "name": "Glob",
+   "is_error": false,
+   "input": {
+    "pattern": "**/*",
+    "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S-dyn"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "ListParams|Paginate|\\.Page\\(|NewPage",
+    "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S-dyn/internal",
+    "output_mode": "content"
+   }
+  },
+  {
+   "name": "mcp__lattice__rule_get",
+   "is_error": false,
+   "input": {
+    "id": "R86"
+   }
+  },
+  {
+   "name": "mcp__lattice__model_get",
+   "is_error": false,
+   "input": {
+    "section": "app"
+   }
+  }
+ ]
+}

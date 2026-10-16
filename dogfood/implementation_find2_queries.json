@@ -1,0 +1,380 @@
+{
+ "F_burned": [
+  {
+   "id": "F01",
+   "label": "exists",
+   "query": "create a new habit",
+   "target": "impl:route:POST /v1/habits",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F02",
+   "label": "exists",
+   "query": "rename a habit",
+   "target": "impl:route:PATCH /v1/habits/{}",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F03",
+   "label": "exists",
+   "query": "archive a habit",
+   "target": "impl:route:PATCH /v1/habits/{}",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F04",
+   "label": "exists",
+   "query": "log in with email and password",
+   "target": "impl:route:POST /v1/auth/login",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F05",
+   "label": "exists",
+   "query": "sign out",
+   "target": "impl:route:POST /v1/auth/logout",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F06",
+   "label": "exists",
+   "query": "refresh the access token",
+   "target": "impl:route:POST /v1/auth/refresh",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F07",
+   "label": "exists",
+   "query": "update notification preferences",
+   "target": "impl:route:PUT /v1/me",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F08",
+   "label": "exists",
+   "query": "delete my account",
+   "target": "impl:route:DELETE /v1/me",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F09",
+   "label": "exists",
+   "query": "habit history",
+   "target": "impl:route:GET /v1/habits/{}/history",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F10",
+   "label": "exists",
+   "query": "dismiss a nudge",
+   "target": "impl:route:POST /v1/nudges/{}/dismiss",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F11",
+   "label": "exists",
+   "query": "remove a check-in",
+   "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F12",
+   "label": "exists",
+   "query": "progress toward the weekly target",
+   "target": "impl:route:GET /v1/habits/{}/progress",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F13",
+   "label": "exists",
+   "query": "health check",
+   "target": "impl:route:GET /health",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F14",
+   "key_set": [
+    "impl:route:GET /v1/habits",
+    "impl:route:GET /v1/habits/{}/completions",
+    "impl:route:GET /v1/nudges",
+    "impl:route:GET /v1/sync"
+   ],
+   "label": "several",
+   "query": "cursor pagination",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F15",
+   "key_set": [
+    "impl:machine:nudges.delivery",
+    "impl:route:GET /v1/nudges",
+    "impl:route:POST /v1/nudges/{}/dismiss"
+   ],
+   "label": "several",
+   "query": "nudges",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F16",
+   "label": "no_match",
+   "query": "upload a profile photo",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F17",
+   "label": "no_match",
+   "query": "pay for a premium subscription",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F18",
+   "label": "no_match",
+   "query": "invite a friend to a challenge",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F19",
+   "label": "no_match",
+   "query": "sign in with Google",
+   "world": "S-dyn"
+  },
+  {
+   "id": "F20",
+   "label": "spec_only",
+   "query": "list nudges",
+   "target": "impl:route:GET /v1/nudges",
+   "world": "S4-stat"
+  },
+  {
+   "id": "F21",
+   "label": "spec_only",
+   "query": "dismiss a nudge",
+   "target": "impl:route:POST /v1/nudges/{}/dismiss",
+   "world": "S4-stat"
+  },
+  {
+   "id": "F22",
+   "label": "spec_only",
+   "query": "remove a device",
+   "target": "impl:route:DELETE /v1/devices/{}",
+   "world": "S4-stat"
+  },
+  {
+   "id": "F23",
+   "label": "spec_only",
+   "query": "fetch changes for offline sync",
+   "target": "impl:route:GET /v1/sync",
+   "world": "S4-stat"
+  },
+  {
+   "id": "F24",
+   "label": "exists",
+   "query": "delete a habit",
+   "target": "impl:route:DELETE /v1/habits/{}",
+   "world": "S4-stat"
+  },
+  {
+   "id": "F25",
+   "key_set": [
+    "impl:route:DELETE /v1/devices/{}",
+    "impl:route:POST /v1/devices"
+   ],
+   "label": "several",
+   "query": "device",
+   "world": "S4-stat"
+  },
+  {
+   "id": "F26",
+   "label": "exists",
+   "query": "rename a habit",
+   "target": "impl:route:PATCH /v1/habits/{}",
+   "world": "S4-stat"
+  },
+  {
+   "id": "F27",
+   "label": "exists",
+   "query": "admin stats",
+   "target": "impl:route:GET /v1/admin/stats",
+   "world": "S-plus"
+  }
+ ],
+ "G": [
+  {
+   "id": "G01",
+   "label": "exists",
+   "query": "see the details of one habit",
+   "target": "impl:route:GET /v1/habits/{}",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G02",
+   "label": "exists",
+   "query": "list a habit's check-ins",
+   "target": "impl:route:GET /v1/habits/{}/completions",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G03",
+   "label": "exists",
+   "query": "edit my timezone",
+   "target": "impl:route:PUT /v1/me",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G04",
+   "label": "exists",
+   "query": "turn off push notifications for my account",
+   "target": "impl:route:PUT /v1/me",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G05",
+   "label": "exists",
+   "query": "view my profile",
+   "target": "impl:route:GET /v1/me",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G06",
+   "label": "exists",
+   "query": "create an account with email and password",
+   "target": "impl:route:POST /v1/auth/register",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G07",
+   "label": "exists",
+   "query": "get a new access token after it expires",
+   "target": "impl:route:POST /v1/auth/refresh",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G08",
+   "label": "exists",
+   "query": "change the period of a habit",
+   "target": "impl:route:PATCH /v1/habits/{}",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G09",
+   "label": "exists",
+   "query": "remove a habit",
+   "target": "impl:route:DELETE /v1/habits/{}",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G10",
+   "label": "exists",
+   "query": "show the streak history of a habit",
+   "target": "impl:route:GET /v1/habits/{}/history",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G11",
+   "key_set": [
+    "impl:route:DELETE /v1/habits/{}",
+    "impl:route:GET /v1/habits",
+    "impl:route:GET /v1/habits/{}",
+    "impl:route:PATCH /v1/habits/{}",
+    "impl:route:POST /v1/habits"
+   ],
+   "label": "several",
+   "query": "habits",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G12",
+   "key_set": [
+    "impl:route:POST /v1/auth/login",
+    "impl:route:POST /v1/auth/register"
+   ],
+   "label": "several",
+   "query": "login or register",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G13",
+   "label": "no_match",
+   "query": "reset my streak to zero",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G14",
+   "label": "no_match",
+   "query": "export my data as a spreadsheet",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G15",
+   "label": "no_match",
+   "query": "block another user",
+   "world": "S-dyn"
+  },
+  {
+   "id": "G16",
+   "label": "spec_only",
+   "query": "register a phone for push",
+   "target": "impl:route:POST /v1/devices",
+   "world": "S4-stat"
+  },
+  {
+   "id": "G17",
+   "label": "spec_only",
+   "query": "the today view with habits and nudges",
+   "target": "impl:route:GET /v1/home",
+   "world": "S4-stat"
+  },
+  {
+   "id": "G18",
+   "label": "spec_only",
+   "query": "page through nudges",
+   "target": "impl:route:GET /v1/nudges",
+   "world": "S4-stat"
+  },
+  {
+   "id": "G19",
+   "label": "spec_only",
+   "query": "pull changes since the last sync",
+   "target": "impl:route:GET /v1/sync",
+   "world": "S4-stat"
+  },
+  {
+   "id": "G20",
+   "label": "exists",
+   "query": "see weekly progress for a habit",
+   "target": "impl:route:GET /v1/habits/{}/progress",
+   "world": "S4-stat"
+  },
+  {
+   "id": "G21",
+   "label": "no_match",
+   "query": "send an email reminder",
+   "world": "S4-stat"
+  },
+  {
+   "id": "G22",
+   "key_set": [
+    "impl:route:DELETE /v1/habits/{}/completions/{}",
+    "impl:route:GET /v1/habits/{}/completions",
+    "impl:route:POST /v1/completions/batch",
+    "impl:route:POST /v1/habits/{}/completions"
+   ],
+   "label": "several",
+   "query": "check-ins of a habit",
+   "world": "S4-stat"
+  },
+  {
+   "id": "G23",
+   "label": "exists",
+   "query": "usage statistics for admins",
+   "target": "impl:route:GET /v1/admin/stats",
+   "world": "S-plus"
+  },
+  {
+   "id": "G24",
+   "label": "no_match",
+   "query": "metrics",
+   "world": "S-plus"
+  }
+ ]
+}

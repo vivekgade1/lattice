@@ -1,0 +1,1871 @@
+{
+ "version": 2,
+ "prompt": "In this project, {Q} Answer for the app as it is implemented, not only the spec. Start with exactly one of these labels on the first line: IMPLEMENTED-VERIFIED (the code implements it and a replayed flow verified it), IMPLEMENTED-UNVERIFIED (the code implements it; no replayed flow verified it), REQUIRED-NOT-IMPLEMENTED (the spec requires it; the code does not implement it), NOT-SPECIFIED-NOT-IMPLEMENTED (neither the spec nor the code has it), AMBIGUOUS (the question's subject matches two or more different routes and the question does not say which; name each of them). Cite code as code:<path>:<line> and spec rules by id (R<n>). Do not change anything.",
+ "model": "sonnet",
+ "worlds": {
+  "S-dyn": "Streak a0679e9 with Spike B's dynamic workflows.json (sha256 in the freeze)",
+  "S4-stat": "Streak 1d00ede with Spike B's static workflows.json"
+ },
+ "report_sha256": {
+  "S-dyn": "84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84",
+  "S4-stat": "80511cbb05dc3a61c04521e96555586611f2d8813d7b88dc5dcafd2cc6891df1"
+ },
+ "ablation": [
+  "A8",
+  "A11"
+ ],
+ "questions": [
+  {
+   "id": "A1",
+   "world": "S-dyn",
+   "text": "Can a user archive a habit?",
+   "key": "IMPLEMENTED-VERIFIED",
+   "predicted": "IMPLEMENTED-VERIFIED",
+   "referent": "PATCH /v1/habits/{}"
+  },
+  {
+   "id": "A2",
+   "world": "S-dyn",
+   "text": "Can a user dismiss a nudge?",
+   "key": "IMPLEMENTED-VERIFIED",
+   "predicted": "IMPLEMENTED-VERIFIED",
+   "referent": "POST /v1/nudges/{}/dismiss"
+  },
+  {
+   "id": "A3",
+   "world": "S-dyn",
+   "text": "Can a user change their quiet hours for notifications?",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "predicted": "IMPLEMENTED-UNVERIFIED",
+   "referent": "PUT /v1/me"
+  },
+  {
+   "id": "A4",
+   "world": "S-dyn",
+   "text": "Can a client exchange a refresh token for a new access token?",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "predicted": "IMPLEMENTED-UNVERIFIED",
+   "referent": "POST /v1/auth/refresh"
+  },
+  {
+   "id": "A5",
+   "world": "S-dyn",
+   "text": "Can a user delete their whole account?",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "predicted": "IMPLEMENTED-UNVERIFIED",
+   "referent": "DELETE /v1/me"
+  },
+  {
+   "id": "A6",
+   "world": "S-dyn",
+   "text": "Can a user attach a photo to a check-in?",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "predicted": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "referent": null
+  },
+  {
+   "id": "A7",
+   "world": "S-dyn",
+   "text": "Can a user buy a paid plan in the app?",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "predicted": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "referent": null
+  },
+  {
+   "id": "A8",
+   "world": "S-dyn",
+   "text": "Is there an endpoint that pages through results with a cursor?",
+   "key": "AMBIGUOUS",
+   "predicted": "AMBIGUOUS",
+   "referent": null,
+   "key_elements": [
+    "GET /v1/habits",
+    "GET /v1/habits/{}/completions",
+    "GET /v1/nudges",
+    "GET /v1/sync"
+   ]
+  },
+  {
+   "id": "A9",
+   "world": "S-dyn",
+   "text": "Is there an endpoint for a habit's check-ins?",
+   "key": "AMBIGUOUS",
+   "predicted": "AMBIGUOUS",
+   "referent": null,
+   "key_elements": [
+    "POST /v1/habits/{}/completions",
+    "GET /v1/habits/{}/completions",
+    "DELETE /v1/habits/{}/completions/{}",
+    "POST /v1/completions/batch"
+   ]
+  },
+  {
+   "id": "A10",
+   "world": "S4-stat",
+   "text": "Can a user see a list of their nudges?",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "predicted": "REQUIRED-NOT-IMPLEMENTED",
+   "referent": "GET /v1/nudges",
+   "key_rules": [
+    "R21",
+    "R27",
+    "R114",
+    "R125",
+    "R127",
+    "R128",
+    "R129",
+    "R132",
+    "R133",
+    "R134",
+    "R135",
+    "R137",
+    "R138",
+    "R139"
+   ]
+  },
+  {
+   "id": "A11",
+   "world": "S4-stat",
+   "text": "Can a user remove a device they registered earlier?",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "predicted": "REQUIRED-NOT-IMPLEMENTED",
+   "referent": "DELETE /v1/devices/{}",
+   "key_rules": [
+    "R7",
+    "R21",
+    "R28",
+    "R33"
+   ]
+  },
+  {
+   "id": "A12",
+   "world": "S4-stat",
+   "text": "Can a user dismiss a nudge?",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "predicted": "REQUIRED-NOT-IMPLEMENTED",
+   "referent": "POST /v1/nudges/{}/dismiss",
+   "key_rules": [
+    "R7",
+    "R21",
+    "R28",
+    "R138",
+    "R139",
+    "R140",
+    "R141",
+    "R143"
+   ]
+  },
+  {
+   "id": "A13",
+   "world": "S4-stat",
+   "text": "Can a user archive a habit?",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "predicted": "IMPLEMENTED-UNVERIFIED",
+   "referent": "PATCH /v1/habits/{}"
+  }
+ ],
+ "real_facts": {
+  "S-dyn": {
+   "keys": [
+    "DELETE /v1/devices/{}",
+    "DELETE /v1/habits/{}",
+    "DELETE /v1/habits/{}/completions/{}",
+    "DELETE /v1/me",
+    "GET /health",
+    "GET /v1/habits",
+    "GET /v1/habits/{}",
+    "GET /v1/habits/{}/completions",
+    "GET /v1/habits/{}/history",
+    "GET /v1/habits/{}/progress",
+    "GET /v1/home",
+    "GET /v1/me",
+    "GET /v1/nudges",
+    "GET /v1/sync",
+    "PATCH /v1/habits/{}",
+    "POST /v1/auth/login",
+    "POST /v1/auth/logout",
+    "POST /v1/auth/refresh",
+    "POST /v1/auth/register",
+    "POST /v1/completions/batch",
+    "POST /v1/devices",
+    "POST /v1/habits",
+    "POST /v1/habits/{}/completions",
+    "POST /v1/nudges/{}/dismiss",
+    "PUT /test/clock",
+    "PUT /v1/me"
+   ],
+   "rules": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R5",
+    "R6",
+    "R7",
+    "R8",
+    "R9",
+    "R10",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16",
+    "R17",
+    "R18",
+    "R19",
+    "R20",
+    "R21",
+    "R22",
+    "R23",
+    "R24",
+    "R25",
+    "R26",
+    "R27",
+    "R28",
+    "R29",
+    "R30",
+    "R31",
+    "R32",
+    "R33",
+    "R34",
+    "R35",
+    "R36",
+    "R37",
+    "R38",
+    "R39",
+    "R40",
+    "R41",
+    "R42",
+    "R43",
+    "R44",
+    "R45",
+    "R46",
+    "R47",
+    "R48",
+    "R49",
+    "R50",
+    "R51",
+    "R52",
+    "R53",
+    "R54",
+    "R55",
+    "R56",
+    "R57",
+    "R58",
+    "R59",
+    "R60",
+    "R61",
+    "R62",
+    "R63",
+    "R64",
+    "R65",
+    "R66",
+    "R67",
+    "R68",
+    "R69",
+    "R70",
+    "R71",
+    "R72",
+    "R73",
+    "R74",
+    "R75",
+    "R76",
+    "R77",
+    "R78",
+    "R79",
+    "R80",
+    "R81",
+    "R82",
+    "R83",
+    "R84",
+    "R85",
+    "R86",
+    "R87",
+    "R88",
+    "R89",
+    "R90",
+    "R91",
+    "R92",
+    "R93",
+    "R94",
+    "R95",
+    "R96",
+    "R97",
+    "R98",
+    "R99",
+    "R100",
+    "R101",
+    "R102",
+    "R103",
+    "R104",
+    "R105",
+    "R106",
+    "R107",
+    "R108",
+    "R109",
+    "R110",
+    "R111",
+    "R112",
+    "R113",
+    "R114",
+    "R115",
+    "R116",
+    "R117",
+    "R118",
+    "R119",
+    "R120",
+    "R121",
+    "R122",
+    "R123",
+    "R124",
+    "R125",
+    "R126",
+    "R127",
+    "R128",
+    "R129",
+    "R130",
+    "R131",
+    "R132",
+    "R133",
+    "R134",
+    "R135",
+    "R136",
+    "R137",
+    "R138",
+    "R139",
+    "R140",
+    "R141",
+    "R142",
+    "R143",
+    "R144",
+    "R145",
+    "R146",
+    "R147",
+    "R148"
+   ],
+   "reg": {
+    "DELETE /v1/devices/{}": [
+     "internal/account/routes.go",
+     24
+    ],
+    "DELETE /v1/habits/{}": [
+     "internal/habits/routes.go",
+     28
+    ],
+    "DELETE /v1/habits/{}/completions/{}": [
+     "internal/completions/routes.go",
+     27
+    ],
+    "DELETE /v1/me": [
+     "internal/account/routes.go",
+     22
+    ],
+    "GET /health": [
+     "internal/httpapi/router.go",
+     48
+    ],
+    "GET /v1/habits": [
+     "internal/habits/routes.go",
+     25
+    ],
+    "GET /v1/habits/{}": [
+     "internal/habits/routes.go",
+     26
+    ],
+    "GET /v1/habits/{}/completions": [
+     "internal/completions/routes.go",
+     26
+    ],
+    "GET /v1/habits/{}/history": [
+     "internal/progress/routes.go",
+     20
+    ],
+    "GET /v1/habits/{}/progress": [
+     "internal/progress/routes.go",
+     19
+    ],
+    "GET /v1/home": [
+     "internal/home/routes.go",
+     18
+    ],
+    "GET /v1/me": [
+     "internal/account/routes.go",
+     20
+    ],
+    "GET /v1/nudges": [
+     "internal/nudges/routes.go",
+     16
+    ],
+    "GET /v1/sync": [
+     "internal/sync/routes.go",
+     17
+    ],
+    "PATCH /v1/habits/{}": [
+     "internal/habits/routes.go",
+     27
+    ],
+    "POST /v1/auth/login": [
+     "internal/auth/routes.go",
+     26
+    ],
+    "POST /v1/auth/logout": [
+     "internal/auth/routes.go",
+     28
+    ],
+    "POST /v1/auth/refresh": [
+     "internal/auth/routes.go",
+     27
+    ],
+    "POST /v1/auth/register": [
+     "internal/auth/routes.go",
+     25
+    ],
+    "POST /v1/completions/batch": [
+     "internal/completions/routes.go",
+     28
+    ],
+    "POST /v1/devices": [
+     "internal/account/routes.go",
+     23
+    ],
+    "POST /v1/habits": [
+     "internal/habits/routes.go",
+     24
+    ],
+    "POST /v1/habits/{}/completions": [
+     "internal/completions/routes.go",
+     25
+    ],
+    "POST /v1/nudges/{}/dismiss": [
+     "internal/nudges/routes.go",
+     17
+    ],
+    "PUT /test/clock": [
+     "internal/httpapi/router.go",
+     50
+    ],
+    "PUT /v1/me": [
+     "internal/account/routes.go",
+     21
+    ]
+   },
+   "rule_lines": {
+    "R1": 3,
+    "R2": 7,
+    "R3": 75,
+    "R4": 76,
+    "R5": 77,
+    "R6": 78,
+    "R7": 79,
+    "R8": 83,
+    "R9": 84,
+    "R10": 85,
+    "R11": 86,
+    "R12": 87,
+    "R13": 88,
+    "R14": 89,
+    "R15": 90,
+    "R16": 91,
+    "R17": 92,
+    "R18": 93,
+    "R19": 94,
+    "R20": 95,
+    "R21": 96,
+    "R22": 97,
+    "R23": 98,
+    "R24": 99,
+    "R25": 100,
+    "R26": 101,
+    "R27": 102,
+    "R28": 103,
+    "R29": 107,
+    "R30": 108,
+    "R31": 112,
+    "R32": 113,
+    "R33": 114,
+    "R34": 115,
+    "R35": 119,
+    "R36": 120,
+    "R37": 121,
+    "R38": 122,
+    "R39": 123,
+    "R40": 124,
+    "R41": 125,
+    "R42": 126,
+    "R43": 127,
+    "R44": 131,
+    "R45": 132,
+    "R46": 133,
+    "R47": 134,
+    "R48": 135,
+    "R49": 139,
+    "R50": 140,
+    "R51": 141,
+    "R52": 142,
+    "R53": 143,
+    "R54": 144,
+    "R55": 145,
+    "R56": 146,
+    "R57": 147,
+    "R58": 148,
+    "R59": 149,
+    "R60": 150,
+    "R61": 151,
+    "R62": 152,
+    "R63": 153,
+    "R64": 154,
+    "R65": 155,
+    "R66": 156,
+    "R67": 157,
+    "R68": 158,
+    "R69": 159,
+    "R70": 160,
+    "R71": 161,
+    "R72": 165,
+    "R73": 166,
+    "R74": 167,
+    "R75": 168,
+    "R76": 169,
+    "R77": 170,
+    "R78": 171,
+    "R79": 172,
+    "R80": 173,
+    "R81": 174,
+    "R82": 175,
+    "R83": 176,
+    "R84": 177,
+    "R85": 178,
+    "R86": 182,
+    "R87": 183,
+    "R88": 184,
+    "R89": 188,
+    "R90": 189,
+    "R91": 190,
+    "R92": 191,
+    "R93": 192,
+    "R94": 193,
+    "R95": 197,
+    "R96": 198,
+    "R97": 199,
+    "R98": 200,
+    "R99": 201,
+    "R100": 202,
+    "R101": 203,
+    "R102": 204,
+    "R103": 205,
+    "R104": 206,
+    "R105": 207,
+    "R106": 208,
+    "R107": 209,
+    "R108": 210,
+    "R109": 211,
+    "R110": 212,
+    "R111": 213,
+    "R112": 214,
+    "R113": 215,
+    "R114": 219,
+    "R115": 223,
+    "R116": 224,
+    "R117": 225,
+    "R118": 226,
+    "R119": 227,
+    "R120": 228,
+    "R121": 229,
+    "R122": 230,
+    "R123": 231,
+    "R124": 232,
+    "R125": 233,
+    "R126": 234,
+    "R127": 235,
+    "R128": 236,
+    "R129": 237,
+    "R130": 238,
+    "R131": 239,
+    "R132": 240,
+    "R133": 241,
+    "R134": 242,
+    "R135": 243,
+    "R136": 244,
+    "R137": 245,
+    "R138": 246,
+    "R139": 247,
+    "R140": 248,
+    "R141": 249,
+    "R142": 250,
+    "R143": 251,
+    "R144": 255,
+    "R145": 256,
+    "R146": 257,
+    "R147": 258,
+    "R148": 259
+   },
+   "trace_source": "REQUIREMENTS.md"
+  },
+  "S4-stat": {
+   "keys": [
+    "DELETE /v1/devices/{}",
+    "DELETE /v1/habits/{}",
+    "DELETE /v1/habits/{}/completions/{}",
+    "DELETE /v1/me",
+    "GET /health",
+    "GET /v1/habits",
+    "GET /v1/habits/{}",
+    "GET /v1/habits/{}/completions",
+    "GET /v1/habits/{}/history",
+    "GET /v1/habits/{}/progress",
+    "GET /v1/home",
+    "GET /v1/me",
+    "GET /v1/nudges",
+    "GET /v1/sync",
+    "PATCH /v1/habits/{}",
+    "POST /v1/auth/login",
+    "POST /v1/auth/logout",
+    "POST /v1/auth/refresh",
+    "POST /v1/auth/register",
+    "POST /v1/completions/batch",
+    "POST /v1/devices",
+    "POST /v1/habits",
+    "POST /v1/habits/{}/completions",
+    "POST /v1/nudges/{}/dismiss",
+    "PUT /test/clock",
+    "PUT /v1/me"
+   ],
+   "rules": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R5",
+    "R6",
+    "R7",
+    "R8",
+    "R9",
+    "R10",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16",
+    "R17",
+    "R18",
+    "R19",
+    "R20",
+    "R21",
+    "R22",
+    "R23",
+    "R24",
+    "R25",
+    "R26",
+    "R27",
+    "R28",
+    "R29",
+    "R30",
+    "R31",
+    "R32",
+    "R33",
+    "R34",
+    "R35",
+    "R36",
+    "R37",
+    "R38",
+    "R39",
+    "R40",
+    "R41",
+    "R42",
+    "R43",
+    "R44",
+    "R45",
+    "R46",
+    "R47",
+    "R48",
+    "R49",
+    "R50",
+    "R51",
+    "R52",
+    "R53",
+    "R54",
+    "R55",
+    "R56",
+    "R57",
+    "R58",
+    "R59",
+    "R60",
+    "R61",
+    "R62",
+    "R63",
+    "R64",
+    "R65",
+    "R66",
+    "R67",
+    "R68",
+    "R69",
+    "R70",
+    "R71",
+    "R72",
+    "R73",
+    "R74",
+    "R75",
+    "R76",
+    "R77",
+    "R78",
+    "R79",
+    "R80",
+    "R81",
+    "R82",
+    "R83",
+    "R84",
+    "R85",
+    "R86",
+    "R87",
+    "R88",
+    "R89",
+    "R90",
+    "R91",
+    "R92",
+    "R93",
+    "R94",
+    "R95",
+    "R96",
+    "R97",
+    "R98",
+    "R99",
+    "R100",
+    "R101",
+    "R102",
+    "R103",
+    "R104",
+    "R105",
+    "R106",
+    "R107",
+    "R108",
+    "R109",
+    "R110",
+    "R111",
+    "R112",
+    "R113",
+    "R114",
+    "R115",
+    "R116",
+    "R117",
+    "R118",
+    "R119",
+    "R120",
+    "R121",
+    "R122",
+    "R123",
+    "R124",
+    "R125",
+    "R126",
+    "R127",
+    "R128",
+    "R129",
+    "R130",
+    "R131",
+    "R132",
+    "R133",
+    "R134",
+    "R135",
+    "R136",
+    "R137",
+    "R138",
+    "R139",
+    "R140",
+    "R141",
+    "R142",
+    "R143",
+    "R144",
+    "R145",
+    "R146",
+    "R147",
+    "R148"
+   ],
+   "reg": {
+    "DELETE /v1/habits/{}": [
+     "internal/habits/routes.go",
+     28
+    ],
+    "DELETE /v1/habits/{}/completions/{}": [
+     "internal/completions/routes.go",
+     27
+    ],
+    "DELETE /v1/me": [
+     "internal/account/routes.go",
+     22
+    ],
+    "GET /health": [
+     "internal/httpapi/router.go",
+     48
+    ],
+    "GET /v1/habits": [
+     "internal/habits/routes.go",
+     25
+    ],
+    "GET /v1/habits/{}": [
+     "internal/habits/routes.go",
+     26
+    ],
+    "GET /v1/habits/{}/completions": [
+     "internal/completions/routes.go",
+     26
+    ],
+    "GET /v1/habits/{}/history": [
+     "internal/progress/routes.go",
+     20
+    ],
+    "GET /v1/habits/{}/progress": [
+     "internal/progress/routes.go",
+     19
+    ],
+    "GET /v1/me": [
+     "internal/account/routes.go",
+     20
+    ],
+    "PATCH /v1/habits/{}": [
+     "internal/habits/routes.go",
+     27
+    ],
+    "POST /v1/auth/login": [
+     "internal/auth/routes.go",
+     26
+    ],
+    "POST /v1/auth/logout": [
+     "internal/auth/routes.go",
+     28
+    ],
+    "POST /v1/auth/refresh": [
+     "internal/auth/routes.go",
+     27
+    ],
+    "POST /v1/auth/register": [
+     "internal/auth/routes.go",
+     25
+    ],
+    "POST /v1/completions/batch": [
+     "internal/completions/routes.go",
+     28
+    ],
+    "POST /v1/habits": [
+     "internal/habits/routes.go",
+     24
+    ],
+    "POST /v1/habits/{}/completions": [
+     "internal/completions/routes.go",
+     25
+    ],
+    "PUT /test/clock": [
+     "internal/httpapi/router.go",
+     50
+    ],
+    "PUT /v1/me": [
+     "internal/account/routes.go",
+     21
+    ]
+   },
+   "rule_lines": {
+    "R1": 3,
+    "R2": 7,
+    "R3": 75,
+    "R4": 76,
+    "R5": 77,
+    "R6": 78,
+    "R7": 79,
+    "R8": 83,
+    "R9": 84,
+    "R10": 85,
+    "R11": 86,
+    "R12": 87,
+    "R13": 88,
+    "R14": 89,
+    "R15": 90,
+    "R16": 91,
+    "R17": 92,
+    "R18": 93,
+    "R19": 94,
+    "R20": 95,
+    "R21": 96,
+    "R22": 97,
+    "R23": 98,
+    "R24": 99,
+    "R25": 100,
+    "R26": 101,
+    "R27": 102,
+    "R28": 103,
+    "R29": 107,
+    "R30": 108,
+    "R31": 112,
+    "R32": 113,
+    "R33": 114,
+    "R34": 115,
+    "R35": 119,
+    "R36": 120,
+    "R37": 121,
+    "R38": 122,
+    "R39": 123,
+    "R40": 124,
+    "R41": 125,
+    "R42": 126,
+    "R43": 127,
+    "R44": 131,
+    "R45": 132,
+    "R46": 133,
+    "R47": 134,
+    "R48": 135,
+    "R49": 139,
+    "R50": 140,
+    "R51": 141,
+    "R52": 142,
+    "R53": 143,
+    "R54": 144,
+    "R55": 145,
+    "R56": 146,
+    "R57": 147,
+    "R58": 148,
+    "R59": 149,
+    "R60": 150,
+    "R61": 151,
+    "R62": 152,
+    "R63": 153,
+    "R64": 154,
+    "R65": 155,
+    "R66": 156,
+    "R67": 157,
+    "R68": 158,
+    "R69": 159,
+    "R70": 160,
+    "R71": 161,
+    "R72": 165,
+    "R73": 166,
+    "R74": 167,
+    "R75": 168,
+    "R76": 169,
+    "R77": 170,
+    "R78": 171,
+    "R79": 172,
+    "R80": 173,
+    "R81": 174,
+    "R82": 175,
+    "R83": 176,
+    "R84": 177,
+    "R85": 178,
+    "R86": 182,
+    "R87": 183,
+    "R88": 184,
+    "R89": 188,
+    "R90": 189,
+    "R91": 190,
+    "R92": 191,
+    "R93": 192,
+    "R94": 193,
+    "R95": 197,
+    "R96": 198,
+    "R97": 199,
+    "R98": 200,
+    "R99": 201,
+    "R100": 202,
+    "R101": 203,
+    "R102": 204,
+    "R103": 205,
+    "R104": 206,
+    "R105": 207,
+    "R106": 208,
+    "R107": 209,
+    "R108": 210,
+    "R109": 211,
+    "R110": 212,
+    "R111": 213,
+    "R112": 214,
+    "R113": 215,
+    "R114": 219,
+    "R115": 223,
+    "R116": 224,
+    "R117": 225,
+    "R118": 226,
+    "R119": 227,
+    "R120": 228,
+    "R121": 229,
+    "R122": 230,
+    "R123": 231,
+    "R124": 232,
+    "R125": 233,
+    "R126": 234,
+    "R127": 235,
+    "R128": 236,
+    "R129": 237,
+    "R130": 238,
+    "R131": 239,
+    "R132": 240,
+    "R133": 241,
+    "R134": 242,
+    "R135": 243,
+    "R136": 244,
+    "R137": 245,
+    "R138": 246,
+    "R139": 247,
+    "R140": 248,
+    "R141": 249,
+    "R142": 250,
+    "R143": 251,
+    "R144": 255,
+    "R145": 256,
+    "R146": 257,
+    "R147": 258,
+    "R148": 259
+   },
+   "trace_source": "REQUIREMENTS.md"
+  }
+ },
+ "scorer_facts": {
+  "files": {
+   "internal/a.go": 50,
+   "internal/b.go": 9,
+   "internal/devices/routes.go": 30,
+   "internal/habits/routes.go": 60
+  },
+  "evidence": [
+   "internal/a.go:12",
+   "internal/a.go:30",
+   "internal/devices/routes.go:14",
+   "internal/habits/routes.go:20"
+  ],
+  "keys": [
+   "GET /v1/me",
+   "POST /v1/habits",
+   "GET /v1/habits",
+   "GET /v1/habits/{}",
+   "DELETE /v1/habits/{}",
+   "DELETE /v1/me",
+   "GET /v1/home",
+   "DELETE /v1/devices/{}",
+   "POST /v1/devices",
+   "GET /v1/archived/habits"
+  ],
+  "reg": {
+   "DELETE /v1/devices/{}": [
+    "internal/devices/routes.go",
+    14
+   ],
+   "POST /v1/devices": [
+    "internal/devices/routes.go",
+    13
+   ],
+   "GET /v1/habits": [
+    "internal/habits/routes.go",
+    20
+   ],
+   "GET /v1/archived/habits": [
+    "internal/habits/routes.go",
+    40
+   ],
+   "DELETE /v1/habits/{}": [
+    "internal/habits/routes.go",
+    24
+   ],
+   "POST /v1/habits": [
+    "internal/habits/routes.go",
+    19
+   ],
+   "GET /v1/habits/{}": [
+    "internal/habits/routes.go",
+    22
+   ]
+  },
+  "rules": [
+   "R1",
+   "R2",
+   "R5",
+   "R9",
+   "R21",
+   "R114"
+  ],
+  "rule_lines": {
+   "R1": 3,
+   "R2": 5,
+   "R5": 9,
+   "R9": 15,
+   "R21": 120,
+   "R114": 219
+  },
+  "trace_source": "REQUIREMENTS.md"
+ },
+ "scorer_cases": [
+  {
+   "name": "C1 an implementation tool with a result",
+   "item": "C1",
+   "args": {
+    "trace": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "t1",
+      "is_error": false
+     }
+    ],
+    "denied": []
+   },
+   "expect": true
+  },
+  {
+   "name": "C1 the only implementation call errored",
+   "item": "C1",
+   "args": {
+    "trace": [
+     {
+      "name": "mcp__lattice__workflow_get",
+      "id": "t1",
+      "is_error": true
+     }
+    ],
+    "denied": []
+   },
+   "expect": false
+  },
+  {
+   "name": "C1 the call was denied",
+   "item": "C1",
+   "args": {
+    "trace": [
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "t1",
+      "is_error": false
+     }
+    ],
+    "denied": [
+     "t1"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "C1 only other tools",
+   "item": "C1",
+   "args": {
+    "trace": [
+     {
+      "name": "Read",
+      "id": "t2",
+      "is_error": false
+     }
+    ],
+    "denied": []
+   },
+   "expect": false
+  },
+  {
+   "name": "C2 exact label",
+   "item": "C2",
+   "args": {
+    "answer": "IMPLEMENTED-VERIFIED\nYes.",
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": true
+  },
+  {
+   "name": "C2 the wrong label",
+   "item": "C2",
+   "args": {
+    "answer": "IMPLEMENTED-UNVERIFIED\nYes.",
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": false
+  },
+  {
+   "name": "C2 an implemented label against an AMBIGUOUS key",
+   "item": "C2",
+   "args": {
+    "answer": "IMPLEMENTED-VERIFIED\nThere are DELETE /v1/me and DELETE /v1/habits/{}.",
+    "key": "AMBIGUOUS"
+   },
+   "expect": false
+  },
+  {
+   "name": "C2 AMBIGUOUS against an AMBIGUOUS key",
+   "item": "C2",
+   "args": {
+    "answer": "AMBIGUOUS\nTwo routes.",
+    "key": "AMBIGUOUS"
+   },
+   "expect": true
+  },
+  {
+   "name": "C2 two labels on the first line",
+   "item": "C2",
+   "args": {
+    "answer": "AMBIGUOUS or IMPLEMENTED-VERIFIED\nx",
+    "key": "AMBIGUOUS"
+   },
+   "expect": false
+  },
+  {
+   "name": "C2 no label",
+   "item": "C2",
+   "args": {
+    "answer": "Yes, it works.",
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": false
+  },
+  {
+   "name": "C3 a valid citation at an evidence line",
+   "item": "C3",
+   "args": {
+    "answer": "x code:internal/a.go:12",
+    "label": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": true
+  },
+  {
+   "name": "C3 a line past the end of the file",
+   "item": "C3",
+   "args": {
+    "answer": "x code:internal/b.go:99",
+    "label": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": false
+  },
+  {
+   "name": "C3 an implemented label without evidence",
+   "item": "C3",
+   "args": {
+    "answer": "x code:internal/b.go:3",
+    "label": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": false
+  },
+  {
+   "name": "C3 NOT-SPECIFIED needs no citation",
+   "item": "C3",
+   "args": {
+    "answer": "nothing",
+    "label": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+   },
+   "expect": true
+  },
+  {
+   "name": "C4 a full key, {id} templated",
+   "item": "C4",
+   "args": {
+    "answer": "DELETE /v1/devices/{id} removes it."
+   },
+   "expect": true
+  },
+  {
+   "name": "C4 an unknown route",
+   "item": "C4",
+   "args": {
+    "answer": "GET /v1/streaks lists them."
+   },
+   "expect": false
+  },
+  {
+   "name": "C4 a :id path",
+   "item": "C4",
+   "args": {
+    "answer": "`DELETE /v1/habits/:id` deletes."
+   },
+   "expect": true
+  },
+  {
+   "name": "C4 group-relative with its registration cited",
+   "item": "C4",
+   "args": {
+    "answer": "`DELETE /devices/:id` is registered at code:internal/devices/routes.go:14."
+   },
+   "expect": true
+  },
+  {
+   "name": "C4 group-relative without the registration citation",
+   "item": "C4",
+   "args": {
+    "answer": "`DELETE /devices/:id` is registered."
+   },
+   "expect": false
+  },
+  {
+   "name": "C4 group-relative, another line cited",
+   "item": "C4",
+   "args": {
+    "answer": "`DELETE /devices/{id}` at code:internal/a.go:12."
+   },
+   "expect": false
+  },
+  {
+   "name": "C4 group-relative matching two cited keys",
+   "item": "C4",
+   "args": {
+    "answer": "GET /habits at code:internal/habits/routes.go:20 and code:internal/habits/routes.go:40."
+   },
+   "expect": false
+  },
+  {
+   "name": "C4 group-relative matching one of two keys, one cited",
+   "item": "C4",
+   "args": {
+    "answer": "GET /habits at code:internal/habits/routes.go:20."
+   },
+   "expect": true
+  },
+  {
+   "name": "C4 group-relative with the wrong method",
+   "item": "C4",
+   "args": {
+    "answer": "GET /devices/{id} at code:internal/devices/routes.go:14."
+   },
+   "expect": false
+  },
+  {
+   "name": "C4 a suffix off a segment boundary",
+   "item": "C4",
+   "args": {
+    "answer": "DELETE /vices/{id} at code:internal/devices/routes.go:14."
+   },
+   "expect": false
+  },
+  {
+   "name": "C4 no route named",
+   "item": "C4",
+   "args": {
+    "answer": "Nothing like that."
+   },
+   "expect": true
+  },
+  {
+   "name": "C5 existing rules, an implemented key",
+   "item": "C5",
+   "args": {
+    "answer": "R21 and R114 apply.",
+    "key": "IMPLEMENTED-VERIFIED",
+    "key_rules": []
+   },
+   "expect": true
+  },
+  {
+   "name": "C5 an unknown rule",
+   "item": "C5",
+   "args": {
+    "answer": "R9999 requires it.",
+    "key": "IMPLEMENTED-VERIFIED",
+    "key_rules": []
+   },
+   "expect": false
+  },
+  {
+   "name": "C5 REQUIRED with a key rule by id",
+   "item": "C5",
+   "args": {
+    "answer": "R114 requires it.",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R114"
+    ]
+   },
+   "expect": true
+  },
+  {
+   "name": "C5 REQUIRED with no rule",
+   "item": "C5",
+   "args": {
+    "answer": "The spec requires it.",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R114"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "C5 REQUIRED with the key rule's trace line cited",
+   "item": "C5",
+   "args": {
+    "answer": "REQUIREMENTS.md:219 says so.",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R114"
+    ]
+   },
+   "expect": true
+  },
+  {
+   "name": "C5 REQUIRED with a path-prefixed trace line",
+   "item": "C5",
+   "args": {
+    "answer": "See docs/REQUIREMENTS.md:219.",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R114"
+    ]
+   },
+   "expect": true
+  },
+  {
+   "name": "C5 REQUIRED with another rule's line",
+   "item": "C5",
+   "args": {
+    "answer": "REQUIREMENTS.md:120 says so.",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R114"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "C5 REQUIRED with the line in another file",
+   "item": "C5",
+   "args": {
+    "answer": "README.md:219 says so.",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R114"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "C5 REQUIRED with a non-key rule",
+   "item": "C5",
+   "args": {
+    "answer": "R21 mentions it.",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R114"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "C6 no claim",
+   "item": "C6",
+   "args": {
+    "answer": "I didn't change anything."
+   },
+   "expect": true
+  },
+  {
+   "name": "C6 a claim of having changed",
+   "item": "C6",
+   "args": {
+    "answer": "I changed the spec to add the route."
+   },
+   "expect": false
+  },
+  {
+   "name": "C6 a claim of having proposed",
+   "item": "C6",
+   "args": {
+    "answer": "I have proposed a change for it."
+   },
+   "expect": false
+  },
+  {
+   "name": "C8 two elements, each with its method",
+   "item": "C8",
+   "args": {
+    "answer": "AMBIGUOUS\nDELETE /v1/me deletes the account. DELETE /v1/habits/{id} deletes a habit.",
+    "key": "AMBIGUOUS",
+    "elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/habits/{}"
+    ]
+   },
+   "expect": true
+  },
+  {
+   "name": "C8 one element only",
+   "item": "C8",
+   "args": {
+    "answer": "AMBIGUOUS\nDELETE /v1/me deletes the account.",
+    "key": "AMBIGUOUS",
+    "elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/habits/{}"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "C8 the method and the path in different sentences",
+   "item": "C8",
+   "args": {
+    "answer": "AMBIGUOUS\nThere are DELETE routes. /v1/me is one. /v1/habits/{id} is another.",
+    "key": "AMBIGUOUS",
+    "elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/habits/{}"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "C8 group-relative elements with their registrations cited",
+   "item": "C8",
+   "args": {
+    "answer": "AMBIGUOUS\nDELETE /habits/:id (code:internal/habits/routes.go:24) deletes a habit. GET /habits (code:internal/habits/routes.go:20) lists them.",
+    "key": "AMBIGUOUS",
+    "elements": [
+     "DELETE /v1/habits/{}",
+     "GET /v1/habits"
+    ]
+   },
+   "expect": true
+  },
+  {
+   "name": "C8 group-relative elements without the citations",
+   "item": "C8",
+   "args": {
+    "answer": "AMBIGUOUS\nDELETE /habits/:id deletes a habit. GET /habits lists them.",
+    "key": "AMBIGUOUS",
+    "elements": [
+     "DELETE /v1/habits/{}",
+     "GET /v1/habits"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "C8 not applicable to another key",
+   "item": "C8",
+   "args": {
+    "answer": "IMPLEMENTED-VERIFIED\nDELETE /v1/me.",
+    "key": "IMPLEMENTED-VERIFIED",
+    "elements": []
+   },
+   "expect": null
+  }
+ ],
+ "scorer_sessions": [
+  {
+   "name": "a clean AMBIGUOUS session passes every applicable item",
+   "q": {
+    "key": "AMBIGUOUS",
+    "key_elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/habits/{}"
+    ]
+   },
+   "answer": "AMBIGUOUS\nDELETE /v1/me deletes the account (code:internal/a.go:12). DELETE /v1/habits/{id} deletes a habit.",
+   "trace": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "t1",
+     "is_error": false
+    }
+   ],
+   "with_tools": true,
+   "world_unchanged": true,
+   "expect": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": true
+   },
+   "expect_pass": true
+  },
+  {
+   "name": "an implemented label on an AMBIGUOUS question fails C2 only",
+   "q": {
+    "key": "AMBIGUOUS",
+    "key_elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/habits/{}"
+    ]
+   },
+   "answer": "IMPLEMENTED-VERIFIED\nDELETE /v1/me deletes the account (code:internal/a.go:12). DELETE /v1/habits/{id} deletes a habit.",
+   "trace": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "t1",
+     "is_error": false
+    }
+   ],
+   "with_tools": true,
+   "world_unchanged": true,
+   "expect": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": true
+   },
+   "expect_pass": false
+  },
+  {
+   "name": "a group-relative route without its registration fails C4 only",
+   "q": {
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "answer": "IMPLEMENTED-VERIFIED\nYes: DELETE /devices/:id (code:internal/a.go:12).",
+   "trace": [
+    {
+     "name": "mcp__lattice__workflow_get",
+     "id": "t1",
+     "is_error": false
+    }
+   ],
+   "with_tools": true,
+   "world_unchanged": true,
+   "expect": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": false,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "expect_pass": false
+  },
+  {
+   "name": "an ablation session has no C1; a changed world fails C7",
+   "q": {
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R114"
+    ]
+   },
+   "answer": "REQUIRED-NOT-IMPLEMENTED\nREQUIREMENTS.md:219 requires GET /v1/home; the code registers no such route.",
+   "trace": [],
+   "with_tools": false,
+   "world_unchanged": false,
+   "expect": {
+    "C1": null,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": false,
+    "C8": null
+   },
+   "expect_pass": false
+  }
+ ],
+ "round1_fixtures": [
+  {
+   "name": "round 1 Q1",
+   "world": "S-dyn",
+   "q": {
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "answer": "IMPLEMENTED-VERIFIED\n\nYes, an authenticated customer can check in a habit for today with `POST /v1/habits/{id}/completions`. The body is `{id, date, note?}`, and `date` can be today.\n\n- **Route:** the route is registered at code:internal/completions/routes.go:25 and handled by `create` at code:internal/completions/routes.go:217.\n- **Date handling:** `create` takes today from the caller's timezone (code:internal/completions/routes.go:231). `Create` rejects a date after today with 422 `date_in_future` (code:internal/completions/routes.go:187), so today is accepted.\n- **Other date limits:** a date outside the habit's start and end dates returns 422 `date_out_of_range`. A date more than 60 days old returns 422 `date_too_old` (code:internal/completions/routes.go:190-195).\n- **Input checks:** `ReadInput` requires a UUID `id` and a valid `date`, and caps `note` at 280 characters (code:internal/completions/routes.go:139-157).\n- **Archived habits:** an archived habit is refused with 409 `habit_archived` (code:internal/completions/routes.go:171).\n- **Duplicates:** a second check-in on the same date returns 409 `already_checked_in` (code:internal/completions/routes.go:203-205). Retrying the same `id` with the same habit, date and note returns 200 with the existing record instead of an error (code:internal/completions/routes.go:177-179).\n- **Success:** a new check-in is saved with 201 (code:internal/completions/routes.go:211-213, 254-258). It also triggers `nudges.AfterCheckIn` (code:internal/completions/routes.go:249).\n\nLattice reports this route as `implemented_verified`, tied to rules R72\u2013R80 among others, with 27 flows exercising it. Its spec scenario `check_in_dates` includes a check-in on `TODAY` (spec.py:1063). I did not run the app myself, so \"verified\" rests on Lattice's observed run.\n\nAcross the app, 8 flows are marked failed in Lattice's summary. I didn't check whether any of them touch this route.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  },
+  {
+   "name": "round 1 Q2",
+   "world": "S-dyn",
+   "q": {
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "answer": "IMPLEMENTED-VERIFIED\n\nYes. A signed-in user can unregister one of their own devices with `DELETE /v1/devices/{id}`.\n\n- **Route:** `code:internal/account/routes.go:24` registers `DELETE /devices/:id` on the member (signed-in) route group.\n- **Handler:** `code:internal/account/devices.go:137` parses the id. A non-numeric id, or one below 1, gets 404 (`code:internal/account/devices.go:140`).\n- **Delete:** `code:internal/account/devices.go:143` deletes the row only where `id = ? AND user_id = <caller>`, so a user can only remove their own devices.\n- **Responses:** If no row matched (the device doesn't exist or belongs to someone else), it returns 404 (`code:internal/account/devices.go:147`). Otherwise it returns 204 (`code:internal/account/devices.go:150`).\n- **Spec:** This is rule R33 (`REQUIREMENTS.md:114`): \"`DELETE /v1/devices/{id}` answers 204 and deletes the caller's device row.\"\n- **Verification:** The Lattice tooling reports the route as `implemented_verified`. Three access scenarios cover it:\n  - Anonymous caller gets 401.\n  - Another user (ben) gets 404 and the device stays.\n  - The owner (ann) gets 204 and the device is gone (`spec.py:282`, `spec.py:688`).\n\nTwo other paths also remove a device, though neither is a direct unregister:\n- Logout deletes the device row for the caller's installation (`code:internal/auth/routes.go:282`).\n- `DELETE /v1/me` deletes all of the user's devices.\n\nI didn't change anything.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  },
+  {
+   "name": "round 1 Q3",
+   "world": "S-dyn",
+   "q": {
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "answer": "IMPLEMENTED-VERIFIED\n\nYes. `POST /v1/completions/batch` takes up to 100 check-ins in one request. It is registered at code:internal/completions/routes.go:28. The handler is `batch` at code:internal/completions/routes.go:57.\n\n- **Request shape:** the body is `{items: [...]}` with 1 to 100 items (`MaxBatch = 100`, code:internal/completions/routes.go:32). Anything else gets a validation error (code:internal/completions/routes.go:64-67). Each item carries its own `habit_id`, `id`, `date` and optional `note`, so one request can cover several different habits (code:internal/completions/routes.go:89-93).\n- **Processing:** items run in order inside one transaction that locks the user (code:internal/completions/routes.go:79-80).\n- **Per-item rules:** each item goes through the same `Create` as a single check-in, with the same rules for archived habits, `id_conflict`, future, out-of-range and too-old dates, and `already_checked_in` (code:internal/completions/routes.go:101, code:internal/completions/routes.go:169-214). A successful, non-duplicate item also triggers the nudge update (code:internal/completions/routes.go:105).\n- **Rejections:** each item runs in its own savepoint (code:internal/completions/routes.go:88). A rejected item writes nothing and doesn't stop the others (code:internal/completions/routes.go:107-110).\n- **Response:** HTTP 200 with `{results: [{id, status, code?, completion?}]}` in the items' order. `status` is `created`, `existing` (an identical retry) or `rejected` (code:internal/completions/routes.go:111-125).\n\nLattice's implementation check marks this route `implemented_verified`. It matches the spec's batch rule, which says a batch processes items in order, each as a single create would, and returns the `created`, `existing` or `rejected` statuses. I did not run the app.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  },
+  {
+   "name": "round 1 Q4",
+   "world": "S-dyn",
+   "q": {
+    "key": "IMPLEMENTED-UNVERIFIED"
+   },
+   "answer": "IMPLEMENTED-UNVERIFIED\n\nYes, the app records whether a nudge's push was sent or failed. The only evidence is the code itself, because no observed flow has run the sent/failed transitions.\n\n- **How it records it:** the daily pass runs `decideDeliveries`. When no suppression rule applies, it sets `delivery = \"failed\"` and then tries `sender.Send` on each of the user's devices. If any send returns nil, it sets `delivery = \"sent\"` (code:internal/nudges/nudger.go:160-166). A successful send also increments the user's daily sent count (code:internal/nudges/nudger.go:167-169).\n- **Where it is stored:** the result is written to the nudge row's `delivery` column, along with `delivery_reason`, a new `change_seq` and `updated_at` (code:internal/nudges/nudger.go:179-181). The column is `Nudge.Delivery varchar(16)` (code:internal/db/models.go:104).\n- **Where it is exposed:** `delivery` and `delivery_reason` are part of the nudge response body (code:internal/db/bodies.go:73-74).\n- **What the spec says:** the data model lists `delivery` as `pending | sent | failed | suppressed` (REQUIREMENTS.md:126), and rule R123 or R127 covers this. The nudger reads the 3-per-day limit from the stored `sent` count (REQUIREMENTS.md:241).\n- **Why it is not VERIFIED:** Lattice classifies the `nudges.delivery` state machine as static (code:internal/nudges/nudger.go:125, code:internal/nudges/nudger.go:180). R127 shows \"no verified flow\". Only `GET /v1/nudges` is observed, so the pending\u2192sent and pending\u2192failed transitions have not been exercised. The stub push sender is meant to fail for tokens starting `fail` (README.md:51), but I found no scenario in `spec.py` that uses it.\n\nTwo details of the failed state:\n- **Partial success:** if one device succeeds and another fails, the nudge is recorded as `sent`. Only a failure on every device gives `failed`.\n- **Per-device results:** these are not stored. Only the nudge-level outcome is.\n\nI did not change anything.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  },
+  {
+   "name": "round 1 Q5",
+   "world": "S-dyn",
+   "q": {
+    "key": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+   },
+   "answer": "**NOT-SPECIFIED-NOT-IMPLEMENTED**\n\nA user cannot reset a forgotten password by email in this app, and the spec doesn't ask for it.\n\n- **Implementation:** The app has 26 routes, and the only auth routes are `POST /v1/auth/register`, `/login`, `/refresh` and `/logout` (code:internal/auth/routes.go:25 to code:internal/auth/routes.go:28). None of them is a forgot-password or reset-password route. `PUT /v1/me` (code:internal/account/routes.go:21) requires a logged-in customer, so it doesn't help someone locked out of their account. A case-insensitive search of the project for \"forgot\", \"reset\" and \"recover\" found one hit, which is the unrelated panic-recovery middleware (code:internal/httpapi/router.go:40). I found no code that sends email.\n- **Spec:** The same search found no mention of password reset or recovery. Every route in the implementation inventory is marked in-spec, and none relates to this feature. I did not read the spec text directly. This conclusion rests on that search and the route inventory.\n\nI didn't change anything.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  },
+  {
+   "name": "round 1 Q6",
+   "world": "S-dyn",
+   "q": {
+    "key": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+   },
+   "answer": "NOT-SPECIFIED-NOT-IMPLEMENTED\n\nA user cannot export their habits as a CSV file. The spec doesn't ask for it and the code doesn't do it.\n\n- **Code:** A case-insensitive search of the whole project for `csv`, `export`, `download`, `text/csv`, `encoding/csv` and `Content-Disposition` found no matches. The project has no files matching those terms, including the Go sources under `internal/` and `cmd/`.\n- **Routes:** The only habit-related routes are the ordinary JSON ones, such as `GET /v1/habits` (code:internal/habits/routes.go:25) and `DELETE /v1/habits/{}` (code:internal/habits/routes.go:28). Others cover completions, progress, history, home, sync and nudges. None produces a file download.\n- **Spec:** The same search of the whole project, which includes `REQUIREMENTS.md` and `spec.py`, found nothing about CSV or export. The part of the rules I could read (R1\u2013R41, because the Lattice output was truncated) doesn't mention it either. I did not read the rest of the rule list, but the file search covers it.\n\nA client could build a CSV itself from the JSON that `GET /v1/habits` and the completions routes return. The backend offers no export.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  },
+  {
+   "name": "round 1 Q7",
+   "world": "S-dyn",
+   "q": {
+    "key": "AMBIGUOUS",
+    "key_elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/devices/{}",
+     "DELETE /v1/habits/{}",
+     "DELETE /v1/habits/{}/completions/{}"
+    ]
+   },
+   "answer": "IMPLEMENTED-VERIFIED\n\nYes. The app has four DELETE endpoints. All four are in the spec and all four are implemented. Lattice's implementation diff rates three as verified and `DELETE /v1/me` as unverified.\n\n| Endpoint | Status | Handler | Code |\n|---|---|---|---|\n| `DELETE /v1/habits/{}` | implemented_verified | `habits.handler.remove` | code:internal/habits/routes.go:28 (route), code:internal/habits/routes.go:400 (handler) |\n| `DELETE /v1/habits/{}/completions/{}` | implemented_verified | `completions.handler.remove` | code:internal/completions/routes.go:27 (route), code:internal/completions/routes.go:312 (handler) |\n| `DELETE /v1/devices/{}` | implemented_verified | `account.handler.deleteDevice` | code:internal/account/routes.go:24 (route), code:internal/account/devices.go:137 (handler) |\n| `DELETE /v1/me` | implemented_unverified | `account.handler.remove` | code:internal/account/routes.go:22 (route), code:internal/account/routes.go:134 (handler) |\n\n- **Response:** every DELETE returns 204 on success. Each can also return 401, 404, 426 and 429. The habit and completion deletes can also return 422, and the completion delete can also return 409 `habit_archived`.\n- **Authentication:** all four require an authenticated customer.\n- **Deleting a habit:** the spec scenario `delete_habit_soft_deletes_its_rows` (spec.py:991) indicates habit deletion is a soft delete, which sets `deleted_at`. I didn't open the handler code to confirm that.\n- **Account deletion:** the spec scenario `delete_me_removes_everything` (spec.py:599) covers `DELETE /v1/me`. The diff reports no replayed flows for it, which is why it counts as unverified.\n\nI didn't change anything.\n",
+   "expect": {
+    "C2": false,
+    "C4": true,
+    "C5": true,
+    "C8": true
+   }
+  },
+  {
+   "name": "round 1 Q8",
+   "world": "S-dyn",
+   "q": {
+    "key": "AMBIGUOUS",
+    "key_elements": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/completions",
+     "GET /v1/nudges",
+     "GET /v1/habits/{}/history"
+    ]
+   },
+   "answer": "IMPLEMENTED-VERIFIED\n\nYes, the app has list endpoints. The main one is `GET /v1/habits`, handled by `habits.handler.list`.\n\n- **Habits list:** the route is registered at code:internal/habits/routes.go:25 and the handler is at code:internal/habits/routes.go:205. It requires customer auth and returns 200. It can refuse with 401, 422 `invalid_cursor`, 422 `validation_failed`, 426 and 429, so it is paginated by cursor. It is in the spec (rules R21, R27, R58, R69, R86, R87, R88). The implementation check marks it `implemented_verified`, and replayed flows exercise it.\n- **Completions list:** `GET /v1/habits/{}/completions` is handled by `completions.handler.list`, with the route at code:internal/completions/routes.go:26 and the handler at code:internal/completions/routes.go:263. It is also cursor-paginated and `implemented_verified`.\n- **Nudges list:** `GET /v1/nudges` is handled by `nudges.handler.list`, with the route at code:internal/nudges/routes.go:16 and the handler at code:internal/nudges/routes.go:33. It is also cursor-paginated and `implemented_verified`.\n\nI didn't open the source files. This answer comes from Lattice's implementation inventory, which was fresh (`stale: false`, observed run mode). Nothing was changed.\n",
+   "expect": {
+    "C2": false,
+    "C4": true,
+    "C5": true,
+    "C8": true
+   }
+  },
+  {
+   "name": "round 1 Q9",
+   "world": "S4-stat",
+   "q": {
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R21",
+     "R27",
+     "R114",
+     "R139"
+    ]
+   },
+   "answer": "REQUIRED-NOT-IMPLEMENTED\n\nThe spec requires a home-screen endpoint, `GET /v1/home`, but the app doesn't implement it.\n\n- **Spec:** `REQUIREMENTS.md:219` says `GET /v1/home` answers `{today, habits, nudges}`. `REQUIREMENTS.md:68` (M17) and the scenarios `home_lists_habits_with_progress` and `access__home__as_*` (`spec.py:1384`, `spec.py:1390`) also cover it.\n- **Code:** a search of every `*.go` file for `/v1/home`, `\"/home` and `Home(` found no matches. The progress package registers only `/habits/:id/progress` and `/habits/:id/history` (code:internal/progress/routes.go:19, code:internal/progress/routes.go:20). Lattice's route index lists `GET /v1/home` as `spec_only` with no code evidence.\n- **Related code:** `progress.Of` (code:internal/progress/routes.go:35) is commented as serving \"progress, home, nudges\". It computes a single habit's progress and could be reused for home, but nothing calls it from a home route.\n- **Other spec-only routes:** `GET /v1/nudges`, `POST /v1/nudges/{}/dismiss` and `GET /v1/sync` are also `spec_only` in Lattice's index, so the nudges and sync pieces that home depends on appear to be missing too.\n\nI didn't change anything.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  },
+  {
+   "name": "round 1 Q10",
+   "world": "S4-stat",
+   "q": {
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R21",
+     "R27",
+     "R89",
+     "R90",
+     "R91",
+     "R92",
+     "R93",
+     "R94",
+     "R139"
+    ]
+   },
+   "answer": "REQUIRED-NOT-IMPLEMENTED\n\nThe spec requires cursor-based sync, but the app has no sync endpoint, so a client can't sync changes since a cursor.\n\n- **Spec:** `GET /v1/sync` is required (rules R89-R94, per the package comment at code:internal/sync/doc.go:1). The scenarios `sync_changes_in_order` and `sync_limits_and_cursors` in spec.py expect it to take `cursor` and `limit` and to return `{changes, has_more}`.\n- **Code:** `internal/sync/` holds only `doc.go`, which is a package declaration and comment (code:internal/sync/doc.go:2). No Go file registers a `/v1/sync` route. The Lattice implementation check lists `GET /v1/sync` as spec-only, and rules R21 and R27 as required but not implemented because of it.\n- **What exists:** The pieces a sync would read from are present.\n  - Write paths bump a per-user `change_seq` counter (code:internal/db/changeseq.go:23) and store it on changed rows (code:internal/habits/routes.go:377, code:internal/habits/routes.go:423, code:internal/completions/routes.go:345).\n  - Signed opaque cursors exist for list endpoints (code:internal/httpapi/pagination.go:38, code:internal/httpapi/pagination.go:44), but nothing uses them for sync.\n\nI changed nothing.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  },
+  {
+   "name": "round 1 Q11",
+   "world": "S4-stat",
+   "q": {
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R21",
+     "R31",
+     "R32",
+     "R34"
+    ]
+   },
+   "answer": "REQUIRED-NOT-IMPLEMENTED\n\nNo, a user can't register a device for push notifications in the app as it is built. The spec requires it, but the code has no route for it.\n\n- **Spec:** R31, R32 and R34 each require `POST /v1/devices`. R33 requires `DELETE /v1/devices/{}`. The spec's `device_registration` scenario and its `add_device` cell both target `POST /v1/devices` (`spec.py:280`, `spec.py:635`).\n- **Code:** the extractor found 20 routes in total, and none of them is `/v1/devices`. The only account routes are `GET`, `PUT` and `DELETE /v1/me` (`code:internal/account/routes.go:20`, `code:internal/account/routes.go:21`, `code:internal/account/routes.go:22`). The auth routes are register, login, refresh and logout (`code:internal/auth/routes.go:25` to `code:internal/auth/routes.go:28`).\n- **Gaps in the code:** a `Device` model and a `devices` table exist (`code:internal/db/models.go:32`, `code:internal/db/models.go:116`). A package comment says `internal/auth` owns devices (R31\u2013R34) (`code:internal/auth/doc.go:1`). A grep of `internal/` for `/v1/devices` found no route registration and no handler.\n- **Related gaps:** `DELETE /v1/devices/{}`, `GET /v1/nudges` and `GET /v1/home` are also missing.\n\nThe README mentions a `internal/push` package with a stub sender, but nothing in the code reaches it from a registration endpoint.\n\nI didn't run the app, so this comes from static analysis. I didn't change anything.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  },
+  {
+   "name": "round 1 Q12",
+   "world": "S4-stat",
+   "q": {
+    "key": "IMPLEMENTED-UNVERIFIED"
+   },
+   "answer": "IMPLEMENTED-UNVERIFIED\n\nYes. A signed-in user can check in a habit for today through `POST /v1/habits/{id}/completions`. The Lattice implementation scan reports this as static only (`implemented_unverified`), and I found no tests that exercise the route, so none of this has been run.\n\n- **Route:** `Register` mounts `POST /habits/:id/completions` as `h.create` (code:internal/completions/routes.go:25). There is also a batch route, `POST /completions/batch` (code:internal/completions/routes.go:28).\n- **Request body:** the body is `{id, date, note?}`. `date` must be `YYYY-MM-DD`, and `note` is at most 280 characters (code:internal/completions/routes.go:139-158).\n- **Handler:**\n  - It reads the path id and body, then computes `today` in the user's timezone with `h.d.Today(c, who.Timezone)` (code:internal/completions/routes.go:231).\n  - It runs in a transaction that locks the user and loads the habit through `db.OwnedHabit`, so the habit must belong to the caller (code:internal/completions/routes.go:237-245).\n  - It then calls `Create` and `nudges.AfterCheckIn` (code:internal/completions/routes.go:245-249).\n  - It returns 201 for a new check-in, or 200 for an identical retry (code:internal/completions/routes.go:254-258).\n- **Today is accepted:**\n  - A future date returns `date_in_future` (code:internal/completions/routes.go:187).\n  - A date outside the habit's start and end dates returns `date_out_of_range` (code:internal/completions/routes.go:190).\n  - A date more than 60 days back returns `date_too_old` (code:internal/completions/routes.go:193).\n  - A habit that is already archived returns `habit_archived` (code:internal/completions/routes.go:171).\n  - A second check-in on the same date returns `already_checked_in` (code:internal/completions/routes.go:203-205).\n  - Otherwise the completion is inserted (code:internal/completions/routes.go:207-213).\n\nSo check-in works only if today falls within the habit's start and end dates and the habit isn't archived.\n\nThe home screen (`GET /v1/home`), `GET /v1/nudges`, `GET /v1/sync` and the device routes are spec-only, with no code. They are not needed to check in. They are the \"today\" view and the notifications around it, so the app has no home screen listing today's habits.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  },
+  {
+   "name": "round 1 Q13",
+   "world": "S4-stat",
+   "q": {
+    "key": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+   },
+   "answer": "NOT-SPECIFIED-NOT-IMPLEMENTED\n\nA user can't share a habit with a friend. Neither the spec nor the code has any sharing feature.\n\n- **Spec:** I searched the whole project, including `REQUIREMENTS.md`, `spec.py` and `spec.trace.json`, for \"share\", \"friend\", \"invite\", \"partner\", \"collaborat\", \"buddy\" and \"follow\". Nothing describes sharing a habit. The only hits were unrelated: the `has_more`/`next_cursor` pagination rules (`REQUIREMENTS.md:183`, `REQUIREMENTS.md:192`) and a clock scenario named `progress_follows_the_test_clock`.\n- **Code:** The only \"share\" matches are about shared code, not sharing a habit. These are `internal/db/bodies.go:9` (response shapes shared between routes) and `internal/httpapi/router.go:22` (what the handlers share). `internal/httpapi/ratelimit_test.go:20` is a rate-limit test, again unrelated.\n- **Routes:** The habit routes cover ordinary habit management only, such as `GET /v1/habits` and `DELETE /v1/habits/{}` (`code:internal/habits/routes.go:25`, `code:internal/habits/routes.go:28`). Habits are tied to the signed-in user, and I found no route that gives another user access.\n\nI changed nothing.\n",
+   "expect": {
+    "C2": true,
+    "C4": true,
+    "C5": true,
+    "C8": null
+   }
+  }
+ ]
+}

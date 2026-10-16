@@ -1,0 +1,110 @@
+{
+ "items": {
+  "C1": true,
+  "C2": true,
+  "C3": true,
+  "C4": true,
+  "C5": true,
+  "C6": true,
+  "C7": true,
+  "C8": null
+ },
+ "detail": {
+  "C1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_0168aKSZabCGuWa8Nci3cfBL",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01VQb9ENnJdsEwZGnWu5XB8X",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01Bv4aWCNNzeKU6GuHn1uG21",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "C2": {
+   "pass": true,
+   "label": "IMPLEMENTED-UNVERIFIED",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "labels_on_line": [
+    "IMPLEMENTED-UNVERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-UNVERIFIED"
+  },
+  "C3": {
+   "pass": true,
+   "citations": [
+    "internal/account/routes.go:21",
+    "internal/account/routes.go:73",
+    "internal/account/routes.go:95",
+    "internal/account/routes.go:32"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/account/routes.go:21",
+    "internal/account/routes.go:73"
+   ],
+   "needs_evidence": true
+  },
+  "C4": {
+   "pass": true,
+   "named": [
+    "PUT /v1/me",
+    "GET /v1/me"
+   ],
+   "derived": {},
+   "unknown": [],
+   "registrations_cited": [
+    "PUT /v1/me"
+   ]
+  },
+  "C5": {
+   "pass": true,
+   "named": [
+    "R5",
+    "R21",
+    "R25",
+    "R124",
+    "R135"
+   ],
+   "unknown": [],
+   "key_rules_named": [],
+   "key_rules_cited_by_line": [],
+   "needs_key_rule": false
+  },
+  "C6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "C7": {
+   "pass": true
+  },
+  "C8": null
+ },
+ "applicable": [
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+  "C5",
+  "C6",
+  "C7"
+ ],
+ "pass": true
+}

@@ -1,0 +1,17 @@
+IMPLEMENTED-VERIFIED
+
+Yes, a user can dismiss a nudge. The route is `POST /v1/nudges/{}/dismiss`, handled by `nudges.handler.dismiss`. It is registered at code:internal/nudges/routes.go:17 and implemented at code:internal/nudges/routes.go:57.
+
+- **Access:** The route needs a signed-in Customer. Unauthenticated requests get 401 `not_authenticated`.
+- **Success:** A successful dismissal returns 200.
+- **Refusals:**
+  - 404 `not_found`
+  - 409 `nudge_dismissed`, which means dismissing an already-dismissed nudge is refused
+  - 422 `validation_failed`
+  - 426 `upgrade_required`
+  - 429 `rate_limited`
+- **Spec rules:** The route is tied to R7, R21, R28, R138, R139, R140, R141 and R143. I read these links from the implementation report and did not open the text of each rule.
+- **Verification:** One replayed flow, `wf-6a4cc7a302` ("create habits > completions habits > read home > dismiss nudges"), is marked verified. Three other replays of the same flow (`wf-053146a70c`, `wf-9f87f3f1d9`, `wf-c71e6bbb49`) are marked failed. I did not look into why they failed, so I don't know whether they exercise different cases such as the 409 refusal.
+- **Related reads:** `GET /v1/nudges` (code:internal/nudges/routes.go:16) lists nudges, and `GET /v1/home` also touches them.
+
+I changed nothing.

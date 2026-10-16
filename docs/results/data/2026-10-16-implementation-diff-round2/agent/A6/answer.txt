@@ -1,0 +1,10 @@
+NOT-SPECIFIED-NOT-IMPLEMENTED
+
+A user cannot attach a photo to a check-in, either in the spec or in the code.
+
+- **Check-in input:** A check-in is a "completion". Its create input is `{id, date, note?}` (`code:internal/completions/routes.go:131`). The only free-form field is `note`, capped at 280 characters (`code:internal/completions/routes.go:150`). It is stored as `Note` on the completion (`code:internal/completions/routes.go:211`).
+- **Routes:** The two check-in create routes are `POST /v1/habits/{}/completions` (`code:internal/completions/routes.go:25`) and `POST /v1/completions/batch` (`code:internal/completions/routes.go:28`). Both take JSON only. I found no multipart handling and no attachment or media field.
+- **Spec:** The spec's `check_in(...)` helper only has `note` and `deleted` (`code:spec.py:158`). A case-insensitive search for photo, image, attach, upload, media and picture found no requirement in `spec.py`. The only hits in the non-lock files were an unrelated Docker "image" mention in `README.md:36` and CSS in a review page. No R<n> rule covers this.
+- **Lattice matching:** `workflow_find` returned `no_match`. Its only candidates matched on the word "check", not on photos.
+
+I changed nothing.

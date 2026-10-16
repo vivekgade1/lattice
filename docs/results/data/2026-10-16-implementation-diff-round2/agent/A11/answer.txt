@@ -1,0 +1,11 @@
+REQUIRED-NOT-IMPLEMENTED
+
+No, a user can't remove a registered device in the app as it is built. The spec requires it, but the code has no such route.
+
+- **Spec:** R33 says "`DELETE /v1/devices/{id}` answers 204 and deletes the caller's device row." R7, R21 and R28 also link to that route. The scenario `access__delete_device__as_ann` and the 404 step at `spec.py:687` cover it.
+- **Code:** The implementation inventory has 20 routes, and none of them is `/v1/devices`. Lattice marks both `DELETE /v1/devices/{}` and `POST /v1/devices` as `spec_only`. Neither has any code evidence. A search of the project for "devices" finds matches only in `spec.py`, with no handler or router entry in the Go code.
+- **Related routes that don't do this:**
+  - `POST /v1/auth/logout` (`code:internal/auth/routes.go:268`) and `DELETE /v1/me` (`code:internal/account/routes.go:132`) only touch the device table indirectly. Neither is a way to remove a single device.
+  - Registering a device is also unimplemented, since `POST /v1/devices` is spec-only too.
+
+I didn't change anything.

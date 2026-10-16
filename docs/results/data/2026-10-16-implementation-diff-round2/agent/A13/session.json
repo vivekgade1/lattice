@@ -1,0 +1,187 @@
+{
+ "sid": "A13",
+ "question": "A13",
+ "world": "S4-stat",
+ "key": "IMPLEMENTED-UNVERIFIED",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 21.1
+ },
+ "cost_usd": 0.09886030000000001,
+ "tokens": 15109,
+ "tokens_incl_cache_reads": 304592,
+ "turns": 7,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T18:28:16+00:00",
+ "score": {
+  "items": {
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "C6": true,
+   "C7": true,
+   "C8": null
+  },
+  "detail": {
+   "C1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_01LWpJTTZna7zc9h6AbLKaQT",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_01ThNtgYLnmpgyeaAp5rNY1Q",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "C2": {
+    "pass": true,
+    "label": "IMPLEMENTED-UNVERIFIED",
+    "key": "IMPLEMENTED-UNVERIFIED",
+    "labels_on_line": [
+     "IMPLEMENTED-UNVERIFIED"
+    ],
+    "first_line": "IMPLEMENTED-UNVERIFIED"
+   },
+   "C3": {
+    "pass": true,
+    "citations": [
+     "internal/habits/routes.go:252",
+     "internal/habits/routes.go:27",
+     "internal/habits/routes.go:310",
+     "internal/habits/routes.go:262",
+     "internal/habits/routes.go:347"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/habits/routes.go:252",
+     "internal/habits/routes.go:27"
+    ],
+    "needs_evidence": true
+   },
+   "C4": {
+    "pass": true,
+    "named": [
+     "PATCH /v1/habits/{}",
+     "GET /v1/habits"
+    ],
+    "derived": {},
+    "unknown": [],
+    "registrations_cited": [
+     "PATCH /v1/habits/{}"
+    ]
+   },
+   "C5": {
+    "pass": true,
+    "named": [
+     "R60",
+     "R68",
+     "R69",
+     "R71"
+    ],
+    "unknown": [],
+    "key_rules_named": [],
+    "key_rules_cited_by_line": [],
+    "needs_key_rule": false
+   },
+   "C6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "C7": {
+    "pass": true
+   },
+   "C8": null
+  },
+  "applicable": [
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7"
+  ],
+  "pass": true
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "archive a habit"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "archiv",
+    "-i": true,
+    "output_mode": "content",
+    "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S4-stat"
+   }
+  },
+  {
+   "name": "Read",
+   "is_error": false,
+   "input": {
+    "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S4-stat/internal/habits/routes.go",
+    "offset": 245,
+    "limit": 120
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "archiv",
+    "-i": true,
+    "output_mode": "content",
+    "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S4-stat/REQUIREMENTS.md"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "archived: true. archives",
+    "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S4-stat",
+    "output_mode": "content",
+    "-B": 1
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "element": "impl:route:PATCH /v1/habits/{}",
+    "section": "rules",
+    "limit": 30
+   }
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+IMPLEMENTED-UNVERIFIED
+
+Yes. A user can change their quiet hours with `PUT /v1/me`. The code implements it, but no replayed flow has exercised that route.
+
+- **Spec:** `PUT /v1/me` accepts any subset of `{timezone, push_enabled, quiet_start, quiet_end, nudge_time}`. Times are `"HH:MM"` 24-hour local times, and an invalid value returns 422 `validation_failed` with nothing changed. Several rules cover this route, including R5, R21, R25 and R124–R135. I did not map each of those rule IDs to a specific behavior. In the spec's REQUIREMENTS.md, line 47 says `start == end` means no quiet hours, and line 240 says nudges inside the window are suppressed with reason `quiet_hours`.
+- **Code:**
+  - The route is registered at code:internal/account/routes.go:21.
+  - The handler is at code:internal/account/routes.go:73.
+  - It validates `quiet_start`, `quiet_end` and `nudge_time` as a group at code:internal/account/routes.go:95.
+  - The `quiet_start` and `quiet_end` fields are at code:internal/account/routes.go:32-33.
+- **Verification:** Lattice reports `PUT /v1/me` as `implemented_unverified`, with zero replayed flows. `GET /v1/me`, which reads the same prefs, is verified.
+
+I did not read the handler body past the grep matches, so I haven't confirmed that the validation matches the 422 rule. I changed nothing.

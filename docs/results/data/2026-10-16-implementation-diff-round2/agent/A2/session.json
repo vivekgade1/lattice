@@ -1,0 +1,152 @@
+{
+ "sid": "A2",
+ "question": "A2",
+ "world": "S-dyn",
+ "key": "IMPLEMENTED-VERIFIED",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 9.8
+ },
+ "cost_usd": 0.0735166,
+ "tokens": 13890,
+ "tokens_incl_cache_reads": 152076,
+ "turns": 3,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T18:25:36+00:00",
+ "score": {
+  "items": {
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "C6": true,
+   "C7": true,
+   "C8": null
+  },
+  "detail": {
+   "C1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_01JkB9EVtG6ee9kc67sryiKN",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_01HBMJ1bbtnUW6P7ptmJnDHp",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "C2": {
+    "pass": true,
+    "label": "IMPLEMENTED-VERIFIED",
+    "key": "IMPLEMENTED-VERIFIED",
+    "labels_on_line": [
+     "IMPLEMENTED-VERIFIED"
+    ],
+    "first_line": "IMPLEMENTED-VERIFIED"
+   },
+   "C3": {
+    "pass": true,
+    "citations": [
+     "internal/nudges/routes.go:17",
+     "internal/nudges/routes.go:57",
+     "internal/nudges/routes.go:16"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/nudges/routes.go:17",
+     "internal/nudges/routes.go:57",
+     "internal/nudges/routes.go:16"
+    ],
+    "needs_evidence": true
+   },
+   "C4": {
+    "pass": true,
+    "named": [
+     "POST /v1/nudges/{}/dismiss",
+     "GET /v1/nudges",
+     "GET /v1/home"
+    ],
+    "derived": {},
+    "unknown": [],
+    "registrations_cited": [
+     "GET /v1/nudges",
+     "POST /v1/nudges/{}/dismiss"
+    ]
+   },
+   "C5": {
+    "pass": true,
+    "named": [
+     "R7",
+     "R21",
+     "R28",
+     "R138",
+     "R139",
+     "R140",
+     "R141",
+     "R143"
+    ],
+    "unknown": [],
+    "key_rules_named": [],
+    "key_rules_cited_by_line": [],
+    "needs_key_rule": false
+   },
+   "C6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "C7": {
+    "pass": true
+   },
+   "C8": null
+  },
+  "applicable": [
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7"
+  ],
+  "pass": true
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "dismiss a nudge"
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "routes",
+    "limit": 200
+   }
+  }
+ ]
+}

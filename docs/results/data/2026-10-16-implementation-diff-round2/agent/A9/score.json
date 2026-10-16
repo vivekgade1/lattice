@@ -1,0 +1,135 @@
+{
+ "items": {
+  "C1": true,
+  "C2": false,
+  "C3": true,
+  "C4": true,
+  "C5": true,
+  "C6": true,
+  "C7": true,
+  "C8": true
+ },
+ "detail": {
+  "C1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_01DhPRULm9hF3Qak8FUTQL6r",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01YYKfyK7Ab5r4zKKDqMLJ1t",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "C2": {
+   "pass": false,
+   "label": "IMPLEMENTED-VERIFIED",
+   "key": "AMBIGUOUS",
+   "labels_on_line": [
+    "IMPLEMENTED-VERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-VERIFIED"
+  },
+  "C3": {
+   "pass": true,
+   "citations": [
+    "internal/completions/routes.go:26",
+    "internal/completions/routes.go:263",
+    "internal/completions/routes.go:25",
+    "internal/completions/routes.go:217",
+    "internal/completions/routes.go:27",
+    "internal/completions/routes.go:312",
+    "internal/completions/routes.go:28",
+    "internal/completions/routes.go:57"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/completions/routes.go:26",
+    "internal/completions/routes.go:263",
+    "internal/completions/routes.go:25",
+    "internal/completions/routes.go:217",
+    "internal/completions/routes.go:27",
+    "internal/completions/routes.go:312",
+    "internal/completions/routes.go:28",
+    "internal/completions/routes.go:57"
+   ],
+   "needs_evidence": true
+  },
+  "C4": {
+   "pass": true,
+   "named": [
+    "GET /v1/habits/{}/completions",
+    "POST /v1/habits/{}/completions",
+    "DELETE /v1/habits/{}/completions/{}",
+    "POST /v1/completions/batch"
+   ],
+   "derived": {},
+   "unknown": [],
+   "registrations_cited": [
+    "DELETE /v1/habits/{}/completions/{}",
+    "GET /v1/habits/{}/completions",
+    "POST /v1/completions/batch",
+    "POST /v1/habits/{}/completions"
+   ]
+  },
+  "C5": {
+   "pass": true,
+   "named": [
+    "R21",
+    "R28",
+    "R43",
+    "R45",
+    "R72",
+    "R78",
+    "R80",
+    "R81",
+    "R82",
+    "R115",
+    "R116",
+    "R125"
+   ],
+   "unknown": [],
+   "key_rules_named": [],
+   "key_rules_cited_by_line": [],
+   "needs_key_rule": false
+  },
+  "C6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "C7": {
+   "pass": true
+  },
+  "C8": {
+   "pass": true,
+   "named": [
+    "POST /v1/habits/{}/completions",
+    "GET /v1/habits/{}/completions",
+    "DELETE /v1/habits/{}/completions/{}",
+    "POST /v1/completions/batch"
+   ],
+   "of": 4
+  }
+ },
+ "applicable": [
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+  "C5",
+  "C6",
+  "C7",
+  "C8"
+ ],
+ "pass": false
+}
