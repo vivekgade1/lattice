@@ -1,0 +1,364 @@
+{
+  "apps": {
+    "job-scheduler-go": {
+      "crashed": false,
+      "deterministic": true,
+      "report_sha256": "ca6976d89cc81a27b6e503f9de677026261dcc66c4a1b502d2c20647de57bc55",
+      "requirement_basis": "spec",
+      "run_mode": "static",
+      "score": {
+        "primary_exact": {
+          "accuracy": 1.0,
+          "agree": 22,
+          "disagreements": [],
+          "implemented_not_specified_after_exclusions": 1,
+          "keys": 22,
+          "report_statuses": {
+            "implemented": 20,
+            "implemented_not_required": 1,
+            "plumbing": 1,
+            "spec_only": 1
+          },
+          "spec_only": 1
+        },
+        "secondary": {
+          "code_routes_matching_a_spec_endpoint": "20/22",
+          "label": "suffix join (Spike A's rule: the spec path is a suffix of the code path); informational",
+          "spec_endpoints_matching_a_code_route": "20/21",
+          "spec_only_by_suffix": [
+            "PATCH /applications/{}/jobs/{}"
+          ]
+        }
+      },
+      "summary": {
+        "endpoints": {
+          "implemented": 20,
+          "implemented_not_required": 1,
+          "plumbing": 1,
+          "spec_only": 1
+        },
+        "excluded": 3,
+        "flows": {
+          "unverified": 80
+        },
+        "orphan_flows": 9,
+        "orphan_machines": 1,
+        "orphan_routes": 1,
+        "requirements": {
+          "implemented_unverified": 97,
+          "implemented_verified": 0,
+          "no_element": 0,
+          "required_not_implemented": 2
+        },
+        "routes": {
+          "excluded": 1,
+          "implemented_not_required": 1,
+          "implemented_unverified": 20
+        }
+      },
+      "truth_sha256": "bf5d44528af88709aab2fccd764aed19304d448a44624b3fd94d2ced08d6ff54",
+      "workflows": "static run",
+      "workflows_mismatch": null
+    },
+    "job-scheduler-go-baseline": {
+      "crashed": false,
+      "deterministic": true,
+      "report_sha256": "87e5966029bae930b4f7a501386fa1d0384e52d4a05d162dcd083e927ec3e698",
+      "requirement_basis": "spec",
+      "run_mode": "static",
+      "score": {
+        "primary_exact": {
+          "accuracy": 1.0,
+          "agree": 22,
+          "disagreements": [],
+          "implemented_not_specified_after_exclusions": 1,
+          "keys": 22,
+          "report_statuses": {
+            "implemented": 21,
+            "implemented_not_required": 1,
+            "plumbing": 1
+          },
+          "spec_only": 0
+        },
+        "secondary": {
+          "code_routes_matching_a_spec_endpoint": "21/23",
+          "label": "suffix join (Spike A's rule: the spec path is a suffix of the code path); informational",
+          "spec_endpoints_matching_a_code_route": "21/21",
+          "spec_only_by_suffix": []
+        }
+      },
+      "summary": {
+        "endpoints": {
+          "implemented": 21,
+          "implemented_not_required": 1,
+          "plumbing": 1
+        },
+        "excluded": 3,
+        "flows": {
+          "unverified": 74
+        },
+        "orphan_flows": 9,
+        "orphan_machines": 0,
+        "orphan_routes": 1,
+        "requirements": {
+          "implemented_unverified": 99,
+          "implemented_verified": 0,
+          "no_element": 0,
+          "required_not_implemented": 0
+        },
+        "routes": {
+          "excluded": 1,
+          "implemented_not_required": 1,
+          "implemented_unverified": 21
+        }
+      },
+      "truth_sha256": "81accc426467dd8f4a404199f607f0ad22781a08271902ac238f08470cc1d3f1",
+      "workflows": "static run",
+      "workflows_mismatch": null
+    },
+    "job-scheduler-go-min-base-opus": {
+      "crashed": false,
+      "deterministic": true,
+      "report_sha256": "7873d8f01ba258c6e6b322b33af3a286d5d7690686b46b0fdfddab145f33c43b",
+      "requirement_basis": "spec",
+      "run_mode": "static",
+      "score": {
+        "primary_exact": {
+          "accuracy": 1.0,
+          "agree": 21,
+          "disagreements": [],
+          "implemented_not_specified_after_exclusions": 0,
+          "keys": 21,
+          "report_statuses": {
+            "implemented": 20,
+            "plumbing": 1,
+            "spec_only": 1
+          },
+          "spec_only": 1
+        },
+        "secondary": {
+          "code_routes_matching_a_spec_endpoint": "20/21",
+          "label": "suffix join (Spike A's rule: the spec path is a suffix of the code path); informational",
+          "spec_endpoints_matching_a_code_route": "20/21",
+          "spec_only_by_suffix": [
+            "PATCH /applications/{}/jobs/{}"
+          ]
+        }
+      },
+      "summary": {
+        "endpoints": {
+          "implemented": 20,
+          "plumbing": 1,
+          "spec_only": 1
+        },
+        "excluded": 4,
+        "flows": {
+          "unverified": 69
+        },
+        "orphan_flows": 0,
+        "orphan_machines": 1,
+        "orphan_routes": 0,
+        "requirements": {
+          "implemented_unverified": 97,
+          "implemented_verified": 0,
+          "no_element": 0,
+          "required_not_implemented": 2
+        },
+        "routes": {
+          "excluded": 1,
+          "implemented_unverified": 20
+        }
+      },
+      "truth_sha256": "1693cdfae48ef14599c1a87d8a3ca969b02564928176d7ad92fbb0769402d0ef",
+      "workflows": "static run",
+      "workflows_mismatch": null
+    },
+    "job-scheduler-go-min-base-sonnet": {
+      "crashed": false,
+      "deterministic": true,
+      "report_sha256": "6d2177ef915ac653e3bbdc714ed1386ea6d4960cb1d713f4f4caa721dd57d0c9",
+      "requirement_basis": "spec",
+      "run_mode": "static",
+      "score": {
+        "primary_exact": {
+          "accuracy": 1.0,
+          "agree": 21,
+          "disagreements": [],
+          "implemented_not_specified_after_exclusions": 0,
+          "keys": 21,
+          "report_statuses": {
+            "implemented": 21,
+            "plumbing": 1
+          },
+          "spec_only": 0
+        },
+        "secondary": {
+          "code_routes_matching_a_spec_endpoint": "21/22",
+          "label": "suffix join (Spike A's rule: the spec path is a suffix of the code path); informational",
+          "spec_endpoints_matching_a_code_route": "21/21",
+          "spec_only_by_suffix": []
+        }
+      },
+      "summary": {
+        "endpoints": {
+          "implemented": 21,
+          "plumbing": 1
+        },
+        "excluded": 1,
+        "flows": {
+          "unverified": 65
+        },
+        "orphan_flows": 0,
+        "orphan_machines": 2,
+        "orphan_routes": 0,
+        "requirements": {
+          "implemented_unverified": 99,
+          "implemented_verified": 0,
+          "no_element": 0,
+          "required_not_implemented": 0
+        },
+        "routes": {
+          "excluded": 1,
+          "implemented_unverified": 21
+        }
+      },
+      "truth_sha256": "4a1d78460e8477e1a75a980982061797a423a7b761c3aced890f6489f599499e",
+      "workflows": "static run",
+      "workflows_mismatch": null
+    },
+    "job-scheduler-go-min-spec-opus": {
+      "crashed": false,
+      "deterministic": true,
+      "report_sha256": "b5553dd211e5687d79a32166f596e464c646ad65e8221ecef98e087be2ccfb20",
+      "requirement_basis": "spec",
+      "run_mode": "static",
+      "score": {
+        "primary_exact": {
+          "accuracy": 1.0,
+          "agree": 22,
+          "disagreements": [],
+          "implemented_not_specified_after_exclusions": 1,
+          "keys": 22,
+          "report_statuses": {
+            "implemented": 20,
+            "implemented_not_required": 1,
+            "plumbing": 1,
+            "spec_only": 1
+          },
+          "spec_only": 1
+        },
+        "secondary": {
+          "code_routes_matching_a_spec_endpoint": "20/22",
+          "label": "suffix join (Spike A's rule: the spec path is a suffix of the code path); informational",
+          "spec_endpoints_matching_a_code_route": "20/21",
+          "spec_only_by_suffix": [
+            "PATCH /applications/{}/jobs/{}"
+          ]
+        }
+      },
+      "summary": {
+        "endpoints": {
+          "implemented": 20,
+          "implemented_not_required": 1,
+          "plumbing": 1,
+          "spec_only": 1
+        },
+        "excluded": 3,
+        "flows": {
+          "unverified": 74
+        },
+        "orphan_flows": 9,
+        "orphan_machines": 2,
+        "orphan_routes": 1,
+        "requirements": {
+          "implemented_unverified": 97,
+          "implemented_verified": 0,
+          "no_element": 0,
+          "required_not_implemented": 2
+        },
+        "routes": {
+          "excluded": 1,
+          "implemented_not_required": 1,
+          "implemented_unverified": 20
+        }
+      },
+      "truth_sha256": "39c4fcf513301d2036931c0d5bfb853b2b2d5ce5e09b01f8a442cc04de365a32",
+      "workflows": "static run",
+      "workflows_mismatch": null
+    },
+    "job-scheduler-go-min-spec-sonnet": {
+      "crashed": false,
+      "deterministic": true,
+      "report_sha256": "315321b142a7cb8be4a1962339883ceaab19933e826405754380da94e01c27f0",
+      "requirement_basis": "spec",
+      "run_mode": "static",
+      "score": {
+        "primary_exact": {
+          "accuracy": 1.0,
+          "agree": 21,
+          "disagreements": [],
+          "implemented_not_specified_after_exclusions": 0,
+          "keys": 21,
+          "report_statuses": {
+            "implemented": 21,
+            "plumbing": 1
+          },
+          "spec_only": 0
+        },
+        "secondary": {
+          "code_routes_matching_a_spec_endpoint": "21/22",
+          "label": "suffix join (Spike A's rule: the spec path is a suffix of the code path); informational",
+          "spec_endpoints_matching_a_code_route": "21/21",
+          "spec_only_by_suffix": []
+        }
+      },
+      "summary": {
+        "endpoints": {
+          "implemented": 21,
+          "plumbing": 1
+        },
+        "excluded": 1,
+        "flows": {
+          "unverified": 15
+        },
+        "orphan_flows": 0,
+        "orphan_machines": 2,
+        "orphan_routes": 0,
+        "requirements": {
+          "implemented_unverified": 99,
+          "implemented_verified": 0,
+          "no_element": 0,
+          "required_not_implemented": 0
+        },
+        "routes": {
+          "excluded": 1,
+          "implemented_unverified": 21
+        }
+      },
+      "truth_sha256": "4a1d78460e8477e1a75a980982061797a423a7b761c3aced890f6489f599499e",
+      "workflows": "static run",
+      "workflows_mismatch": null
+    }
+  },
+  "crashes": 0,
+  "deterministic": true,
+  "freeze": {
+    "dogfood/implementation_probes.py": "33a47d05325d391c4735c94710c264b71b3862e546a69da9f2bedc7a4976b330",
+    "lattice/gocheck/src/goextract.go": "e97fa18e13cbb08f1b2dbd6f4e3c107caf3ecf00f543a9e928c92c8afe06df2e",
+    "lattice/gocheck/src/goextract_assemble.go": "8061f875ad063d07e45b02380f9c974c6f00075fa4db520b49f6323cba5e6607",
+    "lattice/gocheck/src/goextract_closure.go": "ed95d0fb9d93b6f9ae903f298340bed4877c6a9f122817e4fe6cff7f04361a4e",
+    "lattice/gocheck/src/goextract_owner.go": "bd358798d9854264bda77e62227c44be2e87cbc4ec15f6732ab22c64b598e086",
+    "lattice/gocheck/src/goextract_raise.go": "1f8db0956e87bcc5392f4c08fb38d525267b0280733463b04acd7197a9d8e5ad",
+    "lattice/gocheck/src/goextract_routes.go": "4441d0e3f0ffecc7ffd6d68375278fe0013f4b20827cab7a2b6b2c2e00a7ee72",
+    "lattice/gocheck/src/goextract_tables.go": "45339c5eb1c97c0aa9f55ff0640a92224fdc6f19bd2daf4a2038ab16021d4702",
+    "lattice/gocheck/src/goextract_workflow.go": "3eb32761adfb313dc4ced351f62ad85aeb98110c86c43257ef0e212668385a42",
+    "lattice/importer/frontends/go_gin.py": "9f24e9bb5ac8b442cb92cc47ce1b66424b082d728f48e56579783c1bf038a913",
+    "lattice/importer/inventory.py": "55849494b1ece51ed04a84e34f87da3f65c4fcc02b9523ac9269009e754f2e3b",
+    "lattice/importer/workflow_run.py": "edb2fd460b5ea130324fdd361c5b5213ba1e1a20916c6b63675d5268da089cd1",
+    "lattice/importer/workflows.py": "beb576d70e0e742047e63554821692d6540a69eb3ad00d01dadfb12ccbd5dd3a",
+    "lattice/mcp/tools.py": "3e94fce89e5347d0129a89b421f9c2015bd48651fa4c7dc8dad099005867584d",
+    "lattice/spec/ask.py": "0925737b48e1b87fdcc9d8140a6625044592db130df0724af7121096eeb98ffd",
+    "lattice/spec/implementation.py": "c8557dcd561f5a6dcd5843d557f154c0ceb4d1175ab34ba3fa0d2de974d3447c"
+  },
+  "predicted": "accuracy 0.90-1.00 per app; spec-only 0-2 and implemented-not-specified 0-3 per app; 0/6 crashes; identical repeats"
+}

@@ -1,0 +1,5743 @@
+{
+ "by_element": {
+  "impl:route:DELETE /applications/{}/members/{}": [
+   "cell:ann|DELETE /applications/{}/members/{}",
+   "cell:root|DELETE /applications/{}/members/{}",
+   "cell:zed|DELETE /applications/{}/members/{}",
+   "scenario:app_admins_manage_their_members",
+   "scenario:executors_and_outsiders_cannot_manage_members",
+   "scenario:member_requests_are_validated",
+   "scenario:the_super_admin_manages_any_application"
+  ],
+  "impl:route:GET /applications": [
+   "cell:ann|GET /applications",
+   "cell:eve|GET /applications",
+   "cell:no token|GET /applications",
+   "cell:root|GET /applications",
+   "cell:zed|GET /applications",
+   "scenario:each_user_sees_only_their_applications"
+  ],
+  "impl:route:GET /applications/{}": [
+   "cell:ann|GET /applications/{}",
+   "cell:eve|GET /applications/{}",
+   "cell:root|GET /applications/{}",
+   "scenario:each_user_sees_only_their_applications"
+  ],
+  "impl:route:GET /applications/{}/jobs": [
+   "cell:bob|GET /applications/{}/jobs",
+   "cell:eve|GET /applications/{}/jobs",
+   "scenario:members_view_configs_and_versions_never_change"
+  ],
+  "impl:route:GET /applications/{}/jobs/{}": [
+   "cell:eve|GET /applications/{}/jobs/{}",
+   "cell:root|GET /applications/{}/jobs/{}",
+   "scenario:members_view_configs_and_versions_never_change"
+  ],
+  "impl:route:GET /applications/{}/jobs/{}/runs": [
+   "cell:eve|GET /applications/{}/jobs/{}/runs",
+   "scenario:members_run_an_active_job"
+  ],
+  "impl:route:GET /applications/{}/members": [
+   "cell:ann|GET /applications/{}/members",
+   "cell:eve|GET /applications/{}/members",
+   "scenario:app_admins_manage_their_members",
+   "scenario:executors_and_outsiders_cannot_manage_members"
+  ],
+  "impl:route:GET /applications/{}/runs/{}": [
+   "cell:ann|GET /applications/{}/runs/{}",
+   "cell:bob|GET /applications/{}/runs/{}",
+   "cell:eve|GET /applications/{}/runs/{}",
+   "scenario:a_cancelled_run_is_never_executed",
+   "scenario:a_cron_job_is_queued_when_its_time_comes",
+   "scenario:a_nonzero_exit_is_a_failure",
+   "scenario:members_run_an_active_job",
+   "scenario:one_drain_processes_every_queued_run",
+   "scenario:outsiders_cannot_run_or_see_runs",
+   "scenario:the_worker_runs_a_queued_job_to_success"
+  ],
+  "impl:route:GET /users/me": [
+   "cell:ann|GET /users/me",
+   "cell:no token|GET /users/me",
+   "cell:root|GET /users/me",
+   "scenario:me"
+  ],
+  "impl:route:PATCH /applications/{}/jobs/{}": [
+   "cell:ann|PATCH /applications/{}/jobs/{}",
+   "scenario:members_view_configs_and_versions_never_change"
+  ],
+  "impl:route:POST /applications": [
+   "cell:ann|POST /applications",
+   "cell:root|POST /applications",
+   "scenario:applications_are_created_by_the_super_admin"
+  ],
+  "impl:route:POST /applications/{}/jobs": [
+   "cell:ann|POST /applications/{}/jobs",
+   "cell:bob|POST /applications/{}/jobs",
+   "cell:eve|POST /applications/{}/jobs",
+   "cell:no token|POST /applications/{}/jobs",
+   "cell:root|POST /applications/{}/jobs",
+   "cell:zed|POST /applications/{}/jobs",
+   "scenario:a_cancelled_run_is_never_executed",
+   "scenario:a_cron_job_is_queued_when_its_time_comes",
+   "scenario:a_final_run_stays_final",
+   "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+   "scenario:a_nonzero_exit_is_a_failure",
+   "scenario:a_version_is_registered_once",
+   "scenario:app_admins_register_job_configs",
+   "scenario:executors_and_outsiders_cannot_register",
+   "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+   "scenario:invalid_config_bad_cron_expression",
+   "scenario:invalid_config_code_path_absolute",
+   "scenario:invalid_config_code_path_escapes_repo",
+   "scenario:invalid_config_command_too_long",
+   "scenario:invalid_config_cron_without_expression",
+   "scenario:invalid_config_empty_command",
+   "scenario:invalid_config_empty_name",
+   "scenario:invalid_config_empty_version",
+   "scenario:invalid_config_executable_not_allowed",
+   "scenario:invalid_config_expression_without_cron",
+   "scenario:invalid_config_job_name_too_long",
+   "scenario:invalid_config_job_name_with_space",
+   "scenario:members_run_an_active_job",
+   "scenario:members_view_configs_and_versions_never_change",
+   "scenario:one_active_version_per_job",
+   "scenario:one_drain_processes_every_queued_run",
+   "scenario:one_live_run_per_config",
+   "scenario:only_an_active_config_runs",
+   "scenario:outsiders_cannot_run_or_see_runs",
+   "scenario:the_scheduler_service_queues_due_runs",
+   "scenario:the_worker_runs_a_queued_job_to_success",
+   "scenario:the_worker_service_executes_queued_runs"
+  ],
+  "impl:route:POST /applications/{}/jobs/{}/activate": [
+   "cell:ann|POST /applications/{}/jobs/{}/activate",
+   "cell:eve|POST /applications/{}/jobs/{}/activate",
+   "scenario:a_cancelled_run_is_never_executed",
+   "scenario:a_cron_job_is_queued_when_its_time_comes",
+   "scenario:a_final_run_stays_final",
+   "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+   "scenario:a_nonzero_exit_is_a_failure",
+   "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+   "scenario:members_run_an_active_job",
+   "scenario:one_active_version_per_job",
+   "scenario:one_drain_processes_every_queued_run",
+   "scenario:one_live_run_per_config",
+   "scenario:outsiders_cannot_run_or_see_runs",
+   "scenario:the_scheduler_service_queues_due_runs",
+   "scenario:the_worker_runs_a_queued_job_to_success",
+   "scenario:the_worker_service_executes_queued_runs"
+  ],
+  "impl:route:POST /applications/{}/jobs/{}/deactivate": [
+   "cell:ann|POST /applications/{}/jobs/{}/deactivate",
+   "scenario:one_active_version_per_job"
+  ],
+  "impl:route:POST /applications/{}/jobs/{}/runs": [
+   "cell:ann|POST /applications/{}/jobs/{}/runs",
+   "cell:bob|POST /applications/{}/jobs/{}/runs",
+   "cell:eve|POST /applications/{}/jobs/{}/runs",
+   "cell:no token|POST /applications/{}/jobs/{}/runs",
+   "cell:root|POST /applications/{}/jobs/{}/runs",
+   "cell:zed|POST /applications/{}/jobs/{}/runs",
+   "scenario:a_cancelled_run_is_never_executed",
+   "scenario:a_final_run_stays_final",
+   "scenario:a_nonzero_exit_is_a_failure",
+   "scenario:members_run_an_active_job",
+   "scenario:one_drain_processes_every_queued_run",
+   "scenario:one_live_run_per_config",
+   "scenario:only_an_active_config_runs",
+   "scenario:outsiders_cannot_run_or_see_runs",
+   "scenario:the_worker_runs_a_queued_job_to_success",
+   "scenario:the_worker_service_executes_queued_runs"
+  ],
+  "impl:route:POST /applications/{}/runs/{}/cancel": [
+   "cell:ann|POST /applications/{}/runs/{}/cancel",
+   "cell:bob|POST /applications/{}/runs/{}/cancel",
+   "cell:eve|POST /applications/{}/runs/{}/cancel",
+   "scenario:a_cancelled_run_is_never_executed",
+   "scenario:a_final_run_stays_final",
+   "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+   "scenario:one_live_run_per_config",
+   "scenario:outsiders_cannot_run_or_see_runs"
+  ],
+  "impl:route:POST /auth/login": [
+   "cell:no token|POST /auth/login",
+   "scenario:login"
+  ],
+  "impl:route:POST /users": [
+   "cell:ann|POST /users",
+   "cell:root|POST /users",
+   "scenario:only_the_super_admin_creates_users",
+   "scenario:passwords_are_8_to_72_bytes"
+  ],
+  "impl:route:POST /worker/run-once": [
+   "cell:ann|POST /worker/run-once",
+   "cell:root|POST /worker/run-once",
+   "scenario:a_cancelled_run_is_never_executed",
+   "scenario:a_nonzero_exit_is_a_failure",
+   "scenario:one_drain_processes_every_queued_run",
+   "scenario:only_the_super_admin_drives_the_worker",
+   "scenario:the_worker_runs_a_queued_job_to_success"
+  ],
+  "impl:route:POST /worker/schedule-tick": [
+   "cell:ann|POST /worker/schedule-tick",
+   "cell:root|POST /worker/schedule-tick",
+   "scenario:a_cron_job_is_queued_when_its_time_comes",
+   "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+   "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+   "scenario:only_the_super_admin_ticks_the_scheduler"
+  ],
+  "impl:route:PUT /applications/{}/members/{}": [
+   "cell:ann|PUT /applications/{}/members/{}",
+   "cell:bob|PUT /applications/{}/members/{}",
+   "cell:eve|PUT /applications/{}/members/{}",
+   "cell:root|PUT /applications/{}/members/{}",
+   "scenario:app_admins_manage_their_members",
+   "scenario:executors_and_outsiders_cannot_manage_members",
+   "scenario:member_requests_are_validated",
+   "scenario:the_super_admin_manages_any_application"
+  ]
+ },
+ "endpoints": [
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "DELETE /applications/{}/members/{}",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "GET /applications",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "GET /applications/{}",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "GET /applications/{}/jobs",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "GET /applications/{}/jobs/{}",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "GET /applications/{}/jobs/{}/runs",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "GET /applications/{}/members",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "GET /applications/{}/runs/{}",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": false,
+   "key": "GET /health",
+   "status": "plumbing"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "GET /users/me",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "PATCH /applications/{}/jobs/{}",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "POST /applications",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "POST /applications/{}/jobs",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "POST /applications/{}/jobs/{}/activate",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "POST /applications/{}/jobs/{}/deactivate",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "POST /applications/{}/jobs/{}/runs",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "POST /applications/{}/runs/{}/cancel",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "POST /auth/login",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "POST /users",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "POST /worker/run-once",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "POST /worker/schedule-tick",
+   "status": "implemented"
+  },
+  {
+   "in_code": true,
+   "in_spec": true,
+   "key": "PUT /applications/{}/members/{}",
+   "status": "implemented"
+  }
+ ],
+ "excluded": [
+  {
+   "condition": null,
+   "evidence": [
+    "code:internal/app/app.go:76",
+    "code:internal/app/app.go:76"
+   ],
+   "key": "GET /health",
+   "kind": "route",
+   "reason": "plumbing"
+  }
+ ],
+ "flows": [
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:126",
+    "code:internal/app/applications.go:131",
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:15"
+   ],
+   "id": "wf-044efafab4",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > read applications",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "GET /applications/{}"
+   ],
+   "rules": [
+    "cell:ann|GET /applications/{}",
+    "cell:ann|POST /applications",
+    "cell:eve|GET /applications/{}",
+    "cell:root|GET /applications/{}",
+    "cell:root|POST /applications",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:each_user_sees_only_their_applications"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:126",
+    "code:internal/app/applications.go:131",
+    "code:internal/app/applications.go:209",
+    "code:internal/app/applications.go:214",
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:15",
+    "code:internal/app/routes.go:18"
+   ],
+   "id": "wf-0f48344f64",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "after_delete",
+   "machine_refs": [],
+   "name": "create applications > delete members > read applications",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "DELETE /applications/{}/members/{}",
+    "GET /applications/{}"
+   ],
+   "rules": [
+    "cell:ann|DELETE /applications/{}/members/{}",
+    "cell:ann|GET /applications/{}",
+    "cell:ann|POST /applications",
+    "cell:eve|GET /applications/{}",
+    "cell:root|DELETE /applications/{}/members/{}",
+    "cell:root|GET /applications/{}",
+    "cell:root|POST /applications",
+    "cell:zed|DELETE /applications/{}/members/{}",
+    "scenario:app_admins_manage_their_members",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:each_user_sees_only_their_applications",
+    "scenario:executors_and_outsiders_cannot_manage_members",
+    "scenario:member_requests_are_validated",
+    "scenario:the_super_admin_manages_any_application"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/jobs.go:133",
+    "code:internal/app/jobs.go:138",
+    "code:internal/app/jobs.go:193",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:20",
+    "code:internal/app/routes.go:28",
+    "code:internal/app/runs.go:40",
+    "code:internal/app/runs.go:45",
+    "code:internal/app/runs.go:49",
+    "code:internal/app/runs.go:76"
+   ],
+   "id": "wf-24685c2a04",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > jobs applications > runs jobs",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "POST /applications/{}/jobs",
+    "POST /applications/{}/jobs/{}/runs"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:ann|POST /applications/{}/jobs",
+    "cell:ann|POST /applications/{}/jobs/{}/runs",
+    "cell:bob|POST /applications/{}/jobs",
+    "cell:bob|POST /applications/{}/jobs/{}/runs",
+    "cell:eve|POST /applications/{}/jobs",
+    "cell:eve|POST /applications/{}/jobs/{}/runs",
+    "cell:no token|POST /applications/{}/jobs",
+    "cell:no token|POST /applications/{}/jobs/{}/runs",
+    "cell:root|POST /applications",
+    "cell:root|POST /applications/{}/jobs",
+    "cell:root|POST /applications/{}/jobs/{}/runs",
+    "cell:zed|POST /applications/{}/jobs",
+    "cell:zed|POST /applications/{}/jobs/{}/runs",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:a_version_is_registered_once",
+    "scenario:app_admins_register_job_configs",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_register",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:invalid_config_bad_cron_expression",
+    "scenario:invalid_config_code_path_absolute",
+    "scenario:invalid_config_code_path_escapes_repo",
+    "scenario:invalid_config_command_too_long",
+    "scenario:invalid_config_cron_without_expression",
+    "scenario:invalid_config_empty_command",
+    "scenario:invalid_config_empty_name",
+    "scenario:invalid_config_empty_version",
+    "scenario:invalid_config_executable_not_allowed",
+    "scenario:invalid_config_expression_without_cron",
+    "scenario:invalid_config_job_name_too_long",
+    "scenario:invalid_config_job_name_with_space",
+    "scenario:members_run_an_active_job",
+    "scenario:members_view_configs_and_versions_never_change",
+    "scenario:one_active_version_per_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:only_an_active_config_runs",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_scheduler_service_queues_due_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "spec_matches": {
+    "lenient": [
+     16
+    ],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/jobs.go:133",
+    "code:internal/app/jobs.go:138",
+    "code:internal/app/jobs.go:193",
+    "code:internal/app/jobs.go:277",
+    "code:internal/app/jobs.go:282",
+    "code:internal/app/jobs.go:289",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:20",
+    "code:internal/app/routes.go:26"
+   ],
+   "id": "wf-2e29d81465",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > jobs applications > deactivate jobs",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "POST /applications/{}/jobs",
+    "POST /applications/{}/jobs/{}/deactivate"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:ann|POST /applications/{}/jobs",
+    "cell:ann|POST /applications/{}/jobs/{}/deactivate",
+    "cell:bob|POST /applications/{}/jobs",
+    "cell:eve|POST /applications/{}/jobs",
+    "cell:no token|POST /applications/{}/jobs",
+    "cell:root|POST /applications",
+    "cell:root|POST /applications/{}/jobs",
+    "cell:zed|POST /applications/{}/jobs",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:a_version_is_registered_once",
+    "scenario:app_admins_register_job_configs",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_register",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:invalid_config_bad_cron_expression",
+    "scenario:invalid_config_code_path_absolute",
+    "scenario:invalid_config_code_path_escapes_repo",
+    "scenario:invalid_config_command_too_long",
+    "scenario:invalid_config_cron_without_expression",
+    "scenario:invalid_config_empty_command",
+    "scenario:invalid_config_empty_name",
+    "scenario:invalid_config_empty_version",
+    "scenario:invalid_config_executable_not_allowed",
+    "scenario:invalid_config_expression_without_cron",
+    "scenario:invalid_config_job_name_too_long",
+    "scenario:invalid_config_job_name_with_space",
+    "scenario:members_run_an_active_job",
+    "scenario:members_view_configs_and_versions_never_change",
+    "scenario:one_active_version_per_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:only_an_active_config_runs",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_scheduler_service_queues_due_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/jobs.go:133",
+    "code:internal/app/jobs.go:138",
+    "code:internal/app/jobs.go:193",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:20",
+    "code:internal/app/routes.go:29",
+    "code:internal/app/runs.go:89",
+    "code:internal/app/runs.go:94",
+    "code:internal/app/runs.go:98"
+   ],
+   "id": "wf-3e4d2abfec",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > jobs applications > read runs",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "POST /applications/{}/jobs",
+    "GET /applications/{}/jobs/{}/runs"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:ann|POST /applications/{}/jobs",
+    "cell:bob|POST /applications/{}/jobs",
+    "cell:eve|GET /applications/{}/jobs/{}/runs",
+    "cell:eve|POST /applications/{}/jobs",
+    "cell:no token|POST /applications/{}/jobs",
+    "cell:root|POST /applications",
+    "cell:root|POST /applications/{}/jobs",
+    "cell:zed|POST /applications/{}/jobs",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:a_version_is_registered_once",
+    "scenario:app_admins_register_job_configs",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_register",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:invalid_config_bad_cron_expression",
+    "scenario:invalid_config_code_path_absolute",
+    "scenario:invalid_config_code_path_escapes_repo",
+    "scenario:invalid_config_command_too_long",
+    "scenario:invalid_config_cron_without_expression",
+    "scenario:invalid_config_empty_command",
+    "scenario:invalid_config_empty_name",
+    "scenario:invalid_config_empty_version",
+    "scenario:invalid_config_executable_not_allowed",
+    "scenario:invalid_config_expression_without_cron",
+    "scenario:invalid_config_job_name_too_long",
+    "scenario:invalid_config_job_name_with_space",
+    "scenario:members_run_an_active_job",
+    "scenario:members_view_configs_and_versions_never_change",
+    "scenario:one_active_version_per_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:only_an_active_config_runs",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_scheduler_service_queues_due_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/jobs.go:133",
+    "code:internal/app/jobs.go:138",
+    "code:internal/app/jobs.go:193",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:20",
+    "code:internal/app/routes.go:28",
+    "code:internal/app/routes.go:31",
+    "code:internal/app/runs.go:132",
+    "code:internal/app/runs.go:137",
+    "code:internal/app/runs.go:141",
+    "code:internal/app/runs.go:40",
+    "code:internal/app/runs.go:45",
+    "code:internal/app/runs.go:49",
+    "code:internal/app/runs.go:76"
+   ],
+   "id": "wf-4c15491c0c",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > jobs applications > runs jobs > cancel runs",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "POST /applications/{}/jobs",
+    "POST /applications/{}/jobs/{}/runs",
+    "POST /applications/{}/runs/{}/cancel"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:ann|POST /applications/{}/jobs",
+    "cell:ann|POST /applications/{}/jobs/{}/runs",
+    "cell:ann|POST /applications/{}/runs/{}/cancel",
+    "cell:bob|POST /applications/{}/jobs",
+    "cell:bob|POST /applications/{}/jobs/{}/runs",
+    "cell:bob|POST /applications/{}/runs/{}/cancel",
+    "cell:eve|POST /applications/{}/jobs",
+    "cell:eve|POST /applications/{}/jobs/{}/runs",
+    "cell:eve|POST /applications/{}/runs/{}/cancel",
+    "cell:no token|POST /applications/{}/jobs",
+    "cell:no token|POST /applications/{}/jobs/{}/runs",
+    "cell:root|POST /applications",
+    "cell:root|POST /applications/{}/jobs",
+    "cell:root|POST /applications/{}/jobs/{}/runs",
+    "cell:zed|POST /applications/{}/jobs",
+    "cell:zed|POST /applications/{}/jobs/{}/runs",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:a_version_is_registered_once",
+    "scenario:app_admins_register_job_configs",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_register",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:invalid_config_bad_cron_expression",
+    "scenario:invalid_config_code_path_absolute",
+    "scenario:invalid_config_code_path_escapes_repo",
+    "scenario:invalid_config_command_too_long",
+    "scenario:invalid_config_cron_without_expression",
+    "scenario:invalid_config_empty_command",
+    "scenario:invalid_config_empty_name",
+    "scenario:invalid_config_empty_version",
+    "scenario:invalid_config_executable_not_allowed",
+    "scenario:invalid_config_expression_without_cron",
+    "scenario:invalid_config_job_name_too_long",
+    "scenario:invalid_config_job_name_with_space",
+    "scenario:members_run_an_active_job",
+    "scenario:members_view_configs_and_versions_never_change",
+    "scenario:one_active_version_per_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:only_an_active_config_runs",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_scheduler_service_queues_due_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:163",
+    "code:internal/app/applications.go:168",
+    "code:internal/app/applications.go:190",
+    "code:internal/app/applications.go:198",
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/routes.go:11",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:17",
+    "code:internal/app/users.go:54",
+    "code:internal/app/users.go:87"
+   ],
+   "id": "wf-4ddd18e1de",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "lifecycle",
+   "machine_refs": [],
+   "name": "create users > create applications > update members",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /users",
+    "POST /applications",
+    "PUT /applications/{}/members/{}"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:ann|POST /users",
+    "cell:ann|PUT /applications/{}/members/{}",
+    "cell:bob|PUT /applications/{}/members/{}",
+    "cell:eve|PUT /applications/{}/members/{}",
+    "cell:root|POST /applications",
+    "cell:root|POST /users",
+    "cell:root|PUT /applications/{}/members/{}",
+    "scenario:app_admins_manage_their_members",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_manage_members",
+    "scenario:member_requests_are_validated",
+    "scenario:only_the_super_admin_creates_users",
+    "scenario:the_super_admin_manages_any_application",
+    "scenario:passwords_are_8_to_72_bytes"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/jobs.go:133",
+    "code:internal/app/jobs.go:138",
+    "code:internal/app/jobs.go:193",
+    "code:internal/app/jobs.go:240",
+    "code:internal/app/jobs.go:245",
+    "code:internal/app/jobs.go:252",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:20",
+    "code:internal/app/routes.go:25"
+   ],
+   "id": "wf-937c2ec7c2",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > jobs applications > activate jobs",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "POST /applications/{}/jobs",
+    "POST /applications/{}/jobs/{}/activate"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:ann|POST /applications/{}/jobs",
+    "cell:ann|POST /applications/{}/jobs/{}/activate",
+    "cell:bob|POST /applications/{}/jobs",
+    "cell:eve|POST /applications/{}/jobs",
+    "cell:eve|POST /applications/{}/jobs/{}/activate",
+    "cell:no token|POST /applications/{}/jobs",
+    "cell:root|POST /applications",
+    "cell:root|POST /applications/{}/jobs",
+    "cell:zed|POST /applications/{}/jobs",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:a_version_is_registered_once",
+    "scenario:app_admins_register_job_configs",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_register",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:invalid_config_bad_cron_expression",
+    "scenario:invalid_config_code_path_absolute",
+    "scenario:invalid_config_code_path_escapes_repo",
+    "scenario:invalid_config_command_too_long",
+    "scenario:invalid_config_cron_without_expression",
+    "scenario:invalid_config_empty_command",
+    "scenario:invalid_config_empty_name",
+    "scenario:invalid_config_empty_version",
+    "scenario:invalid_config_executable_not_allowed",
+    "scenario:invalid_config_expression_without_cron",
+    "scenario:invalid_config_job_name_too_long",
+    "scenario:invalid_config_job_name_with_space",
+    "scenario:members_run_an_active_job",
+    "scenario:members_view_configs_and_versions_never_change",
+    "scenario:one_active_version_per_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:only_an_active_config_runs",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_scheduler_service_queues_due_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "spec_matches": {
+    "lenient": [
+     3
+    ],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/jobs.go:133",
+    "code:internal/app/jobs.go:138",
+    "code:internal/app/jobs.go:193",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:20"
+   ],
+   "id": "wf-a57472a982",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > jobs applications",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "POST /applications/{}/jobs"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:ann|POST /applications/{}/jobs",
+    "cell:bob|POST /applications/{}/jobs",
+    "cell:eve|POST /applications/{}/jobs",
+    "cell:no token|POST /applications/{}/jobs",
+    "cell:root|POST /applications",
+    "cell:root|POST /applications/{}/jobs",
+    "cell:zed|POST /applications/{}/jobs",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:a_version_is_registered_once",
+    "scenario:app_admins_register_job_configs",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_register",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:invalid_config_bad_cron_expression",
+    "scenario:invalid_config_code_path_absolute",
+    "scenario:invalid_config_code_path_escapes_repo",
+    "scenario:invalid_config_command_too_long",
+    "scenario:invalid_config_cron_without_expression",
+    "scenario:invalid_config_empty_command",
+    "scenario:invalid_config_empty_name",
+    "scenario:invalid_config_empty_version",
+    "scenario:invalid_config_executable_not_allowed",
+    "scenario:invalid_config_expression_without_cron",
+    "scenario:invalid_config_job_name_too_long",
+    "scenario:invalid_config_job_name_with_space",
+    "scenario:members_run_an_active_job",
+    "scenario:members_view_configs_and_versions_never_change",
+    "scenario:one_active_version_per_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:only_an_active_config_runs",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_scheduler_service_queues_due_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/jobs.go:133",
+    "code:internal/app/jobs.go:138",
+    "code:internal/app/jobs.go:193",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:20",
+    "code:internal/app/routes.go:28",
+    "code:internal/app/routes.go:30",
+    "code:internal/app/runs.go:111",
+    "code:internal/app/runs.go:116",
+    "code:internal/app/runs.go:120",
+    "code:internal/app/runs.go:40",
+    "code:internal/app/runs.go:45",
+    "code:internal/app/runs.go:49",
+    "code:internal/app/runs.go:76"
+   ],
+   "id": "wf-c4d6e441bc",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > jobs applications > runs jobs > read runs",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "POST /applications/{}/jobs",
+    "POST /applications/{}/jobs/{}/runs",
+    "GET /applications/{}/runs/{}"
+   ],
+   "rules": [
+    "cell:ann|GET /applications/{}/runs/{}",
+    "cell:ann|POST /applications",
+    "cell:ann|POST /applications/{}/jobs",
+    "cell:ann|POST /applications/{}/jobs/{}/runs",
+    "cell:bob|GET /applications/{}/runs/{}",
+    "cell:bob|POST /applications/{}/jobs",
+    "cell:bob|POST /applications/{}/jobs/{}/runs",
+    "cell:eve|GET /applications/{}/runs/{}",
+    "cell:eve|POST /applications/{}/jobs",
+    "cell:eve|POST /applications/{}/jobs/{}/runs",
+    "cell:no token|POST /applications/{}/jobs",
+    "cell:no token|POST /applications/{}/jobs/{}/runs",
+    "cell:root|POST /applications",
+    "cell:root|POST /applications/{}/jobs",
+    "cell:root|POST /applications/{}/jobs/{}/runs",
+    "cell:zed|POST /applications/{}/jobs",
+    "cell:zed|POST /applications/{}/jobs/{}/runs",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:a_version_is_registered_once",
+    "scenario:app_admins_register_job_configs",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_register",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:invalid_config_bad_cron_expression",
+    "scenario:invalid_config_code_path_absolute",
+    "scenario:invalid_config_code_path_escapes_repo",
+    "scenario:invalid_config_command_too_long",
+    "scenario:invalid_config_cron_without_expression",
+    "scenario:invalid_config_empty_command",
+    "scenario:invalid_config_empty_name",
+    "scenario:invalid_config_empty_version",
+    "scenario:invalid_config_executable_not_allowed",
+    "scenario:invalid_config_expression_without_cron",
+    "scenario:invalid_config_job_name_too_long",
+    "scenario:invalid_config_job_name_with_space",
+    "scenario:members_run_an_active_job",
+    "scenario:members_view_configs_and_versions_never_change",
+    "scenario:one_active_version_per_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:only_an_active_config_runs",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_scheduler_service_queues_due_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:209",
+    "code:internal/app/applications.go:214",
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:18"
+   ],
+   "id": "wf-ded520b3ea",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > delete members",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "DELETE /applications/{}/members/{}"
+   ],
+   "rules": [
+    "cell:ann|DELETE /applications/{}/members/{}",
+    "cell:ann|POST /applications",
+    "cell:root|DELETE /applications/{}/members/{}",
+    "cell:root|POST /applications",
+    "cell:zed|DELETE /applications/{}/members/{}",
+    "scenario:app_admins_manage_their_members",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_manage_members",
+    "scenario:member_requests_are_validated",
+    "scenario:the_super_admin_manages_any_application"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:163",
+    "code:internal/app/applications.go:168",
+    "code:internal/app/applications.go:190",
+    "code:internal/app/applications.go:198",
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/routes.go:11",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:17",
+    "code:internal/app/users.go:54",
+    "code:internal/app/users.go:87"
+   ],
+   "id": "wf-e2d4a7be7c",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > create users > update members",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "POST /users",
+    "PUT /applications/{}/members/{}"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:ann|POST /users",
+    "cell:ann|PUT /applications/{}/members/{}",
+    "cell:bob|PUT /applications/{}/members/{}",
+    "cell:eve|PUT /applications/{}/members/{}",
+    "cell:root|POST /applications",
+    "cell:root|POST /users",
+    "cell:root|PUT /applications/{}/members/{}",
+    "scenario:app_admins_manage_their_members",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_manage_members",
+    "scenario:member_requests_are_validated",
+    "scenario:only_the_super_admin_creates_users",
+    "scenario:the_super_admin_manages_any_application",
+    "scenario:passwords_are_8_to_72_bytes"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/jobs.go:200",
+    "code:internal/app/jobs.go:205",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:21"
+   ],
+   "id": "wf-ebcc3ace1d",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > read jobs",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "GET /applications/{}/jobs"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:bob|GET /applications/{}/jobs",
+    "cell:eve|GET /applications/{}/jobs",
+    "cell:root|POST /applications",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:members_view_configs_and_versions_never_change"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/jobs.go:133",
+    "code:internal/app/jobs.go:138",
+    "code:internal/app/jobs.go:193",
+    "code:internal/app/jobs.go:218",
+    "code:internal/app/jobs.go:223",
+    "code:internal/app/jobs.go:227",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:20",
+    "code:internal/app/routes.go:22"
+   ],
+   "id": "wf-f0458deaaa",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > jobs applications > read jobs",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "POST /applications/{}/jobs",
+    "GET /applications/{}/jobs/{}"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:ann|POST /applications/{}/jobs",
+    "cell:bob|POST /applications/{}/jobs",
+    "cell:eve|GET /applications/{}/jobs/{}",
+    "cell:eve|POST /applications/{}/jobs",
+    "cell:no token|POST /applications/{}/jobs",
+    "cell:root|GET /applications/{}/jobs/{}",
+    "cell:root|POST /applications",
+    "cell:root|POST /applications/{}/jobs",
+    "cell:zed|POST /applications/{}/jobs",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:a_version_is_registered_once",
+    "scenario:app_admins_register_job_configs",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_register",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:invalid_config_bad_cron_expression",
+    "scenario:invalid_config_code_path_absolute",
+    "scenario:invalid_config_code_path_escapes_repo",
+    "scenario:invalid_config_command_too_long",
+    "scenario:invalid_config_cron_without_expression",
+    "scenario:invalid_config_empty_command",
+    "scenario:invalid_config_empty_name",
+    "scenario:invalid_config_empty_version",
+    "scenario:invalid_config_executable_not_allowed",
+    "scenario:invalid_config_expression_without_cron",
+    "scenario:invalid_config_job_name_too_long",
+    "scenario:invalid_config_job_name_with_space",
+    "scenario:members_run_an_active_job",
+    "scenario:members_view_configs_and_versions_never_change",
+    "scenario:one_active_version_per_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:only_an_active_config_runs",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_scheduler_service_queues_due_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  },
+  {
+   "basis": "static",
+   "effective": "unverified",
+   "evidence": [
+    "code:internal/app/applications.go:138",
+    "code:internal/app/applications.go:143",
+    "code:internal/app/applications.go:73",
+    "code:internal/app/applications.go:97",
+    "code:internal/app/routes.go:13",
+    "code:internal/app/routes.go:16"
+   ],
+   "id": "wf-f5e3eb611a",
+   "implemented_not_required": false,
+   "inferred_name": true,
+   "kind": "pair",
+   "machine_refs": [],
+   "name": "create applications > read members",
+   "orphan_routes": [],
+   "reason": "static run: the flow was not executed",
+   "routes": [
+    "POST /applications",
+    "GET /applications/{}/members"
+   ],
+   "rules": [
+    "cell:ann|GET /applications/{}/members",
+    "cell:ann|POST /applications",
+    "cell:eve|GET /applications/{}/members",
+    "cell:root|POST /applications",
+    "scenario:app_admins_manage_their_members",
+    "scenario:applications_are_created_by_the_super_admin",
+    "scenario:executors_and_outsiders_cannot_manage_members"
+   ],
+   "spec_matches": {
+    "lenient": [],
+    "strict": []
+   },
+   "status": "unverified"
+  }
+ ],
+ "implemented_not_required": [
+  {
+   "key": "impl:machine:job_runs.status",
+   "kind": "machine"
+  },
+  {
+   "key": "impl:machine:job_runs.trigger",
+   "kind": "machine"
+  }
+ ],
+ "inventory": {
+  "extract_sha256": "4722fd136e3977b3838a1e2a2a13e642c3581f28501dcf2e2eb381a2768d8248",
+  "run_mode": "static",
+  "stale": null,
+  "workflows_consistency": "route-set",
+  "workflows_mismatch": null,
+  "workflows_sha256": "ce6c74ab637a81049fc3d3ee4e6685b4675805ee60160535c1867a507487eb9c"
+ },
+ "machines": [
+  {
+   "edges": [
+    "queued -> running"
+   ],
+   "evidence": [
+    "code:internal/app/worker.go:53",
+    "code:internal/app/worker.go:54"
+   ],
+   "id": "wm-836675e71c",
+   "implemented_not_required": true,
+   "key": "impl:machine:job_runs.status",
+   "rules": [],
+   "states": [
+    "cancelled",
+    "queued",
+    "running"
+   ],
+   "status": "static"
+  },
+  {
+   "edges": [],
+   "evidence": [],
+   "id": "wm-bd44fff17f",
+   "implemented_not_required": true,
+   "key": "impl:machine:job_runs.trigger",
+   "rules": [],
+   "states": [
+    "cron",
+    "manual"
+   ],
+   "status": "static"
+  }
+ ],
+ "requirement_basis": "spec",
+ "requirements": [
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:209",
+      "code:internal/app/routes.go:18"
+     ],
+     "focus": true,
+     "key": "impl:route:DELETE /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|DELETE /applications/{}/members/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:104",
+      "code:internal/app/routes.go:14"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|GET /applications",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:126",
+      "code:internal/app/routes.go:15"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|GET /applications/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:138",
+      "code:internal/app/routes.go:16"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/members",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|GET /applications/{}/members",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:30",
+      "code:internal/app/runs.go:111"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/runs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|GET /applications/{}/runs/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:10",
+      "code:internal/app/users.go:46"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /users/me",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|GET /users/me",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:236",
+      "code:internal/app/routes.go:24"
+     ],
+     "focus": true,
+     "key": "impl:route:PATCH /applications/{}/jobs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|PATCH /applications/{}/jobs/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:73",
+      "code:internal/app/routes.go:13"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|POST /applications",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|POST /applications/{}/jobs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|POST /applications/{}/jobs/{}/activate",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:277",
+      "code:internal/app/routes.go:26"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/deactivate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|POST /applications/{}/jobs/{}/deactivate",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|POST /applications/{}/jobs/{}/runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:31",
+      "code:internal/app/runs.go:132"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/runs/{}/cancel",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|POST /applications/{}/runs/{}/cancel",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:11",
+      "code:internal/app/users.go:54"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /users",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|POST /users",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:33",
+      "code:internal/app/worker.go:21"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /worker/run-once",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|POST /worker/run-once",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:34",
+      "code:internal/app/scheduler.go:33"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /worker/schedule-tick",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|POST /worker/schedule-tick",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:163",
+      "code:internal/app/routes.go:17"
+     ],
+     "focus": true,
+     "key": "impl:route:PUT /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:ann|PUT /applications/{}/members/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:200",
+      "code:internal/app/routes.go:21"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:bob|GET /applications/{}/jobs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:30",
+      "code:internal/app/runs.go:111"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/runs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:bob|GET /applications/{}/runs/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:bob|POST /applications/{}/jobs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:bob|POST /applications/{}/jobs/{}/runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:31",
+      "code:internal/app/runs.go:132"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/runs/{}/cancel",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:bob|POST /applications/{}/runs/{}/cancel",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:163",
+      "code:internal/app/routes.go:17"
+     ],
+     "focus": true,
+     "key": "impl:route:PUT /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:bob|PUT /applications/{}/members/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:104",
+      "code:internal/app/routes.go:14"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|GET /applications",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:126",
+      "code:internal/app/routes.go:15"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|GET /applications/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:200",
+      "code:internal/app/routes.go:21"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|GET /applications/{}/jobs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:218",
+      "code:internal/app/routes.go:22"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/jobs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|GET /applications/{}/jobs/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:29",
+      "code:internal/app/runs.go:89"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|GET /applications/{}/jobs/{}/runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:138",
+      "code:internal/app/routes.go:16"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/members",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|GET /applications/{}/members",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:30",
+      "code:internal/app/runs.go:111"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/runs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|GET /applications/{}/runs/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|POST /applications/{}/jobs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|POST /applications/{}/jobs/{}/activate",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|POST /applications/{}/jobs/{}/runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:31",
+      "code:internal/app/runs.go:132"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/runs/{}/cancel",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|POST /applications/{}/runs/{}/cancel",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:163",
+      "code:internal/app/routes.go:17"
+     ],
+     "focus": true,
+     "key": "impl:route:PUT /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:eve|PUT /applications/{}/members/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:104",
+      "code:internal/app/routes.go:14"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:no token|GET /applications",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:10",
+      "code:internal/app/users.go:46"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /users/me",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:no token|GET /users/me",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:no token|POST /applications/{}/jobs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:no token|POST /applications/{}/jobs/{}/runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:9",
+      "code:internal/app/users.go:19"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /auth/login",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:no token|POST /auth/login",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:209",
+      "code:internal/app/routes.go:18"
+     ],
+     "focus": true,
+     "key": "impl:route:DELETE /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|DELETE /applications/{}/members/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:104",
+      "code:internal/app/routes.go:14"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|GET /applications",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:126",
+      "code:internal/app/routes.go:15"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|GET /applications/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:218",
+      "code:internal/app/routes.go:22"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/jobs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|GET /applications/{}/jobs/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:10",
+      "code:internal/app/users.go:46"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /users/me",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|GET /users/me",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:73",
+      "code:internal/app/routes.go:13"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|POST /applications",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|POST /applications/{}/jobs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|POST /applications/{}/jobs/{}/runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:11",
+      "code:internal/app/users.go:54"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /users",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|POST /users",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:33",
+      "code:internal/app/worker.go:21"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /worker/run-once",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|POST /worker/run-once",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:34",
+      "code:internal/app/scheduler.go:33"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /worker/schedule-tick",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|POST /worker/schedule-tick",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:163",
+      "code:internal/app/routes.go:17"
+     ],
+     "focus": true,
+     "key": "impl:route:PUT /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:root|PUT /applications/{}/members/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:209",
+      "code:internal/app/routes.go:18"
+     ],
+     "focus": true,
+     "key": "impl:route:DELETE /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:zed|DELETE /applications/{}/members/{}",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:104",
+      "code:internal/app/routes.go:14"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:zed|GET /applications",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:zed|POST /applications/{}/jobs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "cell"
+     ]
+    }
+   ],
+   "id": "cell:zed|POST /applications/{}/jobs/{}/runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "cell",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:30",
+      "code:internal/app/runs.go:111"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/runs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:31",
+      "code:internal/app/runs.go:132"
+     ],
+     "key": "impl:route:POST /applications/{}/runs/{}/cancel",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:33",
+      "code:internal/app/worker.go:21"
+     ],
+     "key": "impl:route:POST /worker/run-once",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:a_cancelled_run_is_never_executed",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:30",
+      "code:internal/app/runs.go:111"
+     ],
+     "key": "impl:route:GET /applications/{}/runs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:34",
+      "code:internal/app/scheduler.go:33"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /worker/schedule-tick",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:a_cron_job_is_queued_when_its_time_comes",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:31",
+      "code:internal/app/runs.go:132"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/runs/{}/cancel",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:a_final_run_stays_final",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:31",
+      "code:internal/app/runs.go:132"
+     ],
+     "key": "impl:route:POST /applications/{}/runs/{}/cancel",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:34",
+      "code:internal/app/scheduler.go:33"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /worker/schedule-tick",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:30",
+      "code:internal/app/runs.go:111"
+     ],
+     "key": "impl:route:GET /applications/{}/runs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:33",
+      "code:internal/app/worker.go:21"
+     ],
+     "key": "impl:route:POST /worker/run-once",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:a_nonzero_exit_is_a_failure",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:a_version_is_registered_once",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:209",
+      "code:internal/app/routes.go:18"
+     ],
+     "focus": true,
+     "key": "impl:route:DELETE /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:138",
+      "code:internal/app/routes.go:16"
+     ],
+     "key": "impl:route:GET /applications/{}/members",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:163",
+      "code:internal/app/routes.go:17"
+     ],
+     "key": "impl:route:PUT /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:app_admins_manage_their_members",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:app_admins_register_job_configs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:73",
+      "code:internal/app/routes.go:13"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:applications_are_created_by_the_super_admin",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:104",
+      "code:internal/app/routes.go:14"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:126",
+      "code:internal/app/routes.go:15"
+     ],
+     "key": "impl:route:GET /applications/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:each_user_sees_only_their_applications",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:209",
+      "code:internal/app/routes.go:18"
+     ],
+     "focus": true,
+     "key": "impl:route:DELETE /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:138",
+      "code:internal/app/routes.go:16"
+     ],
+     "key": "impl:route:GET /applications/{}/members",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:163",
+      "code:internal/app/routes.go:17"
+     ],
+     "key": "impl:route:PUT /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:executors_and_outsiders_cannot_manage_members",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:executors_and_outsiders_cannot_register",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:34",
+      "code:internal/app/scheduler.go:33"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /worker/schedule-tick",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_bad_cron_expression",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_code_path_absolute",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_code_path_escapes_repo",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_command_too_long",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_cron_without_expression",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_empty_command",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_empty_name",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_empty_version",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_executable_not_allowed",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_expression_without_cron",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_job_name_too_long",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:invalid_config_job_name_with_space",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:9",
+      "code:internal/app/users.go:19"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /auth/login",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:login",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:10",
+      "code:internal/app/users.go:46"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /users/me",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:me",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:209",
+      "code:internal/app/routes.go:18"
+     ],
+     "focus": true,
+     "key": "impl:route:DELETE /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:163",
+      "code:internal/app/routes.go:17"
+     ],
+     "key": "impl:route:PUT /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:member_requests_are_validated",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:29",
+      "code:internal/app/runs.go:89"
+     ],
+     "key": "impl:route:GET /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:30",
+      "code:internal/app/runs.go:111"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/runs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:members_run_an_active_job",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:200",
+      "code:internal/app/routes.go:21"
+     ],
+     "key": "impl:route:GET /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:218",
+      "code:internal/app/routes.go:22"
+     ],
+     "key": "impl:route:GET /applications/{}/jobs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:236",
+      "code:internal/app/routes.go:24"
+     ],
+     "focus": true,
+     "key": "impl:route:PATCH /applications/{}/jobs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:members_view_configs_and_versions_never_change",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:277",
+      "code:internal/app/routes.go:26"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/deactivate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:one_active_version_per_job",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:30",
+      "code:internal/app/runs.go:111"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/runs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:33",
+      "code:internal/app/worker.go:21"
+     ],
+     "key": "impl:route:POST /worker/run-once",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:one_drain_processes_every_queued_run",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:31",
+      "code:internal/app/runs.go:132"
+     ],
+     "key": "impl:route:POST /applications/{}/runs/{}/cancel",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:one_live_run_per_config",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:only_an_active_config_runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:11",
+      "code:internal/app/users.go:54"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /users",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:only_the_super_admin_creates_users",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:33",
+      "code:internal/app/worker.go:21"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /worker/run-once",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:only_the_super_admin_drives_the_worker",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:34",
+      "code:internal/app/scheduler.go:33"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /worker/schedule-tick",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:only_the_super_admin_ticks_the_scheduler",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:30",
+      "code:internal/app/runs.go:111"
+     ],
+     "key": "impl:route:GET /applications/{}/runs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:31",
+      "code:internal/app/runs.go:132"
+     ],
+     "key": "impl:route:POST /applications/{}/runs/{}/cancel",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:outsiders_cannot_run_or_see_runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:11",
+      "code:internal/app/users.go:54"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /users",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:passwords_are_8_to_72_bytes",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:the_scheduler_service_queues_due_runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:209",
+      "code:internal/app/routes.go:18"
+     ],
+     "focus": true,
+     "key": "impl:route:DELETE /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/applications.go:163",
+      "code:internal/app/routes.go:17"
+     ],
+     "key": "impl:route:PUT /applications/{}/members/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:the_super_admin_manages_any_application",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:30",
+      "code:internal/app/runs.go:111"
+     ],
+     "focus": true,
+     "key": "impl:route:GET /applications/{}/runs/{}",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:33",
+      "code:internal/app/worker.go:21"
+     ],
+     "key": "impl:route:POST /worker/run-once",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:the_worker_runs_a_queued_job_to_success",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  },
+  {
+   "elements": [
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:133",
+      "code:internal/app/routes.go:20"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/jobs.go:240",
+      "code:internal/app/routes.go:25"
+     ],
+     "key": "impl:route:POST /applications/{}/jobs/{}/activate",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    },
+    {
+     "basis": "static",
+     "evidence": [
+      "code:internal/app/routes.go:28",
+      "code:internal/app/runs.go:40"
+     ],
+     "focus": true,
+     "key": "impl:route:POST /applications/{}/jobs/{}/runs",
+     "kind": "route",
+     "present": true,
+     "reason": "static run",
+     "verified": false,
+     "via": [
+      "scenario"
+     ]
+    }
+   ],
+   "id": "scenario:the_worker_service_executes_queued_runs",
+   "reasons": [
+    "static run"
+   ],
+   "spec_status": "scenario",
+   "status": "implemented_unverified"
+  }
+ ],
+ "routes": [
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:14",
+    "code:internal/app/applications.go:104"
+   ],
+   "flows": [],
+   "handler": "app.App.listApplications",
+   "in_spec": true,
+   "key": "GET /applications",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|GET /applications",
+    "cell:eve|GET /applications",
+    "cell:no token|GET /applications",
+    "cell:root|GET /applications",
+    "cell:zed|GET /applications",
+    "scenario:each_user_sees_only_their_applications"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:13",
+    "code:internal/app/applications.go:73"
+   ],
+   "flows": [
+    "wf-044efafab4",
+    "wf-0f48344f64",
+    "wf-24685c2a04",
+    "wf-2e29d81465",
+    "wf-3e4d2abfec",
+    "wf-4c15491c0c",
+    "wf-4ddd18e1de",
+    "wf-937c2ec7c2",
+    "wf-a57472a982",
+    "wf-c4d6e441bc",
+    "wf-ded520b3ea",
+    "wf-e2d4a7be7c",
+    "wf-ebcc3ace1d",
+    "wf-f0458deaaa",
+    "wf-f5e3eb611a"
+   ],
+   "handler": "app.App.createApplication",
+   "in_spec": true,
+   "key": "POST /applications",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "409 Application already exists",
+    "422 invalid name",
+    "422 invalid request body"
+   ],
+   "rules": [
+    "cell:ann|POST /applications",
+    "cell:root|POST /applications",
+    "scenario:applications_are_created_by_the_super_admin"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    201
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:15",
+    "code:internal/app/applications.go:126"
+   ],
+   "flows": [
+    "wf-044efafab4",
+    "wf-0f48344f64"
+   ],
+   "handler": "app.App.getApplication",
+   "in_spec": true,
+   "key": "GET /applications/{}",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404"
+   ],
+   "rules": [
+    "cell:ann|GET /applications/{}",
+    "cell:eve|GET /applications/{}",
+    "cell:root|GET /applications/{}",
+    "scenario:each_user_sees_only_their_applications"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:21",
+    "code:internal/app/jobs.go:200"
+   ],
+   "flows": [
+    "wf-ebcc3ace1d"
+   ],
+   "handler": "app.App.listJobConfigs",
+   "in_spec": true,
+   "key": "GET /applications/{}/jobs",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:bob|GET /applications/{}/jobs",
+    "cell:eve|GET /applications/{}/jobs",
+    "scenario:members_view_configs_and_versions_never_change"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:20",
+    "code:internal/app/jobs.go:133"
+   ],
+   "flows": [
+    "wf-24685c2a04",
+    "wf-2e29d81465",
+    "wf-3e4d2abfec",
+    "wf-4c15491c0c",
+    "wf-937c2ec7c2",
+    "wf-a57472a982",
+    "wf-c4d6e441bc",
+    "wf-f0458deaaa"
+   ],
+   "handler": "app.App.createJobConfig",
+   "in_spec": true,
+   "key": "POST /applications/{}/jobs",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404",
+    "409 Job config already exists",
+    "422 cron_expr without is_cron",
+    "422 invalid code_path",
+    "422 invalid command",
+    "422 invalid cron_expr",
+    "422 invalid job_name",
+    "422 invalid request body"
+   ],
+   "rules": [
+    "cell:ann|POST /applications/{}/jobs",
+    "cell:bob|POST /applications/{}/jobs",
+    "cell:eve|POST /applications/{}/jobs",
+    "cell:no token|POST /applications/{}/jobs",
+    "cell:root|POST /applications/{}/jobs",
+    "cell:zed|POST /applications/{}/jobs",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:a_version_is_registered_once",
+    "scenario:app_admins_register_job_configs",
+    "scenario:executors_and_outsiders_cannot_register",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:invalid_config_bad_cron_expression",
+    "scenario:invalid_config_code_path_absolute",
+    "scenario:invalid_config_code_path_escapes_repo",
+    "scenario:invalid_config_command_too_long",
+    "scenario:invalid_config_cron_without_expression",
+    "scenario:invalid_config_empty_command",
+    "scenario:invalid_config_empty_name",
+    "scenario:invalid_config_empty_version",
+    "scenario:invalid_config_executable_not_allowed",
+    "scenario:invalid_config_expression_without_cron",
+    "scenario:invalid_config_job_name_too_long",
+    "scenario:invalid_config_job_name_with_space",
+    "scenario:members_run_an_active_job",
+    "scenario:members_view_configs_and_versions_never_change",
+    "scenario:one_active_version_per_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:only_an_active_config_runs",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_scheduler_service_queues_due_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    201
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:22",
+    "code:internal/app/jobs.go:218"
+   ],
+   "flows": [
+    "wf-f0458deaaa"
+   ],
+   "handler": "app.App.getJobConfig",
+   "in_spec": true,
+   "key": "GET /applications/{}/jobs/{}",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404"
+   ],
+   "rules": [
+    "cell:eve|GET /applications/{}/jobs/{}",
+    "cell:root|GET /applications/{}/jobs/{}",
+    "scenario:members_view_configs_and_versions_never_change"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:24",
+    "code:internal/app/jobs.go:236"
+   ],
+   "flows": [],
+   "handler": "app.App.jobConfigMethodNotAllowed",
+   "in_spec": true,
+   "key": "PATCH /applications/{}/jobs/{}",
+   "reason": null,
+   "refusals": [
+    "405 A job config version cannot be edited"
+   ],
+   "rules": [
+    "cell:ann|PATCH /applications/{}/jobs/{}",
+    "scenario:members_view_configs_and_versions_never_change"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:25",
+    "code:internal/app/jobs.go:240"
+   ],
+   "flows": [
+    "wf-937c2ec7c2"
+   ],
+   "handler": "app.App.activateJobConfig",
+   "in_spec": true,
+   "key": "POST /applications/{}/jobs/{}/activate",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|POST /applications/{}/jobs/{}/activate",
+    "cell:eve|POST /applications/{}/jobs/{}/activate",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:members_run_an_active_job",
+    "scenario:one_active_version_per_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_scheduler_service_queues_due_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:26",
+    "code:internal/app/jobs.go:277"
+   ],
+   "flows": [
+    "wf-2e29d81465"
+   ],
+   "handler": "app.App.deactivateJobConfig",
+   "in_spec": true,
+   "key": "POST /applications/{}/jobs/{}/deactivate",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|POST /applications/{}/jobs/{}/deactivate",
+    "scenario:one_active_version_per_job"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:29",
+    "code:internal/app/runs.go:89"
+   ],
+   "flows": [
+    "wf-3e4d2abfec"
+   ],
+   "handler": "app.App.listJobRuns",
+   "in_spec": true,
+   "key": "GET /applications/{}/jobs/{}/runs",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:eve|GET /applications/{}/jobs/{}/runs",
+    "scenario:members_run_an_active_job"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:28",
+    "code:internal/app/runs.go:40"
+   ],
+   "flows": [
+    "wf-24685c2a04",
+    "wf-4c15491c0c",
+    "wf-c4d6e441bc"
+   ],
+   "handler": "app.App.createJobRun",
+   "in_spec": true,
+   "key": "POST /applications/{}/jobs/{}/runs",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404",
+    "409",
+    "409 Job config is not active",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|POST /applications/{}/jobs/{}/runs",
+    "cell:bob|POST /applications/{}/jobs/{}/runs",
+    "cell:eve|POST /applications/{}/jobs/{}/runs",
+    "cell:no token|POST /applications/{}/jobs/{}/runs",
+    "cell:root|POST /applications/{}/jobs/{}/runs",
+    "cell:zed|POST /applications/{}/jobs/{}/runs",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:members_run_an_active_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:one_live_run_per_config",
+    "scenario:only_an_active_config_runs",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success",
+    "scenario:the_worker_service_executes_queued_runs"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    201
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:16",
+    "code:internal/app/applications.go:138"
+   ],
+   "flows": [
+    "wf-f5e3eb611a"
+   ],
+   "handler": "app.App.listMembers",
+   "in_spec": true,
+   "key": "GET /applications/{}/members",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|GET /applications/{}/members",
+    "cell:eve|GET /applications/{}/members",
+    "scenario:app_admins_manage_their_members",
+    "scenario:executors_and_outsiders_cannot_manage_members"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:18",
+    "code:internal/app/applications.go:209"
+   ],
+   "flows": [
+    "wf-0f48344f64",
+    "wf-ded520b3ea"
+   ],
+   "handler": "app.App.deleteMember",
+   "in_spec": true,
+   "key": "DELETE /applications/{}/members/{}",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|DELETE /applications/{}/members/{}",
+    "cell:root|DELETE /applications/{}/members/{}",
+    "cell:zed|DELETE /applications/{}/members/{}",
+    "scenario:app_admins_manage_their_members",
+    "scenario:executors_and_outsiders_cannot_manage_members",
+    "scenario:member_requests_are_validated",
+    "scenario:the_super_admin_manages_any_application"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    204
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:17",
+    "code:internal/app/applications.go:163"
+   ],
+   "flows": [
+    "wf-4ddd18e1de",
+    "wf-e2d4a7be7c"
+   ],
+   "handler": "app.App.putMember",
+   "in_spec": true,
+   "key": "PUT /applications/{}/members/{}",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404",
+    "422 invalid request body",
+    "422 invalid role",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|PUT /applications/{}/members/{}",
+    "cell:bob|PUT /applications/{}/members/{}",
+    "cell:eve|PUT /applications/{}/members/{}",
+    "cell:root|PUT /applications/{}/members/{}",
+    "scenario:app_admins_manage_their_members",
+    "scenario:executors_and_outsiders_cannot_manage_members",
+    "scenario:member_requests_are_validated",
+    "scenario:the_super_admin_manages_any_application"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:30",
+    "code:internal/app/runs.go:111"
+   ],
+   "flows": [
+    "wf-c4d6e441bc"
+   ],
+   "handler": "app.App.getJobRun",
+   "in_spec": true,
+   "key": "GET /applications/{}/runs/{}",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404"
+   ],
+   "rules": [
+    "cell:ann|GET /applications/{}/runs/{}",
+    "cell:bob|GET /applications/{}/runs/{}",
+    "cell:eve|GET /applications/{}/runs/{}",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:members_run_an_active_job",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:outsiders_cannot_run_or_see_runs",
+    "scenario:the_worker_runs_a_queued_job_to_success"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:31",
+    "code:internal/app/runs.go:132"
+   ],
+   "flows": [
+    "wf-4c15491c0c"
+   ],
+   "handler": "app.App.cancelJobRun",
+   "in_spec": true,
+   "key": "POST /applications/{}/runs/{}/cancel",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "404",
+    "409 Run is already in a final state",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|POST /applications/{}/runs/{}/cancel",
+    "cell:bob|POST /applications/{}/runs/{}/cancel",
+    "cell:eve|POST /applications/{}/runs/{}/cancel",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_final_run_stays_final",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:one_live_run_per_config",
+    "scenario:outsiders_cannot_run_or_see_runs"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:9",
+    "code:internal/app/users.go:19"
+   ],
+   "flows": [],
+   "handler": "app.App.login",
+   "in_spec": true,
+   "key": "POST /auth/login",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "422 invalid request body",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:no token|POST /auth/login",
+    "scenario:login"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/app.go:76",
+    "code:internal/app/app.go:76"
+   ],
+   "flows": [],
+   "handler": "app.New.func1",
+   "in_spec": false,
+   "key": "GET /health",
+   "reason": "plumbing",
+   "refusals": [],
+   "rules": [],
+   "status": "excluded",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:11",
+    "code:internal/app/users.go:54"
+   ],
+   "flows": [
+    "wf-4ddd18e1de",
+    "wf-e2d4a7be7c"
+   ],
+   "handler": "app.App.createUser",
+   "in_spec": true,
+   "key": "POST /users",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "409 Email already registered",
+    "422 invalid email",
+    "422 invalid password",
+    "422 invalid request body",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|POST /users",
+    "cell:root|POST /users",
+    "scenario:only_the_super_admin_creates_users",
+    "scenario:passwords_are_8_to_72_bytes"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    201
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:10",
+    "code:internal/app/users.go:46"
+   ],
+   "flows": [],
+   "handler": "app.App.me",
+   "in_spec": true,
+   "key": "GET /users/me",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403"
+   ],
+   "rules": [
+    "cell:ann|GET /users/me",
+    "cell:no token|GET /users/me",
+    "cell:root|GET /users/me",
+    "scenario:me"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:33",
+    "code:internal/app/worker.go:21"
+   ],
+   "flows": [],
+   "handler": "app.App.workerRunOnce",
+   "in_spec": true,
+   "key": "POST /worker/run-once",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|POST /worker/run-once",
+    "cell:root|POST /worker/run-once",
+    "scenario:a_cancelled_run_is_never_executed",
+    "scenario:a_nonzero_exit_is_a_failure",
+    "scenario:one_drain_processes_every_queued_run",
+    "scenario:only_the_super_admin_drives_the_worker",
+    "scenario:the_worker_runs_a_queued_job_to_success"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  },
+  {
+   "auth": "Public",
+   "collision": false,
+   "evidence": [
+    "code:internal/app/routes.go:34",
+    "code:internal/app/scheduler.go:33"
+   ],
+   "flows": [],
+   "handler": "app.App.scheduleTick",
+   "in_spec": true,
+   "key": "POST /worker/schedule-tick",
+   "reason": null,
+   "refusals": [
+    "401",
+    "403",
+    "422 invalid now",
+    "422 invalid request body",
+    "500 internal error"
+   ],
+   "rules": [
+    "cell:ann|POST /worker/schedule-tick",
+    "cell:root|POST /worker/schedule-tick",
+    "scenario:a_cron_job_is_queued_when_its_time_comes",
+    "scenario:a_minute_is_scheduled_once_even_after_its_run_finished",
+    "scenario:inactive_and_non_cron_configs_are_never_scheduled",
+    "scenario:only_the_super_admin_ticks_the_scheduler"
+   ],
+   "status": "implemented_unverified",
+   "statuses": [
+    200
+   ],
+   "via_any": false
+  }
+ ],
+ "schema": "lattice.implementation-report/1",
+ "spec_skeletons": [
+  [
+   "GET /applications",
+   "GET /applications/{}",
+   "GET /applications"
+  ],
+  [
+   "GET /applications/{}/members",
+   "PUT /applications/{}/members/{}",
+   "DELETE /applications/{}/members/{}"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "GET /applications/{}/jobs",
+   "GET /applications/{}/jobs/{}",
+   "GET /applications/{}/jobs",
+   "GET /applications/{}/jobs/{}",
+   "PATCH /applications/{}/jobs/{}"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /applications/{}/jobs/{}/deactivate",
+   "POST /applications/{}/jobs/{}/activate"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /applications/{}/jobs/{}/runs"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /applications/{}/jobs/{}/runs",
+   "GET /applications/{}/jobs/{}/runs",
+   "GET /applications/{}/runs/{}"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /applications/{}/jobs/{}/runs",
+   "GET /applications/{}/runs/{}",
+   "POST /applications/{}/runs/{}/cancel",
+   "POST /applications/{}/jobs/{}/runs"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /applications/{}/jobs/{}/runs",
+   "POST /applications/{}/runs/{}/cancel"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /applications/{}/jobs/{}/runs",
+   "POST /applications/{}/runs/{}/cancel",
+   "POST /applications/{}/jobs/{}/runs"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /applications/{}/jobs/{}/runs",
+   "POST /applications/{}/runs/{}/cancel",
+   "POST /worker/run-once",
+   "GET /applications/{}/runs/{}"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /applications/{}/jobs/{}/runs",
+   "POST /worker/run-once",
+   "GET /applications/{}/runs/{}"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /applications/{}/jobs/{}/runs",
+   "POST /worker/run-once",
+   "GET /applications/{}/runs/{}",
+   "POST /applications/{}/jobs/{}/runs"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /worker/schedule-tick"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /worker/schedule-tick",
+   "GET /applications/{}/runs/{}",
+   "POST /worker/schedule-tick"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/activate",
+   "POST /worker/schedule-tick",
+   "POST /applications/{}/runs/{}/cancel",
+   "POST /worker/schedule-tick"
+  ],
+  [
+   "POST /applications/{}/jobs",
+   "POST /applications/{}/jobs/{}/runs"
+  ],
+  [
+   "PUT /applications/{}/members/{}",
+   "DELETE /applications/{}/members/{}"
+  ],
+  [
+   "PUT /applications/{}/members/{}",
+   "GET /applications/{}/members",
+   "PUT /applications/{}/members/{}",
+   "DELETE /applications/{}/members/{}"
+  ]
+ ],
+ "summary": {
+  "endpoints": {
+   "implemented": 21,
+   "plumbing": 1
+  },
+  "excluded": 1,
+  "flows": {
+   "unverified": 15
+  },
+  "orphan_flows": 0,
+  "orphan_machines": 2,
+  "orphan_routes": 0,
+  "requirements": {
+   "implemented_unverified": 99,
+   "implemented_verified": 0,
+   "no_element": 0,
+   "required_not_implemented": 0
+  },
+  "routes": {
+   "excluded": 1,
+   "implemented_unverified": 21
+  }
+ },
+ "tables": [
+  {
+   "evidence": [
+    "code:internal/app/models.go:22"
+   ],
+   "key": "impl:table:applications",
+   "rules": [],
+   "struct": "Application"
+  },
+  {
+   "evidence": [
+    "code:internal/app/models.go:52"
+   ],
+   "key": "impl:table:job_configs",
+   "rules": [],
+   "struct": "JobConfig"
+  },
+  {
+   "evidence": [
+    "code:internal/app/models.go:91"
+   ],
+   "key": "impl:table:job_runs",
+   "rules": [],
+   "struct": "JobRun"
+  },
+  {
+   "evidence": [
+    "code:internal/app/models.go:30"
+   ],
+   "key": "impl:table:memberships",
+   "rules": [],
+   "struct": "Membership"
+  },
+  {
+   "evidence": [
+    "code:internal/app/models.go:6"
+   ],
+   "key": "impl:table:users",
+   "rules": [],
+   "struct": "User"
+  }
+ ],
+ "unread": [
+  {
+   "file": "internal/app/worker.go",
+   "line": 129,
+   "reason": "value of JobRun.status is not a constant: `status`",
+   "what": "status_write"
+  }
+ ]
+}

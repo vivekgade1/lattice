@@ -246,3 +246,23 @@ fall short of their pre-registered bars: `workflow_find` (PT 2/8 vs 6/8; it answ
 queries because routes linked by ~25 rules contain every query term) and the capped real-agent exercise
 (8/13 vs 11/13; "is there ...?" questions read as yes, relative paths rejected by the frozen scorer). Neither
 was tuned after the fact. The held-out stage follows below once run.
+
+## Held-out stage H (run once by the orchestrator at 28938d3; report-only; not re-scored)
+The six job-scheduler Go apps (multidb 00dd1de and five variants), static (no verified flows), spec
+`spec.tickets:t5` without a trace (`requirement_basis: spec`), endpoint truth from Spike A's route truth files
+written from code alone; freeze hashes in `held-out/freeze.sha256`. Predicted: accuracy 0.90-1.00 per app,
+spec-only 0-2, implemented-not-specified 0-3, 0 crashes, identical repeats.
+
+| app | endpoint accuracy (exact templated keys) | spec-only | implemented-not-required | crash | deterministic |
+|---|---|---|---|---|---|
+| job-scheduler-go | 22/22 (1.00) | 1 | 1 | no | yes |
+| baseline | 22/22 (1.00) | 0 | 1 | no | yes |
+| min-base-opus | 21/21 (1.00) | 1 | 0 | no | yes |
+| min-base-sonnet | 21/21 (1.00) | 0 | 0 | no | yes |
+| min-spec-opus | 22/22 (1.00) | 1 | 1 | no | yes |
+| min-spec-sonnet | 21/21 (1.00) | 0 | 0 | no | yes |
+
+All within or above the predicted ranges; the variants really do differ (one route present in some
+implementations and not in others), and the report says so per app. This is an endpoint-level result only (the
+held-out spec has no trace, so rule-level linking and verified flags are not exercised); it does not test the
+chat or `workflow_find`, the two weak parts on Streak.
