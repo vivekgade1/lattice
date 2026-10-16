@@ -411,9 +411,10 @@ TEST_SUITE = [
 ]
 # the one failure the control run is known to have (see the results: the amended line 130)
 KNOWN_FAILURES = ("tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed",)
-# and the one probe row whose prediction the run refutes (a custom module's `entry` is not
-# announced as CODE in the install summary)
-KNOWN_PROBE_FAILURES = ("M-tamper-T12",)
+# and the probe rows whose prediction the run refutes: none. M-tamper-T12 was one until the
+# hardening (docs/results/2026-10-16-hardening-findings-prereg.md, HD-2): the install summary
+# now announces a custom module's `entry` as CODE.
+KNOWN_PROBE_FAILURES = ()
 
 
 # ---- plumbing ---------------------------------------------------------------------------------

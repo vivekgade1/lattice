@@ -1,0 +1,145 @@
+{
+ "probes": [
+  {
+   "id": "M-tamper-T1",
+   "predicted": "exit 2, git fetch ... failed: ... not our ref ...",
+   "observed": "exit 2: error: git fetch of git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T2",
+   "predicted": "exit 2, pins sha256 0000..., the source tree hashes to ...: refused",
+   "observed": "exit 2: error: index entry /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-075",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T3",
+   "predicted": "exit 0, 0.1.0, sha256 = M-git a's (main advanced to C2)",
+   "observed": "main at C2; @C1 exit 0, sha256 = M-git a's: True",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T4",
+   "predicted": "a: exit 0 (unreachable, not gc'd) = M-git a; b: after gc --prune=now exit 2 not our ref",
+   "observed": "a: exit 0 (= M-git a: True); b after gc: exit 2 fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T5",
+   "predicted": "exit 2, link is a symbolic link (mode 120000): refused; 0 blobs read",
+   "observed": "exit 2: link is a symbolic link (mode 120000): refused; blobs read: 0",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T6",
+   "predicted": "exit 2, the fetch fails on fsck (hasDotdot/hasDotgit) for each of ..,.git/config,.GIT/hooks/x",
+   "observed": "..: exit 2, last line ': fatal: index-pack failed', fsck is the cause: True; .git/config: exit 2, last line ': fatal: index-pack failed', fsck is the cause: True; .GIT/hooks/x: exit 2, last line ': fatal: index-pack failed', fsck is the cause: True",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T7",
+   "predicted": "exit 2, sub is a submodule (mode 160000): refused; canary empty",
+   "observed": "exit 2: sub is a submodule (mode 160000): refused; canary []",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T8",
+   "predicted": "exit 2 each: (cap 1048576); 201 files (cap 200); 9000000 bytes (cap 8388608); size-pack ... (cap 32 MiB)",
+   "observed": "a: exit 2 big.bin is 2097152 bytes (cap 1048576): refused; b: exit 2 the tree has 201 files (cap 200): refused; c: exit 2 the tree is 9002156 bytes (cap 8388608): refused; d: exit 2 git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T9",
+   "predicted": "exit 0, installs; hooks/config/filters of the source never run (canary empty)",
+   "observed": "exit 0; canary []",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T10",
+   "predicted": "exit 0; .gitattributes/.lfsconfig dropped and listed; user git config inert; engine.toml = blob",
+   "observed": "exit 0; dropped listed: True; canary []",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T11",
+   "predicted": "exit 0, installs; GIT_TRACE/GIT_DIR/GIT_CONFIG_*/GIT_SSH_COMMAND of the caller inert",
+   "observed": "exit 0; canary []",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T12",
+   "predicted": "exit 0 each; canary empty; summary says CODE (adapter and entry)",
+   "observed": "exit 0/0; canary []; summary says CODE: adapter True, entry True",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T13",
+   "predicted": "exit 2, differ only in case: refused",
+   "observed": "exit 2: Engine.toml and engine.toml differ only in case: refused",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T14",
+   "predicted": "exit 2, is a tag, not a commit; is a tree, not a commit",
+   "observed": "tag: exit 2 52e4dfba2c87 is a tag, not a commit: refused; tree: exit 2 a31cd52352fc4 is a tree, not a commit: refused",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T15",
+   "predicted": "exit 2 for ' a.toml', '\u00e9.toml', '-x', '.github/x' (2.4)",
+   "observed": "' a.toml': exit 2; '\u00e9.toml': exit 2; '-x': exit 2; '.github/x': exit 2",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-tamper-T16",
+   "predicted": "exit 2, older than 2.45.1 ...; no fetch",
+   "observed": "exit 2: git 2.39.0 is older than 2.45.1 (CVE-2024-32002, CVE-2024-32004, CVE-2024; git calls ['--version']",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-regress-R1",
+   "predicted": "directory install/list/info/uninstall: stdout, stderr, exit, lock bytes, trees byte-identical to a4ab4a1",
+   "observed": "15/15 steps byte-identical to a4ab4a1",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-regress-R2",
+   "predicted": "a4ab4a1's list and info on M-git a's project: ok",
+   "observed": "a4ab4a1 list exit 0, info exit 0: mariadb-engine 0.1.0 (engine): ok",
+   "pass": true,
+   "identical_runs": true
+  },
+  {
+   "id": "M-regress-R4",
+   "predicted": "module --help and lattice --help differ from a4ab4a1 only by new options and usage",
+   "observed": "module --help: 12 changed lines, 0 unexplained; module top --help: 0 changed lines, 0 unexplained; lattice --help: 10 changed lines, 5 unexplained",
+   "pass": false,
+   "identical_runs": true
+  }
+ ],
+ "pass": 18,
+ "total": 19,
+ "runs": 2,
+ "seconds": 41.7,
+ "git": "git version 2.54.0 (Apple Git-157)",
+ "failing": [
+  "M-regress-R4"
+ ]
+}

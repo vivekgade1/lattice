@@ -1,0 +1,125 @@
+{
+ "group": "regress",
+ "runs": 2,
+ "rows": [
+  {
+   "id": "M-regress-R1",
+   "predicted": "directory install/list/info/uninstall: stdout, stderr, exit, lock bytes, trees byte-identical to a4ab4a1",
+   "observed": "15/15 steps byte-identical to a4ab4a1",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "differing": [],
+    "steps": [
+     "dir install, no --yes, no tty",
+     "dir install --yes",
+     "list",
+     "list --json",
+     "info",
+     "info --json",
+     "uninstall",
+     "file:// install",
+     "uninstall",
+     "dir-index install",
+     "list again",
+     "list after a 1-byte tamper",
+     "info after tamper",
+     "uninstall (tampered)",
+     "uninstall (absent)"
+    ],
+    "exit_codes": [
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     0,
+     2
+    ]
+   }
+  },
+  {
+   "id": "M-regress-R2",
+   "predicted": "a4ab4a1's list and info on M-git a's project: ok",
+   "observed": "a4ab4a1 list exit 0, info exit 0: mariadb-engine 0.1.0 (engine): ok",
+   "rule_holds": true,
+   "runs": 2,
+   "identical": true,
+   "pass": true,
+   "detail": {
+    "list": "mariadb-engine  0.1.0      engine  ok       0e7f3c6b14cb  git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/mm/repos/maria_r2@fc796e4cecb3ce9bc3a5bb277f07c0288e469212\n",
+    "info_head": [
+     "mariadb-engine 0.1.0 (engine): ok",
+     "  sha256 (locked): 0e7f3c6b14cbf41a1e6a39e1075da07d7adfba6ca3692a985bc3e391995503b9",
+     "  source:          git+file:///private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/mm/repos/maria_r2@fc796e4cecb3ce9bc3a5bb277f07c0288e469212",
+     "  directory:       /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/mm/work/r2/proj/.lattice/modules/mariadb-engine",
+     ""
+    ],
+    "stderr": ""
+   }
+  },
+  {
+   "id": "M-regress-R4",
+   "predicted": "module --help and lattice --help differ from a4ab4a1 only by new options and usage",
+   "observed": "module --help: 12 changed lines, 0 unexplained; module top --help: 0 changed lines, 0 unexplained; lattice --help: 10 changed lines, 5 unexplained",
+   "rule_holds": false,
+   "runs": 2,
+   "identical": true,
+   "pass": false,
+   "detail": {
+    "module --help": {
+     "diff": [
+      "-usage: lattice module install [-h] [--index DIR] [--yes] [--project PROJECT]",
+      "-                              source",
+      "+usage: lattice module install [-h] [--index DIR|URL] [--allow-remote] [--yes]",
+      "+                              [--project PROJECT]",
+      "+                              source [source ...]",
+      "-  source             a module directory, a file:// URL, or a name (--index)",
+      "+  source             a module directory, a file:// URL, a pinned git+file://",
+      "+                     or git+https:// source, or a name (--index)",
+      "-  --index DIR        a directory of <name>.toml index entries",
+      "+  --index DIR|URL    a directory (or a pinned git+file:// / git+https://",
+      "+                     source) of <name>.toml index entries",
+      "+  --allow-remote     allow git+https:// sources (network)"
+     ],
+     "stray": []
+    },
+    "module top --help": {
+     "diff": [],
+     "stray": []
+    },
+    "lattice --help": {
+     "diff": [
+      "-                                                   .lattice/modules, pinned by sha256)",
+      "+            [--index DIR|URL] [--allow-remote]     .lattice/modules, pinned by sha256; a git",
+      "+                                                   source is pinned to a commit sha)",
+      "-  improve   report|import-plan|ledger|verify|draft improvement proposals ranked from the",
+      "-            [--project DIR] [--top N] [--json]     project's event log (frequency x cost;",
+      "-                                                   no model; the owner decides)",
+      "+  improve   report|import-plan|ledger|verify|draft|apply  improvement proposals ranked from",
+      "+            [--project DIR] [--top N] [--json]     the project's event log (frequency x cost;",
+      "+                                                   no model; the owner decides; apply puts a",
+      "+                                                   config draft on a branch, never merges)"
+     ],
+     "stray": [
+      "-  improve   report|import-plan|ledger|verify|draft improvement proposals ranked from the",
+      "-                                                   no model; the owner decides)",
+      "+  improve   report|import-plan|ledger|verify|draft|apply  improvement proposals ranked from",
+      "+                                                   no model; the owner decides; apply puts a",
+      "+                                                   config draft on a branch, never merges)"
+     ]
+    }
+   }
+  }
+ ]
+}

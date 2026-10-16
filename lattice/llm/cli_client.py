@@ -106,18 +106,26 @@ _OUTPUT_CAP_RE = re.compile(r"exceeded the \d+ output token maximum", re.IGNOREC
 
 # Never bill the API account or switch provider: `claude -p` must authenticate as the
 # logged-in CLI (bench/envfile.py loads ANTHROPIC_API_KEY into os.environ for the API arm).
-_SCRUBBED_ENV = ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL")
-_SCRUBBED_PREFIX = "CLAUDE_CODE_USE_"  # CLAUDE_CODE_USE_BEDROCK / _VERTEX / _FOUNDRY ...
+# Every credential or endpoint the CLI reads from the ANTHROPIC_ namespace (_API_KEY,
+# _AUTH_TOKEN, _BASE_URL, _CUSTOM_HEADERS, _FOUNDRY_*, _VERTEX_*, _BEDROCK_*, _MODEL, future
+# names) is dropped, as are the CLAUDE_CODE_USE_* provider switches (BEDROCK / VERTEX / FOUNDRY
+# ...) and the one Bedrock bearer token outside both. Case-sensitive: the CLI reads upper case
+# only. Kept on purpose: HOME, PATH, USER, TMPDIR (the Keychain login), CLAUDE_CONFIG_DIR,
+# CLAUDE_CODE_OAUTH_TOKEN (the subscription login), proxy variables, generic cloud credentials.
+_SCRUBBED_ENV = ("AWS_BEARER_TOKEN_BEDROCK",)
+_SCRUBBED_PREFIXES = ("ANTHROPIC_", "CLAUDE_CODE_USE_")
 MAX_OUTPUT_ENV = "CLAUDE_CODE_MAX_OUTPUT_TOKENS"
 
 
 def cli_env(base: Mapping[str, str], max_tokens: int | None) -> dict[str, str]:
     """The environment of a ``claude -p`` call: ``base`` without the API credentials and
-    provider switches, with the output cap set to ``max_tokens``."""
+    provider switches (every ``ANTHROPIC_*`` and ``CLAUDE_CODE_USE_*`` name and
+    ``AWS_BEARER_TOKEN_BEDROCK``; upper case, as the CLI reads them), with the output cap
+    set to ``max_tokens``."""
     env = {
         k: v
         for k, v in base.items()
-        if k not in _SCRUBBED_ENV and not k.startswith(_SCRUBBED_PREFIX)
+        if k not in _SCRUBBED_ENV and not k.startswith(_SCRUBBED_PREFIXES)
     }
     if max_tokens is not None:
         env[MAX_OUTPUT_ENV] = str(max_tokens)
@@ -185,10 +193,11 @@ class ClaudeCliClient:
     harness's truncation, as on the API -- never retried.
 
     **Environment.** Every call runs with a copy of the environment (``env`` or
-    ``os.environ``, read at call time) without ``ANTHROPIC_API_KEY``,
-    ``ANTHROPIC_AUTH_TOKEN``, ``ANTHROPIC_BASE_URL`` and any ``CLAUDE_CODE_USE_*``
-    provider switch (:func:`cli_env`): the CLI authenticates as the logged-in user and
-    never bills the API account. Verified on the real CLI: with the key removed it
+    ``os.environ``, read at call time) without any ``ANTHROPIC_*`` variable (the API key,
+    auth token, base URL, custom headers, Foundry/Vertex/Bedrock settings, ``ANTHROPIC_MODEL``;
+    callers pass ``--model``), any ``CLAUDE_CODE_USE_*`` provider switch and
+    ``AWS_BEARER_TOKEN_BEDROCK`` (:func:`cli_env`): the CLI authenticates as the logged-in
+    user and never bills the API account. Verified on the real CLI: with the key removed it
     still authenticates.
 
     **Stop reason.** The CLI's JSON carries ``stop_reason``; a missing one is recorded as

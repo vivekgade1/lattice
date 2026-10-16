@@ -390,6 +390,9 @@ def resolve_source(source: str, index: Path | str | None = None) -> tuple[Path, 
 # ---- install / uninstall --------------------------------------------------------------------
 
 
+_ENTRY_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*")
+
+
 def describe(
     m: Manifest,
     sha256: str,
@@ -413,6 +416,11 @@ def describe(
         f"  provides: {', '.join(m.provides) or '(nothing)'}",
         f"  requires: {', '.join(m.requires) or '(nothing)'} (pip; not installed by Lattice)",
     ]
+    if m.entry is not None:  # declared Python, announced as CODE (nothing imports it at install)
+        shown = m.entry if _ENTRY_NAME.fullmatch(m.entry) else json.dumps(m.entry)
+        lines.append(
+            f"  entry:    {shown} (CODE: a Python module, main(argv); not imported by install)"
+        )
     if m.description:
         lines.insert(1, f"  {m.description}")
     if m.engine is not None:

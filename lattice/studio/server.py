@@ -1534,7 +1534,9 @@ class Studio:
         """None with the stub LLM: sessions then get lattice tools only."""
         with self.lock:
             if self._mcp is None and not self.stub_llm:
-                self._mcp = McpIntake(self.claude_bin, self.root, allow_writes=self.allow_writes)
+                self._mcp = McpIntake(
+                    self.claude_bin, self.root, allow_writes=self.allow_writes, warn=log
+                )
             return self._mcp
 
     def get_mcp(self, refresh: bool = False) -> dict[str, Any]:

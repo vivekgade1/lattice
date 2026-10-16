@@ -1,0 +1,877 @@
+{
+ "control": {
+  "id": "control",
+  "pytest_failed": [],
+  "pytest_summary": "189 passed in 15.64s",
+  "probes_failing": [
+   "M-regress-R4"
+  ],
+  "probe_rows": 64,
+  "probe_exit": 1,
+  "probe_stderr_tail": "",
+  "seconds": 122.9
+ },
+ "mutants": {
+  "control": {
+   "id": "control",
+   "pytest_failed": [],
+   "pytest_summary": "189 passed in 15.64s",
+   "probes_failing": [
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 122.9
+  },
+  "MG2": {
+   "id": "MG2",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_every_git_call_is_hardened_and_isolated"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 15.29s",
+   "probes_failing": [
+    "M-git-a",
+    "M-git-d",
+    "M-regress-R4",
+    "M-tamper-T11",
+    "M-tamper-T12"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 125.9,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_every_git_call_is_hardened_and_isolated"
+   ],
+   "by_probes": [
+    "M-git-a",
+    "M-git-d",
+    "M-tamper-T11",
+    "M-tamper-T12"
+   ]
+  },
+  "MG3": {
+   "id": "MG3",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_every_git_call_is_hardened_and_isolated"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 15.62s",
+   "probes_failing": [
+    "M-git-a",
+    "M-git-d",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 126.5,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_every_git_call_is_hardened_and_isolated"
+   ],
+   "by_probes": [
+    "M-git-a",
+    "M-git-d"
+   ]
+  },
+  "MG1": {
+   "id": "MG1",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_a_second_refusal_writes_nothing_for_the_first",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+file:///tmp/r@AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-pin",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+file:///tmp/r@aaaaaaa-pin",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+file:///tmp/r@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-pin",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+file:///tmp/r@main-pin",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+file:///tmp/r@v0.1.0-pin",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git@github.com:o/r.git-pin",
+    "tests/modules/test_market_index.py::test_an_unpinned_index_is_refused[abc1234]",
+    "tests/modules/test_market_index.py::test_an_unpinned_index_is_refused[main]",
+    "tests/modules/test_market_index.py::test_an_unpinned_index_is_refused[v1]"
+   ],
+   "pytest_summary": "10 failed, 179 passed in 15.81s",
+   "probes_failing": [
+    "M-git-c",
+    "M-index-I8",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 127.3,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_a_second_refusal_writes_nothing_for_the_first",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+file:///tmp/r@AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-pin",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+file:///tmp/r@aaaaaaa-pin",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+file:///tmp/r@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-pin",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+file:///tmp/r@main-pin",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+file:///tmp/r@v0.1.0-pin",
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git@github.com:o/r.git-pin",
+    "tests/modules/test_market_index.py::test_an_unpinned_index_is_refused[abc1234]",
+    "tests/modules/test_market_index.py::test_an_unpinned_index_is_refused[main]",
+    "tests/modules/test_market_index.py::test_an_unpinned_index_is_refused[v1]"
+   ],
+   "by_probes": [
+    "M-git-c",
+    "M-index-I8"
+   ]
+  },
+  "MG4": {
+   "id": "MG4",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_a_refused_tree_leaves_nothing_behind",
+    "tests/modules/test_git_install.py::test_the_listing_is_refused_whole[entries0-link",
+    "tests/modules/test_market_index.py::test_a_symlink_in_one_module_refuses_the_whole_install"
+   ],
+   "pytest_summary": "3 failed, 186 passed in 15.41s",
+   "probes_failing": [
+    "M-index-I2",
+    "M-regress-R4",
+    "M-tamper-T5"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 124.8,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_a_refused_tree_leaves_nothing_behind",
+    "tests/modules/test_git_install.py::test_the_listing_is_refused_whole[entries0-link",
+    "tests/modules/test_market_index.py::test_a_symlink_in_one_module_refuses_the_whole_install"
+   ],
+   "by_probes": [
+    "M-index-I2",
+    "M-tamper-T5"
+   ]
+  },
+  "MG5": {
+   "id": "MG5",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_the_listing_is_refused_whole[entries14-big.bin"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 15.38s",
+   "probes_failing": [
+    "M-regress-R4",
+    "M-tamper-T8"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 124.7,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_the_listing_is_refused_whole[entries14-big.bin"
+   ],
+   "by_probes": [
+    "M-tamper-T8"
+   ]
+  },
+  "MG6": {
+   "id": "MG6",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_the_listing_is_refused_whole[entries15-201"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 15.41s",
+   "probes_failing": [
+    "M-regress-R4",
+    "M-tamper-T8"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 125.4,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_the_listing_is_refused_whole[entries15-201"
+   ],
+   "by_probes": [
+    "M-tamper-T8"
+   ]
+  },
+  "MG8": {
+   "id": "MG8",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_a_missing_commit_is_a_git_failure",
+    "tests/modules/test_git_install.py::test_a_pinned_git_install_writes_the_tree_and_the_lock",
+    "tests/modules/test_git_install.py::test_a_refused_tree_leaves_nothing_behind",
+    "tests/modules/test_git_install.py::test_an_old_git_is_refused_before_any_fetch",
+    "tests/modules/test_git_install.py::test_the_remote_form_gets_https_only_and_the_shim_failure_is_reported"
+   ],
+   "pytest_summary": "5 failed, 184 passed in 15.48s",
+   "probes_failing": [
+    "M-git-a",
+    "M-git-c",
+    "M-git-d",
+    "M-index-I2",
+    "M-index-I3",
+    "M-index-I5",
+    "M-regress-R4",
+    "M-tamper-T1",
+    "M-tamper-T10",
+    "M-tamper-T11",
+    "M-tamper-T12",
+    "M-tamper-T13",
+    "M-tamper-T14",
+    "M-tamper-T15",
+    "M-tamper-T16",
+    "M-tamper-T2",
+    "M-tamper-T3",
+    "M-tamper-T4",
+    "M-tamper-T5",
+    "M-tamper-T6",
+    "M-tamper-T7",
+    "M-tamper-T8",
+    "M-tamper-T9"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 126.1,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_a_missing_commit_is_a_git_failure",
+    "tests/modules/test_git_install.py::test_a_pinned_git_install_writes_the_tree_and_the_lock",
+    "tests/modules/test_git_install.py::test_a_refused_tree_leaves_nothing_behind",
+    "tests/modules/test_git_install.py::test_an_old_git_is_refused_before_any_fetch",
+    "tests/modules/test_git_install.py::test_the_remote_form_gets_https_only_and_the_shim_failure_is_reported"
+   ],
+   "by_probes": [
+    "M-git-a",
+    "M-git-c",
+    "M-git-d",
+    "M-index-I2",
+    "M-index-I3",
+    "M-index-I5",
+    "M-tamper-T1",
+    "M-tamper-T10",
+    "M-tamper-T11",
+    "M-tamper-T12",
+    "M-tamper-T13",
+    "M-tamper-T14",
+    "M-tamper-T15",
+    "M-tamper-T16",
+    "M-tamper-T2",
+    "M-tamper-T3",
+    "M-tamper-T4",
+    "M-tamper-T5",
+    "M-tamper-T6",
+    "M-tamper-T7",
+    "M-tamper-T8",
+    "M-tamper-T9"
+   ]
+  },
+  "MG7": {
+   "id": "MG7",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_a_tag_object_is_not_a_commit"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 15.61s",
+   "probes_failing": [
+    "M-regress-R4",
+    "M-tamper-T14"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 126.5,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_a_tag_object_is_not_a_commit"
+   ],
+   "by_probes": [
+    "M-tamper-T14"
+   ]
+  },
+  "MG9": {
+   "id": "MG9",
+   "pytest_failed": [
+    "tests/modules/test_entry_summary.py::test_install_prints_the_entry_line_and_still_asks",
+    "tests/modules/test_git_install.py::test_a_duplicate_name_in_one_install_is_refused",
+    "tests/modules/test_git_install.py::test_a_failing_rename_removes_what_the_install_made",
+    "tests/modules/test_git_install.py::test_a_second_refusal_writes_nothing_for_the_first",
+    "tests/modules/test_market_index.py::test_a_symlink_in_one_module_refuses_the_whole_install",
+    "tests/modules/test_market_index.py::test_a_wrong_pin_in_one_entry_refuses_the_whole_install",
+    "tests/modules/test_modules.py::test_install_refuses_without_confirmation_and_writes_nothing",
+    "tests/modules/test_modules.py::test_the_cli_refuses_without_yes_when_stdin_is_not_a_terminal"
+   ],
+   "pytest_summary": "8 failed, 181 passed in 15.53s",
+   "probes_failing": [
+    "M-index-I2",
+    "M-index-I3",
+    "M-index-I5",
+    "M-index-I9",
+    "M-regress-R1",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 125.4,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_entry_summary.py::test_install_prints_the_entry_line_and_still_asks",
+    "tests/modules/test_git_install.py::test_a_duplicate_name_in_one_install_is_refused",
+    "tests/modules/test_git_install.py::test_a_failing_rename_removes_what_the_install_made",
+    "tests/modules/test_git_install.py::test_a_second_refusal_writes_nothing_for_the_first",
+    "tests/modules/test_market_index.py::test_a_symlink_in_one_module_refuses_the_whole_install",
+    "tests/modules/test_market_index.py::test_a_wrong_pin_in_one_entry_refuses_the_whole_install",
+    "tests/modules/test_modules.py::test_install_refuses_without_confirmation_and_writes_nothing",
+    "tests/modules/test_modules.py::test_the_cli_refuses_without_yes_when_stdin_is_not_a_terminal"
+   ],
+   "by_probes": [
+    "M-index-I2",
+    "M-index-I3",
+    "M-index-I5",
+    "M-index-I9",
+    "M-regress-R1"
+   ]
+  },
+  "MG11": {
+   "id": "MG11",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_a_pinned_git_install_writes_the_tree_and_the_lock",
+    "tests/modules/test_git_install.py::test_several_sources_are_confirmed_once_and_locked_together",
+    "tests/modules/test_git_install.py::test_the_cli_reports_the_commit",
+    "tests/modules/test_market_index.py::test_a_git_index_installs_by_name_and_records_commit_and_index"
+   ],
+   "pytest_summary": "4 failed, 185 passed in 15.40s",
+   "probes_failing": [
+    "M-git-a",
+    "M-git-b",
+    "M-index-I1",
+    "M-index-I6",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 127.3,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_a_pinned_git_install_writes_the_tree_and_the_lock",
+    "tests/modules/test_git_install.py::test_several_sources_are_confirmed_once_and_locked_together",
+    "tests/modules/test_git_install.py::test_the_cli_reports_the_commit",
+    "tests/modules/test_market_index.py::test_a_git_index_installs_by_name_and_records_commit_and_index"
+   ],
+   "by_probes": [
+    "M-git-a",
+    "M-git-b",
+    "M-index-I1",
+    "M-index-I6"
+   ]
+  },
+  "MG12": {
+   "id": "MG12",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_directory_installs_keep_the_a4ab4a1_lock_bytes",
+    "tests/modules/test_modules.py::test_install_with_yes_copies_the_tree_and_writes_the_lock"
+   ],
+   "pytest_summary": "2 failed, 187 passed in 15.47s",
+   "probes_failing": [
+    "M-regress-R1",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 126.4,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_directory_installs_keep_the_a4ab4a1_lock_bytes",
+    "tests/modules/test_modules.py::test_install_with_yes_copies_the_tree_and_writes_the_lock"
+   ],
+   "by_probes": [
+    "M-regress-R1"
+   ]
+  },
+  "MG10": {
+   "id": "MG10",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_attribute_files_are_dropped_and_listed",
+    "tests/modules/test_git_install.py::test_hostile_repository_config_hooks_and_modules_do_not_run"
+   ],
+   "pytest_summary": "2 failed, 187 passed in 15.43s",
+   "probes_failing": [
+    "M-regress-R4",
+    "M-tamper-T10",
+    "M-tamper-T7"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 127.3,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_attribute_files_are_dropped_and_listed",
+    "tests/modules/test_git_install.py::test_hostile_repository_config_hooks_and_modules_do_not_run"
+   ],
+   "by_probes": [
+    "M-tamper-T10",
+    "M-tamper-T7"
+   ]
+  },
+  "MG14": {
+   "id": "MG14",
+   "pytest_failed": [
+    "tests/modules/test_hub_engines.py::test_a_thread_that_never_loaded_sees_the_builtins_only",
+    "tests/modules/test_hub_engines.py::test_each_project_lists_its_own_engines_in_any_order",
+    "tests/modules/test_hub_engines.py::test_one_thread_switches_projects_without_leaking",
+    "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+   ],
+   "pytest_summary": "4 failed, 185 passed in 15.12s",
+   "probes_failing": [
+    "M-hub-H1",
+    "M-hub-H2",
+    "M-hub-H4",
+    "M-hub-M6",
+    "M-hub-M6b",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 125.7,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_hub_engines.py::test_a_thread_that_never_loaded_sees_the_builtins_only",
+    "tests/modules/test_hub_engines.py::test_each_project_lists_its_own_engines_in_any_order",
+    "tests/modules/test_hub_engines.py::test_one_thread_switches_projects_without_leaking",
+    "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+   ],
+   "by_probes": [
+    "M-hub-H1",
+    "M-hub-H2",
+    "M-hub-H4",
+    "M-hub-M6",
+    "M-hub-M6b"
+   ]
+  },
+  "MG15": {
+   "id": "MG15",
+   "pytest_failed": [
+    "tests/modules/test_hub_engines.py::test_a_thread_that_never_loaded_sees_the_builtins_only",
+    "tests/modules/test_hub_engines.py::test_cli_flags_still_register_in_the_process_registry",
+    "tests/modules/test_hub_engines.py::test_scoped_forgets_what_was_activated_and_using_restores_the_previous",
+    "tests/modules/test_modules.py::test_a_changed_module_is_dropped_from_the_registry_when_not_strict",
+    "tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load",
+    "tests/spec/test_engines.py::test_a_project_engine_takes_over_a_builtin_alias_scheme_only_while_registered",
+    "tests/spec/test_engines.py::test_builtin_names_and_dialect_tuples_are_unchanged",
+    "tests/spec/test_engines.py::test_registry_clashes_and_idempotence",
+    "tests/spec/test_engines.py::test_the_cli_parsers_offer_the_same_database_choices",
+    "tests/spec/test_engines.py::test_the_spec_cli_registers_engine_files_before_reading_database",
+    "tests/spec/test_engines.py::test_unknown_names_fail_as_before",
+    "tests/spec/test_engines.py::test_urls_dialects_and_driver_forms_equal_the_old_functions"
+   ],
+   "pytest_summary": "12 failed, 177 passed in 16.55s",
+   "probes_failing": [
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 128.5,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_hub_engines.py::test_a_thread_that_never_loaded_sees_the_builtins_only",
+    "tests/modules/test_hub_engines.py::test_cli_flags_still_register_in_the_process_registry",
+    "tests/modules/test_hub_engines.py::test_scoped_forgets_what_was_activated_and_using_restores_the_previous",
+    "tests/modules/test_modules.py::test_a_changed_module_is_dropped_from_the_registry_when_not_strict",
+    "tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load",
+    "tests/spec/test_engines.py::test_a_project_engine_takes_over_a_builtin_alias_scheme_only_while_registered",
+    "tests/spec/test_engines.py::test_builtin_names_and_dialect_tuples_are_unchanged",
+    "tests/spec/test_engines.py::test_registry_clashes_and_idempotence",
+    "tests/spec/test_engines.py::test_the_cli_parsers_offer_the_same_database_choices",
+    "tests/spec/test_engines.py::test_the_spec_cli_registers_engine_files_before_reading_database",
+    "tests/spec/test_engines.py::test_unknown_names_fail_as_before",
+    "tests/spec/test_engines.py::test_urls_dialects_and_driver_forms_equal_the_old_functions"
+   ],
+   "by_probes": []
+  },
+  "MG13": {
+   "id": "MG13",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+https://example.invalid/r@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-remote"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 16.52s",
+   "probes_failing": [
+    "M-git-c",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 128.5,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_refused_forms_run_nothing[git+https://example.invalid/r@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-remote"
+   ],
+   "by_probes": [
+    "M-git-c"
+   ]
+  },
+  "MG16": {
+   "id": "MG16",
+   "pytest_failed": [
+    "tests/modules/test_engine_flags.py::test_a_tampered_module_is_refused_like_checks[ask]",
+    "tests/modules/test_engine_flags.py::test_help_lists_the_engine_as_a_database_choice",
+    "tests/modules/test_engine_flags.py::test_problems_have_checks_own_line_and_exit_2[ask]"
+   ],
+   "pytest_summary": "3 failed, 186 passed in 15.90s",
+   "probes_failing": [
+    "M-flag-F1-ask",
+    "M-flag-F3-ask",
+    "M-flag-F3-check",
+    "M-flag-F3-draft",
+    "M-flag-F4-ask",
+    "M-flag-F4-check",
+    "M-flag-F4-draft",
+    "M-flag-F5-ask",
+    "M-flag-F5-check",
+    "M-flag-F5-draft",
+    "M-flag-F6-ask",
+    "M-flag-F6-check",
+    "M-flag-F6-draft",
+    "M-flag-F7-ask",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 130.5,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_engine_flags.py::test_a_tampered_module_is_refused_like_checks[ask]",
+    "tests/modules/test_engine_flags.py::test_help_lists_the_engine_as_a_database_choice",
+    "tests/modules/test_engine_flags.py::test_problems_have_checks_own_line_and_exit_2[ask]"
+   ],
+   "by_probes": [
+    "M-flag-F1-ask",
+    "M-flag-F3-ask",
+    "M-flag-F3-check",
+    "M-flag-F3-draft",
+    "M-flag-F4-ask",
+    "M-flag-F4-check",
+    "M-flag-F4-draft",
+    "M-flag-F5-ask",
+    "M-flag-F5-check",
+    "M-flag-F5-draft",
+    "M-flag-F6-ask",
+    "M-flag-F6-check",
+    "M-flag-F6-draft",
+    "M-flag-F7-ask"
+   ]
+  },
+  "MG18": {
+   "id": "MG18",
+   "pytest_failed": [
+    "tests/modules/test_market_index.py::test_a_git_index_names_pinned_git_sources_only"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 16.07s",
+   "probes_failing": [
+    "M-index-I7",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 132.1,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_market_index.py::test_a_git_index_names_pinned_git_sources_only"
+   ],
+   "by_probes": [
+    "M-index-I7"
+   ]
+  },
+  "MG17": {
+   "id": "MG17",
+   "pytest_failed": [
+    "tests/modules/test_hub_engines.py::test_two_projects_with_an_adapter_of_the_same_name"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 16.17s",
+   "probes_failing": [
+    "M-hub-H4",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 132.1,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_hub_engines.py::test_two_projects_with_an_adapter_of_the_same_name"
+   ],
+   "by_probes": [
+    "M-hub-H4"
+   ]
+  },
+  "MG19": {
+   "id": "MG19",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_every_git_call_is_hardened_and_isolated"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 16.82s",
+   "probes_failing": [
+    "M-git-a",
+    "M-git-d",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 127.5,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_every_git_call_is_hardened_and_isolated"
+   ],
+   "by_probes": [
+    "M-git-a",
+    "M-git-d"
+   ]
+  },
+  "MG20": {
+   "id": "MG20",
+   "pytest_failed": [
+    "tests/modules/test_git_install.py::test_every_git_call_is_hardened_and_isolated"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 16.73s",
+   "probes_failing": [
+    "M-git-a",
+    "M-git-d",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 127.5,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_git_install.py::test_every_git_call_is_hardened_and_isolated"
+   ],
+   "by_probes": [
+    "M-git-a",
+    "M-git-d"
+   ]
+  },
+  "MG21": {
+   "id": "MG21",
+   "pytest_failed": [
+    "tests/modules/test_hub_engines.py::test_a_pooled_thread_serves_a_then_b_then_nothing",
+    "tests/modules/test_hub_engines.py::test_scoped_forgets_what_was_activated_and_using_restores_the_previous",
+    "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+   ],
+   "pytest_summary": "3 failed, 186 passed in 17.23s",
+   "probes_failing": [
+    "M-hub-M6b",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 128.2,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_hub_engines.py::test_a_pooled_thread_serves_a_then_b_then_nothing",
+    "tests/modules/test_hub_engines.py::test_scoped_forgets_what_was_activated_and_using_restores_the_previous",
+    "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+   ],
+   "by_probes": [
+    "M-hub-M6b"
+   ]
+  },
+  "MG22": {
+   "id": "MG22",
+   "pytest_failed": [
+    "tests/modules/test_hub_engines.py::test_a_pooled_thread_serves_a_then_b_then_nothing",
+    "tests/modules/test_hub_engines.py::test_a_thread_that_never_loaded_sees_the_builtins_only",
+    "tests/modules/test_hub_engines.py::test_cli_flags_still_register_in_the_process_registry",
+    "tests/modules/test_hub_engines.py::test_scoped_forgets_what_was_activated_and_using_restores_the_previous",
+    "tests/modules/test_modules.py::test_a_changed_module_is_dropped_from_the_registry_when_not_strict",
+    "tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load",
+    "tests/spec/test_engines.py::test_a_project_engine_takes_over_a_builtin_alias_scheme_only_while_registered",
+    "tests/spec/test_engines.py::test_builtin_names_and_dialect_tuples_are_unchanged",
+    "tests/spec/test_engines.py::test_registry_clashes_and_idempotence",
+    "tests/spec/test_engines.py::test_the_adapter_hook_refuses_what_is_not_a_database",
+    "tests/spec/test_engines.py::test_the_cli_parsers_offer_the_same_database_choices",
+    "tests/spec/test_engines.py::test_the_spec_cli_registers_engine_files_before_reading_database",
+    "tests/spec/test_engines.py::test_unknown_names_fail_as_before",
+    "tests/spec/test_engines.py::test_urls_dialects_and_driver_forms_equal_the_old_functions",
+    "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+   ],
+   "pytest_summary": "15 failed, 174 passed in 15.91s",
+   "probes_failing": [
+    "M-hub-M6",
+    "M-hub-M6b",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 125.0,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_hub_engines.py::test_a_pooled_thread_serves_a_then_b_then_nothing",
+    "tests/modules/test_hub_engines.py::test_a_thread_that_never_loaded_sees_the_builtins_only",
+    "tests/modules/test_hub_engines.py::test_cli_flags_still_register_in_the_process_registry",
+    "tests/modules/test_hub_engines.py::test_scoped_forgets_what_was_activated_and_using_restores_the_previous",
+    "tests/modules/test_modules.py::test_a_changed_module_is_dropped_from_the_registry_when_not_strict",
+    "tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load",
+    "tests/spec/test_engines.py::test_a_project_engine_takes_over_a_builtin_alias_scheme_only_while_registered",
+    "tests/spec/test_engines.py::test_builtin_names_and_dialect_tuples_are_unchanged",
+    "tests/spec/test_engines.py::test_registry_clashes_and_idempotence",
+    "tests/spec/test_engines.py::test_the_adapter_hook_refuses_what_is_not_a_database",
+    "tests/spec/test_engines.py::test_the_cli_parsers_offer_the_same_database_choices",
+    "tests/spec/test_engines.py::test_the_spec_cli_registers_engine_files_before_reading_database",
+    "tests/spec/test_engines.py::test_unknown_names_fail_as_before",
+    "tests/spec/test_engines.py::test_urls_dialects_and_driver_forms_equal_the_old_functions",
+    "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+   ],
+   "by_probes": [
+    "M-hub-M6",
+    "M-hub-M6b"
+   ]
+  },
+  "MM1": {
+   "id": "MM1",
+   "pytest_failed": [
+    "tests/spec/test_engines.py::test_builtin_adapter_default_ports_are_unchanged",
+    "tests/spec/test_engines.py::test_builtin_container_tables_equal_the_old_literals",
+    "tests/spec/test_engines.py::test_defaults_fill_in_optional_fields"
+   ],
+   "pytest_summary": "3 failed, 186 passed in 15.25s",
+   "probes_failing": [
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 124.4,
+   "killed": true,
+   "by_tests": [
+    "tests/spec/test_engines.py::test_builtin_adapter_default_ports_are_unchanged",
+    "tests/spec/test_engines.py::test_builtin_container_tables_equal_the_old_literals",
+    "tests/spec/test_engines.py::test_defaults_fill_in_optional_fields"
+   ],
+   "by_probes": []
+  },
+  "MM2": {
+   "id": "MM2",
+   "pytest_failed": [
+    "tests/modules/test_engine_flags.py::test_a_tampered_module_is_refused_like_checks[ask]",
+    "tests/modules/test_engine_flags.py::test_a_tampered_module_is_refused_like_checks[draft]",
+    "tests/modules/test_modules.py::test_a_changed_module_is_dropped_from_the_registry_when_not_strict",
+    "tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load",
+    "tests/modules/test_modules.py::test_list_info_uninstall_through_the_cli",
+    "tests/modules/test_modules.py::test_the_checker_refuses_a_tampered_module",
+    "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+   ],
+   "pytest_summary": "7 failed, 182 passed in 15.20s",
+   "probes_failing": [
+    "M-flag-F6-ask",
+    "M-flag-F6-check",
+    "M-flag-F6-draft",
+    "M-regress-R1",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 124.4,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_engine_flags.py::test_a_tampered_module_is_refused_like_checks[ask]",
+    "tests/modules/test_engine_flags.py::test_a_tampered_module_is_refused_like_checks[draft]",
+    "tests/modules/test_modules.py::test_a_changed_module_is_dropped_from_the_registry_when_not_strict",
+    "tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load",
+    "tests/modules/test_modules.py::test_list_info_uninstall_through_the_cli",
+    "tests/modules/test_modules.py::test_the_checker_refuses_a_tampered_module",
+    "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+   ],
+   "by_probes": [
+    "M-flag-F6-ask",
+    "M-flag-F6-check",
+    "M-flag-F6-draft",
+    "M-regress-R1"
+   ]
+  },
+  "MM5": {
+   "id": "MM5",
+   "pytest_failed": [
+    "tests/modules/test_engine_flags.py::test_a_tampered_module_is_refused_like_checks[ask]",
+    "tests/modules/test_engine_flags.py::test_a_tampered_module_is_refused_like_checks[draft]",
+    "tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load",
+    "tests/modules/test_modules.py::test_list_info_uninstall_through_the_cli",
+    "tests/modules/test_modules.py::test_the_checker_refuses_a_tampered_module",
+    "tests/modules/test_modules.py::test_the_lock_hash_covers_file_contents_and_paths",
+    "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+   ],
+   "pytest_summary": "7 failed, 182 passed in 14.45s",
+   "probes_failing": [],
+   "probe_rows": 0,
+   "probe_exit": 1,
+   "probe_stderr_tail": ", line 776, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/hd/mmm/mutants/MM5/g3/work/r1/proj/.lattice/modules/mariadb-engine/README.md'\n",
+   "seconds": 108.9,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_engine_flags.py::test_a_tampered_module_is_refused_like_checks[ask]",
+    "tests/modules/test_engine_flags.py::test_a_tampered_module_is_refused_like_checks[draft]",
+    "tests/modules/test_modules.py::test_a_tampered_tree_is_refused_on_load",
+    "tests/modules/test_modules.py::test_list_info_uninstall_through_the_cli",
+    "tests/modules/test_modules.py::test_the_checker_refuses_a_tampered_module",
+    "tests/modules/test_modules.py::test_the_lock_hash_covers_file_contents_and_paths",
+    "tests/studio/test_engines_api.py::test_project_engines_and_modules_are_listed"
+   ],
+   "by_probes": []
+  },
+  "MM3": {
+   "id": "MM3",
+   "pytest_failed": [
+    "tests/modules/test_entry_summary.py::test_install_prints_the_entry_line_and_still_asks",
+    "tests/modules/test_git_install.py::test_several_sources_are_confirmed_once_and_locked_together",
+    "tests/modules/test_modules.py::test_install_refuses_without_confirmation_and_writes_nothing",
+    "tests/modules/test_modules.py::test_the_cli_refuses_without_yes_when_stdin_is_not_a_terminal"
+   ],
+   "pytest_summary": "4 failed, 185 passed in 15.40s",
+   "probes_failing": [
+    "M-regress-R1",
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 124.3,
+   "killed": true,
+   "by_tests": [
+    "tests/modules/test_entry_summary.py::test_install_prints_the_entry_line_and_still_asks",
+    "tests/modules/test_git_install.py::test_several_sources_are_confirmed_once_and_locked_together",
+    "tests/modules/test_modules.py::test_install_refuses_without_confirmation_and_writes_nothing",
+    "tests/modules/test_modules.py::test_the_cli_refuses_without_yes_when_stdin_is_not_a_terminal"
+   ],
+   "by_probes": [
+    "M-regress-R1"
+   ]
+  },
+  "MM4": {
+   "id": "MM4",
+   "pytest_failed": [
+    "tests/spec/test_engines.py::test_validation_errors_are_exact[changes23-E:"
+   ],
+   "pytest_summary": "1 failed, 188 passed in 15.33s",
+   "probes_failing": [
+    "M-regress-R4"
+   ],
+   "probe_rows": 64,
+   "probe_exit": 1,
+   "probe_stderr_tail": "",
+   "seconds": 123.9,
+   "killed": true,
+   "by_tests": [
+    "tests/spec/test_engines.py::test_validation_errors_are_exact[changes23-E:"
+   ],
+   "by_probes": []
+  }
+ },
+ "seconds": 1263.8
+}
