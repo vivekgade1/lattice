@@ -541,3 +541,13 @@ written into any Streak checkout.
  "world": "streak@a0679e9 + fixture REQUIREMENTS.rationale.json / .rationale.proposed.json / .glossary.json"
 }
 ```
+
+## Amendment 1 (orchestrator rulings, 2026-10-16, before any code)
+Q1-Q7 are all ruled as the stated defaults: (1) `<stem>.rationale.json` / `<stem>.glossary.json` beside the trace;
+(2) approval on the CLI only, no Studio approve screen; (3) `mcp/guard.py` and `studio/rebuild.py` protect the
+authoritative files when they exist, and every existing guard/rebuild behaviour stays byte-identical when they do
+not (a probe pins it); (4) G001-G004 stay out of `lint()` and `spec_lint`; (5) proposal text never appears in chat
+answers; (6) context rules stay out of the coverage denominator; (7) USD 7.50 model budget through the claude CLI
+only, NOT RUN on a usage limit, agent exercise gated at 11/13. Clarification: the seeded lint set's predicted two
+misses and six false positives are kept as registered; they are reported, never tuned away. A model-drafted
+rationale is a proposal with `owner` null; only the owner's CLI approval makes it authoritative.
