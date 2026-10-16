@@ -1,0 +1,126 @@
+[
+ {
+  "id": "PT3-1",
+  "label": "implemented",
+  "project": "S",
+  "question": "update my account details",
+  "routes": [
+   "PUT /v1/me"
+  ]
+ },
+ {
+  "id": "PT3-2",
+  "label": "implemented",
+  "project": "S",
+  "question": "how long is my streak on a habit",
+  "routes": [
+   "GET /v1/habits/{}/progress"
+  ]
+ },
+ {
+  "id": "PT3-3",
+  "label": "implemented",
+  "project": "S",
+  "question": "delete a check-in I logged by mistake",
+  "routes": [
+   "DELETE /v1/habits/{}/completions/{}"
+  ]
+ },
+ {
+  "id": "PT3-4",
+  "label": "implemented",
+  "project": "S",
+  "question": "log several check-ins in one request",
+  "routes": [
+   "POST /v1/completions/batch"
+  ]
+ },
+ {
+  "id": "PT3-5",
+  "label": "implemented",
+  "project": "S",
+  "question": "dismiss a reminder",
+  "routes": [
+   "POST /v1/nudges/{}/dismiss"
+  ]
+ },
+ {
+  "id": "PT3-6",
+  "label": "implemented",
+  "project": "S",
+  "question": "sync changes since the last time",
+  "routes": [
+   "GET /v1/sync"
+  ]
+ },
+ {
+  "id": "PT3-7",
+  "label": "spec_only",
+  "project": "S4",
+  "question": "register a device for push notifications",
+  "routes": [
+   "POST /v1/devices"
+  ]
+ },
+ {
+  "id": "PT3-8",
+  "label": "implemented",
+  "project": "S",
+  "question": "see the history of a habit",
+  "routes": [
+   "GET /v1/habits/{}/history"
+  ]
+ },
+ {
+  "id": "PT3-9",
+  "label": "implemented",
+  "project": "S",
+  "question": "sign out",
+  "routes": [
+   "POST /v1/auth/logout"
+  ]
+ },
+ {
+  "id": "PT3-10",
+  "label": "implemented",
+  "project": "S",
+  "question": "refresh my access token",
+  "routes": [
+   "POST /v1/auth/refresh"
+  ]
+ },
+ {
+  "id": "PT3-11",
+  "label": "implemented",
+  "project": "S",
+  "question": "archive a habit",
+  "routes": [
+   "PATCH /v1/habits/{}"
+  ]
+ },
+ {
+  "id": "PT3-12",
+  "label": "no_match",
+  "project": "S",
+  "question": "send a push notification to every user",
+  "routes": []
+ },
+ {
+  "id": "PT3-13",
+  "label": "implemented",
+  "project": "S",
+  "question": "delete my account",
+  "routes": [
+   "DELETE /v1/me"
+  ]
+ },
+ {
+  "id": "PT3-14",
+  "label": "implemented",
+  "project": "S",
+  "question": "show the home screen summary",
+  "routes": [
+   "GET /v1/home"
+  ]
+ }
+]

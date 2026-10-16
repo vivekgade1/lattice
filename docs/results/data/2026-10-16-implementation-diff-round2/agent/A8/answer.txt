@@ -1,0 +1,15 @@
+AMBIGUOUS
+
+Yes, the app pages with a cursor, but there isn't one such endpoint. Four routes do it, and your question doesn't say which you mean:
+
+- **`GET /v1/habits`** (code:internal/habits/routes.go:25, code:internal/habits/routes.go:205). The spec covers it in `sync_limits_and_cursors`-style steps such as the `invalid_cursor` 422 (spec.py:1230).
+- **`GET /v1/habits/{}/completions`** (code:internal/completions/routes.go:26, code:internal/completions/routes.go:263).
+- **`GET /v1/nudges`** (code:internal/nudges/routes.go:16, code:internal/nudges/routes.go:33). The spec expects an `invalid_cursor` 422 here too (spec.py:1638).
+- **`GET /v1/sync`** (code:internal/sync/routes.go:17, code:internal/sync/routes.go:31). It decodes the cursor at code:internal/sync/routes.go:43 and returns `next_cursor` at code:internal/sync/routes.go:105. It is a delta sync by change_seq (R89–R94), not a plain list.
+
+All four share the same cursor mechanism, in code:internal/httpapi/pagination.go:
+- Cursors are opaque, HMAC-signed tokens from `EncodeCursor` and `DecodeCursor` (code:internal/httpapi/pagination.go:38, code:internal/httpapi/pagination.go:44).
+- A cursor the app didn't issue returns 422 `invalid_cursor`.
+- List responses have the shape `{items, next_cursor, has_more}` and take `?limit=` (1..200, default 50) and `?cursor=` (R86–R88).
+
+The Lattice tooling marks all four routes `implemented_verified`, each with replayed flows. For example, `create habits > read habits` verifies `GET /v1/habits`. If you pick one route, I can give its label.

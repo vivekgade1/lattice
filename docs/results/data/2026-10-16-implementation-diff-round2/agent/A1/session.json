@@ -1,0 +1,205 @@
+{
+ "sid": "A1",
+ "question": "A1",
+ "world": "S-dyn",
+ "key": "IMPLEMENTED-VERIFIED",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 25.9
+ },
+ "cost_usd": 0.40294109999999994,
+ "tokens": 86271,
+ "tokens_incl_cache_reads": 572602,
+ "turns": 8,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T18:25:26+00:00",
+ "score": {
+  "items": {
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "C6": true,
+   "C7": true,
+   "C8": null
+  },
+  "detail": {
+   "C1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_01HHXjaciFGhgFTvzjm5tgcU",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_01VpKbYgrZMWpF9CrR83jzt7",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_01QxBBB53KzxQ738fztzE9YT",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_01LnpKwrMJbynKyuvKyHJ3eA",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "C2": {
+    "pass": true,
+    "label": "IMPLEMENTED-VERIFIED",
+    "key": "IMPLEMENTED-VERIFIED",
+    "labels_on_line": [
+     "IMPLEMENTED-VERIFIED"
+    ],
+    "first_line": "IMPLEMENTED-VERIFIED"
+   },
+   "C3": {
+    "pass": true,
+    "citations": [
+     "internal/habits/routes.go:27",
+     "internal/habits/routes.go:252",
+     "internal/habits/routes.go:310",
+     "internal/habits/routes.go:315",
+     "internal/habits/routes.go:376",
+     "internal/habits/routes.go:347",
+     "internal/habits/routes.go:207",
+     "internal/home/routes.go:37",
+     "internal/nudges/routes.go:26",
+     "internal/completions/routes.go:171",
+     "internal/completions/routes.go:337"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/habits/routes.go:27",
+     "internal/habits/routes.go:252"
+    ],
+    "needs_evidence": true
+   },
+   "C4": {
+    "pass": true,
+    "named": [
+     "PATCH /v1/habits/{}",
+     "GET /v1/habits"
+    ],
+    "derived": {},
+    "unknown": [],
+    "registrations_cited": [
+     "PATCH /v1/habits/{}"
+    ]
+   },
+   "C5": {
+    "pass": true,
+    "named": [
+     "R69"
+    ],
+    "unknown": [],
+    "key_rules_named": [],
+    "key_rules_cited_by_line": [],
+    "needs_key_rule": false
+   },
+   "C6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "C7": {
+    "pass": true
+   },
+   "C8": null
+  },
+  "applicable": [
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7"
+  ],
+  "pass": true
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "archive a habit"
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "routes",
+    "limit": 100
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "(?i)archiv",
+    "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S-dyn",
+    "output_mode": "content",
+    "glob": "!*_test.go",
+    "head_limit": 40
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "rules",
+    "rule": "R64"
+   }
+  },
+  {
+   "name": "mcp__lattice__rule_get",
+   "is_error": false,
+   "input": {
+    "id": "R64"
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "rules",
+    "rule": "R69"
+   }
+  },
+  {
+   "name": "mcp__lattice__rule_get",
+   "is_error": false,
+   "input": {
+    "id": "R69"
+   }
+  }
+ ]
+}

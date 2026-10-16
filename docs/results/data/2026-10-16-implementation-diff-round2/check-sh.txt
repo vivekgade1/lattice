@@ -1,0 +1,1 @@
+dogfood/studio/check.sh --json on the worktree (np-c2, after the build): verdict pass, layers DX, counts {'D': 0, 'X': 0}, findings 0, cases 481 ({'correct': 481}), wall 65.5 s (time(1): 27.84s user 17.80s system)

@@ -1,0 +1,11 @@
+IMPLEMENTED-VERIFIED
+
+Yes. A user archives a habit with `PATCH /v1/habits/{id}`, sending `{version, archived: true}`. There is no separate archive route.
+
+- **Spec:** R69 says `archived: true` archives the habit and `archived: false` restores it. Restoring when the user already has 50 active habits returns 409 `habit_limit`.
+- **Code:** `PATCH /v1/habits/{}` is registered at `code:internal/habits/routes.go:27`, and its handler starts at `code:internal/habits/routes.go:252`. It reads the `archived` field and validates that it is a boolean (`code:internal/habits/routes.go:310`). It sets `upd.Archived` (`code:internal/habits/routes.go:315`) and persists it (`code:internal/habits/routes.go:376`). The restore path, where `cur.Archived && !upd.Archived`, is at `code:internal/habits/routes.go:347`.
+- **Effect of archiving:**
+  - `GET /v1/habits` leaves archived habits out unless `?include_archived=true` is passed (`code:internal/habits/routes.go:207`).
+  - Home and nudges also exclude them (`code:internal/home/routes.go:37`, `code:internal/nudges/routes.go:26`).
+  - Creating or deleting a check-in on an archived habit returns 409 `habit_archived` (`code:internal/completions/routes.go:171`, `code:internal/completions/routes.go:337`).
+- **Verification:** The implementation check marks R69 `implemented_verified`, observed through the scenarios `archive_and_restore` and `restoring_past_the_limit_is_refused`. I did not open the replayed flows themselves. Their names ("create habits > update habits") are generic, so I'm relying on the scenario link rather than a flow that visibly sends `archived: true`.

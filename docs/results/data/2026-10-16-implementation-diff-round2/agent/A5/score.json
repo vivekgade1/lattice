@@ -1,0 +1,99 @@
+{
+ "items": {
+  "C1": true,
+  "C2": true,
+  "C3": true,
+  "C4": true,
+  "C5": true,
+  "C6": true,
+  "C7": true,
+  "C8": null
+ },
+ "detail": {
+  "C1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_01VuJWrMYr91dDKMyTCSxBEa",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01LsvXzukrKYxwVd8tEtv1ir",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "C2": {
+   "pass": true,
+   "label": "IMPLEMENTED-UNVERIFIED",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "labels_on_line": [
+    "IMPLEMENTED-UNVERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-UNVERIFIED"
+  },
+  "C3": {
+   "pass": true,
+   "citations": [
+    "internal/account/routes.go:22",
+    "internal/account/routes.go:134",
+    "internal/account/routes.go:137"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/account/routes.go:22",
+    "internal/account/routes.go:134"
+   ],
+   "needs_evidence": true
+  },
+  "C4": {
+   "pass": true,
+   "named": [
+    "DELETE /v1/me"
+   ],
+   "derived": {},
+   "unknown": [],
+   "registrations_cited": [
+    "DELETE /v1/me"
+   ]
+  },
+  "C5": {
+   "pass": true,
+   "named": [
+    "R21",
+    "R22",
+    "R26"
+   ],
+   "unknown": [],
+   "key_rules_named": [],
+   "key_rules_cited_by_line": [],
+   "needs_key_rule": false
+  },
+  "C6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "C7": {
+   "pass": true
+  },
+  "C8": null
+ },
+ "applicable": [
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+  "C5",
+  "C6",
+  "C7"
+ ],
+ "pass": true
+}

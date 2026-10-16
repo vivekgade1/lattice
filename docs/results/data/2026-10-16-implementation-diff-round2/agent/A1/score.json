@@ -1,0 +1,120 @@
+{
+ "items": {
+  "C1": true,
+  "C2": true,
+  "C3": true,
+  "C4": true,
+  "C5": true,
+  "C6": true,
+  "C7": true,
+  "C8": null
+ },
+ "detail": {
+  "C1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_01HHXjaciFGhgFTvzjm5tgcU",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01VpKbYgrZMWpF9CrR83jzt7",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01QxBBB53KzxQ738fztzE9YT",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01LnpKwrMJbynKyuvKyHJ3eA",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "C2": {
+   "pass": true,
+   "label": "IMPLEMENTED-VERIFIED",
+   "key": "IMPLEMENTED-VERIFIED",
+   "labels_on_line": [
+    "IMPLEMENTED-VERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-VERIFIED"
+  },
+  "C3": {
+   "pass": true,
+   "citations": [
+    "internal/habits/routes.go:27",
+    "internal/habits/routes.go:252",
+    "internal/habits/routes.go:310",
+    "internal/habits/routes.go:315",
+    "internal/habits/routes.go:376",
+    "internal/habits/routes.go:347",
+    "internal/habits/routes.go:207",
+    "internal/home/routes.go:37",
+    "internal/nudges/routes.go:26",
+    "internal/completions/routes.go:171",
+    "internal/completions/routes.go:337"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/habits/routes.go:27",
+    "internal/habits/routes.go:252"
+   ],
+   "needs_evidence": true
+  },
+  "C4": {
+   "pass": true,
+   "named": [
+    "PATCH /v1/habits/{}",
+    "GET /v1/habits"
+   ],
+   "derived": {},
+   "unknown": [],
+   "registrations_cited": [
+    "PATCH /v1/habits/{}"
+   ]
+  },
+  "C5": {
+   "pass": true,
+   "named": [
+    "R69"
+   ],
+   "unknown": [],
+   "key_rules_named": [],
+   "key_rules_cited_by_line": [],
+   "needs_key_rule": false
+  },
+  "C6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "C7": {
+   "pass": true
+  },
+  "C8": null
+ },
+ "applicable": [
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+  "C5",
+  "C6",
+  "C7"
+ ],
+ "pass": true
+}

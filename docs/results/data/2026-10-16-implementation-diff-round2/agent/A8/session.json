@@ -1,0 +1,170 @@
+{
+ "sid": "A8",
+ "question": "A8",
+ "world": "S-dyn",
+ "key": "AMBIGUOUS",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 10.8
+ },
+ "cost_usd": 0.0516032,
+ "tokens": 8155,
+ "tokens_incl_cache_reads": 146347,
+ "turns": 3,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T18:27:07+00:00",
+ "score": {
+  "items": {
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "C6": true,
+   "C7": true,
+   "C8": true
+  },
+  "detail": {
+   "C1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_017YttAq4JoGnj5nae9cY4o4",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "C2": {
+    "pass": true,
+    "label": "AMBIGUOUS",
+    "key": "AMBIGUOUS",
+    "labels_on_line": [
+     "AMBIGUOUS"
+    ],
+    "first_line": "AMBIGUOUS"
+   },
+   "C3": {
+    "pass": true,
+    "citations": [
+     "internal/habits/routes.go:25",
+     "internal/habits/routes.go:205",
+     "internal/completions/routes.go:26",
+     "internal/completions/routes.go:263",
+     "internal/nudges/routes.go:16",
+     "internal/nudges/routes.go:33",
+     "internal/sync/routes.go:17",
+     "internal/sync/routes.go:31",
+     "internal/sync/routes.go:43",
+     "internal/sync/routes.go:105",
+     "internal/httpapi/pagination.go:38",
+     "internal/httpapi/pagination.go:44"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/habits/routes.go:25",
+     "internal/habits/routes.go:205",
+     "internal/completions/routes.go:26",
+     "internal/completions/routes.go:263",
+     "internal/nudges/routes.go:16",
+     "internal/nudges/routes.go:33",
+     "internal/sync/routes.go:17",
+     "internal/sync/routes.go:31"
+    ],
+    "needs_evidence": false
+   },
+   "C4": {
+    "pass": true,
+    "named": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/completions",
+     "GET /v1/nudges",
+     "GET /v1/sync"
+    ],
+    "derived": {},
+    "unknown": [],
+    "registrations_cited": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/completions",
+     "GET /v1/nudges",
+     "GET /v1/sync"
+    ]
+   },
+   "C5": {
+    "pass": true,
+    "named": [
+     "R86",
+     "R88",
+     "R89",
+     "R94"
+    ],
+    "unknown": [],
+    "key_rules_named": [],
+    "key_rules_cited_by_line": [],
+    "needs_key_rule": false
+   },
+   "C6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "C7": {
+    "pass": true
+   },
+   "C8": {
+    "pass": true,
+    "named": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/completions",
+     "GET /v1/nudges",
+     "GET /v1/sync"
+    ],
+    "of": 4
+   }
+  },
+  "applicable": [
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7",
+   "C8"
+  ],
+  "pass": true
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "endpoint that pages through results with a cursor (pagination, next_cursor)"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "cursor",
+    "-i": true,
+    "output_mode": "content",
+    "head_limit": 50
+   }
+  }
+ ]
+}

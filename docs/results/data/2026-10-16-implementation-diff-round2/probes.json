@@ -1,0 +1,2504 @@
+[
+  {
+    "id": "PT2A",
+    "observed": {
+      "gate": ">= 12/16",
+      "rows": [
+        {
+          "coverage": 0.4826,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/habits/{}"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:GET /v1/habits/{}/completions"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G01",
+          "query": "see the details of one habit",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.8155,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/habits/{}/completions"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:POST /v1/habits/{}/completions"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G02",
+          "query": "list a habit's check-ins",
+          "top1": false,
+          "top3": false,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:PUT /v1/me"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:PUT /v1/me",
+              "impl:route:PATCH /v1/habits/{}",
+              "impl:route:POST /v1/devices"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "G03",
+          "query": "edit my timezone",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.4172,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:PUT /v1/me"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:PUT /v1/me",
+              "impl:route:POST /v1/devices",
+              "impl:route:GET /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "G04",
+          "query": "turn off push notifications for my account",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.4077,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/me"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /health",
+              "impl:route:GET /v1/habits",
+              "impl:route:GET /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G05",
+          "query": "view my profile",
+          "top1": false,
+          "top3": false,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.7914,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:POST /v1/auth/register"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/auth/register",
+              "impl:route:POST /v1/auth/login",
+              "impl:route:POST /v1/devices"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "G06",
+          "query": "create an account with email and password",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.6098,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:POST /v1/auth/refresh"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:POST /v1/auth/refresh",
+              "impl:route:POST /v1/devices",
+              "impl:route:PATCH /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G07",
+          "query": "get a new access token after it expires",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.8599,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:PATCH /v1/habits/{}"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:PATCH /v1/habits/{}",
+              "impl:route:POST /v1/habits",
+              "impl:route:GET /v1/habits"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G08",
+          "query": "change the period of a habit",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:DELETE /v1/habits/{}"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:DELETE /v1/habits/{}",
+              "impl:route:DELETE /v1/habits/{}/completions/{}",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "G09",
+          "query": "remove a habit",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.5903,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/habits/{}/history"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:GET /v1/habits/{}/history",
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "G10",
+          "query": "show the streak history of a habit",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "several",
+            [
+              "impl:route:DELETE /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:PATCH /v1/habits/{}",
+              "impl:route:POST /v1/habits"
+            ]
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:DELETE /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "G11",
+          "query": "habits",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": false,
+          "expected": [
+            "several",
+            [
+              "impl:route:POST /v1/auth/login",
+              "impl:route:POST /v1/auth/register"
+            ]
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/auth/login",
+              "impl:route:POST /v1/auth/register",
+              "impl:route:POST /v1/auth/refresh"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G12",
+          "query": "login or register",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.0,
+          "exact": true,
+          "expected": [
+            "no_match",
+            null
+          ],
+          "got": [
+            "no_match",
+            []
+          ],
+          "hint_ok": true,
+          "id": "G13",
+          "query": "reset my streak to zero",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.0952,
+          "exact": true,
+          "expected": [
+            "no_match",
+            null
+          ],
+          "got": [
+            "no_match",
+            []
+          ],
+          "hint_ok": true,
+          "id": "G14",
+          "query": "export my data as a spreadsheet",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.1296,
+          "exact": true,
+          "expected": [
+            "no_match",
+            null
+          ],
+          "got": [
+            "no_match",
+            []
+          ],
+          "hint_ok": true,
+          "id": "G15",
+          "query": "block another user",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.5299,
+          "exact": true,
+          "expected": [
+            "spec_only",
+            "impl:route:POST /v1/devices"
+          ],
+          "got": [
+            "spec_only",
+            [
+              "impl:route:POST /v1/devices",
+              "impl:route:PUT /v1/me",
+              "impl:route:POST /v1/auth/register"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "G16",
+          "query": "register a phone for push",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.8144,
+          "exact": false,
+          "expected": [
+            "spec_only",
+            "impl:route:GET /v1/home"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /v1/nudges",
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G17",
+          "query": "the today view with habits and nudges",
+          "top1": false,
+          "top3": false,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.1914,
+          "exact": false,
+          "expected": [
+            "spec_only",
+            "impl:route:GET /v1/nudges"
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/nudges",
+              "impl:route:POST /v1/nudges/{}/dismiss",
+              "impl:route:PUT /v1/me"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G18",
+          "query": "page through nudges",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.3649,
+          "exact": false,
+          "expected": [
+            "spec_only",
+            "impl:route:GET /v1/sync"
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/sync"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G19",
+          "query": "pull changes since the last sync",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.7946,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/habits/{}/progress"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:GET /v1/habits/{}/progress",
+              "impl:route:GET /v1/habits/{}/history",
+              "impl:route:GET /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "G20",
+          "query": "see weekly progress for a habit",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.2896,
+          "exact": true,
+          "expected": [
+            "no_match",
+            null
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:POST /v1/auth/register",
+              "impl:route:POST /v1/auth/login"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "G21",
+          "query": "send an email reminder",
+          "top1": null,
+          "top3": null,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.8147,
+          "exact": false,
+          "expected": [
+            "several",
+            [
+              "impl:route:DELETE /v1/habits/{}/completions/{}",
+              "impl:route:GET /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:POST /v1/habits/{}/completions"
+            ]
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:GET /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G22",
+          "query": "check-ins of a habit",
+          "top1": null,
+          "top3": null,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.2168,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/admin/stats"
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/admin/stats"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G23",
+          "query": "usage statistics for admins",
+          "top1": true,
+          "top3": true,
+          "world": "S-plus"
+        },
+        {
+          "coverage": 0.0,
+          "exact": true,
+          "expected": [
+            "no_match",
+            null
+          ],
+          "got": [
+            "no_match",
+            []
+          ],
+          "hint_ok": true,
+          "id": "G24",
+          "query": "metrics",
+          "top1": null,
+          "top3": null,
+          "world": "S-plus"
+        }
+      ],
+      "top1": "13/16"
+    },
+    "pass": true,
+    "predicted": "13/16 (81%) (r)",
+    "probe": "G: the top-ranked route is the key route on >= 75% of the single-target rows (gated)",
+    "ran": true,
+    "seconds": 1.8
+  },
+  {
+    "id": "PT2B",
+    "observed": {
+      "exact": "13/24",
+      "gate_met": false,
+      "report_only": {
+        "exact": "13/24",
+        "hint": "13/24",
+        "target@1": "13/16",
+        "target@3": "13/16"
+      },
+      "round1_ranker": {
+        "F": {
+          "exact": "5/27",
+          "hint": "10/27",
+          "target@1": "5/20",
+          "target@3": "10/20"
+        },
+        "G": {
+          "exact": "2/24",
+          "hint": "6/24",
+          "target@1": "3/16",
+          "target@3": "9/16"
+        }
+      },
+      "rows": [
+        {
+          "coverage": 0.4826,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/habits/{}"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:GET /v1/habits/{}/completions"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G01",
+          "query": "see the details of one habit",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.8155,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/habits/{}/completions"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:POST /v1/habits/{}/completions"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G02",
+          "query": "list a habit's check-ins",
+          "top1": false,
+          "top3": false,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.4077,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/me"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /health",
+              "impl:route:GET /v1/habits",
+              "impl:route:GET /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G05",
+          "query": "view my profile",
+          "top1": false,
+          "top3": false,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.6098,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:POST /v1/auth/refresh"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:POST /v1/auth/refresh",
+              "impl:route:POST /v1/devices",
+              "impl:route:PATCH /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G07",
+          "query": "get a new access token after it expires",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.8599,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:PATCH /v1/habits/{}"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:PATCH /v1/habits/{}",
+              "impl:route:POST /v1/habits",
+              "impl:route:GET /v1/habits"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G08",
+          "query": "change the period of a habit",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": false,
+          "expected": [
+            "several",
+            [
+              "impl:route:POST /v1/auth/login",
+              "impl:route:POST /v1/auth/register"
+            ]
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/auth/login",
+              "impl:route:POST /v1/auth/register",
+              "impl:route:POST /v1/auth/refresh"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G12",
+          "query": "login or register",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.8144,
+          "exact": false,
+          "expected": [
+            "spec_only",
+            "impl:route:GET /v1/home"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /v1/nudges",
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G17",
+          "query": "the today view with habits and nudges",
+          "top1": false,
+          "top3": false,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.1914,
+          "exact": false,
+          "expected": [
+            "spec_only",
+            "impl:route:GET /v1/nudges"
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/nudges",
+              "impl:route:POST /v1/nudges/{}/dismiss",
+              "impl:route:PUT /v1/me"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G18",
+          "query": "page through nudges",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.3649,
+          "exact": false,
+          "expected": [
+            "spec_only",
+            "impl:route:GET /v1/sync"
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/sync"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G19",
+          "query": "pull changes since the last sync",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.8147,
+          "exact": false,
+          "expected": [
+            "several",
+            [
+              "impl:route:DELETE /v1/habits/{}/completions/{}",
+              "impl:route:GET /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:POST /v1/habits/{}/completions"
+            ]
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:GET /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G22",
+          "query": "check-ins of a habit",
+          "top1": null,
+          "top3": null,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.2168,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/admin/stats"
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/admin/stats"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "G23",
+          "query": "usage statistics for admins",
+          "top1": true,
+          "top3": true,
+          "world": "S-plus"
+        }
+      ]
+    },
+    "pass": null,
+    "predicted": "13/24 (54%) (r): predicted to miss",
+    "probe": "G: exact label + route on >= 75% of the rows (reported, NOT gated, predicted to miss)",
+    "ran": true,
+    "seconds": 1.8
+  },
+  {
+    "id": "PTDEV",
+    "observed": {
+      "PT": "8/8",
+      "PT_rows": [
+        {
+          "got": "exists",
+          "id": "PT1",
+          "project": "S",
+          "question": "check in a habit",
+          "top": [
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "implemented_verified",
+              2.0091
+            ],
+            [
+              "impl:route:POST /v1/completions/batch",
+              "implemented_verified",
+              1.7122
+            ],
+            [
+              "impl:route:GET /v1/habits/{}",
+              "implemented_verified",
+              0.928
+            ]
+          ],
+          "want": "exists"
+        },
+        {
+          "got": "exists",
+          "id": "PT2",
+          "project": "S",
+          "question": "the home screen",
+          "top": [
+            [
+              "impl:route:GET /v1/home",
+              "implemented_verified",
+              1.5506
+            ],
+            [
+              "impl:route:POST /v1/nudges/{}/dismiss",
+              "implemented_verified",
+              0.4962
+            ],
+            [
+              "impl:route:DELETE /v1/habits/{}",
+              "implemented_verified",
+              0.4962
+            ]
+          ],
+          "want": "exists"
+        },
+        {
+          "got": "exists",
+          "id": "PT3",
+          "project": "S",
+          "question": "register a device",
+          "top": [
+            [
+              "impl:route:POST /v1/devices",
+              "implemented_verified",
+              2.832
+            ],
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "implemented_verified",
+              1.8245
+            ],
+            [
+              "impl:route:POST /v1/auth/logout",
+              "implemented_unverified",
+              1.3898
+            ]
+          ],
+          "want": "exists"
+        },
+        {
+          "got": "spec_only",
+          "id": "PT4",
+          "project": "S4",
+          "question": "the home screen",
+          "top": [
+            [
+              "impl:route:GET /v1/home",
+              "spec_only",
+              3.2958
+            ]
+          ],
+          "want": "spec_only"
+        },
+        {
+          "got": "spec_only",
+          "id": "PT5",
+          "project": "S4",
+          "question": "register a device",
+          "top": [
+            [
+              "impl:route:POST /v1/devices",
+              "spec_only",
+              3.1492
+            ],
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "spec_only",
+              2.0149
+            ],
+            [
+              "impl:route:POST /v1/auth/logout",
+              "implemented_unverified",
+              1.5522
+            ]
+          ],
+          "want": "spec_only"
+        },
+        {
+          "got": "no_match",
+          "id": "PT6",
+          "project": "S",
+          "question": "password reset",
+          "top": [
+            [
+              "impl:route:POST /v1/auth/register",
+              "implemented_verified",
+              1.2667
+            ],
+            [
+              "impl:route:POST /v1/auth/login",
+              "implemented_verified",
+              1.2667
+            ]
+          ],
+          "want": "no_match"
+        },
+        {
+          "got": "no_match",
+          "id": "PT7",
+          "project": "S",
+          "question": "export CSV",
+          "top": [],
+          "want": "no_match"
+        },
+        {
+          "got": "several",
+          "id": "PT8",
+          "project": "S",
+          "question": "list",
+          "top": [
+            [
+              "impl:route:GET /health",
+              "implemented_unverified",
+              0.9075
+            ],
+            [
+              "impl:route:GET /v1/habits",
+              "implemented_verified",
+              0.9075
+            ],
+            [
+              "impl:route:GET /v1/habits/{}",
+              "implemented_verified",
+              0.9075
+            ]
+          ],
+          "want": "several"
+        }
+      ],
+      "agent_own_queries": "13/13",
+      "agent_own_rows": [
+        {
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:PATCH /v1/habits/{}"
+            ]
+          ],
+          "id": "Q1",
+          "label": "exists",
+          "ok": true,
+          "query": "check in a habit for today",
+          "target": "impl:route:POST /v1/habits/{}/completions"
+        },
+        {
+          "got": [
+            "exists",
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:POST /v1/devices",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "id": "Q2",
+          "label": "exists",
+          "ok": true,
+          "query": "unregister a device",
+          "target": "impl:route:DELETE /v1/devices/{}"
+        },
+        {
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/habits"
+            ]
+          ],
+          "id": "Q3",
+          "label": "exists",
+          "ok": true,
+          "query": "check in several habits in one request (bulk/batch check-in)",
+          "target": "impl:route:POST /v1/completions/batch"
+        },
+        {
+          "got": [
+            "exists",
+            [
+              "impl:machine:nudges.delivery",
+              "impl:route:PUT /v1/me",
+              "impl:route:POST /v1/devices"
+            ]
+          ],
+          "id": "Q4",
+          "label": "exists",
+          "ok": true,
+          "query": "nudge push sent or failed recorded",
+          "target": "impl:machine:nudges.delivery"
+        },
+        {
+          "got": [
+            "no_match",
+            [
+              "impl:route:POST /v1/auth/register",
+              "impl:route:POST /v1/auth/login"
+            ]
+          ],
+          "id": "Q5",
+          "label": "no_match",
+          "ok": true,
+          "query": "reset forgotten password by email",
+          "target": null
+        },
+        {
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:DELETE /v1/habits/{}"
+            ]
+          ],
+          "id": "Q6",
+          "label": "no_match",
+          "ok": true,
+          "query": "export habits as CSV file",
+          "target": null
+        },
+        {
+          "got": [
+            "several",
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:DELETE /v1/habits/{}",
+              "impl:route:DELETE /v1/habits/{}/completions/{}"
+            ]
+          ],
+          "id": "Q7",
+          "label": "several",
+          "ok": true,
+          "query": "delete endpoint DELETE",
+          "target": null
+        },
+        {
+          "got": [
+            "several",
+            [
+              "impl:route:GET /health",
+              "impl:route:GET /v1/habits",
+              "impl:route:GET /v1/habits/{}"
+            ]
+          ],
+          "id": "Q8",
+          "label": "several",
+          "ok": true,
+          "query": "Is there a list endpoint?",
+          "target": null
+        },
+        {
+          "got": [
+            "spec_only",
+            [
+              "impl:route:GET /v1/home"
+            ]
+          ],
+          "id": "Q9",
+          "label": "spec_only",
+          "ok": true,
+          "query": "home-screen endpoint",
+          "target": "impl:route:GET /v1/home"
+        },
+        {
+          "got": [
+            "spec_only",
+            [
+              "impl:route:GET /v1/sync",
+              "impl:route:GET /v1/nudges",
+              "impl:route:GET /v1/habits"
+            ]
+          ],
+          "id": "Q10",
+          "label": "spec_only",
+          "ok": true,
+          "query": "sync changes since a cursor",
+          "target": "impl:route:GET /v1/sync"
+        },
+        {
+          "got": [
+            "spec_only",
+            [
+              "impl:route:POST /v1/devices",
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:PUT /v1/me"
+            ]
+          ],
+          "id": "Q11",
+          "label": "spec_only",
+          "ok": true,
+          "query": "register a device for push notifications",
+          "target": "impl:route:POST /v1/devices"
+        },
+        {
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:PATCH /v1/habits/{}"
+            ]
+          ],
+          "id": "Q12",
+          "label": "exists",
+          "ok": true,
+          "query": "check in a habit for today",
+          "target": "impl:route:POST /v1/habits/{}/completions"
+        },
+        {
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:DELETE /v1/habits/{}"
+            ]
+          ],
+          "id": "Q13",
+          "label": "no_match",
+          "ok": true,
+          "query": "share a habit with a friend",
+          "target": null
+        }
+      ],
+      "agent_question_rows": [
+        {
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:PATCH /v1/habits/{}"
+            ]
+          ],
+          "id": "Q1",
+          "label": "exists",
+          "ok": true,
+          "query": "Can a user check in a habit for today?",
+          "target": "impl:route:POST /v1/habits/{}/completions"
+        },
+        {
+          "got": [
+            "exists",
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:POST /v1/devices",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "id": "Q2",
+          "label": "exists",
+          "ok": true,
+          "query": "Can a user unregister a device?",
+          "target": "impl:route:DELETE /v1/devices/{}"
+        },
+        {
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:GET /v1/habits/{}"
+            ]
+          ],
+          "id": "Q3",
+          "label": "exists",
+          "ok": false,
+          "query": "Can a user check in several habits in one request?",
+          "target": "impl:route:POST /v1/completions/batch"
+        },
+        {
+          "got": [
+            "exists",
+            [
+              "impl:machine:nudges.delivery",
+              "impl:route:PUT /v1/me",
+              "impl:route:POST /v1/devices"
+            ]
+          ],
+          "id": "Q4",
+          "label": "exists",
+          "ok": true,
+          "query": "Does the app record whether a nudge's push was sent or failed?",
+          "target": "impl:machine:nudges.delivery"
+        },
+        {
+          "got": [
+            "no_match",
+            [
+              "impl:route:POST /v1/auth/register",
+              "impl:route:POST /v1/auth/login"
+            ]
+          ],
+          "id": "Q5",
+          "label": "no_match",
+          "ok": true,
+          "query": "Can a user reset a forgotten password by email?",
+          "target": null
+        },
+        {
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:DELETE /v1/habits/{}"
+            ]
+          ],
+          "id": "Q6",
+          "label": "no_match",
+          "ok": true,
+          "query": "Can a user export their habits as a CSV file?",
+          "target": null
+        },
+        {
+          "got": [
+            "several",
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:DELETE /v1/habits/{}",
+              "impl:route:DELETE /v1/habits/{}/completions/{}"
+            ]
+          ],
+          "id": "Q7",
+          "label": "several",
+          "ok": true,
+          "query": "Is there a delete endpoint?",
+          "target": null
+        },
+        {
+          "got": [
+            "several",
+            [
+              "impl:route:GET /health",
+              "impl:route:GET /v1/habits",
+              "impl:route:GET /v1/habits/{}"
+            ]
+          ],
+          "id": "Q8",
+          "label": "several",
+          "ok": true,
+          "query": "Is there a list endpoint?",
+          "target": null
+        },
+        {
+          "got": [
+            "spec_only",
+            [
+              "impl:route:GET /v1/home"
+            ]
+          ],
+          "id": "Q9",
+          "label": "spec_only",
+          "ok": true,
+          "query": "Is there a home-screen endpoint?",
+          "target": "impl:route:GET /v1/home"
+        },
+        {
+          "got": [
+            "spec_only",
+            [
+              "impl:route:GET /v1/sync",
+              "impl:route:GET /v1/nudges",
+              "impl:route:GET /v1/habits"
+            ]
+          ],
+          "id": "Q10",
+          "label": "spec_only",
+          "ok": true,
+          "query": "Can the app sync changes since a cursor?",
+          "target": "impl:route:GET /v1/sync"
+        },
+        {
+          "got": [
+            "spec_only",
+            [
+              "impl:route:POST /v1/devices",
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:PUT /v1/me"
+            ]
+          ],
+          "id": "Q11",
+          "label": "spec_only",
+          "ok": true,
+          "query": "Can a user register a device for push notifications?",
+          "target": "impl:route:POST /v1/devices"
+        },
+        {
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:PATCH /v1/habits/{}"
+            ]
+          ],
+          "id": "Q12",
+          "label": "exists",
+          "ok": true,
+          "query": "Can a user check in a habit for today?",
+          "target": "impl:route:POST /v1/habits/{}/completions"
+        },
+        {
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:DELETE /v1/habits/{}"
+            ]
+          ],
+          "id": "Q13",
+          "label": "no_match",
+          "ok": true,
+          "query": "Can a user share a habit with a friend?",
+          "target": null
+        }
+      ],
+      "agent_question_texts": "12/13"
+    },
+    "pass": true,
+    "predicted": "PT 8/8, agent queries 13/13 (r)",
+    "probe": "round 1's PT (8, hint as round 1; >= 6/8) and the 13 round-1 agent queries (report only)",
+    "ran": true,
+    "round1_PT_hits": "2/8",
+    "seconds": 0.6
+  },
+  {
+    "id": "PTF",
+    "observed": {
+      "exact": "20/27",
+      "hint": "20/27",
+      "rows": [
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:POST /v1/habits"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/habits",
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F01",
+          "query": "create a new habit",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:PATCH /v1/habits/{}"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:PATCH /v1/habits/{}",
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F02",
+          "query": "rename a habit",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:PATCH /v1/habits/{}"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /v1/habits",
+              "impl:route:PATCH /v1/habits/{}",
+              "impl:route:DELETE /v1/habits/{}/completions/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "F03",
+          "query": "archive a habit",
+          "top1": false,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:POST /v1/auth/login"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/auth/login",
+              "impl:route:POST /v1/auth/register",
+              "impl:route:POST /v1/auth/refresh"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F04",
+          "query": "log in with email and password",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.6119,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:POST /v1/auth/logout"
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "F05",
+          "query": "sign out",
+          "top1": false,
+          "top3": false,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.8284,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:POST /v1/auth/refresh"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/auth/refresh",
+              "impl:route:POST /v1/auth/logout",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F06",
+          "query": "refresh the access token",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.59,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:PUT /v1/me"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:PUT /v1/me",
+              "impl:route:PATCH /v1/habits/{}",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F07",
+          "query": "update notification preferences",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:DELETE /v1/me"
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:DELETE /v1/me",
+              "impl:route:GET /v1/me"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "F08",
+          "query": "delete my account",
+          "top1": false,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/habits/{}/history"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:GET /v1/habits/{}/history",
+              "impl:route:DELETE /v1/habits/{}",
+              "impl:route:PATCH /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F09",
+          "query": "habit history",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:POST /v1/nudges/{}/dismiss"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/nudges/{}/dismiss",
+              "impl:route:GET /v1/nudges",
+              "impl:route:GET /v1/home"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F10",
+          "query": "dismiss a nudge",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.2925,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:DELETE /v1/habits/{}/completions/{}"
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "F11",
+          "query": "remove a check-in",
+          "top1": false,
+          "top3": false,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.314,
+          "exact": false,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/habits/{}/progress"
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/habits/{}/history",
+              "impl:route:GET /v1/habits/{}/progress",
+              "impl:route:PATCH /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "F12",
+          "query": "progress toward the weekly target",
+          "top1": false,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.7601,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:GET /health"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:GET /health",
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:POST /v1/habits/{}/completions"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F13",
+          "query": "health check",
+          "top1": true,
+          "top3": true,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.3199,
+          "exact": false,
+          "expected": [
+            "several",
+            [
+              "impl:route:GET /v1/habits",
+              "impl:route:GET /v1/habits/{}/completions",
+              "impl:route:GET /v1/nudges",
+              "impl:route:GET /v1/sync"
+            ]
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/habits/{}/completions",
+              "impl:route:GET /v1/habits",
+              "impl:route:GET /v1/sync"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "F14",
+          "query": "cursor pagination",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": false,
+          "expected": [
+            "several",
+            [
+              "impl:machine:nudges.delivery",
+              "impl:route:GET /v1/nudges",
+              "impl:route:POST /v1/nudges/{}/dismiss"
+            ]
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:GET /v1/nudges",
+              "impl:route:POST /v1/nudges/{}/dismiss",
+              "impl:route:PUT /v1/me"
+            ]
+          ],
+          "hint_ok": false,
+          "id": "F15",
+          "query": "nudges",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.0,
+          "exact": true,
+          "expected": [
+            "no_match",
+            null
+          ],
+          "got": [
+            "no_match",
+            []
+          ],
+          "hint_ok": true,
+          "id": "F16",
+          "query": "upload a profile photo",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.0,
+          "exact": true,
+          "expected": [
+            "no_match",
+            null
+          ],
+          "got": [
+            "no_match",
+            []
+          ],
+          "hint_ok": true,
+          "id": "F17",
+          "query": "pay for a premium subscription",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.0,
+          "exact": true,
+          "expected": [
+            "no_match",
+            null
+          ],
+          "got": [
+            "no_match",
+            []
+          ],
+          "hint_ok": true,
+          "id": "F18",
+          "query": "invite a friend to a challenge",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 0.1684,
+          "exact": true,
+          "expected": [
+            "no_match",
+            null
+          ],
+          "got": [
+            "no_match",
+            []
+          ],
+          "hint_ok": true,
+          "id": "F19",
+          "query": "sign in with Google",
+          "top1": null,
+          "top3": null,
+          "world": "S-dyn"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "spec_only",
+            "impl:route:GET /v1/nudges"
+          ],
+          "got": [
+            "spec_only",
+            [
+              "impl:route:GET /v1/nudges",
+              "impl:route:POST /v1/nudges/{}/dismiss",
+              "impl:route:GET /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F20",
+          "query": "list nudges",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "spec_only",
+            "impl:route:POST /v1/nudges/{}/dismiss"
+          ],
+          "got": [
+            "spec_only",
+            [
+              "impl:route:POST /v1/nudges/{}/dismiss",
+              "impl:route:GET /v1/nudges",
+              "impl:route:PUT /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F21",
+          "query": "dismiss a nudge",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "spec_only",
+            "impl:route:DELETE /v1/devices/{}"
+          ],
+          "got": [
+            "spec_only",
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:POST /v1/devices",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F22",
+          "query": "remove a device",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 0.5425,
+          "exact": true,
+          "expected": [
+            "spec_only",
+            "impl:route:GET /v1/sync"
+          ],
+          "got": [
+            "spec_only",
+            [
+              "impl:route:GET /v1/sync",
+              "impl:route:GET /v1/home",
+              "impl:route:GET /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F23",
+          "query": "fetch changes for offline sync",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:DELETE /v1/habits/{}"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:DELETE /v1/habits/{}",
+              "impl:route:DELETE /v1/habits/{}/completions/{}",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F24",
+          "query": "delete a habit",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "several",
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:POST /v1/devices"
+            ]
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:POST /v1/devices",
+              "impl:route:POST /v1/auth/logout"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F25",
+          "query": "device",
+          "top1": null,
+          "top3": null,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:PATCH /v1/habits/{}"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:PATCH /v1/habits/{}",
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F26",
+          "query": "rename a habit",
+          "top1": true,
+          "top3": true,
+          "world": "S4-stat"
+        },
+        {
+          "coverage": 1.0,
+          "exact": true,
+          "expected": [
+            "exists",
+            "impl:route:GET /v1/admin/stats"
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:GET /v1/admin/stats"
+            ]
+          ],
+          "hint_ok": true,
+          "id": "F27",
+          "query": "admin stats",
+          "top1": true,
+          "top3": true,
+          "world": "S-plus"
+        }
+      ],
+      "target@1": "15/20",
+      "target@3": "18/20"
+    },
+    "pass": null,
+    "predicted": "20/27 (r, tuned-on)",
+    "probe": "the burned set F (development data; report only; a mutant catcher)",
+    "ran": true,
+    "seconds": 0.5
+  },
+  {
+    "id": "PT3",
+    "observed": {
+      "exact": "6/14",
+      "hint": "6/14",
+      "rows": [
+        {
+          "coverage": 0.6084,
+          "expected": [
+            "exists",
+            [
+              "impl:route:PUT /v1/me"
+            ]
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:PUT /v1/me",
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "hit": true,
+          "id": "PT3-1",
+          "project": "S",
+          "query": "update my account details",
+          "top1": true
+        },
+        {
+          "coverage": 0.1089,
+          "expected": [
+            "exists",
+            [
+              "impl:route:GET /v1/habits/{}/progress"
+            ]
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits",
+              "impl:route:DELETE /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "hit": false,
+          "id": "PT3-2",
+          "project": "S",
+          "query": "how long is my streak on a habit",
+          "top1": false
+        },
+        {
+          "coverage": 0.0882,
+          "expected": [
+            "exists",
+            [
+              "impl:route:DELETE /v1/habits/{}/completions/{}"
+            ]
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:POST /v1/completions/batch",
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "hint_ok": false,
+          "hit": false,
+          "id": "PT3-3",
+          "project": "S",
+          "query": "delete a check-in I logged by mistake",
+          "top1": false
+        },
+        {
+          "coverage": 0.2582,
+          "expected": [
+            "exists",
+            [
+              "impl:route:POST /v1/completions/batch"
+            ]
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch"
+            ]
+          ],
+          "hint_ok": false,
+          "hit": false,
+          "id": "PT3-4",
+          "project": "S",
+          "query": "log several check-ins in one request",
+          "top1": false
+        },
+        {
+          "coverage": 0.2799,
+          "expected": [
+            "exists",
+            [
+              "impl:route:POST /v1/nudges/{}/dismiss"
+            ]
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:POST /v1/nudges/{}/dismiss",
+              "impl:route:GET /v1/home",
+              "impl:route:POST /v1/habits/{}/completions"
+            ]
+          ],
+          "hint_ok": false,
+          "hit": false,
+          "id": "PT3-5",
+          "project": "S",
+          "query": "dismiss a reminder",
+          "top1": true
+        },
+        {
+          "coverage": 0.468,
+          "expected": [
+            "exists",
+            [
+              "impl:route:GET /v1/sync"
+            ]
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /v1/sync",
+              "impl:route:PUT /v1/me",
+              "impl:route:DELETE /v1/habits/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "hit": false,
+          "id": "PT3-6",
+          "project": "S",
+          "query": "sync changes since the last time",
+          "top1": true
+        },
+        {
+          "coverage": 0.7576,
+          "expected": [
+            "spec_only",
+            [
+              "impl:route:POST /v1/devices"
+            ]
+          ],
+          "got": [
+            "spec_only",
+            [
+              "impl:route:POST /v1/devices",
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:PUT /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "hit": true,
+          "id": "PT3-7",
+          "project": "S4",
+          "query": "register a device for push notifications",
+          "top1": true
+        },
+        {
+          "coverage": 1.0,
+          "expected": [
+            "exists",
+            [
+              "impl:route:GET /v1/habits/{}/history"
+            ]
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:GET /v1/habits/{}/history",
+              "impl:route:GET /v1/habits/{}",
+              "impl:route:GET /v1/habits"
+            ]
+          ],
+          "hint_ok": true,
+          "hit": true,
+          "id": "PT3-8",
+          "project": "S",
+          "query": "see the history of a habit",
+          "top1": true
+        },
+        {
+          "coverage": 0.6119,
+          "expected": [
+            "exists",
+            [
+              "impl:route:POST /v1/auth/logout"
+            ]
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:POST /v1/habits/{}/completions",
+              "impl:route:POST /v1/completions/batch"
+            ]
+          ],
+          "hint_ok": false,
+          "hit": false,
+          "id": "PT3-9",
+          "project": "S",
+          "query": "sign out",
+          "top1": false
+        },
+        {
+          "coverage": 0.8284,
+          "expected": [
+            "exists",
+            [
+              "impl:route:POST /v1/auth/refresh"
+            ]
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:POST /v1/auth/refresh",
+              "impl:route:POST /v1/auth/logout",
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "hint_ok": true,
+          "hit": true,
+          "id": "PT3-10",
+          "project": "S",
+          "query": "refresh my access token",
+          "top1": true
+        },
+        {
+          "coverage": 1.0,
+          "expected": [
+            "exists",
+            [
+              "impl:route:PATCH /v1/habits/{}"
+            ]
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:GET /v1/habits",
+              "impl:route:PATCH /v1/habits/{}",
+              "impl:route:DELETE /v1/habits/{}/completions/{}"
+            ]
+          ],
+          "hint_ok": false,
+          "hit": false,
+          "id": "PT3-11",
+          "project": "S",
+          "query": "archive a habit",
+          "top1": false
+        },
+        {
+          "coverage": 0.7803,
+          "expected": [
+            "no_match",
+            null
+          ],
+          "got": [
+            "no_match",
+            [
+              "impl:route:PUT /v1/me",
+              "impl:route:POST /v1/devices",
+              "impl:route:POST /v1/auth/register"
+            ]
+          ],
+          "hint_ok": true,
+          "hit": true,
+          "id": "PT3-12",
+          "project": "S",
+          "query": "send a push notification to every user",
+          "top1": null
+        },
+        {
+          "coverage": 1.0,
+          "expected": [
+            "exists",
+            [
+              "impl:route:DELETE /v1/me"
+            ]
+          ],
+          "got": [
+            "several",
+            [
+              "impl:route:DELETE /v1/devices/{}",
+              "impl:route:DELETE /v1/me",
+              "impl:route:GET /v1/me"
+            ]
+          ],
+          "hint_ok": false,
+          "hit": false,
+          "id": "PT3-13",
+          "project": "S",
+          "query": "delete my account",
+          "top1": false
+        },
+        {
+          "coverage": 0.5185,
+          "expected": [
+            "exists",
+            [
+              "impl:route:GET /v1/home"
+            ]
+          ],
+          "got": [
+            "exists",
+            [
+              "impl:route:GET /v1/home",
+              "impl:route:GET /v1/sync",
+              "impl:route:GET /v1/nudges"
+            ]
+          ],
+          "hint_ok": true,
+          "hit": true,
+          "id": "PT3-14",
+          "project": "S",
+          "query": "show the home screen summary",
+          "top1": true
+        }
+      ],
+      "top1": "7/13"
+    },
+    "pass": null,
+    "predicted": "45-70% exact (p)",
+    "probe": "the orchestrator's held-out queries (14; top-ranked route and label; report only; never tuned on)",
+    "ran": true,
+    "seconds": 0.3
+  },
+  {
+    "id": "PD2",
+    "observed": {
+      "distinct_outputs": 1,
+      "identical": true,
+      "output_sha256": "5d27182db032c4af6a3eb28c407fd5acedac8d278aca6a80cf0417e017e666f0",
+      "processes": 10,
+      "queries": 99,
+      "second_root_identical": true,
+      "second_root_rows_compared": 69
+    },
+    "pass": true,
+    "predicted": "10/10 identical, second root identical",
+    "probe": "workflow_find on G, PT-dev, PT-F, PT3: 10 processes (random hash seeds) and a second archive root identical",
+    "ran": true,
+    "seconds": 7.4
+  },
+  {
+    "id": "PX2",
+    "observed": {
+      "calls": 20,
+      "max_ms": 18.39,
+      "median_ms": 17.68,
+      "min_ms": 17.21
+    },
+    "pass": true,
+    "predicted": "5-50 ms (p)",
+    "probe": "one workflow_find call after load",
+    "ran": true,
+    "seconds": 0.4
+  },
+  {
+    "id": "PB2",
+    "observed": {
+      "ast_added": [
+        "FIND_ANCHORS",
+        "FIND_COVERAGE",
+        "FIND_FILLER",
+        "FIND_NOISE",
+        "FIND_PENALTY",
+        "FIND_VERBS",
+        "FIND_WEIGHTS",
+        "_find_lexicon",
+        "_find_split"
+      ],
+      "ast_changed": [
+        "_find_docs",
+        "find_candidates"
+      ],
+      "ast_removed": [
+        "FIND_THRESHOLD",
+        "_KIND_RANK"
+      ],
+      "checks": {
+        "ast_only_d7_changed": true,
+        "pa_without_inventory_identical": true,
+        "pb_script_identical": true,
+        "report_pa_tools_identical": true,
+        "round1_data_untouched": true,
+        "round1_freeze_list_only_implementation_py_differs": true,
+        "round1_frozen_files_identical": true,
+        "round1_report_hashes": true,
+        "round1_workflow_find_tests_pass": true
+      },
+      "freeze_list_differing": [
+        "lattice/spec/implementation.py"
+      ],
+      "frozen_vs_bb3ff0c": {
+        "dogfood/contracts/agent_scorer.py": true,
+        "dogfood/implementation_agent.py": true,
+        "dogfood/implementation_agent_check.py": true,
+        "dogfood/implementation_agent_scorer.py": true,
+        "dogfood/implementation_agent_scorer_cases.json": true,
+        "dogfood/implementation_mutants.py": true,
+        "dogfood/implementation_probes.py": true,
+        "lattice/mcp/tools.py": true,
+        "tests/mcp/test_implementation_tools.py": true
+      },
+      "git_diff_round1_data": "",
+      "git_status_round1_data": "",
+      "pb_script_differing": [],
+      "pytest_tail": "4 passed, 17 deselected in 0.25s",
+      "report_pa_tools_differing": [],
+      "report_sha256": {
+        "S-dyn": "84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84",
+        "S-plus": "64cc726f98f88ece99c730543371f626ccb12ec12f5793a897fb3ba78bbdc700",
+        "S-stat": "af695d4abf531170ca241402b4030c7c40081928650227f7a8adf3becd4091af",
+        "S4-stat": "80511cbb05dc3a61c04521e96555586611f2d8813d7b88dc5dcafd2cc6891df1"
+      }
+    },
+    "pass": true,
+    "predicted": "all identical",
+    "probe": "byte-compat vs bb3ff0c: MCP instructions and tools/list, report JSON (S-dyn 84624894, S4-stat 80511cbb), PA hashes, the AST of implementation.py outside D7, round-1 frozen files, round-1 data, round-1 workflow_find tests",
+    "ran": true,
+    "seconds": 4.9
+  },
+  {
+    "id": "PR1",
+    "observed": {
+      "PD_report_hashes_equal_round1": true,
+      "PF": true,
+      "PT_now": "8/8",
+      "PT_round1": "2/8",
+      "all_rows_but_PT_as_round1": true,
+      "rc": 0,
+      "rows": {
+        "LEAK": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PA": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PB": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PC": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PD": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PE": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PF": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PO": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PP": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PR": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PT": {
+          "now": true,
+          "ran": true,
+          "round1": false
+        },
+        "PV": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PW": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        },
+        "PX": {
+          "now": true,
+          "ran": true,
+          "round1": true
+        }
+      },
+      "seconds": 40.9,
+      "stderr_tail": "ms))\nRuntimeError: the markdown edit failed: the reply has no document between the lines '<<<BEGIN REQUIREMENTS.md' and 'END REQUIREMENTS.md>>>'\n[studio 13:05:43] c1: failed: the markdown edit failed: the reply has no document between the lines '<<<BEGIN REQUIREMENTS.md' and 'END REQUIREMENTS.md>>>'"
+    },
+    "pass": true,
+    "predicted": "every row as round 1; PT now 8/8 (r)",
+    "probe": "round 1's implementation_probes.py, unchanged, at the new code (--runs 3, PF with Docker); round 2 supersedes PT",
+    "ran": true,
+    "seconds": 40.9
+  }
+]

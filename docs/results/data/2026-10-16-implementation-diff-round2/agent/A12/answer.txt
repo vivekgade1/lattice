@@ -1,0 +1,14 @@
+REQUIRED-NOT-IMPLEMENTED
+
+The spec requires dismissing a nudge, but the code has no way to do it.
+
+- **Spec:** R138 says `POST /v1/nudges/{id}/dismiss` sets `dismissed_at` to now and answers 200 with the nudge. A nudge that is already dismissed gets 409 `nudge_dismissed`. R7, R21, R28, R139, R140, R141 and R143 also touch this route. R138 links to the scenarios `dismiss_twice_is_refused` and `access__dismiss__as_ann`.
+- **Routes:** The implementation inventory lists 20 routes. None is `POST /v1/nudges/{}/dismiss`. The inventory marks that route `spec_only`, meaning the spec requires it and the code doesn't implement it. `GET /v1/nudges` is also `spec_only`.
+- **Handlers:** A search of the Go sources for "dismiss" finds only these:
+  - the `DismissedAt` field in `code:internal/db/models.go:109` and `code:internal/db/bodies.go:75`
+  - a check that skips already-dismissed nudges in `code:internal/nudges/checkin.go:70`
+  - a comment in `code:internal/nudges/doc.go:1` that lists "dismiss" as something the package owns
+
+  No handler ever sets `dismissed_at`, so a user can't dismiss a nudge through the API.
+
+I didn't change anything.

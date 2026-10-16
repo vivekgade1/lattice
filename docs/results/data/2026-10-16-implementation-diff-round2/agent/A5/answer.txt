@@ -1,0 +1,10 @@
+IMPLEMENTED-UNVERIFIED
+
+A signed-in user can delete their whole account with `DELETE /v1/me`. The route is registered at `code:internal/account/routes.go:22`. The handler `account.handler.remove` is at `code:internal/account/routes.go:134`.
+
+- **What it deletes:** In one transaction, it locks the user row (`code:internal/account/routes.go:137`). It then deletes the user's completions, nudges and habit targets (`:146-150`). It also deletes their habits, devices, refresh tokens and notification preferences (`:152-157`). Finally it deletes the user row itself (`:158`).
+- **Response:** It returns 204 on success (`:163`). The route's extracted refusals are 401 `not_authenticated`, 404 `not_found`, 426 `upgrade_required` and 429 `rate_limited`.
+- **Spec:** The route is in the spec and linked to R21, R22 and R26.
+- **Verification:** No replayed flow exercises this route. The implementation report lists no flows for it, so it is implemented but not verified.
+
+I did not change anything.

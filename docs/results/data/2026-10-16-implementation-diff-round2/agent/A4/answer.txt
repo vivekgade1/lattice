@@ -1,0 +1,9 @@
+IMPLEMENTED-UNVERIFIED
+
+Yes, a client can exchange a refresh token for a new access token with `POST /v1/auth/refresh`.
+
+- **Implementation:** The handler is `auth.handler.refresh`. It is registered at code:internal/auth/routes.go:27 and implemented at code:internal/auth/routes.go:198. The route is public, so it needs no access token. It returns 200 on success.
+- **Refusals:** It returns `401 invalid_refresh_token` and `401 refresh_token_reused` for bad or replayed tokens. It also returns `404 not_found`, `422 validation_failed` and `426 upgrade_required`.
+- **Spec:** The route is tied to rules R7, R16, R18, R19 and R20. I did not read the text of those rules, so I can't say what each one requires.
+- **Verification:** The route is marked unverified. The one replayed flow that reaches it, `wf-0da61e11ce` (register → login → refresh), is also marked unverified. Register and login are verified through a separate flow, `wf-a8966be4b8`. Nothing has confirmed the refresh step itself against the running app.
+- **Only one candidate:** Of the 26 routes, only `POST /v1/auth/refresh` exchanges a refresh token. `POST /v1/auth/login` and `POST /v1/auth/logout` also touch a refresh-token table, but they don't issue a new access token from a refresh token.

@@ -1,0 +1,17 @@
+IMPLEMENTED-UNVERIFIED
+
+Yes. Four list routes page with a cursor. The question says "an endpoint", so I answered whether any exists, not which one. The routes are:
+
+- **`GET /v1/habits`**: `code:internal/habits/routes.go:217` reads the paging parameters and `code:internal/habits/routes.go:232` builds the page.
+- **`GET /v1/habits/{id}/completions`**: `code:internal/completions/routes.go:280` and `code:internal/completions/routes.go:306`. A bad cursor is rejected at `code:internal/completions/routes.go:297`.
+- **`GET /v1/nudges`**: `code:internal/nudges/routes.go:35` and `code:internal/nudges/routes.go:51`.
+- **`GET /v1/sync`**: `code:internal/sync/routes.go:43` decodes the cursor and `code:internal/sync/routes.go:105` emits `next_cursor`. Its use of the cursor to drive full and delta sync is described in `code:internal/sync/doc.go:1`.
+
+**Shared mechanism:** `code:internal/httpapi/pagination.go` handles the cursor and the page shape for all four.
+- **Response shape:** `{items, next_cursor, has_more}`, with `limit` from 1 to 200 and a default of 50 (`code:internal/httpapi/pagination.go:13` and `code:internal/httpapi/pagination.go:68`).
+- **Cursor signing:** the cursor is signed with `HABIT_SECRET_KEY` (`code:internal/httpapi/pagination.go:38`). A cursor the app did not issue, or one from a different list, gets 422 `invalid_cursor` (`code:internal/httpapi/pagination.go:44`).
+- **Unit tests:** the encoding and page-building code is covered in `code:internal/httpapi/httpapi_test.go:13` and `code:internal/httpapi/httpapi_test.go:29`.
+
+**Spec:** R86 defines the list shape, `limit` and `cursor`. R137 makes `GET /v1/nudges` paginated (per Q15). R89–R94 cover the sync cursor. The `list_pagination` and `sync_limits_and_cursors` scenarios in `spec.py` exercise these routes.
+
+**Why not VERIFIED:** Lattice reports `last_check: null`, so no replayed flow has run against the app. I did not run anything myself.

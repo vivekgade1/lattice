@@ -1,0 +1,177 @@
+{
+ "sid": "ablation-A11",
+ "question": "A11",
+ "world": "S4-stat",
+ "key": "REQUIRED-NOT-IMPLEMENTED",
+ "with_tools": false,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 14.8
+ },
+ "cost_usd": 0.1074906,
+ "tokens": 17684,
+ "tokens_incl_cache_reads": 311890,
+ "turns": 6,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T18:28:51+00:00",
+ "score": {
+  "items": {
+   "C1": null,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "C6": true,
+   "C7": true,
+   "C8": null
+  },
+  "detail": {
+   "C1": null,
+   "C2": {
+    "pass": true,
+    "label": "REQUIRED-NOT-IMPLEMENTED",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "labels_on_line": [
+     "REQUIRED-NOT-IMPLEMENTED"
+    ],
+    "first_line": "REQUIRED-NOT-IMPLEMENTED"
+   },
+   "C3": {
+    "pass": true,
+    "citations": [
+     "internal/account/routes.go:20",
+     "internal/habits/routes.go:24",
+     "internal/completions/routes.go:25",
+     "internal/auth/routes.go:25",
+     "internal/progress/routes.go:19",
+     "internal/db/models.go:33",
+     "internal/auth/routes.go:282",
+     "internal/account/routes.go:150"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/account/routes.go:20",
+     "internal/habits/routes.go:24",
+     "internal/completions/routes.go:25",
+     "internal/auth/routes.go:25",
+     "internal/progress/routes.go:19",
+     "internal/db/models.go:33"
+    ],
+    "needs_evidence": false
+   },
+   "C4": {
+    "pass": true,
+    "named": [
+     "DELETE /v1/devices/{}",
+     "POST /v1/devices",
+     "POST /v1/auth/logout",
+     "DELETE /v1/me"
+    ],
+    "derived": {},
+    "unknown": [],
+    "registrations_cited": [
+     "GET /v1/habits/{}/progress",
+     "GET /v1/me",
+     "POST /v1/auth/register",
+     "POST /v1/habits",
+     "POST /v1/habits/{}/completions"
+    ]
+   },
+   "C5": {
+    "pass": true,
+    "named": [
+     "R21",
+     "R23",
+     "R26",
+     "R28",
+     "R31",
+     "R32",
+     "R33",
+     "R34"
+    ],
+    "unknown": [],
+    "key_rules_named": [
+     "R21",
+     "R28",
+     "R33"
+    ],
+    "key_rules_cited_by_line": [],
+    "needs_key_rule": true
+   },
+   "C6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "C7": {
+    "pass": true
+   },
+   "C8": null
+  },
+  "applicable": [
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7"
+  ],
+  "pass": true
+ },
+ "tools": [
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "device",
+    "-i": true,
+    "output_mode": "count"
+   }
+  },
+  {
+   "name": "mcp__lattice__model_get",
+   "is_error": false,
+   "input": {
+    "section": "rules"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "devices|Device",
+    "path": "internal",
+    "output_mode": "content",
+    "-n": true
+   }
+  },
+  {
+   "name": "mcp__lattice__code_links",
+   "is_error": false,
+   "input": {
+    "target": "R33"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "\\.(POST|DELETE|GET|PUT|PATCH)\\(|\"/devices|devices\"",
+    "output_mode": "content",
+    "-n": true,
+    "glob": "**/*.go"
+   }
+  }
+ ]
+}

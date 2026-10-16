@@ -1,0 +1,645 @@
+{
+ "experiment": "2026-10-16-implementation-diff-round2 PQ2",
+ "claude_version": "2.1.299 (Claude Code)",
+ "freeze": {
+  "frozen_at_utc": "2026-10-16T18:24:54+00:00",
+  "files": {
+   "implementation_agent2.py": "059dc9068c82ee2e18d3a674692888e17e51bedce70f4cb8e7c5c672aa86078f",
+   "implementation_agent2_scorer.py": "d9b1af2ad94c619dc192a94100169342038d046c971f614810304928d82aa505",
+   "implementation_agent2_check.py": "0abd6a349f6b62e5a0a0d6ce93c49fcc0bfb6e2b9d380108233af4acf74af4f0",
+   "implementation_agent2_scorer_cases.json": "e7ff38cdd6511e0e11475efe83e78bb88187ee5e24d1eedbe7255d55fac5aa8b",
+   "implementation_agent.py": "ca65bcb4a10ca1e020523c4a8fd7f4fbc76f5b5af5afa5f11f3c22411301c728",
+   "implementation_agent_scorer.py": "3be9520c6d94fe70816f11c92357be42f73f8bfc86948d51a056d3a1a20c4e7d",
+   "contracts/agent_scorer.py": "92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08",
+   "agent2_questions.json": "bf06b9e92defaa7ed38365f056492e400651ba4bd0c359100f79e37e4a21a694"
+  },
+  "workflows_dyn_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0",
+  "report_sha256": {
+   "S-dyn": "84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84",
+   "S4-stat": "80511cbb05dc3a61c04521e96555586611f2d8813d7b88dc5dcafd2cc6891df1"
+  },
+  "questions_file_problem": null,
+  "claude_version": "2.1.299 (Claude Code)",
+  "scorer_cases": "74/74 scorer cases hold",
+  "scorer_cases_rc": 0
+ },
+ "frozen_hashes_now": {
+  "implementation_agent2.py": "059dc9068c82ee2e18d3a674692888e17e51bedce70f4cb8e7c5c672aa86078f",
+  "implementation_agent2_scorer.py": "d9b1af2ad94c619dc192a94100169342038d046c971f614810304928d82aa505",
+  "implementation_agent2_check.py": "0abd6a349f6b62e5a0a0d6ce93c49fcc0bfb6e2b9d380108233af4acf74af4f0",
+  "implementation_agent2_scorer_cases.json": "e7ff38cdd6511e0e11475efe83e78bb88187ee5e24d1eedbe7255d55fac5aa8b",
+  "implementation_agent.py": "ca65bcb4a10ca1e020523c4a8fd7f4fbc76f5b5af5afa5f11f3c22411301c728",
+  "implementation_agent_scorer.py": "3be9520c6d94fe70816f11c92357be42f73f8bfc86948d51a056d3a1a20c4e7d",
+  "contracts/agent_scorer.py": "92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08",
+  "agent2_questions.json": "bf06b9e92defaa7ed38365f056492e400651ba4bd0c359100f79e37e4a21a694"
+ },
+ "sessions": [
+  {
+   "sid": "A1",
+   "question": "A1",
+   "world": "S-dyn",
+   "key": "IMPLEMENTED-VERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.40294109999999994,
+   "tokens": 86271,
+   "tokens_incl_cache_reads": 572602,
+   "turns": 8,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:25:26+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get",
+    "Grep",
+    "implementation_get",
+    "rule_get",
+    "implementation_get",
+    "rule_get"
+   ]
+  },
+  {
+   "sid": "A2",
+   "question": "A2",
+   "world": "S-dyn",
+   "key": "IMPLEMENTED-VERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0735166,
+   "tokens": 13890,
+   "tokens_incl_cache_reads": 152076,
+   "turns": 3,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:25:36+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get"
+   ]
+  },
+  {
+   "sid": "A3",
+   "question": "A3",
+   "world": "S-dyn",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0750028,
+   "tokens": 9575,
+   "tokens_incl_cache_reads": 295223,
+   "turns": 7,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:25:57+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "implementation_get",
+    "Grep",
+    "implementation_get",
+    "Grep"
+   ]
+  },
+  {
+   "sid": "A4",
+   "question": "A4",
+   "world": "S-dyn",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.07113509999999999,
+   "tokens": 13278,
+   "tokens_incl_cache_reads": 151469,
+   "turns": 3,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:26:09+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get"
+   ]
+  },
+  {
+   "sid": "A5",
+   "question": "A5",
+   "world": "S-dyn",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0824919,
+   "tokens": 14065,
+   "tokens_incl_cache_reads": 231984,
+   "turns": 4,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:26:27+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get",
+    "Read"
+   ]
+  },
+  {
+   "sid": "A6",
+   "question": "A6",
+   "world": "S-dyn",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.1135634,
+   "tokens": 18972,
+   "tokens_incl_cache_reads": 325086,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:26:44+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "Grep",
+    "Grep",
+    "Grep"
+   ]
+  },
+  {
+   "sid": "A7",
+   "question": "A7",
+   "world": "S-dyn",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.09277379999999999,
+   "tokens": 16269,
+   "tokens_incl_cache_reads": 234687,
+   "turns": 4,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:26:56+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get",
+    "Grep"
+   ]
+  },
+  {
+   "sid": "A8",
+   "question": "A8",
+   "world": "S-dyn",
+   "key": "AMBIGUOUS",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0516032,
+   "tokens": 8155,
+   "tokens_incl_cache_reads": 146347,
+   "turns": 3,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:27:07+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": true
+   },
+   "tools": [
+    "workflow_find",
+    "Grep"
+   ]
+  },
+  {
+   "sid": "A9",
+   "question": "A9",
+   "world": "S-dyn",
+   "key": "AMBIGUOUS",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.07564509999999999,
+   "tokens": 14083,
+   "tokens_incl_cache_reads": 152274,
+   "turns": 3,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:27:21+00:00",
+   "items": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": true
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get"
+   ]
+  },
+  {
+   "sid": "A10",
+   "question": "A10",
+   "world": "S4-stat",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.09487399999999999,
+   "tokens": 14945,
+   "tokens_incl_cache_reads": 309045,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:27:33+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get",
+    "Grep",
+    "rule_get",
+    "Grep"
+   ]
+  },
+  {
+   "sid": "A11",
+   "question": "A11",
+   "world": "S4-stat",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0795738,
+   "tokens": 13145,
+   "tokens_incl_cache_reads": 229083,
+   "turns": 5,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:27:44+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get",
+    "Grep",
+    "rule_get"
+   ]
+  },
+  {
+   "sid": "A12",
+   "question": "A12",
+   "world": "S4-stat",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.08605370000000001,
+   "tokens": 12719,
+   "tokens_incl_cache_reads": 307416,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:27:55+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get",
+    "Grep",
+    "rule_get",
+    "Grep"
+   ]
+  },
+  {
+   "sid": "A13",
+   "question": "A13",
+   "world": "S4-stat",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.09886030000000001,
+   "tokens": 15109,
+   "tokens_incl_cache_reads": 304592,
+   "turns": 7,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:28:16+00:00",
+   "items": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "Read",
+    "Grep",
+    "Grep",
+    "implementation_get"
+   ]
+  },
+  {
+   "sid": "ablation-A8",
+   "question": "A8",
+   "world": "S-dyn",
+   "key": "AMBIGUOUS",
+   "with_tools": false,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.3730663000000001,
+   "tokens": 86553,
+   "tokens_incl_cache_reads": 239476,
+   "turns": 7,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:28:36+00:00",
+   "items": {
+    "C1": null,
+    "C2": false,
+    "C3": false,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": true
+   },
+   "tools": [
+    "Grep",
+    "model_get",
+    "Glob",
+    "Grep",
+    "rule_get",
+    "model_get"
+   ]
+  },
+  {
+   "sid": "ablation-A11",
+   "question": "A11",
+   "world": "S4-stat",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "with_tools": false,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.1074906,
+   "tokens": 17684,
+   "tokens_incl_cache_reads": 311890,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T18:28:51+00:00",
+   "items": {
+    "C1": null,
+    "C2": true,
+    "C3": true,
+    "C4": true,
+    "C5": true,
+    "C6": true,
+    "C7": true,
+    "C8": null
+   },
+   "tools": [
+    "Grep",
+    "model_get",
+    "Grep",
+    "code_links",
+    "Grep"
+   ]
+  }
+ ],
+ "scored": 15,
+ "main_sessions_scored": 13,
+ "main_sessions_pass": 12,
+ "items_main": {
+  "C1": "13/13",
+  "C2": "12/13",
+  "C3": "13/13",
+  "C4": "13/13",
+  "C5": "13/13",
+  "C6": "13/13",
+  "C7": "13/13",
+  "C8": "2/2"
+ },
+ "items_ablation": {
+  "C1": "0/0",
+  "C2": "1/2",
+  "C3": "1/2",
+  "C4": "2/2",
+  "C5": "2/2",
+  "C6": "2/2",
+  "C7": "2/2",
+  "C8": "1/1"
+ },
+ "C7": "15/15",
+ "pass_rule": ">= 11 of 13 scored sessions satisfy every applicable C-item; C7 in 15 of 15",
+ "pass_rule_evaluated": true,
+ "pass_rule_met": true,
+ "n": 13,
+ "total_cost_usd": 1.8786,
+ "total_tokens": 354713,
+ "token_definition": "input + output + cache creation (cache reads excluded); cap 1000000",
+ "total_tokens_incl_cache_reads": 3963250,
+ "stop": null,
+ "wall_s": 230.2
+}

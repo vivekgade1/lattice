@@ -1,0 +1,154 @@
+{
+ "sid": "A7",
+ "question": "A7",
+ "world": "S-dyn",
+ "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 12.4
+ },
+ "cost_usd": 0.09277379999999999,
+ "tokens": 16269,
+ "tokens_incl_cache_reads": 234687,
+ "turns": 4,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T18:26:56+00:00",
+ "score": {
+  "items": {
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "C6": true,
+   "C7": true,
+   "C8": null
+  },
+  "detail": {
+   "C1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_01SKs3pq4vbC1BrEWFhMbZLv",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_018saHLNLdtQepBsD22LLW4c",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "C2": {
+    "pass": true,
+    "label": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+    "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+    "labels_on_line": [
+     "NOT-SPECIFIED-NOT-IMPLEMENTED"
+    ],
+    "first_line": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+   },
+   "C3": {
+    "pass": true,
+    "citations": [
+     "internal/auth/routes.go:26",
+     "internal/habits/routes.go:118",
+     "internal/habits/routes.go:252"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/auth/routes.go:26",
+     "internal/habits/routes.go:118",
+     "internal/habits/routes.go:252"
+    ],
+    "needs_evidence": false
+   },
+   "C4": {
+    "pass": true,
+    "named": [
+     "PUT /test/clock",
+     "POST /v1/auth/login",
+     "POST /v1/habits",
+     "PATCH /v1/habits/{}"
+    ],
+    "derived": {},
+    "unknown": [],
+    "registrations_cited": [
+     "POST /v1/auth/login"
+    ]
+   },
+   "C5": {
+    "pass": true,
+    "named": [],
+    "unknown": [],
+    "key_rules_named": [],
+    "key_rules_cited_by_line": [],
+    "needs_key_rule": false
+   },
+   "C6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "C7": {
+    "pass": true
+   },
+   "C8": null
+  },
+  "applicable": [
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7"
+  ],
+  "pass": true
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "buy a paid plan subscription checkout upgrade"
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "routes",
+    "limit": 200
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "(?i)(paid|premium|subscri|purchase|billing|checkout|\\bplan\\b|\\bpro\\b)",
+    "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S-dyn",
+    "output_mode": "content",
+    "head_limit": 40,
+    "glob": "!*.sum"
+   }
+  }
+ ]
+}

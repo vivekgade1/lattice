@@ -1,0 +1,167 @@
+{
+ "sid": "A11",
+ "question": "A11",
+ "world": "S4-stat",
+ "key": "REQUIRED-NOT-IMPLEMENTED",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 10.9
+ },
+ "cost_usd": 0.0795738,
+ "tokens": 13145,
+ "tokens_incl_cache_reads": 229083,
+ "turns": 5,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T18:27:44+00:00",
+ "score": {
+  "items": {
+   "C1": true,
+   "C2": true,
+   "C3": true,
+   "C4": true,
+   "C5": true,
+   "C6": true,
+   "C7": true,
+   "C8": null
+  },
+  "detail": {
+   "C1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_01EiwCvq77ZF4y6LSjNoe9Ev",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_01LguobSF7APANj1ihrQGnJJ",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "C2": {
+    "pass": true,
+    "label": "REQUIRED-NOT-IMPLEMENTED",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "labels_on_line": [
+     "REQUIRED-NOT-IMPLEMENTED"
+    ],
+    "first_line": "REQUIRED-NOT-IMPLEMENTED"
+   },
+   "C3": {
+    "pass": true,
+    "citations": [
+     "internal/auth/routes.go:268",
+     "internal/account/routes.go:132"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/auth/routes.go:268",
+     "internal/account/routes.go:132"
+    ],
+    "needs_evidence": false
+   },
+   "C4": {
+    "pass": true,
+    "named": [
+     "DELETE /v1/devices/{}",
+     "POST /v1/devices",
+     "POST /v1/auth/logout",
+     "DELETE /v1/me"
+    ],
+    "derived": {},
+    "unknown": [],
+    "registrations_cited": []
+   },
+   "C5": {
+    "pass": true,
+    "named": [
+     "R7",
+     "R21",
+     "R28",
+     "R33"
+    ],
+    "unknown": [],
+    "key_rules_named": [
+     "R7",
+     "R21",
+     "R28",
+     "R33"
+    ],
+    "key_rules_cited_by_line": [],
+    "needs_key_rule": true
+   },
+   "C6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "C7": {
+    "pass": true
+   },
+   "C8": null
+  },
+  "applicable": [
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7"
+  ],
+  "pass": true
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "remove a registered device"
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "routes",
+    "limit": 200
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "devices",
+    "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S4-stat",
+    "output_mode": "content",
+    "head_limit": 30,
+    "-i": true
+   }
+  },
+  {
+   "name": "mcp__lattice__rule_get",
+   "is_error": false,
+   "input": {
+    "id": "R33"
+   }
+  }
+ ]
+}

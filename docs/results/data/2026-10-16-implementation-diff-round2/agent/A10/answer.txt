@@ -1,0 +1,9 @@
+REQUIRED-NOT-IMPLEMENTED
+
+No, a user can't list their nudges in the app as it stands. The spec requires a list endpoint, but the code has no route for it.
+
+- **Spec:** R137 requires `GET /v1/nudges`. It returns a paginated `{items, next_cursor, has_more}` list of the caller's active nudges, ordered by `habit_id`. Active means `for_date` is the user's today, `dismissed_at` and `deleted_at` are null, and the habit isn't archived. R114, R125, R127–R135 and R138–R139 also touch this route.
+- **Code:** The implementation inventory has 20 routes, and none of them is `GET /v1/nudges` or `POST /v1/nudges/{}/dismiss`. Both show as `spec_only`. The only Go references to nudges are the `internal/nudges` package, whose `internal/nudges/doc.go:1` comment says it covers `GET /v1/nudges` and dismiss, but it contains no route. Searching the Go files for `/nudges` finds only that comment and two imports of the package, in `internal/completions/routes.go:15` and `cmd/server/main.go:34`.
+- **Possible workaround:** R114 says `/v1/home` embeds the same nudges, but `/v1/home` isn't among the implemented routes either.
+
+I changed nothing.

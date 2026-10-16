@@ -1,0 +1,17 @@
+REQUIRED-NOT-IMPLEMENTED
+
+No, a user cannot remove a device they registered by id. The spec requires that, and the code has no such route.
+
+- **Spec:** R33 says `DELETE /v1/devices/{id}` answers 204 and deletes the caller's device row. R28 and R21 also expect that route to exist, answering 404 for another user's device and 401 when anonymous. The spec's scenario links name `access__delete_device__as_ann`, `access__delete_device__as_ben` and `access__delete_device__as_anon`.
+- **Missing registration:** Neither `DELETE /v1/devices/{id}` nor `POST /v1/devices` (R31, R32) is registered. The only registered routes are:
+  - `/me`: `code:internal/account/routes.go:20-22`
+  - `/habits`: `code:internal/habits/routes.go:24-28`
+  - completions: `code:internal/completions/routes.go:25-28`
+  - auth: `code:internal/auth/routes.go:25-28`
+  - progress and history: `code:internal/progress/routes.go:19-20`
+- **No handler:** A search of `internal/` finds only the `Device` model (`code:internal/db/models.go:33`) and two incidental deletions. The auth package doc comment claims it covers R31-R34, but `code:internal/auth/routes.go` has no device handler.
+- **Incidental removals:** Both delete device rows only as a side effect, never by device id.
+  - `POST /v1/auth/logout` deletes the device row for the caller's installation (`code:internal/auth/routes.go:282`, R23).
+  - `DELETE /v1/me` removes the user's devices along with the account (`code:internal/account/routes.go:150`, R26).
+
+I didn't run any replayed flow. This answer comes from reading the routes and searching the code, and I changed nothing.

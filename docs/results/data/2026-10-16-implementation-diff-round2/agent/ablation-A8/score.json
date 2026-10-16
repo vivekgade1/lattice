@@ -1,0 +1,102 @@
+{
+ "items": {
+  "C1": null,
+  "C2": false,
+  "C3": false,
+  "C4": true,
+  "C5": true,
+  "C6": true,
+  "C7": true,
+  "C8": true
+ },
+ "detail": {
+  "C1": null,
+  "C2": {
+   "pass": false,
+   "label": "IMPLEMENTED-UNVERIFIED",
+   "key": "AMBIGUOUS",
+   "labels_on_line": [
+    "IMPLEMENTED-UNVERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-UNVERIFIED"
+  },
+  "C3": {
+   "pass": false,
+   "citations": [
+    "internal/habits/routes.go:217",
+    "internal/habits/routes.go:232",
+    "internal/completions/routes.go:280",
+    "internal/completions/routes.go:306",
+    "internal/completions/routes.go:297",
+    "internal/nudges/routes.go:35",
+    "internal/nudges/routes.go:51",
+    "internal/sync/routes.go:43",
+    "internal/sync/routes.go:105",
+    "internal/sync/doc.go:1",
+    "internal/httpapi/pagination.go:13",
+    "internal/httpapi/pagination.go:68",
+    "internal/httpapi/pagination.go:38",
+    "internal/httpapi/pagination.go:44",
+    "internal/httpapi/httpapi_test.go:13",
+    "internal/httpapi/httpapi_test.go:29"
+   ],
+   "invalid": [],
+   "evidence": [],
+   "needs_evidence": true
+  },
+  "C4": {
+   "pass": true,
+   "named": [
+    "GET /v1/habits",
+    "GET /v1/habits/{}/completions",
+    "GET /v1/nudges",
+    "GET /v1/sync"
+   ],
+   "derived": {},
+   "unknown": [],
+   "registrations_cited": []
+  },
+  "C5": {
+   "pass": true,
+   "named": [
+    "R86",
+    "R89",
+    "R94",
+    "R137"
+   ],
+   "unknown": [],
+   "key_rules_named": [],
+   "key_rules_cited_by_line": [],
+   "needs_key_rule": false
+  },
+  "C6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "C7": {
+   "pass": true
+  },
+  "C8": {
+   "pass": true,
+   "named": [
+    "GET /v1/habits",
+    "GET /v1/habits/{}/completions",
+    "GET /v1/nudges",
+    "GET /v1/sync"
+   ],
+   "of": 4
+  }
+ },
+ "applicable": [
+  "C2",
+  "C3",
+  "C4",
+  "C5",
+  "C6",
+  "C7",
+  "C8"
+ ],
+ "pass": false
+}

@@ -1,0 +1,9 @@
+NOT-SPECIFIED-NOT-IMPLEMENTED
+
+No, a user can't buy a paid plan in this app. The spec doesn't ask for it, and the code doesn't offer it.
+
+- **Code:** The implementation has 26 routes. They cover health, auth (register, login, refresh, logout), devices, habits, completions, progress and history, home, nudges, sync, `/v1/me`, and the test-only `PUT /test/clock`. None of them relates to plans, subscriptions, billing, checkout or payment. The `426 upgrade_required` refusal is returned by routes such as `POST /v1/auth/login` (code:internal/auth/routes.go:26). It is an app-version gate, not a purchase flow. A search for plan, paid, premium, subscribe, purchase, billing and checkout in the project matched nothing relevant. The only hits were "pro-rated" targets and tooling notes about the author's own subscription.
+- **Spec:** No rule in `REQUIREMENTS.md` mentions paid plans, tiers, subscriptions or payments. The related-sounding rules are about habits, check-ins, progress and nudges.
+- **Closest thing:** `POST /v1/habits` and `PATCH /v1/habits/{}` can return `409 habit_limit` (code:internal/habits/routes.go:118, code:internal/habits/routes.go:252). I didn't open the limit rule, so I don't know what the limit is. Nothing in the code or spec links it to paid tiers or lets a user raise it by paying.
+
+I changed nothing.

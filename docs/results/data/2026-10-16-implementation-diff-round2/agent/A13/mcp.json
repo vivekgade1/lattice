@@ -1,0 +1,19 @@
+{
+ "mcpServers": {
+  "lattice": {
+   "command": "/Users/vivekgade/Documents/lattice/.venv/bin/python",
+   "args": [
+    "-m",
+    "lattice.mcp",
+    "serve",
+    "--project",
+    "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/c2/a2/worlds/S4-stat",
+    "--readonly"
+   ],
+   "env": {
+    "PYTHONPATH": "/Users/vivekgade/Documents/lattice-c2",
+    "PYTHONDONTWRITEBYTECODE": "1"
+   }
+  }
+ }
+}
