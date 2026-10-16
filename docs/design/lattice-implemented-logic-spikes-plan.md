@@ -164,3 +164,39 @@ out of scope and reported as `not expressible`, never guessed). Order: after D, 
 D's contradiction machinery and E's before/after runs). Risks: expressiveness creep into a programming language
 (mitigated by a closed node set and an `unread/not expressible` list); mapping forms to code conditions is a
 separate, later question and is not claimed here.
+
+## Addendum 2026-10-16 (later): Spike I, gRPC support (owner request)
+
+**I, gRPC in import and build.** Today every front end (`FrontEnd.detect/extract/runtime`) and the checker runtime
+(harness, access matrix, `Step`) assume HTTP: a method, a path, a JSON body, a status code. Nothing in the
+repository speaks gRPC. Scope, unary first:
+
+1. **Contract source.** The `.proto` files are the declared surface: services, rpcs, messages and fields (with
+   `google.api.http` / validate options where present). The importer reads them deterministically (no model).
+2. **Import.** A gRPC front end for Go (`grpc-go`) extending `goextract`: service registrations, rpc handler
+   methods, status codes returned (`codes.X` via `status.Error`), interceptors as auth/guard evidence, and the
+   same table/ownership/state-write evidence the Gin front end already reads. Output is the same framework-neutral
+   `RepoModel`, with rpcs as endpoints (`Service/Method`) and gRPC codes carried as outcomes. Servers that also
+   expose HTTP through grpc-gateway are modelled once, with both bindings listed.
+3. **Spec language.** A `Step` and the access matrix gain an rpc form (`service`, `method`, message body,
+   metadata/auth, expected gRPC code and fields). HTTP specs stay byte-identical; a spec with no rpc steps behaves
+   exactly as before. Per the language rules (`docs/lattice-language-rules.md`): the new form is gated per target,
+   not cut down to the lowest common denominator.
+4. **Runtime and checking.** The harness starts the app as today and drives rpc steps through a gRPC client
+   (reflection or the `.proto` descriptor set; the client dependency, `grpcio` vs a pinned binary, is a
+   pre-registration decision). Layers A (static), B (behaviour vs spec), C (SQL invariants after each rpc),
+   D (scenarios) and the workflow layer (flows over rpcs) run on throwaway databases as now.
+5. **Build.** The rebuild loop's prompt and gates take the `.proto` as part of the contract; the builder fixes code,
+   never the proto/spec; generated stubs are produced by the project's own command, declared in `studio.toml`.
+6. **Report and chat.** Implementation report, `workflow_find`, change impact (D) and the app map (F) list rpcs
+   beside routes, with gRPC codes, and cite `code:<path>:<line>`.
+
+Out of scope for the first round (listed as `not supported`, never guessed): client/server/bidirectional streaming,
+non-Go servers, gRPC-Web, deadlines and retries as checked behaviour, load balancing. Registered test (to be
+pre-registered, opus, before any code): a small gRPC Go app plus the existing Streak behaviour reproduced as a
+gRPC service as the development corpus, and a held-out gRPC Go app written by a separate agent with ground truth,
+scored once after the freeze; rpc recall/precision, code mapping, flows replayed, byte-compat of every HTTP output,
+10 identical runs, >= 10 mutants, and a build-from-spec round on a toy proto. Honest risk: a client dependency and
+Docker/process orchestration are new surface; streaming and interceptor-heavy auth will be partial first.
+Order: after Spikes D, E, F and H have landed (it extends the spec language, the importer and the checker); its
+pre-registration may be written earlier and is independent of the others' builds.
