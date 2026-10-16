@@ -1,0 +1,15 @@
+IMPLEMENTED-UNVERIFIED
+
+Yes, the app records whether a nudge's push was sent or failed. The only evidence is the code itself, because no observed flow has run the sent/failed transitions.
+
+- **How it records it:** the daily pass runs `decideDeliveries`. When no suppression rule applies, it sets `delivery = "failed"` and then tries `sender.Send` on each of the user's devices. If any send returns nil, it sets `delivery = "sent"` (code:internal/nudges/nudger.go:160-166). A successful send also increments the user's daily sent count (code:internal/nudges/nudger.go:167-169).
+- **Where it is stored:** the result is written to the nudge row's `delivery` column, along with `delivery_reason`, a new `change_seq` and `updated_at` (code:internal/nudges/nudger.go:179-181). The column is `Nudge.Delivery varchar(16)` (code:internal/db/models.go:104).
+- **Where it is exposed:** `delivery` and `delivery_reason` are part of the nudge response body (code:internal/db/bodies.go:73-74).
+- **What the spec says:** the data model lists `delivery` as `pending | sent | failed | suppressed` (REQUIREMENTS.md:126), and rule R123 or R127 covers this. The nudger reads the 3-per-day limit from the stored `sent` count (REQUIREMENTS.md:241).
+- **Why it is not VERIFIED:** Lattice classifies the `nudges.delivery` state machine as static (code:internal/nudges/nudger.go:125, code:internal/nudges/nudger.go:180). R127 shows "no verified flow". Only `GET /v1/nudges` is observed, so the pending→sent and pending→failed transitions have not been exercised. The stub push sender is meant to fail for tokens starting `fail` (README.md:51), but I found no scenario in `spec.py` that uses it.
+
+Two details of the failed state:
+- **Partial success:** if one device succeeds and another fails, the nudge is recorded as `sent`. Only a failure on every device gives `failed`.
+- **Per-device results:** these are not stored. Only the nudge-level outcome is.
+
+I did not change anything.

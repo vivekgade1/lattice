@@ -1,0 +1,61 @@
+{
+ "kind": "yes",
+ "answer": "Yes. Each nudge stores a `delivery` value (pending, sent, failed or suppressed), and a push that went out is recorded as `sent` or `failed`.",
+ "explanation": "After a daily pass, a nudge becomes `sent` if at least one device send succeeded, otherwise `failed`, with no reason in either case. The nudges table and the Nudge.delivery state machine hold this. Scenario pass_sends_at_most_three checks the `sent` count. The code has this machine, but no verified flow covers the daily pass.",
+ "citations": [
+  {
+   "target": "rule:R134",
+   "step": null,
+   "quote": "the nudge becomes `sent` if at least one send succeeded, else `failed` (reason null in both cases)"
+  },
+  {
+   "target": "profile:Nudge",
+   "step": null,
+   "quote": "delivery: Str (one of pending, sent, failed, suppressed)"
+  },
+  {
+   "target": "machine:Nudge.delivery",
+   "step": null,
+   "quote": "pending -> sent, failed, suppressed"
+  },
+  {
+   "target": "scenario:pass_sends_at_most_three",
+   "step": 2,
+   "quote": "wait for the nudger service: nudges where {'delivery': 'sent'} count=3"
+  },
+  {
+   "target": "impl:machine:nudges.delivery",
+   "step": null,
+   "quote": "moves pending -> failed; pending -> sent; pending -> suppressed"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 11.75,
+  "tokens": 93937,
+  "input_tokens": 92820,
+  "output_tokens": 1117,
+  "cache_read_tokens": 67492,
+  "cache_creation_tokens": 25324,
+  "rounds": 2,
+  "model": "sonnet",
+  "digest_elements": 452,
+  "calls": [
+   {
+    "input_tokens": 46047,
+    "cache_read_tokens": 33746,
+    "prompt_tokens_est": 35316
+   },
+   {
+    "input_tokens": 46773,
+    "cache_read_tokens": 33746,
+    "prompt_tokens_est": 35884
+   }
+  ],
+  "cost_usd": 0.119223
+ },
+ "implementation": "implemented_unverified",
+ "implementation_basis": "static"
+}

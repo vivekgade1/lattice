@@ -1,0 +1,56 @@
+{
+ "kind": "yes",
+ "answer": "The spec requires it: GET /v1/sync returns changes since a cursor. But the code does not implement it, because the route is not registered.",
+ "explanation": "R89 says GET /v1/sync with a cursor returns the caller's habits, check-ins and nudges whose change_seq is greater than the cursor's, in ascending order. The spec's scenarios exercise this. The implementation section lists GET /v1/sync as spec_only, so the code registers no such route.",
+ "citations": [
+  {
+   "target": "rule:R89",
+   "step": null,
+   "quote": "`GET /v1/sync?cursor=<opaque>&limit=<n>` answers `{changes, next_cursor, has_more}`: the caller's habits, check-ins and nudges whose `change_seq` is greater than the cursor's, ordered by `change_seq` ascending."
+  },
+  {
+   "target": "cell:ann|GET /v1/sync",
+   "step": null,
+   "quote": "200/422"
+  },
+  {
+   "target": "scenario:sync_changes_in_order",
+   "step": 4,
+   "quote": "GET /v1/sync as ann -> 200 -- body {\"changes\": [{\"change_seq\": 1}, {\"change_seq\": 2}], \"has_more\": true}"
+  },
+  {
+   "target": "impl:route:GET /v1/sync",
+   "step": null,
+   "quote": "spec_only: the spec names this endpoint; the code registers no such route"
+  },
+  {
+   "target": "impl:rule:R89",
+   "step": null,
+   "quote": "required_not_implemented; missing GET /v1/sync (partial)"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 5.54,
+  "tokens": 46039,
+  "input_tokens": 45507,
+  "output_tokens": 532,
+  "cache_read_tokens": 33235,
+  "cache_creation_tokens": 12270,
+  "rounds": 1,
+  "model": "sonnet",
+  "digest_elements": 458,
+  "calls": [
+   {
+    "input_tokens": 45507,
+    "cache_read_tokens": 33235,
+    "prompt_tokens_est": 34924
+   }
+  ],
+  "cost_usd": 0.057728
+ },
+ "implementation": "required_not_implemented",
+ "implementation_basis": "inferred"
+}

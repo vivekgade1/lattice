@@ -1,0 +1,144 @@
+{
+ "S-dyn": {
+  "consistency": "route-set",
+  "endpoints": {
+   "implemented": 25,
+   "test_only": 1
+  },
+  "excluded": 3,
+  "flows": {
+   "failed": 8,
+   "unverified": 1,
+   "verified": 59
+  },
+  "implemented": 142,
+  "no_element": 6,
+  "orphan_flows": 0,
+  "orphan_machines": 0,
+  "orphan_routes": 0,
+  "orphans": [],
+  "report_bytes": 251016,
+  "required_not_implemented": 0,
+  "requirements": {
+   "implemented_unverified": 34,
+   "implemented_verified": 108,
+   "no_element": 6,
+   "required_not_implemented": 0
+  },
+  "routes": {
+   "excluded": 1,
+   "implemented_unverified": 5,
+   "implemented_verified": 20
+  },
+  "run_mode": "observed",
+  "spec_only": [],
+  "unread": 4
+ },
+ "S-plus": {
+  "consistency": null,
+  "endpoints": {
+   "implemented": 25,
+   "implemented_not_required": 1,
+   "plumbing": 1,
+   "test_only": 1
+  },
+  "excluded": 4,
+  "flows": {},
+  "implemented": 142,
+  "no_element": 6,
+  "orphan_flows": 0,
+  "orphan_machines": 0,
+  "orphan_routes": 1,
+  "orphans": [
+   "GET /v1/admin/stats"
+  ],
+  "report_bytes": 153465,
+  "required_not_implemented": 0,
+  "requirements": {
+   "implemented_unverified": 142,
+   "implemented_verified": 0,
+   "no_element": 6,
+   "required_not_implemented": 0
+  },
+  "routes": {
+   "excluded": 2,
+   "implemented_not_required": 1,
+   "implemented_unverified": 25
+  },
+  "run_mode": null,
+  "spec_only": [],
+  "unread": 4
+ },
+ "S-stat": {
+  "consistency": "route-set",
+  "endpoints": {
+   "implemented": 25,
+   "test_only": 1
+  },
+  "excluded": 3,
+  "flows": {
+   "unverified": 72
+  },
+  "implemented": 142,
+  "no_element": 6,
+  "orphan_flows": 0,
+  "orphan_machines": 0,
+  "orphan_routes": 0,
+  "orphans": [],
+  "report_bytes": 264674,
+  "required_not_implemented": 0,
+  "requirements": {
+   "implemented_unverified": 142,
+   "implemented_verified": 0,
+   "no_element": 6,
+   "required_not_implemented": 0
+  },
+  "routes": {
+   "excluded": 1,
+   "implemented_unverified": 25
+  },
+  "run_mode": "static",
+  "spec_only": [],
+  "unread": 4
+ },
+ "S4-stat": {
+  "consistency": "route-set",
+  "endpoints": {
+   "implemented": 19,
+   "spec_only": 6,
+   "test_only": 1
+  },
+  "excluded": 3,
+  "flows": {
+   "unverified": 49
+  },
+  "implemented": 113,
+  "no_element": 6,
+  "orphan_flows": 0,
+  "orphan_machines": 0,
+  "orphan_routes": 0,
+  "orphans": [],
+  "report_bytes": 222330,
+  "required_not_implemented": 29,
+  "requirements": {
+   "implemented_unverified": 113,
+   "implemented_verified": 0,
+   "no_element": 6,
+   "required_not_implemented": 29
+  },
+  "routes": {
+   "excluded": 1,
+   "implemented_unverified": 19
+  },
+  "run_mode": "static",
+  "spec_only": [
+   "DELETE /v1/devices/{}",
+   "GET /v1/home",
+   "GET /v1/nudges",
+   "GET /v1/sync",
+   "POST /v1/devices",
+   "POST /v1/nudges/{}/dismiss"
+  ],
+  "unread": 4
+ }
+}

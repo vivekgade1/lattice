@@ -1,0 +1,18 @@
+REQUIRED-NOT-IMPLEMENTED
+
+The spec requires `GET /v1/home`, but the Go code has no handler or route for it.
+
+**What the spec requires**
+- code:REQUIREMENTS.md:219 says `GET /v1/home` answers `{today, habits, nudges}`. `habits` is every non-deleted, non-archived habit with its `progress` embedded. `nudges` is the caller's active nudges as a plain array.
+- code:REQUIREMENTS.md:68 (M17) repeats this requirement.
+- code:spec.py:294 declares the endpoint (`"home": ("GET", "/v1/home", None, None)`).
+- code:spec.py:1384 and code:spec.py:1665 contain scenarios that call it, and they expect a 200 response.
+
+**What the code has**
+- code:internal/progress/doc.go:1 says the package owns "the home screen (R114)". That is a comment only.
+- code:internal/progress/routes.go:19-20 registers only `/habits/:id/progress` and `/habits/:id/history`.
+- code:internal/progress/routes.go:34 defines `Of`, a helper whose comment says it serves progress, home and nudges. Nothing in the code calls it for home.
+- The only other GET routes are `/health` (code:internal/httpapi/router.go:48), `/me` (code:internal/account/routes.go:20), `/habits` and `/habits/:id` (code:internal/habits/routes.go:25-26), and `/habits/:id/completions` (code:internal/completions/routes.go:26). None of them serves `/v1/home`.
+- A case-insensitive grep for "home" across the Go files finds only comments (code:internal/db/bodies.go:9 and the two in the progress package above).
+
+Requests to `/v1/home` would therefore get a 404 (or whatever the router does for an unmatched path). The scenarios that expect 200 would fail. I didn't run the app or `check.sh`. This conclusion comes from reading the code only.

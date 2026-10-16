@@ -1,0 +1,12 @@
+REQUIRED-NOT-IMPLEMENTED
+
+No, a user can't register a device for push notifications in the app as it is built. The spec requires it, but the code has no route for it.
+
+- **Spec:** R31, R32 and R34 each require `POST /v1/devices`. R33 requires `DELETE /v1/devices/{}`. The spec's `device_registration` scenario and its `add_device` cell both target `POST /v1/devices` (`spec.py:280`, `spec.py:635`).
+- **Code:** the extractor found 20 routes in total, and none of them is `/v1/devices`. The only account routes are `GET`, `PUT` and `DELETE /v1/me` (`code:internal/account/routes.go:20`, `code:internal/account/routes.go:21`, `code:internal/account/routes.go:22`). The auth routes are register, login, refresh and logout (`code:internal/auth/routes.go:25` to `code:internal/auth/routes.go:28`).
+- **Gaps in the code:** a `Device` model and a `devices` table exist (`code:internal/db/models.go:32`, `code:internal/db/models.go:116`). A package comment says `internal/auth` owns devices (R31–R34) (`code:internal/auth/doc.go:1`). A grep of `internal/` for `/v1/devices` found no route registration and no handler.
+- **Related gaps:** `DELETE /v1/devices/{}`, `GET /v1/nudges` and `GET /v1/home` are also missing.
+
+The README mentions a `internal/push` package with a stub sender, but nothing in the code reaches it from a registration endpoint.
+
+I didn't run the app, so this comes from static analysis. I didn't change anything.

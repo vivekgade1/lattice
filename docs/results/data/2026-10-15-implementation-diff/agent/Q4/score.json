@@ -1,0 +1,104 @@
+{
+ "items": {
+  "B1": true,
+  "B2": true,
+  "B3": true,
+  "B4": true,
+  "B5": true,
+  "B6": true,
+  "B7": true,
+  "B8": null
+ },
+ "detail": {
+  "B1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_01ASHEi5BoMXoPEGHiFmHVzt",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01BtaoDB7CHs4p6ueiJPWQzv",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01DmJJrq6scyVNYGPPFAsmb6",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "B2": {
+   "pass": true,
+   "label": "IMPLEMENTED-UNVERIFIED",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "labels_on_line": [
+    "IMPLEMENTED-UNVERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-UNVERIFIED"
+  },
+  "B3": {
+   "pass": true,
+   "citations": [
+    "internal/nudges/nudger.go:160",
+    "internal/nudges/nudger.go:167",
+    "internal/nudges/nudger.go:179",
+    "internal/db/models.go:104",
+    "internal/db/bodies.go:73",
+    "internal/nudges/nudger.go:125",
+    "internal/nudges/nudger.go:180"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/nudges/nudger.go:125",
+    "internal/nudges/nudger.go:180"
+   ],
+   "needs_evidence": true
+  },
+  "B4": {
+   "pass": true,
+   "named": [
+    "GET /v1/nudges"
+   ],
+   "unknown": []
+  },
+  "B5": {
+   "pass": true,
+   "named": [
+    "R123",
+    "R127"
+   ],
+   "unknown": [],
+   "key_rules_named": [],
+   "needs_key_rule": false
+  },
+  "B6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "B7": {
+   "pass": true
+  },
+  "B8": null
+ },
+ "applicable": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7"
+ ],
+ "pass": true
+}

@@ -55,13 +55,21 @@ or could not run. ``verified.claim_step`` is set whenever a scenario was written
 failing step's expectation replaced by what the app answered, until it passes, and
 ``verified.status`` is ``observed`` with the app's answers.
 
+**The implemented app** (Spike C, ``inventory=``). With an inventory
+(``lattice.spec.implementation``:
+the code's extract, optional Spike B workflows) the digest gains a section of ``impl:`` elements
+(routes, machines, flows, a status line per rule), ``code:<path>:<line>`` citations are checked
+against the files, and the answer may carry two optional keys, ``implementation`` and
+``implementation_basis``, downgraded deterministically; ``kind`` is unchanged. Without an inventory
+nothing here applies and the prompt, digest, citation results and answer are as before.
+
 CLI (wired as ``python -m lattice.spec ask``)::
 
     ask --spec MOD:SPEC [--trace T.json] "question" [--selected TARGET ...]
         [--verify --app MOD:FN --db MOD:FN [--login MOD:FN] [--login-path /login]
          [--runtime REF] [--services MOD:SERVICES] [--database D] [--database-url URL]
          [--engine-file FILE ...] [--modules DIR]]
-        [--model sonnet] [--json]
+        [--model sonnet] [--json] [--inventory DIR [--app-root DIR]]
 
 ``--engine-file`` and ``--modules`` register a project's engine descriptors and installed
 modules before ``--database`` is read (as ``lattice spec check`` does); they matter only with
@@ -150,6 +158,7 @@ class Digest:
     elements: Mapping[str, Element]
     users: tuple[str, ...] = ()
     with_rules: bool = False
+    impl: Any = field(default=None, compare=False, hash=False)  # an ImplContext (Spike C)
 
     def lines_for(self, targets: Iterable[str]) -> list[str]:
         """The digest lines of the given targets (unknown ones skipped)."""
@@ -183,9 +192,10 @@ def _cell_statuses(text: str) -> frozenset[int]:
     return frozenset(int(s) for s in re.findall(r"\b[1-5]\d\d\b", text))
 
 
-def build_digest(spec: Spec, trace: Trace | None = None) -> Digest:
+def build_digest(spec: Spec, trace: Trace | None = None, inventory: Any = None) -> Digest:
     """The spec digest (see the module docstring). Deterministic: the same spec and
-    trace always give the same text, in the spec's own order."""
+    trace always give the same text, in the spec's own order. `inventory` (an
+    ``lattice.spec.implementation.Inventory``): adds the ``impl:`` elements and their section."""
     data = _build(spec, trace or Trace(source="", rules=[]), None, None, "spec")
     elements: dict[str, Element] = {}
 
@@ -264,7 +274,10 @@ def build_digest(spec: Spec, trace: Trace | None = None) -> Digest:
     for kind, _ in SECTIONS:
         if kind != "rule" or d.with_rules:
             lines += d.section(kind)
-    return replace(d, text="\n".join(lines).rstrip() + "\n")
+    d = replace(d, text="\n".join(lines).rstrip() + "\n")
+    if inventory is not None:
+        d = _with_impl(d, spec, trace, inventory)
+    return d
 
 
 # ---- the citation check -------------------------------------------------------------------
@@ -315,6 +328,10 @@ def check_citation(digest: Digest, citation: Mapping[str, Any]) -> str | None:
     target = str(citation.get("target") or "")
     quote = str(citation.get("quote") or "").strip()
     step = citation.get("step")
+    if digest.impl is not None and target.startswith("code:"):
+        if step is not None:
+            return "a step number is only for a scenario target"
+        return digest.impl.check_code({**citation, "quote": quote})
     el = digest.elements.get(target)
     if el is None:
         return f"no element {target!r} in the spec"
@@ -328,6 +345,10 @@ def check_citation(digest: Digest, citation: Mapping[str, Any]) -> str | None:
         if not 1 <= step <= len(el.steps):
             return f"the scenario has no step {step} (it has {len(el.steps)})"
         return _check_step(el.raw[step - 1], el.steps[step - 1], quote)
+    if el.kind == "impl_flow":
+        said = set(re.findall(r"\b(verified|unverified|failed)\b", quote.lower()))
+        if said and said != {el.raw}:
+            return f"the quote says {'/'.join(sorted(said))}; the flow's status is {el.raw}"
     if el.kind == "cell":
         quoted = _cell_statuses(" ".join(t for t in quote.split() if not t.startswith("/")))
         if not quoted:
@@ -361,9 +382,16 @@ class Answer:
     rejected_citations: list[dict[str, Any]] = field(default_factory=list)
     verified: dict[str, Any] | None = None
     usage: dict[str, Any] = field(default_factory=lambda: {"seconds": 0, "tokens": 0})
+    # Spike C: only with an inventory, left out of to_dict() when None
+    implementation: str | None = None
+    implementation_basis: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        d = asdict(self)
+        for k in ("implementation", "implementation_basis"):
+            if d[k] is None:
+                del d[k]
+        return d
 
     def render(self) -> str:
         out = [f"{self.kind.upper()}: {self.answer}", self.explanation]
@@ -372,6 +400,8 @@ class Answer:
             out.append(f"  cites {c['target']}{step}: {c.get('quote', '')}")
         for c in self.rejected_citations:
             out.append(f"  rejected {c['target']}: {c['reason']}")
+        if self.implementation:
+            out.append(f"implementation: {self.implementation} ({self.implementation_basis})")
         if self.verified:
             out.append(f"verified: {self.verified['status']} -- {self.verified['detail']}")
             out += [f"  {s}" for s in self.verified.get("scenario", "").splitlines()]
@@ -381,6 +411,200 @@ class Answer:
             f"{u.get('rounds', 0)} model calls)"
         )
         return "\n".join(out)
+
+
+# ---- the implemented app (Spike C; only with an inventory) --------------------------------
+
+IMPL_CORE_BUDGET = 8000  # tokens of the implemented-app section in the core
+IMPL_BUDGET = 2500  # tokens of full flows sent with one question
+IMPL_HEADER = "## Implemented app (extracted from the code; static unless marked observed)"
+
+SYSTEM_IMPL = """\
+The digest also has an "Implemented app" section: what the CODE does, extracted from the Go
+source, not from the spec. Routes are [impl:route:METHOD /template] with their registration and
+handler locations (code:<path>:<line>); a route the spec names that the code does not register
+is "spec_only". Machines are [impl:machine:table.column]; flows are [impl:flow:wf-...]
+(sequences of requests replayed on a fresh database: a flow is "verified" only if the replay
+answered as listed; the steps of the relevant flows come with the question); [impl:rule:Rn] is
+a rule's implementation status. Everything else is read from the code ("static"); an absence is
+only inferred from a static extract.
+Besides "kind", give "implementation": one of implemented_verified (cite the verified
+impl:flow, or its impl:rule, AND a code: location), implemented_unverified (the code has it;
+cite an impl: element or a code: location), required_not_implemented (the spec requires it:
+cite the rule:, cell: or scenario:, and the spec_only impl:route), not_specified_not_implemented
+(neither the spec nor the code has it), or ambiguous (several elements fit: cite at least two);
+and "implementation_basis": observed, static or inferred. These labels are re-checked
+mechanically against your citations and downgraded when they do not support them.
+A code citation is {"target": "code:<relative path>:<line>", "step": null, "quote": "<at least
+8 characters copied from that line>"}.
+"""
+
+
+def _flow_step_lines(ctx: Any, flow: Mapping[str, Any]) -> tuple[str, ...]:
+    out = []
+    for st in flow["steps"]:
+        if st["kind"] == "await":
+            out.append(
+                f"await service {st['service']} until {json.dumps(st['expect_db'], sort_keys=True)}"
+            )
+            continue
+        ev = ""
+        regs = [a for a in st["evidence"][:1]]
+        if regs:
+            from lattice.spec.implementation import _parse_at
+
+            loc = _parse_at(regs[0])
+            if loc is not None:
+                ev = f" code:{ctx.inv.evidence_path(loc[0])}:{loc[1]}"
+        who = st["caller"] or "no token"
+        out.append(f"{st['route']} as {who} -> {st['expect_status']}{ev}")
+    return tuple(out)
+
+
+def _impl_elements(ctx: Any, *, refusals: bool) -> dict[str, Element]:
+    rep = ctx.report
+    out: dict[str, Element] = {}
+    flows = {f["id"]: f for f in rep["flows"]}
+    for r in rep["routes"]:
+        c = r["evidence"]
+        parts = [r["status"] + (f" ({r['reason']})" if r["reason"] else "")]
+        if r["auth"]:
+            parts.append(f"auth {r['auth']}")
+        parts.append(f"registered {c[0]}")
+        if len(c) > 1:
+            parts.append(f"handler {c[1]}")
+        if r["statuses"]:
+            parts.append("2xx " + "/".join(map(str, r["statuses"])))
+        if refusals and r["refusals"]:
+            parts.append("refuses " + ", ".join(r["refusals"]))
+        n = len(r["rules"])
+        parts.append(f"required by {n} rule{'s' if n != 1 else ''}" if n else "required by no rule")
+        if r["flows"]:
+            v = sum(1 for f in r["flows"] if flows[f]["effective"] == "verified")
+            parts.append(f"flows {len(r['flows'])} ({v} verified)")
+        t = f"impl:route:{r['key']}"
+        out[t] = Element(t, "impl_route", "; ".join(parts))
+    for e in rep["endpoints"]:
+        if e["status"] == "spec_only":
+            t = f"impl:route:{e['key']}"
+            out[t] = Element(
+                t,
+                "impl_route",
+                "spec_only: the spec names this endpoint; the code registers no such route",
+            )
+    for m in rep["machines"]:
+        parts = [
+            f"states {', '.join(m['states'])}",
+            f"moves {'; '.join(m['edges'])}",
+            f"status {m['status']}",
+        ]
+        parts.append("rules " + (", ".join(m["rules"]) if m["rules"] else "none"))
+        if m["evidence"]:
+            parts.append("evidence " + ", ".join(m["evidence"][:2]))
+        out[m["key"]] = Element(m["key"], "impl_machine", "; ".join(parts))
+    section = "rules" if "rules" in rep else None
+    if section:
+        for e in rep[section]:
+            body = e["status"]
+            if e.get("reasons"):
+                body += f" ({'; '.join(e['reasons'])})"
+            if e.get("missing"):
+                body += "; missing " + ", ".join(
+                    m.removeprefix("impl:route:") for m in e["missing"]
+                )
+                body += " (partial)" if e["partial"] else ""
+            t = f"impl:rule:{e['id']}"
+            out[t] = Element(t, "impl_rule", body)
+    for f in rep["flows"]:
+        raw = ctx.flows[f["id"]]
+        name = f"{f['name']} (inferred name)" if f["inferred_name"] else f["name"]
+        head = f"{name}; kind {f['kind']}; status {f['effective']}"
+        t = f"impl:flow:{f['id']}"
+        out[t] = Element(t, "impl_flow", head, steps=_flow_step_lines(ctx, raw), raw=f["effective"])
+    return out
+
+
+def _impl_core_lines(ctx: Any, els: Mapping[str, Element]) -> list[str]:
+    inv = ctx.report["inventory"]
+    head = (
+        f"inventory: extract {inv['extract_sha256'][:10]}, workflows "
+        f"{(inv['workflows_sha256'] or 'none')[:10]}, run {inv['run_mode'] or 'none'}"
+    )
+    if inv["stale"]:
+        c = inv["stale"]["counts"]
+        head += (
+            f"; STALE: {c['changed']} changed, {c['added']} added, {c['removed']} removed "
+            "source files since the inventory, so nothing is verified"
+        )
+    if inv["workflows_mismatch"]:
+        head += f"; WORKFLOWS MISMATCH: {inv['workflows_mismatch']}"
+    lines = [IMPL_HEADER, "", head, ""]
+    for kind, title in (
+        ("impl_route", "### Routes (code) and endpoints the spec names that the code lacks"),
+        ("impl_machine", "### Machines"),
+        ("impl_rule", "### Rules: implementation status"),
+        ("impl_flow", "### Flows (index; the steps of the relevant ones come with the question)"),
+    ):
+        group = [e for e in els.values() if e.kind == kind]
+        if not group:
+            continue
+        lines += [title, ""]
+        lines += [f"[{e.target}] {e.content}" for e in group]
+        lines.append("")
+    return lines
+
+
+def _with_impl(d: Digest, spec: Spec, trace: Trace | None, inventory: Any) -> Digest:
+    from lattice.spec.implementation import ImplContext
+
+    ctx = ImplContext.of(spec, trace, inventory)
+    els = _impl_elements(ctx, refusals=True)
+    if approx_tokens("\n".join(_impl_core_lines(ctx, els))) > IMPL_CORE_BUDGET:
+        els = _impl_elements(ctx, refusals=False)  # over budget: the refusal codes go first
+    elements = {**d.elements, **els}
+    text = d.text.rstrip("\n") + "\n\n" + "\n".join(_impl_core_lines(ctx, els)).rstrip() + "\n"
+    return replace(d, text=text, elements=elements, impl=ctx)
+
+
+def impl_core(digest: Digest) -> list[str]:
+    """The implemented-app section of the core (empty without an inventory)."""
+    if digest.impl is None:
+        return []
+    els = {t: e for t, e in digest.elements.items() if e.kind.startswith("impl_")}
+    return _impl_core_lines(digest.impl, els)
+
+
+def _impl_flows_for(
+    digest: Digest, index: Index, query: set[str], selected: Sequence[str]
+) -> list[str]:
+    """The flows relevant to a question, best first, within `IMPL_BUDGET` tokens: their words
+    and their rules' scores, plus the flows through the routes of the selected targets."""
+    ctx = digest.impl
+    rule_scores: dict[str, float] = {}
+    sel_keys: set[str] = set()
+    for t in selected:
+        sel_keys |= ctx.target_endpoints(t)
+        if t.startswith("impl:route:"):
+            sel_keys.add(t.removeprefix("impl:route:"))
+    scored = []
+    for f in ctx.report["flows"]:
+        doc = terms(" ".join([f["name"], f["kind"], *f["routes"]]))
+        s = sum(index.idf.get(t, 0.0) for t in query & doc)
+        for rid in f["rules"]:
+            if rid not in rule_scores:
+                rule_scores[rid] = index.score(f"rule:{rid}", query)
+        s += 0.5 * max((rule_scores[r] for r in f["rules"]), default=0.0)
+        if sel_keys & set(f["routes"]):
+            s += 1000.0
+        if s > 0:
+            scored.append((s, f"impl:flow:{f['id']}"))
+    order = {t: i for i, t in enumerate(digest.elements)}
+    scored.sort(key=lambda p: (-p[0], order[p[1]]))
+    return _fill(
+        (t for _, t in scored),
+        lambda t: approx_tokens("\n".join(digest.elements[t].lines(plain=True))),
+        IMPL_BUDGET,
+    )
 
 
 # ---- retrieval: the core digest and the scenarios relevant to a question -------------------
@@ -628,6 +852,7 @@ def core_text(digest: Digest) -> str:
             ]
             continue
         lines += digest.section(kind)
+    lines += impl_core(digest)
     names = [e.target.removeprefix("scenario:") for e in digest.of_kind("scenario")]
     lines += [
         f"## Scenario index ({len(names)} scenarios; target = scenario:<name>; the "
@@ -681,7 +906,8 @@ def retrieve(
     sent = {
         e.target
         for e in digest.elements.values()
-        if e.kind not in ("scenario", "cell") or (e.kind == "cell" and _cells_in_core(digest))
+        if e.kind not in ("scenario", "cell", "impl_flow")
+        or (e.kind == "cell" and _cells_in_core(digest))
     }
     parts: list[str] = []
     if not _cells_in_core(digest):
@@ -713,6 +939,17 @@ def retrieve(
     if not picked:
         parts.append("(none matched the question)")
     parts.append("")
+    if digest.impl is not None:
+        flows = _impl_flows_for(digest, index, query, selected)
+        n_flows = len(digest.impl.report["flows"])
+        parts += [
+            f"## Implemented flows relevant to the question ({len(flows)} of {n_flows}; the rest "
+            "are only named in the core's flow index)",
+            "",
+        ]
+        parts += digest.lines_for(flows) or ["(none matched the question)"]
+        parts.append("")
+        sent |= set(flows)
     sel = digest.lines_for(selected)
     if sel:
         parts += [
@@ -722,7 +959,8 @@ def retrieve(
         ]
         sent |= {t for t in selected if t in digest.elements}
     sent |= set(picked)
-    return Retrieval(SYSTEM + "\n" + core_text(digest), "\n".join(parts), picked, sent)
+    system = SYSTEM + ("\n" + SYSTEM_IMPL if digest.impl is not None else "")
+    return Retrieval(system + "\n" + core_text(digest), "\n".join(parts), picked, sent)
 
 
 def _need_request(data: Any) -> tuple[list[str], list[str]] | None:
@@ -783,7 +1021,7 @@ def _json_object(text: str) -> Any:
     return json.loads(body[start : end + 1])
 
 
-def _parse_answer(text: str) -> tuple[dict[str, Any] | None, str | None]:
+def _parse_answer(text: str, impl: bool = False) -> tuple[dict[str, Any] | None, str | None]:
     try:
         data = _json_object(text)
     except (ValueError, json.JSONDecodeError) as err:
@@ -806,12 +1044,15 @@ def _parse_answer(text: str) -> tuple[dict[str, Any] | None, str | None]:
         clean.append(
             {"target": str(c.get("target") or ""), "step": step, "quote": str(c.get("quote") or "")}
         )
-    return {
+    out = {
         "kind": kind,
         "answer": str(data.get("answer", "")),
         "explanation": str(data.get("explanation", "")),
         "citations": clean,
-    }, None
+    }
+    if impl and data.get("implementation") is not None:
+        out["implementation"] = str(data.get("implementation")).strip().lower()
+    return out, None
 
 
 def _split(digest: Digest, cites: list[dict[str, Any]]) -> tuple[list, list]:
@@ -909,16 +1150,19 @@ def ask(
     verify: VerifyConfig | None = None,
     digest: Digest | None = None,
     index: Index | None = None,
+    inventory: Any = None,
 ) -> Answer:
     """Answer `question` from `spec` (see the module docstring). `digest` / `index`: a
     prebuilt `build_digest(spec, trace)` and its `Index` (`ask_many` reuses them).
+    `inventory`: an ``lattice.spec.implementation.Inventory`` (Spike C); None: as before.
 
     Rounds: the answer; at most one "need more" round (the model asked for elements it
     was not shown); at most one citation-repair round. Citations are always checked
     against the FULL digest, whatever was sent."""
-    digest = digest or build_digest(spec, trace)
+    digest = digest or build_digest(spec, trace, inventory)
     index = index or Index(digest)
     meter = _Meter()
+    with_impl = digest.impl is not None
     r = retrieve(digest, question, selected, index=index)
     meter.sent |= r.sent
     system = r.system
@@ -936,7 +1180,7 @@ def ask(
             {"role": "user", "content": _more_message(digest, index, picked, unknown)},
         ]
         text = meter.call(generator, system, messages)
-    parsed, err = _parse_answer(text)
+    parsed, err = _parse_answer(text, with_impl)
     good, bad = _split(digest, parsed["citations"]) if parsed else ([], [])
     needs = parsed is None or bool(bad) or (parsed["kind"] != "not_specified" and not good)
     if needs:
@@ -948,7 +1192,7 @@ def ask(
             },
         ]
         text = meter.call(generator, system, messages)
-        parsed2, err2 = _parse_answer(text)
+        parsed2, err2 = _parse_answer(text, with_impl)
         if parsed2 is not None or parsed is None:
             parsed, err = parsed2, err2
             good, bad = _split(digest, parsed["citations"]) if parsed else ([], [])
@@ -976,6 +1220,14 @@ def ask(
                 f"The model answered {parsed['kind']} ({parsed['answer']!r}), but {why}, "
                 "so the answer is not grounded in the spec."
             )
+    if with_impl and parsed is not None and parsed.get("implementation") is not None:
+        from lattice.spec.implementation import IMPLEMENTATION_LABELS, settle_implementation
+
+        label = parsed["implementation"]
+        label = label if label in IMPLEMENTATION_LABELS else "unsettled"
+        answer.implementation, answer.implementation_basis = settle_implementation(
+            label, good, digest.impl
+        )
     if verify is not None:
         answer.verified = _verify(
             spec, digest, index, question, answer, r.scenarios, verify, generator, meter
@@ -992,9 +1244,10 @@ def ask_many(
     generator: Generator,
     model: str = "",
     verify: VerifyConfig | None = None,
+    inventory: Any = None,
 ) -> list[Answer]:
     """`ask` each question in turn, on one digest (and so one cached system prompt)."""
-    digest = build_digest(spec, trace)
+    digest = build_digest(spec, trace, inventory)
     index = Index(digest)
     return [
         ask(
@@ -1348,6 +1601,33 @@ def _claim_key(step: Step | Await) -> tuple:
     return (step.method, _normalize_path(step.path), step.user, step.expect_status)
 
 
+def _verify_flow(
+    spec: Spec, digest: Digest, flow_id: str, cfg: VerifyConfig, meter: _Meter
+) -> dict[str, Any]:
+    """Replay a cited flow (Spike B's recorded requests) through layer D with the configured
+    harness: no model call. ``agrees``: every step answered as recorded; ``disagrees``: a step
+    answered otherwise (expected vs actual); ``error``: it could not run."""
+    from lattice.spec.implementation import flow_scenario
+
+    scenario = flow_scenario(digest.impl.flows[flow_id])
+    meter.sent.add(f"impl:flow:{flow_id}")
+    status, out = _run(spec, scenario, cfg)
+    base = {
+        "scenario": _readable(scenario),
+        "claim_step": len(scenario.steps),
+        "source": f"flow:{flow_id}",
+    }
+    if status == "pass":
+        return {
+            "status": "agrees",
+            "detail": "the flow replayed against the app: every step answered as recorded",
+            **base,
+        }
+    if status == "error":
+        return {"status": "error", "detail": out, **base}
+    return {"status": "disagrees", "detail": _finding_text(scenario, out), **base}
+
+
 def _verify(
     spec: Spec,
     digest: Digest,
@@ -1362,6 +1642,15 @@ def _verify(
     """Write a scenario for the answer and run it (see the module docstring). A failing
     step other than the claim step is setup: the model gets one try to fix it, then the
     result is ``inconclusive``."""
+    if digest.impl is not None:
+        cited = [
+            c["target"].removeprefix("impl:flow:")
+            for c in answer.citations
+            if c["target"].startswith("impl:flow:")
+            and c["target"].removeprefix("impl:flow:") in digest.impl.flows
+        ]
+        if cited:
+            return _verify_flow(spec, digest, cited[0], cfg, meter)
     observe = answer.kind == "not_specified"
     if observe and not cfg.observe:
         return {
@@ -1498,6 +1787,14 @@ def _parser() -> argparse.ArgumentParser:
         metavar="DIR",
         help="--verify: load the modules installed in project DIR, each re-hashed",
     )
+    p.add_argument(
+        "--inventory",
+        type=Path,
+        metavar="DIR",
+        help="an implementation inventory (lattice import inventory): answers also say what the "
+        "code implements",
+    )
+    p.add_argument("--app-root", type=Path, default=Path("."), help="--inventory: the app's root")
     return p
 
 
@@ -1527,6 +1824,11 @@ def main(argv: Sequence[str] | None = None, *, generator: Generator | None = Non
         if not isinstance(spec, Spec):
             raise ValueError(f"{args.spec} is not a Spec")
         trace = Trace.load(args.trace) if args.trace else None
+        inventory = None
+        if args.inventory:
+            from lattice.spec.implementation import load_inventory
+
+            inventory = load_inventory(args.inventory, args.app_root)
         cfg = None
         if args.verify:
             if not args.app or not args.db:
@@ -1553,6 +1855,7 @@ def main(argv: Sequence[str] | None = None, *, generator: Generator | None = Non
             generator=generator,
             model=args.model,
             verify=cfg,
+            inventory=inventory,
         )
     except Exception as err:  # noqa: BLE001 -- any failure to ask is exit 2
         print(f"error: {type(err).__name__}: {err}", file=sys.stderr)

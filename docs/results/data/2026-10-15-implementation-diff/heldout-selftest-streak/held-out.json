@@ -1,0 +1,81 @@
+{
+  "apps": {
+    "S": {
+      "crashed": false,
+      "deterministic": true,
+      "report_sha256": "ee87534fc44f4afd44a152d99c1b45f1eed16b6f182537eb4735eca843bee018",
+      "requirement_basis": "spec",
+      "run_mode": "observed",
+      "score": {
+        "primary_exact": {
+          "accuracy": 1.0,
+          "agree": 25,
+          "disagreements": [],
+          "implemented_not_specified_after_exclusions": 0,
+          "keys": 25,
+          "report_statuses": {
+            "implemented": 25,
+            "test_only": 1
+          },
+          "spec_only": 0
+        },
+        "secondary": {
+          "code_routes_matching_a_spec_endpoint": "26/26",
+          "label": "suffix join (Spike A's rule: the spec path is a suffix of the code path); informational",
+          "spec_endpoints_matching_a_code_route": "26/26",
+          "spec_only_by_suffix": []
+        }
+      },
+      "summary": {
+        "endpoints": {
+          "implemented": 25,
+          "test_only": 1
+        },
+        "excluded": 3,
+        "flows": {
+          "failed": 8,
+          "unverified": 1,
+          "verified": 59
+        },
+        "orphan_flows": 0,
+        "orphan_machines": 1,
+        "orphan_routes": 0,
+        "requirements": {
+          "implemented_unverified": 33,
+          "implemented_verified": 188,
+          "no_element": 1,
+          "required_not_implemented": 0
+        },
+        "routes": {
+          "excluded": 1,
+          "implemented_unverified": 5,
+          "implemented_verified": 20
+        }
+      },
+      "truth_sha256": "8b7ae33eca807b4b21883d4e73c892a460bf874b6c3e6eb8a42af9c0ad76cf48",
+      "workflows": "given",
+      "workflows_mismatch": null
+    }
+  },
+  "crashes": 0,
+  "deterministic": true,
+  "freeze": {
+    "dogfood/implementation_probes.py": "33a47d05325d391c4735c94710c264b71b3862e546a69da9f2bedc7a4976b330",
+    "lattice/gocheck/src/goextract.go": "e97fa18e13cbb08f1b2dbd6f4e3c107caf3ecf00f543a9e928c92c8afe06df2e",
+    "lattice/gocheck/src/goextract_assemble.go": "8061f875ad063d07e45b02380f9c974c6f00075fa4db520b49f6323cba5e6607",
+    "lattice/gocheck/src/goextract_closure.go": "ed95d0fb9d93b6f9ae903f298340bed4877c6a9f122817e4fe6cff7f04361a4e",
+    "lattice/gocheck/src/goextract_owner.go": "bd358798d9854264bda77e62227c44be2e87cbc4ec15f6732ab22c64b598e086",
+    "lattice/gocheck/src/goextract_raise.go": "1f8db0956e87bcc5392f4c08fb38d525267b0280733463b04acd7197a9d8e5ad",
+    "lattice/gocheck/src/goextract_routes.go": "4441d0e3f0ffecc7ffd6d68375278fe0013f4b20827cab7a2b6b2c2e00a7ee72",
+    "lattice/gocheck/src/goextract_tables.go": "45339c5eb1c97c0aa9f55ff0640a92224fdc6f19bd2daf4a2038ab16021d4702",
+    "lattice/gocheck/src/goextract_workflow.go": "3eb32761adfb313dc4ced351f62ad85aeb98110c86c43257ef0e212668385a42",
+    "lattice/importer/frontends/go_gin.py": "9f24e9bb5ac8b442cb92cc47ce1b66424b082d728f48e56579783c1bf038a913",
+    "lattice/importer/inventory.py": "55849494b1ece51ed04a84e34f87da3f65c4fcc02b9523ac9269009e754f2e3b",
+    "lattice/importer/workflow_run.py": "edb2fd460b5ea130324fdd361c5b5213ba1e1a20916c6b63675d5268da089cd1",
+    "lattice/importer/workflows.py": "beb576d70e0e742047e63554821692d6540a69eb3ad00d01dadfb12ccbd5dd3a",
+    "lattice/mcp/tools.py": "3e94fce89e5347d0129a89b421f9c2015bd48651fa4c7dc8dad099005867584d",
+    "lattice/spec/ask.py": "0925737b48e1b87fdcc9d8140a6625044592db130df0724af7121096eeb98ffd",
+    "lattice/spec/implementation.py": "c8557dcd561f5a6dcd5843d557f154c0ceb4d1175ab34ba3fa0d2de974d3447c"
+  },
+  "predicted": "accuracy 0.90-1.00 per app; spec-only 0-2 and implemented-not-specified 0-3 per app; 0/6 crashes; identical repeats"
+}

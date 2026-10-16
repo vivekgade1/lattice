@@ -1,0 +1,159 @@
+{
+ "sid": "Q8",
+ "question": "Q8",
+ "world": "S-dyn",
+ "key": "AMBIGUOUS",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 10.8
+ },
+ "cost_usd": 0.067717,
+ "tokens": 12563,
+ "tokens_incl_cache_reads": 151053,
+ "turns": 3,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T06:17:08+00:00",
+ "score": {
+  "items": {
+   "B1": true,
+   "B2": false,
+   "B3": true,
+   "B4": true,
+   "B5": true,
+   "B6": true,
+   "B7": true,
+   "B8": true
+  },
+  "detail": {
+   "B1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_018nmmCnnhyqwwSxeKvkEtGH",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_01TYh3Bd1SajLoCkemRAdvFF",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "B2": {
+    "pass": false,
+    "label": "IMPLEMENTED-VERIFIED",
+    "key": "AMBIGUOUS",
+    "labels_on_line": [
+     "IMPLEMENTED-VERIFIED"
+    ],
+    "first_line": "IMPLEMENTED-VERIFIED"
+   },
+   "B3": {
+    "pass": true,
+    "citations": [
+     "internal/habits/routes.go:25",
+     "internal/habits/routes.go:205",
+     "internal/completions/routes.go:26",
+     "internal/completions/routes.go:263",
+     "internal/nudges/routes.go:16",
+     "internal/nudges/routes.go:33"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/habits/routes.go:25",
+     "internal/habits/routes.go:205",
+     "internal/completions/routes.go:26",
+     "internal/completions/routes.go:263",
+     "internal/nudges/routes.go:16",
+     "internal/nudges/routes.go:33"
+    ],
+    "needs_evidence": true
+   },
+   "B4": {
+    "pass": true,
+    "named": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/completions",
+     "GET /v1/nudges"
+    ],
+    "unknown": []
+   },
+   "B5": {
+    "pass": true,
+    "named": [
+     "R21",
+     "R27",
+     "R58",
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "unknown": [],
+    "key_rules_named": [],
+    "needs_key_rule": false
+   },
+   "B6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "B7": {
+    "pass": true
+   },
+   "B8": {
+    "pass": true,
+    "named": [
+     "GET /v1/habits",
+     "GET /v1/habits/{}/completions",
+     "GET /v1/nudges"
+    ],
+    "of": 4
+   }
+  },
+  "applicable": [
+   "B1",
+   "B2",
+   "B3",
+   "B4",
+   "B5",
+   "B6",
+   "B7",
+   "B8"
+  ],
+  "pass": false
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "Is there a list endpoint?"
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "routes"
+   }
+  }
+ ]
+}

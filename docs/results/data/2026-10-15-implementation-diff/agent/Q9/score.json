@@ -1,0 +1,86 @@
+{
+ "items": {
+  "B1": true,
+  "B2": true,
+  "B3": true,
+  "B4": true,
+  "B5": false,
+  "B6": true,
+  "B7": true,
+  "B8": null
+ },
+ "detail": {
+  "B1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_01YPgYUzRbHNNYmC9LdWpN3R",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "B2": {
+   "pass": true,
+   "label": "REQUIRED-NOT-IMPLEMENTED",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "labels_on_line": [
+    "REQUIRED-NOT-IMPLEMENTED"
+   ],
+   "first_line": "REQUIRED-NOT-IMPLEMENTED"
+  },
+  "B3": {
+   "pass": true,
+   "citations": [
+    "internal/progress/routes.go:19",
+    "internal/progress/routes.go:20",
+    "internal/progress/routes.go:35"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/progress/routes.go:19",
+    "internal/progress/routes.go:20"
+   ],
+   "needs_evidence": false
+  },
+  "B4": {
+   "pass": true,
+   "named": [
+    "GET /v1/home",
+    "GET /v1/nudges",
+    "POST /v1/nudges/{}/dismiss",
+    "GET /v1/sync"
+   ],
+   "unknown": []
+  },
+  "B5": {
+   "pass": false,
+   "named": [],
+   "unknown": [],
+   "key_rules_named": [],
+   "needs_key_rule": true
+  },
+  "B6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "B7": {
+   "pass": true
+  },
+  "B8": null
+ },
+ "applicable": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7"
+ ],
+ "pass": false
+}

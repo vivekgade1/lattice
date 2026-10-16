@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.21)
+# Lattice Studio API contract (v1.22)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--allow-apply] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -1103,3 +1103,35 @@ Evidence group: **Improve** (always listed: proposals, applies, Draft, Verify wi
 
 ### The mock
 Serves all six routes with the real shapes (`lattice.improve` itself computes draft and verify from the fixture log and ledger) and the same guard ladder. The default project is `enabled: true`: an apply of `imp-3e1cd7f9` runs 1.5 s in memory (no git), then holds a fixture record with the real record's key tree (gates `passed`), and a discard removes it; the second project is `enabled: false` (403), so both UI states show.
+
+## v1.22 additions (the implementation diff: what the code implements against what the spec requires)
+
+**Documentation only: no new route, `GET /api/model` gains no key, the web UI and the mock are unchanged.** Everything below applies only when `studio.toml` has an `[implementation]` table; without it `POST /api/ask`, the MCP tool list and the chat sessions' prompts are exactly what they were.
+
+### studio.toml `[implementation]`
+```toml
+[implementation]
+inventory = "../inv"   # the directory `lattice import inventory APP --out DIR [--workflows FILE]` wrote
+app_root = "."         # optional: the app's root (default: the project directory)
+package = "."          # optional: the Go module directory (default: the inventory's)
+```
+The inventory lives **outside** the target (the command refuses an `--out` under the app root, exit 2) and never in the state directory. Studio, the CLI and the MCP tools only **read** it: they never create, cache or refresh it, run no extractor, `go`, git or Docker, and call no model (only `ask` does, as before). Every read re-hashes the app's `*.go`, `go.mod` and `go.sum` (minus `vendor`, `build`, `testdata` and dot-directories): when they differ from the capture, the result says `stale: {changed, added, removed}` and every element reads `implemented_unverified` (reason `stale`). A missing or invalid inventory answers `inventory_missing` or `bad_inventory`, never a guess.
+
+### POST /api/ask: two optional answer keys and two citation kinds
+With `[implementation]` the answer may carry (left out when absent; `kind` keeps its four values):
+- `implementation`: `implemented_verified | implemented_unverified | required_not_implemented | not_specified_not_implemented | ambiguous | unsettled`;
+- `implementation_basis`: `observed | static | inferred` (set by Studio from the label, never taken from the model).
+
+The labels are downgraded mechanically from the **valid** citations, never upgraded: `implemented_verified` needs a valid `impl:flow:<id>` citation of a verified flow (or `impl:rule:<Rn>` of a verified rule) and a valid `code:` citation at an evidence location (a route's registration or handler, a flow step, a machine edge, a struct), else `implemented_unverified` (with one such `code:` or `impl:route|flow|machine` citation) or `unsettled`; a stale inventory turns `*_verified` into `*_unverified`; `required_not_implemented` needs a valid `rule:`, `cell:` or `scenario:` citation whose endpoints include one the report marks missing; `ambiguous` needs valid citations of at least two distinct elements; `not_specified_not_implemented` is accepted (basis `inferred`).
+
+Citation targets: `code:<relative path>:<line>` with `quote` at least 8 non-space characters copied from that line (checked against the file: relative normalised path, inside the app root with no symbolic link, case-exact, a source or code file of at most 1 MB, the line exists, the quote is in it; an optional `symbol` must be a word on the line); and `impl:route:<METHOD /template>`, `impl:flow:<wf-id>`, `impl:machine:<table.column>`, `impl:rule:<Rn>` (a flow's quoted status must equal its status). The quote of an `impl:` citation is a normalised substring of the element. With `verify: true`, an answer that cites a flow is verified by **replaying that flow's recorded requests** through layer D, with no model call: `verified.status` is `agrees`, `disagrees` (step, expected vs actual) or `error`, and `verified.source` is `flow:<id>`.
+
+### MCP tools (read-only, also under `--readonly`; listed only with `[implementation]`, after `change_list`)
+- `implementation_get {section?: summary|rules|routes|flows|machines|orphans|excluded, rule?, element?, status?, limit? <= 200}`: the default `summary` is under 4k characters. Each finding carries a `proposal {request, selected, source: {server: "extractor", item, title}}`: text only, never sent from here; a chat in change mode passes it to `change_propose`, and accepting stays a human click in Studio.
+- `workflow_get {id}`: one flow or machine; an unknown id answers `unknown_id` with the 5 nearest ids.
+- `workflow_find {question, limit? <= 10}`: deterministic and lexical (exact `METHOD /path` mentions first, then IDF-weighted term overlap), with a `hint` of `exists`, `spec_only`, `no_match` or `several`.
+
+Errors start with their code: `inventory_missing`, `bad_inventory`, `bad_workflows`, `no_spec`, `bad_section`, `bad_limit`, `unknown_id`. The chat sessions of the ask, explain and change modes allow the three tools and add one rule to their system prompt when `[implementation]` resolves.
+
+### The CLI
+`python -m lattice.spec implementation --spec MOD:SPEC [--trace T] --inventory DIR [--app-root DIR] [--json] [--rule R] [--status S]` prints the report (`lattice.implementation-report/1`: per rule `implemented_verified | implemented_unverified | required_not_implemented | no_element`, the routes, flows and machines no rule requires, the exclusions with their reason); exit 0 report produced, 2 not. `python -m lattice.spec ask ... --inventory DIR [--app-root DIR]` is the ask above. Without a trace the requirements are the spec's cells and scenarios.

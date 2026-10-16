@@ -1,0 +1,95 @@
+{
+ "items": {
+  "B1": true,
+  "B2": true,
+  "B3": true,
+  "B4": true,
+  "B5": true,
+  "B6": true,
+  "B7": true,
+  "B8": null
+ },
+ "detail": {
+  "B1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_01SG9VtZjC3adUxpmzqSg8WW",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "B2": {
+   "pass": true,
+   "label": "IMPLEMENTED-VERIFIED",
+   "key": "IMPLEMENTED-VERIFIED",
+   "labels_on_line": [
+    "IMPLEMENTED-VERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-VERIFIED"
+  },
+  "B3": {
+   "pass": true,
+   "citations": [
+    "internal/completions/routes.go:28",
+    "internal/completions/routes.go:57",
+    "internal/completions/routes.go:32",
+    "internal/completions/routes.go:64",
+    "internal/completions/routes.go:89",
+    "internal/completions/routes.go:79",
+    "internal/completions/routes.go:101",
+    "internal/completions/routes.go:169",
+    "internal/completions/routes.go:105",
+    "internal/completions/routes.go:88",
+    "internal/completions/routes.go:107",
+    "internal/completions/routes.go:111"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/completions/routes.go:28",
+    "internal/completions/routes.go:57",
+    "internal/completions/routes.go:89",
+    "internal/completions/routes.go:101",
+    "internal/completions/routes.go:105"
+   ],
+   "needs_evidence": true
+  },
+  "B4": {
+   "pass": true,
+   "named": [
+    "POST /v1/completions/batch"
+   ],
+   "unknown": []
+  },
+  "B5": {
+   "pass": true,
+   "named": [],
+   "unknown": [],
+   "key_rules_named": [],
+   "needs_key_rule": false
+  },
+  "B6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "B7": {
+   "pass": true
+  },
+  "B8": null
+ },
+ "applicable": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7"
+ ],
+ "pass": true
+}

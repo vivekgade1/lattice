@@ -58,6 +58,11 @@ or close a ledger entry (lattice/improve/apply.py).
     paths = ["engines/mariadb.toml"]   # API v1.14: the project's engine descriptors
                                        # (lattice/spec/engines.py), --database values
 
+    [implementation]            # API v1.22: what the code implements (lattice.spec.implementation)
+    inventory = "../inv"        # the directory `lattice import inventory` wrote, outside the target
+    app_root = "."              # optional: the app's root (default: the project directory)
+    package = "."               # optional: the Go module directory (default: the inventory's)
+
 The project directory and the ``sys_path`` entries are put on ``sys.path``. Without
 ``[app] app`` and ``[app] db`` the app overlay, ``verify`` and the change impact are off.
 
@@ -68,7 +73,8 @@ The project directory and the ``sys_path`` entries are put on ``sys.path``. With
   the data model (the profile's tables), the app's last check (findings mapped to targets
   as ``lattice.spec.incremental.label_impact`` does) and the change records. Cached
   until the project's files change, a change is accepted or a check finishes.
-- ``POST /api/ask``: ``lattice.spec.ask.ask`` in a worker thread with a timeout.
+- ``POST /api/ask``: ``lattice.spec.ask.ask`` in a worker thread with a timeout; with
+  ``[implementation]`` (API v1.22) the answer may also say what the code implements.
 - ``POST /api/changes``: a change record and a background job -- the LLM edits the
   markdown, ``draft_since`` drafts the change, then validate / lint / L011 conflicts /
   impact, the view diff, the markdown diff, the rule diff and the new questions.
@@ -255,6 +261,7 @@ class StudioConfig:
     mcp: dict[str, Any] = dataclasses.field(default_factory=dict)
     state: dict[str, Any] = dataclasses.field(default_factory=dict)
     engines: Any = dataclasses.field(default_factory=dict)  # [engines] (API v1.14), as written
+    implementation: dict[str, Any] = dataclasses.field(default_factory=dict)  # API v1.22
 
     @classmethod
     def load(cls, root: Path) -> StudioConfig:
@@ -270,6 +277,9 @@ class StudioConfig:
             dict(data.get("mcp") or {}) if isinstance(data.get("mcp"), dict) else {},
             dict(data.get("state") or {}) if isinstance(data.get("state"), dict) else {},
             data.get("engines") or {},
+            dict(data.get("implementation") or {})
+            if isinstance(data.get("implementation"), dict)
+            else {},
         )
 
     @property
@@ -1767,6 +1777,24 @@ class Studio:
             return list(self._cache[4]) if self._cache else []
 
     # -- ask
+    def _inventory(self) -> Any:
+        """The implementation inventory of ``[implementation]`` (API v1.22), re-read and
+        re-hashed on every ask; None when studio.toml has no such table."""
+        if not self.config.implementation:
+            return None
+        from lattice.spec import implementation as impl
+
+        cfg = impl.implementation_config(self.root)
+        if cfg is None or cfg["inventory"] is None:
+            raise ApiError(
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                "inventory_missing: [implementation] names no inventory",
+            )
+        try:
+            return impl.load_inventory(cfg["inventory"], cfg["app_root"], cfg["package"])
+        except impl.ImplementationError as e:
+            raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, str(e)) from None
+
     def ask(self, body: Mapping[str, Any]) -> dict[str, Any]:
         question = str(body.get("question") or "").strip()
         if not question:
@@ -1774,6 +1802,7 @@ class Studio:
         selected = [str(s) for s in body.get("selected") or []]
         snap = self.snapshot()
         verify = bool(body.get("verify")) and self.harness is not None
+        inventory = self._inventory()  # API v1.22: None unless studio.toml has [implementation]
 
         def run() -> dict[str, Any]:
             if verify:
@@ -1787,6 +1816,7 @@ class Studio:
                         generator=self.generator,
                         model=self.model,
                         verify=cfg,
+                        **({"inventory": inventory} if inventory is not None else {}),
                     )
             else:
                 a = ask(
@@ -1796,6 +1826,7 @@ class Studio:
                     selected=selected,
                     generator=self.generator,
                     model=self.model,
+                    **({"inventory": inventory} if inventory is not None else {}),
                 )
             return a.to_dict()
 

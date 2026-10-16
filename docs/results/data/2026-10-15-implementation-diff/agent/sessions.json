@@ -1,0 +1,2481 @@
+[
+ {
+  "sid": "Q1",
+  "question": "Q1",
+  "world": "S-dyn",
+  "key": "IMPLEMENTED-VERIFIED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 17.2
+  },
+  "cost_usd": 0.3586044,
+  "tokens": 79894,
+  "tokens_incl_cache_reads": 376778,
+  "turns": 7,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:15:07+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_01WzDYfX189VzVtymrbKw5QB",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_01JLLuvpopxe7eNhioeyi6sw",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_01635Rbt1LMbB8Dft8Cm5jrz",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "IMPLEMENTED-VERIFIED",
+     "key": "IMPLEMENTED-VERIFIED",
+     "labels_on_line": [
+      "IMPLEMENTED-VERIFIED"
+     ],
+     "first_line": "IMPLEMENTED-VERIFIED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/completions/routes.go:25",
+      "internal/completions/routes.go:217",
+      "internal/completions/routes.go:231",
+      "internal/completions/routes.go:187",
+      "internal/completions/routes.go:190",
+      "internal/completions/routes.go:139",
+      "internal/completions/routes.go:171",
+      "internal/completions/routes.go:203",
+      "internal/completions/routes.go:177",
+      "internal/completions/routes.go:211",
+      "internal/completions/routes.go:249"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/completions/routes.go:25",
+      "internal/completions/routes.go:217",
+      "internal/completions/routes.go:249"
+     ],
+     "needs_evidence": true
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "POST /v1/habits/{}/completions"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [
+      "R72",
+      "R80"
+     ],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "check in a habit for today"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "check.?in",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 60
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "HandleFunc|\\.(Post|POST|Handle)\\(|completions",
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn/internal/completions/routes.go",
+     "output_mode": "content",
+     "head_limit": 30
+    }
+   },
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "element": "impl:route:POST /v1/habits/{}/completions"
+    }
+   },
+   {
+    "name": "Read",
+    "is_error": false,
+    "input": {
+     "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn/internal/completions/routes.go",
+     "offset": 120,
+     "limit": 145
+    }
+   },
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "section": "routes",
+     "element": "impl:route:POST /v1/habits/{}/completions"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q2",
+  "question": "Q2",
+  "world": "S-dyn",
+  "key": "IMPLEMENTED-VERIFIED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 13.1
+  },
+  "cost_usd": 0.0610484,
+  "tokens": 8491,
+  "tokens_incl_cache_reads": 221435,
+  "turns": 4,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:15:20+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": false,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_019CyDgxw5tKDabVfLoNeGg2",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "IMPLEMENTED-VERIFIED",
+     "key": "IMPLEMENTED-VERIFIED",
+     "labels_on_line": [
+      "IMPLEMENTED-VERIFIED"
+     ],
+     "first_line": "IMPLEMENTED-VERIFIED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/account/routes.go:24",
+      "internal/account/devices.go:137",
+      "internal/account/devices.go:140",
+      "internal/account/devices.go:143",
+      "internal/account/devices.go:147",
+      "internal/account/devices.go:150",
+      "internal/auth/routes.go:282"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/account/routes.go:24",
+      "internal/account/devices.go:137",
+      "internal/account/devices.go:143"
+     ],
+     "needs_evidence": true
+    },
+    "B4": {
+     "pass": false,
+     "named": [
+      "DELETE /v1/devices/{}",
+      "DELETE /devices/{}",
+      "DELETE /v1/me"
+     ],
+     "unknown": [
+      "DELETE /devices/{}"
+     ]
+    },
+    "B5": {
+     "pass": true,
+     "named": [
+      "R33"
+     ],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "unregister a device"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "(?i)unregister|delete.*device|device.*delete|remove.*device",
+     "output_mode": "content",
+     "-n": true,
+     "head_limit": 40
+    }
+   },
+   {
+    "name": "Read",
+    "is_error": false,
+    "input": {
+     "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn/internal/account/devices.go",
+     "offset": 130,
+     "limit": 30
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q3",
+  "question": "Q3",
+  "world": "S-dyn",
+  "key": "IMPLEMENTED-VERIFIED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 37.7
+  },
+  "cost_usd": 0.078734,
+  "tokens": 12656,
+  "tokens_incl_cache_reads": 226856,
+  "turns": 4,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:15:58+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_01SG9VtZjC3adUxpmzqSg8WW",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "IMPLEMENTED-VERIFIED",
+     "key": "IMPLEMENTED-VERIFIED",
+     "labels_on_line": [
+      "IMPLEMENTED-VERIFIED"
+     ],
+     "first_line": "IMPLEMENTED-VERIFIED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/completions/routes.go:28",
+      "internal/completions/routes.go:57",
+      "internal/completions/routes.go:32",
+      "internal/completions/routes.go:64",
+      "internal/completions/routes.go:89",
+      "internal/completions/routes.go:79",
+      "internal/completions/routes.go:101",
+      "internal/completions/routes.go:169",
+      "internal/completions/routes.go:105",
+      "internal/completions/routes.go:88",
+      "internal/completions/routes.go:107",
+      "internal/completions/routes.go:111"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/completions/routes.go:28",
+      "internal/completions/routes.go:57",
+      "internal/completions/routes.go:89",
+      "internal/completions/routes.go:101",
+      "internal/completions/routes.go:105"
+     ],
+     "needs_evidence": true
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "POST /v1/completions/batch"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "check in several habits in one request (bulk/batch check-in)"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "check-?in|checkin",
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 60
+    }
+   },
+   {
+    "name": "Read",
+    "is_error": false,
+    "input": {
+     "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn/internal/completions/routes.go",
+     "limit": 215
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q4",
+  "question": "Q4",
+  "world": "S-dyn",
+  "key": "IMPLEMENTED-UNVERIFIED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 18.6
+  },
+  "cost_usd": 0.09974100000000001,
+  "tokens": 14900,
+  "tokens_incl_cache_reads": 307450,
+  "turns": 8,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:16:16+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_01ASHEi5BoMXoPEGHiFmHVzt",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_01BtaoDB7CHs4p6ueiJPWQzv",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_01DmJJrq6scyVNYGPPFAsmb6",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "IMPLEMENTED-UNVERIFIED",
+     "key": "IMPLEMENTED-UNVERIFIED",
+     "labels_on_line": [
+      "IMPLEMENTED-UNVERIFIED"
+     ],
+     "first_line": "IMPLEMENTED-UNVERIFIED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/nudges/nudger.go:160",
+      "internal/nudges/nudger.go:167",
+      "internal/nudges/nudger.go:179",
+      "internal/db/models.go:104",
+      "internal/db/bodies.go:73",
+      "internal/nudges/nudger.go:125",
+      "internal/nudges/nudger.go:180"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/nudges/nudger.go:125",
+      "internal/nudges/nudger.go:180"
+     ],
+     "needs_evidence": true
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "GET /v1/nudges"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [
+      "R123",
+      "R127"
+     ],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "nudge push sent or failed recorded"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "nudge|push",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 80
+    }
+   },
+   {
+    "name": "Read",
+    "is_error": false,
+    "input": {
+     "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn/internal/nudges/nudger.go",
+     "offset": 100,
+     "limit": 120
+    }
+   },
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "section": "machines"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "delivery",
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn",
+     "glob": "{REQUIREMENTS.md,*.go,*.sql}",
+     "output_mode": "content",
+     "-n": true
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "\"failed\"|\"sent\"|tok-fail|fail",
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn/spec.py",
+     "output_mode": "content",
+     "-n": true,
+     "head_limit": 20
+    }
+   },
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "section": "rules",
+     "rule": "R127"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q5",
+  "question": "Q5",
+  "world": "S-dyn",
+  "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 11.6
+  },
+  "cost_usd": 0.0784782,
+  "tokens": 13047,
+  "tokens_incl_cache_reads": 223209,
+  "turns": 5,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:16:28+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_01PqjXpvt9pCsfdvp3s8T649",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_018t9LBD3ftv1iSL2NgXqSPH",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+     "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+     "labels_on_line": [
+      "NOT-SPECIFIED-NOT-IMPLEMENTED"
+     ],
+     "first_line": "**NOT-SPECIFIED-NOT-IMPLEMENTED**"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/auth/routes.go:25",
+      "internal/auth/routes.go:28",
+      "internal/account/routes.go:21",
+      "internal/httpapi/router.go:40"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/auth/routes.go:25",
+      "internal/auth/routes.go:28",
+      "internal/account/routes.go:21"
+     ],
+     "needs_evidence": false
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "POST /v1/auth/register",
+      "PUT /v1/me"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "reset forgotten password by email"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "(?i)(forgot|reset).{0,20}password|password.{0,20}reset",
+     "output_mode": "content",
+     "head_limit": 40
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "(?i)forgot|reset|recover",
+     "output_mode": "content",
+     "head_limit": 30
+    }
+   },
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "section": "routes"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q6",
+  "question": "Q6",
+  "world": "S-dyn",
+  "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 20.0
+  },
+  "cost_usd": 0.1021509,
+  "tokens": 16286,
+  "tokens_incl_cache_reads": 307735,
+  "turns": 7,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:16:48+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_01554VJqDsf8iPvtBJAnkgYJ",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+     "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+     "labels_on_line": [
+      "NOT-SPECIFIED-NOT-IMPLEMENTED"
+     ],
+     "first_line": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/habits/routes.go:25",
+      "internal/habits/routes.go:28"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/habits/routes.go:25",
+      "internal/habits/routes.go:28"
+     ],
+     "needs_evidence": false
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "GET /v1/habits",
+      "DELETE /v1/habits/{}"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [
+      "R1",
+      "R41"
+     ],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "export habits as CSV file"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "csv|export",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 50
+    }
+   },
+   {
+    "name": "mcp__lattice__model_get",
+    "is_error": false,
+    "input": {
+     "section": "rules"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "text/csv|encoding/csv|Content-Disposition|download",
+     "-i": true,
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn",
+     "output_mode": "files_with_matches"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "csv|export|download",
+     "-i": true,
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn",
+     "output_mode": "count"
+    }
+   },
+   {
+    "name": "Glob",
+    "is_error": false,
+    "input": {
+     "pattern": "**/*",
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q7",
+  "question": "Q7",
+  "world": "S-dyn",
+  "key": "AMBIGUOUS",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 9.2
+  },
+  "cost_usd": 0.07835310000000001,
+  "tokens": 14790,
+  "tokens_incl_cache_reads": 153281,
+  "turns": 4,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:16:57+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": false,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": true
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_01KjRrnmFccrUHaDxXtsYt8x",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_01Y4Cn8HJ4n7iPLDwRMjUJzd",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": false,
+     "label": "IMPLEMENTED-VERIFIED",
+     "key": "AMBIGUOUS",
+     "labels_on_line": [
+      "IMPLEMENTED-VERIFIED"
+     ],
+     "first_line": "IMPLEMENTED-VERIFIED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/habits/routes.go:28",
+      "internal/habits/routes.go:400",
+      "internal/completions/routes.go:27",
+      "internal/completions/routes.go:312",
+      "internal/account/routes.go:24",
+      "internal/account/devices.go:137",
+      "internal/account/routes.go:22",
+      "internal/account/routes.go:134"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/habits/routes.go:28",
+      "internal/habits/routes.go:400",
+      "internal/completions/routes.go:27",
+      "internal/completions/routes.go:312",
+      "internal/account/routes.go:24",
+      "internal/account/devices.go:137",
+      "internal/account/routes.go:22",
+      "internal/account/routes.go:134"
+     ],
+     "needs_evidence": true
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "DELETE /v1/me",
+      "DELETE /v1/habits/{}",
+      "DELETE /v1/habits/{}/completions/{}",
+      "DELETE /v1/devices/{}"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": {
+     "pass": true,
+     "named": [
+      "DELETE /v1/me",
+      "DELETE /v1/devices/{}",
+      "DELETE /v1/habits/{}",
+      "DELETE /v1/habits/{}/completions/{}"
+     ],
+     "of": 4
+    }
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B8"
+   ],
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "section": "routes"
+    }
+   },
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "delete endpoint DELETE"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "(?i)delete",
+     "output_mode": "content",
+     "head_limit": 50
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q8",
+  "question": "Q8",
+  "world": "S-dyn",
+  "key": "AMBIGUOUS",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 10.8
+  },
+  "cost_usd": 0.067717,
+  "tokens": 12563,
+  "tokens_incl_cache_reads": 151053,
+  "turns": 3,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:17:08+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": false,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": true
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_018nmmCnnhyqwwSxeKvkEtGH",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_01TYh3Bd1SajLoCkemRAdvFF",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": false,
+     "label": "IMPLEMENTED-VERIFIED",
+     "key": "AMBIGUOUS",
+     "labels_on_line": [
+      "IMPLEMENTED-VERIFIED"
+     ],
+     "first_line": "IMPLEMENTED-VERIFIED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/habits/routes.go:25",
+      "internal/habits/routes.go:205",
+      "internal/completions/routes.go:26",
+      "internal/completions/routes.go:263",
+      "internal/nudges/routes.go:16",
+      "internal/nudges/routes.go:33"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/habits/routes.go:25",
+      "internal/habits/routes.go:205",
+      "internal/completions/routes.go:26",
+      "internal/completions/routes.go:263",
+      "internal/nudges/routes.go:16",
+      "internal/nudges/routes.go:33"
+     ],
+     "needs_evidence": true
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "GET /v1/habits",
+      "GET /v1/habits/{}/completions",
+      "GET /v1/nudges"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [
+      "R21",
+      "R27",
+      "R58",
+      "R69",
+      "R86",
+      "R87",
+      "R88"
+     ],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": {
+     "pass": true,
+     "named": [
+      "GET /v1/habits",
+      "GET /v1/habits/{}/completions",
+      "GET /v1/nudges"
+     ],
+     "of": 4
+    }
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B8"
+   ],
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "Is there a list endpoint?"
+    }
+   },
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "section": "routes"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q9",
+  "question": "Q9",
+  "world": "S4-stat",
+  "key": "REQUIRED-NOT-IMPLEMENTED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 12.7
+  },
+  "cost_usd": 0.0744674,
+  "tokens": 11908,
+  "tokens_incl_cache_reads": 223502,
+  "turns": 5,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:17:21+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": false,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_01YPgYUzRbHNNYmC9LdWpN3R",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "REQUIRED-NOT-IMPLEMENTED",
+     "key": "REQUIRED-NOT-IMPLEMENTED",
+     "labels_on_line": [
+      "REQUIRED-NOT-IMPLEMENTED"
+     ],
+     "first_line": "REQUIRED-NOT-IMPLEMENTED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/progress/routes.go:19",
+      "internal/progress/routes.go:20",
+      "internal/progress/routes.go:35"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/progress/routes.go:19",
+      "internal/progress/routes.go:20"
+     ],
+     "needs_evidence": false
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "GET /v1/home",
+      "GET /v1/nudges",
+      "POST /v1/nudges/{}/dismiss",
+      "GET /v1/sync"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": false,
+     "named": [],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": true
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "home-screen endpoint"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "home|dashboard|landing",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 50
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "/v1/home|\"/home|Home\\(",
+     "glob": "**/*.go",
+     "output_mode": "content"
+    }
+   },
+   {
+    "name": "Read",
+    "is_error": false,
+    "input": {
+     "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S4-stat/internal/progress/routes.go"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q10",
+  "question": "Q10",
+  "world": "S4-stat",
+  "key": "REQUIRED-NOT-IMPLEMENTED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 15.1
+  },
+  "cost_usd": 0.0669455,
+  "tokens": 9991,
+  "tokens_incl_cache_reads": 224066,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:17:36+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_012zK6KeJPChTKcueNuvSgNU",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_01EBNrYyY77uN4X48Rn8Zo7j",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "REQUIRED-NOT-IMPLEMENTED",
+     "key": "REQUIRED-NOT-IMPLEMENTED",
+     "labels_on_line": [
+      "REQUIRED-NOT-IMPLEMENTED"
+     ],
+     "first_line": "REQUIRED-NOT-IMPLEMENTED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/sync/doc.go:1",
+      "internal/sync/doc.go:2",
+      "internal/db/changeseq.go:23",
+      "internal/habits/routes.go:377",
+      "internal/habits/routes.go:423",
+      "internal/completions/routes.go:345",
+      "internal/httpapi/pagination.go:38",
+      "internal/httpapi/pagination.go:44"
+     ],
+     "invalid": [],
+     "evidence": [],
+     "needs_evidence": false
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "GET /v1/sync"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [
+      "R21",
+      "R27",
+      "R89",
+      "R94"
+     ],
+     "unknown": [],
+     "key_rules_named": [
+      "R21",
+      "R27",
+      "R89",
+      "R94"
+     ],
+     "needs_key_rule": true
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "sync changes since a cursor"
+    }
+   },
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "section": "summary"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "cursor|since|sync",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 60
+    }
+   },
+   {
+    "name": "Glob",
+    "is_error": false,
+    "input": {
+     "pattern": "internal/sync/*"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "/v1/sync|\"/sync\"|change_seq",
+     "glob": "**/*.go",
+     "output_mode": "content",
+     "head_limit": 30
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q11",
+  "question": "Q11",
+  "world": "S4-stat",
+  "key": "REQUIRED-NOT-IMPLEMENTED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 16.9
+  },
+  "cost_usd": 0.13202440000000001,
+  "tokens": 23872,
+  "tokens_incl_cache_reads": 317036,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:17:53+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_01STEiTT2wpyyvJhADoU2dd7",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_01SrveHYrcZtmTvDqo3BbB8B",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_01RtifLouaomaspp72WvBz2U",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "REQUIRED-NOT-IMPLEMENTED",
+     "key": "REQUIRED-NOT-IMPLEMENTED",
+     "labels_on_line": [
+      "REQUIRED-NOT-IMPLEMENTED"
+     ],
+     "first_line": "REQUIRED-NOT-IMPLEMENTED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/account/routes.go:20",
+      "internal/account/routes.go:21",
+      "internal/account/routes.go:22",
+      "internal/auth/routes.go:25",
+      "internal/auth/routes.go:28",
+      "internal/db/models.go:32",
+      "internal/db/models.go:116",
+      "internal/auth/doc.go:1"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/account/routes.go:20",
+      "internal/account/routes.go:21",
+      "internal/account/routes.go:22",
+      "internal/auth/routes.go:25",
+      "internal/auth/routes.go:28"
+     ],
+     "needs_evidence": false
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "POST /v1/devices",
+      "DELETE /v1/devices/{}",
+      "DELETE /v1/me",
+      "GET /v1/nudges",
+      "GET /v1/home"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [
+      "R31",
+      "R32",
+      "R33",
+      "R34"
+     ],
+     "unknown": [],
+     "key_rules_named": [
+      "R31",
+      "R32",
+      "R34"
+     ],
+     "needs_key_rule": true
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "register a device for push notifications"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "push|device|fcm|apns",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 60
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "/v1/devices|devices",
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S4-stat/internal",
+     "output_mode": "content",
+     "head_limit": 40
+    }
+   },
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "section": "routes",
+     "limit": 60
+    }
+   },
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "section": "rules",
+     "status": "required_not_implemented",
+     "limit": 30
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q12",
+  "question": "Q12",
+  "world": "S4-stat",
+  "key": "IMPLEMENTED-UNVERIFIED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 19.2
+  },
+  "cost_usd": 0.096882,
+  "tokens": 14614,
+  "tokens_incl_cache_reads": 308614,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:18:12+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": false,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_013pTGoFxcetdU8KMU164YRY",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      },
+      {
+       "name": "mcp__lattice__implementation_get",
+       "id": "toolu_011ANyaebqtq1GoT6dKaeEqR",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "IMPLEMENTED-UNVERIFIED",
+     "key": "IMPLEMENTED-UNVERIFIED",
+     "labels_on_line": [
+      "IMPLEMENTED-UNVERIFIED"
+     ],
+     "first_line": "IMPLEMENTED-UNVERIFIED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/completions/routes.go:25",
+      "internal/completions/routes.go:28",
+      "internal/completions/routes.go:139",
+      "internal/completions/routes.go:231",
+      "internal/completions/routes.go:237",
+      "internal/completions/routes.go:245",
+      "internal/completions/routes.go:254",
+      "internal/completions/routes.go:187",
+      "internal/completions/routes.go:190",
+      "internal/completions/routes.go:193",
+      "internal/completions/routes.go:171",
+      "internal/completions/routes.go:203",
+      "internal/completions/routes.go:207"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/completions/routes.go:25",
+      "internal/completions/routes.go:28",
+      "internal/completions/routes.go:245"
+     ],
+     "needs_evidence": true
+    },
+    "B4": {
+     "pass": false,
+     "named": [
+      "POST /v1/habits/{}/completions",
+      "POST /habits/{}/completions",
+      "POST /completions/batch",
+      "GET /v1/home",
+      "GET /v1/nudges",
+      "GET /v1/sync"
+     ],
+     "unknown": [
+      "POST /habits/{}/completions",
+      "POST /completions/batch"
+     ]
+    },
+    "B5": {
+     "pass": true,
+     "named": [],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "check in a habit for today"
+    }
+   },
+   {
+    "name": "mcp__lattice__implementation_get",
+    "is_error": false,
+    "input": {
+     "section": "rules"
+    }
+   },
+   {
+    "name": "Read",
+    "is_error": false,
+    "input": {
+     "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S4-stat/internal/completions/routes.go",
+     "limit": 200
+    }
+   },
+   {
+    "name": "Read",
+    "is_error": false,
+    "input": {
+     "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S4-stat/internal/completions/routes.go",
+     "offset": 200,
+     "limit": 60
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "completions",
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S4-stat",
+     "glob": "*_test.go",
+     "output_mode": "count"
+    }
+   }
+  ]
+ },
+ {
+  "sid": "Q13",
+  "question": "Q13",
+  "world": "S4-stat",
+  "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+  "with_tools": true,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 10.9
+  },
+  "cost_usd": 0.0547305,
+  "tokens": 7097,
+  "tokens_incl_cache_reads": 217602,
+  "turns": 4,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:18:23+00:00",
+  "score": {
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": {
+     "pass": true,
+     "calls": [
+      {
+       "name": "mcp__lattice__workflow_find",
+       "id": "toolu_01F18aYyCxBQRA4SbEqwtajg",
+       "has_result": true,
+       "is_error": false,
+       "denied": false
+      }
+     ]
+    },
+    "B2": {
+     "pass": true,
+     "label": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+     "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+     "labels_on_line": [
+      "NOT-SPECIFIED-NOT-IMPLEMENTED"
+     ],
+     "first_line": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/habits/routes.go:25",
+      "internal/habits/routes.go:28"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/habits/routes.go:25",
+      "internal/habits/routes.go:28"
+     ],
+     "needs_evidence": false
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "GET /v1/habits",
+      "DELETE /v1/habits/{}"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": true
+  },
+  "tools": [
+   {
+    "name": "mcp__lattice__workflow_find",
+    "is_error": false,
+    "input": {
+     "question": "share a habit with a friend"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "share|friend",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 60
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "invite|partner|collaborat|buddy|follow",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 20
+    }
+   }
+  ]
+ },
+ {
+  "sid": "ablation-Q3",
+  "question": "Q3",
+  "world": "S-dyn",
+  "key": "IMPLEMENTED-VERIFIED",
+  "with_tools": false,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 20.5
+  },
+  "cost_usd": 0.3920518,
+  "tokens": 89494,
+  "tokens_incl_cache_reads": 327272,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:18:43+00:00",
+  "score": {
+   "items": {
+    "B1": null,
+    "B2": false,
+    "B3": true,
+    "B4": false,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": null,
+    "B2": {
+     "pass": false,
+     "label": "IMPLEMENTED-UNVERIFIED",
+     "key": "IMPLEMENTED-VERIFIED",
+     "labels_on_line": [
+      "IMPLEMENTED-UNVERIFIED"
+     ],
+     "first_line": "IMPLEMENTED-UNVERIFIED"
+    },
+    "B3": {
+     "pass": true,
+     "citations": [
+      "internal/completions/routes.go:28",
+      "internal/completions/routes.go:32",
+      "internal/completions/routes.go:64",
+      "internal/completions/routes.go:93",
+      "internal/completions/routes.go:79",
+      "internal/completions/routes.go:101",
+      "internal/completions/routes.go:107",
+      "internal/httpapi/ratelimit.go:54"
+     ],
+     "invalid": [],
+     "evidence": [
+      "internal/completions/routes.go:28",
+      "internal/completions/routes.go:101"
+     ],
+     "needs_evidence": true
+    },
+    "B4": {
+     "pass": false,
+     "named": [
+      "POST /v1/completions/batch",
+      "POST /completions/batch"
+     ],
+     "unknown": [
+      "POST /completions/batch"
+     ]
+    },
+    "B5": {
+     "pass": true,
+     "named": [
+      "R83",
+      "R85"
+     ],
+     "unknown": [],
+     "key_rules_named": [],
+     "needs_key_rule": false
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "check.?in|checkin",
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 80
+    }
+   },
+   {
+    "name": "mcp__lattice__model_get",
+    "is_error": false,
+    "input": {
+     "section": "rules"
+    }
+   },
+   {
+    "name": "Glob",
+    "is_error": false,
+    "input": {
+     "pattern": "**/*",
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "batch",
+     "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn",
+     "-i": true,
+     "output_mode": "content",
+     "glob": "!spec.py",
+     "head_limit": 40
+    }
+   },
+   {
+    "name": "Read",
+    "is_error": false,
+    "input": {
+     "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn/internal/completions/routes.go",
+     "limit": 150
+    }
+   }
+  ]
+ },
+ {
+  "sid": "ablation-Q9",
+  "question": "Q9",
+  "world": "S4-stat",
+  "key": "REQUIRED-NOT-IMPLEMENTED",
+  "with_tools": false,
+  "status": "SCORED",
+  "reason": null,
+  "run": {
+   "rc": 0,
+   "timed_out": false,
+   "wall_s": 15.5
+  },
+  "cost_usd": 0.0927852,
+  "tokens": 14145,
+  "tokens_incl_cache_reads": 300697,
+  "turns": 6,
+  "model_resolved": "claude-sonnet-5-5",
+  "claude_version": "2.1.299 (Claude Code)",
+  "usage_limit": false,
+  "infra_failure": null,
+  "world_changed": {
+   "clone": [],
+   "inventory": []
+  },
+  "started_utc": "2026-10-16T06:18:59+00:00",
+  "score": {
+   "items": {
+    "B1": null,
+    "B2": true,
+    "B3": false,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "detail": {
+    "B1": null,
+    "B2": {
+     "pass": true,
+     "label": "REQUIRED-NOT-IMPLEMENTED",
+     "key": "REQUIRED-NOT-IMPLEMENTED",
+     "labels_on_line": [
+      "REQUIRED-NOT-IMPLEMENTED"
+     ],
+     "first_line": "REQUIRED-NOT-IMPLEMENTED"
+    },
+    "B3": {
+     "pass": false,
+     "citations": [
+      "REQUIREMENTS.md:219",
+      "REQUIREMENTS.md:68",
+      "spec.py:294",
+      "spec.py:1384",
+      "spec.py:1665",
+      "internal/progress/doc.go:1",
+      "internal/progress/routes.go:19",
+      "internal/progress/routes.go:34",
+      "internal/httpapi/router.go:48",
+      "internal/account/routes.go:20",
+      "internal/habits/routes.go:25",
+      "internal/completions/routes.go:26",
+      "internal/db/bodies.go:9"
+     ],
+     "invalid": [
+      "REQUIREMENTS.md:219",
+      "REQUIREMENTS.md:68"
+     ],
+     "evidence": [
+      "internal/progress/routes.go:19",
+      "internal/httpapi/router.go:48",
+      "internal/account/routes.go:20",
+      "internal/habits/routes.go:25",
+      "internal/completions/routes.go:26"
+     ],
+     "needs_evidence": false
+    },
+    "B4": {
+     "pass": true,
+     "named": [
+      "GET /v1/home"
+     ],
+     "unknown": []
+    },
+    "B5": {
+     "pass": true,
+     "named": [
+      "R114"
+     ],
+     "unknown": [],
+     "key_rules_named": [
+      "R114"
+     ],
+     "needs_key_rule": true
+    },
+    "B6": {
+     "pass": true,
+     "claims": [],
+     "pinclaim": null,
+     "proposed": []
+    },
+    "B7": {
+     "pass": true
+    },
+    "B8": null
+   },
+   "applicable": [
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6",
+    "B7"
+   ],
+   "pass": false
+  },
+  "tools": [
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "home|dashboard|landing",
+     "-i": true,
+     "output_mode": "content",
+     "head_limit": 60
+    }
+   },
+   {
+    "name": "Glob",
+    "is_error": false,
+    "input": {
+     "pattern": "**/*"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "/home|\"home\"|Home",
+     "glob": "**/*.go",
+     "output_mode": "content"
+    }
+   },
+   {
+    "name": "Read",
+    "is_error": false,
+    "input": {
+     "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S4-stat/internal/progress/routes.go"
+    }
+   },
+   {
+    "name": "Grep",
+    "is_error": false,
+    "input": {
+     "pattern": "GET\\(|Register\\(|home",
+     "glob": "**/*.go",
+     "output_mode": "content",
+     "-i": true
+    }
+   }
+  ]
+ }
+]

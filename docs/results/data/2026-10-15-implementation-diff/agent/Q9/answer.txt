@@ -1,0 +1,10 @@
+REQUIRED-NOT-IMPLEMENTED
+
+The spec requires a home-screen endpoint, `GET /v1/home`, but the app doesn't implement it.
+
+- **Spec:** `REQUIREMENTS.md:219` says `GET /v1/home` answers `{today, habits, nudges}`. `REQUIREMENTS.md:68` (M17) and the scenarios `home_lists_habits_with_progress` and `access__home__as_*` (`spec.py:1384`, `spec.py:1390`) also cover it.
+- **Code:** a search of every `*.go` file for `/v1/home`, `"/home` and `Home(` found no matches. The progress package registers only `/habits/:id/progress` and `/habits/:id/history` (code:internal/progress/routes.go:19, code:internal/progress/routes.go:20). Lattice's route index lists `GET /v1/home` as `spec_only` with no code evidence.
+- **Related code:** `progress.Of` (code:internal/progress/routes.go:35) is commented as serving "progress, home, nudges". It computes a single habit's progress and could be reused for home, but nothing calls it from a home route.
+- **Other spec-only routes:** `GET /v1/nudges`, `POST /v1/nudges/{}/dismiss` and `GET /v1/sync` are also `spec_only` in Lattice's index, so the nudges and sync pieces that home depends on appear to be missing too.
+
+I didn't change anything.

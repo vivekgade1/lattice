@@ -1,0 +1,51 @@
+{
+ "kind": "yes",
+ "answer": "Yes: the spec defines GET /v1/home, but the code does not register it.",
+ "explanation": "R114 says GET /v1/home answers {today, habits, nudges}, and the scenarios expect 200 for ann and ben and 401 without a token. The implemented-app section lists the route as spec_only, so it is required but not implemented.",
+ "citations": [
+  {
+   "target": "rule:R114",
+   "step": null,
+   "quote": "`GET /v1/home` answers `{today, habits, nudges}`"
+  },
+  {
+   "target": "cell:ann|GET /v1/home",
+   "step": null,
+   "quote": "200"
+  },
+  {
+   "target": "scenario:access__home__as_ann",
+   "step": 1,
+   "quote": "GET /v1/home as ann -> 200"
+  },
+  {
+   "target": "impl:route:GET /v1/home",
+   "step": null,
+   "quote": "spec_only: the spec names this endpoint; the code registers no such route"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 4.25,
+  "tokens": 40806,
+  "input_tokens": 40483,
+  "output_tokens": 323,
+  "cache_read_tokens": 0,
+  "cache_creation_tokens": 40481,
+  "rounds": 1,
+  "model": "sonnet",
+  "digest_elements": 440,
+  "calls": [
+   {
+    "input_tokens": 40483,
+    "cache_read_tokens": 0,
+    "prompt_tokens_est": 31306
+   }
+  ],
+  "cost_usd": 0.165158
+ },
+ "implementation": "required_not_implemented",
+ "implementation_basis": "inferred"
+}

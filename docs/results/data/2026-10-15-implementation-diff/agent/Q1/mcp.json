@@ -1,0 +1,19 @@
+{
+ "mcpServers": {
+  "lattice": {
+   "command": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/perfengines/perfvenv/bin/python",
+   "args": [
+    "-m",
+    "lattice.mcp",
+    "serve",
+    "--project",
+    "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S-dyn",
+    "--readonly"
+   ],
+   "env": {
+    "PYTHONPATH": "/Users/vivekgade/Documents/lattice-impldiff",
+    "PYTHONDONTWRITEBYTECODE": "1"
+   }
+  }
+ }
+}

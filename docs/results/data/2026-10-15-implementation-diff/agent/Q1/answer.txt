@@ -1,0 +1,15 @@
+IMPLEMENTED-VERIFIED
+
+Yes, an authenticated customer can check in a habit for today with `POST /v1/habits/{id}/completions`. The body is `{id, date, note?}`, and `date` can be today.
+
+- **Route:** the route is registered at code:internal/completions/routes.go:25 and handled by `create` at code:internal/completions/routes.go:217.
+- **Date handling:** `create` takes today from the caller's timezone (code:internal/completions/routes.go:231). `Create` rejects a date after today with 422 `date_in_future` (code:internal/completions/routes.go:187), so today is accepted.
+- **Other date limits:** a date outside the habit's start and end dates returns 422 `date_out_of_range`. A date more than 60 days old returns 422 `date_too_old` (code:internal/completions/routes.go:190-195).
+- **Input checks:** `ReadInput` requires a UUID `id` and a valid `date`, and caps `note` at 280 characters (code:internal/completions/routes.go:139-157).
+- **Archived habits:** an archived habit is refused with 409 `habit_archived` (code:internal/completions/routes.go:171).
+- **Duplicates:** a second check-in on the same date returns 409 `already_checked_in` (code:internal/completions/routes.go:203-205). Retrying the same `id` with the same habit, date and note returns 200 with the existing record instead of an error (code:internal/completions/routes.go:177-179).
+- **Success:** a new check-in is saved with 201 (code:internal/completions/routes.go:211-213, 254-258). It also triggers `nudges.AfterCheckIn` (code:internal/completions/routes.go:249).
+
+Lattice reports this route as `implemented_verified`, tied to rules R72–R80 among others, with 27 flows exercising it. Its spec scenario `check_in_dates` includes a check-in on `TODAY` (spec.py:1063). I did not run the app myself, so "verified" rests on Lattice's observed run.
+
+Across the app, 8 flows are marked failed in Lattice's summary. I didn't check whether any of them touch this route.

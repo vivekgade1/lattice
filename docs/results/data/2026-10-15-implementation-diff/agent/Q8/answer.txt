@@ -1,0 +1,9 @@
+IMPLEMENTED-VERIFIED
+
+Yes, the app has list endpoints. The main one is `GET /v1/habits`, handled by `habits.handler.list`.
+
+- **Habits list:** the route is registered at code:internal/habits/routes.go:25 and the handler is at code:internal/habits/routes.go:205. It requires customer auth and returns 200. It can refuse with 401, 422 `invalid_cursor`, 422 `validation_failed`, 426 and 429, so it is paginated by cursor. It is in the spec (rules R21, R27, R58, R69, R86, R87, R88). The implementation check marks it `implemented_verified`, and replayed flows exercise it.
+- **Completions list:** `GET /v1/habits/{}/completions` is handled by `completions.handler.list`, with the route at code:internal/completions/routes.go:26 and the handler at code:internal/completions/routes.go:263. It is also cursor-paginated and `implemented_verified`.
+- **Nudges list:** `GET /v1/nudges` is handled by `nudges.handler.list`, with the route at code:internal/nudges/routes.go:16 and the handler at code:internal/nudges/routes.go:33. It is also cursor-paginated and `implemented_verified`.
+
+I didn't open the source files. This answer comes from Lattice's implementation inventory, which was fresh (`stale: false`, observed run mode). Nothing was changed.

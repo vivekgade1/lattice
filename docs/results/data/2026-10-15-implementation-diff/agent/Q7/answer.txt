@@ -1,0 +1,17 @@
+IMPLEMENTED-VERIFIED
+
+Yes. The app has four DELETE endpoints. All four are in the spec and all four are implemented. Lattice's implementation diff rates three as verified and `DELETE /v1/me` as unverified.
+
+| Endpoint | Status | Handler | Code |
+|---|---|---|---|
+| `DELETE /v1/habits/{}` | implemented_verified | `habits.handler.remove` | code:internal/habits/routes.go:28 (route), code:internal/habits/routes.go:400 (handler) |
+| `DELETE /v1/habits/{}/completions/{}` | implemented_verified | `completions.handler.remove` | code:internal/completions/routes.go:27 (route), code:internal/completions/routes.go:312 (handler) |
+| `DELETE /v1/devices/{}` | implemented_verified | `account.handler.deleteDevice` | code:internal/account/routes.go:24 (route), code:internal/account/devices.go:137 (handler) |
+| `DELETE /v1/me` | implemented_unverified | `account.handler.remove` | code:internal/account/routes.go:22 (route), code:internal/account/routes.go:134 (handler) |
+
+- **Response:** every DELETE returns 204 on success. Each can also return 401, 404, 426 and 429. The habit and completion deletes can also return 422, and the completion delete can also return 409 `habit_archived`.
+- **Authentication:** all four require an authenticated customer.
+- **Deleting a habit:** the spec scenario `delete_habit_soft_deletes_its_rows` (spec.py:991) indicates habit deletion is a soft delete, which sets `deleted_at`. I didn't open the handler code to confirm that.
+- **Account deletion:** the spec scenario `delete_me_removes_everything` (spec.py:599) covers `DELETE /v1/me`. The diff reports no replayed flows for it, which is why it counts as unverified.
+
+I didn't change anything.

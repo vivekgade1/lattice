@@ -502,3 +502,94 @@ remaining sessions as NOT RUN (usage limit) and is never retried in a loop or sc
 (>= 11 of 13) is then not evaluated and n is stated. The scorer, question set and answer keys are frozen by
 hash before the first session. Findings are never auto-sent to `change_propose`.
 **Length.** The 485-line document stands as the contract; no rewrite.
+
+## Addendum 1 (build node, before the Streak-stage probes ran)
+
+Appended by the build node (section 7 allows this only). It records, before any probe ran, how the built Spike B
+schema differs from D9 and what the build decided where the pre-registration is silent. Nothing in D1-D12 is
+changed; nothing here tunes a probe.
+
+**A. Built Spike B (`workflows.json`, `lattice.workflows/1`) against D9, read through the one adapter
+(`implementation.read_workflows`).**
+1. `app.extract_sha256` is the sha256 of `json.dumps(extract, indent=2, sort_keys=False)` of the extractor's own
+   output (no final newline), not of the inventory's canonical `extract.json` (sorted keys, final newline). It can
+   never equal `inventory.extract_sha256`, so D2's first fallback applies and is the normal path: the adapter
+   compares `app.module` and, for every request step, that the route key is in the extract and that each
+   `evidence[what=route].at` is a registration `file:line` the extract has for that key. A difference is
+   `workflows_mismatch` (flows are shown, never verified). The result says `workflows_consistency: "route-set"`.
+2. The machine `status` values are `static`, `observed`, `confirmed`, `partial`, `refuted`. D5's "confirmed" is
+   B's `confirmed` and nothing else; `observed` and `partial` are not confirmed.
+3. Steps all carry `route` (`METHOD /p/{name}`, templated by D3); `spec_object` is `{table, column, edges, initial}`
+   with `table` the spec's table name and `machines[].table` the SQL name (D4's two matches are both used). No
+   other difference from D9 (the keys the adapter reads all exist).
+
+**B. Decisions the pre-registration does not fix.**
+1. `inventory.json` also records `package` (default `"."`); evidence paths are prefixed with it.
+2. A route in a rule's text ignores trailing sentence punctuation (`.`, `:`, `!`, `?`): `routes_in` as written
+   would key `POST /api/login.` for "...with POST /api/login." (found on the unit fixture, before any probe).
+3. Element reasons beyond D5's list: `static schema` (a table element), `machine <status>` (a machine that is not
+   confirmed). A machine with no workflows machine is `present` when its (SQL table, column) is written in the
+   extract's `status_writes` (reason `static run`); only workflows machines are ever listed as machines or orphans.
+4. A table element is `impl:table:<sql>`; a profile link with a column adds `impl:table:<sql>.<col>`. A rule is
+   verified when it has at least one route or machine element and all of them are verified; tables do not block it.
+5. The report also carries `endpoints[]` (spec and code together: `implemented`, `spec_only`,
+   `implemented_not_required`, `test_only`, `plumbing`), `tables[]`, `spec_skeletons[]` (B's multi-route skeletons)
+   and per flow `spec_matches` (indexes into it). `flows[].rules` are the rules linking any route of the flow.
+6. `workflow_find`: `no_match` when the best possible score (the sum of `ask.Index`-style IDF over the query terms
+   that occur in some document; unseen terms weigh 0) is 0 or the top score is under 0.15 of it; an exact
+   `METHOD /path` mention outranks everything and answers `exists` or `spec_only`; `several` when the second is
+   within 10% of the top; candidates tie-break route, machine, flow, rule, then target.
+7. `workflow_get` answers `{type: flow|machine, ...}`; the tools' errors are `ToolError("<code>: ...")` with the codes
+   `inventory_missing`, `bad_inventory`, `bad_workflows`, `no_spec`, `bad_section`, `bad_limit`, `unknown_id`.
+8. An `[implementation]` table that is present but empty registers the three tools (which then answer
+   `inventory_missing`) and leaves the ask path as before.
+9. The digest orders its section routes (with the spec-only endpoints), machines, rules, flow index; the flow index
+   line is `id, inferred name, kind, status` only; full steps are retrieved per question (`IMPL_BUDGET`).
+10. PS+: the planted `/metrics` route is written on the engine in `router.go` next to `/health`
+    (`r.GET("/metrics", ...)`), because `r.Public` is the `/v1` group (`/v1/metrics`) and is not in scope in
+    `NewRouter`; PO expects `GET /metrics` excluded as plumbing and `GET /v1/admin/stats` the only orphan.
+11. S-dyn is Spike B's committed dynamic run (`docs/results/data/2026-10-15-workflow-layer/workflows.json`), frozen
+    by its sha256; the runner re-runs `import workflows` once only if no `--workflows-dyn` file is given.
+12. The base for PB is `454a8e6`; `ask.py`, `mcp/tools.py` and `studio/*` are unchanged between it and the merge
+    base `c0ff1e4` (the only differences are Spike B's own files).
+13. The pytest baseline was taken on a pristine archive of `c0ff1e4` with the main checkout's venv (no database
+    drivers): 2 failed, 2283 passed, 5 skipped, 29 errors (all errors `ModuleNotFoundError`, the two failures
+    `test_multidb` and `test_outside`); the after-run is compared against exactly that.
+
+**C. Freeze for the agent exercise (written before the first session; the runner refuses to start on any mismatch).**
+`claude --version`: 2.1.299 (Claude Code). Scorer cases: 54/54 hold (`implementation_agent_check.py`). Frozen at 2026-10-16T06:14:29+00:00.
+
+```
+ca65bcb4a10ca1e020523c4a8fd7f4fbc76f5b5af5afa5f11f3c22411301c728  dogfood/implementation_agent.py
+3be9520c6d94fe70816f11c92357be42f73f8bfc86948d51a056d3a1a20c4e7d  dogfood/implementation_agent_scorer.py
+69297855d3acf4d8d165473adf793972e9d29e4767fb92f1af3039a8518b7500  dogfood/implementation_agent_check.py
+8eae818cd74af59c76e54dbc4b462ac7e76385e3e6ef1d992b2f3efa19655c7a  dogfood/implementation_agent_scorer_cases.json
+92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08  dogfood/contracts/agent_scorer.py
+af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0  workflows.json (S-dyn, Spike B's committed dynamic run)
+84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84  report JSON of S-dyn (the keys of Q1-Q4 come from it)
+80511cbb05dc3a61c04521e96555586611f2d8813d7b88dc5dcafd2cc6891df1  report JSON of S4-stat (the key of Q12 and the key rules of Q9-Q11 come from it)
+```
+
+The code the sessions run against (not a gate of the runner; the two report hashes above are):
+
+```
+c8557dcd561f5a6dcd5843d557f154c0ceb4d1175ab34ba3fa0d2de974d3447c  lattice/spec/implementation.py
+55849494b1ece51ed04a84e34f87da3f65c4fcc02b9523ac9269009e754f2e3b  lattice/importer/inventory.py
+0925737b48e1b87fdcc9d8140a6625044592db130df0724af7121096eeb98ffd  lattice/spec/ask.py
+3e94fce89e5347d0129a89b421f9c2015bd48651fa4c7dc8dad099005867584d  lattice/mcp/tools.py
+2079d71ee794bf0e96607da11beb7c6957e041acaf05f7fc315495933d654df3  lattice/studio/session.py
+9538a73630bab96fda879db893539de5587981afb9ea8b4d0efff285f3857cbf  lattice/studio/server.py
+803d1d80ac7231ffe43b5b7ed42f97544a46ef8b6d1cf5b79d77a468052470ad  lattice/importer/cli.py
+33a47d05325d391c4735c94710c264b71b3862e546a69da9f2bedc7a4976b330  dogfood/implementation_probes.py
+847955c66876a6589c7e6a1b4cf2657391dddcf4fb6cc38ddd9dac95982ace5c  dogfood/implementation_mutants.py
+```
+
+Keys (in `implementation_agent_scorer_cases.json`): Q1, Q2 IMPLEMENTED-VERIFIED; **Q3 IMPLEMENTED-VERIFIED (predicted
+UNVERIFIED: the report says `POST /v1/completions/batch` is verified, so the key follows the report and the difference is a
+finding)**; Q4, Q12 IMPLEMENTED-UNVERIFIED; Q5, Q6, Q13 NOT-SPECIFIED-NOT-IMPLEMENTED; Q7, Q8 AMBIGUOUS (4 DELETE routes; 4 list
+routes); Q9, Q10, Q11 REQUIRED-NOT-IMPLEMENTED (key rules from the S4-stat report). Design: sessions use `--tools
+Read,Grep,Glob`, the three implementation tools beside `model_get`, `rule_get`, `code_links`, `graph_get`, `spec_lint`, an MCP
+server `--readonly` over the clone, `[state] enabled = false` in the clone's `studio.toml`; B7 snapshots the clone and the
+inventory (sha256, mode, mtime); B3 checks a bare `code:path:line` against D8's path, containment, case, file and line rules
+(there is no quote to check); B8 needs the method and the path in one sentence; E2 is the question text through
+`python -m lattice.spec ask --inventory`, scored on B2-B5 of the answer (the label from `implementation`).

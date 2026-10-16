@@ -1,0 +1,61 @@
+{
+ "kind": "yes",
+ "answer": "Yes. POST /v1/completions/batch accepts 1 to 100 check-in items in one request, and each item carries its own habit_id.",
+ "explanation": "R83 defines the batch body as items with their own habit_id, 1 to 100 per request. R84 and R85 say items are processed in order and a rejected item never stops the others. The route is registered in the code, but I cannot quote a code line, so I leave it as unverified.",
+ "citations": [
+  {
+   "target": "rule:R83",
+   "step": null,
+   "quote": "`POST /v1/completions/batch` takes `{items: [{id, habit_id, date, note?}, ...]}` with 1 to 100 items"
+  },
+  {
+   "target": "rule:R84",
+   "step": null,
+   "quote": "A batch processes its items in order, each exactly as a single check-in create would"
+  },
+  {
+   "target": "rule:R85",
+   "step": null,
+   "quote": "A batch item that is rejected writes nothing, and never stops the other items."
+  },
+  {
+   "target": "cell:ann|POST /v1/completions/batch",
+   "step": null,
+   "quote": "200/422"
+  },
+  {
+   "target": "impl:route:POST /v1/completions/batch",
+   "step": null,
+   "quote": "registered code:internal/completions/routes.go:28"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 12.27,
+  "tokens": 94374,
+  "input_tokens": 93187,
+  "output_tokens": 1187,
+  "cache_read_tokens": 67492,
+  "cache_creation_tokens": 25691,
+  "rounds": 2,
+  "model": "sonnet",
+  "digest_elements": 457,
+  "calls": [
+   {
+    "input_tokens": 46255,
+    "cache_read_tokens": 33746,
+    "prompt_tokens_est": 35267
+   },
+   {
+    "input_tokens": 46932,
+    "cache_read_tokens": 33746,
+    "prompt_tokens_est": 35823
+   }
+  ],
+  "cost_usd": 0.121391
+ },
+ "implementation": "implemented_unverified",
+ "implementation_basis": "static"
+}

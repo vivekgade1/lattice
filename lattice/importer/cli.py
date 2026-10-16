@@ -150,6 +150,10 @@ def main(argv: Sequence[str] | None = None, *, generators: Any = None) -> int:
         from lattice.importer.workflow_run import main as workflows_main
 
         return workflows_main(argv[1:])
+    if argv[:1] == ["inventory"]:  # the implementation diff's capture; `./inventory` for a repo
+        from lattice.importer.inventory import main as inventory_main
+
+        return inventory_main(argv[1:])
     p = parser()
     args = p.parse_args(argv)
     logging.getLogger("httpx2").setLevel(logging.WARNING)

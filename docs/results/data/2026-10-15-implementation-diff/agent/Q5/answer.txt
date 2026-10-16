@@ -1,0 +1,8 @@
+**NOT-SPECIFIED-NOT-IMPLEMENTED**
+
+A user cannot reset a forgotten password by email in this app, and the spec doesn't ask for it.
+
+- **Implementation:** The app has 26 routes, and the only auth routes are `POST /v1/auth/register`, `/login`, `/refresh` and `/logout` (code:internal/auth/routes.go:25 to code:internal/auth/routes.go:28). None of them is a forgot-password or reset-password route. `PUT /v1/me` (code:internal/account/routes.go:21) requires a logged-in customer, so it doesn't help someone locked out of their account. A case-insensitive search of the project for "forgot", "reset" and "recover" found one hit, which is the unrelated panic-recovery middleware (code:internal/httpapi/router.go:40). I found no code that sends email.
+- **Spec:** The same search found no mention of password reset or recovery. Every route in the implementation inventory is marked in-spec, and none relates to this feature. I did not read the spec text directly. This conclusion rests on that search and the route inventory.
+
+I didn't change anything.

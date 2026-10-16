@@ -1,0 +1,93 @@
+{
+ "items": {
+  "B1": true,
+  "B2": true,
+  "B3": true,
+  "B4": true,
+  "B5": true,
+  "B6": true,
+  "B7": true,
+  "B8": null
+ },
+ "detail": {
+  "B1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_01PqjXpvt9pCsfdvp3s8T649",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_018t9LBD3ftv1iSL2NgXqSPH",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "B2": {
+   "pass": true,
+   "label": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "labels_on_line": [
+    "NOT-SPECIFIED-NOT-IMPLEMENTED"
+   ],
+   "first_line": "**NOT-SPECIFIED-NOT-IMPLEMENTED**"
+  },
+  "B3": {
+   "pass": true,
+   "citations": [
+    "internal/auth/routes.go:25",
+    "internal/auth/routes.go:28",
+    "internal/account/routes.go:21",
+    "internal/httpapi/router.go:40"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/auth/routes.go:25",
+    "internal/auth/routes.go:28",
+    "internal/account/routes.go:21"
+   ],
+   "needs_evidence": false
+  },
+  "B4": {
+   "pass": true,
+   "named": [
+    "POST /v1/auth/register",
+    "PUT /v1/me"
+   ],
+   "unknown": []
+  },
+  "B5": {
+   "pass": true,
+   "named": [],
+   "unknown": [],
+   "key_rules_named": [],
+   "needs_key_rule": false
+  },
+  "B6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "B7": {
+   "pass": true
+  },
+  "B8": null
+ },
+ "applicable": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7"
+ ],
+ "pass": true
+}

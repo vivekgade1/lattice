@@ -1,0 +1,620 @@
+{
+  "IM1": {
+    "caught_by": [
+      "PA",
+      "PE",
+      "PR",
+      "PV"
+    ],
+    "killed": true,
+    "predicted_catcher": "PE (S spec-only != [])",
+    "rc": 1,
+    "seconds": 24.3,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": false,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": false,
+      "PF": null,
+      "PO": true,
+      "PR": false,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": false,
+      "PW": true
+    },
+    "what": "norm_route (no UUID templating) for scenario steps"
+  },
+  "IM10": {
+    "caught_by": [
+      "PA"
+    ],
+    "killed": true,
+    "predicted_catcher": "PA (b)",
+    "rc": 1,
+    "seconds": 24.6,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": false,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": true,
+      "PW": true
+    },
+    "what": "the model's implementation label trusted"
+  },
+  "IM11": {
+    "caught_by": [
+      "PA"
+    ],
+    "killed": true,
+    "predicted_catcher": "PA (a), PB",
+    "rc": 1,
+    "seconds": 24.8,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": false,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": true,
+      "PW": true
+    },
+    "what": "SYSTEM_IMPL without an inventory"
+  },
+  "IM12": {
+    "caught_by": [
+      "PB"
+    ],
+    "killed": true,
+    "predicted_catcher": "PB",
+    "rc": 1,
+    "seconds": 24.5,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": false,
+      "PC": true,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": true,
+      "PW": true
+    },
+    "what": "the 3 tools listed without [implementation]"
+  },
+  "IM13": {
+    "caught_by": [
+      "PW"
+    ],
+    "killed": true,
+    "predicted_catcher": "PW",
+    "rc": 1,
+    "seconds": 24.6,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": true,
+      "PW": false
+    },
+    "what": "the read path caches the report under the inventory"
+  },
+  "IM14": {
+    "caught_by": [
+      "PD"
+    ],
+    "killed": true,
+    "predicted_catcher": "PD",
+    "rc": 1,
+    "seconds": 26.3,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": true,
+      "PD": false,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": true,
+      "PW": true
+    },
+    "what": "an absolute path in the report"
+  },
+  "IM15": {
+    "caught_by": [],
+    "killed": false,
+    "predicted_catcher": "PT (S4 rows)",
+    "rc": 1,
+    "seconds": 26.3,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": true,
+      "PW": true
+    },
+    "what": "workflow_find ranks spec-only rules as exists"
+  },
+  "IM16": {
+    "caught_by": [
+      "PF",
+      "PW"
+    ],
+    "killed": true,
+    "predicted_catcher": "PF (generator calls > 0)",
+    "rc": 1,
+    "seconds": 12.9,
+    "stderr_tail": "",
+    "verdicts": {
+      "PF": null,
+      "PW": false
+    },
+    "what": "verify writes a model scenario when a flow is cited"
+  },
+  "IM2": {
+    "caught_by": [
+      "PV"
+    ],
+    "killed": true,
+    "predicted_catcher": "PO (/test/clock not test_only)",
+    "rc": 1,
+    "seconds": 24.1,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": false,
+      "PW": true
+    },
+    "what": "conditional routes not excluded from scenario links"
+  },
+  "IM3": {
+    "caught_by": [
+      "PR"
+    ],
+    "killed": true,
+    "predicted_catcher": "PR (S4 set < 29)",
+    "rc": 1,
+    "seconds": 24.6,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": false,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": true,
+      "PW": true
+    },
+    "what": "a rule is implemented when ANY element is present"
+  },
+  "IM4": {
+    "caught_by": [
+      "PR",
+      "PV"
+    ],
+    "killed": true,
+    "predicted_catcher": "PR (R140 leaves S4's set)",
+    "rc": 1,
+    "seconds": 24.3,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": false,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": false,
+      "PW": true
+    },
+    "what": "rule-text routes ignored"
+  },
+  "IM5": {
+    "caught_by": [
+      "PV"
+    ],
+    "killed": true,
+    "predicted_catcher": "PV",
+    "rc": 1,
+    "seconds": 24.3,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": false,
+      "PW": true
+    },
+    "what": "any flow status counts as verified"
+  },
+  "IM6": {
+    "caught_by": [
+      "PV"
+    ],
+    "killed": true,
+    "predicted_catcher": "PV (stale row)",
+    "rc": 1,
+    "seconds": 24.5,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": false,
+      "PW": true
+    },
+    "what": "stale check off"
+  },
+  "IM7": {
+    "caught_by": [
+      "PE",
+      "PO"
+    ],
+    "killed": true,
+    "predicted_catcher": "PE (/health), PO",
+    "rc": 1,
+    "seconds": 24.5,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": true,
+      "PD": true,
+      "PE": false,
+      "PF": null,
+      "PO": false,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": true,
+      "PW": true
+    },
+    "what": "plumbing list applied to rule-linked routes"
+  },
+  "IM8": {
+    "caught_by": [
+      "PC"
+    ],
+    "killed": true,
+    "predicted_catcher": "PC (line +1)",
+    "rc": 1,
+    "seconds": 24.6,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": false,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": true,
+      "PW": true
+    },
+    "what": "quote matched anywhere in the file"
+  },
+  "IM9": {
+    "caught_by": [
+      "PC"
+    ],
+    "killed": true,
+    "predicted_catcher": "PC (forged rows)",
+    "rc": 1,
+    "seconds": 24.7,
+    "stderr_tail": "",
+    "verdicts": {
+      "PA": true,
+      "PB": true,
+      "PC": false,
+      "PD": true,
+      "PE": true,
+      "PF": null,
+      "PO": true,
+      "PR": true,
+      "PT": [
+        false,
+        "2/8",
+        [
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "several",
+          "no_match",
+          "several"
+        ]
+      ],
+      "PV": true,
+      "PW": true
+    },
+    "what": "no root-containment or symlink check"
+  },
+  "control": {
+    "PE,PR,PV,PO,PC,PA,PT,PW,PD,PB": {
+      "rc": 1,
+      "seconds": 24.3,
+      "verdicts": {
+        "PA": true,
+        "PB": true,
+        "PC": true,
+        "PD": true,
+        "PE": true,
+        "PF": null,
+        "PO": true,
+        "PR": true,
+        "PT": [
+          false,
+          "2/8",
+          [
+            "several",
+            "several",
+            "several",
+            "several",
+            "several",
+            "several",
+            "no_match",
+            "several"
+          ]
+        ],
+        "PV": true,
+        "PW": true
+      }
+    },
+    "PW": {
+      "rc": 0,
+      "seconds": 33.5,
+      "verdicts": {
+        "PF": true,
+        "PW": true
+      }
+    }
+  },
+  "summary": {
+    "killed": 15,
+    "of": 16
+  }
+}

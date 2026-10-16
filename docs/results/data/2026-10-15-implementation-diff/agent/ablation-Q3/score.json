@@ -1,0 +1,82 @@
+{
+ "items": {
+  "B1": null,
+  "B2": false,
+  "B3": true,
+  "B4": false,
+  "B5": true,
+  "B6": true,
+  "B7": true,
+  "B8": null
+ },
+ "detail": {
+  "B1": null,
+  "B2": {
+   "pass": false,
+   "label": "IMPLEMENTED-UNVERIFIED",
+   "key": "IMPLEMENTED-VERIFIED",
+   "labels_on_line": [
+    "IMPLEMENTED-UNVERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-UNVERIFIED"
+  },
+  "B3": {
+   "pass": true,
+   "citations": [
+    "internal/completions/routes.go:28",
+    "internal/completions/routes.go:32",
+    "internal/completions/routes.go:64",
+    "internal/completions/routes.go:93",
+    "internal/completions/routes.go:79",
+    "internal/completions/routes.go:101",
+    "internal/completions/routes.go:107",
+    "internal/httpapi/ratelimit.go:54"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/completions/routes.go:28",
+    "internal/completions/routes.go:101"
+   ],
+   "needs_evidence": true
+  },
+  "B4": {
+   "pass": false,
+   "named": [
+    "POST /v1/completions/batch",
+    "POST /completions/batch"
+   ],
+   "unknown": [
+    "POST /completions/batch"
+   ]
+  },
+  "B5": {
+   "pass": true,
+   "named": [
+    "R83",
+    "R85"
+   ],
+   "unknown": [],
+   "key_rules_named": [],
+   "needs_key_rule": false
+  },
+  "B6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "B7": {
+   "pass": true
+  },
+  "B8": null
+ },
+ "applicable": [
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7"
+ ],
+ "pass": false
+}

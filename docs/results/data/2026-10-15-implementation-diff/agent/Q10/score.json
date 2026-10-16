@@ -1,0 +1,102 @@
+{
+ "items": {
+  "B1": true,
+  "B2": true,
+  "B3": true,
+  "B4": true,
+  "B5": true,
+  "B6": true,
+  "B7": true,
+  "B8": null
+ },
+ "detail": {
+  "B1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_012zK6KeJPChTKcueNuvSgNU",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01EBNrYyY77uN4X48Rn8Zo7j",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "B2": {
+   "pass": true,
+   "label": "REQUIRED-NOT-IMPLEMENTED",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "labels_on_line": [
+    "REQUIRED-NOT-IMPLEMENTED"
+   ],
+   "first_line": "REQUIRED-NOT-IMPLEMENTED"
+  },
+  "B3": {
+   "pass": true,
+   "citations": [
+    "internal/sync/doc.go:1",
+    "internal/sync/doc.go:2",
+    "internal/db/changeseq.go:23",
+    "internal/habits/routes.go:377",
+    "internal/habits/routes.go:423",
+    "internal/completions/routes.go:345",
+    "internal/httpapi/pagination.go:38",
+    "internal/httpapi/pagination.go:44"
+   ],
+   "invalid": [],
+   "evidence": [],
+   "needs_evidence": false
+  },
+  "B4": {
+   "pass": true,
+   "named": [
+    "GET /v1/sync"
+   ],
+   "unknown": []
+  },
+  "B5": {
+   "pass": true,
+   "named": [
+    "R21",
+    "R27",
+    "R89",
+    "R94"
+   ],
+   "unknown": [],
+   "key_rules_named": [
+    "R21",
+    "R27",
+    "R89",
+    "R94"
+   ],
+   "needs_key_rule": true
+  },
+  "B6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "B7": {
+   "pass": true
+  },
+  "B8": null
+ },
+ "applicable": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7"
+ ],
+ "pass": true
+}

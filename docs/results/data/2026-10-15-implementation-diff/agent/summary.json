@@ -1,0 +1,894 @@
+{
+ "experiment": "2026-10-15-implementation-diff PQ",
+ "claude_version": "2.1.299 (Claude Code)",
+ "freeze": {
+  "frozen_at_utc": "2026-10-16T06:14:29+00:00",
+  "files": {
+   "implementation_agent.py": "ca65bcb4a10ca1e020523c4a8fd7f4fbc76f5b5af5afa5f11f3c22411301c728",
+   "implementation_agent_scorer.py": "3be9520c6d94fe70816f11c92357be42f73f8bfc86948d51a056d3a1a20c4e7d",
+   "implementation_agent_check.py": "69297855d3acf4d8d165473adf793972e9d29e4767fb92f1af3039a8518b7500",
+   "implementation_agent_scorer_cases.json": "8eae818cd74af59c76e54dbc4b462ac7e76385e3e6ef1d992b2f3efa19655c7a",
+   "contracts/agent_scorer.py": "92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08"
+  },
+  "workflows_dyn_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0",
+  "report_sha256": {
+   "S-dyn": "84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84",
+   "S4-stat": "80511cbb05dc3a61c04521e96555586611f2d8813d7b88dc5dcafd2cc6891df1"
+  },
+  "claude_version": "2.1.299 (Claude Code)",
+  "scorer_cases": "54/54 scorer cases hold",
+  "scorer_cases_rc": 0
+ },
+ "scorer_hashes_now": {
+  "implementation_agent.py": "ca65bcb4a10ca1e020523c4a8fd7f4fbc76f5b5af5afa5f11f3c22411301c728",
+  "implementation_agent_scorer.py": "3be9520c6d94fe70816f11c92357be42f73f8bfc86948d51a056d3a1a20c4e7d",
+  "implementation_agent_check.py": "69297855d3acf4d8d165473adf793972e9d29e4767fb92f1af3039a8518b7500",
+  "implementation_agent_scorer_cases.json": "8eae818cd74af59c76e54dbc4b462ac7e76385e3e6ef1d992b2f3efa19655c7a",
+  "contracts/agent_scorer.py": "92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08"
+ },
+ "sessions": [
+  {
+   "sid": "Q1",
+   "question": "Q1",
+   "world": "S-dyn",
+   "key": "IMPLEMENTED-VERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.3586044,
+   "tokens": 79894,
+   "tokens_incl_cache_reads": 376778,
+   "turns": 7,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:15:07+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "Grep",
+    "implementation_get",
+    "Read",
+    "implementation_get"
+   ]
+  },
+  {
+   "sid": "Q2",
+   "question": "Q2",
+   "world": "S-dyn",
+   "key": "IMPLEMENTED-VERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0610484,
+   "tokens": 8491,
+   "tokens_incl_cache_reads": 221435,
+   "turns": 4,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:15:20+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": false,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "Read"
+   ]
+  },
+  {
+   "sid": "Q3",
+   "question": "Q3",
+   "world": "S-dyn",
+   "key": "IMPLEMENTED-VERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.078734,
+   "tokens": 12656,
+   "tokens_incl_cache_reads": 226856,
+   "turns": 4,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:15:58+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "Read"
+   ]
+  },
+  {
+   "sid": "Q4",
+   "question": "Q4",
+   "world": "S-dyn",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.09974100000000001,
+   "tokens": 14900,
+   "tokens_incl_cache_reads": 307450,
+   "turns": 8,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:16:16+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "Read",
+    "implementation_get",
+    "Grep",
+    "Grep",
+    "implementation_get"
+   ]
+  },
+  {
+   "sid": "Q5",
+   "question": "Q5",
+   "world": "S-dyn",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0784782,
+   "tokens": 13047,
+   "tokens_incl_cache_reads": 223209,
+   "turns": 5,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:16:28+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "Grep",
+    "implementation_get"
+   ]
+  },
+  {
+   "sid": "Q6",
+   "question": "Q6",
+   "world": "S-dyn",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.1021509,
+   "tokens": 16286,
+   "tokens_incl_cache_reads": 307735,
+   "turns": 7,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:16:48+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "model_get",
+    "Grep",
+    "Grep",
+    "Glob"
+   ]
+  },
+  {
+   "sid": "Q7",
+   "question": "Q7",
+   "world": "S-dyn",
+   "key": "AMBIGUOUS",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.07835310000000001,
+   "tokens": 14790,
+   "tokens_incl_cache_reads": 153281,
+   "turns": 4,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:16:57+00:00",
+   "items": {
+    "B1": true,
+    "B2": false,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": true
+   },
+   "tools": [
+    "implementation_get",
+    "workflow_find",
+    "Grep"
+   ]
+  },
+  {
+   "sid": "Q8",
+   "question": "Q8",
+   "world": "S-dyn",
+   "key": "AMBIGUOUS",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.067717,
+   "tokens": 12563,
+   "tokens_incl_cache_reads": 151053,
+   "turns": 3,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:17:08+00:00",
+   "items": {
+    "B1": true,
+    "B2": false,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": true
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get"
+   ]
+  },
+  {
+   "sid": "Q9",
+   "question": "Q9",
+   "world": "S4-stat",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0744674,
+   "tokens": 11908,
+   "tokens_incl_cache_reads": 223502,
+   "turns": 5,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:17:21+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": false,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "Grep",
+    "Read"
+   ]
+  },
+  {
+   "sid": "Q10",
+   "question": "Q10",
+   "world": "S4-stat",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0669455,
+   "tokens": 9991,
+   "tokens_incl_cache_reads": 224066,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:17:36+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get",
+    "Grep",
+    "Glob",
+    "Grep"
+   ]
+  },
+  {
+   "sid": "Q11",
+   "question": "Q11",
+   "world": "S4-stat",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.13202440000000001,
+   "tokens": 23872,
+   "tokens_incl_cache_reads": 317036,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:17:53+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "Grep",
+    "implementation_get",
+    "implementation_get"
+   ]
+  },
+  {
+   "sid": "Q12",
+   "question": "Q12",
+   "world": "S4-stat",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.096882,
+   "tokens": 14614,
+   "tokens_incl_cache_reads": 308614,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:18:12+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": false,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "implementation_get",
+    "Read",
+    "Read",
+    "Grep"
+   ]
+  },
+  {
+   "sid": "Q13",
+   "question": "Q13",
+   "world": "S4-stat",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "with_tools": true,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0547305,
+   "tokens": 7097,
+   "tokens_incl_cache_reads": 217602,
+   "turns": 4,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:18:23+00:00",
+   "items": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "workflow_find",
+    "Grep",
+    "Grep"
+   ]
+  },
+  {
+   "sid": "ablation-Q3",
+   "question": "Q3",
+   "world": "S-dyn",
+   "key": "IMPLEMENTED-VERIFIED",
+   "with_tools": false,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.3920518,
+   "tokens": 89494,
+   "tokens_incl_cache_reads": 327272,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:18:43+00:00",
+   "items": {
+    "B1": null,
+    "B2": false,
+    "B3": true,
+    "B4": false,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "Grep",
+    "model_get",
+    "Glob",
+    "Grep",
+    "Read"
+   ]
+  },
+  {
+   "sid": "ablation-Q9",
+   "question": "Q9",
+   "world": "S4-stat",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "with_tools": false,
+   "status": "SCORED",
+   "reason": null,
+   "cost_usd": 0.0927852,
+   "tokens": 14145,
+   "tokens_incl_cache_reads": 300697,
+   "turns": 6,
+   "model_resolved": "claude-sonnet-5-5",
+   "claude_version": "2.1.299 (Claude Code)",
+   "usage_limit": false,
+   "infra_failure": null,
+   "world_changed": {
+    "clone": [],
+    "inventory": []
+   },
+   "started_utc": "2026-10-16T06:18:59+00:00",
+   "items": {
+    "B1": null,
+    "B2": true,
+    "B3": false,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "tools": [
+    "Grep",
+    "Glob",
+    "Grep",
+    "Read",
+    "Grep"
+   ]
+  }
+ ],
+ "scored": 15,
+ "main_sessions_scored": 13,
+ "main_sessions_pass": 8,
+ "items_main": {
+  "B1": "13/13",
+  "B2": "11/13",
+  "B3": "13/13",
+  "B4": "11/13",
+  "B5": "12/13",
+  "B6": "13/13",
+  "B7": "13/13",
+  "B8": "2/2"
+ },
+ "items_ablation": {
+  "B2": "1/2",
+  "B3": "1/2",
+  "B4": "1/2",
+  "B5": "2/2",
+  "B6": "2/2",
+  "B7": "2/2",
+  "B8": "0/0"
+ },
+ "B7": "15/15",
+ "pass_rule_evaluated": true,
+ "pass_rule_met": false,
+ "n": 13,
+ "total_cost_usd": 1.8347,
+ "total_tokens": 343748,
+ "token_definition": "input + output + cache creation (cache reads excluded); cap 1000000",
+ "total_tokens_incl_cache_reads": 3886586,
+ "e2": {
+  "rows": [
+   {
+    "id": "Q1",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "IMPLEMENTED-UNVERIFIED",
+    "kind": "yes",
+    "items": {
+     "B2": false,
+     "B3": false,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.255303,
+    "tokens": 94321,
+    "rounds": 2,
+    "rejected": 0,
+    "answer": "Yes. A signed-in user can check in a habit for their local today with POST /v1/habits/{habit_id}/completions, which answers 201."
+   },
+   {
+    "id": "Q2",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "IMPLEMENTED-UNVERIFIED",
+    "kind": "yes",
+    "items": {
+     "B2": false,
+     "B3": false,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.151001,
+    "tokens": 102219,
+    "rounds": 2,
+    "rejected": 0,
+    "answer": "Yes. A signed-in user can delete their own device with DELETE /v1/devices/{id}, which answers 204. A device belonging to another user answers 404."
+   },
+   {
+    "id": "Q3",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "IMPLEMENTED-UNVERIFIED",
+    "kind": "yes",
+    "items": {
+     "B2": false,
+     "B3": false,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.121391,
+    "tokens": 94374,
+    "rounds": 2,
+    "rejected": 0,
+    "answer": "Yes. POST /v1/completions/batch accepts 1 to 100 check-in items in one request, and each item carries its own habit_id."
+   },
+   {
+    "id": "Q4",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "IMPLEMENTED-UNVERIFIED",
+    "kind": "yes",
+    "items": {
+     "B2": true,
+     "B3": false,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.119223,
+    "tokens": 93937,
+    "rounds": 2,
+    "rejected": 0,
+    "answer": "Yes. Each nudge stores a `delivery` value (pending, sent, failed or suppressed), and a push that went out is recorded as `sent` or `failed`."
+   },
+   {
+    "id": "Q5",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+    "kind": "not_specified",
+    "items": {
+     "B2": true,
+     "B3": true,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.053049,
+    "tokens": 45963,
+    "rounds": 1,
+    "rejected": 0,
+    "answer": "The spec does not describe any password reset by email."
+   },
+   {
+    "id": "Q6",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+    "kind": "not_specified",
+    "items": {
+     "B2": true,
+     "B3": true,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.054443,
+    "tokens": 46205,
+    "rounds": 1,
+    "rejected": 0,
+    "answer": "The spec does not describe any CSV export of habits."
+   },
+   {
+    "id": "Q7",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "IMPLEMENTED-UNVERIFIED",
+    "kind": "yes",
+    "items": {
+     "B2": false,
+     "B3": false,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.118395,
+    "tokens": 93796,
+    "rounds": 2,
+    "rejected": 0,
+    "answer": "Yes. There are several delete endpoints: DELETE /v1/me, DELETE /v1/devices/{id}, DELETE /v1/habits/{id}, and DELETE /v1/habits/{habit_id}/completions/{id}."
+   },
+   {
+    "id": "Q8",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "IMPLEMENTED-UNVERIFIED",
+    "kind": "yes",
+    "items": {
+     "B2": false,
+     "B3": false,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.115253,
+    "tokens": 92742,
+    "rounds": 2,
+    "rejected": 0,
+    "answer": "Yes. GET /v1/habits, GET /v1/habits/{id}/completions and GET /v1/nudges are paginated list endpoints, and GET /v1/sync returns a changes list."
+   },
+   {
+    "id": "Q9",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "REQUIRED-NOT-IMPLEMENTED",
+    "kind": "yes",
+    "items": {
+     "B2": true,
+     "B3": true,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.165158,
+    "tokens": 40806,
+    "rounds": 1,
+    "rejected": 0,
+    "answer": "Yes: the spec defines GET /v1/home, but the code does not register it."
+   },
+   {
+    "id": "Q10",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "REQUIRED-NOT-IMPLEMENTED",
+    "kind": "yes",
+    "items": {
+     "B2": true,
+     "B3": true,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.057728,
+    "tokens": 46039,
+    "rounds": 1,
+    "rejected": 0,
+    "answer": "The spec requires it: GET /v1/sync returns changes since a cursor. But the code does not implement it, because the route is not registered."
+   },
+   {
+    "id": "Q11",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "REQUIRED-NOT-IMPLEMENTED",
+    "kind": "yes",
+    "items": {
+     "B2": true,
+     "B3": true,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.056072,
+    "tokens": 45856,
+    "rounds": 1,
+    "rejected": 0,
+    "answer": "Yes, per the spec: a signed-in user can register a device via POST /v1/devices. But the code does not implement this route."
+   },
+   {
+    "id": "Q12",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "IMPLEMENTED-UNVERIFIED",
+    "kind": "yes",
+    "items": {
+     "B2": true,
+     "B3": false,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.119579,
+    "tokens": 92626,
+    "rounds": 2,
+    "rejected": 0,
+    "answer": "Yes. A signed-in user can check in a habit for today with POST /v1/habits/{habit_id}/completions, using today's local date."
+   },
+   {
+    "id": "Q13",
+    "status": "SCORED",
+    "reason": null,
+    "world_changed": [],
+    "label": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+    "kind": "no",
+    "items": {
+     "B2": true,
+     "B3": true,
+     "B4": true,
+     "B5": true
+    },
+    "cost_usd": 0.055471,
+    "tokens": 45778,
+    "rounds": 1,
+    "rejected": 0,
+    "answer": "No. The spec has no habit-sharing feature; habits are private to their owner."
+   }
+  ],
+  "scored": 13,
+  "B2": "8/13",
+  "cost_usd": 1.4421,
+  "stop": null
+ },
+ "stop": null,
+ "wall_s": 368.7
+}

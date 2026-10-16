@@ -1,0 +1,172 @@
+{
+ "sid": "Q10",
+ "question": "Q10",
+ "world": "S4-stat",
+ "key": "REQUIRED-NOT-IMPLEMENTED",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 15.1
+ },
+ "cost_usd": 0.0669455,
+ "tokens": 9991,
+ "tokens_incl_cache_reads": 224066,
+ "turns": 6,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T06:17:36+00:00",
+ "score": {
+  "items": {
+   "B1": true,
+   "B2": true,
+   "B3": true,
+   "B4": true,
+   "B5": true,
+   "B6": true,
+   "B7": true,
+   "B8": null
+  },
+  "detail": {
+   "B1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_012zK6KeJPChTKcueNuvSgNU",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_01EBNrYyY77uN4X48Rn8Zo7j",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "B2": {
+    "pass": true,
+    "label": "REQUIRED-NOT-IMPLEMENTED",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "labels_on_line": [
+     "REQUIRED-NOT-IMPLEMENTED"
+    ],
+    "first_line": "REQUIRED-NOT-IMPLEMENTED"
+   },
+   "B3": {
+    "pass": true,
+    "citations": [
+     "internal/sync/doc.go:1",
+     "internal/sync/doc.go:2",
+     "internal/db/changeseq.go:23",
+     "internal/habits/routes.go:377",
+     "internal/habits/routes.go:423",
+     "internal/completions/routes.go:345",
+     "internal/httpapi/pagination.go:38",
+     "internal/httpapi/pagination.go:44"
+    ],
+    "invalid": [],
+    "evidence": [],
+    "needs_evidence": false
+   },
+   "B4": {
+    "pass": true,
+    "named": [
+     "GET /v1/sync"
+    ],
+    "unknown": []
+   },
+   "B5": {
+    "pass": true,
+    "named": [
+     "R21",
+     "R27",
+     "R89",
+     "R94"
+    ],
+    "unknown": [],
+    "key_rules_named": [
+     "R21",
+     "R27",
+     "R89",
+     "R94"
+    ],
+    "needs_key_rule": true
+   },
+   "B6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "B7": {
+    "pass": true
+   },
+   "B8": null
+  },
+  "applicable": [
+   "B1",
+   "B2",
+   "B3",
+   "B4",
+   "B5",
+   "B6",
+   "B7"
+  ],
+  "pass": true
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "sync changes since a cursor"
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "summary"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "cursor|since|sync",
+    "-i": true,
+    "output_mode": "content",
+    "head_limit": 60
+   }
+  },
+  {
+   "name": "Glob",
+   "is_error": false,
+   "input": {
+    "pattern": "internal/sync/*"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "/v1/sync|\"/sync\"|change_seq",
+    "glob": "**/*.go",
+    "output_mode": "content",
+    "head_limit": 30
+   }
+  }
+ ]
+}

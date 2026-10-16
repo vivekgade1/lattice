@@ -1,0 +1,18 @@
+{
+ "frozen_at_utc": "2026-10-16T06:14:29+00:00",
+ "files": {
+  "implementation_agent.py": "ca65bcb4a10ca1e020523c4a8fd7f4fbc76f5b5af5afa5f11f3c22411301c728",
+  "implementation_agent_scorer.py": "3be9520c6d94fe70816f11c92357be42f73f8bfc86948d51a056d3a1a20c4e7d",
+  "implementation_agent_check.py": "69297855d3acf4d8d165473adf793972e9d29e4767fb92f1af3039a8518b7500",
+  "implementation_agent_scorer_cases.json": "8eae818cd74af59c76e54dbc4b462ac7e76385e3e6ef1d992b2f3efa19655c7a",
+  "contracts/agent_scorer.py": "92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08"
+ },
+ "workflows_dyn_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0",
+ "report_sha256": {
+  "S-dyn": "84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84",
+  "S4-stat": "80511cbb05dc3a61c04521e96555586611f2d8813d7b88dc5dcafd2cc6891df1"
+ },
+ "claude_version": "2.1.299 (Claude Code)",
+ "scorer_cases": "54/54 scorer cases hold",
+ "scorer_cases_rc": 0
+}

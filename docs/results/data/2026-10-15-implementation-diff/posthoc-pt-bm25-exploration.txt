@@ -1,0 +1,25 @@
+Post hoc exploration of PT (one round, NOT shipped): the blind result of `workflow_find` was 2/8 hints (every query
+that names a popular route ties at the best possible set overlap, so the hint is `several`). One alternative was tried
+once, with its parameters fixed before running (BM25, k1 1.2, b 0.75, the same IDF, the same 0.15 and 10% rules).
+Output (query, expected, scoring, hint, top-3 targets with scores):
+
+PT1 check in a habit exists overlap several [DELETE /v1/devices/{} 2.4995, DELETE /v1/habits/{} 2.4995, DELETE /v1/habits/{}/completions/{} 2.4995]
+PT1 check in a habit exists bm25 several [DELETE /v1/habits/{}/completions/{} 4.1464, POST /v1/habits/{}/completions 4.0492, POST /v1/completions/batch 3.7556]
+PT2 the home screen exists overlap several [DELETE /v1/habits/{} 1.7918, DELETE /v1/habits/{}/completions/{} 1.7918, GET /v1/habits/{}/progress 1.7918]
+PT2 the home screen exists bm25 several [GET /v1/home 3.3689, flow wf-b95fd71de1 3.2885, flow wf-b595a756b6 3.2231]
+PT3 register a device exists overlap several [DELETE /v1/devices/{} 3.1729, DELETE /v1/habits/{} 3.1729, DELETE /v1/habits/{}/completions/{} 3.1729]
+PT3 register a device exists bm25 several [POST /v1/devices 5.0473, DELETE /v1/devices/{} 4.6401, POST /v1/auth/logout 3.8029]
+PT6 password reset no_match overlap several [POST /v1/auth/login 3.8816, POST /v1/auth/register 3.8816]
+PT6 password reset no_match bm25 exists [POST /v1/auth/register 6.5761, POST /v1/auth/login 4.1397]
+PT7 export CSV no_match overlap no_match []
+PT7 export CSV no_match bm25 no_match []
+PT8 list several overlap several [GET /v1/habits 2.8234, GET /v1/habits/{}/completions 2.8234, GET /v1/habits/{}/progress 2.8234]
+PT8 list several bm25 several [GET /v1/habits 3.1121, GET /v1/nudges 2.9919, GET /v1/habits/{}/completions 2.2016]
+PT4 the home screen spec_only overlap several [GET /v1/habits/{}/progress 2.539, GET /v1/home 2.539, GET /v1/nudges 2.539]
+PT4 the home screen spec_only bm25 several [R139 3.852, R114 3.7654, GET /v1/home 3.5549]
+PT5 register a device spec_only overlap several [DELETE /v1/devices/{} 3.0713, DELETE /v1/habits/{} 3.0713, DELETE /v1/habits/{}/completions/{} 3.0713]
+PT5 register a device spec_only bm25 several [R32 4.7922, POST /v1/devices 4.6043, R21 4.1985]
+
+Reading: BM25 ranks the intended route first for PT2 and PT3 only (GET /v1/home, POST /v1/devices), and its hints match
+the expected ones in 2 of 8 (PT7, PT8), the same as the pre-registered overlap. It does not pass the gate, so it was
+not kept: the shipped `workflow_find` is the pre-registered overlap, and PT is reported as the finding it is.

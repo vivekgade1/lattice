@@ -1,0 +1,36 @@
+{
+ "kind": "not_specified",
+ "answer": "The spec does not describe any CSV export of habits.",
+ "explanation": "The access matrix and rules list no export endpoint or CSV format; habits are only read through GET /v1/habits (JSON paginated list), GET /v1/habits/{id}, /v1/home and /v1/sync. The code also registers no export route.",
+ "citations": [
+  {
+   "target": "rule:R58",
+   "step": null,
+   "quote": "`GET /v1/habits` answers `{items, next_cursor, has_more}`"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 4.4,
+  "tokens": 46205,
+  "input_tokens": 45999,
+  "output_tokens": 206,
+  "cache_read_tokens": 33746,
+  "cache_creation_tokens": 12251,
+  "rounds": 1,
+  "model": "sonnet",
+  "digest_elements": 461,
+  "calls": [
+   {
+    "input_tokens": 45999,
+    "cache_read_tokens": 33746,
+    "prompt_tokens_est": 35331
+   }
+  ],
+  "cost_usd": 0.054443
+ },
+ "implementation": "not_specified_not_implemented",
+ "implementation_basis": "inferred"
+}

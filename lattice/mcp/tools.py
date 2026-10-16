@@ -644,6 +644,19 @@ def _clip(text: str, n: int) -> str:
     return text if len(text) <= n else text[:n] + "..."
 
 
+IMPLEMENTATION_SECTIONS = ("summary", "rules", "routes", "flows", "machines", "orphans", "excluded")
+
+
+def _has_implementation_table(root: Path) -> bool:
+    """Whether ``root/studio.toml`` has an ``[implementation]`` table (the three Spike C tools
+    are registered only then)."""
+    try:
+        cfg = tomllib.loads((root / "studio.toml").read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return False
+    return isinstance(cfg.get("implementation"), dict)
+
+
 class Toolbox:
     """The tools over one backend. ``readonly`` hides change_propose and check_run."""
 
@@ -984,6 +997,207 @@ class Toolbox:
             return {"count": len(ch), "changes": ch}
 
         self._reg("change_list", "The change sets: id, request, status.", {}, [], change_list)
+        if _has_implementation_table(self.root):
+            self._build_implementation()
+
+    # -- the implementation diff (Spike C): three read-only tools, only with [implementation]
+    def _spec_trace(self) -> tuple[Any, Any]:
+        """The project's Spec and Trace, read from its files (no write anywhere); kept in memory
+        while the files do not change."""
+        import hashlib
+
+        from lattice.spec.draft import load_spec
+        from lattice.spec.rules import Trace
+
+        files = [self.root / "spec.py", self.root / "spec.trace.json"]
+        try:
+            module, trace_text = (f.read_text(encoding="utf-8") for f in files)
+        except OSError as e:
+            raise ToolError(
+                f"no_spec: cannot read the project's spec files ({e.strerror or e})"
+            ) from None
+        key = hashlib.sha256((module + "\0" + trace_text).encode()).hexdigest()
+        hit = getattr(self, "_spec_cache", None)
+        if hit is not None and hit[0] == key:
+            return hit[1], hit[2]
+        spec, errors = load_spec(module)
+        if spec is None:
+            raise ToolError("no_spec: spec.py does not load: " + "; ".join(errors))
+        trace = Trace.from_json(trace_text)
+        self._spec_cache = (key, spec, trace)
+        return spec, trace
+
+    def _impl_ctx(self) -> Any:
+        from lattice.spec import implementation as impl
+
+        cfg = impl.implementation_config(self.root)
+        if cfg is None or cfg["inventory"] is None:
+            raise ToolError("inventory_missing: studio.toml [implementation] names no inventory")
+        try:
+            inv = impl.load_inventory(cfg["inventory"], cfg["app_root"], cfg["package"])
+        except impl.ImplementationError as e:
+            raise ToolError(str(e)) from None
+        spec, trace = self._spec_trace()
+        return impl.ImplContext.of(spec, trace, inv)
+
+    def _build_implementation(self) -> None:
+        from lattice.spec import implementation as impl
+
+        S = {"type": "string"}
+        RO = "Read-only: nothing is written, the extractor, go and the app are not run."
+
+        def implementation_get(a: Mapping[str, Any]) -> dict[str, Any]:
+            section = _str(a, "section", required=False) or "summary"
+            if section not in IMPLEMENTATION_SECTIONS:
+                raise ToolError(
+                    f"bad_section: section must be one of {', '.join(IMPLEMENTATION_SECTIONS)}"
+                )
+            limit = a.get("limit", 50)
+            if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 200:
+                raise ToolError("bad_limit: limit must be an integer 1..200")
+            rule, element, status = (
+                _str(a, k, required=False) for k in ("rule", "element", "status")
+            )
+            ctx = self._impl_ctx()
+            rep = ctx.report
+            fs = impl.findings(ctx)
+            inv = rep["inventory"]
+            if section == "summary":
+                out: dict[str, Any] = {
+                    "section": "summary",
+                    "requirement_basis": rep["requirement_basis"],
+                    "inventory": {
+                        "extract": inv["extract_sha256"][:12],
+                        "workflows": (inv["workflows_sha256"] or "none")[:12],
+                        "run_mode": inv["run_mode"],
+                        "stale": bool(inv["stale"]),
+                        "workflows_mismatch": inv["workflows_mismatch"],
+                    },
+                    "summary": rep["summary"],
+                    "findings_total": len(fs),
+                    "findings": fs[:3],
+                    "sections": list(IMPLEMENTATION_SECTIONS),
+                    "note": "static facts from the code unless marked observed; absence is "
+                    "inferred. "
+                    "Ask for section=rules|orphans|... to see more. " + RO,
+                }
+                while len(json.dumps(out)) > 3800 and out["findings"]:
+                    out["findings"] = out["findings"][:-1]
+                return out
+            by_id = {f["target"]: f for f in fs}
+            sect = "rules" if "rules" in rep else "requirements"
+            if section == "rules":
+                items = [
+                    e
+                    for e in rep[sect]
+                    if (not rule or e["id"] == rule)
+                    and (not status or e["status"] == status)
+                    and (not element or e["id"] in rep["by_element"].get(element, []))
+                ]
+                rows = []
+                for e in items[:limit]:
+                    row = {k: e[k] for k in ("id", "spec_status", "status") if k in e}
+                    for k in ("missing", "partial", "reasons", "impact_label", "last_check"):
+                        if k in e:
+                            row[k] = e[k]
+                    if rule:
+                        row["elements"] = e["elements"]
+                    if e["id"] in by_id and e["status"] == "required_not_implemented":
+                        row["finding"] = by_id[e["id"]]
+                    rows.append(row)
+            elif section == "routes":
+                items = [
+                    r
+                    for r in rep["routes"]
+                    if (not status or r["status"] == status)
+                    and (not element or element.removeprefix("impl:route:") == r["key"])
+                    and (not rule or rule in r["rules"])
+                ]
+                rows = items[:limit]
+            elif section == "flows":
+                items = [
+                    f
+                    for f in rep["flows"]
+                    if (not status or f["effective"] == status)
+                    and (not element or element.removeprefix("impl:route:") in f["routes"])
+                    and (not rule or rule in f["rules"])
+                ]
+                rows = [{k: v for k, v in f.items() if k != "evidence"} for f in items[:limit]]
+            elif section == "machines":
+                items = [m for m in rep["machines"] if not rule or rule in m["rules"]]
+                rows = items[:limit]
+            elif section == "orphans":
+                items = [f for f in fs if f["kind"] == "implemented_not_required"]
+                rows = items[:limit]
+            else:
+                items = rep["excluded"]
+                rows = items[:limit]
+            return {
+                "section": section,
+                "inventory": {"stale": bool(inv["stale"]), "run_mode": inv["run_mode"]},
+                "total": len(items),
+                "returned": len(rows),
+                "items": rows,
+                "note": RO,
+            }
+
+        self._reg(
+            "implementation_get",
+            "What the app's code implements against what the spec requires (the implementation "
+            "diff). `section`: summary (default, counts and the first findings), rules (status per "
+            "rule: implemented_verified|implemented_unverified|required_not_implemented|"
+            "no_element), routes, flows, machines, orphans (implemented but required by no rule), "
+            "excluded. Filters: rule, element (impl:route:METHOD /path), status, limit (<= 200). "
+            "Each finding carries a `proposal` for change_propose: text only, never sent from "
+            "here. "
+            "Facts are static (from the code) unless basis is observed (a replayed flow); an "
+            "absence is inferred.",
+            {
+                "section": {"type": "string", "enum": list(IMPLEMENTATION_SECTIONS)},
+                "rule": {**S, "description": "a rule id, e.g. R44"},
+                "element": {**S, "description": "an element key, e.g. impl:route:GET /v1/me"},
+                "status": S,
+                "limit": {"type": "integer", "minimum": 1, "maximum": 200},
+            },
+            [],
+            implementation_get,
+        )
+
+        def workflow_get(a: Mapping[str, Any]) -> dict[str, Any]:
+            ident = _str(a, "id")
+            ctx = self._impl_ctx()
+            try:
+                return impl.get_workflow(ctx, ident)
+            except impl.ImplementationError as e:
+                raise ToolError(str(e)) from None
+
+        self._reg(
+            "workflow_get",
+            "One flow (wf-...) or machine (wm-... or table.column) of the implementation: steps, "
+            "status, evidence (code:path:line), the rules that need it and the spec skeletons it "
+            "matches. A flow name is inferred. " + RO,
+            {"id": {**S, "description": "a flow or machine id from implementation_get"}},
+            ["id"],
+            workflow_get,
+        )
+
+        def workflow_find(a: Mapping[str, Any]) -> dict[str, Any]:
+            q = _str(a, "question")
+            limit = a.get("limit", 5)
+            if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 10:
+                raise ToolError("bad_limit: limit must be an integer 1..10")
+            return impl.find_candidates(self._impl_ctx(), q, limit)
+
+        self._reg(
+            "workflow_find",
+            "Find the routes, flows, machines and unimplemented rules a question is about "
+            "(deterministic, lexical: exact METHOD /path mentions first, then term overlap). "
+            "`hint`: exists, spec_only, no_match or several. Lexical match, not understanding. "
+            + RO,
+            {"question": S, "limit": {"type": "integer", "minimum": 1, "maximum": 10}},
+            ["question"],
+            workflow_find,
+        )
 
 
 def cap_result(data: Any, cap: int = OUTPUT_CAP) -> tuple[str, bool]:

@@ -1,0 +1,1 @@
+dogfood/studio/check.sh --json on the worktree (stub LLM server per scenario): verdict pass, layers DX, counts {'D': 0, 'X': 0}, findings 0, cases 481 (all 'correct'), wall 52.9 s

@@ -1,0 +1,9 @@
+NOT-SPECIFIED-NOT-IMPLEMENTED
+
+A user cannot export their habits as a CSV file. The spec doesn't ask for it and the code doesn't do it.
+
+- **Code:** A case-insensitive search of the whole project for `csv`, `export`, `download`, `text/csv`, `encoding/csv` and `Content-Disposition` found no matches. The project has no files matching those terms, including the Go sources under `internal/` and `cmd/`.
+- **Routes:** The only habit-related routes are the ordinary JSON ones, such as `GET /v1/habits` (code:internal/habits/routes.go:25) and `DELETE /v1/habits/{}` (code:internal/habits/routes.go:28). Others cover completions, progress, history, home, sync and nudges. None produces a file download.
+- **Spec:** The same search of the whole project, which includes `REQUIREMENTS.md` and `spec.py`, found nothing about CSV or export. The part of the rules I could read (R1–R41, because the Lattice output was truncated) doesn't mention it either. I did not read the rest of the rule list, but the file search covers it.
+
+A client could build a CSV itself from the JSON that `GET /v1/habits` and the completions routes return. The backend offers no export.

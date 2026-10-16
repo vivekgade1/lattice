@@ -286,6 +286,10 @@ L_ASK = [
             "contract_check",
             "contract_impact",
             "linked_question_list",
+            # API v1.22 (Spike C): the implementation tools, after the multi-project ones
+            "implementation_get",
+            "workflow_get",
+            "workflow_find",
         )
     ],
 ]
@@ -324,23 +328,23 @@ X3 = [X + "exportAndSend", X + "notion-search", X + "run_query"]
 
 # turn id -> (instance, mode, allowed, denied, n_allowed, n_denied)
 TURNS: dict[str, tuple[str, str, list[str], list[str], int, int]] = {
-    "I0.ask1": ("I0", "ask", L_ASK + RA, BD + DA, 21, 15),
-    "I0.ask2": ("I0", "ask", L_ASK + RA, BD + DA, 21, 15),  # --resume <SID>
-    "I0.explain": ("I0", "explain", L_ASK + RA, BD + DA, 21, 15),
-    "I0.change": ("I0", "change", L_CHG + RA, BD + DA, 24, 15),
-    "I0.change_B": ("I0", "change", L_CHG + G2 + D3, BD + G3 + D2 + N2, 22, 12),
-    "I1.ask": ("I1", "ask", L_ASK + RA, BD + DA, 21, 15),
-    "I1.explain": ("I1", "explain", L_ASK + RA, BD + DA, 21, 15),
-    "I1.change": ("I1", "change", L_CHG + G2 + L2 + L3 + D3, BD + G3 + D2 + N2, 27, 12),
-    "I1.change_B": ("I1", "change", L_CHG + G2 + D3, BD + G3 + D2 + N2, 22, 12),
-    "I2.change": ("I2", "change", L_CHG + G2 + L2 + L3 + D3, BD + G3 + D2 + N2, 27, 12),
-    "I3.change": ("I3", "change", L_CHG + RA, BD + DA, 24, 15),
-    "I4.change": ("I4", "change", L_CHG + RA, BD + DA, 24, 15),
-    "I5.change": ("I5", "change", L_CHG + RA, BD + DA, 24, 15),
-    "I6.ask": ("I6", "ask", L_ASK + X4, BD + X3, 18, 8),
-    "I8.ask": ("I8", "ask", L_ASK, BD, 14, 5),
-    "I10.ask": ("I10", "ask", L_ASK, BD, 14, 5),
-    "I10.change": ("I10", "change", L_CHG, BD, 17, 5),
+    "I0.ask1": ("I0", "ask", L_ASK + RA, BD + DA, 24, 15),
+    "I0.ask2": ("I0", "ask", L_ASK + RA, BD + DA, 24, 15),  # --resume <SID>
+    "I0.explain": ("I0", "explain", L_ASK + RA, BD + DA, 24, 15),
+    "I0.change": ("I0", "change", L_CHG + RA, BD + DA, 27, 15),
+    "I0.change_B": ("I0", "change", L_CHG + G2 + D3, BD + G3 + D2 + N2, 25, 12),
+    "I1.ask": ("I1", "ask", L_ASK + RA, BD + DA, 24, 15),
+    "I1.explain": ("I1", "explain", L_ASK + RA, BD + DA, 24, 15),
+    "I1.change": ("I1", "change", L_CHG + G2 + L2 + L3 + D3, BD + G3 + D2 + N2, 30, 12),
+    "I1.change_B": ("I1", "change", L_CHG + G2 + D3, BD + G3 + D2 + N2, 25, 12),
+    "I2.change": ("I2", "change", L_CHG + G2 + L2 + L3 + D3, BD + G3 + D2 + N2, 30, 12),
+    "I3.change": ("I3", "change", L_CHG + RA, BD + DA, 27, 15),
+    "I4.change": ("I4", "change", L_CHG + RA, BD + DA, 27, 15),
+    "I5.change": ("I5", "change", L_CHG + RA, BD + DA, 27, 15),
+    "I6.ask": ("I6", "ask", L_ASK + X4, BD + X3, 21, 8),
+    "I8.ask": ("I8", "ask", L_ASK, BD, 17, 5),
+    "I10.ask": ("I10", "ask", L_ASK, BD, 17, 5),
+    "I10.change": ("I10", "change", L_CHG, BD, 20, 5),
 }
 for _tid, (_i, _m, _a, _d, _na, _nd) in TURNS.items():
     assert (len(_a), len(_d)) == (_na, _nd), _tid

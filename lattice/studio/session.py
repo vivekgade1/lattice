@@ -66,6 +66,7 @@ import sys
 import tempfile
 import threading
 import time
+import tomllib
 import uuid
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
@@ -115,6 +116,11 @@ _MULTI_TOOLS = tuple(
         "linked_question_list",
     )
 )
+# API v1.22: the read-only implementation tools, listed by the session's server only when the
+# project's studio.toml has [implementation]; not in _MODEL_TOOLS (rebuild's list)
+_IMPL_TOOLS = tuple(
+    f"mcp__lattice__{n}" for n in ("implementation_get", "workflow_get", "workflow_find")
+)
 _CHANGE_TOOLS = tuple(f"mcp__lattice__{n}" for n in ("change_propose", "change_get", "change_list"))
 _DENIED = ("Edit", "Write", "MultiEdit", "NotebookEdit", "Bash")
 
@@ -125,6 +131,13 @@ _BASE_RULES = (
     "model_get, rule_get) and cite rule ids (R12) and targets (scenario:..., "
     "cell:row|GET /path). Say plainly when the spec does not say. Never edit files "
     "yourself and never run shell commands: you have no tools for it. Be brief."
+)
+# API v1.22: appended to the chat's rules only when the project's studio.toml has [implementation]
+_IMPL_RULES = (
+    "This project can tell what the code implements: mcp__lattice__implementation_get, "
+    "workflow_get and workflow_find are facts read from the code (static unless marked "
+    "observed, an absence is inferred), not the spec: cite code:<path>:<line> for them, and "
+    "never present a static fact as tested."
 )
 # API v1.13 (spike 4): the chat modes see the owner's connected claude.ai servers, read-only
 _EXTERNAL_RULES = (
@@ -156,7 +169,7 @@ MODE_PROFILES: dict[str, ModeProfile] = {
     "ask": ModeProfile(
         "ask",
         _READ_TOOLS,
-        (*_READ_TOOLS, *_MODEL_TOOLS, *_MULTI_TOOLS),
+        (*_READ_TOOLS, *_MODEL_TOOLS, *_MULTI_TOOLS, *_IMPL_TOOLS),
         _DENIED,
         True,
         True,
@@ -165,7 +178,7 @@ MODE_PROFILES: dict[str, ModeProfile] = {
     "explain": ModeProfile(
         "explain",
         _READ_TOOLS,
-        (*_READ_TOOLS, *_MODEL_TOOLS, *_MULTI_TOOLS),
+        (*_READ_TOOLS, *_MODEL_TOOLS, *_MULTI_TOOLS, *_IMPL_TOOLS),
         _DENIED,
         True,
         True,
@@ -176,7 +189,7 @@ MODE_PROFILES: dict[str, ModeProfile] = {
     "change": ModeProfile(
         "change",
         _READ_TOOLS,
-        (*_READ_TOOLS, *_MODEL_TOOLS, *_MULTI_TOOLS, *_CHANGE_TOOLS),
+        (*_READ_TOOLS, *_MODEL_TOOLS, *_MULTI_TOOLS, *_IMPL_TOOLS, *_CHANGE_TOOLS),
         _DENIED,
         False,
         True,
@@ -259,6 +272,9 @@ _MCP_LABELS = {
     "change_propose": "Proposed a change",
     "change_get": "Read a change",
     "change_list": "Listed the changes",
+    "implementation_get": "Read the implementation",
+    "workflow_get": "Read a flow or machine",
+    "workflow_find": "Searched the implementation",
 }
 
 
@@ -563,12 +579,23 @@ def project_rules(project: Path) -> str:
         return ""
 
 
+def _has_implementation(project: Path) -> bool:
+    """Whether the project's studio.toml has an ``[implementation]`` table."""
+    try:
+        data = tomllib.loads((Path(project) / "studio.toml").read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return False
+    return isinstance(data.get("implementation"), dict)
+
+
 def system_prompt(
     mode: str, project: Path, selected: Sequence[str] = (), change: str | None = None
 ) -> str:
     parts = [_BASE_RULES, MODE_PROFILES[mode].prompt]
     if mode in ("ask", "explain", "change"):
         parts.append(_EXTERNAL_RULES)
+        if _has_implementation(project):
+            parts.append(_IMPL_RULES)
     if change:
         parts.append(f"The open change is {change}.")
     rules = project_rules(project)

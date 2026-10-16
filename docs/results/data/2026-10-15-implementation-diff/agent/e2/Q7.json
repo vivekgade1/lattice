@@ -1,0 +1,71 @@
+{
+ "kind": "yes",
+ "answer": "Yes. There are several delete endpoints: DELETE /v1/me, DELETE /v1/devices/{id}, DELETE /v1/habits/{id}, and DELETE /v1/habits/{habit_id}/completions/{id}.",
+ "explanation": "The access matrix lists cells for these DELETE routes, and scenarios show them answering 204 for ann. The code registers the habit delete route, and a verified flow replays it with a 204.",
+ "citations": [
+  {
+   "target": "cell:ann|DELETE /v1/habits/{}",
+   "step": null,
+   "quote": "204/404"
+  },
+  {
+   "target": "cell:ann|DELETE /v1/me",
+   "step": null,
+   "quote": "204"
+  },
+  {
+   "target": "cell:ann|DELETE /v1/devices/{}",
+   "step": null,
+   "quote": "204/404"
+  },
+  {
+   "target": "cell:ann|DELETE /v1/habits/{}/completions/{}",
+   "step": null,
+   "quote": "204/404/409"
+  },
+  {
+   "target": "scenario:access__delete_habit__as_ann",
+   "step": 1,
+   "quote": "DELETE /v1/habits/00000000-0000-4000-8000-000000000100 as ann -> 204"
+  },
+  {
+   "target": "impl:flow:wf-8b2744d526",
+   "step": null,
+   "quote": "create habits > delete habits"
+  },
+  {
+   "target": "impl:route:DELETE /v1/habits/{}",
+   "step": null,
+   "quote": "registered code:internal/habits/routes.go:28"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 10.35,
+  "tokens": 93796,
+  "input_tokens": 92723,
+  "output_tokens": 1073,
+  "cache_read_tokens": 67492,
+  "cache_creation_tokens": 25227,
+  "rounds": 2,
+  "model": "sonnet",
+  "digest_elements": 459,
+  "calls": [
+   {
+    "input_tokens": 45952,
+    "cache_read_tokens": 33746,
+    "prompt_tokens_est": 35281
+   },
+   {
+    "input_tokens": 46771,
+    "cache_read_tokens": 33746,
+    "prompt_tokens_est": 35862
+   }
+  ],
+  "cost_usd": 0.118395
+ },
+ "implementation": "implemented_unverified",
+ "implementation_basis": "static"
+}

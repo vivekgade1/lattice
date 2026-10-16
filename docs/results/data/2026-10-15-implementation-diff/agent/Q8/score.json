@@ -1,0 +1,116 @@
+{
+ "items": {
+  "B1": true,
+  "B2": false,
+  "B3": true,
+  "B4": true,
+  "B5": true,
+  "B6": true,
+  "B7": true,
+  "B8": true
+ },
+ "detail": {
+  "B1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_018nmmCnnhyqwwSxeKvkEtGH",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_01TYh3Bd1SajLoCkemRAdvFF",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "B2": {
+   "pass": false,
+   "label": "IMPLEMENTED-VERIFIED",
+   "key": "AMBIGUOUS",
+   "labels_on_line": [
+    "IMPLEMENTED-VERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-VERIFIED"
+  },
+  "B3": {
+   "pass": true,
+   "citations": [
+    "internal/habits/routes.go:25",
+    "internal/habits/routes.go:205",
+    "internal/completions/routes.go:26",
+    "internal/completions/routes.go:263",
+    "internal/nudges/routes.go:16",
+    "internal/nudges/routes.go:33"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/habits/routes.go:25",
+    "internal/habits/routes.go:205",
+    "internal/completions/routes.go:26",
+    "internal/completions/routes.go:263",
+    "internal/nudges/routes.go:16",
+    "internal/nudges/routes.go:33"
+   ],
+   "needs_evidence": true
+  },
+  "B4": {
+   "pass": true,
+   "named": [
+    "GET /v1/habits",
+    "GET /v1/habits/{}/completions",
+    "GET /v1/nudges"
+   ],
+   "unknown": []
+  },
+  "B5": {
+   "pass": true,
+   "named": [
+    "R21",
+    "R27",
+    "R58",
+    "R69",
+    "R86",
+    "R87",
+    "R88"
+   ],
+   "unknown": [],
+   "key_rules_named": [],
+   "needs_key_rule": false
+  },
+  "B6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "B7": {
+   "pass": true
+  },
+  "B8": {
+   "pass": true,
+   "named": [
+    "GET /v1/habits",
+    "GET /v1/habits/{}/completions",
+    "GET /v1/nudges"
+   ],
+   "of": 4
+  }
+ },
+ "applicable": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7",
+  "B8"
+ ],
+ "pass": false
+}

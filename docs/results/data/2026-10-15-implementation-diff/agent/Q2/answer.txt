@@ -1,0 +1,19 @@
+IMPLEMENTED-VERIFIED
+
+Yes. A signed-in user can unregister one of their own devices with `DELETE /v1/devices/{id}`.
+
+- **Route:** `code:internal/account/routes.go:24` registers `DELETE /devices/:id` on the member (signed-in) route group.
+- **Handler:** `code:internal/account/devices.go:137` parses the id. A non-numeric id, or one below 1, gets 404 (`code:internal/account/devices.go:140`).
+- **Delete:** `code:internal/account/devices.go:143` deletes the row only where `id = ? AND user_id = <caller>`, so a user can only remove their own devices.
+- **Responses:** If no row matched (the device doesn't exist or belongs to someone else), it returns 404 (`code:internal/account/devices.go:147`). Otherwise it returns 204 (`code:internal/account/devices.go:150`).
+- **Spec:** This is rule R33 (`REQUIREMENTS.md:114`): "`DELETE /v1/devices/{id}` answers 204 and deletes the caller's device row."
+- **Verification:** The Lattice tooling reports the route as `implemented_verified`. Three access scenarios cover it:
+  - Anonymous caller gets 401.
+  - Another user (ben) gets 404 and the device stays.
+  - The owner (ann) gets 204 and the device is gone (`spec.py:282`, `spec.py:688`).
+
+Two other paths also remove a device, though neither is a direct unregister:
+- Logout deletes the device row for the caller's installation (`code:internal/auth/routes.go:282`).
+- `DELETE /v1/me` deletes all of the user's devices.
+
+I didn't change anything.

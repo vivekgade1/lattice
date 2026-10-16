@@ -1,0 +1,11 @@
+REQUIRED-NOT-IMPLEMENTED
+
+The spec requires cursor-based sync, but the app has no sync endpoint, so a client can't sync changes since a cursor.
+
+- **Spec:** `GET /v1/sync` is required (rules R89-R94, per the package comment at code:internal/sync/doc.go:1). The scenarios `sync_changes_in_order` and `sync_limits_and_cursors` in spec.py expect it to take `cursor` and `limit` and to return `{changes, has_more}`.
+- **Code:** `internal/sync/` holds only `doc.go`, which is a package declaration and comment (code:internal/sync/doc.go:2). No Go file registers a `/v1/sync` route. The Lattice implementation check lists `GET /v1/sync` as spec-only, and rules R21 and R27 as required but not implemented because of it.
+- **What exists:** The pieces a sync would read from are present.
+  - Write paths bump a per-user `change_seq` counter (code:internal/db/changeseq.go:23) and store it on changed rows (code:internal/habits/routes.go:377, code:internal/habits/routes.go:423, code:internal/completions/routes.go:345).
+  - Signed opaque cursors exist for list endpoints (code:internal/httpapi/pagination.go:38, code:internal/httpapi/pagination.go:44), but nothing uses them for sync.
+
+I changed nothing.

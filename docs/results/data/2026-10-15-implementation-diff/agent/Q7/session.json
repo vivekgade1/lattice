@@ -1,0 +1,166 @@
+{
+ "sid": "Q7",
+ "question": "Q7",
+ "world": "S-dyn",
+ "key": "AMBIGUOUS",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 9.2
+ },
+ "cost_usd": 0.07835310000000001,
+ "tokens": 14790,
+ "tokens_incl_cache_reads": 153281,
+ "turns": 4,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T06:16:57+00:00",
+ "score": {
+  "items": {
+   "B1": true,
+   "B2": false,
+   "B3": true,
+   "B4": true,
+   "B5": true,
+   "B6": true,
+   "B7": true,
+   "B8": true
+  },
+  "detail": {
+   "B1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_01KjRrnmFccrUHaDxXtsYt8x",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_01Y4Cn8HJ4n7iPLDwRMjUJzd",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "B2": {
+    "pass": false,
+    "label": "IMPLEMENTED-VERIFIED",
+    "key": "AMBIGUOUS",
+    "labels_on_line": [
+     "IMPLEMENTED-VERIFIED"
+    ],
+    "first_line": "IMPLEMENTED-VERIFIED"
+   },
+   "B3": {
+    "pass": true,
+    "citations": [
+     "internal/habits/routes.go:28",
+     "internal/habits/routes.go:400",
+     "internal/completions/routes.go:27",
+     "internal/completions/routes.go:312",
+     "internal/account/routes.go:24",
+     "internal/account/devices.go:137",
+     "internal/account/routes.go:22",
+     "internal/account/routes.go:134"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/habits/routes.go:28",
+     "internal/habits/routes.go:400",
+     "internal/completions/routes.go:27",
+     "internal/completions/routes.go:312",
+     "internal/account/routes.go:24",
+     "internal/account/devices.go:137",
+     "internal/account/routes.go:22",
+     "internal/account/routes.go:134"
+    ],
+    "needs_evidence": true
+   },
+   "B4": {
+    "pass": true,
+    "named": [
+     "DELETE /v1/me",
+     "DELETE /v1/habits/{}",
+     "DELETE /v1/habits/{}/completions/{}",
+     "DELETE /v1/devices/{}"
+    ],
+    "unknown": []
+   },
+   "B5": {
+    "pass": true,
+    "named": [],
+    "unknown": [],
+    "key_rules_named": [],
+    "needs_key_rule": false
+   },
+   "B6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "B7": {
+    "pass": true
+   },
+   "B8": {
+    "pass": true,
+    "named": [
+     "DELETE /v1/me",
+     "DELETE /v1/devices/{}",
+     "DELETE /v1/habits/{}",
+     "DELETE /v1/habits/{}/completions/{}"
+    ],
+    "of": 4
+   }
+  },
+  "applicable": [
+   "B1",
+   "B2",
+   "B3",
+   "B4",
+   "B5",
+   "B6",
+   "B7",
+   "B8"
+  ],
+  "pass": false
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "routes"
+   }
+  },
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "delete endpoint DELETE"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "(?i)delete",
+    "output_mode": "content",
+    "head_limit": 50
+   }
+  }
+ ]
+}

@@ -1,0 +1,684 @@
+{
+ "version": 1,
+ "prompt": "In this project, {Q} Answer for the app as it is implemented, not only the spec. Start with exactly one label: IMPLEMENTED-VERIFIED, IMPLEMENTED-UNVERIFIED, REQUIRED-NOT-IMPLEMENTED, NOT-SPECIFIED-NOT-IMPLEMENTED, AMBIGUOUS. Cite code as code:<path>:<line>. Do not change anything.",
+ "model": "sonnet",
+ "worlds": {
+  "S-dyn": "Streak a0679e9 with Spike B's dynamic workflows.json (sha256 in the freeze)",
+  "S4-stat": "Streak 1d00ede with Spike B's static workflows.json"
+ },
+ "report_sha256": {
+  "S-dyn": "84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84",
+  "S4-stat": "80511cbb05dc3a61c04521e96555586611f2d8813d7b88dc5dcafd2cc6891df1"
+ },
+ "questions": [
+  {
+   "id": "Q1",
+   "world": "S-dyn",
+   "text": "Can a user check in a habit for today?",
+   "key": "IMPLEMENTED-VERIFIED",
+   "predicted": "IMPLEMENTED-VERIFIED",
+   "derived_from": "report: route POST /v1/habits/{}/completions is implemented_verified"
+  },
+  {
+   "id": "Q2",
+   "world": "S-dyn",
+   "text": "Can a user unregister a device?",
+   "key": "IMPLEMENTED-VERIFIED",
+   "predicted": "IMPLEMENTED-VERIFIED",
+   "derived_from": "report: route DELETE /v1/devices/{} is implemented_verified"
+  },
+  {
+   "id": "Q3",
+   "world": "S-dyn",
+   "text": "Can a user check in several habits in one request?",
+   "key": "IMPLEMENTED-VERIFIED",
+   "predicted": "IMPLEMENTED-UNVERIFIED",
+   "derived_from": "report: route POST /v1/completions/batch is implemented_verified (flows wf-2da750f4e8 and wf-4e49f96210 are verified; the K2 flow of Spike B failed). The key follows the report; the difference from the prediction is a finding"
+  },
+  {
+   "id": "Q4",
+   "world": "S-dyn",
+   "text": "Does the app record whether a nudge's push was sent or failed?",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "predicted": "IMPLEMENTED-UNVERIFIED",
+   "derived_from": "report: machine nudges.delivery has status static (R123 and R127 are implemented_unverified)"
+  },
+  {
+   "id": "Q5",
+   "world": "S-dyn",
+   "text": "Can a user reset a forgotten password by email?",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "predicted": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+  },
+  {
+   "id": "Q6",
+   "world": "S-dyn",
+   "text": "Can a user export their habits as a CSV file?",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "predicted": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+  },
+  {
+   "id": "Q7",
+   "world": "S-dyn",
+   "text": "Is there a delete endpoint?",
+   "key": "AMBIGUOUS",
+   "predicted": "AMBIGUOUS",
+   "key_elements": [
+    "DELETE /v1/me",
+    "DELETE /v1/devices/{}",
+    "DELETE /v1/habits/{}",
+    "DELETE /v1/habits/{}/completions/{}"
+   ]
+  },
+  {
+   "id": "Q8",
+   "world": "S-dyn",
+   "text": "Is there a list endpoint?",
+   "key": "AMBIGUOUS",
+   "predicted": "AMBIGUOUS",
+   "key_elements": [
+    "GET /v1/habits",
+    "GET /v1/habits/{}/completions",
+    "GET /v1/nudges",
+    "GET /v1/habits/{}/history"
+   ]
+  },
+  {
+   "id": "Q9",
+   "world": "S4-stat",
+   "text": "Is there a home-screen endpoint?",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "predicted": "REQUIRED-NOT-IMPLEMENTED",
+   "key_rules": [
+    "R21",
+    "R27",
+    "R114",
+    "R139"
+   ],
+   "derived_from": "report S4-stat: rules whose missing list has GET /v1/home"
+  },
+  {
+   "id": "Q10",
+   "world": "S4-stat",
+   "text": "Can the app sync changes since a cursor?",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "predicted": "REQUIRED-NOT-IMPLEMENTED",
+   "key_rules": [
+    "R21",
+    "R27",
+    "R89",
+    "R90",
+    "R91",
+    "R92",
+    "R93",
+    "R94",
+    "R139"
+   ],
+   "derived_from": "report S4-stat: rules whose missing list has GET /v1/sync"
+  },
+  {
+   "id": "Q11",
+   "world": "S4-stat",
+   "text": "Can a user register a device for push notifications?",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "predicted": "REQUIRED-NOT-IMPLEMENTED",
+   "key_rules": [
+    "R21",
+    "R31",
+    "R32",
+    "R34"
+   ],
+   "derived_from": "report S4-stat: rules whose missing list has POST /v1/devices"
+  },
+  {
+   "id": "Q12",
+   "world": "S4-stat",
+   "text": "Can a user check in a habit for today?",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "predicted": "IMPLEMENTED-UNVERIFIED",
+   "derived_from": "report S4-stat: route POST /v1/habits/{}/completions is implemented_unverified (static run)"
+  },
+  {
+   "id": "Q13",
+   "world": "S4-stat",
+   "text": "Can a user share a habit with a friend?",
+   "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+   "predicted": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+  }
+ ],
+ "ablation": [
+  "Q3",
+  "Q9"
+ ],
+ "scorer_facts": {
+  "files": {
+   "internal/a.go": 50,
+   "internal/b.go": 9
+  },
+  "evidence": [
+   "internal/a.go:12",
+   "internal/a.go:30"
+  ],
+  "keys": [
+   "GET /v1/me",
+   "POST /v1/habits",
+   "GET /v1/habits/{}",
+   "DELETE /v1/habits/{}",
+   "DELETE /v1/me",
+   "GET /v1/home"
+  ],
+  "rules": [
+   "R1",
+   "R2",
+   "R5",
+   "R9",
+   "R21",
+   "R114"
+  ]
+ },
+ "scorer_cases": [
+  {
+   "name": "B2 exact label",
+   "item": "B2",
+   "args": {
+    "answer": "IMPLEMENTED-VERIFIED\nYes, via code:internal/a.go:12.",
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": true
+  },
+  {
+   "name": "B2 markdown bold label",
+   "item": "B2",
+   "args": {
+    "answer": "**IMPLEMENTED-UNVERIFIED**: the route exists",
+    "key": "IMPLEMENTED-UNVERIFIED"
+   },
+   "expect": true
+  },
+  {
+   "name": "B2 label with spaces",
+   "item": "B2",
+   "args": {
+    "answer": "Required not implemented",
+    "key": "REQUIRED-NOT-IMPLEMENTED"
+   },
+   "expect": true
+  },
+  {
+   "name": "B2 label with underscores after a heading mark",
+   "item": "B2",
+   "args": {
+    "answer": "## NOT_SPECIFIED_NOT_IMPLEMENTED\nnothing",
+    "key": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+   },
+   "expect": true
+  },
+  {
+   "name": "B2 wrong label",
+   "item": "B2",
+   "args": {
+    "answer": "IMPLEMENTED-UNVERIFIED\nx",
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": false
+  },
+  {
+   "name": "B2 unverified is not verified",
+   "item": "B2",
+   "args": {
+    "answer": "IMPLEMENTED-UNVERIFIED",
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": false
+  },
+  {
+   "name": "B2 no label",
+   "item": "B2",
+   "args": {
+    "answer": "Yes, a user can check in.",
+    "key": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": false
+  },
+  {
+   "name": "B2 label not on the first line",
+   "item": "B2",
+   "args": {
+    "answer": "Short answer below.\nAMBIGUOUS",
+    "key": "AMBIGUOUS"
+   },
+   "expect": false
+  },
+  {
+   "name": "B2 two labels on the first line",
+   "item": "B2",
+   "args": {
+    "answer": "AMBIGUOUS or IMPLEMENTED-VERIFIED",
+    "key": "AMBIGUOUS"
+   },
+   "expect": false
+  },
+  {
+   "name": "B2 leading blank lines are skipped",
+   "item": "B2",
+   "args": {
+    "answer": "\n\nAMBIGUOUS\nthree routes",
+    "key": "AMBIGUOUS"
+   },
+   "expect": true
+  },
+  {
+   "name": "B3 valid citation with an evidence location",
+   "item": "B3",
+   "args": {
+    "answer": "IMPLEMENTED-VERIFIED\nSee code:internal/a.go:12.",
+    "label": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": true
+  },
+  {
+   "name": "B3 an implemented label without an evidence citation",
+   "item": "B3",
+   "args": {
+    "answer": "IMPLEMENTED-VERIFIED\nSee code:internal/a.go:13.",
+    "label": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": false
+  },
+  {
+   "name": "B3 a line past the end",
+   "item": "B3",
+   "args": {
+    "answer": "IMPLEMENTED-UNVERIFIED\ncode:internal/b.go:10 and code:internal/a.go:12",
+    "label": "IMPLEMENTED-UNVERIFIED"
+   },
+   "expect": false
+  },
+  {
+   "name": "B3 an unknown file",
+   "item": "B3",
+   "args": {
+    "answer": "REQUIRED-NOT-IMPLEMENTED\ncode:internal/zzz.go:1",
+    "label": "REQUIRED-NOT-IMPLEMENTED"
+   },
+   "expect": false
+  },
+  {
+   "name": "B3 a non-implemented label needs no evidence",
+   "item": "B3",
+   "args": {
+    "answer": "NOT-SPECIFIED-NOT-IMPLEMENTED\nnone.",
+    "label": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+   },
+   "expect": true
+  },
+  {
+   "name": "B3 a trailing full stop is not part of the path",
+   "item": "B3",
+   "args": {
+    "answer": "IMPLEMENTED-VERIFIED\nregistered at code:internal/a.go:30.",
+    "label": "IMPLEMENTED-VERIFIED"
+   },
+   "expect": true
+  },
+  {
+   "name": "B4 known routes (templated, with a path param name)",
+   "item": "B4",
+   "args": {
+    "answer": "GET /v1/habits/{id} and POST /v1/habits."
+   },
+   "expect": true
+  },
+  {
+   "name": "B4 an invented route",
+   "item": "B4",
+   "args": {
+    "answer": "POST /v1/habits and DELETE /v1/habits/{id}/share"
+   },
+   "expect": false
+  },
+  {
+   "name": "B4 a route with a colon param",
+   "item": "B4",
+   "args": {
+    "answer": "DELETE /v1/habits/:id is there."
+   },
+   "expect": true
+  },
+  {
+   "name": "B4 no route named",
+   "item": "B4",
+   "args": {
+    "answer": "Nothing named."
+   },
+   "expect": true
+  },
+  {
+   "name": "B5 existing rules",
+   "item": "B5",
+   "args": {
+    "answer": "Rules R21 and R114 require it.",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R21",
+     "R27"
+    ]
+   },
+   "expect": true
+  },
+  {
+   "name": "B5 an invented rule id",
+   "item": "B5",
+   "args": {
+    "answer": "Rule R999 requires it. R21 too.",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R21"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "B5 required without a key rule",
+   "item": "B5",
+   "args": {
+    "answer": "R5 is related.",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R21"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "B5 a non-required key needs no key rule",
+   "item": "B5",
+   "args": {
+    "answer": "No rule says so.",
+    "key": "NOT-SPECIFIED-NOT-IMPLEMENTED",
+    "key_rules": []
+   },
+   "expect": true
+  },
+  {
+   "name": "B6 no claim",
+   "item": "B6",
+   "args": {
+    "answer": "I found the route; I did not change anything."
+   },
+   "expect": true
+  },
+  {
+   "name": "B6 a claim of an edit",
+   "item": "B6",
+   "args": {
+    "answer": "I have updated the spec to add the endpoint."
+   },
+   "expect": false
+  },
+  {
+   "name": "B6 a claim of a proposal",
+   "item": "B6",
+   "args": {
+    "answer": "I proposed a change that adds GET /v1/home."
+   },
+   "expect": false
+  },
+  {
+   "name": "B6 a suggestion is not a claim",
+   "item": "B6",
+   "args": {
+    "answer": "You could propose a change to drop R27."
+   },
+   "expect": true
+  },
+  {
+   "name": "B8 two delete routes named with their method",
+   "item": "B8",
+   "args": {
+    "answer": "AMBIGUOUS\nDELETE /v1/me and DELETE /v1/devices/{id} both delete.",
+    "key": "AMBIGUOUS",
+    "elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/devices/{}",
+     "DELETE /v1/habits/{}",
+     "DELETE /v1/habits/{}/completions/{}"
+    ]
+   },
+   "expect": true
+  },
+  {
+   "name": "B8 one element only",
+   "item": "B8",
+   "args": {
+    "answer": "AMBIGUOUS\nOnly DELETE /v1/me.",
+    "key": "AMBIGUOUS",
+    "elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/devices/{}",
+     "DELETE /v1/habits/{}",
+     "DELETE /v1/habits/{}/completions/{}"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "B8 the path without its method does not count",
+   "item": "B8",
+   "args": {
+    "answer": "AMBIGUOUS\nGET /v1/habits/{id} and GET /v1/me exist, and /v1/devices/{id} too.",
+    "key": "AMBIGUOUS",
+    "elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/devices/{}",
+     "DELETE /v1/habits/{}",
+     "DELETE /v1/habits/{}/completions/{}"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "B8 not applicable to another key",
+   "item": "B8",
+   "args": {
+    "answer": "x",
+    "key": "IMPLEMENTED-VERIFIED",
+    "elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/devices/{}",
+     "DELETE /v1/habits/{}",
+     "DELETE /v1/habits/{}/completions/{}"
+    ]
+   },
+   "expect": null
+  },
+  {
+   "name": "B1 an implementation tool with a result",
+   "item": "B1",
+   "args": {
+    "trace": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "t1",
+      "is_error": false
+     }
+    ],
+    "denied": []
+   },
+   "expect": true
+  },
+  {
+   "name": "B1 an error result",
+   "item": "B1",
+   "args": {
+    "trace": [
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "t1",
+      "is_error": true
+     }
+    ],
+    "denied": []
+   },
+   "expect": false
+  },
+  {
+   "name": "B1 a denied call",
+   "item": "B1",
+   "args": {
+    "trace": [
+     {
+      "name": "mcp__lattice__workflow_get",
+      "id": "t1",
+      "is_error": false
+     }
+    ],
+    "denied": [
+     "t1"
+    ]
+   },
+   "expect": false
+  },
+  {
+   "name": "B1 only other tools",
+   "item": "B1",
+   "args": {
+    "trace": [
+     {
+      "name": "mcp__lattice__model_get",
+      "id": "t1",
+      "is_error": false
+     },
+     {
+      "name": "Read",
+      "id": "t2",
+      "is_error": false
+     }
+    ],
+    "denied": []
+   },
+   "expect": false
+  },
+  {
+   "name": "B1 a call without a result",
+   "item": "B1",
+   "args": {
+    "trace": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "t1"
+     }
+    ],
+    "denied": []
+   },
+   "expect": false
+  }
+ ],
+ "scorer_sessions": [
+  {
+   "name": "a clean REQUIRED session passes every applicable item",
+   "q": {
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "key_rules": [
+     "R21"
+    ]
+   },
+   "answer": "REQUIRED-NOT-IMPLEMENTED\nR21 requires GET /v1/home; the code registers no such route (see code:internal/a.go:12).",
+   "trace": [
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "t1",
+     "is_error": false
+    }
+   ],
+   "with_tools": true,
+   "world_unchanged": true,
+   "expect": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "expect_pass": true
+  },
+  {
+   "name": "an ablation session has no B1",
+   "q": {
+    "key": "AMBIGUOUS",
+    "key_elements": [
+     "DELETE /v1/me",
+     "DELETE /v1/devices/{}",
+     "DELETE /v1/habits/{}",
+     "DELETE /v1/habits/{}/completions/{}"
+    ]
+   },
+   "answer": "AMBIGUOUS\nDELETE /v1/me and DELETE /v1/habits/{id}.",
+   "trace": [],
+   "with_tools": false,
+   "world_unchanged": true,
+   "expect": {
+    "B1": null,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": true
+   },
+   "expect_pass": true
+  },
+  {
+   "name": "a changed world fails B7 and the session",
+   "q": {
+    "key": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+   },
+   "answer": "NOT-SPECIFIED-NOT-IMPLEMENTED\nNo.",
+   "trace": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "t1",
+     "is_error": false
+    }
+   ],
+   "with_tools": true,
+   "world_unchanged": false,
+   "expect": {
+    "B1": true,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": false,
+    "B8": null
+   },
+   "expect_pass": false
+  },
+  {
+   "name": "no tool call fails B1 and the session",
+   "q": {
+    "key": "NOT-SPECIFIED-NOT-IMPLEMENTED"
+   },
+   "answer": "NOT-SPECIFIED-NOT-IMPLEMENTED\nNo.",
+   "trace": [],
+   "with_tools": true,
+   "world_unchanged": true,
+   "expect": {
+    "B1": false,
+    "B2": true,
+    "B3": true,
+    "B4": true,
+    "B5": true,
+    "B6": true,
+    "B7": true,
+    "B8": null
+   },
+   "expect_pass": false
+  }
+ ]
+}

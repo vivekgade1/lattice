@@ -1,0 +1,56 @@
+{
+ "kind": "yes",
+ "answer": "Yes. A signed-in user can check in a habit for today with POST /v1/habits/{habit_id}/completions, using today's local date.",
+ "explanation": "The check-in takes the user's local date, and only a date after the user's today is refused (422 date_in_future), so today is accepted. Today must also fall within the habit's start and end dates, and the habit must not be archived. The code registers this route, but no flow has been replayed to verify it.",
+ "citations": [
+  {
+   "target": "rule:R72",
+   "step": null,
+   "quote": "takes `{id, date, note?}`"
+  },
+  {
+   "target": "rule:R73",
+   "step": null,
+   "quote": "A check-in `date` after the user's today answers 422 with code `date_in_future`."
+  },
+  {
+   "target": "cell:ann|POST /v1/habits/{}/completions",
+   "step": null,
+   "quote": "200/201/404/409/422"
+  },
+  {
+   "target": "impl:route:POST /v1/habits/{}/completions",
+   "step": null,
+   "quote": "implemented_unverified"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 13.33,
+  "tokens": 92626,
+  "input_tokens": 91240,
+  "output_tokens": 1386,
+  "cache_read_tokens": 66470,
+  "cache_creation_tokens": 24766,
+  "rounds": 2,
+  "model": "sonnet",
+  "digest_elements": 455,
+  "calls": [
+   {
+    "input_tokens": 45349,
+    "cache_read_tokens": 33235,
+    "prompt_tokens_est": 34927
+   },
+   {
+    "input_tokens": 45891,
+    "cache_read_tokens": 33235,
+    "prompt_tokens_est": 35369
+   }
+  ],
+  "cost_usd": 0.119579
+ },
+ "implementation": "implemented_unverified",
+ "implementation_basis": "static"
+}

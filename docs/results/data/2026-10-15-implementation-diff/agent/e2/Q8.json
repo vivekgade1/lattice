@@ -1,0 +1,61 @@
+{
+ "kind": "yes",
+ "answer": "Yes. GET /v1/habits, GET /v1/habits/{id}/completions and GET /v1/nudges are paginated list endpoints, and GET /v1/sync returns a changes list.",
+ "explanation": "R58 defines GET /v1/habits as answering {items, next_cursor, has_more}, and R137 defines GET /v1/nudges the same way. The code registers GET /v1/habits, and a verified flow reads it.",
+ "citations": [
+  {
+   "target": "rule:R58",
+   "step": null,
+   "quote": "`GET /v1/habits` answers `{items, next_cursor, has_more}`"
+  },
+  {
+   "target": "rule:R137",
+   "step": null,
+   "quote": "`GET /v1/nudges` answers `{items, next_cursor, has_more}`"
+  },
+  {
+   "target": "cell:ann|GET /v1/habits",
+   "step": null,
+   "quote": "200/422"
+  },
+  {
+   "target": "impl:flow:wf-c00e2afaf3",
+   "step": null,
+   "quote": "create habits > read habits (inferred name)"
+  },
+  {
+   "target": "impl:route:GET /v1/habits",
+   "step": null,
+   "quote": "implemented_verified"
+  }
+ ],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 13.39,
+  "tokens": 92742,
+  "input_tokens": 91490,
+  "output_tokens": 1252,
+  "cache_read_tokens": 67492,
+  "cache_creation_tokens": 23994,
+  "rounds": 2,
+  "model": "sonnet",
+  "digest_elements": 453,
+  "calls": [
+   {
+    "input_tokens": 45392,
+    "cache_read_tokens": 33746,
+    "prompt_tokens_est": 34872
+   },
+   {
+    "input_tokens": 46098,
+    "cache_read_tokens": 33746,
+    "prompt_tokens_est": 35387
+   }
+  ],
+  "cost_usd": 0.115253
+ },
+ "implementation": "implemented_unverified",
+ "implementation_basis": "static"
+}

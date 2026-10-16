@@ -1,0 +1,22 @@
+IMPLEMENTED-UNVERIFIED
+
+Yes. A signed-in user can check in a habit for today through `POST /v1/habits/{id}/completions`. The Lattice implementation scan reports this as static only (`implemented_unverified`), and I found no tests that exercise the route, so none of this has been run.
+
+- **Route:** `Register` mounts `POST /habits/:id/completions` as `h.create` (code:internal/completions/routes.go:25). There is also a batch route, `POST /completions/batch` (code:internal/completions/routes.go:28).
+- **Request body:** the body is `{id, date, note?}`. `date` must be `YYYY-MM-DD`, and `note` is at most 280 characters (code:internal/completions/routes.go:139-158).
+- **Handler:**
+  - It reads the path id and body, then computes `today` in the user's timezone with `h.d.Today(c, who.Timezone)` (code:internal/completions/routes.go:231).
+  - It runs in a transaction that locks the user and loads the habit through `db.OwnedHabit`, so the habit must belong to the caller (code:internal/completions/routes.go:237-245).
+  - It then calls `Create` and `nudges.AfterCheckIn` (code:internal/completions/routes.go:245-249).
+  - It returns 201 for a new check-in, or 200 for an identical retry (code:internal/completions/routes.go:254-258).
+- **Today is accepted:**
+  - A future date returns `date_in_future` (code:internal/completions/routes.go:187).
+  - A date outside the habit's start and end dates returns `date_out_of_range` (code:internal/completions/routes.go:190).
+  - A date more than 60 days back returns `date_too_old` (code:internal/completions/routes.go:193).
+  - A habit that is already archived returns `habit_archived` (code:internal/completions/routes.go:171).
+  - A second check-in on the same date returns `already_checked_in` (code:internal/completions/routes.go:203-205).
+  - Otherwise the completion is inserted (code:internal/completions/routes.go:207-213).
+
+So check-in works only if today falls within the habit's start and end dates and the habit isn't archived.
+
+The home screen (`GET /v1/home`), `GET /v1/nudges`, `GET /v1/sync` and the device routes are spec-only, with no code. They are not needed to check in. They are the "today" view and the notifications around it, so the app has no home screen listing today's habits.

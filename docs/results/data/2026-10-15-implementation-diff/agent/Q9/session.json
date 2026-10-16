@@ -1,0 +1,148 @@
+{
+ "sid": "Q9",
+ "question": "Q9",
+ "world": "S4-stat",
+ "key": "REQUIRED-NOT-IMPLEMENTED",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 12.7
+ },
+ "cost_usd": 0.0744674,
+ "tokens": 11908,
+ "tokens_incl_cache_reads": 223502,
+ "turns": 5,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T06:17:21+00:00",
+ "score": {
+  "items": {
+   "B1": true,
+   "B2": true,
+   "B3": true,
+   "B4": true,
+   "B5": false,
+   "B6": true,
+   "B7": true,
+   "B8": null
+  },
+  "detail": {
+   "B1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_01YPgYUzRbHNNYmC9LdWpN3R",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "B2": {
+    "pass": true,
+    "label": "REQUIRED-NOT-IMPLEMENTED",
+    "key": "REQUIRED-NOT-IMPLEMENTED",
+    "labels_on_line": [
+     "REQUIRED-NOT-IMPLEMENTED"
+    ],
+    "first_line": "REQUIRED-NOT-IMPLEMENTED"
+   },
+   "B3": {
+    "pass": true,
+    "citations": [
+     "internal/progress/routes.go:19",
+     "internal/progress/routes.go:20",
+     "internal/progress/routes.go:35"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/progress/routes.go:19",
+     "internal/progress/routes.go:20"
+    ],
+    "needs_evidence": false
+   },
+   "B4": {
+    "pass": true,
+    "named": [
+     "GET /v1/home",
+     "GET /v1/nudges",
+     "POST /v1/nudges/{}/dismiss",
+     "GET /v1/sync"
+    ],
+    "unknown": []
+   },
+   "B5": {
+    "pass": false,
+    "named": [],
+    "unknown": [],
+    "key_rules_named": [],
+    "needs_key_rule": true
+   },
+   "B6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "B7": {
+    "pass": true
+   },
+   "B8": null
+  },
+  "applicable": [
+   "B1",
+   "B2",
+   "B3",
+   "B4",
+   "B5",
+   "B6",
+   "B7"
+  ],
+  "pass": false
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "home-screen endpoint"
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "home|dashboard|landing",
+    "-i": true,
+    "output_mode": "content",
+    "head_limit": 50
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "/v1/home|\"/home|Home\\(",
+    "glob": "**/*.go",
+    "output_mode": "content"
+   }
+  },
+  {
+   "name": "Read",
+   "is_error": false,
+   "input": {
+    "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S4-stat/internal/progress/routes.go"
+   }
+  }
+ ]
+}

@@ -1,0 +1,179 @@
+{
+ "sid": "Q12",
+ "question": "Q12",
+ "world": "S4-stat",
+ "key": "IMPLEMENTED-UNVERIFIED",
+ "with_tools": true,
+ "status": "SCORED",
+ "reason": null,
+ "run": {
+  "rc": 0,
+  "timed_out": false,
+  "wall_s": 19.2
+ },
+ "cost_usd": 0.096882,
+ "tokens": 14614,
+ "tokens_incl_cache_reads": 308614,
+ "turns": 6,
+ "model_resolved": "claude-sonnet-5-5",
+ "claude_version": "2.1.299 (Claude Code)",
+ "usage_limit": false,
+ "infra_failure": null,
+ "world_changed": {
+  "clone": [],
+  "inventory": []
+ },
+ "started_utc": "2026-10-16T06:18:12+00:00",
+ "score": {
+  "items": {
+   "B1": true,
+   "B2": true,
+   "B3": true,
+   "B4": false,
+   "B5": true,
+   "B6": true,
+   "B7": true,
+   "B8": null
+  },
+  "detail": {
+   "B1": {
+    "pass": true,
+    "calls": [
+     {
+      "name": "mcp__lattice__workflow_find",
+      "id": "toolu_013pTGoFxcetdU8KMU164YRY",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     },
+     {
+      "name": "mcp__lattice__implementation_get",
+      "id": "toolu_011ANyaebqtq1GoT6dKaeEqR",
+      "has_result": true,
+      "is_error": false,
+      "denied": false
+     }
+    ]
+   },
+   "B2": {
+    "pass": true,
+    "label": "IMPLEMENTED-UNVERIFIED",
+    "key": "IMPLEMENTED-UNVERIFIED",
+    "labels_on_line": [
+     "IMPLEMENTED-UNVERIFIED"
+    ],
+    "first_line": "IMPLEMENTED-UNVERIFIED"
+   },
+   "B3": {
+    "pass": true,
+    "citations": [
+     "internal/completions/routes.go:25",
+     "internal/completions/routes.go:28",
+     "internal/completions/routes.go:139",
+     "internal/completions/routes.go:231",
+     "internal/completions/routes.go:237",
+     "internal/completions/routes.go:245",
+     "internal/completions/routes.go:254",
+     "internal/completions/routes.go:187",
+     "internal/completions/routes.go:190",
+     "internal/completions/routes.go:193",
+     "internal/completions/routes.go:171",
+     "internal/completions/routes.go:203",
+     "internal/completions/routes.go:207"
+    ],
+    "invalid": [],
+    "evidence": [
+     "internal/completions/routes.go:25",
+     "internal/completions/routes.go:28",
+     "internal/completions/routes.go:245"
+    ],
+    "needs_evidence": true
+   },
+   "B4": {
+    "pass": false,
+    "named": [
+     "POST /v1/habits/{}/completions",
+     "POST /habits/{}/completions",
+     "POST /completions/batch",
+     "GET /v1/home",
+     "GET /v1/nudges",
+     "GET /v1/sync"
+    ],
+    "unknown": [
+     "POST /habits/{}/completions",
+     "POST /completions/batch"
+    ]
+   },
+   "B5": {
+    "pass": true,
+    "named": [],
+    "unknown": [],
+    "key_rules_named": [],
+    "needs_key_rule": false
+   },
+   "B6": {
+    "pass": true,
+    "claims": [],
+    "pinclaim": null,
+    "proposed": []
+   },
+   "B7": {
+    "pass": true
+   },
+   "B8": null
+  },
+  "applicable": [
+   "B1",
+   "B2",
+   "B3",
+   "B4",
+   "B5",
+   "B6",
+   "B7"
+  ],
+  "pass": false
+ },
+ "tools": [
+  {
+   "name": "mcp__lattice__workflow_find",
+   "is_error": false,
+   "input": {
+    "question": "check in a habit for today"
+   }
+  },
+  {
+   "name": "mcp__lattice__implementation_get",
+   "is_error": false,
+   "input": {
+    "section": "rules"
+   }
+  },
+  {
+   "name": "Read",
+   "is_error": false,
+   "input": {
+    "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S4-stat/internal/completions/routes.go",
+    "limit": 200
+   }
+  },
+  {
+   "name": "Read",
+   "is_error": false,
+   "input": {
+    "file_path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S4-stat/internal/completions/routes.go",
+    "offset": 200,
+    "limit": 60
+   }
+  },
+  {
+   "name": "Grep",
+   "is_error": false,
+   "input": {
+    "pattern": "completions",
+    "path": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impldiff/a/worlds/S4-stat",
+    "glob": "*_test.go",
+    "output_mode": "count"
+   }
+  }
+ ]
+}

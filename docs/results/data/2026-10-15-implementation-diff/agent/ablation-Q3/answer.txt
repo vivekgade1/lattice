@@ -1,0 +1,13 @@
+IMPLEMENTED-UNVERIFIED
+
+Yes. A user can check in several habits in one request with `POST /v1/completions/batch`. I read the code but did not run it or any tests.
+
+- **Route:** `POST /completions/batch` is registered under the `/v1` member group (code:internal/completions/routes.go:28).
+- **Request:** The body is `{items: [{id, habit_id, date, note?}, ...]}`. It takes 1 to 100 items, and anything else returns 422 `validation_failed` with field `items` (code:internal/completions/routes.go:32, code:internal/completions/routes.go:64-67).
+- **Several habits:** Each item carries its own `habit_id`. The handler looks up each habit, checking it belongs to the caller, so one request can span different habits (code:internal/completions/routes.go:93-100).
+- **Processing:** Items run in order inside one transaction. Each item gets its own nested transaction (savepoint), so a rejected item writes nothing and doesn't stop the others (code:internal/completions/routes.go:79-106). Each item calls the same `Create` as a single check-in, and then writes the nudge (code:internal/completions/routes.go:101-105).
+- **Response:** It returns 200 `{results: [...]}` in item order. Each result's `status` is `created`, `existing` or `rejected`. A rejected result has the single-create error `code`, such as `not_found` or `already_checked_in` (code:internal/completions/routes.go:107-125).
+
+This matches the spec: R83–R85 in REQUIREMENTS.md:176-178, and one rate-limit request per batch (code:internal/httpapi/ratelimit.go:54).
+
+**Why not VERIFIED:** The spec has scenarios `batch_item_bounds`, `batch_processes_items_in_order` and `access__batch__as_*` (spec.trace.json:1235-1241). I didn't run them, and I found no Go `_test.go` that covers the batch handler.

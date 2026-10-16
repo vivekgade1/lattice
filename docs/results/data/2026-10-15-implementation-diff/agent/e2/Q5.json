@@ -1,0 +1,30 @@
+{
+ "kind": "not_specified",
+ "answer": "The spec does not describe any password reset by email.",
+ "explanation": "The digest's auth routes are register, login, refresh and logout. No rule, cell, scenario or implemented route covers a forgotten-password or email reset flow, so neither the spec nor the code has it.",
+ "citations": [],
+ "citations_checked": true,
+ "rejected_citations": [],
+ "verified": null,
+ "usage": {
+  "seconds": 3.17,
+  "tokens": 45963,
+  "input_tokens": 45828,
+  "output_tokens": 135,
+  "cache_read_tokens": 33746,
+  "cache_creation_tokens": 12080,
+  "rounds": 1,
+  "model": "sonnet",
+  "digest_elements": 466,
+  "calls": [
+   {
+    "input_tokens": 45828,
+    "cache_read_tokens": 33746,
+    "prompt_tokens_est": 35251
+   }
+  ],
+  "cost_usd": 0.053049
+ },
+ "implementation": "not_specified_not_implemented",
+ "implementation_basis": "inferred"
+}

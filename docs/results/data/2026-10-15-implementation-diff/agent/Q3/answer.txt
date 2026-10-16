@@ -1,0 +1,11 @@
+IMPLEMENTED-VERIFIED
+
+Yes. `POST /v1/completions/batch` takes up to 100 check-ins in one request. It is registered at code:internal/completions/routes.go:28. The handler is `batch` at code:internal/completions/routes.go:57.
+
+- **Request shape:** the body is `{items: [...]}` with 1 to 100 items (`MaxBatch = 100`, code:internal/completions/routes.go:32). Anything else gets a validation error (code:internal/completions/routes.go:64-67). Each item carries its own `habit_id`, `id`, `date` and optional `note`, so one request can cover several different habits (code:internal/completions/routes.go:89-93).
+- **Processing:** items run in order inside one transaction that locks the user (code:internal/completions/routes.go:79-80).
+- **Per-item rules:** each item goes through the same `Create` as a single check-in, with the same rules for archived habits, `id_conflict`, future, out-of-range and too-old dates, and `already_checked_in` (code:internal/completions/routes.go:101, code:internal/completions/routes.go:169-214). A successful, non-duplicate item also triggers the nudge update (code:internal/completions/routes.go:105).
+- **Rejections:** each item runs in its own savepoint (code:internal/completions/routes.go:88). A rejected item writes nothing and doesn't stop the others (code:internal/completions/routes.go:107-110).
+- **Response:** HTTP 200 with `{results: [{id, status, code?, completion?}]}` in the items' order. `status` is `created`, `existing` (an identical retry) or `rejected` (code:internal/completions/routes.go:111-125).
+
+Lattice's implementation check marks this route `implemented_verified`. It matches the spec's batch rule, which says a batch processes items in order, each as a single create would, and returns the `created`, `existing` or `rejected` statuses. I did not run the app.

@@ -1,0 +1,109 @@
+{
+ "items": {
+  "B1": true,
+  "B2": true,
+  "B3": true,
+  "B4": false,
+  "B5": true,
+  "B6": true,
+  "B7": true,
+  "B8": null
+ },
+ "detail": {
+  "B1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_013pTGoFxcetdU8KMU164YRY",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "id": "toolu_011ANyaebqtq1GoT6dKaeEqR",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "B2": {
+   "pass": true,
+   "label": "IMPLEMENTED-UNVERIFIED",
+   "key": "IMPLEMENTED-UNVERIFIED",
+   "labels_on_line": [
+    "IMPLEMENTED-UNVERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-UNVERIFIED"
+  },
+  "B3": {
+   "pass": true,
+   "citations": [
+    "internal/completions/routes.go:25",
+    "internal/completions/routes.go:28",
+    "internal/completions/routes.go:139",
+    "internal/completions/routes.go:231",
+    "internal/completions/routes.go:237",
+    "internal/completions/routes.go:245",
+    "internal/completions/routes.go:254",
+    "internal/completions/routes.go:187",
+    "internal/completions/routes.go:190",
+    "internal/completions/routes.go:193",
+    "internal/completions/routes.go:171",
+    "internal/completions/routes.go:203",
+    "internal/completions/routes.go:207"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/completions/routes.go:25",
+    "internal/completions/routes.go:28",
+    "internal/completions/routes.go:245"
+   ],
+   "needs_evidence": true
+  },
+  "B4": {
+   "pass": false,
+   "named": [
+    "POST /v1/habits/{}/completions",
+    "POST /habits/{}/completions",
+    "POST /completions/batch",
+    "GET /v1/home",
+    "GET /v1/nudges",
+    "GET /v1/sync"
+   ],
+   "unknown": [
+    "POST /habits/{}/completions",
+    "POST /completions/batch"
+   ]
+  },
+  "B5": {
+   "pass": true,
+   "named": [],
+   "unknown": [],
+   "key_rules_named": [],
+   "needs_key_rule": false
+  },
+  "B6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "B7": {
+   "pass": true
+  },
+  "B8": null
+ },
+ "applicable": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7"
+ ],
+ "pass": false
+}

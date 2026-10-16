@@ -1,0 +1,94 @@
+{
+ "items": {
+  "B1": true,
+  "B2": true,
+  "B3": true,
+  "B4": false,
+  "B5": true,
+  "B6": true,
+  "B7": true,
+  "B8": null
+ },
+ "detail": {
+  "B1": {
+   "pass": true,
+   "calls": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "id": "toolu_019CyDgxw5tKDabVfLoNeGg2",
+     "has_result": true,
+     "is_error": false,
+     "denied": false
+    }
+   ]
+  },
+  "B2": {
+   "pass": true,
+   "label": "IMPLEMENTED-VERIFIED",
+   "key": "IMPLEMENTED-VERIFIED",
+   "labels_on_line": [
+    "IMPLEMENTED-VERIFIED"
+   ],
+   "first_line": "IMPLEMENTED-VERIFIED"
+  },
+  "B3": {
+   "pass": true,
+   "citations": [
+    "internal/account/routes.go:24",
+    "internal/account/devices.go:137",
+    "internal/account/devices.go:140",
+    "internal/account/devices.go:143",
+    "internal/account/devices.go:147",
+    "internal/account/devices.go:150",
+    "internal/auth/routes.go:282"
+   ],
+   "invalid": [],
+   "evidence": [
+    "internal/account/routes.go:24",
+    "internal/account/devices.go:137",
+    "internal/account/devices.go:143"
+   ],
+   "needs_evidence": true
+  },
+  "B4": {
+   "pass": false,
+   "named": [
+    "DELETE /v1/devices/{}",
+    "DELETE /devices/{}",
+    "DELETE /v1/me"
+   ],
+   "unknown": [
+    "DELETE /devices/{}"
+   ]
+  },
+  "B5": {
+   "pass": true,
+   "named": [
+    "R33"
+   ],
+   "unknown": [],
+   "key_rules_named": [],
+   "needs_key_rule": false
+  },
+  "B6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "B7": {
+   "pass": true
+  },
+  "B8": null
+ },
+ "applicable": [
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7"
+ ],
+ "pass": false
+}

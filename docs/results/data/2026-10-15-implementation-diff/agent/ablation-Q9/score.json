@@ -1,0 +1,91 @@
+{
+ "items": {
+  "B1": null,
+  "B2": true,
+  "B3": false,
+  "B4": true,
+  "B5": true,
+  "B6": true,
+  "B7": true,
+  "B8": null
+ },
+ "detail": {
+  "B1": null,
+  "B2": {
+   "pass": true,
+   "label": "REQUIRED-NOT-IMPLEMENTED",
+   "key": "REQUIRED-NOT-IMPLEMENTED",
+   "labels_on_line": [
+    "REQUIRED-NOT-IMPLEMENTED"
+   ],
+   "first_line": "REQUIRED-NOT-IMPLEMENTED"
+  },
+  "B3": {
+   "pass": false,
+   "citations": [
+    "REQUIREMENTS.md:219",
+    "REQUIREMENTS.md:68",
+    "spec.py:294",
+    "spec.py:1384",
+    "spec.py:1665",
+    "internal/progress/doc.go:1",
+    "internal/progress/routes.go:19",
+    "internal/progress/routes.go:34",
+    "internal/httpapi/router.go:48",
+    "internal/account/routes.go:20",
+    "internal/habits/routes.go:25",
+    "internal/completions/routes.go:26",
+    "internal/db/bodies.go:9"
+   ],
+   "invalid": [
+    "REQUIREMENTS.md:219",
+    "REQUIREMENTS.md:68"
+   ],
+   "evidence": [
+    "internal/progress/routes.go:19",
+    "internal/httpapi/router.go:48",
+    "internal/account/routes.go:20",
+    "internal/habits/routes.go:25",
+    "internal/completions/routes.go:26"
+   ],
+   "needs_evidence": false
+  },
+  "B4": {
+   "pass": true,
+   "named": [
+    "GET /v1/home"
+   ],
+   "unknown": []
+  },
+  "B5": {
+   "pass": true,
+   "named": [
+    "R114"
+   ],
+   "unknown": [],
+   "key_rules_named": [
+    "R114"
+   ],
+   "needs_key_rule": true
+  },
+  "B6": {
+   "pass": true,
+   "claims": [],
+   "pinclaim": null,
+   "proposed": []
+  },
+  "B7": {
+   "pass": true
+  },
+  "B8": null
+ },
+ "applicable": [
+  "B2",
+  "B3",
+  "B4",
+  "B5",
+  "B6",
+  "B7"
+ ],
+ "pass": false
+}
