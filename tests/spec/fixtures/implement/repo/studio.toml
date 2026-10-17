@@ -1,0 +1,17 @@
+# The implement fixture's project: the mini-shop app (package `shop`) and its gate.
+[llm]
+model = "scripted"
+
+[app]
+app = "ms_harness:make_app"
+db = "ms_harness:build_db"
+login = "ms_harness:login"
+
+[check]
+layers = "ACD"
+app_dir = "shop"
+package = "shop"
+
+[rebuild]
+gates = ["./gate.py"]
+max_rounds = 3
