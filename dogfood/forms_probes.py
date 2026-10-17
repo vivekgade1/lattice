@@ -17,12 +17,15 @@ needs the set is recorded ``NOT RUN`` with the reason when the set or a file of 
 in a format this runner does not recognise (the formats are the section 3.1 table's; the exact
 JSON layouts below are this runner's reading of it and are UNVALIDATED against the real set).
 
-Assumed layouts (frozen stage): ``minishop/REQUIREMENTS.md``; ``minishop/handwritten.py`` with
-``SPEC`` (and optionally ``TRACE`` or a sibling ``handwritten.trace.json`` with the links);
-``minishop/forms.json`` (lattice.forms/1); ``minishop/mutants.json`` (a list or a mapping of
-``{id, file, old, new}``); ``minishop/truth.json`` (``{rule: {app: {violates: bool}}}``);
-``invalid.json`` (a list of ``{id, kind, form, code}``); ``not_expressible.json`` (a list of
-``{rule, category, form?}``).
+Layouts of the frozen set (as scored): ``minishop/handwritten.py`` (``SPEC``, ``TRACE``);
+``minishop/forms.json`` (``lattice.forms/1``, condition nodes written UNTAGGED: ``{op, value}``,
+``{values}``; the runner adds the ``Cmp|Len|In`` tag and recomputes ``approved_sha`` of the tagged
+form, nothing else); ``minishop/mutants.json`` (``{id: [file, old, new]}``); ``minishop/truth.json``
+(``cells: [{rule, app, violates}]``); ``invalid.json`` (``invalid: [{id, code, entry | entries,
+also_acceptable?, spec_extra_scenarios?}]``, each checked beside the valid forms); ``pairs.json``
+(``pairs: [{id, class, expect, a, b}]``, a side is ``{kind, form}``, ``{ref}`` or ``{scenario}``);
+``not_expressible.json`` (``rules: [{id, category, attempt?: {kind, form, expect_codes}}]``).
+A form the library cannot generate is recorded, its rule's G is "no check", and the run goes on.
 """
 
 from __future__ import annotations
@@ -725,147 +728,324 @@ def frozen(shapes: Path | None, manifest: Path | None, scratch: Path) -> list[di
         return [row(p, w, "NOT RUN", reason=reason) for p, w in NOT_RUN_FROZEN]
 
 
+def adapt_cond(kind: str, form: dict[str, Any]) -> dict[str, Any]:
+    """The frozen set writes condition nodes untagged (``{op, value}``, ``{values}``); the
+    library's closed node set is tagged (``Cmp``, ``Len``, ``In``). Add the tag, change nothing
+    else; a node with no derivable tag (``{any: [...]}``) is left as written for the checker."""
+    out = json.loads(json.dumps(form))
+    c = out.get("cond")
+    if kind == "bound" and isinstance(c, dict) and "node" not in c:
+        if "op" in c:
+            tag = "Len" if c["op"] in ("min_len", "max_len") else "Cmp"
+            out["cond"] = {"node": tag, **c}
+        elif "values" in c:
+            out["cond"] = {"node": "In", **c}
+    return out
+
+
+def adapt_entry(F: Any, e: dict[str, Any]) -> dict[str, Any]:
+    """A forms-file entry with tagged conditions and the approved_sha of the tagged form (the
+    set's sha is over the untagged text, which would make every form ``edited``)."""
+    e = dict(e)
+    e["form"] = adapt_cond(e["kind"], e["form"])
+    if e.get("approved_sha") is not None:
+        e["approved_sha"] = F.form_sha(e["kind"], e["form"])
+    return e
+
+
+def to_form(F: Any, e: dict[str, Any]) -> Any:
+    return F._parse_form(adapt_entry(F, e), 0)  # noqa: SLF001
+
+
+def scenario_of(d: dict[str, Any]) -> Any:
+    from lattice.spec.model import Scenario, Step
+
+    return Scenario(d["name"], d.get("given"), tuple(Step(**s) for s in d["steps"]))
+
+
 def score_frozen(shapes: Path, scratch: Path) -> list[dict[str, Any]]:
-    """PG1, PG1t, PG1o, PG1k, PG5, PNX on the assumed layouts (see the module docstring)."""
+    """PG1, PG1t, PG1o, PG1k, PG2, PG5, PT2f, PT2x, PT2w, PNX on the real layouts of the set."""
+    import dataclasses
     import importlib.util
 
     sys.path.insert(0, str(REPO))
     from lattice.spec import forms as F
+    from lattice.spec import forms_tier2 as T2
     from lattice.spec.check import check
-    from lattice.spec.rules import Trace, extract_rules
     from tests.spec import minishop as M
 
     ms = shapes / "minishop"
-    md = (ms / "REQUIREMENTS.md").read_text()
     spec_ = importlib.util.spec_from_file_location("hshapes_handwritten", ms / "handwritten.py")
     assert spec_ is not None and spec_.loader is not None
     mod = importlib.util.module_from_spec(spec_)
     spec_.loader.exec_module(mod)
-    spec = mod.SPEC
-    tpath = ms / "handwritten.trace.json"
-    if tpath.is_file():
-        trace = Trace.load(tpath)
-    elif hasattr(mod, "TRACE"):
-        trace = mod.TRACE
-    else:
-        trace = Trace(source="REQUIREMENTS.md", rules=extract_rules(md))
-    file = F.load_forms_file(ms / "forms.json")
-    resolved = F.usable(F.resolve(trace, file.forms))
-    gen = F.generate(spec, resolved)
-    diags = F.check_forms(spec, trace, file.forms)
+    spec, trace = mod.SPEC, mod.TRACE
+    raw_forms = json.loads((ms / "forms.json").read_text())
+    entries = [adapt_entry(F, e) for e in raw_forms["forms"]]
+    forms = tuple(F._parse_form(e, i) for i, e in enumerate(entries))  # noqa: SLF001
+    resolved = F.usable(F.resolve(trace, forms))
+    states = {r.form.id: r.state for r in F.resolve(trace, forms)}
+    try:
+        F.generate(spec, resolved)
+        whole_set_error = None
+    except Exception as err:  # noqa: BLE001 -- recorded as a finding; the CLI exits 2 on it
+        whole_set_error = f"{type(err).__name__}: {err}"
+    gen_errors: dict[str, str] = {}
+    parts = []
+    for r in sorted(resolved, key=lambda r: (F._fnum(r.form.id), r.form.id)):  # noqa: SLF001
+        try:
+            parts.append(F.generate(spec, [r]))
+        except Exception as err:  # noqa: BLE001 -- a form that cannot generate yields no check
+            gen_errors[r.form.id] = f"{type(err).__name__}: {err}"
+    gen = F.Generated(
+        tuple(s_ for p_ in parts for s_ in p_.scenarios),
+        tuple(i_ for p_ in parts for i_ in p_.invariants),
+        {k: v for p_ in parts for k, v in p_.links.items()},
+        {k: v for p_ in parts for k, v in p_.no_invariant.items()},
+    )
+    diags = F.check_forms(spec, trace, list(forms))
     eff = F.effective_spec(spec, gen)
-    truth = json.loads((ms / "truth.json").read_text())
-    raw = json.loads((ms / "mutants.json").read_text())
-    muts = list(raw.values()) if isinstance(raw, dict) else raw
+    truth: dict[str, dict[str, bool]] = {}
+    for c in json.loads((ms / "truth.json").read_text())["cells"]:
+        truth.setdefault(c["rule"], {})[c["app"]] = bool(c["violates"])
+    muts = json.loads((ms / "mutants.json").read_text())
     root = scratch / "apps"
     shutil.rmtree(root, ignore_errors=True)
     root.mkdir(parents=True)
     apps = apps_for(root, M)
-    for m in muts:
-        apps.append((m["id"], M.write_app(root, m["id"], edit=(m["file"], m["old"], m["new"]))))
+    for mid, (mf, old, new) in muts.items():
+        apps.append((mid, M.write_app(root, mid, edit=(mf, old, new))))
     form_rule = {r.form.id: r.rule for r in resolved}
     links = {t: rid for rid, ts in trace.links.items() for t in ts}
     inv_by_sentence = {i.sentence: i.name for i in spec.invariants}
+    inv_names = {i.name for i in spec.invariants}
 
-    def rule_of(layer: str, text: str) -> tuple[bool, str | None]:
+    def rule_of(text: str) -> tuple[bool, str | None]:
         m = re.search(r"form:(F\d+):", text) or re.search(r"\(form (F\d+)\)", text)
         if m:
             return True, form_rule.get(m.group(1))
         if text.startswith("scenario: "):
             return False, links.get("scenario:" + text[len("scenario: ") :])
+        if text in inv_names:
+            return False, links.get("invariant:" + text)
         return False, links.get("invariant:" + inv_by_sentence.get(text, ""))
 
     cells = []
+    t_run = time.perf_counter()
     for name, (_d, pkg) in apps:
         rep = check(eff, M.app_factory(pkg), M.build_db, layers="CD", login=M.login)
-        gfail: set[str] = set()
-        hfail: set[str] = set()
+        gfail: dict[str, set[str]] = {}
+        hfail: dict[str, set[str]] = {}
+        unattributed = []
         for f in rep.findings:
-            is_gen, rid = rule_of(f.layer, str(f.rule))
+            is_gen, rid = rule_of(str(f.rule))
             if rid:
-                (gfail if is_gen else hfail).add(rid)
-        for rid in sorted({*form_rule.values()}):
-            t = truth.get(rid, {}).get(name, {}).get("violates")
-            cells.append({"rule": rid, "app": name, "G": rid in gfail, "H": rid in hfail, "T": t})
-    n = len(cells)
+                (gfail if is_gen else hfail).setdefault(rid, set()).add(f.layer)
+            elif is_gen:
+                unattributed.append(str(f.rule))
+        for rid in sorted(set(form_rule.values()), key=lambda r: int(r[1:])):
+            t = truth.get(rid, {}).get(name)
+            cells.append({"rule": rid, "app": name, "G": rid in gfail, "H": rid in hfail, "T": t,
+                          "Glayers": sorted(gfail.get(rid, ())), "Hlayers": sorted(hfail.get(rid, ())),
+                          "unattributed": unattributed})  # fmt: skip
+    run_wall = round(time.perf_counter() - t_run, 2)
     scored = [c for c in cells if c["T"] is not None]
     pg1_bad = [c for c in cells if c["G"] != c["H"] and c["H"] == c["T"]]
+    pg1_diff = [c for c in cells if c["G"] != c["H"]]
     pg1t_bad = [c for c in scored if c["G"] != c["T"]]
     ok_bad = [c for c in cells if c["app"] == "ok" and c["G"] != bool(c["T"])]
-    g_k = {c["app"] for c in cells if c["app"] != "ok" and c["G"]}
-    h_k = {c["app"] for c in cells if c["app"] != "ok" and c["H"]}
+    ok_g = {c["rule"] for c in cells if c["app"] == "ok" and c["G"]}
+    ok_h = {c["rule"] for c in cells if c["app"] == "ok" and c["H"]}
+    # killed = some cell flips to fail relative to the same rule on ok (prereg 3.2 PG1k)
+    g_k = {c["app"] for c in cells if c["app"] != "ok" and c["G"] and c["rule"] not in ok_g}
+    h_k = {c["app"] for c in cells if c["app"] != "ok" and c["H"] and c["rule"] not in ok_h}
+    g_k_raw = {c["app"] for c in cells if c["app"] != "ok" and c["G"]}
+    h_k_raw = {c["app"] for c in cells if c["app"] != "ok" and c["H"]}
+    both = [c for c in cells if c["G"] and c["H"]]
+
+    def slim(cs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return [{k: c[k] for k in ("rule", "app", "G", "H", "T")} for c in cs]
+
     out = [
-        row(
-            "PG1",
-            "G vs H per cell",
-            "PASS" if not pg1_bad else "FAIL",
-            cells=n,
-            g_eq_h=sum(1 for c in cells if c["G"] == c["H"]),
-            bad=pg1_bad,
-        ),  # fmt: skip
-        row(
-            "PG1t",
-            "G vs truth per cell",
-            "PASS" if not pg1t_bad else "FAIL",
-            scored=len(scored),
-            bad=pg1t_bad,
-        ),  # fmt: skip
-        row(
-            "PG1o",
-            "every generated element passes on ok (except truth-violating rules)",
-            "PASS" if not ok_bad else "FAIL",
-            bad=ok_bad,
-        ),  # fmt: skip
-        row(
-            "PG1k",
-            "G kills a superset of H's kills",
-            "PASS" if h_k <= g_k else "FAIL",
-            g_kills=sorted(g_k),
-            h_kills=sorted(h_k),
-            apps=len(apps),
-        ),  # fmt: skip
-        row(
-            "PG2",
-            "layer of the failing check",
-            "NOT RUN",
-            reason="layer attribution per cell is not computed by this runner",
-        ),  # fmt: skip
-    ]
-    inv = json.loads((shapes / "invalid.json").read_text())
-    wrong, accepted = [], []
+        row("PG1", "G vs H per cell", "PASS" if not pg1_bad else "FAIL", cells=len(cells),
+            apps=len(apps), formed_rules=len(set(form_rule.values())), forms_usable=len(resolved),
+            form_states=states, generate_whole_set_error=whole_set_error,
+            forms_that_could_not_generate=gen_errors, g_eq_h=sum(1 for c in cells if c["G"] == c["H"]),
+            g_ne_h=slim(pg1_diff), bad_gne_h_and_h_eq_t=slim(pg1_bad),
+            unattributed_generated_findings=sorted({u for c in cells for u in c["unattributed"]}),
+            run_wall_s=run_wall),
+        row("PG1t", "G vs truth per cell", "PASS" if not pg1t_bad else "FAIL", scored=len(scored),
+            g_eq_t=sum(1 for c in scored if c["G"] == c["T"]), bad=slim(pg1t_bad)),
+        row("PG1o", "on ok, G fails exactly the rules T marks violated", "PASS" if not ok_bad else "FAIL",
+            g_fail_on_ok=sorted(c["rule"] for c in cells if c["app"] == "ok" and c["G"]),
+            t_violated_on_ok=sorted(c["rule"] for c in cells if c["app"] == "ok" and c["T"]),
+            bad=slim(ok_bad)),
+        row("PG1k", "G kills a superset of H's kills", "PASS" if h_k <= g_k else "FAIL",
+            g_kills=sorted(g_k), h_kills=sorted(h_k), g_only=sorted(g_k - h_k), h_only=sorted(h_k - g_k),
+            g_kills_raw_any_fail=len(g_k_raw), h_kills_raw_any_fail=len(h_k_raw),
+            apps_non_ok=len(apps) - 1),
+        row("PG2", "layer of the failing check where both fail", "REPORTED", cells_both_fail=len(both),
+            same_layer_sets=sum(1 for c in both if c["Glayers"] == c["Hlayers"]),
+            overlapping_layers=sum(1 for c in both if set(c["Glayers"]) & set(c["Hlayers"])),
+            diff=[{k: c[k] for k in ("rule", "app", "Glayers", "Hlayers")}
+                  for c in both if c["Glayers"] != c["Hlayers"]]),
+    ]  # fmt: skip
+
+    # PG5: each invalid entry in a forms file of the valid forms plus the entry
+    inv = json.loads((shapes / "invalid.json").read_text())["invalid"]
+    wrong, accepted, refused_ok = [], [], []
     for x in inv:
-        f = F.Form(x.get("id", "F900"), x.get("rule", "R1"), "0" * 64, x["kind"], x["form"],
-                   "approved", "hand", "t", None)  # fmt: skip
+        if "entries" in x:
+            fs = [to_form(F, e) for e in x["entries"]]
+        else:
+            fs = [*forms, to_form(F, x["entry"])]
+        sp = spec
+        if x.get("spec_extra_scenarios"):
+            sp = dataclasses.replace(
+                spec,
+                scenarios=(*spec.scenarios, *(scenario_of(s) for s in x["spec_extra_scenarios"])),
+            )
+        got = sorted({d.code for d in F.check_forms(sp, trace, fs)})
+        want = {x["code"], *x.get("also_acceptable", ())}
+        if not got:
+            accepted.append(x["id"])
+        elif x["code"] not in got:
+            wrong.append({"id": x["id"], "want": x["code"], "got": got,
+                          "also_acceptable_hit": bool(want & set(got))})  # fmt: skip
+        else:
+            refused_ok.append(x["id"])
+    valid_refused = [d.render() for d in diags]
+    out.append(
+        row("PG5", "invalid.json refused with the expected code; valid forms accepted",
+            "PASS" if not accepted and not valid_refused else "FAIL", invalid=len(inv),
+            refused_with_expected_code=len(refused_ok), accepted_invalid=accepted,
+            valid_refused=valid_refused, valid_forms=len(forms), codes_not_exact=wrong)
+    )  # fmt: skip
+
+    # PT2f / PT2x on pairs.json
+    pairs = json.loads((shapes / "pairs.json").read_text())["pairs"]
+    byid = {e["id"]: e for e in entries}
+    res = []
+    for p in pairs:
+        fs: list[Any] = []
+        extra = []
+        for side, fid in (("a", "PA"), ("b", "PB")):
+            s = p[side]
+            if "ref" in s:
+                fs.append(F._parse_form(byid[s["ref"]], 0))  # noqa: SLF001
+            elif "scenario" in s:
+                extra.append(scenario_of(s["scenario"]))
+            else:
+                fs.append(to_form(F, {"id": fid, "rule": "R1", "anchor": "0" * 64, "kind": s["kind"],
+                                      "form": s["form"], "status": "approved", "author": "hand",
+                                      "approved_sha": "x"}))  # fmt: skip
+        sp = dataclasses.replace(spec, scenarios=(*spec.scenarios, *extra)) if extra else spec
+        if len({f.id for f in fs}) < len(fs):
+            fs[1] = dataclasses.replace(fs[1], id="F9999")
+        err = None
+        try:
+            items = T2.contradictions(sp, fs)
+            ids = {f.id for f in fs}
+            items = [
+                i for i in items if all(x in ids or x.startswith("scenario:") for x in i["forms"])
+            ]
+        except Exception as e:  # noqa: BLE001 -- recorded: the pair was not decided
+            items, err = [], f"{type(e).__name__}: {e}"
+        res.append({"id": p["id"], "class": p["class"], "expect": p["expect"], "items": items,
+                    "error": err, "got": "error" if err else "contradict" if items else "compatible"})  # fmt: skip
+    tp = [r for r in res if r["expect"] == "contradict" and r["items"]]
+    fn = [r for r in res if r["expect"] == "contradict" and not r["items"]]
+    fp = [r for r in res if r["expect"] == "compatible" and r["items"]]
+    tn = [r for r in res if r["expect"] == "compatible" and not r["items"]]
+
+    def by_class(cs: str) -> dict[str, Any]:
+        sub = [r for r in res if r["class"] in cs]
+        return {"contradict": sum(r["expect"] == "contradict" for r in sub),
+                "found": sum(r["expect"] == "contradict" and bool(r["items"]) for r in sub),
+                "compatible": sum(r["expect"] == "compatible" for r in sub),
+                "false_pos": sum(r["expect"] == "compatible" and bool(r["items"]) for r in sub)}  # fmt: skip
+
+    recall_abcd = by_class("abcd")
+    ok_abcd = recall_abcd["found"] == recall_abcd["contradict"]
+    out.append(
+        row("PT2f", "forms contradictions on pairs.json",
+            "PASS" if not fp and ok_abcd and not any(r["error"] for r in res) else "FAIL",
+            pairs=len(res), true_pos=len(tp), false_neg=[r["id"] for r in fn],
+            false_pos=[{"id": r["id"], "items": [i["id"] for i in r["items"]]} for r in fp],
+            true_neg=len(tn), errors=[{"id": r["id"], "expect": r["expect"], "error": r["error"]}
+                                      for r in res if r["error"]],
+            precision=(len(tp) / (len(tp) + len(fp))) if tp or fp else None,
+            recall_abcd=f"{recall_abcd['found']}/{recall_abcd['contradict']}",
+            class_e=by_class("e"), per_class={c: by_class(c) for c in "abcde"})
+    )  # fmt: skip
+    no_witness = [r["id"] for r in tp if any(i.get("witness") is None for i in r["items"])]
+    out.append(
+        row("PT2x", "every emitted item carries a witness (the library emits only self-checked items)",
+            "PASS" if not no_witness else "FAIL", items=sum(len(r["items"]) for r in res),
+            items_without_witness=no_witness,
+            note="no independent re-derivation of the incompatible expectations is done by this runner")
+    )  # fmt: skip
+
+    ne = json.loads((shapes / "not_expressible.json").read_text())["rules"]
+    ne_acc, ne_wrong, tried = [], [], 0
+    for x in ne:
+        a = x.get("attempt")
+        if not a:
+            continue
+        tried += 1
+        f = to_form(F, {"id": "F901", "rule": "R1", "anchor": "0" * 64, "kind": a["kind"],
+                        "form": a["form"], "status": "approved", "author": "hand"})  # fmt: skip
         got = sorted({d.code for d in F.check_forms(spec, None, [f])})
         if not got:
-            accepted.append(x.get("id"))
-        elif x.get("code") not in got:
-            wrong.append({"id": x.get("id"), "want": x.get("code"), "got": got})
-    valid_refused = [d.render() for d in diags]
-    out.append(row("PG5", "invalid.json refused; valid forms accepted",
-                   "PASS" if not accepted and not valid_refused else "FAIL",
-                   invalid=len(inv), accepted_invalid=accepted, valid_refused=valid_refused,
-                   codes_not_exact=wrong))  # fmt: skip
-    ne = json.loads((shapes / "not_expressible.json").read_text())
-    ne_acc = []
-    for x in ne:
-        if "form" not in x:
-            continue
-        f = F.Form("F901", x.get("rule", "R1"), "0" * 64, x.get("kind", "bound"), x["form"],
-                   "approved", "hand", "t", None)  # fmt: skip
-        if not F.check_forms(spec, None, [f]):
-            ne_acc.append(x.get("rule"))
-    out.append(row("PNX", "not_expressible forms refused", "PASS" if not ne_acc else "FAIL",
-                   accepted=ne_acc))  # fmt: skip
-    out += [
-        row("PT2f", "contradictions on pairs.json", "NOT RUN",
-            reason="the layout of pairs.json is not known to this runner"),
-        row("PT2x", "witness self-check on the frozen pairs", "NOT RUN",
-            reason="depends on PT2f"),
-        row("PT2w", "impact report with two contradictory forms", "NOT RUN",
-            reason="impact_report.py is frozen; the forms branch is not reachable from the CLI"),
-    ]  # fmt: skip
+            ne_acc.append(x["id"])
+        elif not set(got) & set(a.get("expect_codes", ())):
+            ne_wrong.append({"id": x["id"], "want": a.get("expect_codes"), "got": got})
+    out.append(
+        row("PNX", "not_expressible attempts refused", "PASS" if not ne_acc else "FAIL",
+            rules=len(ne), with_attempt=tried, accepted=ne_acc, refused_with_other_code=ne_wrong,
+            without_attempt=[x["id"] for x in ne if not x.get("attempt")])
+    )  # fmt: skip
+    out.append(pt2w_cli(scratch))
     return out
+
+
+def pt2w_cli(scratch: Path) -> dict[str, Any]:
+    """PT2w through ``lattice spec impact`` (CLI): project = the dev minishop fixture with its
+    forms file, candidate = a copy whose forms file gains a form contradicting an existing one."""
+    py = sys.executable
+    proj = scratch / "pt2w" / "project"
+    cand = scratch / "pt2w" / "candidate"
+    for d in (proj, cand):
+        shutil.rmtree(d, ignore_errors=True)
+        shutil.copytree(FIX, d)
+    fp = next(cand.glob("*.forms.json"))
+    data = json.loads(fp.read_text())
+    from lattice.spec import forms as F
+
+    base = next(f for f in data["forms"] if f["id"] == "F3")
+    e = json.loads(json.dumps(base))
+    e["id"] = "F90"
+    e["rule"] = "R7"
+    e["form"]["cond"] = {"node": "Cmp", "op": "lt", "value": 1}
+    e["approved_sha"] = F.form_sha(e["kind"], e["form"])
+    data["forms"].append(e)
+    fp.write_text(json.dumps(data, indent=2) + "\n")
+    cmd = [py, "-m", "lattice.spec", "impact", "--project", str(proj), "--candidate", str(cand),
+           "--tiers", "2", "--json", "--no-flows", "--baseline", "none"]  # fmt: skip
+    p = subprocess.run(cmd, capture_output=True, text=True, cwd=REPO, timeout=300)
+    try:
+        rep = json.loads(p.stdout)
+        tier2_present = "tier2" in rep
+        det = rep.get("tier2", {}).get("determined", [])
+        form_items = [d for d in det if str(d.get("id", "")).startswith("fc:")]
+    except ValueError:
+        tier2_present, det, form_items = False, None, None
+    ok = bool(form_items)
+    return row("PT2w", "impact report (CLI) gains the form contradiction items",
+               "PASS" if ok else "FAIL", exit_code=p.returncode, tier2_present=tier2_present,
+               form_items_in_tier2_determined=None if form_items is None else len(form_items),
+               determined_total=None if det is None else len(det), stderr_tail=p.stderr[-300:],
+               note="impact_report.py is frozen (hash-checked) and never passes forms_items")  # fmt: skip
 
 
 # ---- main ---------------------------------------------------------------------------------

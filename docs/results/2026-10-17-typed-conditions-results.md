@@ -189,3 +189,92 @@ uv run python dogfood/forms_mutants.py $(seq -f HX%g 1 16) --scratch $SCRATCH/mu
 uv run python -m pytest tests/spec/test_forms.py -q
 uv run ruff check <changed .py>; uv run ruff format --check <created .py>
 ```
+
+## 8. Stage: the frozen set, scored (2026-10-17, gated stage; supersedes the NOT RUN rows of sections 3 and 6 for the minishop arm)
+
+**Inputs, verified first.** `MANIFEST.sha256` of the set = `182fe629...83af13` (identical to the committed
+`data/2026-10-17-typed-conditions/shapes.manifest.sha256`; all 9 files `OK` under `sha256sum -c`).
+`lattice/spec/forms.py` and `forms_tier2.py` re-verified against `freeze.sha256` before and after the runs: `OK`
+(849d33b2..., 6f9c2482...); neither was touched. The set: 20 rules (16 formed), 16 forms, 14 author mutants, 25 apps
+(ok + 4 BROKEN + 6 SEC_BROKEN + 14), 500 truth cells (400 on formed rules), 32 pairs, 29 invalid forms, 18
+not-expressible rules. No model call, no API key, no sub-agent, nothing committed or staged. Wall time of the
+whole stage (25 apps x CD with G and H): 48 s (PX <= 180 s: met).
+
+**Runs (all four are on the same set and the same library files; only `dogfood/forms_probes.py` changed).**
+
+| run | runner state | outcome | data |
+|---|---|---|---|
+| 1 | the pre-existing runner, unchanged | all 10 rows NOT RUN: `KeyError: 'node'`. The set writes condition nodes untagged (`{op,value}`, `{values}`); the library's closed set is tagged (`Cmp`, `Len`, `In`). **Runner format mismatch**, not a score | `frozen-run1-layout-mismatch.json` |
+| 2 | reader adapted to the real layouts; tags added to untagged conditions and `approved_sha` recomputed for the tagged form (otherwise every form reads `edited`) | scored. Two runner bugs found afterwards (below) | `frozen-run2.json` |
+| 3 | run 2 + fix: PT2f dropped every class e item because the item's `forms` holds `scenario:<name>`, which my id filter rejected | PT2f class e 0/3 became 1/3; nothing else moved | `frozen-run3.json` |
+| 4 = 5 | run 3 + fix: PG1k counted any G failure as a kill, including rules that already fail on `ok`; the prereg says a cell must **flip** relative to `ok`. Run 5 is run 4 re-run after `ruff format` (identical but timings) | PG1k PASS (run 2, 3: vacuous) became FAIL | `frozen.json` (final) |
+
+The two runner bugs were mine; fixing them is not tuning (each moves a number toward the prereg's wording and one of
+them moved a PASS to a FAIL). Nothing was changed to improve a score; no form of the set was edited. A form that makes
+`generate` raise is isolated per form: its rule's G is "no check" and the run continues.
+
+**Results (final run; predicted from the prereg, observed here).**
+
+| probe | predicted (prereg 3.2) | observed | status |
+|---|---|---|---|
+| PG1 G vs H | 0 cells with G != H and H == T | 400 cells, G == H on 151; **249 cells have G != H with H == T** | **FAIL** |
+| PG1t G vs T | 100% | G == T on **150 / 400 (37.5%)**: 199 false fails (G fails, T says fine) + 51 misses (G passes, T says violated) | **FAIL** |
+| PG1o on ok | G fails exactly the rules T marks violated on ok (R12-R14) | G fails on ok for R6, R7, R8, R14, R15, R16, R17, R18, R19, R20 (10 rules; R14 is the only correct one). R12 and R13 are violated on ok by design (Amendment 2) but G has no check for them | **FAIL** |
+| PG1k mutants | G kills a superset of H | by flips relative to ok: G 3 (`h_cancel_typo_state`, `h_qty_min0`, `sec:bounds`), H 18 of 24; G-only 0, H-only 15. (Run 2/3 counted any failure: 24 of 24 for both, which was an artefact of G failing on ok) | **FAIL** |
+| PG2 layer | reported | 54 cells where both fail; same layer set in 53, overlap in 54 (one cell, `h_cancel_typo_state` R18: G on C and D, H on D) | reported |
+| PG5 invalid.json | 0 invalid accepted, 0 valid refused | **0 invalid accepted**; 29 / 29 refused with an acceptable code (28 with `code`, I26 with `F001`+`F002` where the set lists `F001` as `also_acceptable` and `F017` as `code`); but **5 of the 16 valid forms are refused by `check`** (F2, F3, F4: F002 "a db expectation needs a table"; F8, F9: F002 "needs a counted-row template") | **FAIL** (valid refused) |
+| PT2f contradictions | precision 1.0, recall 1.0 on a-d | 32 pairs; precision 1.0 (14/14 emitted correct, 0 false positives); recall a-d **13/14** (class a 6/6, b **0/1**, c 4/4, d 3/3); class e **1/3**. 5 pairs (P13, P14, P15, P16, P30) make `contradictions` raise `AssertionError` (row_limit form with no counted-row template); P29 undecided (below) | **FAIL** |
+| PT2x witness | 100% | 19 items, 0 without a witness. Weak: this runner does not re-derive the expectations; the library emits only self-checked items | PASS (weak) |
+| PT2w impact CLI | `tier2.determined` gains the form items | CLI on the dev minishop fixture (candidate adds a contradicting form): `tier2` present, `determined` = 0 items. `impact_report.py` is frozen and never passes `forms_items` (deviation 2). At `compute()` level the dev probe passes | **FAIL** (known, deviation 2) |
+| PNX | 0 accepted | 0 accepted of 8 attempts; 3 refused with another code than the set expects (N2, N3: F004; N9: F002+F004; expected F001/F017). The 10 rules without an attempt were not run through `forms coverage` (the set has no trace for them) | PASS |
+
+PB, PW, PA, PG3, PG4, PX(dev) are the dev-stage rows of section 3 and were not re-run by this stage. PS0-PSx (Streak
+arm) stay **NOT RUN** (no Docker, no Streak checkout). The drafter stays NOT RUN.
+
+**Probes: 2 passed (PT2x weak, PNX), 6 failed (PG1, PG1t, PG1o, PG1k, PG5, PT2f) + PT2w failed, 1 reported (PG2), 0 NOT RUN in the
+minishop arm; Streak arm and drafter NOT RUN.** The gate "every gated row of section 3.2" is **not met**.
+
+**Findings (every miss; root cause is from the findings' own messages, not from a fix).** These are the library
+disagreeing with a separate author's reading of D1; none was fixed or tuned.
+
+1. **`bound` has no `accepted` in D1, and my default is 200.** F2, F3, F4 (request bounds on `POST /orders/{}/items`)
+   generate `at_bound` expecting 200; minishop answers 201. Observed on ok: `status: expected 200, got 201`.
+   Predicted: pass. This alone makes R6, R7, R8 fail on every app that is not already failing. Amendment: D1 or the
+   generator must carry the accepted outcome; deviation 4 of section 5 added an optional `accepted`, the set cannot use it.
+2. **Ownership `row` is read as a value, the set writes a path.** D1 says `row: Request-path value`; F11-F13 give
+   `"/orders/1"` and the generator builds `GET /orders//orders/1` (404 on ok). Dev forms used `1`. R15, R16, R17 fail
+   everywhere; P29 (class e) is missed for the same reason (the generated request is not the hand-written one).
+3. **Transition `row` is read as the full table row, D1 says `{key: Lit}`.** F14-F16 give `{"id": 20}`; the generated
+   given row misses `user_id`: `IntegrityError: NOT NULL constraint failed: orders.user_id`, a loud layer D finding on
+   ok. R18, R19, R20 fail everywhere.
+4. **`row_limit` needs a counted-row template in `given[table][0]`** (my interpretation, module docstring) and the set
+   states `given` as the prior state of the *parent* (`orders: [...]`). F8, F9: `check` refuses them (F002) and
+   `generate` raises `AssertionError` with no message: **a form that type-checks cleanly in D4 terms is refused by an
+   undocumented check, and the whole-set `generate` aborts** (`forms generate` would exit 2 for the set). R12, R13 get
+   no check; R12-R13 are violated on ok by design, so G == H fails only because G is absent. P13-P16 and P30 raise.
+   F10 (R14) generates, but with the pending order 20 as the template: `below`/`at_limit` answer 404 on ok.
+5. **A param `bound` with `refused.db: unchanged` needs a table** (`stores`, my addition, D5 names it): F2-F4 are
+   refused by `check` (F002) though D1 never asks for `stores`.
+6. **A column-only bound is blind to an app that stops enforcing it.** F1 (R4, `Product.stock >= 0`) generates only the
+   invariant; on `h_no_stock_check` no existing scenario drives stock negative: G passes where T says violated (G and
+   H both miss it). The only G == T miss outside findings 1-5.
+7. **PNX codes**: three of the eight attempts are refused with a type error (F004/F002) because the checker types the
+   literal before it looks at the node (`value` as `{param...}`/`{column...}`/`{sum...}`), not with F001/F017. Refused
+   all the same.
+8. The three G-vs-H crosstalk cases: hand-written invariants (R13's "a product appears at most once") fail inside
+   generated scenario states (F2, F4 reuse product 1). Attribution by trace link counts them as H of R13, which T already
+   marks violated on ok, so no cell changes.
+
+**Reading.** Of the 16 formed rules, G == T on all 25 apps for R9, R10, R11 and R14 only (4 of 16); R4 on 24 of 25.
+Findings 1-4 account for 10 rules (R6, R7, R8, R12, R13, R15-R20 = 250 - 1 = 249 of the 250 wrong cells). The set's
+author followed D1 to the letter; the build departed from D1 in `accepted`, `row` and `stores`, and the departures,
+not the set, are what the numbers measure. The adapted node tags (untagged to tagged) were a reader change only, and
+the set did not need any other change to be read.
+
+**Not done.** No post hoc variant of the set was scored. A fix to findings 1-5 is a separate commit, rerun with deltas
+labelled post hoc, and never counts as blind (prereg section 6).
+
+```sh
+uv run python dogfood/forms_probes.py --stage frozen --shapes $SCRATCH/../hshapes \
+    --manifest docs/results/data/2026-10-17-typed-conditions/shapes.manifest.sha256 --scratch $SCRATCH/f --out $SCRATCH/f-data
+```
