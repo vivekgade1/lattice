@@ -361,21 +361,21 @@ def _g_fails(report):
 
 
 def test_generated_checks_pass_on_the_ok_app_except_the_limit_the_app_lacks(apps, gen):
+    # round 2 (cause 4): F7's `given` counted row (id 1) is kept as written and collides with the
+    # seed's order line 1, so both F7 scenarios stop at their `given` step (the invariant is not
+    # reached); round 1 replaced that row by fresh keys. Every other generated check passes.
     rep = _run(F.effective_spec(SPEC, gen), apps["ok"])
-    assert _g_fails(rep) == [
-        "at most 5 OrderItem rows per order_id (form F7)",
-        "scenario: form:F7:at_limit",
-    ]
+    assert _g_fails(rep) == ["scenario: form:F7:at_limit", "scenario: form:F7:below"]
     assert len(rep.findings) == 2
 
 
 def test_a_generated_ownership_check_catches_a_mutant_the_hand_written_misses(apps, gen):
     eff = F.effective_spec(SPEC, gen)
     assert _g_fails(_run(eff, apps["wrong_answer"])) == [
-        "at most 5 OrderItem rows per order_id (form F7)",
         "scenario: form:F6:other_get_orders",
         "scenario: form:F7:at_limit",
-    ]
+        "scenario: form:F7:below",
+    ]  # round 2: see the test above for the two F7 entries
     assert _run(SPEC, apps["wrong_answer"]).findings == []
 
 

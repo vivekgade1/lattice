@@ -595,12 +595,22 @@ def _class_e(spec: Spec, forms: Sequence[tuple[F.Form, str]]) -> list[dict[str, 
 # ---- entry point -----------------------------------------------------------------------------
 
 
-def contradictions(spec: Spec, forms: Sequence[F.Form | F.Resolved]) -> list[dict[str, Any]]:
+def contradictions(
+    spec: Spec, forms: Sequence[F.Form | F.Resolved], notes: list[str] | None = None
+) -> list[dict[str, Any]]:
     """The contradictions among ``forms`` (those that may generate), and between a form and a
-    hand-written scenario, sorted by id. Pure."""
+    hand-written scenario, sorted by id. Pure. A form the generator refuses is left out and
+    named in ``notes`` as ``pair_undecided:<id>:<code>``: no claim, no exception."""
     items: list[tuple[F.Form, str]] = []
     for x in forms:
-        items.append((x.form, x.rule) if isinstance(x, F.Resolved) else (x, x.rule))
+        form = F.normalised(x.form if isinstance(x, F.Resolved) else x)
+        try:
+            F.generate(spec, [form])
+        except F.FormsError as err:
+            if notes is not None:
+                notes.append(f"pair_undecided:{form.id}:{err.code}")
+        else:
+            items.append((form, x.rule))
     items.sort(key=lambda p: (F._fnum(p[0].id), p[0].id))  # noqa: SLF001
     found: dict[str, dict[str, Any]] = {}
 

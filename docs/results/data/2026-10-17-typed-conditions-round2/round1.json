@@ -1,0 +1,362 @@
+[
+  {
+    "apps": 25,
+    "bad_gne_h_and_h_eq_t": [
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "rule": "R20"
+      }
+    ],
+    "cells": 400,
+    "form_states": {
+      "F1": "current",
+      "F10": "current",
+      "F11": "current",
+      "F12": "current",
+      "F13": "current",
+      "F14": "current",
+      "F15": "current",
+      "F16": "current",
+      "F2": "current",
+      "F3": "current",
+      "F4": "current",
+      "F5": "current",
+      "F6": "current",
+      "F7": "current",
+      "F8": "current",
+      "F9": "current"
+    },
+    "formed_rules": 16,
+    "forms_that_could_not_generate": {},
+    "forms_usable": 16,
+    "g_eq_h": 398,
+    "g_ne_h": [
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "rule": "R20"
+      }
+    ],
+    "generate_whole_set_error": null,
+    "notes": [],
+    "post_hoc": true,
+    "probe": "PG1",
+    "round1_value": "249 cells with G != H and H == T",
+    "run_wall_s": 65.85,
+    "status": "REPORTED",
+    "status_gate": "FAIL",
+    "unattributed_generated_findings": [],
+    "what": "G vs H per cell"
+  },
+  {
+    "bad_outside_k6": [
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "rule": "R20"
+      }
+    ],
+    "g_eq_t": 397,
+    "k6_cells": 100,
+    "k6_misses": [
+      {
+        "G": false,
+        "H": false,
+        "T": true,
+        "app": "h_no_stock_check",
+        "k6": true,
+        "rule": "R4"
+      }
+    ],
+    "k6_rules": [
+      "R10",
+      "R11",
+      "R4",
+      "R9"
+    ],
+    "post_hoc": true,
+    "probe": "PG1t",
+    "round1_value": "150 / 400 (37.5%)",
+    "scored": 400,
+    "status": "REPORTED",
+    "status_gate": "FAIL",
+    "what": "G vs truth per cell (K6 cells apart)"
+  },
+  {
+    "bad": [],
+    "g_fail_on_ok": [
+      "R12",
+      "R13",
+      "R14"
+    ],
+    "post_hoc": true,
+    "probe": "PG1o",
+    "round1_value": "G fails R6-R8, R14-R20; no check for R12, R13",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "t_violated_on_ok": [
+      "R12",
+      "R13",
+      "R14"
+    ],
+    "what": "on ok, G fails exactly the rules T marks violated"
+  },
+  {
+    "apps_non_ok": 24,
+    "g_kills": [
+      "h_add_any_state",
+      "h_cancel_400",
+      "h_cancel_from_paid",
+      "h_cancel_no_owner",
+      "h_cancel_refused_writes",
+      "h_cancel_typo_state",
+      "h_product_id_min0",
+      "h_qty_max101",
+      "h_qty_min0",
+      "h_read_admin_bypass",
+      "h_read_hides_cancelled",
+      "h_read_other_403",
+      "sec:auth",
+      "sec:authz",
+      "sec:bounds",
+      "sec:leak",
+      "sec:state",
+      "wrong_answer"
+    ],
+    "g_only": [],
+    "h_kills": [
+      "h_add_any_state",
+      "h_cancel_400",
+      "h_cancel_from_paid",
+      "h_cancel_no_owner",
+      "h_cancel_refused_writes",
+      "h_cancel_typo_state",
+      "h_product_id_min0",
+      "h_qty_max101",
+      "h_qty_min0",
+      "h_read_admin_bypass",
+      "h_read_hides_cancelled",
+      "h_read_other_403",
+      "sec:auth",
+      "sec:authz",
+      "sec:bounds",
+      "sec:leak",
+      "sec:state",
+      "wrong_answer"
+    ],
+    "h_only": [],
+    "post_hoc": true,
+    "probe": "PG1k",
+    "round1_value": "G 3, H 18 of 24; H-only 15",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "G kills (flips vs ok, formed rules) a superset of H's"
+  },
+  {
+    "cells_both_fail": 104,
+    "diff": [
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "h_cancel_typo_state",
+        "rule": "R18"
+      }
+    ],
+    "post_hoc": true,
+    "probe": "PG2",
+    "round1_value": "53 / 54 same layer set",
+    "same_layer_sets": 103,
+    "status": "REPORTED",
+    "status_gate": "REPORTED",
+    "what": "layer of the failing check where both fail"
+  },
+  {
+    "accepted_invalid": [],
+    "invalid": 29,
+    "post_hoc": true,
+    "probe": "PG5",
+    "round1_value": "0 / 29 invalid accepted; 5 / 16 valid refused",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "valid_forms": 16,
+    "valid_refused": [],
+    "what": "invalid.json refused; the set's valid forms accepted"
+  },
+  {
+    "codes_not_exact": [
+      {
+        "also_acceptable_hit": true,
+        "got": [
+          "F001"
+        ],
+        "id": "I26",
+        "want": "F017"
+      }
+    ],
+    "exact": 28,
+    "of": 29,
+    "post_hoc": true,
+    "probe": "PG5c",
+    "round1_value": "n/a",
+    "status": "REPORTED",
+    "status_gate": "REPORTED",
+    "what": "exact F-code on invalid.json"
+  },
+  {
+    "class_e": {
+      "compatible": 2,
+      "contradict": 3,
+      "false_pos": 0,
+      "found": 3
+    },
+    "errors": [],
+    "false_neg": [],
+    "false_pos": [
+      {
+        "id": "P15",
+        "items": [
+          "fc:e:PA:PB"
+        ]
+      }
+    ],
+    "pairs": 32,
+    "per_class": {
+      "a": {
+        "compatible": 6,
+        "contradict": 6,
+        "false_pos": 0,
+        "found": 6
+      },
+      "b": {
+        "compatible": 3,
+        "contradict": 1,
+        "false_pos": 1,
+        "found": 1
+      },
+      "c": {
+        "compatible": 2,
+        "contradict": 4,
+        "false_pos": 0,
+        "found": 4
+      },
+      "d": {
+        "compatible": 2,
+        "contradict": 3,
+        "false_pos": 0,
+        "found": 3
+      },
+      "e": {
+        "compatible": 2,
+        "contradict": 3,
+        "false_pos": 0,
+        "found": 3
+      }
+    },
+    "post_hoc": true,
+    "precision": 0.9444444444444444,
+    "probe": "PT2f",
+    "recall_abcd": "14/14",
+    "round1_value": "precision 1.0; recall a-d 13/14; class e 1/3; 5 raises",
+    "status": "REPORTED",
+    "status_gate": "FAIL",
+    "true_neg": 14,
+    "true_pos": 17,
+    "undecided": [],
+    "what": "forms contradictions on pairs.json"
+  },
+  {
+    "failed_rederivation": [],
+    "items": 23,
+    "not_rederived_weak": [
+      "fc:c:PA:PB",
+      "fc:c:PA:PB",
+      "fc:c:PA:PB",
+      "fc:c:PA:PB"
+    ],
+    "post_hoc": true,
+    "probe": "PT2x",
+    "round1_value": "19 items, 0 without witness (weak)",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "witness, strong: the runner re-derives the witness and calls incompatible itself"
+  },
+  {
+    "accepted": [],
+    "post_hoc": true,
+    "probe": "PNX",
+    "refused_with_other_code": [],
+    "round1_value": "0 / 8 accepted; 3 with F004/F002",
+    "rules": 18,
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "not_expressible attempts refused with F001 or F017",
+    "with_attempt": 8
+  },
+  {
+    "determined_total": 1,
+    "exit_code": 0,
+    "expected_items": 1,
+    "got_items": 1,
+    "post_hoc": true,
+    "probe": "PT2w",
+    "round1_value": "0 items (CLI)",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "tiers": [
+      2
+    ],
+    "what": "impact CLI: tier2.determined gains exactly the new form items (tier 2)"
+  },
+  {
+    "gate": "<= 180 s",
+    "probe": "PX",
+    "seconds": 67.0,
+    "status": "PASS",
+    "what": "wall time of the set arm"
+  },
+  {
+    "probe": "wall",
+    "seconds": 67.0,
+    "status": "REPORTED",
+    "what": "total"
+  }
+]

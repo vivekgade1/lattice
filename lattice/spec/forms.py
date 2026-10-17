@@ -26,9 +26,10 @@ Interpretations the pre-registration leaves open (stated, never silent):
   generator counts only the form's own ``given`` rows for the "unchanged" baseline.
 * For a column field with an endpoint, the value is placed where the witness request
   carries a key named like the column (a JSON key, a query key, a path placeholder).
-* ``row_limit``: the first row of ``given[table]`` is the template of the counted rows.
-* ``transition``: ``row`` is the full row of the machine's table (its key included); the
-  machine column is set per case.
+* Round 2 (D1'): ``node`` tags are optional; ``accepted`` is derived from the spec's own steps
+  when absent; ownership ``row`` is a key or a request path; transition ``row`` is ``{key: Lit}``;
+  ``given`` is the prior state and counted rows are synthesised (rules B, C; F021); a column
+  ``bound`` without ``endpoint`` generates an invariant only (class K6, by design).
 """
 
 from __future__ import annotations
@@ -54,6 +55,7 @@ from lattice.spec.model import (
     Step,
     resolve_table,
     scope_parts,
+    tables_of,
     valid_scope,
 )
 from lattice.spec.rules import Trace
@@ -83,6 +85,10 @@ NOT_EXPRESSIBLE = (
     "effect_value",
     "disjunction",
     "other",
+)
+# node names that are not expressible when found as a value's key (F017, D4')
+NOT_EXPR_NODES = frozenset(
+    "now today date sum avg min max count or any all param column ref add sub mul div".split()
 )
 # keys and node tags that name a construct outside the closed set (F017, never F001)
 NOT_EXPR_KEYS = frozenset(
@@ -179,6 +185,28 @@ class Form:
             "approved_by": self.approved_by,
             "approved_sha": self.approved_sha,
         }
+
+
+def _names_node(v: Any) -> bool:
+    """Whether ``v`` is an object keyed by a construct outside the closed set (D4')."""
+    return isinstance(v, dict) and any(k in NOT_EXPR_KEYS | NOT_EXPR_NODES for k in v)
+
+
+def norm_cond(c: Any) -> Any:
+    """``c`` with its ``node`` tag inferred from its keys (D1' i); as written when it has none."""
+    if not isinstance(c, dict) or "node" in c:
+        return c
+    op = c.get("op")
+    tag = "Cmp" if op in CMP_OPS else "Len" if op in LEN_OPS else "In" if "values" in c else None
+    return {"node": tag, **c} if tag else c
+
+
+def normalised(f: Form) -> Form:
+    """``f`` with its condition tagged. ``approved_sha`` stays over the form as written."""
+    c = f.form.get("cond")
+    if f.kind != "bound" or norm_cond(c) is c:
+        return f
+    return dataclasses.replace(f, form={**f.form, "cond": norm_cond(c)})
 
 
 @dataclass(frozen=True)
@@ -493,6 +521,13 @@ class _Checker:
             return False
         return True
 
+    def value_lit(self, ptr: str, scalar: Scalar | None, v: Any) -> bool:
+        """A condition's value: F017 for a node name, F001 for another non-literal (D4')."""
+        if v is None or isinstance(v, dict | list | tuple):
+            self.err("F017" if _names_node(v) else "F001", ptr, "not a literal")
+            return False
+        return self.lit(ptr, scalar, v)
+
     def endpoint(self, ptr: str, ep: Any) -> str | None:
         """The endpoint's named template (``METHOD /tpl``) or None after F003."""
         if not isinstance(ep, str) or " " not in ep.strip():
@@ -619,7 +654,7 @@ class _Checker:
             self.err("F001", ptr, "cond is not an object")
             return
         node = cond.get("node")
-        if node in NOT_EXPR_KEYS:
+        if isinstance(node, str) and node in NOT_EXPR_KEYS:
             self.err("F017", f"{ptr}/node", f"node {node!r} is not expressible as a form")
             return
         scalar = ref.scalar if ref else None
@@ -637,7 +672,7 @@ class _Checker:
                 if scalar is not None and scalar not in ORDERED:
                     self.err("F004", f"{ptr}/op", f"{op} on a {scalar} field")
                     return
-            self.lit(f"{ptr}/value", scalar, v)
+            self.value_lit(f"{ptr}/value", scalar, v)
         elif node == "Len":
             if not self.keys(ptr, cond, ("node", "op", "value"), ("op", "value")):
                 return
@@ -645,7 +680,9 @@ class _Checker:
                 self.err("F001", f"{ptr}/op", f"op {cond['op']!r} is not one of {LEN_OPS}")
                 return
             v = cond["value"]
-            if not isinstance(v, int) or isinstance(v, bool):
+            if isinstance(v, dict | list):
+                self.value_lit(f"{ptr}/value", scalar, v)
+            elif not isinstance(v, int) or isinstance(v, bool):
                 self.err("F004", f"{ptr}/value", "a length is an integer")
             elif v < 0:
                 self.err("F011", f"{ptr}/value", "a negative length")
@@ -659,12 +696,13 @@ class _Checker:
                 self.err("F001", f"{ptr}/values", f"values is a list of 1 to {IN_MAX} literals")
                 return
             for i, v in enumerate(vals):
-                if not self.lit(f"{ptr}/values/{i}", scalar, v):
+                if not self.value_lit(f"{ptr}/values/{i}", scalar, v):
                     continue
                 if ref is not None and ref.one_of is not None and v not in ref.one_of:
                     self.err("F005", f"{ptr}/values/{i}", f"{v!r} is outside the one_of values")
         else:
-            self.err("F001", f"{ptr}/node", f"node {node!r} is not Cmp, Len or In")
+            code = "F017" if _names_node({str(node): 0, **cond}) else "F001"
+            self.err(code, f"{ptr}/node", f"node {node!r} is not Cmp, Len or In")
 
     def where(self, ptr: str, w: Any, table: str, schema: Schema) -> None:
         if not isinstance(w, dict):
@@ -692,6 +730,7 @@ class _Checker:
         return None
 
     def check(self, f: Form) -> None:
+        f = normalised(f)
         ptr = f"/forms/{f.id}"
         if self.rules is not None and f.rule not in self.rules:
             self.err("F016", ptr, f"rule {f.rule} is not in the trace")
@@ -699,7 +738,13 @@ class _Checker:
             code = "F017" if f.kind in NOT_EXPR_KEYS else "F001"
             self.err(code, f"{ptr}/kind", f"unknown kind {f.kind!r}", f"one of {KINDS}")
             return
+        n = len(self.diags)
         getattr(self, f"_{f.kind}")(f"{ptr}/form", f.form)
+        if len(self.diags) == n and f.kind in ("row_limit", "transition"):
+            try:  # D3 preconditions: a row the generator cannot complete is F021 here
+                _Gen(self.spec).prepare(f)
+            except FormsError as err:
+                self.err(err.code, f"{ptr}/form", err.detail)
 
     def _bound(self, ptr: str, form: Mapping[str, Any]) -> None:
         allowed = (
@@ -736,14 +781,6 @@ class _Checker:
         for k in ("refused", "accepted"):
             if k in form:
                 self.outcome(f"{ptr}/{k}", form[k])
-                self._locus_needed(f"{ptr}/{k}", form[k], ref.table if ref else None)
-
-    def _locus_needed(self, ptr: str, outcome: Any, table: str | None) -> None:
-        db = outcome.get("db") if isinstance(outcome, dict) else None
-        if db is not None and table is None:
-            self.err(
-                "F002", f"{ptr}/db", "a db expectation needs a table (a column field or stores)"
-            )
 
     def _row_limit(self, ptr: str, form: Mapping[str, Any]) -> None:
         allowed = (
@@ -772,14 +809,6 @@ class _Checker:
         g = form.get("given")
         if g is not None:
             self.given(f"{ptr}/given", g)
-        have = False
-        if found is not None and isinstance(g, dict):
-            for t, rows in g.items():
-                fr = resolve_table(self.spec.profile, t)
-                if fr is not None and fr[0] == found[0] and isinstance(rows, list) and rows:
-                    have = True
-        if not have:
-            self.err("F002", f"{ptr}/given", "needs a counted-row template: given[table][0]")
         for k in ("refused", "accepted"):
             if k in form:
                 self.outcome(f"{ptr}/{k}", form[k])
@@ -823,7 +852,9 @@ class _Checker:
         if form.get("owner") == form.get("other"):
             self.err("F007", f"{ptr}/other", "owner and other are the same user")
         if isinstance(form["row"], dict | list) or form["row"] is None:
-            self.err("F014", f"{ptr}/row", "row is a path value (int or string)")
+            self.err("F014", f"{ptr}/row", "row is a key or a request path (int or string)")
+        elif _row_key(form["row"], list(named.values())) is None:
+            self.err("F014", f"{ptr}/row", "the request path matches none of the endpoints")
         if "given" in form:
             self.given(f"{ptr}/given", form["given"])
         for k in ("refused_other", "refused_anon"):
@@ -919,6 +950,147 @@ def check_forms(spec: Spec, trace: Trace | None, forms: Sequence[Form]) -> list[
         seen.add(f.id)
         ck.check(f)
     return ck.diags
+
+
+# ---- derivations (D1', rules B and C): what a form leaves out, decided from the spec ----------
+
+
+def _word_table(spec: Spec, word: str) -> str | None:
+    """The schema name a path segment or ``x_id`` stem names (``orders``, ``order``)."""
+    tables, sql = tables_of(spec.profile)
+    w = word.lower().replace("_", "")
+    names = lambda t: {t.lower(), t.lower() + "s", sql.get(t, t).lower().replace("_", "")}  # noqa: E731
+    return next((t for t in tables if w and w in names(t)), None)
+
+
+def _fk_target(spec: Spec, schema: Schema, col: str) -> str | None:
+    """The table ``col`` references: users (owner), the ``owner_via`` parent, else ``x_id``."""
+    api = spec.profile.api
+    if col == schema.owner:
+        return api.users_table if api else None
+    if schema.owner_via and schema.owner_via[0] == col:
+        parent = resolve_table(spec.profile, schema.owner_via[1])
+        return parent[0] if parent else None
+    return _word_table(spec, col[:-3]) if col.endswith("_id") else None
+
+
+def _ph_table(spec: Spec, named: str) -> str | None:
+    """The table a template's first placeholder addresses (by its name, else the segment before)."""
+    segs = named.partition(" ")[2].split("/")
+    i = next((i for i, seg in enumerate(segs) if _PLACEHOLDER.fullmatch(seg)), 0)
+    by_name = _word_table(spec, segs[i][1:-4]) if segs[i].endswith("_id}") else None
+    return by_name or (_word_table(spec, segs[i - 1]) if i else None)
+
+
+def _first_ph(named: str, concrete: str) -> str | None:
+    """The value a concrete path binds to the template's first placeholder."""
+    pairs = zip(named.partition(" ")[2].split("/"), concrete.split("?")[0].split("/"), strict=False)
+    return next((c for t, c in pairs if _PLACEHOLDER.fullmatch(t)), None)
+
+
+def _row_key(row: Any, named: Sequence[str]) -> Any:
+    """An ownership ``row``'s key: a literal, or what a request path binds to the first placeholder
+    of one of the endpoints (D1' iii). None: a path matching none."""
+    if not (isinstance(row, str) and row.startswith("/")):
+        return row
+    cs = row.split("?")[0].split("/")
+    for tpl in named:
+        ts = tpl.partition(" ")[2].split("/")
+        first = next((i for i, t in enumerate(ts) if _PLACEHOLDER.fullmatch(t)), None)
+        if first is None or first >= len(cs) or len(cs) > len(ts):
+            continue
+        if all(_PLACEHOLDER.fullmatch(t) or t == c for t, c in zip(ts, cs, strict=False)):
+            return _coerce(Scalar.INT, cs[first])
+    return None
+
+
+def accepted_status(spec: Spec, named: str) -> int | None:
+    """The accepted status when a form gives none (D1' ii): the unique 2xx the spec's steps expect
+    on the endpoint, else 200 if a program serves it, else None (the caller notes the 200)."""
+    method, _, path = named.partition(" ")
+    key = f"{method.upper()} {norm_template(path)}"
+    got = {
+        st.expect_status
+        for sc in spec.scenarios if not sc.name.startswith(RESERVED_PREFIX)
+        for st in sc.steps
+        if isinstance(st, Step) and st.expect_status is not None and 200 <= st.expect_status < 300
+        and f"{st.method.upper()} {norm_template(st.path)}" == key
+    }  # fmt: skip
+    if got:
+        return next(iter(got)) if len(got) == 1 else None
+    from lattice.spec.validate import _endpoints
+
+    served = any(
+        f"{m} {norm_template(p)}" == key
+        for src in spec.programs.values()
+        for _n, m, p in _endpoints(src)
+    )
+    return 200 if served else None
+
+
+def _user_id(spec: Spec, handle: str | None) -> int | None:
+    """A caller's user id: its 1-based position in ``Spec.users`` (the seed's order)."""
+    handles = list(spec.users)
+    return handles.index(handle) + 1 if handle in handles else None
+
+
+def _witness_col(w: Any, named: str, col: str) -> Any:
+    """What the witness request carries for ``col`` (a JSON key, query key or path placeholder)."""
+    if isinstance(w.json, dict) and w.json.get(col) is not None:
+        return w.json[col]
+    if w.params and col in w.params:
+        return w.params[col]
+    got = _match_path(named.partition(" ")[2], w.path).get(col)
+    return None if got is None else _coerce(Scalar.INT, got)
+
+
+def bind_column(spec: Spec, schema: Schema, col: str, w: Any, named: str, caller: str) -> Any:
+    """Rule B, a ``by`` column's value: (1) the witness carries it; (2) the first placeholder, for a
+    foreign key to the table it addresses; (3) the caller's id for the owner column; else None."""
+    v = _witness_col(w, named, col)
+    if v is not None:
+        return v
+    ph = _first_ph(named, w.path)
+    if ph is not None and (tgt := _fk_target(spec, schema, col)) and tgt == _ph_table(spec, named):
+        return _coerce(dict(schema.columns)[col], ph)
+    return _user_id(spec, caller) if col == schema.owner else None
+
+
+def complete_row(
+    spec: Spec, found: tuple[str, str, Schema], row: Mapping[str, Any], w: Any, named: str,
+    caller: str, given: Mapping[str, Any] | None,
+) -> dict[str, Any]:  # fmt: skip
+    """Rule C: ``row`` with every NOT NULL column filled, in schema order. The owner column gets
+    the caller's id; any other column the value the witness request carries under its name;
+    then a foreign key the smallest key among the ``given`` rows of the referenced table (1
+    for a users key), a machine column its initial state, a one_of column its first sorted
+    value, else the typed zero. F021 names a column it cannot fill."""
+    table, _sql, schema = found
+    api = spec.profile.api
+    out = dict(row)
+    for col, scalar in schema.columns:
+        if col in out or col in schema.nullable:
+            continue
+        tgt = _fk_target(spec, schema, col)
+        mt = ((resolve_table(spec.profile, m.table) or ("",))[0] == table for m in spec.machines)
+        init = next((m.initial or m.states() for m, ok in zip(spec.machines, mt, strict=True)
+                     if ok and m.column == col), None)  # fmt: skip
+        v = _user_id(spec, caller) if col == schema.owner else _witness_col(w, named, col)
+        if v is None and tgt is not None:
+            tf = resolve_table(spec.profile, tgt)
+            keys = [r[k] for r in _given_rows(given, spec, tgt, {})
+                    if tf and (k := _keycol(tf[2])) in r]  # fmt: skip
+            v = min(keys) if keys else 1 if api and tgt == api.users_table else None
+        elif v is None and init:
+            v = init[0]
+        elif v is None and (vals := _one_of(schema, col)):
+            v = sorted(vals)[0]
+        elif v is None:
+            v = {Scalar.INT: 0, Scalar.FLOAT: 0.0, Scalar.BOOL: False}.get(scalar, "")
+        if v is None:
+            raise FormsError("F021", f"cannot complete a {table} row: no value for {col!r}")
+        out[col] = v
+    return out
 
 
 # ---- generation (D3) ------------------------------------------------------------------------
@@ -1170,6 +1342,8 @@ def _expect_db(
     ``unchanged`` needs a non-empty locus (the seed's rows are unknown to the form): the
     given rows it matches are the baseline (one row: its values; none: a count of 0)."""
     db = outcome.get("db")
+    if db == "unchanged" and table is None:
+        return _given_only(spec, given)
     if db is None or table is None:
         return None
     cond: dict[str, Any] = {}
@@ -1188,6 +1362,47 @@ def _expect_db(
     else:
         cond["equals"] = dict(db["equals"])
     return {table: cond}
+
+
+def _given_only(spec: Spec, given: Mapping[str, Any] | None) -> dict[str, Any] | None:
+    """``unchanged`` with no derivable table: the first given row of each table, by key."""
+    out: dict[str, Any] = {}
+    for t, rows in (given or {}).items():
+        found = resolve_table(spec.profile, t)
+        key = _keycol(found[2]) if found else None
+        if found and key and rows and key in rows[0]:
+            eq = {c: v for c, v in rows[0].items() if v is not None}
+            out.setdefault(found[0], {"where": {key: rows[0][key]}, "equals": eq})
+    return out or None
+
+
+def derive_table(spec: Spec, named: str, w: Any) -> str | None:
+    """The table of a param ``bound`` without ``stores`` (cause 5): (a) the one table of the spec's
+    contract or program for the endpoint; (b) the unique table with a foreign key to the table
+    its first placeholder addresses whose columns cover the witness's JSON keys."""
+    method, _, path = named.partition(" ")
+    key = f"{method.upper()} {norm_template(path)}"
+    for c in spec.contracts:
+        if f"{c.method.upper()} {norm_template(c.path)}" == key and c.table:
+            found = resolve_table(spec.profile, c.table)
+            return found[0] if found else None
+    for src in spec.programs.values():
+        for chunk in src.split("@endpoint(")[1:]:
+            m = re.match(r'\s*"(\w+)"\s*,\s*"([^"]+)"', chunk)
+            if m and f"{m[1].upper()} {norm_template(m[2])}" == key:
+                names = {x for x in re.findall(r"(?:fetch|insert)\(\s*(\w+)", chunk)}
+                tabs = {found[0] for n in names if (found := resolve_table(spec.profile, n))}
+                if len(tabs) == 1:
+                    return next(iter(tabs))
+    parent = _ph_table(spec, named)
+    sent = set(w.json) if isinstance(w.json, dict) else set()
+    tables, _sql = tables_of(spec.profile)
+    cands = [
+        t for t, sc in tables.items()
+        if parent and sent <= set(sc.names())
+        and any(_fk_target(spec, sc, c) == parent for c in sc.names())
+    ]  # fmt: skip
+    return cands[0] if len(cands) == 1 else None
 
 
 def _merge_given(
@@ -1234,6 +1449,52 @@ class _Gen:
 
     def user_of(self, caller: str | None) -> str | None:
         return None if caller in (None, "anon") else caller
+
+    def accepted(self, given: Mapping[str, Any] | None, named: str) -> Mapping[str, Any]:
+        """The accepted outcome: the form's, else derived from the spec (200 and a note if not)."""
+        if given:
+            return given
+        status = accepted_status(self.spec, named)
+        if status is None:
+            self.notes.append(f"accepted_default:{named}")
+        return {"status": 200 if status is None else status}
+
+    def prepare(self, f: Form) -> Any:
+        """What a row_limit or transition needs before it generates (rules B and C); raises
+        :class:`FormsError` (F011, F021) for a form the generator cannot complete."""
+        form = f.form
+        named = self.named(form["endpoint"] if f.kind == "row_limit" else form["trigger"])
+        w = _witness_of(named, form["request"])
+        if f.kind == "transition":
+            col = form["machine"]
+            found = resolve_table(self.spec.profile, col.split(".")[0])
+            assert found is not None
+            row = complete_row(
+                self.spec, found, form["row"], w, named, form["caller"], form.get("given")
+            )
+            return named, w, found, row
+        found = resolve_table(self.spec.profile, form["table"])
+        assert found is not None
+        table, schema = found[0], found[2]
+        have = _given_rows(form.get("given"), self.spec, table, {})
+        tmpl = have[0] if have else {}
+        locus = {}
+        for c in form["by"]:
+            v = bind_column(self.spec, schema, c, w, named, form["caller"])
+            v = tmpl.get(c) if v is None else v
+            if v is None:
+                raise FormsError("F021", f"cannot bind the by-column {table}.{c}")
+            locus[c] = v
+        locus.update(form.get("where") or {})
+        m = sum(1 for r in have if all(r.get(c) == v for c, v in locus.items()))
+        if m > form["max"] - 1:
+            raise FormsError(
+                "F011", f"{m} given {table} rows already match the locus; max is {form['max']}"
+            )
+        key = _keycol(schema)
+        proto = {**tmpl, **locus, **({key: 0} if key else {})}
+        row = complete_row(self.spec, found, proto, w, named, form["caller"], form.get("given"))
+        return named, w, found, (locus, row, m)
 
     def add_invariant(self, f: Form, rule: str, name: str, sentence: str, expr: str) -> None:
         inv = Invariant(name, sentence, expr)
@@ -1288,13 +1549,17 @@ class _Gen:
         named = self.named(endpoint)
         at, beyond = bound_values(cond, scalar)
         base = _witness_of(named, form["request"])
+        if table is None:
+            table = derive_table(self.spec, named, base)
+            found = resolve_table(self.spec.profile, table) if table else None
+            schema_cols = dict(found[2].columns) if found else {}
         if "param" in fld:
             where, name = fld["path"].split(".", 1)
         else:
             where = _locate_column(base, column or "") or ""
             name = column or ""
         user = self.user_of(form["caller"])
-        accepted = form.get("accepted") or {"status": 200}
+        accepted = self.accepted(form.get("accepted"), named)
         refused = form["refused"]
         for case, value, outcome in (
             ("at_bound", at, accepted),
@@ -1309,6 +1574,9 @@ class _Gen:
                 continue
             locus = _db_locus(table, schema_cols, w, named, column, value)
             given = _merge_given(form.get("given"))
+            note = f"{f.id}: db_locus:given_only"
+            if table is None and outcome.get("db") == "unchanged" and note not in self.notes:
+                self.notes.append(note)
             db = _expect_db(self.spec, outcome, table, locus, given)
             self.add_scenario(f, rule, case, given, self.step(w, user, outcome["status"], db))
 
@@ -1347,43 +1615,25 @@ class _Gen:
             f, rule, f"{RESERVED_PREFIX}{f.id}:invariant",
             f"at most {mx} {table} rows per {', '.join(by)} (form {f.id})", expr,
         )  # fmt: skip
-        named = self.named(form["endpoint"])
-        w = _witness_of(named, form["request"])
+        named, w, _found, (locus, proto, m) = self.prepare(f)
         user = self.user_of(form["caller"])
         key = _keycol(schema)
-        given0 = form["given"]
-        template = None
-        for t, rows in given0.items():
-            fr = resolve_table(self.spec.profile, t)
-            if fr is not None and fr[0] == table and rows:
-                template = rows[0]
-                break
-        assert template is not None
+        given0 = form.get("given") or {}
+        have = _given_rows(given0, self.spec, table, {})
         other = {
             t: rows
             for t, rows in given0.items()
             if (resolve_table(self.spec.profile, t) or (t,))[0] != table
         }
         base = _fresh_base(self.spec, given0, table, key)
-        locus = {c: template[c] for c in by if c in template}
-        locus.update(where)
-        accepted = form.get("accepted") or {"status": 200}
+        accepted = self.accepted(form.get("accepted"), named)
         for case, k, outcome in (
             ("below", mx - 1, accepted),
             ("at_limit", mx, form["refused"]),
         ):
-            rows = []
-            for i in range(k):
-                row = dict(template)
-                row.update(where)
-                if key is not None:
-                    row[key] = base + i
-                rows.append(row)
-            given = _merge_given(other, {table: rows} if rows else None)
-            if case == "below":
-                db = {table: {"where": dict(locus), "count": mx}}
-            else:
-                db = {table: {"where": dict(locus), "count": mx}}
+            rows = [{**proto, **({key: base + i} if key else {})} for i in range(k - m)]
+            given = _merge_given(other, {table: [*have, *rows]} if have or rows else None)
+            db = {table: {"where": dict(locus), "count": mx}}
             self.add_scenario(f, rule, case, given, self.step(w, user, outcome["status"], db))
 
     # -- ownership
@@ -1394,24 +1644,23 @@ class _Gen:
         table, schema_cols = found[0], dict(found[2].columns)
         accepted = form.get("accepted") or {}
         bodies = form.get("bodies") or {}
+        row = _row_key(form["row"], [self.named(e) for e in form["endpoints"]])
         for ep in form["endpoints"]:
             named = self.named(ep)
             method, _, tpl = named.partition(" ")
-            path = _PLACEHOLDER.sub(str(form["row"]), tpl, count=1)
+            path = _PLACEHOLDER.sub(str(row), tpl, count=1)
             w = _Witness(method.upper(), path, copy.deepcopy(bodies.get(ep)), None)
             slug = _slug(ep)
             given = _merge_given(form.get("given"))
             keycol = _keycol(found[2])
             for case, user, outcome in (
-                ("owner", form["owner"], accepted.get(ep) or {"status": 200}),
+                ("owner", form["owner"], self.accepted(accepted.get(ep), named)),
                 ("other", form["other"], form["refused_other"]),
                 ("anon", None, form["refused_anon"]),
             ):
                 locus = _db_locus(table, schema_cols, w, named, None, None)
-                if keycol is not None and _given_rows(
-                    given, self.spec, table, {keycol: form["row"]}
-                ):
-                    locus = {**locus, keycol: form["row"]}
+                if keycol is not None and _given_rows(given, self.spec, table, {keycol: row}):
+                    locus = {**locus, keycol: row}
                 if case != "owner":
                     outcome = _refused(outcome)
                 db = _expect_db(self.spec, outcome, table, locus, given)
@@ -1438,15 +1687,13 @@ class _Gen:
             f"{table}.{column} is one of the machine's states (form {f.id})",
             f"{table}.{column} in ({quoted}{',' if len(states) == 1 else ''})",
         )  # fmt: skip
-        named = self.named(form["trigger"])
-        w = _witness_of(named, form["request"])
+        _named, w, _found, full = self.prepare(f)
         user = self.user_of(form["caller"])
         key = _keycol(schema)
         frm, to = list(form["from"]), form["to"]
         where = {key: form["row"][key]} if key and key in form["row"] else {}
         for s in sorted(set(states)):
-            row = dict(form["row"])
-            row[column] = s
+            row = {**full, column: s}
             given = _merge_given(form.get("given"), {table: [row]})
             if s in frm:
                 outcome, final, case = form["accepted"], (to if to is not None else s), f"from_{s}"
@@ -1477,7 +1724,7 @@ def generate(spec: Spec, forms: Sequence[Form | Resolved]) -> Generated:
     approved ones in state ``current`` or ``moved``, :func:`usable`)."""
     items: list[tuple[Form, str]] = []
     for x in forms:
-        items.append((x.form, x.rule) if isinstance(x, Resolved) else (x, x.rule))
+        items.append((normalised(x.form if isinstance(x, Resolved) else x), x.rule))
     items.sort(key=lambda p: (_fnum(p[0].id), p[0].id))
     gen = _Gen(spec)
     for f, rule in items:

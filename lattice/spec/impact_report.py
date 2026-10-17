@@ -88,6 +88,7 @@ class Side:
     trace_text: str
     spec: Spec
     trace: Trace
+    forms: Path | None = None  # Spike H: the approved forms file beside the requirements
 
     def hashes(self) -> dict[str, str | None]:
         return {
@@ -125,7 +126,33 @@ def read_side(directory: Path) -> Side:
 
     module = read("spec.py", True)
     assert module is not None
-    return make_side(read("REQUIREMENTS.md", False), module, read("spec.trace.json", False))
+    side = make_side(read("REQUIREMENTS.md", False), module, read("spec.trace.json", False))
+    side.forms = next(iter(sorted(d.glob("*.forms.json"))), None)
+    return side
+
+
+def forms_items(base: Side, cand: Side) -> Callable[[], list[dict[str, Any]]] | None:
+    """Spike H: the candidate's form contradictions that the base's lack, as Tier 2 items; None
+    (the report unchanged) when neither side has a forms file."""
+    if base.forms is None and cand.forms is None:
+        return None
+    from lattice.spec import forms as F
+    from lattice.spec import forms_tier2
+
+    def items(side: Side) -> list[dict[str, Any]]:
+        if side.forms is None:
+            return []
+        try:
+            usable = F.usable(F.resolve(side.trace, F.load_forms_file(side.forms).forms))
+            return forms_tier2.contradictions(side.spec, usable)
+        except F.FormsError:
+            return []
+
+    def key(it: dict[str, Any]) -> str:
+        return F.canon([it["class"], it["forms"], it["witness"]])
+
+    had = {key(i) for i in items(base)}
+    return lambda: [i for i in items(cand) if key(i) not in had]
 
 
 def read_change(state_dir: Path, cid: str) -> tuple[Side, Side]:
@@ -898,6 +925,7 @@ def build_report(
             cand_lines=cand_lines,
             conflicts_fn=conflicts,
             flow_passed=flow_ok,
+            **({"forms_items": fi} if (fi := forms_items(base, cand)) else {}),
         )
         replay = impact_tier2.runtime_replay(base.spec, cand.spec, passed, replay_env, cand_lines)
         tier2["runtime_replay"] = {"status": replay["status"]}
