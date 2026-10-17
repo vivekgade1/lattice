@@ -1,0 +1,210 @@
+[
+  {
+    "catchers": [
+      "tests/spec/test_impact_tier4.py::test_a_planted_t2_flow_claim_on_an_unchanged_flow_is_contradicted",
+      "tests/spec/test_impact_tier4.py::test_merge_changes_exactly_tiers4_and_tier4",
+      "tests/spec/test_impact_tier4.py::test_regression_fails",
+      "tests/spec/test_impact_tier4.py::test_report_mismatch_on_base_candidate_and_inventory_bytes",
+      "tests/spec/test_impact_tier4.py::test_spec_backed_the_eight_cases",
+      "tests/spec/test_impact_tier4.py::test_t3_vs_edit_counts_on_four_synthetic_diffs",
+      "tests/spec/test_impact_tier4.py::test_the_verdict_table",
+      "tests/studio/test_implement.py::test_a_passed_build_is_not_merged_even_when_nothing_blocks_a_fast_forward",
+      "tests/studio/test_implement.py::test_an_unexpected_regression_on_an_uncovered_route_fails_the_gate_i3_i4",
+      "tests/studio/test_implement.py::test_an_untracked_owner_file_never_reaches_the_spec_commit",
+      "tests/studio/test_implement.py::test_cleanup_leaves_the_review_worktree_only_when_a_build_ran",
+      "tests/studio/test_implement.py::test_i1_resolves_the_failing_scenario_and_the_flow_that_repeats_it_changes_as_reported",
+      "tests/studio/test_implement.py::test_refusals_bad_report_and_report_mismatch",
+      "tests/studio/test_implement.py::test_the_dev_changes_end_as_predicted[i5]",
+      "tests/studio/test_implement.py::test_the_dev_changes_end_as_predicted[i8]",
+      "tests/studio/test_implement.py::test_the_dev_changes_end_as_predicted[i9]",
+      "tests/studio/test_implement.py::test_the_output_is_the_input_report_but_for_two_keys",
+      "tests/studio/test_implement.py::test_the_output_names_no_path_time_host_or_commit",
+      "tests/studio/test_implement.py::test_the_owners_files_refs_and_index_are_untouched[i1]"
+    ],
+    "id": "control",
+    "pass": true,
+    "seconds": 74.7,
+    "tail": "...................                                                      [100%]\n19 passed in 72.87s (0:01:12)"
+  },
+  {
+    "catchers": [
+      "tests/studio/test_implement.py::test_an_unexpected_regression_on_an_uncovered_route_fails_the_gate_i3_i4",
+      "tests/studio/test_implement.py::test_i1_resolves_the_failing_scenario_and_the_flow_that_repeats_it_changes_as_reported"
+    ],
+    "id": "EM1",
+    "killed": true,
+    "mutant": "Tier 4 built from the before run only (no after run)",
+    "preregistered_catcher": "PV i3/i4, PR",
+    "seconds": 16.7,
+    "tail": "\ntests/studio/test_implement.py:119: ValueError\n=========================== short test summary info ============================\nFAILED tests/studio/test_implement.py::test_an_unexpected_regression_on_an_uncovered_route_fails_the_gate_i3_i4\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 16.07s"
+  },
+  {
+    "catchers": [
+      "tests/studio/test_implement.py::test_i1_resolves_the_failing_scenario_and_the_flow_that_repeats_it_changes_as_reported"
+    ],
+    "id": "EM2",
+    "killed": true,
+    "mutant": "after run on S instead of B",
+    "preregistered_catcher": "PR (resolved empty on i1)",
+    "seconds": 11.7,
+    "tail": "\ntests/studio/test_implement.py:88: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_implement.py::test_i1_resolves_the_failing_scenario_and_the_flow_that_repeats_it_changes_as_reported\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 10.85s"
+  },
+  {
+    "catchers": [
+      "tests/studio/test_implement.py::test_an_unexpected_regression_on_an_uncovered_route_fails_the_gate_i3_i4"
+    ],
+    "id": "EM3",
+    "killed": true,
+    "mutant": "unreported flow changes counted as t3_may_fail",
+    "preregistered_catcher": "PU",
+    "seconds": 8.5,
+    "tail": "\ntests/studio/test_implement.py:122: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_implement.py::test_an_unexpected_regression_on_an_uncovered_route_fails_the_gate_i3_i4\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 7.93s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_tier4.py::test_regression_fails",
+      "tests/spec/test_impact_tier4.py::test_the_verdict_table"
+    ],
+    "id": "EM4",
+    "killed": true,
+    "mutant": "the verdict ignores regression",
+    "preregistered_catcher": "unit regression_fails (a synthetic after run)",
+    "seconds": 1.4,
+    "tail": "\ntests/spec/test_impact_tier4.py:233: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_tier4.py::test_regression_fails - AssertionErro...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.42s"
+  },
+  {
+    "catchers": [
+      "tests/studio/test_implement.py::test_a_passed_build_is_not_merged_even_when_nothing_blocks_a_fast_forward"
+    ],
+    "id": "EM5",
+    "killed": true,
+    "mutant": "git merge rebuild/<eid> in the owner's repo after a pass",
+    "preregistered_catcher": "PNM, PG",
+    "seconds": 12.1,
+    "tail": "\ntests/studio/test_implement.py:178: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_implement.py::test_a_passed_build_is_not_merged_even_when_nothing_blocks_a_fast_forward\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 11.22s"
+  },
+  {
+    "catchers": [
+      "tests/studio/test_implement.py::test_the_owners_files_refs_and_index_are_untouched[i1]"
+    ],
+    "id": "EM6",
+    "killed": true,
+    "mutant": "the spec commit also moves the owner's current branch",
+    "preregistered_catcher": "PG, PH",
+    "seconds": 8.3,
+    "tail": "\ntests/studio/test_implement.py:150: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_implement.py::test_the_owners_files_refs_and_index_are_untouched[i1]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 7.68s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_tier4.py::test_report_mismatch_on_base_candidate_and_inventory_bytes",
+      "tests/studio/test_implement.py::test_refusals_bad_report_and_report_mismatch"
+    ],
+    "id": "EM7",
+    "killed": true,
+    "mutant": "the report hash check skipped",
+    "preregistered_catcher": "PH (report_mismatch x3)",
+    "seconds": 1.6,
+    "tail": "\ntests/spec/test_impact_tier4.py:150: Failed\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_tier4.py::test_report_mismatch_on_base_candidate_and_inventory_bytes\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.59s"
+  },
+  {
+    "catchers": [
+      "tests/studio/test_implement.py::test_an_untracked_owner_file_never_reaches_the_spec_commit"
+    ],
+    "id": "EM8",
+    "killed": true,
+    "mutant": "git add -A in the owner's checkout (the whole project dir) before the spec commit",
+    "preregistered_catcher": "PSC (a fixture with an untracked owner file)",
+    "seconds": 11.8,
+    "tail": "\ntests/studio/test_implement.py:207: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_implement.py::test_an_untracked_owner_file_never_reaches_the_spec_commit\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 10.89s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_tier4.py::test_merge_changes_exactly_tiers4_and_tier4",
+      "tests/studio/test_implement.py::test_the_output_is_the_input_report_but_for_two_keys"
+    ],
+    "id": "EM9",
+    "killed": true,
+    "mutant": "the merge also rewrites summary",
+    "preregistered_catcher": "PBC (report minus T4 byte-equal)",
+    "seconds": 1.7,
+    "tail": "\ntests/spec/test_impact_tier4.py:396: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_tier4.py::test_merge_changes_exactly_tiers4_and_tier4\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.59s"
+  },
+  {
+    "catchers": [
+      "tests/studio/test_implement.py::test_the_dev_changes_end_as_predicted[i5]"
+    ],
+    "id": "EM10",
+    "killed": true,
+    "mutant": "nothing_to_build starts a rebuild anyway",
+    "preregistered_catcher": "PV i5-i7",
+    "seconds": 8.1,
+    "tail": "\ntests/studio/test_implement.py:71: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_implement.py::test_the_dev_changes_end_as_predicted[i5]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 7.62s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_tier4.py::test_t3_vs_edit_counts_on_four_synthetic_diffs"
+    ],
+    "id": "EM11",
+    "killed": true,
+    "mutant": "t3_vs_edit counts test files and stub-rebuild.json",
+    "preregistered_catcher": "PT3E",
+    "seconds": 1.2,
+    "tail": "\ntests/spec/test_impact_tier4.py:450: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_tier4.py::test_t3_vs_edit_counts_on_four_synthetic_diffs\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.57s"
+  },
+  {
+    "catchers": [
+      "tests/studio/test_implement.py::test_the_output_names_no_path_time_host_or_commit"
+    ],
+    "id": "EM12",
+    "killed": true,
+    "mutant": "an absolute worktree path in tier4",
+    "preregistered_catcher": "PD",
+    "seconds": 11.0,
+    "tail": "\ntests/studio/test_implement.py:238: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_implement.py::test_the_output_names_no_path_time_host_or_commit\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 10.06s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_tier4.py::test_spec_backed_the_eight_cases"
+    ],
+    "id": "EM13",
+    "killed": true,
+    "mutant": "spec_backed matches by route only (ignores user and status)",
+    "preregistered_catcher": "PSB",
+    "seconds": 1.3,
+    "tail": "\ntests/spec/test_impact_tier4.py:204: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_tier4.py::test_spec_backed_the_eight_cases - as...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.40s"
+  },
+  {
+    "catchers": [
+      "tests/studio/test_implement.py::test_cleanup_leaves_the_review_worktree_only_when_a_build_ran"
+    ],
+    "id": "EM14",
+    "killed": true,
+    "mutant": "the after-run worktree is not removed",
+    "preregistered_catcher": "PC",
+    "seconds": 8.0,
+    "tail": "\ntests/studio/test_implement.py:214: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_implement.py::test_cleanup_leaves_the_review_worktree_only_when_a_build_ran\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 7.52s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_tier4.py::test_a_planted_t2_flow_claim_on_an_unchanged_flow_is_contradicted"
+    ],
+    "id": "EM15",
+    "killed": true,
+    "mutant": "a contradicted T2 flow claim is not flagged",
+    "preregistered_catcher": "PT2",
+    "seconds": 1.0,
+    "tail": "\ntests/spec/test_impact_tier4.py:285: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_tier4.py::test_a_planted_t2_flow_claim_on_an_unchanged_flow_is_contradicted\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.33s"
+  },
+  {
+    "catchers": [
+      "tests/studio/test_implement.py::test_the_dev_changes_end_as_predicted[i8]",
+      "tests/studio/test_implement.py::test_the_dev_changes_end_as_predicted[i9]"
+    ],
+    "id": "EM16",
+    "killed": true,
+    "mutant": "a gave_up build gets an after run (on S) and a verdict",
+    "preregistered_catcher": "PV i8/i9",
+    "seconds": 11.8,
+    "tail": "\ntests/studio/test_implement.py:70: AssertionError\n=========================== short test summary info ============================\nFAILED tests/studio/test_implement.py::test_the_dev_changes_end_as_predicted[i8]\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 10.89s"
+  }
+]
