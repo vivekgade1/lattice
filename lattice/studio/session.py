@@ -132,6 +132,9 @@ _NOTES_TOOLS = {
     "rationale": "mcp__lattice__rationale_get",
     "glossary": "mcp__lattice__glossary_get",
 }
+# API v1.25: Spike D's change_impact, allowed in ask, explain and change only when the project's
+# studio.toml has [impact] (the session's server lists the tool only then); not in rebuild's list
+_IMPACT_TOOLS = ("mcp__lattice__change_impact",)
 _CHANGE_TOOLS = tuple(f"mcp__lattice__{n}" for n in ("change_propose", "change_get", "change_list"))
 _DENIED = ("Edit", "Write", "MultiEdit", "NotebookEdit", "Bash")
 
@@ -157,6 +160,18 @@ _NOTES_RULES = (
     "approved reason for a rule and [term:x] the owner's definition). When asked why, cite the "
     "rationale; if the rule has none, say no rationale is recorded and do not offer one as the "
     "owner's. Rationale and term citations never ground a yes/no/value answer by themselves."
+)
+# API v1.25: appended to the chat's rules only when the project's studio.toml has [impact]. The
+# text is frozen by docs/results/2026-10-16-goto-place-prereg.md (D5).
+_IMPACT_RULES = (
+    "For 'what breaks if ...' questions use mcp__lattice__change_impact on a drafted change "
+    "(change id cN) or a candidate directory; never answer them from your own reasoning. Report "
+    "its tiers with their item ids, using the tool's wording: tier 1 observed and tier 2 "
+    "determined are the only failures you may state; tier 3 items are 'static: may fail', never "
+    "a failure; tier 4 is not run. If no change exists, say that Lattice decides failures only "
+    "for a drafted change, offer to draft one (change mode), and list what the element touches "
+    "as static facts only. Under the read-only modes tier 1 (observe) is refused; say it was "
+    "not run."
 )
 # API v1.13 (spike 4): the chat modes see the owner's connected claude.ai servers, read-only
 _EXTERNAL_RULES = (
@@ -296,6 +311,7 @@ _MCP_LABELS = {
     "workflow_find": "Searched the implementation",
     "rationale_get": "Read the rationale",
     "glossary_get": "Read the glossary",
+    "change_impact": "Checked the impact",
 }
 
 
@@ -609,6 +625,23 @@ def _has_implementation(project: Path) -> bool:
     return isinstance(data.get("implementation"), dict)
 
 
+def _has_impact(project: Path) -> bool:
+    """Whether the project's studio.toml has an ``[impact]`` table (API v1.25)."""
+    try:
+        data = tomllib.loads((Path(project) / "studio.toml").read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return False
+    return isinstance(data.get("impact"), dict)
+
+
+def impact_tools(project: Path, mode: str) -> tuple[str, ...]:
+    """The change-impact tool a session of `mode` may use: ask, explain and change, only with
+    ``[impact]`` in the project's studio.toml (API v1.25); never rebuild."""
+    if mode not in ("ask", "explain", "change") or not _has_impact(project):
+        return ()
+    return _IMPACT_TOOLS
+
+
 def notes_tools(project: Path, mode: str) -> tuple[str, ...]:
     """The rationale / glossary tools a session of `mode` may use: those whose files exist in
     `project` (API v1.23); none in rebuild mode or without any such file."""
@@ -637,6 +670,8 @@ def system_prompt(
             parts.append(_IMPL_RULES)
         if notes_tools(project, mode):
             parts.append(_NOTES_RULES)
+        if impact_tools(project, mode):
+            parts.append(_IMPACT_RULES)
     if change:
         parts.append(f"The open change is {change}.")
     rules = project_rules(project)
@@ -866,7 +901,8 @@ class SessionManager:
             resume = s.transcript.claude_session_id
             turn = s.transcript.turns
             prompt = system_prompt(s.mode, s.project, selected, s.change)
-            notes = notes_tools(s.project, s.mode)  # API v1.23
+            # API v1.23 (rationale / glossary) and v1.25 (change_impact): extra allowed tools
+            notes = (*notes_tools(s.project, s.mode), *impact_tools(s.project, s.mode))
 
             def argv_of_turn() -> list[str]:
                 # in the turn's thread: a discovery may take seconds (cached 5 minutes)

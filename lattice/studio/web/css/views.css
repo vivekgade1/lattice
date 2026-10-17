@@ -286,3 +286,81 @@
 @media (max-width: 760px) {
   .view .imp-input { min-width: 0; width: 100%; }
 }
+
+/* ---- app map and impact (API v1.25): tokens only, no colour literals ---- */
+
+.view-appmap, .view-impact { max-width: 1200px; min-width: 0; }
+.view-appmap .am-strip { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
+.view-appmap .am-stale { margin-bottom: var(--space-3); }
+.view-appmap .am-notbuilt { margin: 0 0 var(--space-3); }
+.view-appmap .am-tabs { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 2px; margin: var(--space-3) 0; border-radius: var(--radius-control); background: var(--surface); }
+.view-appmap .am-tab[aria-selected="true"] { background: var(--raised); color: var(--ink); box-shadow: var(--elev-1); }
+.view-appmap .am-panel { min-width: 0; max-width: 100%; overflow-x: auto; padding-bottom: var(--space-4); }
+.view-appmap .am-panel[hidden] { display: none; }
+.view-appmap .am-filter { margin-bottom: var(--space-2); }
+.view-appmap .am-table { width: 100%; border-collapse: collapse; font-size: var(--fs-13); }
+.view-appmap .am-table th, .view-appmap .am-table td { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3) var(--space-2) 0; border-bottom: 1px solid var(--hairline); }
+.view-appmap .am-table thead th { color: var(--ink-2); font-weight: var(--fw-medium); white-space: nowrap; }
+.view-appmap .am-text { max-width: var(--measure); overflow-wrap: anywhere; }
+.view-appmap .am-open { border: 0; background: none; padding: 2px 0; color: var(--accent); cursor: pointer; text-align: left; font: inherit; }
+.view-appmap .am-open:hover { text-decoration: underline; }
+.view-appmap .am-open:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.view-appmap .am-scroll { overflow-x: auto; max-width: 100%; }
+.view-appmap .am-grid { width: max-content; min-width: 100%; }
+.view-appmap .am-col { min-width: 150px; max-width: 220px; white-space: normal; overflow-wrap: anywhere; }
+.view-appmap .am-cell-btn { display: grid; gap: 2px; min-width: 120px; }
+.view-appmap .am-cell-spec { font-weight: var(--fw-medium); color: var(--ink); }
+.view-appmap .am-unspec .am-cell-spec { color: var(--ink-2); font-weight: var(--fw-regular); }
+.view-appmap .am-cell-line { overflow-wrap: anywhere; }
+.view-appmap .am-code { font-family: var(--font-mono); font-size: var(--fs-12); overflow-wrap: anywhere; }
+.view-appmap .am-evidence { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); }
+.view-appmap .am-machine, .view-appmap .am-group, .view-appmap .am-unread { margin-top: var(--space-6); }
+.view-appmap .am-machine h3, .view-appmap .am-group h3 { font-size: var(--fs-14); margin: 0 0 var(--space-1); }
+.view-appmap .am-unread-list { margin: 0; padding-left: var(--space-5); display: grid; gap: var(--space-1); }
+.view-appmap .am-state, .view-impact .am-state { max-width: var(--measure); margin-top: var(--space-4); }
+.view-appmap .am-state h2, .view-impact .am-state h2 { font-size: var(--fs-16); }
+.view-appmap .am-toml, .view-impact .am-toml { white-space: pre; overflow-x: auto; }
+.view-appmap .am-loading, .view-impact .am-loading { padding: var(--space-6) 0; color: var(--ink-2); }
+.view-appmap .am-legend dt { font-weight: var(--fw-medium); }
+.view-appmap .am-inferred { margin-left: var(--space-2); }
+.view-appmap .am-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 40; width: min(480px, 100vw); overflow: auto;
+  padding: var(--space-4); background: var(--raised); color: var(--ink);
+  border-left: 1px solid var(--hairline-strong); box-shadow: var(--elev-2, none);
+}
+.view-appmap .am-drawer:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.view-appmap .am-drawer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
+.view-appmap .am-drawer-head h2 { margin: 0; font-size: var(--fs-14); overflow-wrap: anywhere; }
+.view-appmap .am-facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-1) var(--space-3); }
+.view-appmap .am-facts dt { color: var(--ink-2); }
+.view-appmap .am-facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.view-appmap .am-touches { margin-top: var(--space-4); padding-top: var(--space-3); border-top: 1px solid var(--hairline); }
+.view-appmap .am-touches h3, .view-appmap .am-evidence-box h3 { font-size: var(--fs-13); margin: var(--space-3) 0 var(--space-1); }
+@media (max-width: 760px) {
+  .view-appmap .am-drawer { top: auto; height: 70vh; width: 100vw; border-left: 0; border-top: 1px solid var(--hairline-strong); }
+  .view-appmap .am-facts { grid-template-columns: minmax(0, 1fr); }
+}
+
+.view-impact .ip-picker { margin-bottom: var(--space-4); }
+.view-impact .ip-decidable { margin: 0 0 var(--space-4); }
+.view-impact .ip-summary { margin: 0 0 var(--space-3); }
+.view-impact .ip-tier { margin-top: var(--space-6); min-width: 0; }
+.view-impact .ip-tier h2 { font-size: var(--fs-16); margin: 0 0 var(--space-2); }
+.view-impact .ip-tier h3 { font-size: var(--fs-13); color: var(--ink-2); margin: var(--space-3) 0 var(--space-1); }
+.view-impact .ip-tier1-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 360px); gap: var(--space-5); }
+.view-impact .ip-studio-check { padding: var(--space-3) var(--space-4); border: 1px solid var(--hairline); border-radius: var(--radius-surface); background: var(--surface); }
+.view-impact .ip-studio-check h3 { margin-top: 0; }
+.view-impact .ip-items { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.view-impact .ip-item { padding: var(--space-2) var(--space-3); border: 1px solid var(--hairline); border-radius: var(--radius-control); min-width: 0; }
+.view-impact .ip-item-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); }
+.view-impact .ip-target { font-family: var(--font-mono); font-size: var(--fs-12); overflow-wrap: anywhere; }
+.view-impact .ip-fields { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-1) var(--space-3); margin: var(--space-2) 0 0; }
+.view-impact .ip-fields dt { color: var(--ink-2); font-size: var(--fs-12); }
+.view-impact .ip-fields dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.view-impact .ip-list { margin: 0; padding-left: var(--space-4); }
+.view-impact .ip-val { overflow-wrap: anywhere; }
+.view-impact .ip-cmd { white-space: pre-wrap; }
+@media (max-width: 760px) {
+  .view-impact .ip-tier1-grid { grid-template-columns: minmax(0, 1fr); }
+  .view-impact .ip-fields { grid-template-columns: minmax(0, 1fr); }
+}

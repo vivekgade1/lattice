@@ -1,0 +1,603 @@
+{
+ "seconds": 261.9,
+ "setup_notes": [
+  "S: studio.toml go_src rewritten to the clone",
+  "S-root2: studio.toml go_src rewritten to the clone",
+  "S4: studio.toml go_src rewritten to the clone"
+ ],
+ "probes": [
+  {
+   "id": "PM1",
+   "probe": "S: every map field equals its source (Spike C report, ReviewData, a recount from workflows.json)",
+   "ran": true,
+   "predicted": {
+    "rules": "108/34/0/6",
+    "flows": "59/8/1",
+    "machine": "1 with 3 edges",
+    "cells": "78 (12 \u00b7)",
+    "observed cells": "15-30 (p)",
+    "differences": 0
+   },
+   "observed": {
+    "rules": {
+     "implemented_unverified": 34,
+     "implemented_verified": 108,
+     "no_element": 6
+    },
+    "flows": {
+     "failed": 8,
+     "unverified": 1,
+     "verified": 59
+    },
+    "machines": [
+     [
+      "impl:machine:nudges.delivery",
+      3
+     ]
+    ],
+    "cells": 78,
+    "unspecified": 12,
+    "observed_cells": 30,
+    "compared": 2685,
+    "differences": [],
+    "n_differences": 0
+   },
+   "pass": true
+  },
+  {
+   "id": "PM1-S4",
+   "probe": "S4: every map field equals its source",
+   "ran": true,
+   "predicted": "0 differences",
+   "observed": {
+    "compared": 2479,
+    "differences": [],
+    "n_differences": 0
+   },
+   "pass": true
+  },
+  {
+   "id": "PM1-S-stale",
+   "probe": "S-stale: every map field equals its source",
+   "ran": true,
+   "predicted": "0 differences",
+   "observed": {
+    "compared": 2685,
+    "differences": [],
+    "n_differences": 0
+   },
+   "pass": true
+  },
+  {
+   "id": "PM2",
+   "probe": "every code: location of S and S4 passes Spike C's check_code",
+   "ran": true,
+   "predicted": "100%",
+   "observed": {
+    "locations": 266,
+    "bad": [],
+    "n_bad": 0
+   },
+   "pass": true
+  },
+  {
+   "id": "PM3",
+   "probe": "S4: 29 rules not built, 6 spec_only endpoints = 18 cells with route null, no machines",
+   "ran": true,
+   "predicted": {
+    "required_not_implemented": 29,
+    "spec_only": 6,
+    "cells with route null": 18,
+    "note": "no_workflows_capture",
+    "machines": 0
+   },
+   "observed": {
+    "required_not_implemented": 29,
+    "spec_only": [
+     "DELETE /v1/devices/{}",
+     "GET /v1/home",
+     "GET /v1/nudges",
+     "GET /v1/sync",
+     "POST /v1/devices",
+     "POST /v1/nudges/{}/dismiss"
+    ],
+    "cells with route null": 18,
+    "notes": [
+     "no_workflows_capture"
+    ],
+    "machines": 0
+   },
+   "pass": true
+  },
+  {
+   "id": "PM4",
+   "probe": "S-stale: changed 1, 0 implemented_verified, nothing observed, the stale note",
+   "ran": true,
+   "predicted": {
+    "stale.counts": {
+     "changed": 1
+    },
+    "implemented_verified": 0,
+    "observed cells": 0,
+    "note": "stale"
+   },
+   "observed": {
+    "stale": {
+     "changed": 1,
+     "added": 0,
+     "removed": 0
+    },
+    "rules": {
+     "implemented_unverified": 142,
+     "no_element": 6
+    },
+    "observed cells": 0,
+    "notes": [
+     "stale"
+    ]
+   },
+   "pass": true
+  },
+  {
+   "id": "PM5",
+   "probe": "the four states: not_configured, inventory_missing, bad_inventory, no_spec",
+   "ran": true,
+   "predicted": "4/4 (200, only schema/state/inputs/why)",
+   "observed": {
+    "not_configured": "200 not_configured keys=['inputs', 'schema', 'state', 'why']",
+    "inventory_missing": "200 inventory_missing keys=['inputs', 'schema', 'state', 'why']",
+    "bad_inventory": "200 bad_inventory keys=['inputs', 'schema', 'state', 'why']",
+    "no_spec": "200 no_spec keys=['inputs', 'schema', 'state', 'why']"
+   },
+   "pass": true
+  },
+  {
+   "id": "PM6",
+   "probe": "unread: the 4 S items listed, each with its code: location",
+   "ran": true,
+   "predicted": 4,
+   "observed": {
+    "n": 4,
+    "ats_ok": true
+   },
+   "pass": true
+  },
+  {
+   "id": "PE",
+   "probe": "GET /api/appmap/element: touches equals the join recomputed from the sources (13 keys); unknown key: 404 with 5 nearest",
+   "ran": true,
+   "predicted": "12/12 + 404",
+   "observed": {
+    "keys": 13,
+    "differences": [],
+    "unknown": {
+     "status": 404,
+     "nearest": [
+      "rule:R99",
+      "rule:R9",
+      "rule:R98",
+      "rule:R97",
+      "rule:R96"
+     ]
+    }
+   },
+   "pass": true
+  },
+  {
+   "id": "PI",
+   "probe": "GET /api/impact report vs Spike D's CLI (change_impact's default flags), canonical bytes, on the 6 dev candidates",
+   "ran": true,
+   "predicted": "6/6 identical",
+   "observed": [
+    {
+     "change": "d1_limit",
+     "id": "c1",
+     "identical": true,
+     "state": "ok",
+     "tier2": 0,
+     "tier3": 60
+    },
+    {
+     "change": "d2_bound",
+     "id": "c2",
+     "identical": true,
+     "state": "ok",
+     "tier2": 0,
+     "tier3": 44
+    },
+    {
+     "change": "d3_invariant",
+     "id": "c3",
+     "identical": true,
+     "state": "ok",
+     "tier2": 0,
+     "tier3": 30
+    },
+    {
+     "change": "d4_removed_endpoint",
+     "id": "c4",
+     "identical": true,
+     "state": "ok",
+     "tier2": 0,
+     "tier3": 7
+    },
+    {
+     "change": "d5_access",
+     "id": "c5",
+     "identical": true,
+     "state": "ok",
+     "tier2": 0,
+     "tier3": 56
+    },
+    {
+     "change": "d6_reword",
+     "id": "c6",
+     "identical": true,
+     "state": "ok",
+     "tier2": 0,
+     "tier3": 11
+    }
+   ],
+   "pass": true
+  },
+  {
+   "id": "PIC",
+   "probe": "studio_check equals the record's checks.impact verbatim",
+   "ran": true,
+   "predicted": "6/6 equal",
+   "observed": [
+    {
+     "change": "d1_limit",
+     "id": "c1",
+     "equal": true,
+     "null": false
+    },
+    {
+     "change": "d2_bound",
+     "id": "c2",
+     "equal": true,
+     "null": false
+    },
+    {
+     "change": "d3_invariant",
+     "id": "c3",
+     "equal": true,
+     "null": true
+    },
+    {
+     "change": "d4_removed_endpoint",
+     "id": "c4",
+     "equal": true,
+     "null": true
+    },
+    {
+     "change": "d5_access",
+     "id": "c5",
+     "equal": true,
+     "null": false
+    },
+    {
+     "change": "d6_reword",
+     "id": "c6",
+     "equal": true,
+     "null": false
+    }
+   ],
+   "pass": true
+  },
+  {
+   "id": "PIS",
+   "probe": "tier1_saved: shown only when the hashes match",
+   "ran": true,
+   "predicted": {
+    "no key": "not_configured",
+    "no file": "absent",
+    "matching": "shown",
+    "one byte of the candidate": "mismatch"
+   },
+   "observed": {
+    "no key": "not_configured",
+    "no file": "absent",
+    "matching": "shown",
+    "one byte of the candidate": "mismatch"
+   },
+   "pass": true
+  },
+  {
+   "id": "PX",
+   "probe": "time on S: CLI map; GET /api/appmap p50; GET /api/impact p50 (tiers 2+3)",
+   "ran": true,
+   "predicted": {
+    "cli": "<= 0.6 s (p)",
+    "GET /api/appmap p50": "<= 0.5 s (p)",
+    "GET /api/impact": "<= 3 s (p)",
+    "gate": "<= 2 / 1.5 / 5 s"
+   },
+   "observed": {
+    "cli p50 s": 0.179,
+    "cli max s": 0.185,
+    "GET /api/appmap p50 s": 0.018,
+    "GET /api/appmap max s": 0.026,
+    "GET /api/impact p50 s": 0.098,
+    "GET /api/impact max s": 0.111
+   },
+   "pass": true
+  },
+  {
+   "id": "PSZ",
+   "probe": "size: the summary section < 4 kB; the whole map on S 120-350 kB (p)",
+   "ran": true,
+   "predicted": {
+    "summary": "< 4 kB",
+    "whole": "120-350 kB (p)"
+   },
+   "observed": {
+    "summary bytes": 1239,
+    "whole bytes": 347286
+   },
+   "pass": true
+  },
+  {
+   "id": "PW",
+   "probe": "no write: snapshots (sha256, mode, mtime, listing) of the project, inventory, state and reports directories around 10 calls of each GET route, the CLI x10 and the router; the claude shim; docker ps -a",
+   "ran": true,
+   "predicted": {
+    "changed": 0,
+    "new": 0,
+    "shim calls": 0,
+    "new containers": 0
+   },
+   "observed": {
+    "get calls": 70,
+    "cli runs": 10,
+    "router questions": 6,
+    "changed/new/gone": {
+     "project": {
+      "changed": 0,
+      "new": 0,
+      "gone": 0
+     },
+     "inventory": {
+      "changed": 0,
+      "new": 0,
+      "gone": 0
+     },
+     "state": {
+      "changed": 0,
+      "new": 0,
+      "gone": 0
+     },
+     "reports": {
+      "changed": 0,
+      "new": 0,
+      "gone": 0
+     }
+    },
+    "first changes": {},
+    "shim calls": 0,
+    "new containers": []
+   },
+   "pass": true
+  },
+  {
+   "id": "PS",
+   "probe": "sessions: byte-identical to base in 4 configs without [impact]; with it +1 tool, +1 paragraph (ask, explain, change), rebuild unchanged",
+   "ran": true,
+   "predicted": "exact",
+   "observed": {
+    "identical_to_base": {
+     "impl0-ws0": false,
+     "impl0-ws1": false,
+     "impl1-ws0": false,
+     "impl1-ws1": false
+    },
+    "with_impact": {
+     "impl0-ws0/ask": false,
+     "impl0-ws0/explain": false,
+     "impl0-ws0/change": false,
+     "impl0-ws1/ask": false,
+     "impl0-ws1/explain": false,
+     "impl0-ws1/change": false,
+     "impl1-ws0/ask": false,
+     "impl1-ws0/explain": false,
+     "impl1-ws0/change": false,
+     "impl1-ws1/ask": false,
+     "impl1-ws1/explain": false,
+     "impl1-ws1/change": false
+    }
+   },
+   "pass": false
+  },
+  {
+   "id": "PD",
+   "probe": "determinism: the map (CLI) and the two GET routes in 10 processes with random PYTHONHASHSEED, alternating two scratch roots, on S, S4 and S-stale; no absolute path, time or port",
+   "ran": true,
+   "predicted": "10/10 identical; none",
+   "observed": {
+    "rows": {
+     "S": {
+      "distinct cli": 1,
+      "distinct http map": 1,
+      "distinct http impact": 1,
+      "cli equals http": true
+     },
+     "S4": {
+      "distinct cli": 1,
+      "distinct http map": 1,
+      "distinct http impact": 1,
+      "cli equals http": true
+     },
+     "S-stale": {
+      "distinct cli": 1,
+      "distinct http map": 1,
+      "distinct http impact": 1,
+      "cli equals http": true
+     }
+    },
+    "leaks": [
+     "S cli: 2026-03-04T12:00",
+     "S map: 2026-03-04T12:00",
+     "S cli: 2026-03-04T12:00",
+     "S map: 2026-03-04T12:00",
+     "S cli: 2026-03-04T12:00",
+     "S map: 2026-03-04T12:00",
+     "S cli: 2026-03-04T12:00",
+     "S map: 2026-03-04T12:00",
+     "S cli: 2026-03-04T12:00",
+     "S map: 2026-03-04T12:00"
+    ]
+   },
+   "pass": false
+  },
+  {
+   "id": "PB",
+   "probe": "byte-compat with the base tip: every existing route, tools/list, help, web files, protected files, pytest failure ids",
+   "ran": true,
+   "predicted": "all identical",
+   "observed": {
+    "protected files: empty diff": true,
+    "existing tests, goldens, fixtures: untouched": true,
+    "existing tests changed (names)": [],
+    "existing web files byte-identical (except app.js, api.js, views.css)": true,
+    "web files differing": [],
+    "js/app.js is additive (lines added, lines deleted)": [
+     "7",
+     "0"
+    ],
+    "js/app.js deletes nothing": true,
+    "js/api.js is additive (lines added, lines deleted)": [
+     "7",
+     "0"
+    ],
+    "js/api.js deletes nothing": true,
+    "css/views.css is additive (lines added, lines deleted)": [
+     "78",
+     "0"
+    ],
+    "css/views.css deletes nothing": true,
+    "real server: existing routes identical": false,
+    "real server: routes that differ": [
+     "GET /api/model",
+     "GET /api/projects",
+     "GET /api/areas",
+     "GET /api/branches",
+     "GET /api/appmap (the old tree has none)"
+    ],
+    "mock server: existing routes identical": true,
+    "mock routes that differ": [],
+    "mcp tools/list and instructions": {
+     "C: [implementation] readonly=False": {
+      "identical": true,
+      "tools": 16,
+      "has change_impact": false
+     },
+     "C: [implementation] readonly=True": {
+      "identical": true,
+      "tools": 14,
+      "has change_impact": false
+     },
+     "D: [implementation] + [impact] readonly=False": {
+      "identical": true,
+      "tools": 17,
+      "has change_impact": true
+     },
+     "D: [implementation] + [impact] readonly=True": {
+      "identical": true,
+      "tools": 15,
+      "has change_impact": true
+     }
+    },
+    "lattice --help and spec usage identical": true,
+    "pytest: same failure ids as the base": true,
+    "pytest summary": "2 failed, 3095 passed, 5 skipped, 4 deselected, 414 warnings, 29 errors in 870.75s (0:14:30)",
+    "pytest failure ids only in the new run": []
+   },
+   "pass": false
+  },
+  {
+   "id": "GATE",
+   "probe": "dogfood/studio/check.sh with R104-R108",
+   "ran": true,
+   "predicted": "PASS, 481 + 10-20 cases, 57 + 4 scenarios (p)",
+   "observed": {
+    "rc": 0,
+    "verdict": "pass",
+    "cases": 509,
+    "scenarios": 62,
+    "findings": 0,
+    "seconds": 63.5
+   },
+   "pass": true
+  },
+  {
+   "id": "PU",
+   "probe": "UI facts without a browser: node --check, navigator, api.js, headings, forbidden words, fake-DOM walk of every state",
+   "ran": true,
+   "predicted": "all pass",
+   "observed": {
+    "files": [
+     "tests/studio/test_appmap_ui.py"
+    ],
+    "summary": "10 passed in 8.68s"
+   },
+   "pass": true
+  },
+  {
+   "id": "PP",
+   "probe": "mock parity and the API.md shapes (PP, PAPI)",
+   "ran": true,
+   "predicted": "all pass",
+   "observed": {
+    "files": [
+     "tests/studio/test_appmap_api.py"
+    ],
+    "summary": "16 passed in 12.70s"
+   },
+   "pass": true
+  },
+  {
+   "id": "PR*",
+   "probe": "the router and the session allowance, unit level",
+   "ran": true,
+   "predicted": "all pass",
+   "observed": {
+    "files": [
+     "tests/studio/test_impact_ask.py"
+    ],
+    "summary": "37 passed in 4.08s"
+   },
+   "pass": true
+  },
+  {
+   "id": "PM*",
+   "probe": "the map, unit level",
+   "ran": true,
+   "predicted": "all pass",
+   "observed": {
+    "files": [
+     "tests/spec/test_appmap.py"
+    ],
+    "summary": "28 passed in 1.37s"
+   },
+   "pass": true
+  },
+  {
+   "id": "PBR",
+   "probe": "real-browser walk (prereg section 4)",
+   "ran": false,
+   "reason": "NOT RUN by the build node: a browser (Browser 1, macOS) was connected at build time, but section 4 gives the walk to the orchestrator; the build node claims no browser result (an informal look at both views on the mock showed them drawing, which is not the protocol)",
+   "pass": null
+  },
+  {
+   "id": "CONTAINERS",
+   "probe": "containers this runner started and left behind",
+   "ran": true,
+   "predicted": 0,
+   "observed": {
+    "before": [],
+    "after": []
+   },
+   "pass": true
+  }
+ ]
+}

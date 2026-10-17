@@ -1,0 +1,619 @@
+{
+ "questions": [
+  {
+   "checks": {
+    "section_present": true,
+    "select_equal": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "select": [
+     "R3",
+     "R5",
+     "R7",
+     "R16",
+     "R18",
+     "R19",
+     "R20",
+     "R21",
+     "R22",
+     "R23",
+     "R25",
+     "R26",
+     "R35",
+     "R36",
+     "R37",
+     "R38",
+     "R40",
+     "R41",
+     "R42",
+     "R47",
+     "R123",
+     "R124",
+     "R125",
+     "R126",
+     "R127",
+     "R128",
+     "R129",
+     "R130",
+     "R131",
+     "R132",
+     "R133",
+     "R134",
+     "R135",
+     "R143"
+    ]
+   },
+   "id": "M-R1",
+   "set": "M_rules"
+  },
+  {
+   "checks": {
+    "section_present": true,
+    "select_equal": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "select": [
+     "R1",
+     "R2",
+     "R6",
+     "R15",
+     "R136",
+     "R142"
+    ]
+   },
+   "id": "M-R2",
+   "set": "M_rules"
+  },
+  {
+   "checks": {
+    "field.basis": true,
+    "field.impl_status": true,
+    "item_unique": true,
+    "section_present": true,
+    "set.reasons": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "basis": "static",
+    "impl_status": "implemented_unverified",
+    "reasons": [
+     "machine static"
+    ]
+   },
+   "id": "M-R3",
+   "set": "M_rules"
+  },
+  {
+   "checks": {
+    "field.basis": true,
+    "field.impl_status": true,
+    "item_unique": true,
+    "section_present": true,
+    "set.evidence": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "basis": "observed",
+    "evidence": [
+     "code:internal/db/models.go:58",
+     "code:internal/habits/routes.go:118",
+     "code:internal/habits/routes.go:24"
+    ],
+    "impl_status": "implemented_verified"
+   },
+   "id": "M-R4",
+   "set": "M_rules"
+  },
+  {
+   "checks": {
+    "item_unique": true,
+    "section_present": true,
+    "set.workflows": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "workflows": [
+     "wf-2818e45412",
+     "wf-801d529a0f"
+    ]
+   },
+   "id": "M-R5",
+   "set": "M_rules"
+  },
+  {
+   "checks": {
+    "section_present": true,
+    "select_equal": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "select": [
+     "wf-0c6bdd7ab0",
+     "wf-11a98b3683",
+     "wf-1e4314104c",
+     "wf-21a2d02394",
+     "wf-2610c56483",
+     "wf-2f54cb544b",
+     "wf-3de8783507",
+     "wf-5a6bab46c9",
+     "wf-5eebdfc88b",
+     "wf-6a4cc7a302",
+     "wf-717a23507f",
+     "wf-a7ae5cb208",
+     "wf-cf27dadc73",
+     "wf-d06e3e8777",
+     "wf-d2b6d84725",
+     "wf-d2fcd76bcd",
+     "wf-d650036584",
+     "wf-dbac494b10",
+     "wf-e3249cec66",
+     "wf-f67bf44692",
+     "wf-f961306c88",
+     "wf-fc7d0a0772",
+     "wf-fcf46753f5",
+     "wf-ffaa047bf2"
+    ]
+   },
+   "id": "M-W1",
+   "set": "M_workflows"
+  },
+  {
+   "checks": {
+    "section_present": true,
+    "select_equal": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "select": [
+     "wf-053146a70c",
+     "wf-7f0f99bdcf",
+     "wf-9523e7a835",
+     "wf-9f87f3f1d9",
+     "wf-b2ee5de88e",
+     "wf-c71e6bbb49",
+     "wf-da24bc5b11",
+     "wf-ebadb4a811"
+    ]
+   },
+   "id": "M-W2",
+   "set": "M_workflows"
+  },
+  {
+   "checks": {
+    "field.basis": true,
+    "field.reason": true,
+    "field.status": true,
+    "item_unique": true,
+    "section_present": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "basis": "static",
+    "reason": "step 3 POST /v1/nudges/{id}/dismiss answered 404 (not_found): status 404",
+    "status": "failed"
+   },
+   "id": "M-W3",
+   "set": "M_workflows"
+  },
+  {
+   "checks": {
+    "also.reason": true,
+    "also_item_unique": true,
+    "section_present": true,
+    "select_equal": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "select": [
+     "wf-0da61e11ce"
+    ]
+   },
+   "id": "M-W4",
+   "set": "M_workflows"
+  },
+  {
+   "checks": {
+    "field.status": true,
+    "item_unique": true,
+    "section_present": true,
+    "set.routes": true,
+    "state_ok": true,
+    "steps.caller": true,
+    "steps.expect_status": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "routes": [
+     "POST /v1/habits",
+     "DELETE /v1/habits/{}"
+    ],
+    "status": "verified",
+    "steps.caller": [
+     "ann",
+     "ben"
+    ],
+    "steps.expect_status": [
+     201,
+     404
+    ]
+   },
+   "id": "M-W5",
+   "set": "M_workflows"
+  },
+  {
+   "checks": {
+    "field.status": true,
+    "item_unique": true,
+    "section_present": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "status": "static"
+   },
+   "id": "M-M1",
+   "set": "M_machines"
+  },
+  {
+   "checks": {
+    "item_unique": true,
+    "section_present": true,
+    "set.edges": true,
+    "set.states": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "edges": [
+     "pending -> failed",
+     "pending -> sent",
+     "pending -> suppressed"
+    ],
+    "states": [
+     "failed",
+     "pending",
+     "sent",
+     "suppressed"
+    ]
+   },
+   "id": "M-M2",
+   "set": "M_machines"
+  },
+  {
+   "checks": {
+    "item_unique": true,
+    "section_present": true,
+    "set.evidence": true,
+    "set.rules": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "evidence": [
+     "code:internal/nudges/nudger.go:125",
+     "code:internal/nudges/nudger.go:180"
+    ],
+    "rules": [
+     "R123",
+     "R127"
+    ]
+   },
+   "id": "M-M3",
+   "set": "M_machines"
+  },
+  {
+   "checks": {
+    "field.auth": true,
+    "field.route_status": true,
+    "field.spec": true,
+    "item_unique": true,
+    "observed.count": true,
+    "observed.statuses": true,
+    "section_present": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "auth": "Customer",
+    "observed": [
+     {
+      "flow": "wf-a1793fed29",
+      "status": 404,
+      "step": 1
+     }
+    ],
+    "route_status": "implemented",
+    "spec": "404"
+   },
+   "id": "M-A1",
+   "set": "M_access"
+  },
+  {
+   "checks": {
+    "field.auth": true,
+    "field.route_status": true,
+    "field.spec": true,
+    "item_unique": true,
+    "observed.count": true,
+    "observed.statuses": true,
+    "section_present": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "auth": "Public",
+    "observed": [
+     {
+      "flow": "wf-a8966be4b8",
+      "status": 201,
+      "step": 0
+     }
+    ],
+    "route_status": "implemented",
+    "spec": "201/409/422"
+   },
+   "id": "M-A2",
+   "set": "M_access"
+  },
+  {
+   "checks": {
+    "field.auth": true,
+    "field.route_status": true,
+    "field.spec": true,
+    "item_unique": true,
+    "observed.count": true,
+    "observed.statuses": true,
+    "section_present": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "auth": "Customer",
+    "observed": [
+     {
+      "flow": "wf-4e49f96210",
+      "status": 422,
+      "step": 1
+     }
+    ],
+    "route_status": "implemented",
+    "spec": "200/422"
+   },
+   "id": "M-A3",
+   "set": "M_access"
+  },
+  {
+   "checks": {
+    "field.auth": true,
+    "field.route_status": true,
+    "field.spec": true,
+    "item_unique": true,
+    "observed.count": true,
+    "observed.statuses": true,
+    "section_present": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "auth": "Customer",
+    "observed": [],
+    "route_status": "implemented",
+    "spec": "200"
+   },
+   "id": "M-A4",
+   "set": "M_access"
+  },
+  {
+   "checks": {
+    "field.auth": true,
+    "field.route_status": true,
+    "field.spec": true,
+    "item_unique": true,
+    "observed.count": true,
+    "observed.statuses": true,
+    "section_present": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "auth": "Public",
+    "observed": [],
+    "route_status": "implemented",
+    "spec": "·"
+   },
+   "id": "M-A5",
+   "set": "M_access"
+  },
+  {
+   "checks": {
+    "field.status": true,
+    "item_unique": true,
+    "section_present": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "status": "spec_only"
+   },
+   "id": "N-1",
+   "set": "N_not_built"
+  },
+  {
+   "checks": {
+    "section_present": true,
+    "select_equal": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "select": [
+     "GET /v1/home",
+     "GET /v1/sync",
+     "GET /v1/nudges",
+     "POST /v1/devices",
+     "DELETE /v1/devices/{}",
+     "POST /v1/nudges/{}/dismiss"
+    ]
+   },
+   "id": "N-2",
+   "set": "N_not_built"
+  },
+  {
+   "checks": {
+    "section_present": true,
+    "select_equal": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "select": [
+     "R7",
+     "R21",
+     "R27",
+     "R28",
+     "R31",
+     "R32",
+     "R33",
+     "R34",
+     "R89",
+     "R90",
+     "R91",
+     "R92",
+     "R93",
+     "R94",
+     "R114",
+     "R125",
+     "R127",
+     "R128",
+     "R129",
+     "R132",
+     "R133",
+     "R134",
+     "R135",
+     "R137",
+     "R138",
+     "R139",
+     "R140",
+     "R141",
+     "R143"
+    ]
+   },
+   "id": "N-3",
+   "set": "N_not_built"
+  },
+  {
+   "checks": {
+    "field.auth": true,
+    "field.route": true,
+    "field.route_status": true,
+    "field.spec": true,
+    "item_unique": true,
+    "observed.count": true,
+    "observed.statuses": true,
+    "section_present": true,
+    "state_ok": true
+   },
+   "claims": [],
+   "correct": true,
+   "got": {
+    "auth": null,
+    "observed": [],
+    "route": null,
+    "route_status": "spec_only",
+    "spec": "200/404/409"
+   },
+   "id": "N-4",
+   "set": "N_not_built"
+  }
+ ],
+ "summary": {
+  "by_set": {
+   "M_access": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 5,
+    "n": 5,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "M_machines": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 3,
+    "n": 3,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "M_rules": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 5,
+    "n": 5,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "M_workflows": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 5,
+    "n": 5,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "N_not_built": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 4,
+    "n": 4,
+    "not_run": 0,
+    "unscored": 0
+   }
+  },
+  "changes": {},
+  "correct": 22,
+  "errors": [],
+  "gate": {
+   "pass": true,
+   "rule": "22/22 exact"
+  },
+  "lenient_note": "report-only (Amendment 2): negations and named recorded replays exempted",
+  "n": 22,
+  "not_run": 0,
+  "surface": "map",
+  "unscored": 0,
+  "unsupported_failure_claims": 0,
+  "unsupported_failure_claims_lenient": 0
+ }
+}

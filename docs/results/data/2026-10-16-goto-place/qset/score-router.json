@@ -1,0 +1,531 @@
+{
+ "questions": [
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": []
+   },
+   "id": "I-c1-1",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": []
+   },
+   "id": "I-c1-2",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": []
+   },
+   "id": "I-c2-1",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": []
+   },
+   "id": "I-c2-2",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": []
+   },
+   "id": "I-c3-1",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": []
+   },
+   "id": "I-c3-2",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [
+     "t2-1da637132c",
+     "t2-22fc49acc5"
+    ]
+   },
+   "id": "I-c4-1",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [
+     "t2-1da637132c",
+     "t2-22fc49acc5"
+    ]
+   },
+   "id": "I-c4-2",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [
+     "t2-3452760d56",
+     "t2-a234b1ca88"
+    ]
+   },
+   "id": "I-c5-1",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [
+     "t2-3452760d56",
+     "t2-a234b1ca88"
+    ]
+   },
+   "id": "I-c5-2",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": []
+   },
+   "id": "I-c6-1",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "change_id": true,
+    "no_unsupported_claims": true,
+    "routed": true,
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_ids_from_report": true,
+    "tier3_never_failure": true,
+    "tiers_map_equal": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": []
+   },
+   "id": "I-c6-2",
+   "routed_calls": 0,
+   "set": "I_impact",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "kind_not_specified": true,
+    "no_tier12_ids": true,
+    "no_unsupported_claims": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "fixed_text": true
+   },
+   "id": "H-1",
+   "routed_calls": 0,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "kind_not_specified": true,
+    "no_tier12_ids": true,
+    "no_unsupported_claims": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "fixed_text": true
+   },
+   "id": "H-2",
+   "routed_calls": 0,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "kind_not_specified": true,
+    "no_tier12_ids": true,
+    "no_unsupported_claims": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "fixed_text": true
+   },
+   "id": "H-3",
+   "routed_calls": 0,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "kind_not_specified": true,
+    "no_tier12_ids": true,
+    "no_unsupported_claims": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "fixed_text": true
+   },
+   "id": "H-4",
+   "routed_calls": 0,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "kind_not_specified": true,
+    "no_tier12_ids": true,
+    "no_unsupported_claims": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "fixed_text": true
+   },
+   "id": "H-5",
+   "routed_calls": 0,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "kind_not_specified": true,
+    "no_tier12_ids": true,
+    "no_unsupported_claims": true,
+    "zero_model_calls": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "fixed_text": true
+   },
+   "id": "H-6",
+   "routed_calls": 0,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "identical_to_base": true,
+    "no_impact_key": true,
+    "not_h_template": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "base_compared": true
+   },
+   "id": "C-1",
+   "routed_calls": null,
+   "set": "C_control",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "identical_to_base": true,
+    "no_impact_key": true,
+    "not_h_template": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "base_compared": true
+   },
+   "id": "C-2",
+   "routed_calls": null,
+   "set": "C_control",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "identical_to_base": true,
+    "no_impact_key": true,
+    "not_h_template": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "base_compared": true
+   },
+   "id": "C-3",
+   "routed_calls": null,
+   "set": "C_control",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "identical_to_base": true,
+    "no_impact_key": true,
+    "not_h_template": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "base_compared": true
+   },
+   "id": "C-4",
+   "routed_calls": null,
+   "set": "C_control",
+   "tier3_called_failure": []
+  }
+ ],
+ "summary": {
+  "by_set": {
+   "C_control": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 4,
+    "n": 4,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "H_hypothetical": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 6,
+    "n": 6,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "I_impact": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 12,
+    "n": 12,
+    "not_run": 0,
+    "unscored": 0
+   }
+  },
+  "changes": {
+   "c1": "verified",
+   "c2": "verified",
+   "c3": "verified",
+   "c4": "verified",
+   "c5": "verified",
+   "c6": "verified"
+  },
+  "correct": 22,
+  "errors": [],
+  "gate": {
+   "pass": true,
+   "rule": "22/22 exact; 0 unsupported failure claims; 0 model calls on routed questions"
+  },
+  "lenient_note": "report-only (Amendment 2): negations and named recorded replays exempted",
+  "model_calls_on_routed": 0,
+  "model_calls_unknown": 0,
+  "n": 22,
+  "not_run": 0,
+  "surface": "router",
+  "unscored": 0,
+  "unsupported_failure_claims": 0,
+  "unsupported_failure_claims_lenient": 0
+ }
+}

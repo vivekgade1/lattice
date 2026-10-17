@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.23)
+# Lattice Studio API contract (v1.25)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--allow-apply] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -1185,3 +1185,118 @@ Every item carries a `tier`: **1 observed** (the candidate's checks, layers A, C
 
 ### The CLI
 `lattice spec impact --project DIR (--candidate CDIR | --change cN [--state-dir SD]) [--inventory INV] [--tiers 123] [--layers ACD] [--baseline run|none|FILE] [--no-flows] [--race] [--json] [--section S] [--out FILE]` prints the report (`lattice.impact/1`: `input`, `diff`, `tiers`, `tier1`..`tier4`, `summary`; canonical JSON, sorted, relative paths, no time or host). Exit 0: the report was produced; 2: the inputs are unusable, or `--out` is inside the project, the app root or the inventory; 3: tier 1 could not run (`tier1` says `not_run` and the report has `error`). It never writes the project, the spec, the inventory or the state directory, never calls a model, `go` or git.
+
+## v1.25 additions (the go-to place: the app map, "what breaks if", and the App views)
+
+**Three read-only GET routes, an optional answer key, one `studio.toml` key and two web views. `GET /api/model`, `GET /api/projects` and every existing route gain no key and answer byte-identically.** The binding rule behind all of it: **a workflow failure is observed or logically determined, never predicted.** Every failure statement on every surface (these routes, the web views, the one-shot router, the chat) traces to a tier 1 (observed) or tier 2 (determined) item of a `lattice.impact/1` report (v1.24); anything else is "static: may fail" or "not decided". The three routes are project-scoped like `/api/improve`: bare is the default project, `/p/<name>/api/...` another one (unknown project: 404 `no such project`); any other method on these paths answers 404 `no such route`. None of them runs a process, starts Docker, opens `StateStore`, calls a model or writes anything (the project, the spec files, the inventory, the reports directory, the state directory).
+
+### studio.toml
+```toml
+[impact]
+reports = "../impact"   # optional (v1.25): a directory of `lattice spec impact ... --tiers 123 --json --out cN.json` files
+```
+`GET /api/appmap` needs only `[implementation]`. `GET /api/impact` and the router need `[impact]` (and `[implementation]` for the inventory). `reports` is read-only: Studio never writes it.
+
+### GET /api/appmap[?section=summary|rules|workflows|machines|access|endpoints|unread]
+Always 200 with `lattice.appmap/1`: a **pure join** of Spike C's implementation report and the review data (`ReviewData`) plus the caller of each request step of the inventory's workflows. It extracts nothing, re-reads the inventory (and re-hashes the source set) on every call, caches and writes nothing. A value is copied from the report that holds it; a join is an exact-key lookup on the **template form** of a route (`{id}`, `{habit_id}` and `1` are all `{}`, the spec's own spelling of a column is kept in `col`). **The map never decides agreement**: it does not compare a spec cell with the code's `auth`, nor a spec machine with the code's edges beyond set membership. With `section`, the answer is `{schema, state, inputs, <section>}` (`endpoints` also carries `excluded`); a non-`ok` map is returned whole. A bad `section` is 422 `{"detail", "code": "bad_section"}`.
+```json
+{
+  "schema": "lattice.appmap/1",
+  "state": "ok",
+  "inputs": {"spec_sha256": "...", "trace_sha256": "...", "requirements_sha256": "...",
+             "inventory": {"extract_sha256": "...", "workflows_sha256": "...|null", "run_mode": "observed|static|null",
+                           "stale": {"changed": [], "added": [], "removed": [], "counts": {"changed": 0, "added": 0, "removed": 0}}},
+             "last_check": {"verdict": "pass|fail", "sha256": "..."}},
+  "summary": {"rules": {"total": 0, "impl_status": {"<status>": 0}, "spec_status": {"<status>": 0}, "basis": {"<basis>": 0}},
+              "workflows": {"total": 0, "effective": {"<status>": 0}, "basis": {"<basis>": 0}},
+              "machines": {"total": 0, "status": {"<status>": 0}},
+              "access": {"groups": 0, "columns": 0, "cells": 0, "specified": 0, "unspecified": 0, "with_route": 0, "without_route": 0, "with_observed": 0},
+              "endpoints": {"total": 0, "status": {"<status>": 0}},
+              "unread": 0,
+              "notes": [{"code": "no_workflows_capture|static_capture|stale|no_trace", "text": "..."}]},
+  "rules": [{"id": "R4", "text": "...", "spec_status": "checked|unchecked|context|untraced|probe_gap",
+             "impl_status": "implemented_verified|implemented_unverified|required_not_implemented|no_element",
+             "reasons": ["no verified flow"], "missing": ["impl:route:GET /x"], "impact_label": "not_built_yet|null",
+             "basis": "observed|static|inferred|none",
+             "elements": [{"key": "impl:route:POST /v1/habits", "kind": "route|machine|table", "present": true, "verified": true, "basis": "observed|static|inferred"}],
+             "evidence": ["code:internal/habits/routes.go:118"], "workflows": ["wf-053146a70c"], "machines": ["impl:machine:nudges.delivery"],
+             "cells": ["cell:ann|GET /v1/me"], "last_check": "pass|fail|null"}],
+  "workflows": [{"id": "wf-053146a70c", "name": "...", "inferred_name": true, "kind": "...", "status": "verified|failed|unverified",
+                 "effective": "verified|failed|unverified", "reason": "...|null", "routes": ["POST /v1/habits"], "rules": ["R4"],
+                 "orphan_routes": [], "implemented_not_required": false, "spec_matches": {"strict": [], "lenient": []},
+                 "machine_refs": [], "evidence": ["code:internal/habits/routes.go:118"], "basis": "observed|static",
+                 "steps": [{"i": 0, "method": "POST", "route": "POST /v1/habits", "caller": "ann|null", "expect_status": 201, "evidence": ["code:internal/habits/routes.go:118"]}]}],
+  "machines": [{"key": "impl:machine:nudges.delivery", "id": "wm-003a8c98c5", "states": ["pending", "sent"], "edges": ["pending -> sent"],
+                "status": "confirmed|static", "rules": ["R123"], "implemented_not_required": false, "evidence": ["code:internal/nudges/nudger.go:125"],
+                "spec_target": "machine:Nudge.delivery|null",
+                "edges_detail": [{"from": "pending", "to": "sent", "in_spec": true, "in_code": true}]}],
+  "access": {"groups": [{"prefix": "v1", "rows": ["ann", "ben", "no token"], "columns": ["GET /v1/me"]}],
+             "cells": [{"row": "ann", "col": "GET /v1/me", "spec": "200|·", "route": "GET /v1/me|null", "auth": "Customer|null",
+                        "refusals": ["401 not_authenticated"], "route_status": "implemented|spec_only|test_only|plumbing|implemented_not_required|null",
+                        "observed": [{"flow": "wf-2610c56483", "step": 2, "status": 200}], "evidence": ["code:internal/account/routes.go:20"]}]},
+  "endpoints": [{"key": "GET /v1/me", "status": "implemented|spec_only|test_only|plumbing|implemented_not_required", "in_spec": true, "in_code": true}],
+  "excluded": [{"kind": "route|framework", "key": "PUT /test/clock", "reason": "test_only|plumbing|...", "condition?": "...", "evidence": ["code:cmd/server/main.go:40"]}],
+  "unread": [{"file": "internal/habits/routes.go", "line": 55, "what": "bound", "reason": "...", "at": "code:internal/habits/routes.go:55"}]
+}
+```
+`state` is `ok | not_configured | inventory_missing | bad_inventory | no_spec`; any other state than `ok` has no other keys than `schema`, `state`, `inputs` (the hashes that exist, the rest null) and `why` (a sentence, never an absolute path). **Basis words are fixed:** `observed` = a Spike B replay of those requests passed on a fresh database **at capture time** (a rule is `observed` iff `implemented_verified`); `static` = read from the code (`implemented_unverified`); `inferred` = an absence in a static extract (`required_not_implemented`); `none` = no code element (`no_element`). A stale inventory (`inputs.inventory.stale` not null, and a `stale` note) turns `implemented_verified` into `implemented_unverified`, Spike C's rule, and nothing is `observed`. `access.cells[].observed` holds `{flow, step, status}` for each request step of a **verified** flow whose route is the cell's and whose caller (null is `no token`) is its row. Without a workflows capture the `no_workflows_capture` note is set: flows and machines are then empty because they were **not captured**, which is not the same as none found. `machines[].spec_target` is the spec machine whose `machine_for` match this row is (Spike C's rule), else null. `unread` items gain `at`, the code location.
+
+### GET /api/appmap/element?key=K
+One element with its full row and its **neighbourhood**: the map's own join keys of what references it or is referenced by it. `K` is one of `rule:Rn`, `wf-...`, `impl:machine:table.column`, `cell:row|METHOD /template` or `impl:route:METHOD /template`. A missing key or one over 300 characters is 422 `bad_key`; an unknown key is 404 with `nearest` (the 5 closest keys).
+```json
+{"schema": "lattice.appmap/1", "state": "ok", "key": "rule:R3", "kind": "rule|workflow|machine|cell|route",
+ "row": {"...": "the element's row as the map holds it; a route is {endpoint, route} (route is null for an endpoint no route registers)"},
+ "touches": {"rules": ["rule:R3"], "workflows": ["wf-053146a70c"], "machines": ["impl:machine:nudges.delivery"],
+             "cells": ["cell:ann|GET /v1/me"], "routes": ["impl:route:GET /v1/me"]},
+ "basis": "static",
+ "meaning": "these elements reference it; whether they fail is not decided"}
+```
+```json
+{"detail": "no element 'rule:R99'", "code": "unknown_key", "nearest": ["rule:R9", "rule:R19"]}
+```
+`touches` is always labelled `static`: it lists what is connected, never what fails. A map in a state other than `ok` has no elements (404 `unknown_key`, `nearest` empty).
+
+### GET /api/impact?change=cN[&section=summary|tier1|tier2|tier3|flows|unread|decidability]
+`change` must match `^c[0-9]{1,6}$`, else 422 `bad_change` (a missing `change` too); a bad `section` is 422 `bad_section`. Always 200 otherwise.
+```json
+{"schema": "lattice.studio-impact/1", "change": "c2",
+ "state": "ok|impact_not_configured|no_change|change_not_ready|no_state|inventory_missing|error",
+ "why": "a sentence|null",
+ "report": {"...": "Spike D's lattice.impact/1 report, verbatim (v1.24); with section, its section_of(section)"},
+ "studio_check": {"verdict": "pass|fail", "failing": [{"target": "scenario:x", "label": "not_built_yet", "message": "..."}]},
+ "tier1_saved": {"state": "shown|mismatch|absent|not_configured", "differs": ["candidate_sha256"], "tier1": {"...": "the saved report's tier1, verbatim, only when shown"}}}
+```
+- `report` is built **in process** with exactly the arguments and mode of `change_impact`'s default (`build_inputs(project, change=, state_dir=)`, then `build_report(tiers="23", runner=None, baseline="none")`): tiers 2 and 3, no app run, no container, no subprocess. It is `null` unless `state` is `ok`. Studio does not edit Spike D's module, so the report is the CLI's `lattice spec impact --project DIR --change cN --tiers 23 --baseline none --json`, byte for byte.
+- `studio_check` is the change record's own `checks.impact` (the Studio change check: observed, layers C and D, on today's app, when the change was drafted), verbatim, or null. It is never relabelled as tier 1.
+- `tier1_saved`: with `[impact] reports = DIR`, `DIR/<cN>.json` is read. It is shown (`state: shown`, `tier1` verbatim) **only when** its `input` hashes (base, candidate, `inventory.extract_sha256`, `inventory.workflows_sha256`) equal the ones the report above computes now for this change **and** its `tiers["1"]` is `run`. Otherwise `mismatch` (`differs` names `base_sha256`, `candidate_sha256`, `extract_sha256`, `workflows_sha256`, `tier1_not_run`, `not_a_report`, `unreadable` or `no_report_now`), `absent` (no file) or `not_configured` (no `reports` key). The owner writes the file with `lattice spec impact --project DIR --change cN --tiers 123 --json --out REPORTS/cN.json`; **a GET never runs tier 1.**
+- `state`: `impact_not_configured` (no `[impact]` table), `no_change` (no record), `change_not_ready` (the record is not `ready` or `accepted`), `no_state` (`[state] enabled = false`: the record lives in memory only), `inventory_missing` (no readable `[implementation]` inventory), `error` (the report could not be built; `why` says why).
+
+### POST /api/ask: the model-free router and the `impact` answer key
+**Only with `[impact]`.** Before the model path, `lattice.spec.impact_ask.route` matches two frozen, case-insensitive patterns: (A) a change id `\bc\d+\b` **and** an impact word `\b(break|breaks|broken|fail|fails|failing|impact|affect)\b`; or (B) a hypothetical: `\bwhat\s+(would\s+|will\s+)?(break|fail)s?\b.*\bif\b`, `\bif\s+we\b.*\b(break|fail)s?\b` or `^\s*what\s+breaks\b`. A routed answer makes **0 model calls** (`usage.tokens` 0). A question that matches neither follows the old path byte-identically (`ask.py` is not edited).
+- (A) with a change that has a report: `kind: "value"`, `answer` is the fixed template `Tier 1 (observed): n failing|not run here; Tier 2 (determined): n; Tier 3 (static, may fail): n locations, n workflows; Tier 4: not run.` (tier 1 is counted only from a hash-matched saved report, else it says it was not run here), citations are `impact:<item id>` for every tier 1 and tier 2 item.
+- (A) with a change that has none (unknown, not ready, no state, no inventory): `kind: "not_specified"`.
+- (B) with no change: `kind: "not_specified"`, `answer` "Lattice does not predict failures. It decides them only for a drafted change (tier 1 observed, tier 2 determined). Draft this change, then ask about its id." and `impact.touches`: the static neighbourhood (as `GET /api/appmap/element`) of every element the question names exactly (`METHOD /path`, `Rn` or `rule:Rn`, `wf-...`, `machine:T.c`).
+```json
+{"kind": "value|not_specified", "answer": "...", "explanation": "...",
+ "citations": [{"target": "impact:t2-ea39baecdf", "step": null, "quote": "..."}],
+ "citations_checked": true, "rejected_citations": [], "verified": null, "usage": {"seconds": 0, "tokens": 0},
+ "impact": {"change": "c2", "state": "ok",
+            "tiers": {"1": "not_run:not_requested", "2": "run", "3": "run", "4": "not_run:spike_e"},
+            "tier1": {"state": "shown|not_run", "failing": [], "flows": []},
+            "tier2": {"determined": [], "flows": []},
+            "tier3": {"locations": [], "flows": [], "total": {"locations": 0, "flows": 0}},
+            "tier4": "not_run"}}
+```
+`impact.tier1` and `impact.tier2` hold the report's items verbatim; `impact.tier3` holds at most 20 of each with the totals. For (B) and for an (A) without a report `impact` is `{"change": null|"cN", "state": "no_change|...", "tiers": null, ...}` plus, for (B), `"touches": {"rule:R3": {"rules": [], "workflows": [], "machines": [], "cells": [], "routes": []}}`, `"basis": "static"` and the `meaning` sentence. `kind` keeps its four values.
+
+### Chat sessions
+With `[impact]` the ask, explain and change sessions also allow `mcp__lattice__change_impact` (the tool of v1.24; the rebuild mode does not) and their system prompt gains one paragraph: use the tool on a drafted change or a candidate directory and never answer "what breaks if ..." from reasoning; report its tiers with their item ids in the tool's wording (tier 1 observed and tier 2 determined are the only failures that may be stated, tier 3 is "static: may fail", tier 4 is not run); with no change, say that Lattice decides failures only for a drafted change, offer to draft one and list what the element touches as static facts. The read-only modes refuse `observe` (tier 1); say it was not run. The tool's label is "Checked the impact". Without `[impact]` the argv, the settings and the system prompt are byte-identical to v1.24.
+
+### The web UI
+A navigator group **App**, always listed (no count, no attention dot; its empty states carry the setup), with two views. **`#appmap` "App map"**: the inventory strip (observed or static capture, a stale banner), four tabs (Rules, Workflows, Lifecycles, Access: a `role="tablist"`), a "Not read" list, and a drawer for any element (its row, its evidence lines, its `touches` with the static sentence, "Ask about this" and "What breaks if I change this?"). **`#impact` "Impact"**: a change picker and four tiers under fixed headings; every item is shown with its id, kind, target, rules and its text fields verbatim, in the report's order; tier 1 shows a matching saved report or "Not run here" with the CLI command; the Studio change check sits in its own box and is never relabelled. The words `will fail`, `would fail`, `will break`, `would break` and `predict` appear in neither view except in the sentence "Lattice does not predict failures". A status is a word plus an icon, never colour alone. Only `api.js` calls the server (`appmap(section)`, `appmapElement(key)`, `impact(change, section)`).
+
+### The CLI
+`python -m lattice.spec appmap --spec MOD:SPEC [--trace T] --inventory DIR [--app-root DIR] [--json] [--section S]` prints the map (text, or `--json`: sorted keys, indent 1). Exit 0: the map was produced; 2: it was not. Writes nothing. `lattice --help` is unchanged.
+
+### The mock
+`GET /api/appmap`, `/api/appmap/element` and `/api/impact` are answered by the same `appmap.py` and `impact_ask.py` over the committed fixture project `lattice/studio/mock/appmap/` (a copy of `tests/spec/fixtures/implementation` plus one candidate): any `ready` or `accepted` mock change has the fixture candidate. The mock's second project answers `not_configured`. `POST /api/ask` routes in the mock like the real server.

@@ -1,0 +1,406 @@
+{
+ "control": {
+  "tests": {
+   "ran": true,
+   "rc": 0,
+   "failed": [],
+   "summary": "18 passed in 7.38s"
+  },
+  "probes": {
+   "ran": true,
+   "rc": 0,
+   "failed": [],
+   "ids_seen": [
+    "PM1",
+    "PM2",
+    "PM4",
+    "PM6"
+   ],
+   "summary": "failed: none"
+  },
+  "passes": true
+ },
+ "GM1": {
+  "what": "an implemented_unverified rule (static) reported observed",
+  "prereg_killer": "PM1",
+  "killed": true,
+  "killed_by": [
+   "test tests/spec/test_appmap.py::test_basis_words_are_fixed",
+   "probe PM1"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/spec/test_appmap.py::test_basis_words_are_fixed"
+   ],
+   "summary": "1 failed in 2.86s"
+  },
+  "probes": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "PM1"
+   ],
+   "ids_seen": [
+    "PM1"
+   ],
+   "summary": "failed: ['PM1']"
+  }
+ },
+ "GM2": {
+  "what": "unread dropped from the map",
+  "prereg_killer": "PM6",
+  "killed": true,
+  "killed_by": [
+   "test tests/spec/test_appmap.py::test_unread_items_are_listed_with_their_code_location",
+   "probe PM6"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/spec/test_appmap.py::test_unread_items_are_listed_with_their_code_location"
+   ],
+   "summary": "1 failed in 0.15s"
+  },
+  "probes": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "PM6"
+   ],
+   "ids_seen": [
+    "PM6"
+   ],
+   "summary": "failed: ['PM6']"
+  }
+ },
+ "GM3": {
+  "what": "evidence paths made absolute",
+  "prereg_killer": "PD, PM2",
+  "killed": true,
+  "killed_by": [
+   "test tests/spec/test_appmap.py::test_determinism_and_purity",
+   "probe PM2"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/spec/test_appmap.py::test_determinism_and_purity"
+   ],
+   "summary": "1 failed in 0.15s"
+  },
+  "probes": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "PM2"
+   ],
+   "ids_seen": [
+    "PM2"
+   ],
+   "summary": "failed: ['PM2']"
+  }
+ },
+ "GM4": {
+  "what": "access auth taken from a path-name heuristic instead of the route row",
+  "prereg_killer": "PM1",
+  "killed": true,
+  "killed_by": [
+   "test tests/spec/test_appmap.py::test_auth_and_refusals_are_the_route_rows_not_a_guess",
+   "probe PM1"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/spec/test_appmap.py::test_auth_and_refusals_are_the_route_rows_not_a_guess"
+   ],
+   "summary": "1 failed in 0.12s"
+  },
+  "probes": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "PM1"
+   ],
+   "ids_seen": [
+    "PM1"
+   ],
+   "summary": "failed: ['PM1']"
+  }
+ },
+ "GM5": {
+  "what": "staleness ignored (no downgrade, no note)",
+  "prereg_killer": "PM4",
+  "killed": true,
+  "killed_by": [
+   "test tests/spec/test_appmap.py::test_stale_downgrades_and_says_so",
+   "probe PM4"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/spec/test_appmap.py::test_stale_downgrades_and_says_so"
+   ],
+   "summary": "1 failed in 0.12s"
+  },
+  "probes": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "PM4"
+   ],
+   "ids_seen": [
+    "PM4"
+   ],
+   "summary": "failed: ['PM4']"
+  }
+ },
+ "GM6": {
+  "what": "flow steps with caller null not joined to the no-token row",
+  "prereg_killer": "PM1 (the observed recount)",
+  "killed": true,
+  "killed_by": [
+   "test tests/spec/test_appmap.py::test_a_step_without_a_caller_joins_the_no_token_row",
+   "probe PM1"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/spec/test_appmap.py::test_a_step_without_a_caller_joins_the_no_token_row"
+   ],
+   "summary": "1 failed in 0.12s"
+  },
+  "probes": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "PM1"
+   ],
+   "ids_seen": [
+    "PM1"
+   ],
+   "summary": "failed: ['PM1']"
+  }
+ },
+ "GM7": {
+  "what": "/api/impact merges tier 3 may_fail flows into tier 1 failing",
+  "prereg_killer": "PI, PU (verbatim)",
+  "killed": true,
+  "killed_by": [
+   "test tests/studio/test_appmap_api.py::test_the_report_is_the_cli_report_verbatim"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/studio/test_appmap_api.py::test_the_report_is_the_cli_report_verbatim"
+   ],
+   "summary": "1 failed in 1.71s"
+  },
+  "probes": {
+   "ran": false,
+   "failed": [],
+   "summary": "no probes"
+  }
+ },
+ "GM8": {
+  "what": "the router answers a hypothetical with tier 3 style items as failures",
+  "prereg_killer": "PR (the H rows)",
+  "killed": true,
+  "killed_by": [
+   "test tests/studio/test_impact_ask.py::test_a_hypothetical_is_never_a_failure_claim"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/studio/test_impact_ask.py::test_a_hypothetical_is_never_a_failure_claim"
+   ],
+   "summary": "1 failed in 0.60s"
+  },
+  "probes": {
+   "ran": false,
+   "failed": [],
+   "summary": "no probes"
+  }
+ },
+ "GM9": {
+  "what": "tier1_saved shown on a hash mismatch",
+  "prereg_killer": "PIS",
+  "killed": true,
+  "killed_by": [
+   "test tests/studio/test_appmap_api.py::test_tier1_saved_is_shown_only_when_the_hashes_match"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/studio/test_appmap_api.py::test_tier1_saved_is_shown_only_when_the_hashes_match"
+   ],
+   "summary": "1 failed in 1.62s"
+  },
+  "probes": {
+   "ran": false,
+   "failed": [],
+   "summary": "no probes"
+  }
+ },
+ "GM10": {
+  "what": "the mock serves a hand-edited answer (drift from the real server)",
+  "prereg_killer": "PP",
+  "killed": true,
+  "killed_by": [
+   "test tests/studio/test_appmap_api.py::test_the_mock_is_the_real_server_over_the_same_fixture"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/studio/test_appmap_api.py::test_the_mock_is_the_real_server_over_the_same_fixture"
+   ],
+   "summary": "1 failed in 1.67s"
+  },
+  "probes": {
+   "ran": false,
+   "failed": [],
+   "summary": "no probes"
+  }
+ },
+ "GM11": {
+  "what": "GET /api/appmap writes a cache file under the state directory",
+  "prereg_killer": "PW",
+  "killed": true,
+  "killed_by": [
+   "test tests/studio/test_appmap_api.py::test_get_never_runs_tier_one_or_a_process_and_writes_nothing"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/studio/test_appmap_api.py::test_get_never_runs_tier_one_or_a_process_and_writes_nothing"
+   ],
+   "summary": "1 failed in 1.75s"
+  },
+  "probes": {
+   "ran": false,
+   "failed": [],
+   "summary": "no probes"
+  }
+ },
+ "GM12": {
+  "what": "/api/model gains an appmap key",
+  "prereg_killer": "PB",
+  "killed": true,
+  "killed_by": [
+   "test tests/studio/test_appmap_api.py::test_existing_routes_gain_no_key"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/studio/test_appmap_api.py::test_existing_routes_gain_no_key"
+   ],
+   "summary": "1 failed in 1.10s"
+  },
+  "probes": {
+   "ran": false,
+   "failed": [],
+   "summary": "no probes"
+  }
+ },
+ "GM13": {
+  "what": "the UI word map shows Verified for implemented_unverified",
+  "prereg_killer": "PU",
+  "killed": true,
+  "killed_by": [
+   "test tests/studio/test_appmap_ui.py::test_the_fixed_headings_and_words"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/studio/test_appmap_ui.py::test_the_fixed_headings_and_words"
+   ],
+   "summary": "1 failed in 0.58s"
+  },
+  "probes": {
+   "ran": false,
+   "failed": [],
+   "summary": "no probes"
+  }
+ },
+ "GM14": {
+  "what": "session.py lists change_impact without [impact]",
+  "prereg_killer": "PS",
+  "killed": true,
+  "killed_by": [
+   "test tests/studio/test_impact_ask.py::test_with_impact_the_tool_and_the_paragraph_are_added_to_three_modes"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/studio/test_impact_ask.py::test_with_impact_the_tool_and_the_paragraph_are_added_to_three_modes"
+   ],
+   "summary": "1 failed in 0.60s"
+  },
+  "probes": {
+   "ran": false,
+   "failed": [],
+   "summary": "no probes"
+  }
+ },
+ "GM15": {
+  "what": "the router calls the generator for a routed question",
+  "prereg_killer": "PR (call count), PW (the claude shim)",
+  "killed": true,
+  "killed_by": [
+   "test tests/studio/test_impact_ask.py::test_a_routed_question_makes_no_model_call"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/studio/test_impact_ask.py::test_a_routed_question_makes_no_model_call"
+   ],
+   "summary": "1 failed in 1.26s"
+  },
+  "probes": {
+   "ran": false,
+   "failed": [],
+   "summary": "no probes"
+  }
+ },
+ "GM16": {
+  "what": "GET /api/impact runs tier 1 (observe)",
+  "prereg_killer": "PW (containers), PI",
+  "killed": true,
+  "killed_by": [
+   "test tests/studio/test_appmap_api.py::test_get_never_runs_tier_one_or_a_process_and_writes_nothing"
+  ],
+  "tests": {
+   "ran": true,
+   "rc": 1,
+   "failed": [
+    "tests/studio/test_appmap_api.py::test_get_never_runs_tier_one_or_a_process_and_writes_nothing"
+   ],
+   "summary": "1 failed in 1.58s"
+  },
+  "probes": {
+   "ran": false,
+   "failed": [],
+   "summary": "no probes"
+  }
+ },
+ "summary": {
+  "mutants": 16,
+  "killed": 16,
+  "seconds": 56.6
+ }
+}

@@ -32,6 +32,12 @@ Studio 2 (API v1.3) adds, all fixture-driven and polled:
   (API v1.7), ``project.git_head`` does not move: the commit is on the record's ``branch``
   (``rebuild/<change>``) with ``base``, ``worktree`` and a ``merge_hint``; nothing merges.
 
+API v1.25 adds ``GET /api/appmap``, ``/api/appmap/element`` and ``/api/impact`` and the model-free
+router of ``POST /api/ask``: the SAME ``lattice.spec.appmap`` and ``impact_ask`` modules as the real
+server, over the committed fixture project ``mock/appmap/`` (a copy of
+``tests/spec/fixtures/implementation`` plus one candidate: any ``ready`` or ``accepted`` mock
+change has it); the second project answers ``not_configured``.
+
 API v1.4 adds ``GET /api/graph`` (the business-logic graph: nodes, edges, lifecycle
 machines and the open change's diff, all derived from the same fixtures, see
 ``build_graph``) and ``id``/``next`` on every ``GET /api/flow`` stage.
@@ -172,6 +178,7 @@ import hashlib
 import json
 import mimetypes
 import re
+import tempfile
 import threading
 import time
 from datetime import UTC, datetime
@@ -182,6 +189,8 @@ from typing import Any
 from urllib.parse import parse_qs, unquote, urlparse
 
 from lattice.contracts.linked import LEGEND
+from lattice.spec import appmap as appmap_mod
+from lattice.spec import impact_ask
 from lattice.studio import areas as areas_mod
 from lattice.studio import plan as plan_mod
 from lattice.studio.mcp_intake import McpIntake, SourceError, parse_init, parse_source
@@ -1199,6 +1208,11 @@ class MockState:
         self.apply_enabled = True
         self.apply_jobs: dict[str, dict[str, Any]] = {}
         self.apply_records: dict[str, dict[str, Any]] = {}
+        # API v1.25: the app map and the impact come from the committed fixture project in
+        # mock/appmap/ (a copy of tests/spec/fixtures/implementation plus one candidate), built
+        # by the same appmap.py and impact_ask.py as the real server; a second project has none
+        self.appmap_enabled = True
+        self._impact_tmp: tempfile.TemporaryDirectory[str] | None = None
         if seed_change:
             self._seed_initial_change()
 
@@ -1565,8 +1579,93 @@ class MockState:
                 out["changes"].append(item)
             return out
 
+    # -- the app map and the impact (API v1.25), by the real modules over a fixture project
+    def _appmap_root(self) -> Path | None:
+        root = self.fixture_dir / "appmap" / "project"
+        return root if self.appmap_enabled and (root / "spec.py").is_file() else None
+
+    def appmap(self) -> appmap_mod.AppMap:
+        root = self._appmap_root()
+        if root is None:
+            return appmap_mod.AppMap(
+                appmap_mod.non_ok(
+                    "not_configured",
+                    "studio.toml has no [implementation] table: add inventory and app_root",
+                )
+            )
+        return appmap_mod.appmap_from_dir(root)
+
+    def get_appmap(self, section: str | None) -> dict[str, Any]:
+        doc = self.appmap().doc
+        return appmap_mod.section_of(doc, section) if section else doc
+
+    def get_appmap_element(self, key: str) -> dict[str, Any]:
+        return appmap_mod.element(self.appmap(), key)
+
+    def _impact_record(self, cid: str) -> tuple[Path | None, dict[str, Any] | None]:
+        """(a state directory holding the change's record, its Studio check): the record is the
+        mock change's status over the fixture's base and candidate, written for D's plain-file
+        reader (a ``tempfile`` directory of this mock; never the fixture)."""
+        root = self._appmap_root()
+        with self.lock:
+            known = cid in self.changes
+        if root is None or not known:
+            return None, None
+        ch = self.get_change(cid) or {}
+        cand = self.fixture_dir / "appmap" / "candidate"
+        read = lambda d, n: (d / n).read_text(encoding="utf-8")  # noqa: E731
+        with self.lock:
+            if self._impact_tmp is None:
+                self._impact_tmp = tempfile.TemporaryDirectory(prefix="lattice-mock-impact-")
+            state = Path(self._impact_tmp.name)
+        (state / "changes").mkdir(exist_ok=True)
+        doc = {
+            "schema": 1,
+            "kind": "changes",
+            "id": cid,
+            "record": {"id": cid, "status": ch.get("status")},
+            "private": {
+                "base": {
+                    "markdown": read(root, "REQUIREMENTS.md"),
+                    "module": read(root, "spec.py"),
+                    "trace": read(root, "spec.trace.json"),
+                },
+                "new_md": read(cand, "REQUIREMENTS.md"),
+                "new_module": read(cand, "spec.py"),
+                "new_trace": read(cand, "spec.trace.json"),
+            },
+        }
+        (state / "changes" / f"{cid}.json").write_text(json.dumps(doc), encoding="utf-8")
+        return state, (ch.get("checks") or {}).get("impact")
+
+    def impact_body(self, cid: str) -> dict[str, Any]:
+        root = self._appmap_root()
+        state, check = self._impact_record(cid)
+        return impact_ask.impact_view(
+            project=root or self.fixture_dir,
+            state_dir=state if state is not None else self._empty_state(),
+            change=cid,
+            configured=root is not None,
+            studio_check=check,
+            reports=None,
+        )
+
+    def _empty_state(self) -> Path:
+        with self.lock:
+            if self._impact_tmp is None:
+                self._impact_tmp = tempfile.TemporaryDirectory(prefix="lattice-mock-impact-")
+            return Path(self._impact_tmp.name)
+
+    def get_impact(self, cid: str, section: str | None) -> dict[str, Any]:
+        return impact_ask.with_section(self.impact_body(cid), section)
+
     # POST /api/ask
     def ask(self, body: dict[str, Any]) -> dict[str, Any]:
+        question = str(body.get("question", ""))
+        if self._appmap_root() is not None and impact_ask.is_routed(question):
+            routed = impact_ask.route(question, lookup=self.impact_body, appmap=self.appmap)
+            if routed is not None:
+                return routed
         answer = self._load(pick_ask_fixture(str(body.get("question", ""))))
         if not body.get("verify"):
             answer["verified"] = None
@@ -3328,6 +3427,8 @@ class Handler(BaseHTTPRequestHandler):
             )
         if path == "/api/model":
             return self._json(state.get_model())
+        if path in ("/api/appmap", "/api/appmap/element", "/api/impact"):  # API v1.25
+            return self._appmap_get(path, query, state)
         if path == "/api/areas":
             return self._json(state.areas(query.get("branch") or None))
         if path == "/api/branches":
@@ -3455,6 +3556,33 @@ class Handler(BaseHTTPRequestHandler):
         if path.startswith("/api/"):
             return self._error(HTTPStatus.NOT_FOUND, "no such route")
         return self._static(path)
+
+    def _appmap_get(self, path: str, query: dict[str, str], state: MockState) -> None:
+        """GET /api/appmap, /api/appmap/element and /api/impact: the refusals are the real
+        server's (the shared ``refuse_*`` functions of appmap.py and impact_ask.py)."""
+        if path == "/api/appmap":
+            section = query.get("section") or None
+            bad = appmap_mod.refuse_section(section)
+            if bad is not None:
+                return self._json({"detail": bad[0], "code": bad[1]}, 422)
+            return self._json(state.get_appmap(section))
+        if path == "/api/appmap/element":
+            key = query.get("key") or None
+            bad = appmap_mod.refuse_key(key)
+            if bad is not None:
+                return self._json({"detail": bad[0], "code": bad[1]}, 422)
+            assert key is not None
+            try:
+                return self._json(state.get_appmap_element(key))
+            except appmap_mod.ElementError as e:
+                return self._json({"detail": e.detail, "code": e.code, "nearest": e.nearest}, 404)
+        change = query.get("change") or None
+        section = query.get("section") or None
+        bad = impact_ask.refuse_change(change) or impact_ask.refuse_section(section)
+        if bad is not None:
+            return self._json({"detail": bad[0], "code": bad[1]}, 422)
+        assert change is not None
+        return self._json(state.get_impact(change, section))
 
     def do_POST(self) -> None:  # noqa: N802
         split = self._split()
@@ -3706,6 +3834,7 @@ class MockServer(ThreadingHTTPServer):
         self.verbose = verbose
         self.apply_lock = threading.Lock()  # API v1.21: guards the check-and-start of an apply
         self.states[SECOND_PROJECT].apply_enabled = False  # a fixture choice: both UI states
+        self.states[SECOND_PROJECT].appmap_enabled = False  # API v1.25: it answers not_configured
         self.workspace_enabled = True  # API v1.16: False answers the no-manifest shape
         # API v1.19: the fixture consumer's linked questions, cleared in memory
         self.linked: list[dict[str, Any]] = [copy.deepcopy(q) for q in MOCK_LINKED_QUESTIONS]

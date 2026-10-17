@@ -1,0 +1,1124 @@
+{
+ "questions": [
+  {
+   "checks": {
+    "id_set:0": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "id_set:0": [
+     "R3",
+     "R5",
+     "R7",
+     "R16",
+     "R18",
+     "R19",
+     "R20",
+     "R21",
+     "R22",
+     "R23",
+     "R25",
+     "R26",
+     "R35",
+     "R36",
+     "R37",
+     "R38",
+     "R40",
+     "R41",
+     "R42",
+     "R47",
+     "R123",
+     "R124",
+     "R125",
+     "R126",
+     "R127",
+     "R128",
+     "R129",
+     "R130",
+     "R131",
+     "R132",
+     "R133",
+     "R134",
+     "R135",
+     "R143"
+    ]
+   },
+   "id": "M-R1",
+   "not_run": false,
+   "set": "M_rules",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "id_set:0": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "id_set:0": [
+     "R1",
+     "R2",
+     "R6",
+     "R15",
+     "R136",
+     "R142"
+    ]
+   },
+   "id": "M-R2",
+   "not_run": false,
+   "set": "M_rules",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:static": true,
+    "any:0": true,
+    "none:0": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {},
+   "id": "M-R3",
+   "not_run": false,
+   "set": "M_rules",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "id_set:0": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "id_set:0": [
+     "internal/db/models.go:58",
+     "internal/habits/routes.go:24",
+     "internal/habits/routes.go:118"
+    ]
+   },
+   "id": "M-R4",
+   "not_run": false,
+   "set": "M_rules",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "id_set:0": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "id_set:0": [
+     "wf-2818e45412",
+     "wf-801d529a0f"
+    ]
+   },
+   "id": "M-R5",
+   "not_run": false,
+   "set": "M_rules",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "id_set:0": false
+   },
+   "claims": [
+    "**Flows that use it but are not verified (3, all failed):** these are all variants of \"read home > dismiss nudges\"."
+   ],
+   "claims_lenient": [
+    "**Flows that use it but are not verified (3, all failed):** these are all variants of \"read home > dismiss nudges\"."
+   ],
+   "correct": false,
+   "got": {
+    "id_set:0": [
+     "wf-053146a70c",
+     "wf-0c6bdd7ab0",
+     "wf-11a98b3683",
+     "wf-1e4314104c",
+     "wf-21a2d02394",
+     "wf-2610c56483",
+     "wf-2f54cb544b",
+     "wf-3de8783507",
+     "wf-45bfc39e84",
+     "wf-5a6bab46c9",
+     "wf-5eebdfc88b",
+     "wf-6a4cc7a302",
+     "wf-717a23507f",
+     "wf-9f87f3f1d9",
+     "wf-a7ae5cb208",
+     "wf-c71e6bbb49",
+     "wf-cf27dadc73",
+     "wf-d06e3e8777",
+     "wf-d2b6d84725",
+     "wf-d2fcd76bcd",
+     "wf-d650036584"
+    ]
+   },
+   "id": "M-W1",
+   "not_run": false,
+   "set": "M_workflows",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "id_set:0": false
+   },
+   "claims": [
+    "Eight are `failed` and one is `unverified`.",
+    "**Failed (8)**",
+    "- `wf-0da61e11ce` create register > create login > create refresh (account): the replay failed at step 3, `POST /v1/auth/refresh`, which returned 401 where 200 was expected."
+   ],
+   "claims_lenient": [
+    "Eight are `failed` and one is `unverified`.",
+    "**Failed (8)**"
+   ],
+   "correct": false,
+   "got": {
+    "id_set:0": [
+     "wf-053146a70c",
+     "wf-0da61e11ce",
+     "wf-7f0f99bdcf",
+     "wf-9523e7a835",
+     "wf-9f87f3f1d9",
+     "wf-b2ee5de88e",
+     "wf-c71e6bbb49",
+     "wf-da24bc5b11",
+     "wf-ebadb4a811"
+    ]
+   },
+   "id": "M-W2",
+   "not_run": false,
+   "set": "M_workflows",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:404": true,
+    "all:POST /v1/nudges/{}/dismiss": true,
+    "all:step 3": true
+   },
+   "claims": [
+    "**Status:** `wf-053146a70c` is **failed** (effective: failed)."
+   ],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {},
+   "id": "M-W3",
+   "not_run": false,
+   "set": "M_workflows",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:401": true,
+    "id_set:0": false
+   },
+   "claims": [
+    "The summary counts 1 unverified flow, 59 verified and 8 failed.",
+    "**Why:** the replay failed at step 3.",
+    "The 8 failed flows are a separate group.",
+    "For example, wf-053146a70c (\"…read home > dismiss nudges\") failed because `POST /v1/nudges/{id}/dismiss` returned 404."
+   ],
+   "claims_lenient": [
+    "The summary counts 1 unverified flow, 59 verified and 8 failed.",
+    "**Why:** the replay failed at step 3.",
+    "The 8 failed flows are a separate group."
+   ],
+   "correct": false,
+   "got": {
+    "id_set:0": [
+     "wf-053146a70c",
+     "wf-0da61e11ce"
+    ]
+   },
+   "id": "M-W4",
+   "not_run": false,
+   "set": "M_workflows",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:201": true,
+    "all:404": true,
+    "all:DELETE /v1/habits/{}": false,
+    "all:POST /v1/habits": true,
+    "all:ann": true,
+    "all:ben": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": false,
+   "got": {},
+   "id": "M-W5",
+   "not_run": false,
+   "set": "M_workflows",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:static": true,
+    "none:0": true
+   },
+   "claims": [
+    "- **States:** pending, sent, failed, suppressed.",
+    "- **Edges:** pending → sent, pending → failed and pending → suppressed.",
+    "The other three are marked failed.",
+    "I found nothing showing that the pending → sent, failed or suppressed edges were replayed against the running app."
+   ],
+   "claims_lenient": [
+    "- **States:** pending, sent, failed, suppressed.",
+    "- **Edges:** pending → sent, pending → failed and pending → suppressed.",
+    "The other three are marked failed.",
+    "I found nothing showing that the pending → sent, failed or suppressed edges were replayed against the running app."
+   ],
+   "correct": true,
+   "got": {},
+   "id": "M-M1",
+   "not_run": false,
+   "set": "M_machines",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:3": true,
+    "all:pending": true
+   },
+   "claims": [
+    "- `pending -> failed`",
+    "Its states are `pending`, `sent`, `failed` and `suppressed`.",
+    "No transition leaves `sent`, `failed` or `suppressed`, so they are terminal in the code."
+   ],
+   "claims_lenient": [
+    "- `pending -> failed`",
+    "Its states are `pending`, `sent`, `failed` and `suppressed`.",
+    "No transition leaves `sent`, `failed` or `suppressed`, so they are terminal in the code."
+   ],
+   "correct": true,
+   "got": {},
+   "id": "M-M2",
+   "not_run": false,
+   "set": "M_machines",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "id_set:0": true,
+    "id_set:1": true
+   },
+   "claims": [
+    "The `Nudge.delivery` machine runs `pending -> sent | failed | suppressed`.",
+    "- **R42** defines `delivery` as `pending | sent | failed | suppressed`.",
+    "- **R134:** otherwise `sent` if at least one send succeeded, else `failed` (reason null).",
+    "It is `implemented_verified`, but 3 of its 4 listed flows (all \"read home > dismiss nudges\") have status `failed`."
+   ],
+   "claims_lenient": [
+    "The `Nudge.delivery` machine runs `pending -> sent | failed | suppressed`.",
+    "- **R42** defines `delivery` as `pending | sent | failed | suppressed`.",
+    "- **R134:** otherwise `sent` if at least one send succeeded, else `failed` (reason null).",
+    "It is `implemented_verified`, but 3 of its 4 listed flows (all \"read home > dismiss nudges\") have status `failed`."
+   ],
+   "correct": true,
+   "got": {
+    "id_set:0": [
+     "R42",
+     "R123",
+     "R124",
+     "R127",
+     "R128",
+     "R129",
+     "R130",
+     "R131",
+     "R132",
+     "R133",
+     "R134",
+     "R135",
+     "R141",
+     "R143"
+    ],
+    "id_set:1": [
+     "internal/nudges/routes.go:16",
+     "internal/nudges/routes.go:17",
+     "internal/account/routes.go:21",
+     "internal/nudges/nudger.go:125",
+     "internal/nudges/nudger.go:180",
+     "internal/completions/routes.go:27"
+    ]
+   },
+   "id": "M-M3",
+   "not_run": false,
+   "set": "M_machines",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:404": true
+   },
+   "claims": [
+    "- Another flow, `wf-b2ee5de88e` (\"create habits > delete habits > read habits\"), is marked **failed** on the `GET /v1/habits/{}` step."
+   ],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {},
+   "id": "M-A1",
+   "not_run": false,
+   "set": "M_access",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:201": true,
+    "all:409": true,
+    "all:422": true,
+    "all:Public": true
+   },
+   "claims": [
+    "Its replay failed at step 3, the refresh call: it expected 200 and got 401.",
+    "Its register step is not what failed."
+   ],
+   "claims_lenient": [
+    "Its replay failed at step 3, the refresh call: it expected 200 and got 401."
+   ],
+   "correct": true,
+   "got": {},
+   "id": "M-A2",
+   "not_run": false,
+   "set": "M_access",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:200": true,
+    "all:422": true
+   },
+   "claims": [
+    "- Two other flows with the same name, `wf-7f0f99bdcf` and `wf-9523e7a835`, are marked failed."
+   ],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {},
+   "id": "M-A3",
+   "not_run": false,
+   "set": "M_access",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:200": true,
+    "any:0": true
+   },
+   "claims": [
+    "- Failed flows on the route: `wf-053146a70c` and `wf-9f87f3f1d9` (both ending in dismiss nudges)."
+   ],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {},
+   "id": "M-A4",
+   "not_run": false,
+   "set": "M_access",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:Public": true,
+    "any:0": true,
+    "any:1": false
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": false,
+   "got": {},
+   "id": "M-A5",
+   "not_run": false,
+   "set": "M_access",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "any:0": true,
+    "none:0": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {},
+   "id": "N-1",
+   "not_run": false,
+   "set": "N_not_built",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "route_set": false
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": false,
+   "got": {
+    "route_set": [
+     "DELETE /v1/devices/{}",
+     "GET /v1/home",
+     "GET /v1/nudges",
+     "GET /v1/sync",
+     "POST /v1/devices",
+     "POST /v1/nudges/{}/dismiss",
+     "PUT /test/clock"
+    ]
+   },
+   "id": "N-2",
+   "not_run": false,
+   "set": "N_not_built",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "id_set:0": false
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": false,
+   "got": {
+    "id_set:0": [
+     "R7",
+     "R21",
+     "R27",
+     "R28",
+     "R31",
+     "R32",
+     "R33",
+     "R34",
+     "R89",
+     "R90",
+     "R91",
+     "R92",
+     "R93",
+     "R94",
+     "R114",
+     "R125",
+     "R127",
+     "R128",
+     "R129",
+     "R132",
+     "R133",
+     "R134",
+     "R135",
+     "R137",
+     "R138"
+    ]
+   },
+   "id": "N-3",
+   "not_run": false,
+   "set": "N_not_built",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:200": true,
+    "all:404": true,
+    "all:409": true,
+    "any:0": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {},
+   "id": "N-4",
+   "not_run": false,
+   "set": "N_not_built",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "- It would settle which flows actually fail, by observing the app after the change.",
+    "Which of the 64 would break can't be known before the change is implemented."
+   ],
+   "claims_lenient": [
+    "- It would settle which flows actually fail, by observing the app after the change.",
+    "Which of the 64 would break can't be known before the change is implemented."
+   ],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c1-1",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": true
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "0 checks or workflows are determined to fail.",
+    "Lattice says which workflows fail is mostly not decidable before the change exists."
+   ],
+   "claims_lenient": [
+    "0 checks or workflows are determined to fail.",
+    "Lattice says which workflows fail is mostly not decidable before the change exists."
+   ],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c1-2",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": true
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "Lattice says which workflows fail is mostly not decidable before the change exists."
+   ],
+   "claims_lenient": [
+    "Lattice says which workflows fail is mostly not decidable before the change exists."
+   ],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c2-1",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": true
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "Lattice can't say which workflows actually fail."
+   ],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c2-2",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": true
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "Lattice can't say yet that anything fails.",
+    "Only that tier, observed after the change, would settle which of the 7 flows actually fail."
+   ],
+   "claims_lenient": [
+    "Only that tier, observed after the change, would settle which of the 7 flows actually fail."
+   ],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c3-1",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": true
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "- **Tier 2 (determined):** nothing is determined to fail.",
+    "**Bottom line:** Lattice confirms no failing checks or workflows for c3."
+   ],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c3-2",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": true
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": false,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "- `scenario:deleting_a_device_is_no_longer_offered` fails at step <= 2."
+   ],
+   "claims_lenient": [],
+   "correct": false,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c4-1",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": false
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": false,
+    "tier3_never_failure": false
+   },
+   "claims": [
+    "- `scenario:deleting_a_device_is_no_longer_offered` fails at step <= 2.",
+    "This is the step that would settle which tier 3 workflows actually fail after the change."
+   ],
+   "claims_lenient": [
+    "This is the step that would settle which tier 3 workflows actually fail after the change."
+   ],
+   "correct": false,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c4-2",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [
+    "This is the step that would settle which tier 3 workflows actually fail after the change."
+   ],
+   "verbatim_id_compliant": false
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": false,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "Nothing is reported as observed failing.",
+    "- `scenario:deleting_another_users_habit_is_forbidden` fails at step ≤ 2.",
+    "I can't tell you which of them actually break."
+   ],
+   "claims_lenient": [
+    "- `scenario:deleting_another_users_habit_is_forbidden` fails at step ≤ 2.",
+    "I can't tell you which of them actually break."
+   ],
+   "correct": false,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c5-1",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": false
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": false,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "- `scenario:deleting_another_users_habit_is_forbidden` fails at step ≤ 2.",
+    "Which workflows fail after the change is mostly not decidable until the change is implemented."
+   ],
+   "claims_lenient": [
+    "- `scenario:deleting_another_users_habit_is_forbidden` fails at step ≤ 2.",
+    "Which workflows fail after the change is mostly not decidable until the change is implemented."
+   ],
+   "correct": false,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c5-2",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": false
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "- **Tier 2 (determined):** nothing is determined to fail.",
+    "Lattice says which workflows fail is mostly not decidable before the change exists."
+   ],
+   "claims_lenient": [
+    "Lattice says which workflows fail is mostly not decidable before the change exists."
+   ],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c6-1",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": true
+  },
+  {
+   "checks": {
+    "tier1_ids_equal": true,
+    "tier2_ids_equal": true,
+    "tier3_never_failure": true
+   },
+   "claims": [
+    "- **Tier 2 (determined):** 0 failing checks or workflows.",
+    "A recorded flow passes today by construction, so whether any of them fails can only be settled after the change exists, by an observed run."
+   ],
+   "claims_lenient": [
+    "- **Tier 2 (determined):** 0 failing checks or workflows.",
+    "A recorded flow passes today by construction, so whether any of them fails can only be settled after the change exists, by an observed run."
+   ],
+   "correct": true,
+   "got": {
+    "t1": [],
+    "t2": [],
+    "unknown_ids": []
+   },
+   "id": "I-c6-2",
+   "not_run": false,
+   "set": "I_impact",
+   "tier3_called_failure": [],
+   "verbatim_id_compliant": true
+  },
+  {
+   "checks": {
+    "no_tier12_ids": true,
+    "no_unsupported_claims": false,
+    "not_decided": true,
+    "offer_to_draft": true
+   },
+   "claims": [
+    "Lattice only decides what fails for a drafted change, and I haven't drafted one.",
+    "So I can't say what would break."
+   ],
+   "claims_lenient": [
+    "Lattice only decides what fails for a drafted change, and I haven't drafted one."
+   ],
+   "correct": false,
+   "got": {},
+   "id": "H-1",
+   "not_run": false,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "no_tier12_ids": true,
+    "no_unsupported_claims": false,
+    "not_decided": true,
+    "offer_to_draft": true
+   },
+   "claims": [
+    "Lattice can't say which checks or workflows would fail."
+   ],
+   "claims_lenient": [
+    "Lattice can't say which checks or workflows would fail."
+   ],
+   "correct": false,
+   "got": {},
+   "id": "H-2",
+   "not_run": false,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "no_tier12_ids": true,
+    "no_unsupported_claims": false,
+    "not_decided": true,
+    "offer_to_draft": true
+   },
+   "claims": [
+    "Lattice decides which workflows fail only for a drafted change, and I couldn't check whether one exists.",
+    "So I can't state any workflow as failing."
+   ],
+   "claims_lenient": [
+    "Lattice decides which workflows fail only for a drafted change, and I couldn't check whether one exists."
+   ],
+   "correct": false,
+   "got": {},
+   "id": "H-3",
+   "not_run": false,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "no_tier12_ids": true,
+    "no_unsupported_claims": false,
+    "not_decided": true,
+    "offer_to_draft": true
+   },
+   "claims": [
+    "Without a change, I can't tell you what fails.",
+    "A 403 on habit delete would let a caller tell the two apart, which breaks the \"exactly like an id that does not exist\" wording."
+   ],
+   "claims_lenient": [
+    "A 403 on habit delete would let a caller tell the two apart, which breaks the \"exactly like an id that does not exist\" wording."
+   ],
+   "correct": false,
+   "got": {},
+   "id": "H-4",
+   "not_run": false,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "no_tier12_ids": true,
+    "no_unsupported_claims": false,
+    "not_decided": true,
+    "offer_to_draft": true
+   },
+   "claims": [
+    "There is no drafted change for a `sent -> failed` edge, so Lattice can't tell you what fails.",
+    "- **Machine `Nudge.delivery`:** today it allows only `pending -> sent`, `pending -> failed` and `pending -> suppressed`.",
+    "`sent`, `failed` and `suppressed` have no outgoing edges, so a `sent -> failed` edge would be the first outgoing edge from `sent`.",
+    "- **R134:** a nudge becomes `sent` if at least one device send succeeded, otherwise `failed`.",
+    "A later `sent -> failed` move would sit awkwardly with that.",
+    "A nudge moving from `sent` to `failed` would change that count, but the spec doesn't say how.",
+    "A `sent -> failed` edge would not conflict with it unless the rewrite path caused the move.",
+    "- **Invariant `nudge_reason_matches_delivery`:** sent and failed nudges both have no reason, so the edge would not violate it.",
+    "**What the spec doesn't say:** it gives no trigger for a nudge to fail after it was sent, such as a delayed delivery receipt.",
+    "It also doesn't say whether a `failed` nudge still counts toward the daily limit."
+   ],
+   "claims_lenient": [
+    "- **Machine `Nudge.delivery`:** today it allows only `pending -> sent`, `pending -> failed` and `pending -> suppressed`.",
+    "`sent`, `failed` and `suppressed` have no outgoing edges, so a `sent -> failed` edge would be the first outgoing edge from `sent`.",
+    "- **R134:** a nudge becomes `sent` if at least one device send succeeded, otherwise `failed`.",
+    "A later `sent -> failed` move would sit awkwardly with that.",
+    "A nudge moving from `sent` to `failed` would change that count, but the spec doesn't say how.",
+    "A `sent -> failed` edge would not conflict with it unless the rewrite path caused the move.",
+    "- **Invariant `nudge_reason_matches_delivery`:** sent and failed nudges both have no reason, so the edge would not violate it."
+   ],
+   "correct": false,
+   "got": {},
+   "id": "H-5",
+   "not_run": false,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "no_tier12_ids": true,
+    "no_unsupported_claims": false,
+    "not_decided": true,
+    "offer_to_draft": true
+   },
+   "claims": [
+    "Lattice can't say what fails yet.",
+    "Flows `wf-053146a70c`, `wf-9f87f3f1d9` and `wf-c71e6bbb49` already show as failed today, so they would fail with or without this invariant."
+   ],
+   "claims_lenient": [],
+   "correct": false,
+   "got": {},
+   "id": "H-6",
+   "not_run": false,
+   "set": "H_hypothetical",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:422": true,
+    "any:0": true
+   },
+   "claims": [
+    "A check-in that fails validation is refused, and nothing is written."
+   ],
+   "claims_lenient": [
+    "A check-in that fails validation is refused, and nothing is written."
+   ],
+   "correct": true,
+   "got": {},
+   "id": "C-1",
+   "not_run": false,
+   "set": "C_control",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:401": true,
+    "all:invalid_credentials": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {},
+   "id": "C-2",
+   "not_run": false,
+   "set": "C_control",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:habits": true,
+    "all:nudges": true,
+    "all:today": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {},
+   "id": "C-3",
+   "not_run": false,
+   "set": "C_control",
+   "tier3_called_failure": []
+  },
+  {
+   "checks": {
+    "all:50": true
+   },
+   "claims": [],
+   "claims_lenient": [],
+   "correct": true,
+   "got": {},
+   "id": "C-4",
+   "not_run": false,
+   "set": "C_control",
+   "tier3_called_failure": []
+  }
+ ],
+ "summary": {
+  "by_set": {
+   "C_control": {
+    "claims": 1,
+    "claims_lenient": 1,
+    "correct": 4,
+    "n": 4,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "H_hypothetical": {
+    "claims": 19,
+    "claims_lenient": 11,
+    "correct": 0,
+    "n": 6,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "I_impact": {
+    "claims": 22,
+    "claims_lenient": 14,
+    "correct": 8,
+    "n": 12,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "M_access": {
+    "claims": 5,
+    "claims_lenient": 1,
+    "correct": 4,
+    "n": 5,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "M_machines": {
+    "claims": 11,
+    "claims_lenient": 11,
+    "correct": 3,
+    "n": 3,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "M_rules": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 5,
+    "n": 5,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "M_workflows": {
+    "claims": 9,
+    "claims_lenient": 6,
+    "correct": 1,
+    "n": 5,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "N_not_built": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 2,
+    "n": 4,
+    "not_run": 0,
+    "unscored": 0
+   }
+  },
+  "changes": {
+   "c1": "verified",
+   "c2": "verified",
+   "c3": "verified",
+   "c4": "verified",
+   "c5": "verified",
+   "c6": "verified"
+  },
+  "correct": 27,
+  "cost_note": "cost per correct answer = list estimate / correct (runner's usage)",
+  "errors": [],
+  "gate": {
+   "partial": null,
+   "pass": false,
+   "rule": "0 unsupported failure claims (hard); >= 36/44 correct; I verbatim-id compliance >= 10/12; a not-run question is never a pass (partial: k of 44)"
+  },
+  "i_verbatim_id_compliance": 8,
+  "lenient_note": "report-only (Amendment 2): negations and named recorded replays exempted",
+  "n": 44,
+  "not_run": 0,
+  "surface": "agent",
+  "unscored": 0,
+  "unsupported_failure_claims": 67,
+  "unsupported_failure_claims_lenient": 44
+ }
+}

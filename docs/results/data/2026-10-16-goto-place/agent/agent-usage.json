@@ -1,0 +1,1368 @@
+{
+ "model": "sonnet",
+ "max_turns": 12,
+ "timeout_s": 600,
+ "usd_cap": 5.69,
+ "spent_usd_list_estimate": 2.1511,
+ "stopped": null,
+ "asked": 44,
+ "ok": 44,
+ "of": 44,
+ "input_tokens": 200,
+ "output_tokens": 30061,
+ "cache_read_tokens": 7106938,
+ "cache_creation_tokens": 284853,
+ "turns": 146,
+ "wall_s": 500.0,
+ "change_impact_calls": 12,
+ "per_question": {
+  "I-c1-1": {
+   "wall_s": 9.7,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_get",
+     "input": {
+      "id": "c1"
+     }
+    },
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c1"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0214805,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 697,
+   "cache_read_tokens": 145025,
+   "cache_creation_tokens": 0,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1565
+  },
+  "I-c1-2": {
+   "wall_s": 7.6,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c1"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0354263,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 561,
+   "cache_read_tokens": 140763,
+   "cache_creation_tokens": 3933,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1330
+  },
+  "I-c2-1": {
+   "wall_s": 8.5,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_get",
+     "input": {
+      "id": "c2"
+     }
+    },
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c2"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0368154,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 578,
+   "cache_read_tokens": 140754,
+   "cache_creation_tokens": 4238,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1231
+  },
+  "I-c2-2": {
+   "wall_s": 7.3,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c2"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0346543,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 497,
+   "cache_read_tokens": 140763,
+   "cache_creation_tokens": 3900,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1121
+  },
+  "I-c3-1": {
+   "wall_s": 8.4,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c3"
+     }
+    },
+    {
+     "name": "mcp__lattice__change_get",
+     "input": {
+      "id": "c3"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0372354,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 608,
+   "cache_read_tokens": 140754,
+   "cache_creation_tokens": 4268,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1305
+  },
+  "I-c3-2": {
+   "wall_s": 7.6,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c3"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0356243,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 582,
+   "cache_read_tokens": 140763,
+   "cache_creation_tokens": 3930,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1377
+  },
+  "I-c4-1": {
+   "wall_s": 8.6,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c4"
+     }
+    },
+    {
+     "name": "mcp__lattice__change_get",
+     "input": {
+      "id": "c4"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0368434,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 578,
+   "cache_read_tokens": 140754,
+   "cache_creation_tokens": 4245,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1212
+  },
+  "I-c4-2": {
+   "wall_s": 7.3,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c4"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0346123,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 490,
+   "cache_read_tokens": 140763,
+   "cache_creation_tokens": 3907,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1112
+  },
+  "I-c5-1": {
+   "wall_s": 7.5,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c5"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0351754,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 526,
+   "cache_read_tokens": 140754,
+   "cache_creation_tokens": 3958,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1170
+  },
+  "I-c5-2": {
+   "wall_s": 8.6,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c5"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0355723,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 562,
+   "cache_read_tokens": 140763,
+   "cache_creation_tokens": 3967,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1276
+  },
+  "I-c6-1": {
+   "wall_s": 8.1,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_get",
+     "input": {
+      "id": "c6"
+     }
+    },
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c6"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0370694,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 603,
+   "cache_read_tokens": 140754,
+   "cache_creation_tokens": 4239,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1264
+  },
+  "I-c6-2": {
+   "wall_s": 8.8,
+   "tools": [
+    {
+     "name": "mcp__lattice__change_impact",
+     "input": {
+      "change": "c6"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0344483,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 476,
+   "cache_read_tokens": 140763,
+   "cache_creation_tokens": 3901,
+   "subtype": "success",
+   "status": "ok",
+   "set": "I_impact",
+   "final_text_chars": 1078
+  },
+  "H-1": {
+   "wall_s": 24.5,
+   "tools": [
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What does the spec say about the habit limit (maximum number of habits)? Which rules, scenarios and endpoints depend on it?"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "habit limit maximum number of habits"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0471958,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 852,
+   "cache_read_tokens": 140758,
+   "cache_creation_tokens": 6148,
+   "subtype": "success",
+   "status": "ok",
+   "set": "H_hypothetical",
+   "final_text_chars": 1558
+  },
+  "H-2": {
+   "wall_s": 20.6,
+   "tools": [
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What is the habit name length limit?"
+     }
+    },
+    {
+     "name": "mcp__lattice__change_list",
+     "input": {}
+    },
+    {
+     "name": "mcp__lattice__code_links",
+     "input": {
+      "target": "R51"
+     }
+    },
+    {
+     "name": "mcp__lattice__graph_get",
+     "input": {
+      "focus": "R51",
+      "depth": 1
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.051447599999999996,
+   "turns": 5,
+   "input_tokens": 6,
+   "output_tokens": 819,
+   "cache_read_tokens": 213896,
+   "cache_creation_tokens": 5464,
+   "subtype": "success",
+   "status": "ok",
+   "set": "H_hypothetical",
+   "final_text_chars": 1366
+  },
+  "H-3": {
+   "wall_s": 10.0,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "DELETE /v1/devices/{id}"
+     }
+    },
+    {
+     "name": "mcp__lattice__graph_get",
+     "input": {
+      "focus": "DELETE /v1/devices/{id}",
+      "depth": 2
+     }
+    },
+    {
+     "name": "mcp__lattice__change_list",
+     "input": {}
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0470787,
+   "turns": 4,
+   "input_tokens": 4,
+   "output_tokens": 863,
+   "cache_read_tokens": 140767,
+   "cache_creation_tokens": 6091,
+   "subtype": "success",
+   "status": "ok",
+   "set": "H_hypothetical",
+   "final_text_chars": 1700
+  },
+  "H-4": {
+   "wall_s": 9.5,
+   "tools": [
+    {
+     "name": "mcp__lattice__rule_get",
+     "input": {
+      "id": "R28"
+     }
+    },
+    {
+     "name": "mcp__lattice__change_list",
+     "input": {}
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0389167,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 772,
+   "cache_read_tokens": 140767,
+   "cache_creation_tokens": 4278,
+   "subtype": "success",
+   "status": "ok",
+   "set": "H_hypothetical",
+   "final_text_chars": 1758
+  },
+  "H-5": {
+   "wall_s": 23.6,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "nudge delivery lifecycle sent failed"
+     }
+    },
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What is the nudge delivery lifecycle (states and transitions), and is there any rule about sent and failed?"
+     }
+    },
+    {
+     "name": "mcp__lattice__change_list",
+     "input": {}
+    },
+    {
+     "name": "mcp__lattice__workflow_get",
+     "input": {
+      "id": "nudges.delivery"
+     }
+    },
+    {
+     "name": "mcp__lattice__graph_get",
+     "input": {
+      "focus": "machine:Nudge.delivery",
+      "depth": 1
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0606041,
+   "turns": 6,
+   "input_tokens": 6,
+   "output_tokens": 1133,
+   "cache_read_tokens": 215581,
+   "cache_creation_tokens": 6926,
+   "subtype": "success",
+   "status": "ok",
+   "set": "H_hypothetical",
+   "final_text_chars": 1819
+  },
+  "H-6": {
+   "wall_s": 9.1,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "nudge message"
+     }
+    },
+    {
+     "name": "mcp__lattice__change_list",
+     "input": {}
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.042098500000000004,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 787,
+   "cache_read_tokens": 140765,
+   "cache_creation_tokens": 5036,
+   "subtype": "success",
+   "status": "ok",
+   "set": "H_hypothetical",
+   "final_text_chars": 1631
+  },
+  "C-1": {
+   "wall_s": 18.6,
+   "tools": [
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What happens when a check-in fails validation?"
+     }
+    },
+    {
+     "name": "mcp__lattice__model_get",
+     "input": {
+      "section": "rules"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0708455,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 483,
+   "cache_read_tokens": 140755,
+   "cache_creation_tokens": 12983,
+   "subtype": "success",
+   "status": "ok",
+   "set": "C_control",
+   "final_text_chars": 989
+  },
+  "C-2": {
+   "wall_s": 11.2,
+   "tools": [
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "Which error code does the app return for a wrong password at login?"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "routes",
+      "limit": 50
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0647179,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 375,
+   "cache_read_tokens": 140759,
+   "cache_creation_tokens": 11721,
+   "subtype": "success",
+   "status": "ok",
+   "set": "C_control",
+   "final_text_chars": 626
+  },
+  "C-3": {
+   "wall_s": 16.7,
+   "tools": [
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What does GET /v1/home return?",
+      "selected": [
+       "cell:row|GET /v1/home"
+      ]
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "GET /v1/home"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.044615300000000004,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 678,
+   "cache_read_tokens": 140753,
+   "cache_creation_tokens": 5938,
+   "subtype": "success",
+   "status": "ok",
+   "set": "C_control",
+   "final_text_chars": 1238
+  },
+  "C-4": {
+   "wall_s": 16.8,
+   "tools": [
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "How many active habits may a user have?"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0326772,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 289,
+   "cache_read_tokens": 140752,
+   "cache_creation_tokens": 3926,
+   "subtype": "success",
+   "status": "ok",
+   "set": "C_control",
+   "final_text_chars": 638
+  },
+  "M-R1": {
+   "wall_s": 6.6,
+   "tools": [
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "rules",
+      "status": "implemented_unverified",
+      "limit": 200
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0379295,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 423,
+   "cache_read_tokens": 140755,
+   "cache_creation_tokens": 4904,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_rules",
+   "final_text_chars": 858
+  },
+  "M-R2": {
+   "wall_s": 6.1,
+   "tools": [
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "rules",
+      "status": "no_element",
+      "limit": 200
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0326395,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 386,
+   "cache_read_tokens": 140755,
+   "cache_creation_tokens": 3674,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_rules",
+   "final_text_chars": 783
+  },
+  "M-R3": {
+   "wall_s": 7.8,
+   "tools": [
+    {
+     "name": "mcp__lattice__rule_get",
+     "input": {
+      "id": "R123"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "rules",
+      "rule": "R123"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0369808,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 634,
+   "cache_read_tokens": 140768,
+   "cache_creation_tokens": 4139,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_rules",
+   "final_text_chars": 1339
+  },
+  "M-R4": {
+   "wall_s": 9.0,
+   "tools": [
+    {
+     "name": "mcp__lattice__code_links",
+     "input": {
+      "target": "R56"
+     }
+    },
+    {
+     "name": "mcp__lattice__rule_get",
+     "input": {
+      "id": "R56"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "rule": "R56"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "rules",
+      "rule": "R56"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "POST /v1/habits habit_limit 50 active habits"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0617868,
+   "turns": 6,
+   "input_tokens": 8,
+   "output_tokens": 704,
+   "cache_read_tokens": 286268,
+   "cache_creation_tokens": 6526,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_rules",
+   "final_text_chars": 1054
+  },
+  "M-R5": {
+   "wall_s": 7.2,
+   "tools": [
+    {
+     "name": "mcp__lattice__rule_get",
+     "input": {
+      "id": "R33"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "flows",
+      "rule": "R33"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "delete a device"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0420265,
+   "turns": 4,
+   "input_tokens": 4,
+   "output_tokens": 559,
+   "cache_read_tokens": 140765,
+   "cache_creation_tokens": 5588,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_rules",
+   "final_text_chars": 930
+  },
+  "M-W1": {
+   "wall_s": 12.3,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "POST /v1/habits/{}/completions"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "flows",
+      "element": "impl:route:POST /v1/habits/{}/completions"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0965685,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 1380,
+   "cache_read_tokens": 140765,
+   "cache_creation_tokens": 17171,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_workflows",
+   "final_text_chars": 1876
+  },
+  "M-W2": {
+   "wall_s": 12.1,
+   "tools": [
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "flows",
+      "limit": 200
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "flows",
+      "status": "failed",
+      "limit": 200
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "flows",
+      "status": "unverified",
+      "limit": 200
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.1095223,
+   "turns": 4,
+   "input_tokens": 6,
+   "output_tokens": 1265,
+   "cache_read_tokens": 224643,
+   "cache_creation_tokens": 18599,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_workflows",
+   "final_text_chars": 2370
+  },
+  "M-W3": {
+   "wall_s": 6.7,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_get",
+     "input": {
+      "id": "wf-053146a70c"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0368112,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 449,
+   "cache_read_tokens": 140772,
+   "cache_creation_tokens": 4559,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_workflows",
+   "final_text_chars": 952
+  },
+  "M-W4": {
+   "wall_s": 7.5,
+   "tools": [
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "flows"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "summary"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0819395,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 540,
+   "cache_read_tokens": 140755,
+   "cache_creation_tokens": 15614,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_workflows",
+   "final_text_chars": 1100
+  },
+  "M-W5": {
+   "wall_s": 7.0,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_get",
+     "input": {
+      "id": "wf-a1793fed29"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0359896,
+   "turns": 2,
+   "input_tokens": 4,
+   "output_tokens": 544,
+   "cache_read_tokens": 140776,
+   "cache_creation_tokens": 4116,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_workflows",
+   "final_text_chars": 1076
+  },
+  "M-M1": {
+   "wall_s": 7.6,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "nudge delivery lifecycle"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "machines"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0395925,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 540,
+   "cache_read_tokens": 140765,
+   "cache_creation_tokens": 5027,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_machines",
+   "final_text_chars": 1182
+  },
+  "M-M2": {
+   "wall_s": 9.5,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "nudge delivery lifecycle state machine transitions"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "machines"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0381614,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 388,
+   "cache_read_tokens": 140774,
+   "cache_creation_tokens": 5049,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_machines",
+   "final_text_chars": 673
+  },
+  "M-M3": {
+   "wall_s": 15.3,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "nudge delivery lifecycle"
+     }
+    },
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "Which rules govern the nudge delivery lifecycle?"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0478889,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 1038,
+   "cache_read_tokens": 140769,
+   "cache_creation_tokens": 5856,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_machines",
+   "final_text_chars": 2162
+  },
+  "M-A1": {
+   "wall_s": 18.3,
+   "tools": [
+    {
+     "name": "mcp__lattice__graph_get",
+     "input": {
+      "focus": "cell:ben|DELETE /v1/habits/{}"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "DELETE /v1/habits/{} as ben"
+     }
+    },
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What does the spec expect for ben on DELETE /v1/habits/{}?",
+      "selected": [
+       "cell:ben|DELETE /v1/habits/{}"
+      ]
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_get",
+     "input": {
+      "id": "wf-a1793fed29"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.058709500000000005,
+   "turns": 5,
+   "input_tokens": 6,
+   "output_tokens": 910,
+   "cache_read_tokens": 215695,
+   "cache_creation_tokens": 7007,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_access",
+   "final_text_chars": 1377
+  },
+  "M-A2": {
+   "wall_s": 19.3,
+   "tools": [
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What does the spec expect for a caller with no token on POST /v1/auth/register?",
+      "selected": [
+       "cell:row|POST /v1/auth/register"
+      ]
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "element": "impl:route:POST /v1/auth/register",
+      "section": "routes"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "POST /v1/auth/register without a token"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_get",
+     "input": {
+      "id": "wf-a8966be4b8"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_get",
+     "input": {
+      "id": "wf-0da61e11ce"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.060400499999999996,
+   "turns": 6,
+   "input_tokens": 6,
+   "output_tokens": 1012,
+   "cache_read_tokens": 215085,
+   "cache_creation_tokens": 7190,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_access",
+   "final_text_chars": 1544
+  },
+  "M-A3": {
+   "wall_s": 21.4,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "POST /v1/completions/batch ann"
+     }
+    },
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What does the spec expect for the user ann on POST /v1/completions/batch?"
+     }
+    },
+    {
+     "name": "mcp__lattice__graph_get",
+     "input": {
+      "focus": "POST /v1/completions/batch"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_get",
+     "input": {
+      "id": "wf-2da750f4e8"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_get",
+     "input": {
+      "id": "wf-4e49f96210"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0663951,
+   "turns": 6,
+   "input_tokens": 6,
+   "output_tokens": 1025,
+   "cache_read_tokens": 216171,
+   "cache_creation_tokens": 8629,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_access",
+   "final_text_chars": 1589
+  },
+  "M-A4": {
+   "wall_s": 14.5,
+   "tools": [
+    {
+     "name": "mcp__lattice__graph_get",
+     "input": {
+      "focus": "cell:ben|GET /v1/home",
+      "depth": 2
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "ben GET /v1/home"
+     }
+    },
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What does the spec expect for ben on GET /v1/home?",
+      "selected": [
+       "cell:ben|GET /v1/home"
+      ]
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0534233,
+   "turns": 4,
+   "input_tokens": 4,
+   "output_tokens": 935,
+   "cache_read_tokens": 140773,
+   "cache_creation_tokens": 7497,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_access",
+   "final_text_chars": 1726
+  },
+  "M-A5": {
+   "wall_s": 13.2,
+   "tools": [
+    {
+     "name": "mcp__lattice__graph_get",
+     "input": {
+      "focus": "cell:ann|GET /health"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "element": "impl:route:GET /health",
+      "section": "routes"
+     }
+    },
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What does the spec say for ann on GET /health?",
+      "selected": [
+       "cell:ann|GET /health"
+      ]
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.047141300000000004,
+   "turns": 4,
+   "input_tokens": 6,
+   "output_tokens": 682,
+   "cache_read_tokens": 213613,
+   "cache_creation_tokens": 4737,
+   "subtype": "success",
+   "status": "ok",
+   "set": "M_access",
+   "final_text_chars": 870
+  },
+  "N-1": {
+   "wall_s": 6.3,
+   "tools": [
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "element": "impl:route:GET /v1/sync"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "GET /v1/sync"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0400814,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 357,
+   "cache_read_tokens": 140754,
+   "cache_creation_tokens": 5607,
+   "subtype": "success",
+   "status": "ok",
+   "set": "N_not_built",
+   "final_text_chars": 638
+  },
+  "N-2": {
+   "wall_s": 9.6,
+   "tools": [
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "routes",
+      "limit": 200
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "rules",
+      "status": "required_not_implemented",
+      "limit": 200
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "summary"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0777369,
+   "turns": 4,
+   "input_tokens": 6,
+   "output_tokens": 812,
+   "cache_read_tokens": 220809,
+   "cache_creation_tokens": 11881,
+   "subtype": "success",
+   "status": "ok",
+   "set": "N_not_built",
+   "final_text_chars": 1114
+  },
+  "N-3": {
+   "wall_s": 9.2,
+   "tools": [
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "rules",
+      "status": "required_not_implemented",
+      "limit": 200
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "summary"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.041252500000000004,
+   "turns": 3,
+   "input_tokens": 6,
+   "output_tokens": 400,
+   "cache_read_tokens": 213005,
+   "cache_creation_tokens": 3985,
+   "subtype": "success",
+   "status": "ok",
+   "set": "N_not_built",
+   "final_text_chars": 637
+  },
+  "N-4": {
+   "wall_s": 14.9,
+   "tools": [
+    {
+     "name": "mcp__lattice__graph_get",
+     "input": {
+      "focus": "cell:ann|POST /v1/nudges/{}/dismiss"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "element": "impl:route:POST /v1/nudges/{}/dismiss"
+     }
+    },
+    {
+     "name": "mcp__lattice__model_get",
+     "input": {
+      "section": "views"
+     }
+    },
+    {
+     "name": "mcp__lattice__code_links",
+     "input": {
+      "target": "cell:ann|POST /v1/nudges/{}/dismiss"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "routes",
+      "element": "impl:route:POST /v1/nudges/{}/dismiss"
+     }
+    },
+    {
+     "name": "mcp__lattice__rule_get",
+     "input": {
+      "id": "R138"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0929837,
+   "turns": 7,
+   "input_tokens": 6,
+   "output_tokens": 1269,
+   "cache_read_tokens": 222777,
+   "cache_creation_tokens": 14501,
+   "subtype": "success",
+   "status": "ok",
+   "set": "N_not_built",
+   "final_text_chars": 1872
+  }
+ },
+ "extra_observe": {}
+}
