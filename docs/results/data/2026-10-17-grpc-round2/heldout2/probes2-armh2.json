@@ -1,0 +1,678 @@
+{
+ "schema": "lattice.grpc-probes2-h2/1",
+ "arm": "H2",
+ "heldout_freeze_before": {
+  "heldout_freeze_file_sha256": "d7a5ea3c642e06b4ccb18983ad185896afec3cae8b15361b7d5941479803868e",
+  "heldout_freeze_sha256_ok": true,
+  "heldout_freeze_equals_committed_copy": true,
+  "heldout_problems": [],
+  "heldout_files": 27,
+  "runner_listed_sha256 (dev stage, not enforced)": "7ab7dd3f7ee32c8423100218f26c2f01685148a91f59d637ac157084a5868936",
+  "library_files_checked": 17,
+  "library_problems": [],
+  "runner_sha256 (H2 stage)": "0193add7bd620dbf2af90cddf66a8bccca85ba1ade5b06f048bd711c952755fa",
+  "tracked_files_changed": [
+   "docs/results/2026-10-17-grpc-round2-results.md",
+   "dogfood/grpc_probes2.py"
+  ],
+  "staged": [],
+  "tracked_unexpected": [],
+  "ok": true
+ },
+ "heldout_freeze_after_ok": true,
+ "library_sha256": {
+  "lattice/spec/grpc.py": "814b3bc0d27fb648c7ff90eeb61d53107b4cf48a577d88770ce0e12eb3ba9bde",
+  "lattice/importer/workflows.py": "5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098",
+  "dogfood/grpc_flow_scorer.py": "8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3",
+  "dogfood/grpc_probes2.py": "0193add7bd620dbf2af90cddf66a8bccca85ba1ade5b06f048bd711c952755fa"
+ },
+ "truth_reader": {
+  "keys": [
+   "app",
+   "conventions",
+   "counts",
+   "error_constructors",
+   "expected_empty_message_codes",
+   "flows",
+   "interceptor",
+   "module",
+   "natural_keys",
+   "owner_checks",
+   "ownership_chain",
+   "proto_paths",
+   "protos",
+   "reconcile_notes",
+   "rpcs",
+   "schema",
+   "seed",
+   "services",
+   "tables",
+   "users"
+  ],
+  "links_zero_based": true,
+  "rpcs": 20,
+  "tables": 7,
+  "flows": 9
+ },
+ "probes": [
+  {
+   "id": "HO2-RPC",
+   "prediction": "recall 0.90-1.00 / precision 0.95-1.00 (p)",
+   "pass_rule": "recall >= 0.90 and precision >= 0.95 (rpc name AND state must match)",
+   "status": "FAIL",
+   "observed": {
+    "recall": 0.3,
+    "precision": 0.3,
+    "truth rpcs": 20,
+    "extracted rpcs": 20,
+    "matched": 6,
+    "truth states": {
+     "implemented": 16,
+     "not_registered": 2,
+     "streaming": 1,
+     "unimplemented": 1
+    },
+    "streaming reported not supported": [
+     "kiln.v1.Pieces/TailKiln"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 3
+   },
+   "detail": {
+    "missed (truth, state)": [
+     [
+      "kiln.v1.Passport/SignIn",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Passport/SignOff",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Passport/StepDown",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Passport/WhoAmI",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Pieces/AddPiece",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Pieces/FirePiece",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Pieces/GetPiece",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Pieces/RemovePiece",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Projects/ArchiveProject",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Projects/GetProject",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Projects/ListProjects",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Projects/OpenProject",
+      "implemented"
+     ],
+     [
+      "kiln.v1.Projects/TransferProject",
+      "unimplemented"
+     ]
+    ],
+    "extra (extract, state)": [
+     [
+      "kiln.v1.Passport/SignIn",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Passport/SignOff",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Passport/StepDown",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Passport/WhoAmI",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Pieces/AddPiece",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Pieces/FirePiece",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Pieces/GetPiece",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Pieces/RemovePiece",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Projects/ArchiveProject",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Projects/GetProject",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Projects/ListProjects",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Projects/OpenProject",
+      "not_registered"
+     ],
+     [
+      "kiln.v1.Projects/TransferProject",
+      "not_registered"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "HO2-CODES",
+   "prediction": "recall 0.70-0.95 / precision 0.90-1.00 (p)",
+   "pass_rule": "micro recall >= 0.70 and micro precision >= 0.90 (implemented rpcs, OK excluded)",
+   "status": "FAIL",
+   "observed": {
+    "recall": 0.125,
+    "precision": 1.0,
+    "truth codes": 40,
+    "extracted codes": 5,
+    "matched": 5
+   },
+   "detail": {
+    "missed": [
+     [
+      "kiln.v1.Passport/SignIn",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Passport/SignIn",
+      "INVALID_ARGUMENT"
+     ],
+     [
+      "kiln.v1.Passport/SignIn",
+      "UNAUTHENTICATED"
+     ],
+     [
+      "kiln.v1.Passport/SignOff",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Passport/StepDown",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Passport/StepDown",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Pieces/AddPiece",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Pieces/AddPiece",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Pieces/AddPiece",
+      "INVALID_ARGUMENT"
+     ],
+     [
+      "kiln.v1.Pieces/AddPiece",
+      "NOT_FOUND"
+     ],
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "INVALID_ARGUMENT"
+     ],
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "NOT_FOUND"
+     ],
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "PERMISSION_DENIED"
+     ],
+     [
+      "kiln.v1.Pieces/FirePiece",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Pieces/FirePiece",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Pieces/FirePiece",
+      "NOT_FOUND"
+     ],
+     [
+      "kiln.v1.Pieces/FirePiece",
+      "PERMISSION_DENIED"
+     ],
+     [
+      "kiln.v1.Pieces/GetPiece",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Pieces/GetPiece",
+      "NOT_FOUND"
+     ],
+     [
+      "kiln.v1.Pieces/RemovePiece",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Pieces/RemovePiece",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Pieces/RemovePiece",
+      "NOT_FOUND"
+     ],
+     [
+      "kiln.v1.Projects/ArchiveProject",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Projects/ArchiveProject",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Projects/ArchiveProject",
+      "NOT_FOUND"
+     ],
+     [
+      "kiln.v1.Projects/GetProject",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Projects/GetProject",
+      "NOT_FOUND"
+     ],
+     [
+      "kiln.v1.Projects/ListProjects",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Projects/OpenProject",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Projects/OpenProject",
+      "INTERNAL"
+     ],
+     [
+      "kiln.v1.Projects/OpenProject",
+      "INVALID_ARGUMENT"
+     ],
+     [
+      "kiln.v1.Projects/OpenProject",
+      "NOT_FOUND"
+     ],
+     [
+      "kiln.v1.Projects/OpenProject",
+      "RESOURCE_EXHAUSTED"
+     ]
+    ],
+    "extra": []
+   }
+  },
+  {
+   "id": "HO2-AUTH",
+   "prediction": "0 wrong; unclear 0-0.3 (p)",
+   "pass_rule": "0 rpcs labelled Public/Member that contradict truth (hard); unclear reported",
+   "status": "FAIL",
+   "observed": {
+    "wrong": 2,
+    "unclear": 0,
+    "checked": 3,
+    "unclear share": 0.0
+   },
+   "detail": {
+    "wrong (rpc, extract, truth)": [
+     [
+      "kiln.v1.Catalog/ListStudios",
+      "Public",
+      "Member"
+     ],
+     [
+      "kiln.v1.Catalog/LookupGlaze",
+      "Public",
+      "Member"
+     ]
+    ],
+    "unclear (rpc, extract, truth)": []
+   }
+  },
+  {
+   "id": "HO2-TABLES",
+   "prediction": "recall 0.9-1.0 (p)",
+   "pass_rule": "recall >= 0.9",
+   "status": "PASS",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth": 7,
+    "extracted": 7
+   },
+   "detail": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "id": "HO2-REC",
+   "prediction": "100%; 1-3 order disagreements, all resolved (p)",
+   "pass_rule": "100% of truth states, 0 auth_refused on implemented non-public rpcs, every order disagreement resolved isolated",
+   "status": "PASS",
+   "observed": {
+    "implemented": "16/16",
+    "unimplemented": "1/1",
+    "not_registered": "2/2",
+    "absent": "1/1",
+    "auth_refused": [],
+    "order disagreed": [],
+    "all disagreements resolved isolated": true,
+    "rpcs answered by the library": 4,
+    "supplementary calls (not library output)": [
+     "kiln.v1.Billing/PayQuote",
+     "kiln.v1.Billing/QuoteFiring",
+     "kiln.v1.Passport/SignIn",
+     "kiln.v1.Passport/SignOff",
+     "kiln.v1.Passport/StepDown",
+     "kiln.v1.Passport/WhoAmI",
+     "kiln.v1.Pieces/AddPiece",
+     "kiln.v1.Pieces/ApplyGlaze",
+     "kiln.v1.Pieces/FirePiece",
+     "kiln.v1.Pieces/GetPiece",
+     "kiln.v1.Pieces/RemovePiece",
+     "kiln.v1.Projects/ArchiveProject",
+     "kiln.v1.Projects/GetProject",
+     "kiln.v1.Projects/ListProjects",
+     "kiln.v1.Projects/OpenProject",
+     "kiln.v1.Projects/TransferProject"
+    ],
+    "seconds": 2.43
+   },
+   "detail": {
+    "wrong (rpc, code, class, note)": [],
+    "uncalled or login_failed": [],
+    "library output rpcs not in truth": [],
+    "unknown truth states": [],
+    "codes": {
+     "kiln.v1.Catalog/ListStudios": {
+      "code": "UNAUTHENTICATED",
+      "answered": true
+     },
+     "kiln.v1.Catalog/ListGlazes": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Catalog/LookupGlaze": {
+      "code": "UNAUTHENTICATED",
+      "answered": true
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    },
+    "supplementary": {
+     "kiln.v1.Passport/SignIn": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Passport/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Passport/SignOff": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Passport/StepDown": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Projects/OpenProject": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Projects/GetProject": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Projects/ListProjects": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Projects/ArchiveProject": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Projects/TransferProject": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "kiln.v1.Pieces/AddPiece": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Pieces/GetPiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Pieces/FirePiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Pieces/ApplyGlaze": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Pieces/RemovePiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Billing/QuoteFiring": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "kiln.v1.Billing/PayQuote": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   }
+  },
+  {
+   "id": "HO2-FLOWS",
+   "prediction": "verified 3-12; edge recall 0.30-0.65 (point 0.45); coverage 2-5 of >= 6; exact 0-1; 0 vbf (p)",
+   "pass_rule": "S2: verified >= 1, 0 verified-but-failing, edge recall >= 0.30, coverage >= 2 truth flows",
+   "status": "FAIL",
+   "observed": {
+    "truth_flows": 9,
+    "truth_flows_passing": 9,
+    "truth_edges_total": 33,
+    "recovered": 0,
+    "recovered_by_status": {
+     "verified": 0,
+     "unverified": 0,
+     "failed": 0,
+     "unbound": 0
+    },
+    "recovered_by_kind_status": {},
+    "verified": 0,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 0,
+     "den": 33,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.0,
+     "pass": false,
+     "reason": "below_bound"
+    },
+    "coverage": {
+     "num": 0,
+     "den": 9,
+     "bound": 2,
+     "gated": true,
+     "value": 0.0,
+     "pass": false,
+     "reason": "below_bound"
+    },
+    "exact": {
+     "num": 0,
+     "den": 9
+    },
+    "failing_codes": {},
+    "unbound_reasons": {},
+    "reasons": [
+     "no_verified_flow",
+     "edge_recall:below_bound",
+     "coverage:below_bound"
+    ],
+    "seconds": 0.0
+   },
+   "detail": {
+    "score": {
+     "pass": false,
+     "reasons": [
+      "no_verified_flow",
+      "edge_recall:below_bound",
+      "coverage:below_bound"
+     ],
+     "recovered": 0,
+     "recovered_by_status": {
+      "verified": 0,
+      "unverified": 0,
+      "failed": 0,
+      "unbound": 0
+     },
+     "verified": 0,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 33,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.0,
+      "pass": false,
+      "reason": "below_bound"
+     },
+     "coverage": {
+      "num": 0,
+      "den": 9,
+      "bound": 2,
+      "gated": true,
+      "value": 0.0,
+      "pass": false,
+      "reason": "below_bound"
+     },
+     "exact": {
+      "num": 0,
+      "den": 9
+     },
+     "truth_defects": [],
+     "failing_codes": {},
+     "unbound_reasons": {},
+     "truth_flows": 9,
+     "truth_flows_passing": 9,
+     "truth_edges_total": 33,
+     "recovered_by_kind_status": {}
+    },
+    "vbf ids": [],
+    "truth flow failures": [],
+    "not verified": []
+   }
+  },
+  {
+   "id": "HO2-DET",
+   "prediction": "10/10 identical (p)",
+   "pass_rule": "10/10 identical, no absolute path, time or port",
+   "status": "PASS",
+   "observed": {
+    "identical runs": 10,
+    "of": 10,
+    "roots": 2,
+    "artifacts": [
+     "describe",
+     "extract",
+     "flows",
+     "model",
+     "plans",
+     "reconcile"
+    ],
+    "differing artifacts": [],
+    "leaks": []
+   },
+   "detail": []
+  },
+  {
+   "id": "P2-NW (heldout2 root)",
+   "prediction": "0 changed, 0 new",
+   "pass_rule": "all 0",
+   "status": "PASS",
+   "observed": {
+    "changed": 0,
+    "new": 0
+   },
+   "detail": []
+  },
+  {
+   "id": "PM-S / PM-SG (Arm M)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here",
+   "detail": null
+  },
+  {
+   "id": "Arm L",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the build round is its own node; out of scope",
+   "detail": null
+  }
+ ]
+}

@@ -173,3 +173,81 @@ and scorer hashes (section 1) are what that stage should check. Arm M and Arm L 
 Commands (from the pre-registration, section 12): `uv run python dogfood/grpc_probes2.py --arm 0 --base <cea85fc> --deskd <heldout/deskd> --reg-before ... --reg-after ...`;
 `--arm G ... --base6a <6a318e5>`; `uv run python dogfood/grpc_mutants2.py --scratch ... --base ... --deskd ... GR1..GR17`;
 `ruff check` and `ruff format --check` clean on every touched or created `.py` (before: the two library files clean at HEAD); `gofmt -l tests/grpc/fixtures/sessions` empty.
+
+## 10. PG-HO2: the gated held-out stage (kilnworks)
+
+### 10.1 Hash of the H2 runner, recorded BEFORE `heldout2/kilnworks/truth.json` was opened
+
+`dogfood/grpc_probes2.py` with `--arm H2` (reads the interface from the prereg, the four `.proto` files and `harness.py` only; no truth
+field was seen): sha256 `0193add7bd620dbf2af90cddf66a8bccca85ba1ade5b06f048bd711c952755fa` (`data/2026-10-17-grpc-round2/grpc_probes2.h2.sha256`).
+The dev-stage runner listed in `freeze2.sha256` was `7ab7dd3f...`; this is the one listed file the stage changes (disclosed deviation: the
+runner enforces the other `freeze2` / `freeze-lib` / `freeze-dev` entries). Before this hash: `tests/grpc` 171 passed; `ruff check` and
+`ruff format --check` clean on the runner; the harness's `kilnd` binary built (`CGO_ENABLED=0`, Go proxy) and `RUNTIME` constructed from
+the library's `AuthDriver.rpc` (a build/import preflight; no rpc was called, no metric computed, `truth.json` not opened).
+
+### 10.2 What ran, and the freeze checks (m)
+
+One run (`h2-run1.log`; no rerun; the runner did not crash). Command: `uv run python dogfood/grpc_probes2.py --arm H2 --heldout
+<scratch>/heldout2 --out docs/results/data/2026-10-17-grpc-round2/heldout2`. Before scoring the runner verified: held-out `freeze.sha256`
+`d7a5ea3c642e06b4ccb18983ad185896afec3cae8b15361b7d5941479803868e` equal to the recorded hash and to the committed copy
+(`heldout2.freeze.sha256`), all 27 listed files unchanged; 17 library/test/fixture entries of `freeze-lib`, `freeze-dev`, `freeze2` unchanged
+(`grpc.py` `814b3bc0...`, `workflows.py` `5eba7e8a...`, scorer `8d896ee0...`); `git diff --name-only HEAD` = the runner and this doc only; nothing
+staged. After the run the held-out freeze was still intact and `heldout2/kilnworks` had 0 changed / 0 new entries (P2-NW). No library file
+was changed. Truth reader: `truth.json` keys read as expected (rpcs 20, tables 7, flows 9, 33 links); `conventions.step_index_base` is 0 and
+the reader's zero-based detection (any link index 0) matched it. 0 truth flows failed their own replay (9/9 pass as `Rpc` scenarios).
+Round-1 erratum (blind PG-HO 6/7, 5/7 under S1/S2): section 2 above; unchanged.
+
+### 10.3 Result: PG-HO2 = 3 of 7 PASS, 4 FAIL (blind, first and only run)
+
+| id | prediction (p) | observed (m) | verdict |
+|---|---|---|---|
+| HO2-RPC | recall 0.90-1.00 / precision 0.95-1.00 | **0.30 / 0.30** (6 of 20 matched; 14 rpcs extracted `not_registered` that are `implemented` (13) or `unimplemented` (1) in truth) | **FAIL** |
+| HO2-CODES | 0.70-0.95 / 0.90-1.00 | **0.125 / 1.00** (5 of 40 truth codes; the 14 mis-stated rpcs have no codes) | **FAIL** |
+| HO2-AUTH | 0 wrong, unclear 0-0.3 | **2 wrong** of 3 checked, unclear 0: `Catalog/ListStudios` and `Catalog/LookupGlaze` labelled `Public`, truth `Member` | **FAIL** (hard) |
+| HO2-TABLES | 0.9-1.0 | 1.00 / 1.00 (7/7) | PASS |
+| HO2-REC | 100%; 1-3 order disagreements, all resolved | runner rule: implemented 16/16, unimplemented 1/1, not_registered 2/2, absent 1/1, 0 `auth_refused`, 0 order disagreements | PASS by the runner rule, **see caveat** |
+| HO2-FLOWS | verified 3-12, edge recall 0.30-0.65, coverage 2-5 of 9 | recovered **0** (verified 0, vbf 0), edge recall **0/33**, coverage **0/9**, exact 0/9 | **FAIL** (`no_verified_flow`, `edge_recall:below_bound`, `coverage:below_bound`) |
+| HO2-DET | 10/10 identical | 10/10 identical over 10 processes, random hash seeds, 2 roots; extract, describe, model, plans, flows, reconcile; no path/time/port | PASS |
+| P2-NW (heldout2 root) | 0 changed, 0 new | 0 / 0 | PASS |
+
+Counts: **probes passed 4 (HO2-TABLES, HO2-REC, HO2-DET, P2-NW), failed 4 (HO2-RPC, HO2-CODES, HO2-AUTH, HO2-FLOWS), NOT RUN 2** (Arm M: no
+Docker/Streak; Arm L: the build round). Of the 7 gated HO2 rows: 3 PASS, 4 FAIL. HO2 is not passed.
+
+**HO2-REC caveat (stated plainly).** The library's `reconcile_with` answered only **4 of the 20 rpcs** (`Catalog/ListStudios`, `ListGlazes`,
+`LookupGlaze`, `(absent)`), because its model has 3 routes (finding 1). The other 16 non-streaming truth rpcs were called by my runner's
+supplementary fresh-login `_call_fresh` (as `pr2_desk` did for `Backlog`), not by the library; those calls are listed in the data
+(`supplementary calls`) and all matched the truth `expected_empty_message_codes` states. The 0 order disagreements is therefore not evidence for RC2/RC3 here:
+the two order-sensitive rpcs (`SignOff`, `StepDown`) were never in the library's pass (predicted 1-3 disagreements, observed 0 because the
+rpcs were absent). Read strictly (library output only), HO2-REC would FAIL (4/19). Also `ListStudios` and `LookupGlaze` answered
+`UNAUTHENTICATED` in the library's output and counted `answered: true` because the extract called them Public, so `auth_refused` (non-public only)
+could not flag them: a second consequence of finding 2.
+
+### 10.4 Findings (predicted vs observed; nothing tuned, no library change)
+
+1. **Registration through a `[]mount` slice of func values and a helper is not followed (extractor, frozen).** `mount.go` registers
+   `Passport` in a closure literal inside `var mounts = []mount{...}` and `Projects`/`Pieces` in `mountWorkshop`, run by `for _, m := range mounts
+   { m(srv, db) }`. The extractor lists them as `excluded: unwired ... "not reachable from main"` (mount.go:27, 28) and marks 14 rpcs
+   `not_registered`; only the direct `srv.RegisterService(&kilnv1.Catalog_ServiceDesc, ...)` was seen. Predicted: registered services found
+   (HO2-RPC 0.90+); observed 0.30. Cascade: the model has 3 routes, so codes (0.125), reconcile coverage (4/20), flows (0 recovered) all collapse.
+   Only 6 of 20 states were right: Billing's 2 `not_registered`, `TailKiln` streaming, and Catalog's 3.
+   The prereg named this class as a risk only for flows ("a key shape F2 does not read"), not for registration; the brief asked for idiom diversity (Q7).
+2. **An unrecognised interceptor yields `Public` (extractor, frozen).** Both chained interceptors (`steady`, `gate.unary`) are `kind: "other"`;
+   the public set is `openDoors`, a `map[string]bool` keyed by generated `*_FullMethodName` constants (gate.go:19). The extractor labelled all three Catalog rpcs
+   `Public` (truth: only `Passport/SignIn` and `Catalog/ListGlazes` are public). Predicted 0 wrong; observed 2 wrong. A default of `Public` when the
+   auth mechanism is not understood is the unsafe direction (HO2-AUTH is a hard gate for that reason); it should be `unclear`.
+3. **HO2-FLOWS could not be tested.** With 3 model routes no rpc flow has a writing rpc: 0 plans, so F2 (natural keys `studio_slug`, `glaze_code`), F3 (role-gated field)
+   and F4 (ownership chain `projects -> pieces -> glazings`) were not exercised. The prereg's most likely miss (edge recall under 0.30 from a key shape) was not the
+   cause; the cause is upstream (finding 1). Whether F2-F4 work on this app is **unknown**, not failed or passed.
+4. **Reconcile, harness and determinism held.** The held-out harness started with the library as is (`ProcessApp(ready="grpc")`, `AuthDriver.rpc` via `RPC_LOGIN`,
+   `make_app` filling protos/proto_root): no library patch was needed and none was made. RC1 (fresh login per call) worked (0 `login_failed`; `SignOff` revoking a session
+   affected nothing). HO2-DET 10/10 and HO2-TABLES 7/7 held.
+5. **Truth side.** 9 truth flows, 33 links, all 9 pass their own replay; `step_index_base: 0` handled by the reader; truth `auth_raw` read as Public/Member.
+
+### 10.5 Deviations
+
+* `dogfood/grpc_probes2.py` changed (the H2 arm), hash `0193add7...` recorded before `truth.json` was opened; its dev-stage hash `7ab7dd3f...` in `freeze2.sha256` is therefore not enforced (the runner checks the other 17 entries).
+* HO2-REC pass rule is the runner's (truth states; supplementary calls for rpcs the library did not call); the strict library-only reading is FAIL (caveat above).
+* A truth auth label that is not a public-like word is read as `Member` (the app has roles `lead`/`potter`); the truth used Public/Member, so this had no effect.
+* A build/import preflight (go build of `kilnd`, `RUNTIME` construction) was run before the hash; no rpc was called.
+* Not run: Arm M, Arm L; the mutants and Arm 0/G dev rows were not re-run (no library change). `tests/grpc`: 171 passed (run before the H2 run, runner unchanged since); `ruff check` and `ruff format --check` clean on `dogfood/grpc_probes2.py`.
+* Data: `data/2026-10-17-grpc-round2/heldout2/{probes2-armh2.json, reconcile-kilnworks.json, flows-kilnworks.json, h2-run1.log}`. Nothing committed or staged.

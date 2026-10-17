@@ -2,17 +2,19 @@
 state-independent reconcile (RC1-RC3), rpc flows that verify (F1-F6, ``lattice.rpc-flows/2``) and
 the vacuity-aware flows scorer (``dogfood/grpc_flow_scorer.py``).
 
-This is the development stage: Arm 0 (static) and Arm G (Go servers over pure-Go SQLite, no
-Docker). ``deskd`` -- seen by round 1's author, by round 1's scorer and by this round's author -- is
-**development data**, never a blind or held-out claim. Arm M (Streak over MySQL), Arm L (the build
-round) and the gated held-out stage (PG-HO2, a new app by a new agent, scored once by the
-orchestrator after the freeze) are reported ``NOT RUN``; ``--arm H2`` refuses to run here.
+Arms 0 (static) and G (Go servers over pure-Go SQLite, no Docker) are the development stage.
+``deskd`` -- seen by round 1's author, by round 1's scorer and by this round's author -- is
+**development data**, never a blind or held-out claim. Arm M (Streak over MySQL) and Arm L (the
+build round) are reported ``NOT RUN``. ``--arm H2`` is the gated held-out stage (PG-HO2: a new app by
+a new agent, scored ONCE by the orchestrator after the freeze, section H2 below); it refuses to
+score when a frozen file differs, and writes no metric file when the runner itself errors.
 
     export UV_NO_SYNC=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=<worktree>
     uv run python dogfood/grpc_probes2.py --arm 0 --base "$SCRATCH/base" --scratch "$SCRATCH/p0" \\
         --out docs/results/data/2026-10-17-grpc-round2 --reg-before ... --reg-after ...
     uv run python dogfood/grpc_probes2.py --arm G --base "$SCRATCH/base" --base6a "$SCRATCH/base6a" \\
         --deskd "$SCRATCH/../heldout/deskd" --scratch "$SCRATCH/pg" --out docs/results/data/...
+    uv run python dogfood/grpc_probes2.py --arm H2 --heldout "$SCRATCH/heldout2" --out .../heldout2
 
 Internal sub-commands: ``emit-det``, ``emit-rec`` (run in a subprocess, on this tree or the baseline
 tree) and ``check <name>`` (one probe, exit 0 on PASS: what ``grpc_mutants2.py`` runs).
@@ -33,6 +35,8 @@ import subprocess
 import sys
 import tempfile
 import time
+from collections import Counter
+from collections.abc import Mapping
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
@@ -292,6 +296,8 @@ def cmd_emit_det(kind: str, root: str, scratch: str) -> None:
         model = fe.extract(rootp, "notes")
         app.extract, app.model = extract, model
         app.root = rootp / "notes"
+    elif kind == "kiln":
+        app = load_kiln(rootp / H2_PKG, Path(scratch), truth=False)
     else:
         os.environ.setdefault("LATTICE_HELDOUT_BUILD", str(Path(scratch) / "hbuild"))
         app = load_desk(rootp / "deskd", Path(scratch))
@@ -302,6 +308,9 @@ def cmd_emit_det(kind: str, root: str, scratch: str) -> None:
     texts["reconcile"] = json.dumps(
         app.fe.reconcile(app.root, app.model) if kind == "n" else reconcile_of(app)
     )
+    if kind == "kiln":
+        texts["model"] = app.model.to_json()
+        texts["describe"] = _describe_text(app)
     print(json.dumps({k: hashlib.sha256(v.encode()).hexdigest() for k, v in texts.items()}))
     print(json.dumps(texts), file=sys.stderr)
 
@@ -1172,6 +1181,697 @@ def not_run_rows() -> list[Probe]:
     ]
 
 
+# ---- Arm H2: the gated held-out app (prereg sections 6, 7 and 12; scored ONCE) ----------------
+#
+# Written and hashed BEFORE ``heldout2/kilnworks/truth.json`` was opened (the hash is in the
+# results doc). The interface comes from the pre-registration, the ``.proto`` files and the app's
+# ``harness.py`` only. The truth is read tolerantly (the prereg names its fields: rpcs with state,
+# codes, auth, tables, flows with ``as`` / ``message`` / ``expect_code`` and ``links``); a shape the
+# reader cannot read raises ``ReaderMismatch`` BEFORE any metric exists, which is a runner problem
+# (fixed in this file only, every run kept), never a score. Nothing here is tuned to a number.
+
+H2_PKG = "kilnworks"
+H2_FREEZE_SHA = "d7a5ea3c642e06b4ccb18983ad185896afec3cae8b15361b7d5941479803868e"
+H2_DATA = REPO / "docs/results/data/2026-10-17-grpc-round2"
+H2_PRED = {
+    "HO2-RPC": "recall 0.90-1.00 / precision 0.95-1.00 (p)",
+    "HO2-CODES": "recall 0.70-0.95 / precision 0.90-1.00 (p)",
+    "HO2-AUTH": "0 wrong; unclear 0-0.3 (p)",
+    "HO2-TABLES": "recall 0.9-1.0 (p)",
+    "HO2-REC": "100%; 1-3 order disagreements, all resolved (p)",
+    "HO2-FLOWS": "verified 3-12; edge recall 0.30-0.65 (point 0.45); coverage 2-5 of >= 6; exact 0-1; 0 vbf (p)",
+    "HO2-DET": "10/10 identical (p)",
+}
+H2_RULE = {
+    "HO2-RPC": "recall >= 0.90 and precision >= 0.95 (rpc name AND state must match)",
+    "HO2-CODES": "micro recall >= 0.70 and micro precision >= 0.90 (implemented rpcs, OK excluded)",
+    "HO2-AUTH": "0 rpcs labelled Public/Member that contradict truth (hard); unclear reported",
+    "HO2-TABLES": "recall >= 0.9",
+    "HO2-REC": "100% of truth states, 0 auth_refused on implemented non-public rpcs, every order disagreement resolved isolated",
+    "HO2-FLOWS": "S2: verified >= 1, 0 verified-but-failing, edge recall >= 0.30, coverage >= 2 truth flows",
+    "HO2-DET": "10/10 identical, no absolute path, time or port",
+}
+PUBLIC_LABELS = {"public", "none", "anonymous", "anon", "unauthenticated", "open", "no"}
+
+
+class ReaderMismatch(Exception):
+    """The held-out truth (or harness) is not in a shape this runner reads: raised before any metric."""
+
+
+def h2_verify_freeze(root: Path) -> dict[str, Any]:
+    """The held-out files against its ``freeze.sha256`` (itself against the hash recorded in the
+    prereg stage and the committed copy), and the frozen library files against the build node's
+    listings. ``dogfood/grpc_probes2.py`` is the one listed file this stage changes (it adds this
+    arm): its listed hash is reported, not enforced, and the new hash is recorded."""
+    out: dict[str, Any] = {}
+    fz = root / "freeze.sha256"
+    out["heldout_freeze_file_sha256"] = sha(fz.read_bytes())
+    out["heldout_freeze_sha256_ok"] = out["heldout_freeze_file_sha256"] == H2_FREEZE_SHA
+    committed = H2_DATA / "heldout2.freeze.sha256"
+    out["heldout_freeze_equals_committed_copy"] = committed.read_bytes() == fz.read_bytes()
+    out["heldout_problems"] = r1._check_sha_file(fz, root)
+    out["heldout_files"] = sum(1 for ln in fz.read_text().splitlines() if ln.strip())
+    problems: list[str] = []
+    checked = 0
+    for name in ("freeze-lib.sha256", "freeze-dev.sha256", "freeze2.sha256"):
+        lines = (H2_DATA / name).read_text().splitlines()
+        for line in lines:
+            if not line.strip():
+                continue
+            digest, _, rel = line.partition("  ")
+            rel = rel.strip()
+            if rel == "dogfood/grpc_probes2.py":
+                out["runner_listed_sha256 (dev stage, not enforced)"] = digest
+                continue
+            checked += 1
+            f = REPO / rel
+            if not f.is_file():
+                problems.append(f"{name}: missing {rel}")
+            elif sha(f.read_bytes()) != digest:
+                problems.append(f"{name}: changed {rel}")
+    out["library_files_checked"] = checked
+    out["library_problems"] = problems
+    out["runner_sha256 (H2 stage)"] = sha((HERE / "grpc_probes2.py").read_bytes())
+    changed = subprocess.run(
+        ["git", "diff", "--name-only", "HEAD"],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+    ).stdout.split()
+    staged = subprocess.run(
+        ["git", "diff", "--name-only", "--cached"],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+    ).stdout.split()
+    out["tracked_files_changed"] = sorted(changed)
+    out["staged"] = sorted(staged)
+    out["tracked_unexpected"] = sorted(
+        set(changed) - {"dogfood/grpc_probes2.py", "docs/results/2026-10-17-grpc-round2-results.md"}
+    )
+    out["ok"] = (
+        out["heldout_freeze_sha256_ok"]
+        and out["heldout_freeze_equals_committed_copy"]
+        and not out["heldout_problems"]
+        and not problems
+        and not out["tracked_unexpected"]
+        and not staged
+    )
+    return out
+
+
+def _auth2(value: Any) -> str:
+    """``Public`` / ``Member`` from a truth or extract label: anything that is not a public-like
+    word is an authenticated rpc (the app has roles, the labels are Public and Member)."""
+    v = str(value or "").strip()
+    low = v.lower()
+    if low == "public" or low in PUBLIC_LABELS:
+        return "Public"
+    if low == "member":
+        return "Member"
+    return v
+
+
+def _truth_auth(value: Any) -> str:
+    v = _auth2(value)
+    return v if v in ("Public", "Member", "") else "Member"
+
+
+def h2_truth(path: Path) -> dict[str, Any]:
+    """``truth.json`` (``lattice.heldout.truth/2``) normalised: rpcs {full: {state, codes, auth}},
+    tables, flows with 1-based ``links``. Raises ReaderMismatch on a shape it cannot read."""
+    raw = json.loads(path.read_text())
+    rpcs_raw = r1._first(raw, "rpcs", "methods", default={})
+    entries: list[tuple[str, Mapping[str, Any]]] = []
+    if isinstance(rpcs_raw, Mapping):
+        entries = [(r1._full(k), v) for k, v in rpcs_raw.items()]
+    else:
+        for v in rpcs_raw:
+            has_full = "full_name" in v or "rpc" in v
+            entries.append(
+                (
+                    r1._full(
+                        r1._first(v, "full_name", "rpc", "name", "id", default=""),
+                        None if has_full else r1._first(v, "service"),
+                    ),
+                    v,
+                )
+            )
+    rpcs = {
+        k: {
+            "state": r1._state(r1._first(v, "state", "status", default="")),
+            "codes": r1._code_names(r1._first(v, "codes", "grpc_codes", default=())),
+            "auth": _truth_auth(r1._first(v, "auth", default="")),
+            "auth_raw": str(r1._first(v, "auth", default="")),
+        }
+        for k, v in entries
+    }
+    if not rpcs or any(not v["state"] for v in rpcs.values()):
+        raise ReaderMismatch("truth rpcs: none read, or a rpc without a state")
+    tables_raw = r1._first(raw, "tables", default=[])
+    if isinstance(tables_raw, Mapping):
+        tables_raw = list(tables_raw)
+    tables = {
+        str(t if isinstance(t, str) else r1._first(t, "table", "name", default="")).lower()
+        for t in tables_raw
+    }
+    if not tables:
+        raise ReaderMismatch("truth tables: none read")
+    flows: list[dict[str, Any]] = []
+    raw_links: list[tuple[int, dict[str, Any], dict[str, Any]]] = []
+    for i, f in enumerate(r1._first(raw, "flows", default=[])):
+        steps = []
+        flow_links = list(f.get("links") or []) if isinstance(f, Mapping) else []
+        for j, st in enumerate(r1._first(f, "steps", "rpcs", "calls", default=[]), 1):
+            if not isinstance(st, Mapping):
+                raise ReaderMismatch(f"flow {i + 1} step {j} is not an object")
+            rpc = r1._first(st, "rpc", "call", "method", "name", default="")
+            svc = r1._first(st, "service") if "/" not in str(rpc) else None
+            code = r1._first(st, "expect_code", "expect", "code", "expected_code", default="OK")
+            if isinstance(code, Mapping):
+                code = r1._first(code, "code", default="OK")
+            steps.append(
+                {
+                    "rpc": r1._full(rpc, svc),
+                    "as": r1._first(st, "as", "user", "caller", "actor", "who", default=None),
+                    "message": r1._first(
+                        st, "message", "request", "req", "body", "input", "args", default={}
+                    ),
+                    "expect_code": str(code).upper(),
+                }
+            )
+            for ln in st.get("links") or []:
+                raw_links.append((i, {"step": j, **ln} if "step" not in ln else dict(ln), ln))
+        for ln in flow_links:
+            raw_links.append((i, dict(ln), ln))
+        flows.append(
+            {"name": str(r1._first(f, "id", "name", default=f"flow{i + 1}")), "steps": steps}
+        )
+    if not flows:
+        raise ReaderMismatch("truth flows: none read")
+    zero_based = any(
+        r1._first(ln, "step", default=1) == 0 or r1._first(ln, "from_step", default=1) == 0
+        for _, ln, _ in raw_links
+    )
+    links: dict[str, list[dict[str, Any]]] = {f["name"]: [] for f in flows}
+    for i, ln, _ in raw_links:
+        try:
+            step = int(r1._first(ln, "step", "to_step", "consumer_step"))
+            frm = int(r1._first(ln, "from_step", "from", "producer_step"))
+            field = str(r1._first(ln, "field", "request_field", "to_field"))
+            ffield = str(r1._first(ln, "from_field", "response_field", "producer_field"))
+        except (TypeError, ValueError) as err:
+            raise ReaderMismatch(
+                f"flow {i + 1}: a link is not {{step, field, from_step, from_field}}"
+            ) from err
+        step, frm = (step + 1, frm + 1) if zero_based else (step, frm)
+        n = len(flows[i]["steps"])
+        if not (1 <= frm < step <= n):
+            raise ReaderMismatch(
+                f"flow {i + 1}: link step {step} from {frm} outside 1..{n} or not earlier"
+            )
+        links[flows[i]["name"]].append(
+            {"step": step, "field": field, "from_step": frm, "from_field": ffield}
+        )
+    return {
+        "rpcs": rpcs,
+        "tables": tables,
+        "flows": flows,
+        "links": links,
+        "links_zero_based": zero_based,
+        "keys": sorted(raw),
+    }
+
+
+def load_kiln(base: Path, scratch: Path, *, truth: bool = True) -> App:
+    """``kilnworks`` through its own harness (``make_app`` already names protos, proto paths and
+    proto_root; ``RUNTIME`` is built from the library's ``AuthDriver.rpc``)."""
+    import importlib.util
+
+    from lattice.importer.frontends.go_grpc import GoGrpcFrontEnd
+    from lattice.profile import ApiProfile, Profile
+    from lattice.spec import Spec
+
+    os.environ.setdefault("KILNWORKS_BIN_DIR", str(scratch / "kiln-bin"))
+    path = base / "harness.py"
+    spec_ = importlib.util.spec_from_file_location("heldout2_kilnworks_harness", path)
+    assert spec_ and spec_.loader
+    h = importlib.util.module_from_spec(spec_)
+    sys.modules["heldout2_kilnworks_harness"] = h
+    spec_.loader.exec_module(h)
+    parent = base.resolve().parent
+    fe = GoGrpcFrontEnd()
+    protos = tuple(str(base / p) for p in h.PROTOS)
+    profile = Profile(
+        schemas={},
+        api=ApiProfile(
+            tables={}, table_names={}, roles=frozenset({"Public", "Member"}), error_body="fastapi"
+        ),
+    )
+    return App(
+        name=H2_PKG,
+        root=base,
+        fixtures=parent,
+        pkg=H2_PKG,
+        fe=fe,
+        extract=fe.extract_json(parent, H2_PKG),
+        model=fe.extract(parent, H2_PKG),
+        make=h.make_app,
+        raw_make=h.make_app,
+        build_db=h.build_db,
+        runtime=h.RUNTIME,
+        users=h.USERS,
+        protos=(),
+        proto_paths=(),
+        spec=Spec(profile=profile, users=h.USERS, protos=protos),
+        harness=h,
+        truth=h2_truth(base / "truth.json") if truth else None,
+    )
+
+
+def _describe_text(app: App) -> str:
+    from lattice.spec.grpc import Bridge
+
+    base = Path(app.root)
+    files = [base / p["file"] for p in app.extract["grpc"]["protos"]]
+    with Bridge() as b:
+        d = b.describe(files, [base, base / "proto"])
+    return json.dumps(d["grpc"], sort_keys=True) + d["descriptor_set"]
+
+
+def _h2_rpc_metrics(app: App) -> list[Probe]:
+    truth, extract = app.truth, app.extract
+    got = {f"{s['name']}/{r['name']}": r for s in extract["grpc"]["services"] for r in s["rpcs"]}
+    ex_state = {k: r1._state(r.get("state")) for k, r in got.items()}
+    probes: list[Probe] = []
+    t_pairs = {(k, v["state"]) for k, v in truth["rpcs"].items()}
+    e_pairs = set(ex_state.items())
+    hit = t_pairs & e_pairs
+    rec, prec = r1._prf(len(hit), len(t_pairs), len(e_pairs))
+    streams = {k for k, v in truth["rpcs"].items() if v["state"] == "streaming"}
+    excluded = {x["path"].lstrip("/") for x in extract["excluded"] if x.get("kind") == "streaming"}
+    route_keys = {f"{r.rpc.service}/{r.rpc.method}" for r in app.model.routes if r.rpc}
+    probes.append(
+        Probe("HO2-RPC", H2_PRED["HO2-RPC"], H2_RULE["HO2-RPC"]).done(
+            rec >= 0.90 and prec >= 0.95,
+            {
+                "recall": round(rec, 3),
+                "precision": round(prec, 3),
+                "truth rpcs": len(t_pairs),
+                "extracted rpcs": len(e_pairs),
+                "matched": len(hit),
+                "truth states": dict(
+                    sorted(Counter(v["state"] for v in truth["rpcs"].values()).items())
+                ),
+                "streaming reported not supported": sorted(streams & excluded),
+                "streaming not supported (all)": streams <= excluded and not (streams & route_keys),
+                "model endpoints": len(route_keys),
+            },
+            {
+                "missed (truth, state)": sorted(t_pairs - e_pairs),
+                "extra (extract, state)": sorted(e_pairs - t_pairs),
+            },
+        )
+    )
+    tc = {
+        (k, c) for k, v in truth["rpcs"].items() if v["state"] == "implemented" for c in v["codes"]
+    }
+    ec = {
+        (k, c)
+        for k, r in got.items()
+        if ex_state[k] == "implemented"
+        for c in r1._code_names(r.get("codes"))
+    }
+    crec, cprec = r1._prf(len(tc & ec), len(tc), len(ec))
+    probes.append(
+        Probe("HO2-CODES", H2_PRED["HO2-CODES"], H2_RULE["HO2-CODES"]).done(
+            crec >= 0.70 and cprec >= 0.90,
+            {
+                "recall": round(crec, 3),
+                "precision": round(cprec, 3),
+                "truth codes": len(tc),
+                "extracted codes": len(ec),
+                "matched": len(tc & ec),
+            },
+            {"missed": sorted(tc - ec), "extra": sorted(ec - tc)},
+        )
+    )
+    wrong, unclear, checked = [], [], 0
+    for k, v in truth["rpcs"].items():
+        r = got.get(k)
+        if r is None or ex_state[k] != "implemented" or v["state"] != "implemented":
+            continue
+        checked += 1
+        label = _auth2(r.get("auth"))
+        if label not in ("Public", "Member"):
+            unclear.append((k, label or "(none)", v["auth_raw"]))
+        elif label != v["auth"]:
+            wrong.append((k, label, v["auth_raw"]))
+    probes.append(
+        Probe("HO2-AUTH", H2_PRED["HO2-AUTH"], H2_RULE["HO2-AUTH"]).done(
+            not wrong and checked > 0,
+            {
+                "wrong": len(wrong),
+                "unclear": len(unclear),
+                "checked": checked,
+                "unclear share": round(len(unclear) / checked, 3) if checked else None,
+            },
+            {"wrong (rpc, extract, truth)": wrong, "unclear (rpc, extract, truth)": unclear},
+        )
+    )
+    et = {t["table"].lower() for t in extract["tables"]}
+    trec, tprec = r1._prf(len(truth["tables"] & et), len(truth["tables"]), len(et))
+    probes.append(
+        Probe("HO2-TABLES", H2_PRED["HO2-TABLES"], H2_RULE["HO2-TABLES"]).done(
+            trec >= 0.9,
+            {
+                "recall": round(trec, 3),
+                "precision": round(tprec, 3),
+                "truth": len(truth["tables"]),
+                "extracted": len(et),
+            },
+            {"missed": sorted(truth["tables"] - et), "extra": sorted(et - truth["tables"])},
+        )
+    )
+    return probes
+
+
+def _h2_rec(app: App, ctx: dict[str, Any]) -> Probe:
+    """The library's ``reconcile_with`` (no runner re-implementation) against the truth states."""
+    from lattice.spec.grpc import _call_fresh
+
+    p = Probe("HO2-REC", H2_PRED["HO2-REC"], H2_RULE["HO2-REC"])
+    t0 = time.perf_counter()
+    got = reconcile_of(app)
+    secs = time.perf_counter() - t0
+    ctx["rec"] = got
+    truth = app.truth["rpcs"]
+    ex = {f"{s['name']}/{r['name']}": r for s in app.extract["grpc"]["services"] for r in s["rpcs"]}
+    classes: dict[str, list[bool]] = {
+        "implemented": [],
+        "unimplemented": [],
+        "not_registered": [],
+        "absent": [],
+    }
+    bad: list[Any] = []
+    unknown = sorted(
+        {v["state"] for v in truth.values()}
+        - {"implemented", "unimplemented", "not_registered", "streaming"}
+    )
+    refused = set(got.get("auth_refused", []))
+    # truth rpcs the library did not call (a not-registered rpc is not a route): one supplementary
+    # fresh-login call each, reported as such
+    supp: dict[str, Any] = {}
+    missing = [k for k, v in truth.items() if v["state"] != "streaming" and k not in got]
+    if missing:
+        db = app.build_db(Path(tempfile.mkdtemp(prefix="lattice-h2-supp-")) / "s.db")
+        sapp = app.make(db)
+        try:
+            with app.runtime.open(sapp) as tr:
+                first = next(iter(app.users))
+                for k in missing:
+                    svc, _, m = k.partition("/")
+                    pub = _auth2(ex.get(k, {}).get("auth")) == "Public"
+                    supp[k] = _call_fresh(tr.rpc(), tr, app.runtime, first, None, svc, m, pub)
+        finally:
+            app.runtime.close(sapp)
+    uncalled = []
+    for k, v in truth.items():
+        if v["state"] == "streaming":
+            continue
+        res = got.get(k) or supp.get(k)
+        cls = v["state"] if v["state"] in classes else "implemented"
+        if res is None or res.get("code") is None:
+            uncalled.append((k, (res or {}).get("reason")))
+            classes[cls].append(False)
+            continue
+        if cls == "implemented":
+            ok = res["code"] != "UNIMPLEMENTED" and k not in refused
+        else:
+            ok = res["code"] == "UNIMPLEMENTED"
+        classes[cls].append(ok)
+        if not ok:
+            bad.append((k, res["code"], cls, "auth_refused" if k in refused else ""))
+    ab = got.get("(absent)", {}).get("code")
+    classes["absent"].append(ab == "UNIMPLEMENTED")
+    if ab != "UNIMPLEMENTED":
+        bad.append(("(absent)", ab, "absent", ""))
+    dis = got.get("order", {}).get("disagreed", [])
+    resolved = all(got[k].get("isolated") is True and got[k].get("code") for k in dis)
+    extra = sorted(
+        k for k in got if k not in truth and k not in ("(absent)", "order", "auth_refused")
+    )
+    return p.done(
+        not bad
+        and not uncalled
+        and resolved
+        and not refused
+        and all(classes[c] for c in ("implemented", "absent")),
+        {
+            **{c: f"{sum(v)}/{len(v)}" for c, v in classes.items()},
+            "auth_refused": sorted(refused),
+            "order disagreed": dis,
+            "all disagreements resolved isolated": resolved,
+            "rpcs answered by the library": len(
+                [k for k in got if k not in ("order", "auth_refused")]
+            ),
+            "supplementary calls (not library output)": sorted(supp),
+            "seconds": round(secs, 2),
+        },
+        {
+            "wrong (rpc, code, class, note)": bad,
+            "uncalled or login_failed": uncalled,
+            "library output rpcs not in truth": extra,
+            "unknown truth states": unknown,
+            "codes": {k: v for k, v in got.items()},
+            "supplementary": supp,
+        },
+    )
+
+
+def _h2_flows(app: App, ctx: dict[str, Any]) -> Probe:
+    p = Probe("HO2-FLOWS", H2_PRED["HO2-FLOWS"], H2_RULE["HO2-FLOWS"])
+    truth_flows = app.truth["flows"]
+    links = app.truth["links"]
+    t_ok = _truth_replay(app, truth_flows)
+    t0 = time.perf_counter()
+    flows = flows_of(app)
+    secs = time.perf_counter() - t0
+    ctx["flows"] = flows
+    verified = [f for f in flows if f["status"] == "verified"]
+    vbf = replay_failures(app, verified)[0] if verified else []
+    row = scorer.score_flows(
+        flows,
+        truth_flows,
+        links,
+        t_ok,
+        verified_but_failing=len(vbf),
+        min_verified=1,
+        edge_recall_bound=0.30,
+        coverage_bound=2,
+    )
+    row["truth_flows"] = len(truth_flows)
+    row["truth_flows_passing"] = sum(t_ok.values())
+    row["truth_edges_total"] = sum(len(v) for v in links.values())
+    row["recovered_by_kind_status"] = {}
+    for f in flows:
+        k = row["recovered_by_kind_status"].setdefault(f["kind"], {})
+        k[f["status"]] = k.get(f["status"], 0) + 1
+    ctx["row_flows"] = row
+    keys = (
+        "truth_flows",
+        "truth_flows_passing",
+        "truth_edges_total",
+        "recovered",
+        "recovered_by_status",
+        "recovered_by_kind_status",
+        "verified",
+        "verified_but_failing",
+        "edge_recall",
+        "coverage",
+        "exact",
+        "failing_codes",
+        "unbound_reasons",
+        "reasons",
+    )
+    return p.done(
+        row["pass"] and len(truth_flows) >= 1,
+        {**{k: row[k] for k in keys}, "seconds": round(secs, 1)},
+        {
+            "score": row,
+            "vbf ids": vbf,
+            "truth flow failures": [k for k, v in t_ok.items() if not v],
+            "not verified": [
+                {"id": f["id"], "kind": f["kind"], "status": f["status"], "reason": f.get("reason")}
+                for f in flows
+                if f["status"] != "verified"
+            ],
+        },
+    )
+
+
+def _h2_det(root: Path, scratch: Path) -> Probe:
+    """extract, describe, model, plans, flows and reconcile over 10 processes (random hash seeds),
+    two roots (a byte copy of the app directory for the second)."""
+    p = Probe("HO2-DET", H2_PRED["HO2-DET"], H2_RULE["HO2-DET"])
+    parent = root.resolve().parent
+    rx_abs = re.compile(r"/(home|tmp|Users|root)/[\w./-]+")
+    rx_time = re.compile(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}")
+    rx_port = re.compile(r"127\.0\.0\.1:\d+|localhost:\d+")
+    shutil.rmtree(scratch / "det-b-kiln", ignore_errors=True)
+    copy = scratch / "det-b-kiln" / "x" / "y"
+    shutil.copytree(parent, copy, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    roots = [parent, copy]
+    results: list[Any] = []
+    leaks: list[str] = []
+    for i in range(10):
+        r = roots[i % 2]
+        proc = subprocess.run(
+            [
+                sys.executable,
+                str(Path(__file__).resolve()),
+                "emit-det",
+                "kiln",
+                str(r),
+                str(scratch),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            cwd=REPO,
+            env={
+                **os.environ,
+                "PYTHONHASHSEED": str(random.randrange(1, 2**31)),
+                "PYTHONPATH": str(REPO),
+            },
+        )
+        if proc.returncode != 0:
+            results.append(("error", proc.stderr[-400:]))
+            continue
+        results.append(json.loads(proc.stdout.splitlines()[-1]))
+        for key, text in json.loads(proc.stderr.splitlines()[-1]).items():
+            scrubbed = text.replace(str(r), "").replace(str(parent), "")
+            for rx, what in ((rx_abs, "absolute path"), (rx_time, "time"), (rx_port, "port")):
+                m = rx.search(scrubbed)
+                if m and key != "extract":
+                    leaks.append(f"{key}: {what} {m.group(0)!r}")
+    ok_runs = [r for r in results if isinstance(r, dict)]
+    same = len({json.dumps(r, sort_keys=True) for r in ok_runs}) == 1
+    differing = (
+        sorted({k for r in ok_runs for k in r if len({x.get(k) for x in ok_runs}) > 1})
+        if ok_runs
+        else []
+    )
+    return p.done(
+        len(ok_runs) == 10 and same and not leaks,
+        {
+            "identical runs": len(ok_runs) if same else 0,
+            "of": 10,
+            "roots": 2,
+            "artifacts": sorted(ok_runs[0]) if ok_runs else [],
+            "differing artifacts": differing,
+            "leaks": sorted(set(leaks))[:5],
+        },
+        [r for r in results if not isinstance(r, dict)],
+    )
+
+
+def arm_h2(heldout: Path, scratch: Path, out: Path) -> int:
+    root = Path(heldout).resolve() / H2_PKG
+    fz = h2_verify_freeze(root)
+    print(
+        "freeze:", json.dumps({k: fz[k] for k in ("ok", "heldout_files", "library_files_checked")})
+    )
+    if not fz["ok"]:
+        print("REFUSED: a frozen file differs; nothing was scored")
+        print(json.dumps(fz, indent=1))
+        return 2
+    os.environ.setdefault("LATTICE_GOCHECK_CACHE", str(scratch / "gocache"))
+    os.environ.setdefault("LATTICE_GRPCBRIDGE_CACHE", str(scratch / "bridgecache"))
+    before = _snapshot(root)
+    ctx: dict[str, Any] = {}
+    errors: list[str] = []
+    probes: list[Probe] = []
+    try:
+        app = load_kiln(root, scratch)
+    except ReaderMismatch as err:
+        print(f"RUNNER ERROR (reader mismatch, no metric written): {err}")
+        return 3
+    except Exception as err:  # noqa: BLE001
+        print(f"RUNNER ERROR (no metric written): {type(err).__name__}: {str(err)[:800]}")
+        return 3
+    if app.runtime is None:
+        print(
+            "RUNNER ERROR (no metric written): harness RUNTIME is None (no AuthDriver.rpc in the library)"
+        )
+        return 3
+    steps = (
+        ("rpc", lambda: _h2_rpc_metrics(app)),
+        ("HO2-REC", lambda: _h2_rec(app, ctx)),
+        ("HO2-FLOWS", lambda: _h2_flows(app, ctx)),
+        ("HO2-DET", lambda: _h2_det(root, scratch)),
+    )
+    for name, fn in steps:
+        try:
+            res = fn()
+            probes += res if isinstance(res, list) else [res]
+        except Exception as err:  # noqa: BLE001 -- a runner failure is never a score
+            errors.append(f"{name}: {type(err).__name__}: {str(err)[:800]}")
+    if errors:
+        print("RUNNER ERROR (no metric file written):")
+        for e in errors:
+            print(" ", e)
+        return 3
+    after = _snapshot(root)
+    changed = [x for x in before if before[x] != after.get(x)]
+    new = [x for x in after if x not in before]
+    nw = Probe("P2-NW (heldout2 root)", "0 changed, 0 new", "all 0").done(
+        not changed and not new, {"changed": len(changed), "new": len(new)}, changed + new
+    )
+    fz_after = h2_verify_freeze(root)
+    probes += [nw]
+    probes += [p for p in not_run_rows() if not p.id.startswith("PG-HO2")]
+    doc = {
+        "schema": "lattice.grpc-probes2-h2/1",
+        "arm": "H2",
+        "heldout_freeze_before": fz,
+        "heldout_freeze_after_ok": fz_after["ok"],
+        "library_sha256": {
+            f: sha((REPO / f).read_bytes())
+            for f in (
+                "lattice/spec/grpc.py",
+                "lattice/importer/workflows.py",
+                "dogfood/grpc_flow_scorer.py",
+                "dogfood/grpc_probes2.py",
+            )
+        },
+        "truth_reader": {
+            "keys": app.truth["keys"],
+            "links_zero_based": app.truth["links_zero_based"],
+            "rpcs": len(app.truth["rpcs"]),
+            "tables": len(app.truth["tables"]),
+            "flows": len(app.truth["flows"]),
+        },
+        "probes": [pr.row() for pr in probes],
+    }
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "probes2-armh2.json").write_text(json.dumps(doc, indent=1, default=str) + "\n")
+    (out / "reconcile-kilnworks.json").write_text(json.dumps(ctx["rec"], indent=1) + "\n")
+    (out / "flows-kilnworks.json").write_text(
+        json.dumps(ctx["flows"], indent=1, default=str) + "\n"
+    )
+    for pr in probes:
+        print(f"{pr.status:8} {pr.id:24} {json.dumps(pr.observed, default=str)[:260]}")
+    failed = [pr for pr in probes if pr.status == "FAIL"]
+    print(
+        f"{sum(pr.status == 'PASS' for pr in probes)} passed, {len(failed)} failed, "
+        f"{sum(pr.status == 'NOT RUN' for pr in probes)} not run"
+    )
+    return 1 if failed else 0
+
+
 # ---- main -----------------------------------------------------------------------------------------
 
 
@@ -1213,20 +1913,21 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--deskd", type=Path, default=None, help="development data: the deskd directory"
     )
+    ap.add_argument(
+        "--heldout", type=Path, default=None, help="--arm H2: the directory holding kilnworks/"
+    )
     ap.add_argument("--scratch", type=Path, default=None)
     ap.add_argument("--out", type=Path, default=OUT_DEFAULT)
     ap.add_argument("--reg-before", type=Path, default=None)
     ap.add_argument("--reg-after", type=Path, default=None)
     ap.add_argument("--no-pr1", action="store_true")
     args = ap.parse_args(args_in)
-    if args.arm == "H2":
-        print(
-            "REFUSED: --arm H2 is the gated held-out stage (the orchestrator, once, after the freeze); "
-            "it is not part of this development-stage node and nothing here opens heldout2/"
-        )
-        return 2
     scratch = args.scratch or Path(tempfile.mkdtemp(prefix="grpc2-probes-"))
     scratch.mkdir(parents=True, exist_ok=True)
+    if args.arm == "H2":
+        if args.heldout is None:
+            ap.error("--arm H2 needs --heldout (the directory holding kilnworks/)")
+        return arm_h2(args.heldout, scratch, args.out)
     os.environ.setdefault("LATTICE_HELDOUT_BUILD", str(scratch / "hbuild"))
     ctx: dict[str, Any] = {
         "scratch": scratch,
