@@ -207,3 +207,80 @@ uv run python dogfood/forms_probes2.py --stage frozen --shapes <hshapes2> \
     --manifest docs/results/data/2026-10-17-typed-conditions-round2/shapes2.manifest.sha256 \
     --freeze docs/results/data/2026-10-17-typed-conditions-round2/freeze2.sha256 --scratch $SCRATCH/f --out $SCRATCH/f-data
 ```
+
+## 9. The gated stage on H2 (orchestrator run; scored once, library frozen)
+
+2026-10-17. `shapes2.manifest.sha256` and the 9 set files verified by `sha256sum -c` (0 mismatches) and `freeze2.sha256`
+verified (3 library files OK) **before and after** every run. Data: `data/.../frozen/frozen.json` (run 3, the scored run),
+`frozen-run1-layout-mismatch.json` and `frozen-run2-layout-mismatch.json` (kept as written). No model call, no API key, no
+sub-agent, nothing committed or staged. No Docker, no Streak: the Streak arm and PA, PW, PG3, PG4 (not in this stage's
+list) are NOT RUN here.
+
+### 9.1 Runner reader changes (dogfood/forms_probes2.py only; no library file, no metric changed)
+
+| run | result | cause (reader mismatch before any metric) | fix |
+|---|---|---|---|
+| 1 | every gated probe NOT RUN, `TypeError: string indices must be integers` | `truth.json` `cells` is `{app: {rule: {violates, reason}}}`, the reader expected a list of `{rule, app, violates}` | `_truth_cells` accepts both |
+| 2 | every gated probe NOT RUN, `TypeError: list indices must be integers` | the re-derivation of class e read the library item's witness (`request` is a list) instead of the pair's own `witness.request` (H2) | class e re-derives from the pair file's witness request: finds each side's generated case (or hand-written step) with that method, path, user and calls `incompatible` |
+| 3 | scored | | |
+
+Run 3 also reads, with the same change set: `mutants.json` as `{name: {kind, aims, why, edit: [file, old, new]}}`;
+`pairs.json` as a list of `{id, class, expect, forms: [{id, rule, kind, form} | "scenario:<hand step>"], witness}` with
+`expect` `contradictory`/`compatible`; `invalid.json` and `not_expressible.json` as lists (`expect` / `attempt` /
+`expect_any_of`); `invalid.json` and pair forms completed to approved records (anchor of the rule text, `approved_sha` =
+`form_sha`); sec apps named `sec_<v>` (round 1 used `sec:<v>`); untagged condition nodes need no reader change (the library
+infers the tag, `norm_cond`); `accepted`/`stores`/`given` optional and `row` as path or key are library matters and
+were read as written. K6 = column-only bound with no `endpoint` (F1/R4, F7/R11, F9/R13), kept out of the PG1t gate
+(Amendment 1, Q2). A pair's items count only if every form they name is in the pair (or is its named hand-written step);
+other items are listed (`items_outside_the_pair`). Run 3 was formatted with `ruff format` afterwards (no logic change).
+The same file still reads the round-1 layouts. PT2x class-d/b/a branches are unchanged; class a without `holds`
+is re-derived by requiring exactly one of the two conditions to hold at the value.
+
+### 9.2 Predicted vs observed (run 3; 32 apps x 21 formed rules = 672 cells; 21 of 21 forms usable and `current`)
+
+| probe | prediction (p) | gate | observed | status |
+|---|---|---|---|---|
+| PG1 | G == H on 85-97%; 0-8 cells G != H with H == T | 0 cells | G == H on **668 / 672 (99.4%)**, above the range; **4 cells G != H with H == T** (below) | **FAIL** |
+| PG1t | outside K6 94-100%; K6 misses 0-4 | 100% outside K6 | G == T on 668 / 672 overall; outside K6 **572 / 576 (99.3%)**, 4 misses (the same 4 cells); K6 **96 cells, 0 misses** (R4, R11, R13 x 32 apps) | **FAIL** (K6 reported) |
+| PG1o | exact (0-2 extra) | exact | G fails R14, R15, R16, R17, R21, R25 on `ok` = T's six; 0 extra, 0 missing | PASS |
+| PG1k | G = H's kills + 1-5; G-only >= 1 | superset | G kills **20**, H kills **22** of 31 non-ok apps; G-only **0**, **H-only 2** (`m_read_clamp`, `m_cancel_clamp`) | **FAIL** |
+| PG2 | same layer set >= 85% | reported | **99 / 223** (44%): all 124 differences are R14-R17 (G fails C and D, H only D) | reported, prediction missed |
+| PG5 | 0 invalid accepted; 0-1 valid refused | 0 and 0 | 0 / 29 invalid accepted; 0 / 21 valid refused | PASS |
+| PG5c | exact 85-100% | reported | **29 / 29** exact | reported |
+| PT2f | precision 1.0; recall a-d 1.0; class e 0.5-1.0; 0 raises | precision 1.0, recall a-d 1.0, 0 raises | precision **1.0** (13 TP, 0 FP, 14 TN); recall a-d **11 / 11**; class e **2 / 4** (FN P24, P25); 0 raises | PASS (class e reported, inside the predicted range) |
+| PT2x | 100% | 100% | 20 items, 0 failed re-derivations; 2 not independently re-derived ("weak": class c `fc:c:P13a:P13b`, `fc:c:P14a:P14b`) | PASS (weak disclosed) |
+| PT2w | exact; D's 7 fixtures identical | gains exactly the new items | `tier2.determined` 1 item expected, 1 got, `tier: 2`, exit 0. D's 7 fixtures are not part of this stage (PB) | PASS (CLI part) |
+| PNX | 0 accepted; F001/F017 on 90-100% | 0 accepted; every refusal F001 or F017 | 0 accepted of 12 attempts; **10 / 12 (83%)** refused with F001/F017; N12 and N13 refused with **F004 only** | **FAIL** |
+| PX | 0.3-5 ms; arm 35-90 s | <= 1 s; <= 180 s | arm **132.4 s** (checks 130.9 s) inside the gate, above the predicted 35-90 s; the `generate` time alone is not measured in this stage | PASS (prediction missed) |
+
+PG1 note list (library output): `F5:at_bound`, `F5:beyond`, `F6:at_bound`, `F6:beyond`: "the witness request does not carry the field".
+
+### 9.3 Misses (findings; nothing tuned, library unchanged)
+
+1. **PG1 / PG1t, `m_read_clamp` x R9 and `m_cancel_clamp` x R10 (G pass, H and T fail).** F5 and F6 are bounds on the
+   path parameter `order_id` (`ge 1`), and the witness request is `/orders/1`. The library emits no at-bound or beyond case
+   ("the witness request does not carry the field"), so an app that clamps order id 0 to 1 is not caught; the hand-written
+   scenarios catch it. These two cells are also the PG1k H-only kills. Predicted: 0. Cause class: a bound on a path
+   parameter has no generated case (a limit of the case synthesis, not a reader matter).
+2. **PG1 / PG1t, `m_cancel_sneaky` x R19 (G pass, H and T fail).** The mutant cancels another buyer's pending order and
+   then answers 404; F15 (`ownership`, `row: 3` as a key, `refused_other` 404 with db unchanged) does not flag it. Not
+   root-caused in this run (no library or form probing was done).
+3. **PG1 / PG1t, `m_pair2` x R15 (G fail, H and T pass): a false positive.** The mutant implements the 2-lines-per-
+   (order, product) limit exactly; F11 (`by [order_id, product_id]`, `max 2`, caller ben, `/orders/3/items`) still reports a
+   failure. Not root-caused in this run. Predicted: 0.
+4. **PNX N12, N13** (`effect_value`: a stored value computed from, or equal to, a request value, written as an
+   `accepted.db.equals` whose value is a `{sub}` / `{param}` node): refused with F004 ("not a literal") and not F001/F017.
+   Same family as round 1's PNX misses. The refusal is correct; the code is not the registered one.
+5. **PG2**: G reports layer C in addition to D on every R14-R17 cell (the row-limit forms generate an invariant); H
+   has only D. Not a defect of correctness, but 44% vs the predicted >= 85%.
+6. **PT2f class e**: P24 (ownership `accepted` 200 vs a path-param bound `accepted` 202 on the same request) and P25
+   (bound 200 vs ownership `accepted` 203) are not reported: 2 of 4. P15 (a compatible pair) has 1 item that names a hand-
+   written scenario, outside the pair, so it is not a false positive of the pair.
+7. **PT2x**: the class c items cannot be re-derived independently by the runner (witness weak).
+8. **Time**: the arm took 132.4 s against a predicted 35-90 s (still under the 180 s gate); 672 cells x CD checks.
+
+### 9.4 Verdict for the gated stage
+
+Passed: PG1o, PG5, PT2f, PT2x, PT2w (CLI), PX (and PG5c, PG2 reported). **Failed: PG1 (4 cells), PG1t (4 cells outside
+K6), PG1k (H-only 2), PNX (N12, N13).** K6: 96 cells, 0 misses. PD1 (post hoc, section 3.2) was not re-run. NOT RUN: the
+Streak arm, PA, PW, PG3, PG4 on the set. The gate rule of the prereg (section 6: every gated row) is **not met**.

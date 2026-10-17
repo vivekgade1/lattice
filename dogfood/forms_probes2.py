@@ -469,6 +469,48 @@ def check_set(shapes: Path, manifest: Path | None, freeze: Path | None) -> str |
     return None
 
 
+# ---- readers for the layouts of a frozen set (H2: lists, tagged-or-not nodes, optional keys) ----
+
+
+def _as_list(doc: Any, key: str) -> list[dict[str, Any]]:
+    """A file that is a list (H2) or an object holding the list under ``key`` (round 1)."""
+    return doc if isinstance(doc, list) else doc[key]
+
+
+def _truth_cells(cells: Any) -> list[tuple[str, str, bool]]:
+    """(rule, app, violates): a list of {rule, app, violates} (round 1) or {app: {rule: {violates}}} (H2)."""
+    if isinstance(cells, dict):
+        return [
+            (rid, app, bool(c["violates"]))
+            for app, by_rule in cells.items()
+            for rid, c in by_rule.items()
+        ]
+    return [(c["rule"], c["app"], bool(c["violates"])) for c in cells]
+
+
+def _mutant_edit(v: Any) -> tuple[str, str, str]:
+    """(file, old, new): a bare triple (round 1) or {kind, aims, why, edit: [file, old, new]} (H2)."""
+    e = v["edit"] if isinstance(v, dict) else v
+    return (e[0], e[1], e[2])
+
+
+def _entry(F: Any, x: dict[str, Any], rule_text: dict[str, str]) -> dict[str, Any]:
+    """A form record from H2's {id, rule, kind, form}: approved, anchored on the rule's text when known."""
+    from lattice.spec.rationale import anchor_of
+
+    return {
+        "id": x["id"],
+        "rule": x["rule"],
+        "anchor": anchor_of(rule_text[x["rule"]]) if x["rule"] in rule_text else "0" * 64,
+        "kind": x["kind"],
+        "form": x["form"],
+        "status": "approved",
+        "author": "hand",
+        "approved_by": "runner",
+        "approved_sha": F.form_sha(x["kind"], x["form"]),
+    }
+
+
 def set_rows(shapes: Path, scratch: Path, label: str) -> list[dict[str, Any]]:
     """PG1, PG1t, PG1o, PG1k, PG2, PG5, PG5c, PT2f, PT2x (strong), PT2w, PNX on the set, as written."""
     F, T2, impact_tier2, M = lib()
@@ -507,13 +549,17 @@ def set_rows(shapes: Path, scratch: Path, label: str) -> list[dict[str, Any]]:
     diags = F.check_forms(spec, trace, list(forms))
     eff = F.effective_spec(spec, gen)
     truth: dict[str, dict[str, bool]] = {}
-    for c in json.loads((ms / "truth.json").read_text())["cells"]:
-        truth.setdefault(c["rule"], {})[c["app"]] = bool(c["violates"])
-    muts = json.loads((ms / "mutants.json").read_text())
+    truth_doc = json.loads((ms / "truth.json").read_text())
+    for rid, app, v in _truth_cells(truth_doc["cells"]):
+        truth.setdefault(rid, {})[app] = v
+    rule_text: dict[str, str] = dict(truth_doc.get("rules") or {})
+    muts = {k: _mutant_edit(v) for k, v in json.loads((ms / "mutants.json").read_text()).items()}
     root = scratch / "apps"
     shutil.rmtree(root, ignore_errors=True)
     root.mkdir(parents=True)
-    apps = P1.apps_for(root, M)
+    apps = [
+        (n.replace("sec:", "sec_", 1), v) for n, v in P1.apps_for(root, M)
+    ]  # H2 names a sec app sec_<v>
     for mid, (mf, old, new) in muts.items():
         apps.append((mid, M.write_app(root, mid, edit=(mf, old, new))))
     form_rule = {r.form.id: r.rule for r in resolved}
@@ -592,14 +638,16 @@ def set_rows(shapes: Path, scratch: Path, label: str) -> list[dict[str, Any]]:
     ]  # fmt: skip
 
     # PG5 / PG5c
-    inv = json.loads((shapes / "invalid.json").read_text())["invalid"]
+    inv = _as_list(json.loads((shapes / "invalid.json").read_text()), "invalid")
     wrong, accepted, exact = [], [], []
     for x in inv:
-        fs = (
-            [F._parse_form(e, 0) for e in x["entries"]]
-            if "entries" in x
-            else [*forms, F._parse_form(x["entry"], 0)]
-        )  # noqa: SLF001
+        x = {**x, "code": x.get("code", x.get("expect"))}  # H2 writes `expect`
+        if "entries" in x:
+            fs = [F._parse_form(e, 0) for e in x["entries"]]  # noqa: SLF001
+        elif "entry" in x:
+            fs = [*forms, F._parse_form(x["entry"], 0)]  # noqa: SLF001
+        else:  # H2: {id, rule, kind, form}, one form added to the set's approved forms
+            fs = [*forms, F._parse_form(_entry(F, x, rule_text), 0)]  # noqa: SLF001
         sp = spec
         if x.get("spec_extra_scenarios"):
             extra = (
@@ -631,53 +679,68 @@ def set_rows(shapes: Path, scratch: Path, label: str) -> list[dict[str, Any]]:
     ]  # fmt: skip
 
     # PT2f / PT2x (strong)
-    pairs = json.loads((shapes / "pairs.json").read_text())["pairs"]
+    pairs = _as_list(json.loads((shapes / "pairs.json").read_text()), "pairs")
+    hand = {f"scenario:{sc.name}" for sc in spec.scenarios}
     res = []
     for p in pairs:
         fs: list[Any] = []
+        named: set[str] = set()
         extra = []
-        for side, fid in (("a", "PA"), ("b", "PB")):
-            s = p[side]
-            if "ref" in s:
-                fs.append(F._parse_form(entries[s["ref"]], 0))  # noqa: SLF001
-            elif "scenario" in s:
-                extra.append(
-                    Scenario(
-                        s["scenario"]["name"],
-                        s["scenario"].get("given"),
-                        tuple(Step(**t) for t in s["scenario"]["steps"]),
+        if "forms" in p:  # H2: forms = [{id, rule, kind, form} | "scenario:<hand-written name>"]
+            for s_ in p["forms"]:
+                if isinstance(s_, str):
+                    if s_ not in hand:
+                        raise ValueError(f"pair {p['id']}: no hand-written {s_!r}")
+                    named.add(s_)
+                else:
+                    fs.append(F._parse_form(_entry(F, s_, rule_text), 0))  # noqa: SLF001
+        else:  # round-1 layout: a / b sides
+            for side, fid in (("a", "PA"), ("b", "PB")):
+                s_ = p[side]
+                if "ref" in s_:
+                    fs.append(F._parse_form(entries[s_["ref"]], 0))  # noqa: SLF001
+                elif "scenario" in s_:
+                    extra.append(
+                        Scenario(
+                            s_["scenario"]["name"],
+                            s_["scenario"].get("given"),
+                            tuple(Step(**t) for t in s_["scenario"]["steps"]),
+                        )
                     )
-                )
-            else:
-                fs.append(
-                    F._parse_form(
-                        {
-                            "id": fid,
-                            "rule": "R1",
-                            "anchor": "0" * 64,
-                            "kind": s["kind"],
-                            "form": s["form"],
-                            "status": "approved",
-                            "author": "hand",
-                            "approved_sha": "x",
-                        },
-                        0,
-                    )
-                )  # noqa: SLF001
+                else:
+                    fs.append(
+                        F._parse_form(
+                            {
+                                "id": fid,
+                                "rule": "R1",
+                                "anchor": "0" * 64,
+                                "kind": s_["kind"],
+                                "form": s_["form"],
+                                "status": "approved",
+                                "author": "hand",
+                                "approved_sha": "x",
+                            },
+                            0,
+                        )
+                    )  # noqa: SLF001
         sp = dataclasses.replace(spec, scenarios=(*spec.scenarios, *extra)) if extra else spec
         if len({f.id for f in fs}) < len(fs):
             fs[1] = dataclasses.replace(fs[1], id="F9999")
         err, notes = None, []
+        out_of_pair = 0
         try:
             items = T2.contradictions(sp, fs, notes)
             ids = {f.id for f in fs}
-            items = [
-                i for i in items if all(x in ids or x.startswith("scenario:") for x in i["forms"])
-            ]
+            allowed = ids | named | {f"scenario:{x.name}" for x in extra}
+            kept = [i for i in items if all(x in allowed for x in i["forms"])]
+            out_of_pair = len(items) - len(kept)
+            items = kept
         except Exception as e:  # noqa: BLE001
             items, err = [], f"{type(e).__name__}: {e}"
-        res.append({"id": p["id"], "class": p["class"], "expect": p["expect"], "items": items, "error": err, "notes": notes,
-                    "forms": fs, "spec": sp})  # fmt: skip
+        expect = {"contradictory": "contradict"}.get(p["expect"], p["expect"])
+        res.append({"id": p["id"], "class": p["class"], "expect": expect, "items": items, "error": err, "notes": notes,
+                    "forms": fs, "spec": sp, "named": sorted(named), "witness": p.get("witness"),
+                    "out_of_pair": out_of_pair})  # fmt: skip
     tp = [r for r in res if r["expect"] == "contradict" and r["items"]]
     fn = [r for r in res if r["expect"] == "contradict" and not r["items"]]
     fp = [r for r in res if r["expect"] == "compatible" and r["items"]]
@@ -696,6 +759,7 @@ def set_rows(shapes: Path, scratch: Path, label: str) -> list[dict[str, Any]]:
                    false_pos=[{"id": r["id"], "items": [i["id"] for i in r["items"]]} for r in fp], true_neg=len(tn),
                    errors=[{"id": r["id"], "error": r["error"]} for r in res if r["error"]],
                    undecided=[{"id": r["id"], "notes": r["notes"]} for r in res if r["notes"]],
+                   items_outside_the_pair=[{"id": r["id"], "n": r["out_of_pair"]} for r in res if r["out_of_pair"]],
                    precision=(len(tp) / (len(tp) + len(fp))) if tp or fp else None,
                    recall_abcd=f"{rabcd['found']}/{rabcd['contradict']}", class_e=by_class("e"),
                    per_class={c: by_class(c) for c in "abcde"}))  # fmt: skip
@@ -706,7 +770,9 @@ def set_rows(shapes: Path, scratch: Path, label: str) -> list[dict[str, Any]]:
     for r in tp:
         for it in r["items"]:
             n_items += 1
-            why = rederive(F, impact_tier2, r["spec"], {f.id: f for f in r["forms"]}, it)
+            why = rederive(
+                F, impact_tier2, r["spec"], {f.id: f for f in r["forms"]}, it, r.get("witness")
+            )
             if why == "weak":
                 weak.append(it["id"])
             elif why:
@@ -715,7 +781,7 @@ def set_rows(shapes: Path, scratch: Path, label: str) -> list[dict[str, Any]]:
                    items=n_items, not_rederived_weak=weak, failed_rederivation=bad_w))  # fmt: skip
 
     # PNX
-    ne = json.loads((shapes / "not_expressible.json").read_text())["rules"]
+    ne = _as_list(json.loads((shapes / "not_expressible.json").read_text()), "rules")
     acc, wrong_code, tried = [], [], 0
     for x in ne:
         a = x.get("attempt")
@@ -738,7 +804,13 @@ def set_rows(shapes: Path, scratch: Path, label: str) -> list[dict[str, Any]]:
         if not got:
             acc.append(x["id"])
         elif not set(got) & set(NOT_EXPR_NODE_CODES):
-            wrong_code.append({"id": x["id"], "got": got, "set_expects": a.get("expect_codes")})
+            wrong_code.append(
+                {
+                    "id": x["id"],
+                    "got": got,
+                    "set_expects": x.get("expect_any_of", a.get("expect_codes")),
+                }
+            )
     out.append(row("PNX", "not_expressible attempts refused with F001 or F017", "PASS" if not acc and not wrong_code else "FAIL",
                    rules=len(ne), with_attempt=tried, accepted=acc, refused_with_other_code=wrong_code))  # fmt: skip
     out.append(pt2w_set(shapes, scratch, spec, trace, forms, label))
@@ -746,11 +818,19 @@ def set_rows(shapes: Path, scratch: Path, label: str) -> list[dict[str, Any]]:
 
 
 def rederive(
-    F: Any, impact_tier2: Any, spec: Any, by_id: dict[str, Any], it: dict[str, Any]
+    F: Any,
+    impact_tier2: Any,
+    spec: Any,
+    by_id: dict[str, Any],
+    it: dict[str, Any],
+    pair_witness: Any = None,
 ) -> str | None:
     """None when the item's witness re-derives; 'weak' when no independent derivation is done; else the reason."""
     cls, ids, w = it["class"], it["forms"], it["witness"]
     forms = [by_id.get(i) for i in ids]
+    if cls == "a" and all(forms) and "value" in w and "holds" not in w and "accepted_by" not in w:
+        held = [F.cond_holds(F.norm_cond(f.form["cond"]), w["value"]) for f in forms]
+        return None if sum(held) == 1 else "value does not separate"
     if cls == "a" and all(forms) and "value" in w and "holds" in w:
         holder, failer = by_id[w["holds"]], by_id[w["fails"]]
         return (
@@ -779,6 +859,36 @@ def rederive(
             g = F.generate(spec, [by_id[fid]])
             return next((s.steps[0] for s in g.scenarios if s.name == name), None)
 
+        pw = pair_witness if isinstance(pair_witness, dict) else {}
+        if cls == "e" and isinstance(
+            pw.get("request"), dict
+        ):  # H2: the pair's witness is a request
+            rq = pw["request"]
+
+            def steps_of(i: str) -> list[Any]:
+                if i.startswith("scenario:"):
+                    return [
+                        st for sc in spec.scenarios if f"scenario:{sc.name}" == i for st in sc.steps
+                    ]
+                if i not in by_id:
+                    return []
+                return [st for sc in F.generate(spec, [by_id[i]]).scenarios for st in sc.steps]
+
+            def hit(st: Any) -> bool:
+                return (st.method, st.path, st.user) == (
+                    rq["method"],
+                    rq["path"],
+                    rq.get("user"),
+                ) and ("json" not in rq or st.json == rq["json"])
+
+            sides = [[_ex(st) for st in steps_of(i) if hit(st)] for i in ids]
+            if len(sides) != 2 or not all(sides):
+                return "no case for the witness request on a side"
+            return (
+                None
+                if any(impact_tier2.incompatible(a, b, spec) for a in sides[0] for b in sides[1])
+                else "cases are not incompatible"
+            )
         if cls == "e":
             names = w.get("cases", [])
             ex = []
@@ -822,6 +932,14 @@ def rederive(
                 None if impact_tier2.incompatible(ex[0], ex[1], spec) else "states not incompatible"
             )
     return "weak"
+
+
+def _ex(st: Any) -> dict[str, Any]:
+    return {
+        "status": st.expect_status,
+        "body": st.expect_body,
+        "db": dict(st.expect_db) if st.expect_db else None,
+    }
 
 
 def pt2w_set(
