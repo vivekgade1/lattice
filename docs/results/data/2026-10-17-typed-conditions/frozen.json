@@ -1,0 +1,68 @@
+[
+  {
+    "probe": "PG1",
+    "reason": "the separate agent's frozen rule-shape set is not present in this worktree",
+    "status": "NOT RUN",
+    "what": "G vs H per cell"
+  },
+  {
+    "probe": "PG1t",
+    "reason": "the separate agent's frozen rule-shape set is not present in this worktree",
+    "status": "NOT RUN",
+    "what": "G vs truth per cell"
+  },
+  {
+    "probe": "PG1o",
+    "reason": "the separate agent's frozen rule-shape set is not present in this worktree",
+    "status": "NOT RUN",
+    "what": "every generated element passes on ok"
+  },
+  {
+    "probe": "PG1k",
+    "reason": "the separate agent's frozen rule-shape set is not present in this worktree",
+    "status": "NOT RUN",
+    "what": "mutants killed, G a superset of H"
+  },
+  {
+    "probe": "PG2",
+    "reason": "the separate agent's frozen rule-shape set is not present in this worktree",
+    "status": "NOT RUN",
+    "what": "layer of the failing check"
+  },
+  {
+    "probe": "PG5",
+    "reason": "the separate agent's frozen rule-shape set is not present in this worktree",
+    "status": "NOT RUN",
+    "what": "invalid.json refused with the expected code; valid forms accepted"
+  },
+  {
+    "probe": "PT2f",
+    "reason": "the separate agent's frozen rule-shape set is not present in this worktree",
+    "status": "NOT RUN",
+    "what": "forms contradictions on pairs.json"
+  },
+  {
+    "probe": "PT2x",
+    "reason": "the separate agent's frozen rule-shape set is not present in this worktree",
+    "status": "NOT RUN",
+    "what": "witness self-check on the frozen pairs"
+  },
+  {
+    "probe": "PT2w",
+    "reason": "the separate agent's frozen rule-shape set is not present in this worktree",
+    "status": "NOT RUN",
+    "what": "impact report with two contradictory forms"
+  },
+  {
+    "probe": "PNX",
+    "reason": "the separate agent's frozen rule-shape set is not present in this worktree",
+    "status": "NOT RUN",
+    "what": "not_expressible.json refused"
+  },
+  {
+    "probe": "wall",
+    "seconds": 0.0,
+    "status": "REPORTED",
+    "what": "total"
+  }
+]

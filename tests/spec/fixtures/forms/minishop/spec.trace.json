@@ -1,0 +1,94 @@
+{
+  "source": "REQUIREMENTS.md",
+  "rules": [
+    {
+      "id": "R1",
+      "text": "A buyer can cancel their own pending order, and cancelling it again is refused with 409.",
+      "section": "Mini shop > Orders",
+      "line": 5
+    },
+    {
+      "id": "R2",
+      "text": "A buyer can add a line to a pending order and the stored line has the requested quantity.",
+      "section": "Mini shop > Orders",
+      "line": 6
+    },
+    {
+      "id": "R3",
+      "text": "An order's total is the sum of its lines.",
+      "section": "Mini shop > Orders",
+      "line": 7
+    },
+    {
+      "id": "R4",
+      "text": "Stock is never negative.",
+      "section": "Mini shop > Orders",
+      "line": 8
+    },
+    {
+      "id": "R5",
+      "text": "An order moves from pending to paid or cancelled, and from paid to shipped.",
+      "section": "Mini shop > Orders",
+      "line": 9
+    },
+    {
+      "id": "R6",
+      "text": "A line's quantity is at least 1.",
+      "section": "Mini shop > Typed conditions",
+      "line": 13
+    },
+    {
+      "id": "R7",
+      "text": "A line's quantity is at most 100.",
+      "section": "Mini shop > Typed conditions",
+      "line": 14
+    },
+    {
+      "id": "R8",
+      "text": "An order's status is one of pending, paid, shipped or cancelled.",
+      "section": "Mini shop > Typed conditions",
+      "line": 15
+    },
+    {
+      "id": "R9",
+      "text": "A buyer reads, cancels and adds lines only on their own orders.",
+      "section": "Mini shop > Typed conditions",
+      "line": 16
+    },
+    {
+      "id": "R10",
+      "text": "An order has at most 5 lines.",
+      "section": "Mini shop > Typed conditions",
+      "line": 17
+    }
+  ],
+  "links": {
+    "R1": [
+      "scenario:ann cancels her pending order"
+    ],
+    "R2": [
+      "scenario:ann adds a line to a new order"
+    ],
+    "R3": [
+      "invariant:order_total"
+    ],
+    "R4": [
+      "invariant:stock_non_negative"
+    ],
+    "R5": [
+      "machine:Order.status"
+    ]
+  },
+  "unchecked": {
+    "R6": "covered only by a typed condition form",
+    "R7": "covered only by a typed condition form",
+    "R8": "covered only by a typed condition form",
+    "R9": "covered only by a typed condition form",
+    "R10": "covered only by a typed condition form"
+  },
+  "context": [],
+  "questions": [],
+  "replaces": {},
+  "retired": {},
+  "retired_targets": []
+}

@@ -1,0 +1,285 @@
+{
+  "schema": "lattice.forms/1",
+  "source": "REQUIREMENTS.md",
+  "forms": [
+    {
+      "id": "F1",
+      "rule": "R1",
+      "anchor": "7b33837a138ac62df936dea52d40cdac80de0c9f123339e927f9a1b212dc5db2",
+      "kind": "transition",
+      "form": {
+        "machine": "Order.status",
+        "trigger": "POST /orders/{}/cancel",
+        "caller": "ann",
+        "request": {
+          "path": "/orders/10/cancel"
+        },
+        "row": {
+          "id": 10,
+          "user_id": 1,
+          "total": 0.0
+        },
+        "from": [
+          "pending"
+        ],
+        "to": "cancelled",
+        "accepted": {
+          "status": 200
+        },
+        "refused": {
+          "status": 409
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "508717f3d35c58541ebe9bd50f0041588dc73726fecc6b718a6625bfbb8f3871"
+    },
+    {
+      "id": "F2",
+      "rule": "R4",
+      "anchor": "31bcf1fb362ac9c5699868073fe3fe309704f3ec2d92317b04c80aac3e223e24",
+      "kind": "bound",
+      "form": {
+        "field": {
+          "column": "Product.stock"
+        },
+        "cond": {
+          "node": "Cmp",
+          "op": "ge",
+          "value": 0
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "e02c18e4d4d703c72e395888a6f9ec49c404eea8f7f903d20a67b8da6f30e893"
+    },
+    {
+      "id": "F3",
+      "rule": "R6",
+      "anchor": "217abd828d8ed80dfb50d0cb080be204ce713e43facb45566903b3a2ece24787",
+      "kind": "bound",
+      "form": {
+        "field": {
+          "column": "OrderItem.quantity"
+        },
+        "cond": {
+          "node": "Cmp",
+          "op": "ge",
+          "value": 1
+        },
+        "endpoint": "POST /orders/{}/items",
+        "caller": "ann",
+        "request": {
+          "path": "/orders/10/items",
+          "json": {
+            "product_id": 50,
+            "quantity": 5
+          }
+        },
+        "given": {
+          "orders": [
+            {
+              "id": 10,
+              "user_id": 1,
+              "status": "pending",
+              "total": 0.0
+            }
+          ],
+          "products": [
+            {
+              "id": 50,
+              "name": "bulk",
+              "price": 1.0,
+              "stock": 1000
+            }
+          ]
+        },
+        "accepted": {
+          "status": 201
+        },
+        "refused": {
+          "status": 422
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "22079506367d8154ce01c9cae1d1edfa71cc7fb9fdc2ffc17946e77ad264d8f3"
+    },
+    {
+      "id": "F4",
+      "rule": "R7",
+      "anchor": "ee5ce22d9e54ad125af6d03495e55cdcb9d903c699c71d85f0c77ab8330d76e9",
+      "kind": "bound",
+      "form": {
+        "field": {
+          "column": "OrderItem.quantity"
+        },
+        "cond": {
+          "node": "Cmp",
+          "op": "le",
+          "value": 100
+        },
+        "endpoint": "POST /orders/{}/items",
+        "caller": "ann",
+        "request": {
+          "path": "/orders/10/items",
+          "json": {
+            "product_id": 50,
+            "quantity": 5
+          }
+        },
+        "given": {
+          "orders": [
+            {
+              "id": 10,
+              "user_id": 1,
+              "status": "pending",
+              "total": 0.0
+            }
+          ],
+          "products": [
+            {
+              "id": 50,
+              "name": "bulk",
+              "price": 1.0,
+              "stock": 1000
+            }
+          ]
+        },
+        "accepted": {
+          "status": 201
+        },
+        "refused": {
+          "status": 422
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "dd54c33a706ba80d5f3ac1394265fa4bf24ce756988709ec03a355726bca308d"
+    },
+    {
+      "id": "F5",
+      "rule": "R8",
+      "anchor": "f454a7694cbf4dda3df5f14b0aa83eda01c989107aac120fc79073fbc5b3b0ae",
+      "kind": "bound",
+      "form": {
+        "field": {
+          "column": "Order.status"
+        },
+        "cond": {
+          "node": "In",
+          "values": [
+            "pending",
+            "paid",
+            "shipped",
+            "cancelled"
+          ]
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "a4c76d4d50a1bd6688a992331c0846051c7586808a2ceeb77dde5310f37ec0ba"
+    },
+    {
+      "id": "F6",
+      "rule": "R9",
+      "anchor": "44cfb989b2805718c522233bce0a749a97a5904603f39880a2409cf2137da370",
+      "kind": "ownership",
+      "form": {
+        "table": "Order",
+        "scope": "owner",
+        "endpoints": [
+          "GET /orders/{}",
+          "POST /orders/{}/cancel"
+        ],
+        "owner": "ann",
+        "other": "ben",
+        "row": 1,
+        "refused_other": {
+          "status": 404
+        },
+        "refused_anon": {
+          "status": 401
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "f9e17f8ee55731f4a2123eeccedcefaf1e83b0b25b30a49d93ab0c9322fe40e4"
+    },
+    {
+      "id": "F7",
+      "rule": "R10",
+      "anchor": "7f756f535f1670ead25375980efe3f777220a3d9767635f0858490804a851bac",
+      "kind": "row_limit",
+      "form": {
+        "table": "OrderItem",
+        "by": [
+          "order_id"
+        ],
+        "max": 5,
+        "endpoint": "POST /orders/{}/items",
+        "caller": "ann",
+        "request": {
+          "path": "/orders/10/items",
+          "json": {
+            "product_id": 50,
+            "quantity": 5
+          }
+        },
+        "given": {
+          "orders": [
+            {
+              "id": 10,
+              "user_id": 1,
+              "status": "pending",
+              "total": 0.0
+            }
+          ],
+          "products": [
+            {
+              "id": 50,
+              "name": "bulk",
+              "price": 1.0,
+              "stock": 1000
+            }
+          ],
+          "order_items": [
+            {
+              "id": 1,
+              "order_id": 10,
+              "product_id": 50,
+              "quantity": 1,
+              "price": 0.0
+            }
+          ]
+        },
+        "accepted": {
+          "status": 201
+        },
+        "refused": {
+          "status": 409
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "88b79f5e68cbed869937bce8d6d8477df20fb63fbde6e23bb8587116b7ffa836"
+    }
+  ],
+  "not_expressible": {
+    "R2": {
+      "category": "effect_value",
+      "reason": "the stored quantity equals the requested one"
+    },
+    "R3": {
+      "category": "money",
+      "reason": "a sum"
+    }
+  }
+}
