@@ -1,0 +1,187 @@
+{
+ "schema": "lattice.grpc-mutants/1",
+ "control": {
+  "summary": "44 passed in 52.48s",
+  "seconds": 53.7
+ },
+ "killed": 16,
+ "of": 16,
+ "mutants": [
+  {
+   "id": "GX1",
+   "mutant": "the proto reader treats `repeated` / proto3 `optional` as a single field",
+   "killer": "P0-PARSE",
+   "tests": "tests/grpc/test_proto_reader.py",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_proto_reader.py::test_notes_protos_agree_with_protocompile"
+   ],
+   "seconds": 1.8
+  },
+  {
+   "id": "GX2",
+   "mutant": "a streaming rpc kept as unary",
+   "killer": "P0-UNREAD, P0-EXT",
+   "tests": "tests/grpc/test_proto_reader.py tests/grpc/test_extract_notes.py",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_proto_reader.py::test_unsupported_constructs_are_unread_with_their_line"
+   ],
+   "seconds": 1.7
+  },
+  {
+   "id": "GX3",
+   "mutant": "an rpc served by Unimplemented*Server reported implemented",
+   "killer": "P0-EXT, PG-REC",
+   "tests": "tests/grpc/test_extract_notes.py tests/grpc/test_runtime.py -k reconcile or test_extract_matches",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_extract_notes.py::test_extract_matches_the_truth"
+   ],
+   "seconds": 1.6
+  },
+  {
+   "id": "GX4",
+   "mutant": "status.Errorf's code ignored (every site UNKNOWN)",
+   "killer": "P0-EXT",
+   "tests": "tests/grpc/test_extract_notes.py",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_extract_notes.py::test_extract_matches_the_truth"
+   ],
+   "seconds": 1.8
+  },
+  {
+   "id": "GX5",
+   "mutant": "the interceptor's public set ignored (every rpc Member)",
+   "killer": "P0-EXT, PG-AUTH",
+   "tests": "tests/grpc/test_extract_notes.py tests/grpc/test_runtime.py -k extracted_auth or access_matrix or test_extract_matches",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_extract_notes.py::test_extract_matches_the_truth"
+   ],
+   "seconds": 2.5
+  },
+  {
+   "id": "GX6",
+   "mutant": "`return nil, err` not followed through the closure",
+   "killer": "P0-EXT (N's passthrough rpcs)",
+   "tests": "tests/grpc/test_extract_notes.py",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_extract_notes.py::test_extract_matches_the_truth"
+   ],
+   "seconds": 1.9
+  },
+  {
+   "id": "GX7",
+   "mutant": "a non-literal code guessed as the first map value instead of unread",
+   "killer": "P0-EXT",
+   "tests": "tests/grpc/test_extract_notes.py",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_extract_notes.py::test_extract_matches_the_truth"
+   ],
+   "seconds": 2.4
+  },
+  {
+   "id": "GX8",
+   "mutant": "goextract emits \"grpc\": null for an HTTP-only module",
+   "killer": "P0-BC (fixture hashes)",
+   "tests": "tests/grpc/test_bc.py tests/grpc/test_extract_notes.py",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_bc.py::test_http_outputs_are_byte_identical_to_the_baseline"
+   ],
+   "seconds": 1.9
+  },
+  {
+   "id": "GX9",
+   "mutant": "Route.transport serialised for HTTP routes (OMIT_DEFAULT dropped)",
+   "killer": "P0-BC (RepoModel JSON)",
+   "tests": "tests/grpc/test_bc.py tests/grpc/test_extract_notes.py",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_bc.py::test_http_outputs_are_byte_identical_to_the_baseline"
+   ],
+   "seconds": 1.8
+  },
+  {
+   "id": "GX10",
+   "mutant": "go_grpc.detect true on G-mixed (a gRPC client import only)",
+   "killer": "P0-BC (select answers gin)",
+   "tests": "tests/grpc/test_bc.py tests/grpc/test_extract_notes.py",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_bc.py::test_http_outputs_are_byte_identical_to_the_baseline"
+   ],
+   "seconds": 1.9
+  },
+  {
+   "id": "GX11",
+   "mutant": "a gateway binding added as a second endpoint",
+   "killer": "P0-MODEL (11 endpoints, not 13)",
+   "tests": "tests/grpc/test_extract_notes.py",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_extract_notes.py::test_model_lists_rpcs_as_routes_and_bindings_on_the_rpc"
+   ],
+   "seconds": 2.0
+  },
+  {
+   "id": "GX12",
+   "mutant": "the checker passes an Rpc whatever its code (code not compared)",
+   "killer": "PG-D",
+   "tests": "tests/grpc/test_runtime.py -k deliberate_fault or code_expectations or dev_spec",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_runtime.py::test_each_deliberate_fault_breaks_exactly_its_scenario[dup_code]"
+   ],
+   "seconds": 12.1
+  },
+  {
+   "id": "GX13",
+   "mutant": "int64 kept as protojson strings",
+   "killer": "PG-J",
+   "tests": "tests/grpc/test_runtime.py -k message_form or expect_message",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_runtime.py::test_message_form_int64_enums_and_unpopulated_fields"
+   ],
+   "seconds": 2.0
+  },
+  {
+   "id": "GX14",
+   "mutant": "expect_db / layer C skipped after an rpc",
+   "killer": "PG-C",
+   "tests": "tests/grpc/test_runtime.py -k layer_c or deliberate_fault",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_runtime.py::test_layer_c_catches_the_broken_invariants_after_the_rpc"
+   ],
+   "seconds": 16.6
+  },
+  {
+   "id": "GX15",
+   "mutant": "the bridge dials a non-loopback target",
+   "killer": "PG-BR",
+   "tests": "tests/grpc/test_runtime.py -k bridge",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_runtime.py::test_bridge_refuses_non_loopback_and_streaming"
+   ],
+   "seconds": 4.1
+  },
+  {
+   "id": "GX16",
+   "mutant": "no process-group stop after a ready:grpc startup failure",
+   "killer": "PG-LEAK",
+   "tests": "tests/grpc/test_runtime.py -k nothing_is_left",
+   "result": "KILLED",
+   "failed": [
+    "tests/grpc/test_runtime.py::test_nothing_is_left_after_a_failed_start"
+   ],
+   "seconds": 6.0
+  }
+ ]
+}

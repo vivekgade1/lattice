@@ -1,0 +1,229 @@
+{
+ "schema": "lattice.grpc-probes/1",
+ "arm": "G",
+ "probes": [
+  {
+   "id": "PG-BR",
+   "prediction": "all",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 3,
+    "deselected": 24,
+    "seconds": 3.2
+   },
+   "detail": []
+  },
+  {
+   "id": "PG-REC",
+   "prediction": "8/8, 1/1, 1/1 (10/10 on the fixed shape)",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 1,
+    "deselected": 26,
+    "seconds": 1.9
+   },
+   "detail": []
+  },
+  {
+   "id": "PG-D",
+   "prediction": "0; 8/8 caught",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 11,
+    "deselected": 16,
+    "seconds": 31.4,
+    "ok findings": 0,
+    "bugs": {
+     "no_owner": {
+      "layer D scenarios": [
+       "other_user_cannot_read"
+      ],
+      "named": "other_user_cannot_read",
+      "localised": true,
+      "layer C": []
+     },
+     "publish_any_state": {
+      "layer D scenarios": [
+       "publish_flow"
+      ],
+      "named": "publish_flow",
+      "localised": true,
+      "layer C": []
+     },
+     "delete_published": {
+      "layer D scenarios": [
+       "delete_rules"
+      ],
+      "named": "delete_rules",
+      "localised": true,
+      "layer C": []
+     },
+     "list_all": {
+      "layer D scenarios": [
+       "list_is_scoped"
+      ],
+      "named": "list_is_scoped",
+      "localised": true,
+      "layer C": []
+     },
+     "dup_code": {
+      "layer D scenarios": [
+       "register_duplicate"
+      ],
+      "named": "register_duplicate",
+      "localised": true,
+      "layer C": []
+     },
+     "no_priority_check": {
+      "layer D scenarios": [
+       "create_validation"
+      ],
+      "named": "create_validation",
+      "localised": true,
+      "layer C": [
+       "create_validation / step 2"
+      ]
+     },
+     "update_archived": {
+      "layer D scenarios": [
+       "update_archived_note"
+      ],
+      "named": "update_archived_note",
+      "localised": true,
+      "layer C": []
+     },
+     "publish_limit_off": {
+      "layer D scenarios": [
+       "publish_limit"
+      ],
+      "named": "publish_limit",
+      "localised": true,
+      "layer C": [
+       "publish_limit / step 8"
+      ]
+     }
+    },
+    "localised": "8/8",
+    "scenarios in the dev spec": 17
+   },
+   "detail": []
+  },
+  {
+   "id": "PG-C",
+   "prediction": "caught; quiet",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 2,
+    "deselected": 25,
+    "seconds": 10.3
+   },
+   "detail": []
+  },
+  {
+   "id": "PG-J",
+   "prediction": "exact",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 2,
+    "deselected": 25,
+    "seconds": 3.1
+   },
+   "detail": []
+  },
+  {
+   "id": "PG-MIX",
+   "prediction": "agree",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 2,
+    "deselected": 25,
+    "seconds": 2.4
+   },
+   "detail": []
+  },
+  {
+   "id": "PG-AUTH",
+   "prediction": "100%",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 2,
+    "deselected": 25,
+    "seconds": 3.4
+   },
+   "detail": []
+  },
+  {
+   "id": "PG-WF",
+   "prediction": "3-6 flows (p); 0",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 1,
+    "deselected": 26,
+    "seconds": 9.1,
+    "flows recovered": 17,
+    "by kind and status": {
+     "account": {
+      "verified": 1
+     },
+     "after_delete": {
+      "verified": 2
+     },
+     "lifecycle": {
+      "verified": 4
+     },
+     "owner_guard": {
+      "verified": 5
+     },
+     "pair": {
+      "verified": 5
+     }
+    },
+    "verified": 17,
+    "predicted range 3-6": "missed"
+   },
+   "detail": []
+  },
+  {
+   "id": "PG-LEAK",
+   "prediction": "0",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 3,
+    "deselected": 24,
+    "seconds": 7.2
+   },
+   "detail": []
+  },
+  {
+   "id": "PG-X",
+   "prediction": "0.5-3 ms; 3-12 s; 20-90 s (p)",
+   "pass_rule": "<= 5 ms; <= 30 s; <= 180 s",
+   "status": "PASS",
+   "observed": {
+    "bridge call p50 (ms)": 0.57,
+    "bridge call p95 (ms)": 1.017,
+    "dev spec, layers CD (s, median of 3)": 3.65,
+    "cold bridge build, Go build cache warm (s)": 3.0,
+    "cold bridge build, Go build cache empty (s)": 15.9
+   },
+   "detail": null
+  },
+  {
+   "id": "PG-HO",
+   "prediction": "section 5",
+   "pass_rule": "section 5",
+   "status": "NOT RUN",
+   "observed": "the held-out app is authored by a separate agent (Amendment 1, Q7) and scored once by the orchestrator after the freeze; none was given to this node",
+   "detail": null
+  }
+ ]
+}

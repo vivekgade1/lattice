@@ -17,6 +17,13 @@ command that serves the database, not started. :func:`process_runtime` is the
   ``stop_timeout`` -- and reaps it. An ``atexit`` guard stops whatever is still running
   when the interpreter exits.
 
+**gRPC** (Spike I): ``ProcessApp(ready="grpc")`` starts the app when ``grpc.health.v1.
+Health/Check`` answers SERVING (``ready="tcp"``: when the port accepts a connection) and
+serves the spec's ``Rpc`` steps through :meth:`ProcessTransport.rpc` (one bridge process per
+transport: :mod:`lattice.spec.grpc`). The one port ``port_env`` names then serves gRPC; with
+``grpc_port_env`` set the app serves HTTP on ``port_env``'s port (a grpc-gateway) and gRPC on
+a second one. ``ready="http"`` (the default) is the behaviour above, unchanged.
+
 On a server database (``check(..., database="postgres" | "mysql" | "clickhouse")``)
 ``db_path`` is the database's canonical URL (:mod:`lattice.spec.db`), and ``db_env``
 carries it unchanged (a SQLite path is made absolute); the app opens it (a Go app
@@ -107,7 +114,21 @@ class ProcessApp:
     inherit_env: bool = True
     stop_timeout: float = 5.0
     request_timeout: float = 30.0
+    # gRPC (Spike I). ``ready``: how start-up is detected -- ``"http"`` (``GET health_path``
+    # answers 200: today's behaviour), ``"grpc"`` (``grpc.health.v1.Health/Check`` answers
+    # SERVING) or ``"tcp"`` (the port accepts a connection). ``grpc_port_env``: the
+    # environment variable carrying a second free port, for an app serving HTTP (``port_env``)
+    # and gRPC on two ports; None: with ``ready="grpc"`` the one port serves gRPC. ``protos``
+    # / ``proto_paths`` / ``proto_root``: the ``.proto`` files the rpc transport describes
+    # when the spec names none (paths relative to ``proto_root``, default the working
+    # directory) and their include roots.
+    ready: str = "http"
+    grpc_port_env: str | None = None
+    protos: Sequence[str] = ()
+    proto_paths: Sequence[str] = ()
+    proto_root: Path | str | None = None
     # runtime state
+    grpc_port: int | None = field(default=None, init=False)
     port: int | None = field(default=None, init=False)
     pid: int | None = field(default=None, init=False)
     returncode: int | None = field(default=None, init=False)
@@ -173,9 +194,18 @@ class ProcessApp:
 
     def _spawn(self) -> None:
         self.port = _free_port(self.host)
+        self.grpc_port = None
+        if self.grpc_port_env is not None:
+            self.grpc_port = _free_port(self.host)
+            while self.grpc_port == self.port:
+                self.grpc_port = _free_port(self.host)
+        elif self.ready == "grpc":
+            self.grpc_port = self.port
         env = dict(os.environ) if self.inherit_env else {}
         env.update({k: str(v) for k, v in self.env.items()})
         env[self.port_env] = str(self.port)
+        if self.grpc_port_env is not None:
+            env[self.grpc_port_env] = str(self.grpc_port)
         if self.db_path is not None:
             env[self.db_env] = _db_env_value(self.db_path)
         if self._stderr is not None:
@@ -199,6 +229,9 @@ class ProcessApp:
             _LIVE.add(self)
 
     def _wait_healthy(self) -> None:
+        if self.ready != "http":
+            self._wait_ready()
+            return
         import httpx
 
         assert self._proc is not None
@@ -228,6 +261,58 @@ class ProcessApp:
                         f"stderr:\n{self.stderr_text() or '(empty)'}"
                     )
                 time.sleep(0.02)
+
+    def _wait_ready(self) -> None:
+        """Wait for a gRPC (``Health/Check`` SERVING) or a TCP (a connection) start-up."""
+        assert self._proc is not None
+        target = f"{self.host}:{self.grpc_port if self.grpc_port is not None else self.port}"
+        what = "grpc.health.v1.Health/Check SERVING" if self.ready == "grpc" else "a TCP connection"
+        deadline = time.monotonic() + self.startup_timeout
+        last = "no answer"
+        bridge = None
+        if self.ready == "grpc":
+            from lattice.spec.grpc import Bridge
+
+            bridge = Bridge()
+        try:
+            while True:
+                code = self._proc.poll()
+                if code is not None:
+                    self.returncode = code
+                    raise ProcessStartError(
+                        f"process app {self.describe()!r} exited with code {code} before "
+                        f"answering {what}; stderr:\n{self.stderr_text() or '(empty)'}"
+                    )
+                if bridge is not None:
+                    from lattice.spec.grpc import BridgeError
+
+                    try:
+                        answer = bridge.request(
+                            {"op": "health", "target": target, "timeout_ms": 1000}
+                        )
+                        if answer.get("serving"):
+                            return
+                        last = str(answer.get("code") or answer.get("status") or "not serving")
+                    except BridgeError as err:
+                        last = err.kind
+                else:
+                    try:
+                        with socket.create_connection(
+                            (self.host, int(target.rsplit(":", 1)[1])), 1.0
+                        ):
+                            return
+                    except OSError as err:
+                        last = type(err).__name__
+                if time.monotonic() > deadline:
+                    raise ProcessStartError(
+                        f"process app {self.describe()!r} did not answer {what} within "
+                        f"{self.startup_timeout:g}s (last: {last}); "
+                        f"stderr:\n{self.stderr_text() or '(empty)'}"
+                    )
+                time.sleep(0.02)
+        finally:
+            if bridge is not None:
+                bridge.stop()
 
     def stop(self) -> None:
         """Terminate the process group (SIGTERM, then SIGKILL) and reap it."""
@@ -288,15 +373,62 @@ def stop_all() -> None:
 # ------------------------------------------------------------------------------ runtime --
 
 
+class NoHttpClient:
+    """The ``client`` of a gRPC-only process app (no HTTP port): it carries the rpc
+    transport (``_lattice_rpc``) a gRPC login reads, and refuses every HTTP request."""
+
+    def __init__(self) -> None:
+        self.cookies: dict[str, str] = {}
+
+    def request(self, method: str, url: str, **kw: Any) -> Any:
+        raise CheckError(f"{method} {url}: the app serves gRPC only (no HTTP port)")
+
+    def __enter__(self) -> NoHttpClient:
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        return None
+
+
 class ProcessTransport(HttpxTransport):
     """An httpx client of a running process app; a request the server cannot answer
-    (it died) is a CheckError carrying its stderr."""
+    (it died) is a CheckError carrying its stderr. For a gRPC app (``ready="grpc"``)
+    :meth:`rpc` is its unary-call transport (one bridge process, stopped with this
+    transport); ``client`` stays the HTTP client when the app has an HTTP port too."""
 
     def __init__(self, app: ProcessApp) -> None:
         import httpx
 
         self.app = app
-        super().__init__(httpx.Client(base_url=app.base_url, timeout=app.request_timeout))
+        self._rpc: Any = None
+        client: Any
+        if app.ready == "grpc" and app.grpc_port_env is None:
+            client = NoHttpClient()
+        else:
+            client = httpx.Client(base_url=app.base_url, timeout=app.request_timeout)
+        super().__init__(client)
+        client._lattice_rpc = self.rpc  # what a gRPC login reaches the server through
+
+    def rpc(self, protos: Sequence[str] | None = None) -> Any:
+        """The app's gRPC transport (created on first use; ``protos`` are described by the
+        first call)."""
+        from lattice.spec.grpc import GrpcTransport
+
+        if self.app.grpc_port is None:
+            raise CheckError(
+                f"process app {self.app.describe()!r} has no gRPC port: start it with "
+                "ProcessApp(ready='grpc')"
+            )
+        if self._rpc is None:
+            self._rpc = GrpcTransport(
+                f"{self.app.host}:{self.app.grpc_port}",
+                protos=tuple(protos or self.app.protos),
+                root=self.app.proto_root,
+                proto_paths=tuple(self.app.proto_paths),
+            )
+        elif protos and not self._rpc._described:
+            self._rpc.protos = tuple(protos)
+        return self._rpc
 
     def request(self, method: str, path: str, **kw: Any) -> Any:
         import httpx
@@ -310,6 +442,13 @@ class ProcessTransport(HttpxTransport):
                 f"process app {self.app.describe()!r} died during {method} {path} "
                 f"({type(err).__name__}); stderr:\n{self.app.stderr_text() or '(empty)'}"
             ) from err
+
+    def __exit__(self, *exc: object) -> None:
+        try:
+            if self._rpc is not None:
+                self._rpc.close()
+        finally:
+            super().__exit__(*exc)
 
 
 def as_process_app(app: Any) -> ProcessApp:
@@ -380,6 +519,7 @@ def returns_process_app(app_factory: Any) -> bool:
 
 
 __all__ = [
+    "NoHttpClient",
     "ProcessApp",
     "ProcessStartError",
     "ProcessTransport",

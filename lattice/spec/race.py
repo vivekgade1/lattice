@@ -95,7 +95,7 @@ from lattice.spec.check import (
 )
 from lattice.spec.db import DB_ERRORS, DbRef, open_db
 from lattice.spec.invariants import _FLIPPED
-from lattice.spec.model import Await, Invariant, Machine, Scenario, Spec, Step, resolve_table
+from lattice.spec.model import Await, Invariant, Machine, Rpc, Scenario, Spec, Step, resolve_table
 from lattice.spec.report import CheckFinding, Report
 
 if TYPE_CHECKING:
@@ -900,9 +900,16 @@ def _before_await(scenario: Scenario, report: Report) -> Scenario:
     """The scenario up to its first ``Await`` step: layer X never races (nor replays) a
     wait on a background service, nor the steps after it (they rely on what the service
     did)."""
-    first = next((i for i, s in enumerate(scenario.steps) if isinstance(s, Await)), None)
+    first = next((i for i, s in enumerate(scenario.steps) if isinstance(s, Await | Rpc)), None)
     if first is None:
         return scenario
+    if isinstance(scenario.steps[first], Rpc):
+        report.notes.append(
+            f"rpc_layer_not_supported:X: scenario {scenario.name!r}: only its {first} step(s) "
+            f"before step {first + 1} are raced; layer X does not race rpcs (exit: the bridge "
+            "supports concurrent calls)"
+        )
+        return replace(scenario, steps=scenario.steps[:first])
     report.notes.append(
         f"layer X: scenario {scenario.name!r}: only its {first} step(s) before step "
         f"{first + 1} are raced; step {first + 1} awaits the "

@@ -41,11 +41,21 @@ class FrontEnd(Protocol):
 
 
 _REGISTRY: dict[str, FrontEnd] = {}
+# front ends tried before the others once loaded: one whose framework is detected by a
+# narrower test than a front end it shares libraries with (grpc-go over Gin)
+_FIRST: list[FrontEnd] = []
 
 
 def register(front_end: FrontEnd) -> FrontEnd:
     """Add (or replace) a front end under its name."""
     _REGISTRY[front_end.name] = front_end
+    return front_end
+
+
+def register_first(front_end: FrontEnd) -> FrontEnd:
+    """:func:`register`, and try this front end before the others when detecting."""
+    register(front_end)
+    _FIRST.append(front_end)
     return front_end
 
 
@@ -67,7 +77,7 @@ def _load_others() -> None:
 def _load_go() -> None:
     """Register the Go (Gin + GORM) front end: imported only on a request for it, or after
     every Python front end declined, so a Python import never loads it."""
-    from lattice.importer.frontends import go_gin  # noqa: F401 -- register
+    from lattice.importer.frontends import go_gin, go_grpc  # noqa: F401 -- register
 
 
 def select(
@@ -93,7 +103,7 @@ def select(
     for load in (None, _load_others, _load_go):
         if load is not None:
             load()
-        for fe in front_ends():
+        for fe in sorted(front_ends(), key=lambda fe: fe not in _FIRST):
             if fe.name not in tried:
                 tried.add(fe.name)
                 if fe.detect(Path(root), package):

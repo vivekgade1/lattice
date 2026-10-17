@@ -46,6 +46,15 @@
   default layers; it uses D's ``app_factory``, ``db_factory``, ``login`` and
   ``runtime``.
 
+**gRPC** (Spike I, unary only): a scenario's ``Rpc`` step is a call through the app's rpc
+transport (:mod:`lattice.spec.grpc`; a process app started with ``ready="grpc"``), the caller's
+token the metadata ``authorization: Bearer <token>``; its ``expect_code`` (a ``google.rpc.Code``
+name), ``expect_message`` (a subset of the response in ``lattice.grpcjson/1``) and ``expect_db``
+are compared, and layer C's invariants run after it as after an HTTP step. A scenario may mix
+``Rpc`` and ``Step`` steps (a gRPC gateway). Layers A and X do not run on a spec with ``Rpc``
+steps (a report note ``rpc_layer_not_supported:<layer>``), and layers R and B take no contract or
+program on an ``RPC`` endpoint (validate S029).
+
 Callers: ``login(client, handle)`` answers a bearer token for a handle of
 ``Spec.users`` (or ``login_path``: a form login with ``Spec.users``' credentials).
 Layer B logs every handle in once, on the app, on a scratch copy of the seed, and uses
@@ -110,7 +119,7 @@ from lattice.importer.verify import Case, CaseRecord, Rule, ValidationEnvelope, 
 from lattice.pycheck import CODES, Policy, derive_policy, run_pycheck
 from lattice.spec.db import DB_ERRORS, DbRef, as_ref, check_dialect, open_db
 from lattice.spec.invariants import InvariantError, compile_invariant
-from lattice.spec.model import Await, Invariant, Scenario, Spec, Step, resolve_table, tables_of
+from lattice.spec.model import Await, Invariant, Rpc, Scenario, Spec, Step, resolve_table, tables_of
 from lattice.spec.preconditions import unestablished
 from lattice.spec.report import LAYERS, Accepted, CheckFinding, Report
 from lattice.spec.services import POLL_S, Services, start_service
@@ -1373,7 +1382,13 @@ def _body(response: Any) -> Any:
         return response.text
 
 
-def _step_request(step: Step | Await) -> dict[str, Any]:
+def _step_request(step: Step | Await | Rpc) -> dict[str, Any]:
+    if isinstance(step, Rpc):
+        return {
+            "rpc": f"{step.service}/{step.method}",
+            "user": step.user,
+            "message": step.message,
+        }
     if isinstance(step, Await):
         return {
             "await": step.service,
@@ -1389,8 +1404,11 @@ def _step_request(step: Step | Await) -> dict[str, Any]:
     }
 
 
-def _step_endpoint(step: Step | Await) -> str:
-    """``METHOD /path`` of a request step; ``service <name>`` of an Await."""
+def _step_endpoint(step: Step | Await | Rpc) -> str:
+    """``METHOD /path`` of a request step; ``service <name>`` of an Await; ``RPC
+    <Service>/<Method>`` of an Rpc."""
+    if isinstance(step, Rpc):
+        return step.endpoint
     if isinstance(step, Await):
         return f"service {step.service}"
     return f"{step.method} {step.path}"
@@ -1592,7 +1610,9 @@ def _run_scenario(
     if clock is None:
         clock = ScenarioClock(scenario.name, monitor)
 
-    def fail(label: str, step: Step | Await | None, verdict: str, details: dict[str, Any]) -> None:
+    def fail(
+        label: str, step: Step | Await | Rpc | None, verdict: str, details: dict[str, Any]
+    ) -> None:
         report.findings.append(
             CheckFinding(
                 layer="D",
@@ -1652,10 +1672,21 @@ def _run_scenario(
                     )
                     client = serve.enter_context(serving)
                 clock.process(app)
+                prime = getattr(client, "rpc", None) if spec.protos else None
+                if callable(prime):  # a gRPC app: the protos its rpc transport describes
+                    prime(spec.protos)
                 with clock.part("steps_s"):
                     tokens: dict[str, str] = {}
                     for i, step in enumerate(scenario.steps, 1):
                         label = f"{scenario.name} / step {i}"
+                        if isinstance(step, Rpc):
+                            with clock.part("rpc_s"):
+                                goes_on = _rpc_step(spec, scenario, step, i, label, client,
+                                                    runtime, login, tokens, monitor, db,
+                                                    report, clock, fail)  # fmt: skip
+                            if not goes_on:
+                                return
+                            continue
                         if isinstance(step, Await):
                             clock.awaits += 1
                             with clock.part("await_s"):
@@ -1753,6 +1784,111 @@ def _run_scenario(
             with clock.part("app_stop_s"):
                 _close(runtime, app)
             clock.process(app)
+
+
+# codes whose answer is a server fault, as a 5xx is for an HTTP step
+LOUD_CODES = frozenset({"UNKNOWN", "DEADLINE_EXCEEDED", "INTERNAL", "UNAVAILABLE", "DATA_LOSS"})
+
+
+def _rpc_step(
+    spec: Spec,
+    scenario: Scenario,
+    step: Rpc,
+    i: int,
+    label: str,
+    client: Any,
+    runtime: AppRuntime | None,
+    login: Login | None,
+    tokens: dict[str, str],
+    monitor: InvariantMonitor | None,
+    db: DbRef,
+    report: Report,
+    clock: ScenarioClock,
+    fail: Callable[[str, Step | Await | Rpc | None, str, dict[str, Any]], None],
+) -> bool:
+    """An Rpc step of layer D (Spike I): the unary call through the app's gRPC transport,
+    the caller's token as the metadata ``authorization: Bearer <token>``, then the code,
+    the response and the database compared, and layer C's invariants run after it exactly
+    as after an HTTP step. Whether the scenario goes on."""
+    from lattice.spec.grpc import BridgeError, GrpcAnswer, bearer
+
+    reach = getattr(client, "rpc", None)
+    if not callable(reach):
+        err = "the app's transport has no gRPC client: serve it with ProcessApp(ready='grpc')"
+        fail(label, step, "loud", {"error": err})
+        report.cases[label] = {"layer": "D", "endpoint": _step_endpoint(step), "verdict": "loud",
+                               "reason": err, "request": _step_request(step)}  # fmt: skip
+        return False
+    rpc = reach(spec.protos)
+    token = None
+    if step.user is not None:
+        if step.user not in tokens:
+            if monitor is not None:
+                monitor.label = f"{scenario.name} / login as {step.user}"
+            clock.logins += 1
+            try:
+                with clock.part("login_s"):
+                    if runtime is not None:
+                        tokens[step.user] = runtime.auth.token(client, step.user, login)
+                    elif login is None:
+                        raise RuntimeError("no login given")
+                    else:
+                        tokens[step.user] = login(client, step.user)
+            except Exception as err:  # noqa: BLE001 -- loud: cannot run
+                fail(label, step, "loud", {"error": f"cannot log in as {step.user!r}: {err}"})
+                report.cases[label] = {"layer": "D", "endpoint": _step_endpoint(step),
+                                       "verdict": "loud", "reason": str(err),
+                                       "request": _step_request(step)}  # fmt: skip
+                return False
+        token = tokens[step.user]
+    if monitor is not None:
+        monitor.label = label
+        monitor.requests[label] = _step_request(step)
+        monitor.endpoints[label] = _step_endpoint(step)
+    clock.requests += 1
+    try:
+        answer = rpc.call(step.service, step.method, step.message, bearer(token, step.metadata))
+    except BridgeError as err:
+        problem = f"the rpc could not be made: {err}"
+        fail(label, step, "loud", {"problems": [problem]})
+        report.cases[label] = {"layer": "D", "endpoint": _step_endpoint(step), "verdict": "loud",
+                               "reason": problem, "request": _step_request(step)}  # fmt: skip
+        return False
+    after = getattr(client, "_after", None)
+    if monitor is not None and callable(after):  # layer C: the invariants after the rpc
+        after("RPC", f"/{step.service}/{step.method}")
+    problems: list[str] = []
+    if answer.code != step.expect_code:
+        problems.append(f"code: expected {step.expect_code}, got {answer.code}"
+                        + (f" ({answer.message})" if answer.message else ""))  # fmt: skip
+    got: Any = answer.as_body() if isinstance(answer, GrpcAnswer) else None
+    if step.expect_message is not None and not subset(step.expect_message, got):
+        problems.append(f"message: expected {step.expect_message!r} within {got!r}")
+    if step.expect_db:
+        problems += _expect_db(spec, db, step.expect_db)
+        problems += unestablished(scenario, i, step.expect_db, problems)
+    verdict = "correct"
+    if problems:
+        verdict = "loud" if answer.code in LOUD_CODES else "silent"
+    report.cases[label] = {
+        "layer": "D",
+        "endpoint": _step_endpoint(step),
+        "verdict": verdict,
+        "reason": "; ".join(problems),
+        "request": _step_request(step),
+        "code": answer.code,
+    }
+    if problems:
+        # "status" carries the code, so a reader of an HTTP finding (the ask verifier, the
+        # studio) prints an rpc finding as it prints any: "expected NOT_FOUND, got OK"
+        fail(label, step, verdict, {
+            "problems": problems,
+            "expected": {"status": step.expect_code, "code": step.expect_code,
+                         "body": step.expect_message, "db": step.expect_db},
+            "actual": {"status": answer.code, "code": answer.code, "body": got},
+        })  # fmt: skip
+        return False
+    return True
 
 
 def _await_step(
@@ -1984,10 +2120,24 @@ def check(
     problems = validate(spec)
     if problems:
         raise CheckError("the spec is not valid:\n  " + "\n  ".join(p.render() for p in problems))
+    rpc_skipped = ""
+    if any(isinstance(st, Rpc) for sc in spec.scenarios for st in sc.steps):
+        # layers A and X do not read or race rpcs this round (Spike I, D9)
+        rpc_skipped = "".join(x for x in "AX" if x in run)
+        run = "".join(x for x in run if x not in rpc_skipped)
     if login is None and login_path is not None and spec.users:
         login = form_login(login_path, dict(spec.users))
     report = Report(layers=run, unchecked=[u.text for u in spec.unchecked])
     report.timings = {"total_s": 0.0, "layers": {}, "setup": {}, "scenarios": []}
+    for x in rpc_skipped:
+        report.notes.append(
+            f"rpc_layer_not_supported:{x}: layer {x} is not run on a spec with Rpc steps "
+            + (
+                "(layer A reads Gin routes, not rpc handlers; exit: GO8xx rules take a handler set)"
+                if x == "A"
+                else "(races need concurrent calls; exit: the bridge supports concurrent calls)"
+            )
+        )
     scenario_spec = spec
     if only is not None:
         from lattice.spec.selection import select_scenarios

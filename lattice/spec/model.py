@@ -120,6 +120,56 @@ class Await:
     note: str = ""
 
 
+# google.rpc.Code's canonical names (gRPC status codes), in code order
+RPC_CODES = (
+    "OK",
+    "CANCELLED",
+    "UNKNOWN",
+    "INVALID_ARGUMENT",
+    "DEADLINE_EXCEEDED",
+    "NOT_FOUND",
+    "ALREADY_EXISTS",
+    "PERMISSION_DENIED",
+    "RESOURCE_EXHAUSTED",
+    "FAILED_PRECONDITION",
+    "ABORTED",
+    "OUT_OF_RANGE",
+    "UNIMPLEMENTED",
+    "INTERNAL",
+    "UNAVAILABLE",
+    "DATA_LOSS",
+    "UNAUTHENTICATED",
+)
+
+
+@dataclass(frozen=True)
+class Rpc:
+    """A unary gRPC call of a scenario (Spike I), beside `Step` (HTTP) and `Await`.
+
+    `service` is the full service name ("notes.v1.Notes"), `method` the rpc ("GetNote");
+    `user` a handle of `Spec.users` (None: no caller; the token goes in the metadata
+    `authorization: Bearer <token>`); `message` the request in Lattice's canonical message
+    form `lattice.grpcjson/1` (protojson with proto field names; 64-bit integers within
+    +/-2^53 are JSON numbers); `metadata` extra request metadata. `expect_code` is a
+    `google.rpc.Code` name (RPC_CODES); `expect_message` a subset of the response (for OK)
+    or of `{"code", "message"}` (for an error); `expect_db` the forms of `Step.expect_db`.
+    Only unary rpcs: a streaming method is refused by `validate` (S028)."""
+
+    service: str
+    method: str
+    user: str | None = None
+    message: Any = field(default=None, hash=False)
+    metadata: Mapping[str, str] | None = field(default=None, hash=False)
+    expect_code: str = "OK"
+    expect_message: Any | None = field(default=None, hash=False)
+    expect_db: Mapping[str, Any] | None = field(default=None, hash=False)
+
+    @property
+    def endpoint(self) -> str:
+        """``RPC notes.v1.Notes/GetNote``."""
+        return f"RPC {self.service}/{self.method}"
+
+
 @dataclass(frozen=True)
 class Service:
     """A background service the app runs besides its HTTP server (a worker draining a
@@ -142,11 +192,12 @@ def _services(value: Any) -> tuple[Service, ...]:
 class Scenario:
     """A concrete example the user approves: rows `given` (table -> rows as dicts of
     column values, one_of columns by value) before `steps` run in order. A step is a
-    request (`Step`) or a wait on a background service (`Await`)."""
+    request (`Step`), a unary gRPC call (`Rpc`) or a wait on a background service
+    (`Await`)."""
 
     name: str
     given: Mapping[str, list[dict[str, Any]]] | None = field(default=None, hash=False)
-    steps: tuple[Step | Await, ...] = ()
+    steps: tuple[Step | Await | Rpc, ...] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "steps", tuple(self.steps))
@@ -335,6 +386,9 @@ class Spec:
     approved: tuple[Any, ...] = ()
     contracts: tuple[Contract, ...] = ()
     services: tuple[Service, ...] = ()
+    # project-relative `.proto` paths: the declared gRPC contract `Rpc` steps are checked
+    # against (validate S026); empty for every spec without rpcs
+    protos: tuple[str, ...] = ()
     # program names given more than once (programs given as pairs); see validate S013
     duplicate_programs: tuple[str, ...] = field(default=(), init=False, repr=False)
 
@@ -347,6 +401,7 @@ class Spec:
         for name in ("machines", "invariants", "scenarios", "unchecked", "approved", "contracts"):
             object.__setattr__(self, name, tuple(getattr(self, name)))
         object.__setattr__(self, "services", _services(self.services))
+        object.__setattr__(self, "protos", _strings(self.protos))
 
     def service_names(self) -> tuple[str, ...]:
         """The declared services' names, in order."""

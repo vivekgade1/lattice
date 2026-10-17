@@ -63,6 +63,16 @@ Background services (`Spec.services`, `Await` steps of scenarios); an `Await`'s
 - S024: a scenario's `Await` names a service `Spec.services` does not declare.
 - S025: a malformed `Await` or service: an empty `expect_db`, a `within_s` that is not
   a positive number; or a service name that is empty or declared twice.
+
+gRPC (`Rpc` steps, `Spec.protos`; Spike I -- unary rpcs only):
+
+- S026: an `Rpc` names a service or method that `Spec.protos` does not declare (checked
+  only when `protos` is not empty), or a proto file that cannot be read.
+- S027: an `Rpc`'s `expect_code` is not a `google.rpc.Code` name (`RPC_CODES`).
+- S028: an `Rpc` names a streaming method (client, server or bidirectional streaming is
+  not supported; exit: a stream step form).
+- S029: a `Contract` or a program on an `RPC` endpoint: layers R and B do not run over rpcs
+  (exit: the probe oracle and the Lattice runtime get an rpc transport).
 """
 
 from __future__ import annotations
@@ -81,10 +91,12 @@ from lattice.spec.model import (
     EXAMPLE_KEYS,
     OWNER_SCOPES,
     PARAM_SOURCES,
+    RPC_CODES,
     Await,
     Contract,
     ContractParam,
     Machine,
+    Rpc,
     Scenario,
     Spec,
     Step,
@@ -121,6 +133,10 @@ CODES: Mapping[str, str] = {
     "S023": "contract owner scope on a table nobody owns",
     "S024": "await names an undeclared service",
     "S025": "malformed await or service",
+    "S026": "rpc outside the spec's protos",
+    "S027": "rpc expect_code is not a gRPC code",
+    "S028": "rpc names a streaming method",
+    "S029": "contract or program on an rpc endpoint",
 }
 HTTP_METHODS = ("GET", "POST", "PUT", "PATCH", "DELETE")
 EXPECT_DB_KEYS = frozenset({"where", "count", "equals"})
@@ -139,10 +155,11 @@ class SpecProblem:
         return f"{text} (hint: {self.hint})" if self.hint else text
 
 
-def validate(spec: Spec) -> list[SpecProblem]:
+def validate(spec: Spec, root: Any = None) -> list[SpecProblem]:
     """Every problem of `spec`, in the order: users, programs, machines, invariants,
     services, scenarios, contracts, unchecked requirements. Empty when the spec is
-    consistent."""
+    consistent. `root`: where `Spec.protos` are read from (default: the working
+    directory)."""
     if spec.profile.api is None:
         return [
             SpecProblem(
@@ -157,7 +174,7 @@ def validate(spec: Spec) -> list[SpecProblem]:
     problems += _machines(spec)
     problems += _invariants(spec)
     problems += _services(spec)
-    problems += _scenarios(spec)
+    problems += _scenarios(spec, root)
     problems += _contracts(spec)
     problems += _unchecked(spec)
     return problems
@@ -224,6 +241,17 @@ def _programs(spec: Spec) -> list[SpecProblem]:
     functions: dict[str, str] = {}
     for program, source in spec.programs.items():
         for function, method, path in _endpoints(source):
+            if method == "RPC":
+                problems.append(
+                    SpecProblem(
+                        "S029",
+                        f"program {program!r}: endpoint {function!r} is on an RPC endpoint "
+                        f"({path})",
+                        "layer B does not run over rpcs (exit: the Lattice runtime gets an rpc "
+                        "transport); drop the program",
+                    )
+                )
+                continue
             first = routes.setdefault((method, path), program)
             if first != program:
                 problems.append(
@@ -334,16 +362,98 @@ def _duplicates(names: Sequence[str], what: str) -> list[SpecProblem]:
 # ---- scenarios ---------------------------------------------------------------------------
 
 
-def _scenarios(spec: Spec) -> list[SpecProblem]:
+def _scenarios(spec: Spec, root: Any = None) -> list[SpecProblem]:
     problems = _duplicates([s.name for s in spec.scenarios], "scenario")
+    contract: Any = None
     for scenario in spec.scenarios:
         problems += _given(spec, scenario)
         for index, step in enumerate(scenario.steps, 1):
             where = f"scenario {scenario.name!r} step {index}"
             if isinstance(step, Await):
                 problems += _await(spec, where, step)
+            elif isinstance(step, Rpc):
+                if contract is None:
+                    contract = _proto_contract(spec, root)
+                    problems += contract[1]  # unreadable protos, once
+                problems += _rpc(spec, where, step, contract)
             else:
                 problems += _step(spec, where, step)
+    return problems
+
+
+def _proto_contract(
+    spec: Spec, root: Any
+) -> tuple[dict[str, dict[str, tuple[bool, bool]]], list[SpecProblem]]:
+    """The services of `Spec.protos` (empty: not checked) and the problems reading them."""
+    if not spec.protos:
+        return {}, []
+    from lattice.spec.grpc import read_services
+
+    services, unread = read_services(spec.protos, root)
+    return services, [
+        SpecProblem(
+            "S026",
+            f"Spec.protos: {why}",
+            "give the path of a .proto file, relative to the project root",
+        )
+        for why in unread
+    ]
+
+
+def _rpc(spec: Spec, where: str, step: Rpc, contract: Any) -> list[SpecProblem]:
+    problems: list[SpecProblem] = []
+    services, proto_problems = contract
+    if not (
+        isinstance(step.service, str)
+        and step.service
+        and isinstance(step.method, str)
+        and step.method
+    ):
+        problems.append(
+            _malformed(
+                where,
+                f"rpc {step.service!r}/{step.method!r}",
+                'name the service and method: Rpc("notes.v1.Notes", "GetNote")',
+            )
+        )
+    if step.user is not None and step.user not in spec.users:
+        known = ", ".join(sorted(spec.users)) or "none"
+        problems.append(
+            SpecProblem(
+                "S011",
+                f"{where}: unknown user {step.user!r}",
+                f"add it to Spec.users (handle -> (login, password)); known: {known}",
+            )
+        )
+    if step.expect_code not in RPC_CODES:
+        problems.append(
+            SpecProblem(
+                "S027",
+                f"{where}: expect_code {step.expect_code!r} is not a gRPC code",
+                f"use a google.rpc.Code name: {', '.join(RPC_CODES)}",
+            )
+        )
+    if spec.protos and not proto_problems:
+        methods = services.get(step.service)
+        if methods is None or step.method not in methods:
+            known = ", ".join(f"{s}/{m}" for s, ms in sorted(services.items()) for m in ms)
+            problems.append(
+                SpecProblem(
+                    "S026",
+                    f"{where}: {step.service}/{step.method} is not declared by Spec.protos",
+                    f"declared: {known or 'none'}",
+                )
+            )
+        elif any(methods[step.method]):
+            problems.append(
+                SpecProblem(
+                    "S028",
+                    f"{where}: {step.service}/{step.method} is a streaming method",
+                    "only unary rpcs are supported; leave it out of the scenario",
+                )
+            )
+    if step.expect_db is not None:
+        problems += _expect_db(spec, where, step.expect_db)
     return problems
 
 
@@ -522,6 +632,14 @@ def _contract(spec: Spec, c: Contract, where: str) -> list[SpecProblem]:
     def bad(message: str, hint: str, code: str = "S017") -> None:
         problems.append(SpecProblem(code, f"{where}: {message}", hint))
 
+    if c.method == "RPC":
+        bad(
+            "a contract on an RPC endpoint",
+            "layer R does not run over rpcs (exit: the probe oracle gets an rpc transport); "
+            "drop the contract",
+            "S029",
+        )
+        return problems
     if c.method not in HTTP_METHODS:
         bad(f"method {c.method!r}", f"use one of {', '.join(HTTP_METHODS)}")
     if not (isinstance(c.path, str) and c.path.startswith("/")):

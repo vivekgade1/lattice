@@ -15,7 +15,7 @@ import json
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from lattice.spec.model import Await, Scenario, Spec, Step, tables_of
+from lattice.spec.model import Await, Rpc, Scenario, Spec, Step, tables_of
 from lattice.typesys import Schema
 
 __all__ = ["access_matrix", "requirements_markdown"]
@@ -263,6 +263,17 @@ def _scenarios_block(spec: Spec) -> list[str]:
         for step in scenario.steps:
             if isinstance(step, Await):
                 lines.append("  - " + _await_fact(step))
+                continue
+            if isinstance(step, Rpc):
+                facts = []
+                if step.expect_message is not None:
+                    facts.append(f"message {_short(step.expect_message)}")
+                if step.expect_db:
+                    facts.append("; ".join(_db_fact(t, c) for t, c in step.expect_db.items()))
+                tail = f" -- {'; '.join(facts)}" if facts else ""
+                lines.append(
+                    f"  - {step.endpoint} as {step.user or 'anon'} -> {step.expect_code}{tail}"
+                )
                 continue
             who = step.user or "anon"
             fact = _step_fact(step)

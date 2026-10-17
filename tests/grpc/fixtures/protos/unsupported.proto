@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package t.v1;
+
+import public "other.proto";
+import weak "weak.proto";
+import "google/protobuf/descriptor.proto";
+import "validate/validate.proto";
+
+extend google.protobuf.FieldOptions {
+  string my_opt = 50001;
+}
+
+message Odd {
+  string a = 1 [(my_opt) = "x"];
+  string b = 2 [(validate.rules).string.pattern = "^a"];
+  string ok = 3 [(validate.rules).string.min_len = 1];
+}
+
+service OddSvc {
+  rpc Fine(Odd) returns (Odd);
+  rpc Up(stream Odd) returns (Odd);
+}

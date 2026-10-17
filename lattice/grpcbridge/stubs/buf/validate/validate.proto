@@ -1,0 +1,99 @@
+// A reduced stand-in for buf/validate/validate.proto (protovalidate), field numbers as in
+// the published file: the rules Lattice reads (see lattice/gocheck/src/goextract_proto.go)
+// plus `pattern`, so a service that names them compiles here. A real file on the include
+// path wins over this one.
+syntax = "proto3";
+
+package buf.validate;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate";
+
+extend google.protobuf.FieldOptions {
+  optional FieldRules field = 1159;
+}
+
+message FieldRules {
+  optional bool required = 25;
+  oneof type {
+    FloatRules float = 1;
+    DoubleRules double = 2;
+    Int32Rules int32 = 3;
+    Int64Rules int64 = 4;
+    UInt32Rules uint32 = 5;
+    UInt64Rules uint64 = 6;
+    BoolRules bool = 13;
+    StringRules string = 14;
+    BytesRules bytes = 15;
+    EnumRules enum = 16;
+    RepeatedRules repeated = 18;
+    MapRules map = 19;
+  }
+}
+
+message FloatRules {
+  optional float const = 1;
+  oneof less_than { float lt = 2; float lte = 3; }
+  oneof greater_than { float gt = 4; float gte = 5; }
+  repeated float in = 6;
+}
+message DoubleRules {
+  optional double const = 1;
+  oneof less_than { double lt = 2; double lte = 3; }
+  oneof greater_than { double gt = 4; double gte = 5; }
+  repeated double in = 6;
+}
+message Int32Rules {
+  optional int32 const = 1;
+  oneof less_than { int32 lt = 2; int32 lte = 3; }
+  oneof greater_than { int32 gt = 4; int32 gte = 5; }
+  repeated int32 in = 6;
+}
+message Int64Rules {
+  optional int64 const = 1;
+  oneof less_than { int64 lt = 2; int64 lte = 3; }
+  oneof greater_than { int64 gt = 4; int64 gte = 5; }
+  repeated int64 in = 6;
+}
+message UInt32Rules {
+  optional uint32 const = 1;
+  oneof less_than { uint32 lt = 2; uint32 lte = 3; }
+  oneof greater_than { uint32 gt = 4; uint32 gte = 5; }
+  repeated uint32 in = 6;
+}
+message UInt64Rules {
+  optional uint64 const = 1;
+  oneof less_than { uint64 lt = 2; uint64 lte = 3; }
+  oneof greater_than { uint64 gt = 4; uint64 gte = 5; }
+  repeated uint64 in = 6;
+}
+message BoolRules {
+  optional bool const = 1;
+}
+message StringRules {
+  optional string const = 1;
+  optional uint64 min_len = 2;
+  optional uint64 max_len = 3;
+  optional string pattern = 6;
+  repeated string in = 10;
+}
+message BytesRules {
+  optional bytes const = 1;
+  optional uint64 min_len = 2;
+  optional uint64 max_len = 3;
+}
+message EnumRules {
+  optional int32 const = 1;
+  optional bool defined_only = 2;
+  repeated int32 in = 3;
+}
+message RepeatedRules {
+  optional uint64 min_items = 1;
+  optional uint64 max_items = 2;
+  optional bool unique = 3;
+}
+message MapRules {
+  optional uint64 min_pairs = 1;
+  optional uint64 max_pairs = 2;
+}

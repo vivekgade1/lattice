@@ -1,0 +1,145 @@
+syntax = "proto3";
+
+package t.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "buf/validate/validate.proto";
+import "validate/validate.proto";
+
+option go_package = "example.com/t/v1;tv1";
+option java_package = "com.example.t.v1";
+
+enum Color {
+  COLOR_UNSPECIFIED = 0;
+  RED = 1;
+  GREEN = 2;
+  BLUE = 3;
+}
+
+message Scalars {
+  double a = 1;
+  float b = 2;
+  int32 c = 3;
+  int64 d = 4;
+  uint32 e = 5;
+  uint64 f = 6;
+  sint32 g = 7;
+  sint64 h = 8;
+  fixed32 i = 9;
+  fixed64 j = 10;
+  sfixed32 k = 11;
+  sfixed64 l = 12;
+  bool m = 13;
+  string n = 14;
+  bytes o = 15;
+}
+
+message Containers {
+  repeated string tags = 1;
+  optional int32 maybe = 2;
+  map<string, int64> counts = 3;
+  map<int32, Scalars> by_id = 4;
+  oneof choice {
+    string text = 5;
+    int64 number = 6;
+    Scalars scalars = 7;
+  }
+  Color color = 8;
+  repeated Color colors = 9;
+  google.protobuf.Timestamp at = 10;
+  google.protobuf.Duration took = 11;
+  google.protobuf.StringValue label = 12;
+  google.protobuf.Struct extra = 13;
+  google.protobuf.FieldMask mask = 14;
+  Inner inner = 15;
+  Inner.Mode mode = 16;
+  repeated Inner inners = 17;
+  map<string, Color> palette = 18;
+
+  message Inner {
+    string v = 1;
+    enum Mode {
+      MODE_UNSPECIFIED = 0;
+      FAST = 1;
+      SAFE = 2;
+    }
+    Mode mode = 2;
+    Deeper deeper = 3;
+    message Deeper {
+      repeated int32 xs = 1;
+      Inner back = 2;
+    }
+  }
+
+  reserved 100 to 110, 200;
+  reserved "old_name", "older_name";
+}
+
+message Rules {
+  string name = 1 [(validate.rules).string = {min_len: 2, max_len: 20}];
+  int32 age = 2 [(validate.rules).int32 = {gte: 0, lt: 150}];
+  int64 big = 3 [(validate.rules).int64 = {gt: 0, lte: 1000000}];
+  string kind = 4 [(validate.rules).string = {in: ["a", "b", "c"]}];
+  repeated string items = 5 [(validate.rules).repeated = {min_items: 1, max_items: 5}];
+  Color shade = 6 [(validate.rules).enum.defined_only = true];
+  Scalars sc = 7 [(validate.rules).message.required = true];
+  string pv = 8 [(buf.validate.field).string.min_len = 3];
+  int32 pw = 9 [(buf.validate.field).int32 = {gte: 1, lte: 9}];
+  string req = 10 [(buf.validate.field).required = true];
+  double ratio = 11 [(validate.rules).double = {const: 1.5}];
+  uint32 small = 12 [(validate.rules).uint32.lte = 255, deprecated = true];
+  bytes blob = 13 [(validate.rules).bytes.max_len = 64];
+  bool flag = 14 [(validate.rules).bool.const = true];
+  string tag = 15 [json_name = "tagName"];
+}
+
+service Svc {
+  rpc Unary(Scalars) returns (Containers);
+  rpc Void(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc Get(Rules) returns (Rules) {
+    option (google.api.http) = {
+      get: "/v1/rules/{name}"
+    };
+  }
+  rpc Put(Rules) returns (Rules) {
+    option (google.api.http) = {
+      put: "/v1/rules/{name}"
+      body: "*"
+    };
+  }
+  rpc Post(Rules) returns (Rules) {
+    option (google.api.http) = {
+      post: "/v1/rules"
+      body: "*"
+      response_body: "result"
+    };
+  }
+  rpc Multi(Rules) returns (Rules) {
+    option (google.api.http) = {
+      get: "/v1/multi/{name}"
+      additional_bindings {
+        get: "/v2/multi/{name}"
+      }
+    };
+  }
+  rpc Delete(Rules) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/rules/{name}"
+    };
+  }
+  rpc Patch(Rules) returns (Rules) {
+    option (google.api.http) = {
+      patch: "/v1/rules/{name}"
+      body: "*"
+    };
+  }
+  rpc Down(Scalars) returns (stream Containers);
+  rpc Up(stream Scalars) returns (Containers);
+  rpc Bidi(stream Scalars) returns (stream Scalars);
+}

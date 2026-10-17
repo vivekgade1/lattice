@@ -1,0 +1,323 @@
+{
+ "bounds": {
+  "notes.v1.CreateNoteRequest.priority": {
+   "ge": 0,
+   "le": 5
+  },
+  "notes.v1.CreateNoteRequest.title": {
+   "max_length": 80,
+   "min_length": 1
+  },
+  "notes.v1.RegisterRequest.name": {
+   "max_length": 32,
+   "min_length": 3
+  },
+  "notes.v1.RegisterRequest.password": {
+   "min_length": 6
+  }
+ },
+ "counts": {
+  "gateway_bindings": 2,
+  "implemented": 10,
+  "model_endpoints": 11,
+  "routes_if_bindings_were_routes": 13,
+  "streaming": 1,
+  "unary": 11,
+  "unimplemented": 1
+ },
+ "excluded": {
+  "notes.v1.Notes/WatchNotes": "streaming_not_supported"
+ },
+ "interceptor": {
+  "file": "internal/svc/auth.go",
+  "public": [
+   "/notes.v1.Accounts/Register",
+   "/notes.v1.Accounts/Login",
+   "/grpc.health.v1.Health/Check"
+  ]
+ },
+ "module": "example.com/notesapp",
+ "note": "Written by hand from the fixture source BEFORE the extractor existed (pre-registration section 9/10); its sha256 is frozen in freeze-truth.sha256. The pre-registration's counts for N (9 unary / 8 implemented / 9 endpoints) contradict its own fixed shape; this file follows the shape: 11 unary rpcs, 10 implemented, 1 unimplemented, 1 streaming.",
+ "plain_error_rpcs": [
+  "notes.v1.Notes/DeleteNote"
+ ],
+ "rpcs": {
+  "notes.v1.Accounts/Login": {
+   "auth": "Public",
+   "codes": [
+    "INVALID_ARGUMENT",
+    "UNAUTHENTICATED"
+   ],
+   "handler_file": "internal/svc/accounts.go",
+   "handler_line": 46,
+   "http_bindings": [],
+   "owner_uses": [],
+   "plain_error": false,
+   "state": "implemented",
+   "tables": [
+    "users"
+   ],
+   "unread": []
+  },
+  "notes.v1.Accounts/Me": {
+   "auth": "Member",
+   "codes": [
+    "UNAUTHENTICATED"
+   ],
+   "handler_file": "internal/svc/accounts.go",
+   "handler_line": 57,
+   "http_bindings": [],
+   "owner_uses": [],
+   "plain_error": false,
+   "state": "implemented",
+   "tables": [],
+   "unread": []
+  },
+  "notes.v1.Accounts/Register": {
+   "auth": "Public",
+   "codes": [
+    "ALREADY_EXISTS",
+    "INTERNAL",
+    "INVALID_ARGUMENT"
+   ],
+   "handler_file": "internal/svc/accounts.go",
+   "handler_line": 22,
+   "http_bindings": [],
+   "owner_uses": [],
+   "plain_error": false,
+   "state": "implemented",
+   "tables": [
+    "users"
+   ],
+   "unread": []
+  },
+  "notes.v1.Notes/ArchiveNote": {
+   "auth": "Member",
+   "codes": [
+    "INTERNAL",
+    "NOT_FOUND"
+   ],
+   "handler_file": "internal/svc/notes.go",
+   "handler_line": 138,
+   "http_bindings": [],
+   "owner_uses": [
+    {
+     "column": "user_id",
+     "how": "compare",
+     "table": "notes"
+    }
+   ],
+   "plain_error": false,
+   "state": "implemented",
+   "tables": [
+    "notes"
+   ],
+   "unread": [
+    {
+     "file": "internal/svc/notes.go",
+     "kind": "grpc_code_not_literal",
+     "line": 144
+    }
+   ]
+  },
+  "notes.v1.Notes/CreateNote": {
+   "auth": "Member",
+   "codes": [
+    "INTERNAL",
+    "INVALID_ARGUMENT"
+   ],
+   "handler_file": "internal/svc/notes.go",
+   "handler_line": 55,
+   "http_bindings": [
+    {
+     "method": "POST",
+     "path": "/v1/notes"
+    }
+   ],
+   "owner_uses": [
+    {
+     "column": "user_id",
+     "how": "assign",
+     "table": "notes"
+    }
+   ],
+   "plain_error": false,
+   "state": "implemented",
+   "tables": [
+    "notes"
+   ],
+   "unread": []
+  },
+  "notes.v1.Notes/DeleteNote": {
+   "auth": "Member",
+   "codes": [
+    "INTERNAL",
+    "NOT_FOUND",
+    "UNKNOWN"
+   ],
+   "handler_file": "internal/svc/notes.go",
+   "handler_line": 152,
+   "http_bindings": [],
+   "owner_uses": [
+    {
+     "column": "user_id",
+     "how": "compare",
+     "table": "notes"
+    }
+   ],
+   "plain_error": true,
+   "state": "implemented",
+   "tables": [
+    "notes"
+   ],
+   "unread": []
+  },
+  "notes.v1.Notes/GetNote": {
+   "auth": "Member",
+   "codes": [
+    "NOT_FOUND"
+   ],
+   "handler_file": "internal/svc/notes.go",
+   "handler_line": 70,
+   "http_bindings": [
+    {
+     "method": "GET",
+     "path": "/v1/notes/{id}"
+    }
+   ],
+   "owner_uses": [
+    {
+     "column": "user_id",
+     "how": "compare",
+     "table": "notes"
+    }
+   ],
+   "plain_error": false,
+   "state": "implemented",
+   "tables": [
+    "notes"
+   ],
+   "unread": []
+  },
+  "notes.v1.Notes/ListNotes": {
+   "auth": "Member",
+   "codes": [
+    "INTERNAL"
+   ],
+   "handler_file": "internal/svc/notes.go",
+   "handler_line": 78,
+   "http_bindings": [],
+   "owner_uses": [
+    {
+     "column": "user_id",
+     "how": "compare",
+     "table": "notes"
+    }
+   ],
+   "plain_error": false,
+   "state": "implemented",
+   "tables": [
+    "notes"
+   ],
+   "unread": []
+  },
+  "notes.v1.Notes/PublishNote": {
+   "auth": "Member",
+   "codes": [
+    "FAILED_PRECONDITION",
+    "INTERNAL",
+    "NOT_FOUND",
+    "RESOURCE_EXHAUSTED"
+   ],
+   "handler_file": "internal/svc/notes.go",
+   "handler_line": 116,
+   "http_bindings": [],
+   "owner_uses": [
+    {
+     "column": "user_id",
+     "how": "compare",
+     "table": "notes"
+    }
+   ],
+   "plain_error": false,
+   "state": "implemented",
+   "tables": [
+    "notes"
+   ],
+   "unread": []
+  },
+  "notes.v1.Notes/ShareNote": {
+   "auth": "Member",
+   "codes": [
+    "UNIMPLEMENTED"
+   ],
+   "handler_file": "",
+   "handler_line": 0,
+   "http_bindings": [],
+   "owner_uses": [],
+   "plain_error": false,
+   "state": "unimplemented",
+   "tables": [],
+   "unread": []
+  },
+  "notes.v1.Notes/UpdateNote": {
+   "auth": "Member",
+   "codes": [
+    "FAILED_PRECONDITION",
+    "INTERNAL",
+    "INVALID_ARGUMENT",
+    "NOT_FOUND"
+   ],
+   "handler_file": "internal/svc/notes.go",
+   "handler_line": 98,
+   "http_bindings": [],
+   "owner_uses": [
+    {
+     "column": "user_id",
+     "how": "compare",
+     "table": "notes"
+    }
+   ],
+   "plain_error": false,
+   "state": "implemented",
+   "tables": [
+    "notes"
+   ],
+   "unread": []
+  }
+ },
+ "schema": "lattice.grpc.truth/1",
+ "status_writes": [
+  {
+   "column": "state",
+   "file": "internal/svc/notes.go",
+   "line": 63,
+   "root": "RPC /notes.v1.Notes/CreateNote",
+   "table": "notes",
+   "value": "draft"
+  },
+  {
+   "column": "state",
+   "file": "internal/svc/notes.go",
+   "line": 132,
+   "root": "RPC /notes.v1.Notes/PublishNote",
+   "table": "notes",
+   "value": "published"
+  },
+  {
+   "column": "state",
+   "file": "internal/svc/notes.go",
+   "line": 146,
+   "root": "RPC /notes.v1.Notes/ArchiveNote",
+   "table": "notes",
+   "value": "archived"
+  }
+ ],
+ "tables": [
+  "notes",
+  "users"
+ ],
+ "unread_kinds": {
+  "grpc_code_not_literal": 1
+ }
+}

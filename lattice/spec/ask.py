@@ -100,7 +100,7 @@ from typing import Any
 
 from lattice.llm.client import Generator
 from lattice.spec.authoring import _table_block
-from lattice.spec.model import Await, Scenario, Spec, Step, tables_of
+from lattice.spec.model import Await, Rpc, Scenario, Spec, Step, tables_of
 from lattice.spec.review import _build, _normalize_path, _step_line
 from lattice.spec.rules import Trace
 
@@ -313,9 +313,9 @@ def _norm(text: str) -> str:
 _ARROW = re.compile(r"([A-Za-z_][\w]*)\s*(?:->|→|to)\s*([A-Za-z_][\w]*)")
 
 
-def _check_step(step: Step | Await, line: str, quote: str) -> str | None:
+def _check_step(step: Step | Await | Rpc, line: str, quote: str) -> str | None:
     """Why `quote` does not match the scenario step (None: it does)."""
-    if isinstance(step, Await):
+    if isinstance(step, Await | Rpc):  # Spike I: an rpc is quoted by its text, like an Await
         return (
             None
             if _norm(quote) and _norm(quote) in _norm(line)
@@ -1584,7 +1584,10 @@ SETUP_BUDGET = 2500  # tokens of setup patterns in the verify prompt
 SETUP_SCENARIOS = 6  # at most this many patterns, 2 per endpoint
 
 
-def _step_json(step: Step | Await) -> str:
+def _step_json(step: Step | Await | Rpc) -> str:
+    if isinstance(step, Rpc):  # Spike I
+        return json.dumps({"rpc": step.endpoint, "user": step.user, "message": step.message,
+                           "expect_code": step.expect_code}, default=str)  # fmt: skip
     if isinstance(step, Await):
         d: dict[str, Any] = {"service": step.service, "expect_db": step.expect_db}
         d["within_s"] = step.within_s
@@ -1858,7 +1861,9 @@ def _claim_step(data: Any, n_steps: int) -> int:
     return c
 
 
-def _claim_key(step: Step | Await) -> tuple:
+def _claim_key(step: Step | Await | Rpc) -> tuple:
+    if isinstance(step, Rpc):  # Spike I
+        return ("rpc", step.service, step.method, step.user, step.expect_code)
     if isinstance(step, Await):
         return ("await", step.service)
     return (step.method, _normalize_path(step.path), step.user, step.expect_status)

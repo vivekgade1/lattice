@@ -1083,3 +1083,304 @@ def summary(flows: Sequence[Mapping[str, Any]], edges: int, machines: int) -> di
     for f in flows:
         count[f["status"]] = count.get(f["status"], 0) + 1
     return {"flows": len(flows), **count, "edges": edges, "machines": machines}
+
+
+# ---- rpc flows (Spike I, D6) ------------------------------------------------------------
+#
+# A gRPC rpc is a request step. The dependency edge of the HTTP layer holds unchanged: a
+# response field ``id`` (or ``<x>_id``) -- at the top of the response message, or in the one
+# message field that carries an ``id`` -- of an rpc that creates a row feeds a later request
+# field of the same name, or ``<table>_id``, of an rpc that reads or writes that table.
+# "Creates" is evidence: a GORM ``Create`` in the rpc's closure (``grpc.rpcs[].writes`` of
+# the extract). Flows are lists of rpc steps with the callers (A and B: the spec's first two
+# users) and the ids bound from earlier responses; each is run on a throwaway SQLite file
+# against the app's own binary, recorded as concrete ``Rpc`` steps, and *verified* only when
+# every step answered as the plan means (a success where it expects one, a refusal where it
+# expects one, never INTERNAL or UNKNOWN) and the recorded scenario passes a replay of layer
+# D on a fresh database.
+
+RPC_FLOWS_SCHEMA = "lattice.rpc-flows/1"
+RPC_REFUSALS = frozenset(
+    {
+        "NOT_FOUND",
+        "PERMISSION_DENIED",
+        "UNAUTHENTICATED",
+        "FAILED_PRECONDITION",
+        "INVALID_ARGUMENT",
+        "ALREADY_EXISTS",
+        "RESOURCE_EXHAUSTED",
+        "OUT_OF_RANGE",
+        "ABORTED",
+    }
+)
+RPC_FAULTS = frozenset({"INTERNAL", "UNKNOWN", "DATA_LOSS", "UNAVAILABLE", "DEADLINE_EXCEEDED"})
+LIFECYCLE_MAX = 4
+
+
+@dataclass(frozen=True)
+class RpcView:
+    """One implemented rpc of the extraction, as the flow layer reads it."""
+
+    key: str  # "notes.v1.Notes/GetNote"
+    service: str
+    method: str
+    inputs: tuple[Mapping[str, Any], ...]  # the request message's fields
+    id_inputs: tuple[str, ...]  # request fields named id or <x>_id
+    makes_id: bool  # the response carries an id (top level, or in its one message field)
+    auth: str
+    tables: tuple[str, ...]  # SQL names
+    creates: tuple[str, ...]
+    deletes: tuple[str, ...]
+    writes: tuple[str, ...]  # tables written other than by create
+    owner_compare: bool
+
+    @property
+    def public(self) -> bool:
+        return self.auth == "Public"
+
+
+def _is_id_name(name: str) -> bool:
+    return name == "id" or name.endswith("_id")
+
+
+def rpc_views(extract: Mapping[str, Any]) -> list[RpcView]:
+    """The implemented unary rpcs of ``extract["grpc"]``, in the contract's order."""
+    grpc = extract.get("grpc") or {}
+    messages = {m["name"]: m for m in grpc.get("messages", [])}
+    out: list[RpcView] = []
+    for svc in grpc.get("services", []):
+        for r in svc["rpcs"]:
+            if r.get("state") != "implemented":
+                continue
+            fields = tuple(messages.get(r["input"], {}).get("fields", ()))
+            resp = messages.get(r["output"], {}).get("fields", ())
+            holders = [
+                f
+                for f in resp
+                if f["label"] == "single"
+                and f["type"] in messages
+                and any(x["name"] == "id" for x in messages[f["type"]]["fields"])
+            ]
+            makes = any(_is_id_name(f["name"]) and f["type"] != "map" for f in resp) or (
+                len(holders) == 1
+            )
+            ws = r.get("writes") or []
+            out.append(
+                RpcView(
+                    key=f"{svc['name']}/{r['name']}",
+                    service=svc["name"],
+                    method=r["name"],
+                    inputs=fields,
+                    id_inputs=tuple(f["name"] for f in fields if _is_id_name(f["name"])),
+                    makes_id=makes,
+                    auth=r.get("auth", "unclear"),
+                    tables=tuple(r.get("tables") or ()),
+                    creates=tuple(dict.fromkeys(w["table"] for w in ws if w["op"] == "create")),
+                    deletes=tuple(dict.fromkeys(w["table"] for w in ws if w["op"] == "delete")),
+                    writes=tuple(
+                        dict.fromkeys(w["table"] for w in ws if w["op"] in ("save", "update"))
+                    ),
+                    owner_compare=any(o["how"] == "compare" for o in r.get("owner_uses") or []),
+                )
+            )
+    return out
+
+
+def _singular(table: str) -> str:
+    return table[:-1] if table.endswith("s") and len(table) > 1 else table
+
+
+def rpc_edges(views: Sequence[RpcView]) -> list[tuple[str, str, str, str]]:
+    """``(table, producer key, consumer key, request field)``: the producer creates the
+    table's row and answers an id; the consumer takes it as ``id`` or ``<table>_id``."""
+    out = []
+    for p in views:
+        if not p.makes_id:
+            continue
+        for t in p.creates:
+            for c in views:
+                if c.key == p.key or t not in c.tables:
+                    continue
+                for f in c.id_inputs:
+                    if f == "id" or f == f"{_singular(t)}_id" or f == f"{t}_id":
+                        out.append((t, p.key, c.key, f))
+                        break
+    return out
+
+
+def example_value(f: Mapping[str, Any]) -> Any:
+    """A value a request field accepts, from its type and bounds (None: leave it out)."""
+    b = f.get("bounds") or {}
+    if f["label"] != "single":
+        return None
+    if "choices" in b and b["choices"]:
+        return b["choices"][0]
+    t = f["type"]
+    if t in ("string", "bytes"):
+        lo, hi = int(b.get("min_length") or 0), b.get("max_length")
+        text = f"wf-{f['name']}"
+        text = text.ljust(max(lo, 1), "x")
+        return text[: int(hi)] if hi is not None else text
+    if t == "bool":
+        return True
+    if t in ("double", "float"):
+        return b.get("ge", b["gt"] + 1 if "gt" in b else 0.0)
+    if t.endswith("int32") or t.endswith("int64") or t in ("fixed32", "fixed64"):
+        if "ge" in b:
+            return b["ge"]
+        return b["gt"] + 1 if "gt" in b else 0
+    return None  # an enum, a message: left out
+
+
+def rpc_message(view: RpcView, bound: Mapping[str, Any]) -> dict[str, Any]:
+    """The request of a step: the ids bound from earlier responses, and -- for an rpc that
+    writes -- an example of every scalar field."""
+    msg: dict[str, Any] = {}
+    writes = bool(view.creates or view.writes or view.deletes)
+    for f in view.inputs:
+        if f["name"] in bound:
+            msg[f["name"]] = bound[f["name"]]
+        elif writes:
+            v = example_value(f)
+            if v is not None:
+                msg[f["name"]] = v
+    return msg
+
+
+@dataclass
+class RpcPlanStep:
+    key: str
+    caller: str | None  # "A", "B" or None
+    binds: dict[str, int]  # request field -> the 1-based step whose response id feeds it
+    intent: str = "ok"  # ok | refuse | any
+    same_as: int | None = None  # the 1-based step whose request fields this one repeats
+
+
+@dataclass
+class RpcPlan:
+    kind: str
+    steps: list[RpcPlanStep]
+    why: str
+
+    @property
+    def id(self) -> str:
+        raw = (
+            self.kind
+            + "|"
+            + "|".join(
+                f"{s.key}@{s.caller}:{sorted(s.binds.items())}:{s.intent}" for s in self.steps
+            )
+        )
+        return "rf-" + hashlib.sha256(raw.encode()).hexdigest()[:10]
+
+
+def _caller(view: RpcView, who: str) -> str | None:
+    return None if view.public else who
+
+
+def static_rpc_plans(views: Sequence[RpcView]) -> list[RpcPlan]:
+    """The flows the contract and the closures support, before anything runs: ``pair``
+    (one per edge), ``owner_guard`` (the consumer as another user), ``after_delete`` (a
+    read after the row is deleted) and ``account`` (a public rpc that creates users, then
+    the public rpc that takes the same fields)."""
+    by_key = {v.key: v for v in views}
+    plans: list[RpcPlan] = []
+    for table, p, c, field_ in rpc_edges(views):
+        pv, cv = by_key[p], by_key[c]
+        plans.append(
+            RpcPlan(
+                "pair",
+                [
+                    RpcPlanStep(p, _caller(pv, "A"), {}),
+                    RpcPlanStep(c, _caller(cv, "A"), {field_: 1}),
+                ],
+                f"{p} creates a {table} row; {c} takes its id as {field_}",
+            )
+        )
+        if cv.owner_compare and not cv.public:
+            plans.append(
+                RpcPlan(
+                    "owner_guard",
+                    [
+                        RpcPlanStep(p, _caller(pv, "A"), {}),
+                        RpcPlanStep(c, "B", {field_: 1}, "refuse"),
+                    ],
+                    f"{c} compares the owner: another user must be refused",
+                )
+            )
+        if cv.deletes:
+            for r in views:
+                if r.key == c or table not in r.tables or r.deletes or r.creates or r.writes:
+                    continue
+                if r.id_inputs:
+                    f2 = next((f for f in r.id_inputs if f == field_ or f == "id"), r.id_inputs[0])
+                    plans.append(
+                        RpcPlan(
+                            "after_delete",
+                            [
+                                RpcPlanStep(p, _caller(pv, "A"), {}),
+                                RpcPlanStep(c, _caller(cv, "A"), {field_: 1}),
+                                RpcPlanStep(r.key, _caller(r, "A"), {f2: 1}, "refuse"),
+                            ],
+                            f"{r.key} reads the {table} row after {c} deleted it",
+                        )
+                    )
+                else:
+                    plans.append(
+                        RpcPlan(
+                            "after_delete",
+                            [
+                                RpcPlanStep(p, _caller(pv, "A"), {}),
+                                RpcPlanStep(c, _caller(cv, "A"), {field_: 1}),
+                                RpcPlanStep(r.key, _caller(r, "A"), {}),
+                            ],
+                            f"{r.key} lists the {table} rows after {c} deleted one",
+                        )
+                    )
+    # account: a public rpc creating the users table, and a public rpc over it whose fields
+    # the creator's request also has
+    for r in views:
+        if not (r.public and r.creates and not r.id_inputs):
+            continue
+        names = {f["name"] for f in r.inputs}
+        for login in views:
+            if login.key == r.key or not login.public or login.creates or login.writes:
+                continue
+            if set(r.creates) & set(login.tables) and {f["name"] for f in login.inputs} <= names:
+                plans.append(
+                    RpcPlan(
+                        "account",
+                        [RpcPlanStep(r.key, None, {}), RpcPlanStep(login.key, None, {}, same_as=1)],
+                        f"{login.key} takes the credentials {r.key} created",
+                    )
+                )
+    seen: set[str] = set()
+    out = []
+    for p in plans:
+        if p.id not in seen:
+            seen.add(p.id)
+            out.append(p)
+    return out
+
+
+def rpc_lifecycle_creators(views: Sequence[RpcView]) -> list[tuple[str, RpcView, list[RpcView]]]:
+    """``(table, creator, writers)``: the rpcs that update a created row by its id."""
+    out = []
+    edges = rpc_edges(views)
+    by_key = {v.key: v for v in views}
+    for table in dict.fromkeys(e[0] for e in edges):
+        creators = [by_key[p] for t, p, _, _ in edges if t == table]
+        writers = [
+            by_key[c]
+            for t, _, c, _ in edges
+            if t == table and (by_key[c].writes) and not by_key[c].deletes
+        ]
+        if creators and len(writers) >= 2:
+            out.append((table, creators[0], list({w.key: w for w in writers}.values())))
+    return out
+
+
+def rpc_flows_json(flows: Sequence[Mapping[str, Any]]) -> str:
+    """``rpc-flows.json``: sorted keys, two-space indent, one trailing newline."""
+    doc = {"schema": RPC_FLOWS_SCHEMA, "flows": list(flows), "summary": summary(flows, 0, 0)}
+    return to_json(doc)

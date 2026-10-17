@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package notes.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "example.com/notesapp/gen/notes/v1;notesv1";
+
+service Notes {
+  rpc CreateNote(CreateNoteRequest) returns (CreateNoteResponse) {
+    option (google.api.http) = {
+      post: "/v1/notes"
+      body: "*"
+    };
+  }
+  rpc GetNote(GetNoteRequest) returns (GetNoteResponse) {
+    option (google.api.http) = {
+      get: "/v1/notes/{id}"
+    };
+  }
+  rpc ListNotes(ListNotesRequest) returns (ListNotesResponse);
+  rpc UpdateNote(UpdateNoteRequest) returns (UpdateNoteResponse);
+  rpc PublishNote(PublishNoteRequest) returns (PublishNoteResponse);
+  rpc ArchiveNote(ArchiveNoteRequest) returns (ArchiveNoteResponse);
+  rpc DeleteNote(DeleteNoteRequest) returns (DeleteNoteResponse);
+  // ShareNote is in the contract and not served (the server embeds the Unimplemented stub).
+  rpc ShareNote(ShareNoteRequest) returns (ShareNoteResponse);
+  // WatchNotes streams: out of scope for round 1.
+  rpc WatchNotes(WatchNotesRequest) returns (stream Note);
+}
+
+enum Visibility {
+  VISIBILITY_UNSPECIFIED = 0;
+  PRIVATE = 1;
+  SHARED = 2;
+}
+
+message Note {
+  int64 id = 1;
+  string title = 2;
+  string body = 3;
+  string state = 4;
+  int32 priority = 5;
+  int64 client_rev = 6;
+  Visibility visibility = 7;
+}
+
+message CreateNoteRequest {
+  string title = 1 [(validate.rules).string = {min_len: 1, max_len: 80}];
+  string body = 2;
+  int32 priority = 3 [(validate.rules).int32 = {gte: 0, lte: 5}];
+  int64 client_rev = 4;
+}
+
+message CreateNoteResponse {
+  Note note = 1;
+}
+
+message GetNoteRequest {
+  int64 id = 1;
+}
+
+message GetNoteResponse {
+  Note note = 1;
+}
+
+message ListNotesRequest {
+  string state = 1;
+}
+
+message ListNotesResponse {
+  repeated Note notes = 1;
+}
+
+message UpdateNoteRequest {
+  int64 id = 1;
+  string title = 2;
+  string body = 3;
+  int32 priority = 4;
+  int64 client_rev = 5;
+}
+
+message UpdateNoteResponse {
+  Note note = 1;
+}
+
+message PublishNoteRequest {
+  int64 id = 1;
+}
+
+message PublishNoteResponse {
+  Note note = 1;
+}
+
+message ArchiveNoteRequest {
+  int64 id = 1;
+}
+
+message ArchiveNoteResponse {
+  Note note = 1;
+}
+
+message DeleteNoteRequest {
+  int64 id = 1;
+}
+
+message DeleteNoteResponse {}
+
+message ShareNoteRequest {
+  int64 id = 1;
+  string with_user = 2;
+}
+
+message ShareNoteResponse {}
+
+message WatchNotesRequest {}

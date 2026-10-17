@@ -1,0 +1,60 @@
+{
+ "schema": "lattice.grpc.expected_unread/1",
+ "note": "Hand-written from the T fixtures before the proto reader was run (pre-registration P0-UNREAD): ten unsupported constructs, eight unread items and two that are read and listed.",
+ "unread": [
+  {
+   "kind": "proto_proto2",
+   "file": "legacy2.proto",
+   "line": 1
+  },
+  {
+   "kind": "proto_group",
+   "file": "legacy2.proto",
+   "line": 8
+  },
+  {
+   "kind": "proto_edition",
+   "file": "ed2023.proto",
+   "line": 1
+  },
+  {
+   "kind": "proto_import_public",
+   "file": "unsupported.proto",
+   "line": 5
+  },
+  {
+   "kind": "proto_import_weak",
+   "file": "unsupported.proto",
+   "line": 6
+  },
+  {
+   "kind": "proto_extend",
+   "file": "unsupported.proto",
+   "line": 10
+  },
+  {
+   "kind": "proto_custom_option",
+   "file": "unsupported.proto",
+   "line": 15
+  },
+  {
+   "kind": "proto_validate_rule",
+   "file": "unsupported.proto",
+   "line": 16
+  }
+ ],
+ "listed": [
+  {
+   "kind": "additional_bindings",
+   "file": "core.proto",
+   "rpc": "t.v1.Svc/Multi",
+   "count": 1
+  },
+  {
+   "kind": "client_streaming",
+   "file": "unsupported.proto",
+   "line": 22,
+   "rpc": "t.v1.OddSvc/Up"
+  }
+ ]
+}
