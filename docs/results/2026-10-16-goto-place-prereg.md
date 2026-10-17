@@ -417,3 +417,19 @@ via the `claude` CLI, and only in the agent exercise.
   orchestrator before the builder runs any gated probe.
 - The standing rule stays binding: no predicted failures; the forbidden-word scan and the unsupported-claim gate
   are not relaxed.
+
+## Amendment 2 (orchestrator rulings on the question-set author's questions, 2026-10-16, before the build)
+- **Claim rule stays literal as the gate.** The unsupported-failure-claim regex and hedge list of section 5 are not
+  loosened: the hard gate counts every match. The scorer also reports, **report-only and never gating**, a second
+  count that exempts (a) a negation ("nothing fails", "no ... fail") and (b) a sentence that names a recorded replay
+  (a flow id `wf-...` or "the replay of ..." with its status). Both counts appear in the results. The frozen agent
+  prompt asks for "does not pass" / "is refused" phrasing; a literal-gate miss caused by echoing the user's own words
+  ("fails validation") is reported as such, not excused.
+- **Change records:** the runner records `candidates/c1..c6` (the author's byte-exact files) as ready change records,
+  in that order, in a fresh state directory, so "c1".."c6" in the questions mean those changes. The builder is given the
+  formats (answer files, candidate setup) through `FORMATS.md`, never the questions.
+- **Path normalisation:** the app map joins routes on the normalised form (`{id}`, `{habit_id}` and similar written
+  `{}`), as the access questions assume; an exact-string join would fail M-A1 and that would be a real finding.
+- **Router patterns are case-insensitive.**
+- The two extra `observe: true` questions are not frozen; their expected ids come from a D CLI `--tiers 123` run at
+  scoring time and are reported separately.
