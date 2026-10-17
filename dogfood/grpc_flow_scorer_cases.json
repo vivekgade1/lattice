@@ -1,0 +1,1739 @@
+{
+ "schema": "lattice.grpc-flow-scorer-cases/1",
+ "cases": [
+  {
+   "name": "S1 empty denominator, gated: vacuous fail",
+   "fn": "rate",
+   "input": {
+    "num": 0,
+    "den": 0,
+    "bound": 0.3
+   },
+   "expect": {
+    "pass": false,
+    "reason": "vacuous",
+    "value": null
+   }
+  },
+  {
+   "name": "S1 empty denominator is never 1.0",
+   "fn": "rate",
+   "input": {
+    "num": 0,
+    "den": 0,
+    "bound": 0.0
+   },
+   "expect": {
+    "pass": false,
+    "reason": "vacuous"
+   }
+  },
+  {
+   "name": "S1 empty denominator, not gated: reported only",
+   "fn": "rate",
+   "input": {
+    "num": 0,
+    "den": 0,
+    "bound": null,
+    "gated": false
+   },
+   "expect": {
+    "pass": true
+   }
+  },
+  {
+   "name": "rate at the bound passes",
+   "fn": "rate",
+   "input": {
+    "num": 3,
+    "den": 10,
+    "bound": 0.3
+   },
+   "expect": {
+    "pass": true,
+    "value": 0.3
+   }
+  },
+  {
+   "name": "rate under the bound fails",
+   "fn": "rate",
+   "input": {
+    "num": 2,
+    "den": 10,
+    "bound": 0.3
+   },
+   "expect": {
+    "pass": false,
+    "reason": "below_bound"
+   }
+  },
+  {
+   "name": "rate with no bound is reported",
+   "fn": "rate",
+   "input": {
+    "num": 1,
+    "den": 10,
+    "bound": null
+   },
+   "expect": {
+    "pass": true
+   }
+  },
+  {
+   "name": "D4 contained",
+   "fn": "contains",
+   "input": {
+    "flow": {
+     "id": "f",
+     "kind": "pair",
+     "status": "verified",
+     "reason": null,
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "code": "OK",
+       "bound": {
+        "id": {
+         "step": 1,
+         "from_field": "id"
+        }
+       }
+      }
+     ]
+    },
+    "edge": {
+     "producer": "a.v1.S/Open",
+     "from_field": "id",
+     "consumer": "a.v1.S/Get",
+     "field": "id",
+     "code": "OK"
+    }
+   },
+   "expect": true
+  },
+  {
+   "name": "D4 wrong consumer request field",
+   "fn": "contains",
+   "input": {
+    "flow": {
+     "id": "f",
+     "kind": "pair",
+     "status": "verified",
+     "reason": null,
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "code": "OK",
+       "bound": {
+        "id": {
+         "step": 1,
+         "from_field": "id"
+        }
+       }
+      }
+     ]
+    },
+    "edge": {
+     "producer": "a.v1.S/Open",
+     "from_field": "id",
+     "consumer": "a.v1.S/Get",
+     "field": "ticket_id",
+     "code": "OK"
+    }
+   },
+   "expect": false
+  },
+  {
+   "name": "D4 wrong consumer code",
+   "fn": "contains",
+   "input": {
+    "flow": {
+     "id": "f",
+     "kind": "pair",
+     "status": "verified",
+     "reason": null,
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "code": "OK",
+       "bound": {
+        "id": {
+         "step": 1,
+         "from_field": "id"
+        }
+       }
+      }
+     ]
+    },
+    "edge": {
+     "producer": "a.v1.S/Open",
+     "from_field": "id",
+     "consumer": "a.v1.S/Get",
+     "field": "id",
+     "code": "NOT_FOUND"
+    }
+   },
+   "expect": false
+  },
+  {
+   "name": "D4 wrong producer rpc",
+   "fn": "contains",
+   "input": {
+    "flow": {
+     "id": "f",
+     "kind": "pair",
+     "status": "verified",
+     "reason": null,
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "code": "OK",
+       "bound": {
+        "id": {
+         "step": 1,
+         "from_field": "id"
+        }
+       }
+      }
+     ]
+    },
+    "edge": {
+     "producer": "a.v1.S/Other",
+     "from_field": "id",
+     "consumer": "a.v1.S/Get",
+     "field": "id",
+     "code": "OK"
+    }
+   },
+   "expect": false
+  },
+  {
+   "name": "D4 wrong producer response field",
+   "fn": "contains",
+   "input": {
+    "flow": {
+     "id": "f",
+     "kind": "pair",
+     "status": "verified",
+     "reason": null,
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "code": "OK",
+       "bound": {
+        "id": {
+         "step": 1,
+         "from_field": "id"
+        }
+       }
+      }
+     ]
+    },
+    "edge": {
+     "producer": "a.v1.S/Open",
+     "from_field": "slug",
+     "consumer": "a.v1.S/Get",
+     "field": "id",
+     "code": "OK"
+    }
+   },
+   "expect": false
+  },
+  {
+   "name": "D4 wrong consumer rpc",
+   "fn": "contains",
+   "input": {
+    "flow": {
+     "id": "f",
+     "kind": "pair",
+     "status": "verified",
+     "reason": null,
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "code": "OK",
+       "bound": {
+        "id": {
+         "step": 1,
+         "from_field": "id"
+        }
+       }
+      }
+     ]
+    },
+    "edge": {
+     "producer": "a.v1.S/Open",
+     "from_field": "id",
+     "consumer": "a.v1.S/Put",
+     "field": "id",
+     "code": "OK"
+    }
+   },
+   "expect": false
+  },
+  {
+   "name": "D4 the bound step is not the producer",
+   "fn": "contains",
+   "input": {
+    "flow": {
+     "id": "f",
+     "kind": "pair",
+     "status": "verified",
+     "reason": null,
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Open",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "code": "OK",
+       "bound": {
+        "id": {
+         "step": 2,
+         "from_field": "id"
+        }
+       }
+      }
+     ]
+    },
+    "edge": {
+     "producer": "a.v1.S/Open",
+     "from_field": "id",
+     "consumer": "a.v1.S/Get",
+     "field": "id",
+     "code": "OK"
+    }
+   },
+   "expect": true
+  },
+  {
+   "name": "D4 bound step out of range",
+   "fn": "contains",
+   "input": {
+    "flow": {
+     "id": "f",
+     "kind": "pair",
+     "status": "verified",
+     "reason": null,
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "code": "OK",
+       "bound": {
+        "id": {
+         "step": 9,
+         "from_field": "id"
+        }
+       }
+      }
+     ]
+    },
+    "edge": {
+     "producer": "a.v1.S/Open",
+     "from_field": "id",
+     "consumer": "a.v1.S/Get",
+     "field": "id",
+     "code": "OK"
+    }
+   },
+   "expect": false
+  },
+  {
+   "name": "D4 unbound field (a literal, not a binding)",
+   "fn": "contains",
+   "input": {
+    "flow": {
+     "id": "f",
+     "kind": "pair",
+     "status": "verified",
+     "reason": null,
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "code": "OK",
+       "bound": {}
+      }
+     ]
+    },
+    "edge": {
+     "producer": "a.v1.S/Open",
+     "from_field": "id",
+     "consumer": "a.v1.S/Get",
+     "field": "id",
+     "code": "OK"
+    }
+   },
+   "expect": false
+  },
+  {
+   "name": "D4 the bound step names another rpc",
+   "fn": "contains",
+   "input": {
+    "flow": {
+     "id": "f",
+     "kind": "pair",
+     "status": "verified",
+     "reason": null,
+     "steps": [
+      {
+       "rpc": "a.v1.S/Other",
+       "code": "OK",
+       "bound": {}
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "code": "OK",
+       "bound": {
+        "id": {
+         "step": 1,
+         "from_field": "id"
+        }
+       }
+      }
+     ]
+    },
+    "edge": {
+     "producer": "a.v1.S/Open",
+     "from_field": "id",
+     "consumer": "a.v1.S/Get",
+     "field": "id",
+     "code": "OK"
+    }
+   },
+   "expect": false
+  },
+  {
+   "name": "edges from a link",
+   "fn": "edges",
+   "input": {
+    "truth": {
+     "name": "t1",
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "expect_code": "OK"
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "expect_code": "OK"
+      }
+     ]
+    },
+    "links": [
+     {
+      "step": 2,
+      "field": "id",
+      "from_step": 1,
+      "from_field": "id"
+     }
+    ]
+   },
+   "expect": [
+    {
+     "producer": "a.v1.S/Open",
+     "from_field": "id",
+     "consumer": "a.v1.S/Get",
+     "field": "id",
+     "code": "OK"
+    }
+   ]
+  },
+  {
+   "name": "edges: a link to a step that does not exist is skipped",
+   "fn": "edges",
+   "input": {
+    "truth": {
+     "name": "t1",
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "expect_code": "OK"
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "expect_code": "OK"
+      }
+     ]
+    },
+    "links": [
+     {
+      "step": 5,
+      "field": "id",
+      "from_step": 1,
+      "from_field": "id"
+     }
+    ]
+   },
+   "expect": []
+  },
+  {
+   "name": "edges: no links, no edges",
+   "fn": "edges",
+   "input": {
+    "truth": {
+     "name": "t1",
+     "steps": [
+      {
+       "rpc": "a.v1.S/Open",
+       "expect_code": "OK"
+      },
+      {
+       "rpc": "a.v1.S/Get",
+       "expect_code": "OK"
+      }
+     ]
+    },
+    "links": []
+   },
+   "expect": []
+  },
+  {
+   "name": "S2 all four conjuncts hold: pass",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t1": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "coverage_bound": 1
+   },
+   "expect": {
+    "pass": true,
+    "verified": 1
+   }
+  },
+  {
+   "name": "S2 round 1's rule: verified == 0 is a FAIL",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 answered NOT_FOUND",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t1": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "coverage_bound": 1
+   },
+   "expect": {
+    "pass": false,
+    "verified": 0,
+    "reasons": [
+     "no_verified_flow",
+     "edge_recall:below_bound",
+     "coverage:below_bound"
+    ]
+   }
+  },
+  {
+   "name": "S2 verified_but_failing alone fails",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t1": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "coverage_bound": 1,
+    "vbf": 1
+   },
+   "expect": {
+    "pass": false,
+    "reasons": [
+     "verified_but_failing"
+    ]
+   }
+  },
+  {
+   "name": "S2 edge recall below its bound alone fails",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     },
+     {
+      "name": "t2",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Put",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t1": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ],
+     "t2": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "edge_bound": 0.75,
+    "coverage_bound": 1
+   },
+   "expect": {
+    "pass": false,
+    "reasons": [
+     "edge_recall:below_bound"
+    ],
+    "edge_recall": {
+     "num": 1,
+     "den": 2
+    }
+   }
+  },
+  {
+   "name": "S2 flow coverage below its bound alone fails",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "NOT_FOUND",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t3",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "NOT_FOUND"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     },
+     {
+      "name": "t2",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Put",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t3": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ],
+     "t2": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "edge_bound": 0.3,
+    "coverage_bound": 2
+   },
+   "expect": {
+    "pass": false,
+    "reasons": [
+     "coverage:below_bound"
+    ],
+    "coverage": {
+     "num": 1,
+     "den": 2
+    }
+   }
+  },
+  {
+   "name": "S1 no links on a gated edge recall: vacuous FAIL",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {},
+    "coverage_bound": 1
+   },
+   "expect": {
+    "pass": false,
+    "edge_recall": {
+     "den": 0,
+     "reason": "vacuous"
+    }
+   }
+  },
+  {
+   "name": "S1 no truth flows on a gated coverage: vacuous FAIL",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [],
+    "links": {},
+    "edge_bound": null,
+    "coverage_bound": 1
+   },
+   "expect": {
+    "pass": false,
+    "reasons": [
+     "coverage:vacuous"
+    ]
+   }
+  },
+  {
+   "name": "a row with no links reports and does not gate rates (the notes app)",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     },
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     },
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [],
+    "links": {},
+    "edge_bound": null,
+    "coverage_bound": null,
+    "min_verified": 3
+   },
+   "expect": {
+    "pass": true,
+    "verified": 3
+   }
+  },
+  {
+   "name": "min_verified: two verified of three required",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     },
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [],
+    "links": {},
+    "edge_bound": null,
+    "coverage_bound": null,
+    "min_verified": 3
+   },
+   "expect": {
+    "pass": false,
+    "reasons": [
+     "too_few_verified"
+    ]
+   }
+  },
+  {
+   "name": "a failed flow containing the edge does not count",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 2 answered NOT_FOUND",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t1": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "coverage_bound": 1
+   },
+   "expect": {
+    "pass": false,
+    "edge_recall": {
+     "num": 0,
+     "den": 1
+    }
+   }
+  },
+  {
+   "name": "an unverified flow containing the edge does not count",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "unverified",
+      "reason": "the replay disagreed",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t1": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "coverage_bound": 1
+   },
+   "expect": {
+    "pass": false,
+    "edge_recall": {
+     "num": 0,
+     "den": 1
+    }
+   }
+  },
+  {
+   "name": "a truth flow that fails its own replay leaves the denominator",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     },
+     {
+      "name": "t2",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Put",
+        "expect_code": "OK"
+       }
+      ]
+     },
+     {
+      "name": "t4",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t1": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ],
+     "t2": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "passing": {
+     "t2": false
+    },
+    "coverage_bound": 1
+   },
+   "expect": {
+    "pass": true,
+    "edge_recall": {
+     "num": 1,
+     "den": 1
+    },
+    "truth_defects": [
+     "t2"
+    ]
+   }
+  },
+  {
+   "name": "more than one third of the truth flows failing: not scorable",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     },
+     {
+      "name": "t2",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Put",
+        "expect_code": "OK"
+       }
+      ]
+     },
+     {
+      "name": "t4",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t1": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ],
+     "t2": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "passing": {
+     "t2": false,
+     "t4": false
+    },
+    "coverage_bound": 1
+   },
+   "expect": {
+    "pass": false,
+    "reasons": [
+     "truth_not_scorable"
+    ]
+   }
+  },
+  {
+   "name": "exact recall counts equal (rpc, code) sequences",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t1": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "coverage_bound": 1
+   },
+   "expect": {
+    "exact": {
+     "num": 1,
+     "den": 1
+    }
+   }
+  },
+  {
+   "name": "S3 failing-code histogram and unbound reasons",
+   "fn": "score",
+   "input": {
+    "recovered": [
+     {
+      "id": "f",
+      "kind": "pair",
+      "status": "verified",
+      "reason": null,
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "code": "OK",
+        "bound": {
+         "id": {
+          "step": 1,
+          "from_field": "id"
+         }
+        }
+       }
+      ]
+     },
+     {
+      "id": "f2",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (a.v1.S/Open) answered NOT_FOUND",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       }
+      ]
+     },
+     {
+      "id": "f3",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (a.v1.S/Open) answered NOT_FOUND",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       }
+      ]
+     },
+     {
+      "id": "f4",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 2 (x) answered PERMISSION_DENIED",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "code": "OK",
+        "bound": {}
+       }
+      ]
+     },
+     {
+      "id": "f5",
+      "kind": "pair",
+      "status": "unbound",
+      "reason": "no_source:queue_slug",
+      "steps": []
+     }
+    ],
+    "truth": [
+     {
+      "name": "t1",
+      "steps": [
+       {
+        "rpc": "a.v1.S/Open",
+        "expect_code": "OK"
+       },
+       {
+        "rpc": "a.v1.S/Get",
+        "expect_code": "OK"
+       }
+      ]
+     }
+    ],
+    "links": {
+     "t1": [
+      {
+       "step": 2,
+       "field": "id",
+       "from_step": 1,
+       "from_field": "id"
+      }
+     ]
+    },
+    "coverage_bound": 1
+   },
+   "expect": {
+    "recovered_by_status": {
+     "verified": 1,
+     "unverified": 0,
+     "failed": 3,
+     "unbound": 1
+    },
+    "failing_codes": {
+     "NOT_FOUND": 2,
+     "PERMISSION_DENIED": 1
+    },
+    "unbound_reasons": {
+     "no_source:queue_slug": 1
+    }
+   }
+  },
+  {
+   "name": "S4 round 1's deskd HO-FLOWS re-scored: FAIL",
+   "fn": "rescore",
+   "input": {
+    "truth flows": 7,
+    "truth flows passing": 7,
+    "recovered flows": 38,
+    "recovered by status": {
+     "failed": 38
+    },
+    "verified": 0,
+    "verified-but-failing": 0,
+    "truth flows recovered exactly (rpc sequence equal)": "0/7",
+    "truth flows covered (subsequence of a verified flow)": "0/7"
+   },
+   "expect": {
+    "pass": false,
+    "verified": 0,
+    "reasons": [
+     "no_verified_flow",
+     "coverage:below_bound"
+    ]
+   }
+  },
+  {
+   "name": "S4 with verified flows and coverage passes",
+   "fn": "rescore",
+   "input": {
+    "recovered by status": {
+     "verified": 4
+    },
+    "verified": 4,
+    "verified-but-failing": 0,
+    "truth flows covered (subsequence of a verified flow)": "3/7"
+   },
+   "expect": {
+    "pass": true
+   }
+  },
+  {
+   "name": "S4 verified-but-failing fails",
+   "fn": "rescore",
+   "input": {
+    "recovered by status": {
+     "verified": 4
+    },
+    "verified": 4,
+    "verified-but-failing": 1,
+    "truth flows covered (subsequence of a verified flow)": "3/7"
+   },
+   "expect": {
+    "pass": false,
+    "reasons": [
+     "verified_but_failing"
+    ]
+   }
+  }
+ ]
+}

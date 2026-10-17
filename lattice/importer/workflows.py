@@ -1085,21 +1085,28 @@ def summary(flows: Sequence[Mapping[str, Any]], edges: int, machines: int) -> di
     return {"flows": len(flows), **count, "edges": edges, "machines": machines}
 
 
-# ---- rpc flows (Spike I, D6) ------------------------------------------------------------
+# ---- rpc flows (Spike I, D6; round 2: D2-D4) ----------------------------------------------
 #
 # A gRPC rpc is a request step. The dependency edge of the HTTP layer holds unchanged: a
 # response field ``id`` (or ``<x>_id``) -- at the top of the response message, or in the one
 # message field that carries an ``id`` -- of an rpc that creates a row feeds a later request
-# field of the same name, or ``<table>_id``, of an rpc that reads or writes that table.
+# field of the same name, or ``<table>_id``, of an rpc that reads or writes that table (F1).
 # "Creates" is evidence: a GORM ``Create`` in the rpc's closure (``grpc.rpcs[].writes`` of
-# the extract). Flows are lists of rpc steps with the callers (A and B: the spec's first two
-# users) and the ids bound from earlier responses; each is run on a throwaway SQLite file
-# against the app's own binary, recorded as concrete ``Rpc`` steps, and *verified* only when
-# every step answered as the plan means (a success where it expects one, a refusal where it
-# expects one, never INTERNAL or UNKNOWN) and the recorded scenario passes a replay of layer
-# D on a fresh database.
+# the extract). Round 2 adds three things. F2: a request string field ``<s>_<col>`` that
+# names a row of a table the rpc uses by a natural key (``queue_slug`` of ``queues``) is bound
+# from an earlier step's response field ``col`` or from a *lookup step* inserted before the
+# step that needs it (a flow with no source is ``unbound``, never run). F3: the example value
+# of a field nothing binds is the least privileged one (``bool`` false, an enum's first
+# non-zero value). F4: an ``owner_chain`` plan -- another user attaching a child row to a
+# parent row of the first user -- is refused. Flows are lists of rpc steps with the callers (A
+# and B: the spec's first two users) and the values bound from earlier responses; each is run
+# on a throwaway SQLite file against the app's own binary, recorded as concrete ``Rpc`` steps
+# with the binding of every field (F6), and *verified* only when every step answered as the plan
+# means (a success where it expects one, a refusal where it expects one, never INTERNAL or
+# UNKNOWN; guard refusals only NOT_FOUND or PERMISSION_DENIED) and the recorded scenario passes
+# a replay of layer D on a fresh database.
 
-RPC_FLOWS_SCHEMA = "lattice.rpc-flows/1"
+RPC_FLOWS_SCHEMA = "lattice.rpc-flows/2"
 RPC_REFUSALS = frozenset(
     {
         "NOT_FOUND",
@@ -1114,6 +1121,8 @@ RPC_REFUSALS = frozenset(
     }
 )
 RPC_FAULTS = frozenset({"INTERNAL", "UNKNOWN", "DATA_LOSS", "UNAVAILABLE", "DEADLINE_EXCEEDED"})
+GUARD_KINDS = frozenset({"owner_guard", "owner_chain"})
+GUARD_REFUSALS = frozenset({"NOT_FOUND", "PERMISSION_DENIED"})
 LIFECYCLE_MAX = 4
 
 
@@ -1133,6 +1142,10 @@ class RpcView:
     deletes: tuple[str, ...]
     writes: tuple[str, ...]  # tables written other than by create
     owner_compare: bool
+    # response fields a natural key can be read from: top-level and one message deep
+    out_paths: tuple[tuple[str, ...], ...] = ()
+    # repeated message fields of the response: (field name, the element message's field names)
+    out_lists: tuple[tuple[str, tuple[str, ...]], ...] = ()
 
     @property
     def public(self) -> bool:
@@ -1164,6 +1177,19 @@ def rpc_views(extract: Mapping[str, Any]) -> list[RpcView]:
             makes = any(_is_id_name(f["name"]) and f["type"] != "map" for f in resp) or (
                 len(holders) == 1
             )
+            paths: list[tuple[str, ...]] = []
+            lists: list[tuple[str, tuple[str, ...]]] = []
+            for f in resp:
+                if f["label"] == "single" and f["type"] not in messages and f["type"] != "map":
+                    paths.append((f["name"],))
+                elif f["label"] == "single" and f["type"] in messages:
+                    for g in messages[f["type"]]["fields"]:
+                        if g["label"] == "single" and g["type"] not in messages:
+                            paths.append((f["name"], g["name"]))
+                elif f["label"] == "repeated" and f["type"] in messages:
+                    lists.append(
+                        (f["name"], tuple(g["name"] for g in messages[f["type"]]["fields"]))
+                    )
             ws = r.get("writes") or []
             out.append(
                 RpcView(
@@ -1181,9 +1207,20 @@ def rpc_views(extract: Mapping[str, Any]) -> list[RpcView]:
                         dict.fromkeys(w["table"] for w in ws if w["op"] in ("save", "update"))
                     ),
                     owner_compare=any(o["how"] == "compare" for o in r.get("owner_uses") or []),
+                    out_paths=tuple(paths),
+                    out_lists=tuple(lists),
                 )
             )
     return out
+
+
+def rpc_enums(extract: Mapping[str, Any]) -> dict[str, tuple[tuple[str, int], ...]]:
+    """``{enum full name: ((value name, number), ...)}`` of ``extract["grpc"]``."""
+    grpc = extract.get("grpc") or {}
+    return {
+        e["name"]: tuple((v["name"], int(v["number"])) for v in e.get("values", ()))
+        for e in grpc.get("enums", [])
+    }
 
 
 def _singular(table: str) -> str:
@@ -1192,7 +1229,7 @@ def _singular(table: str) -> str:
 
 def rpc_edges(views: Sequence[RpcView]) -> list[tuple[str, str, str, str]]:
     """``(table, producer key, consumer key, request field)``: the producer creates the
-    table's row and answers an id; the consumer takes it as ``id`` or ``<table>_id``."""
+    table's row and answers an id; the consumer takes it as ``id`` or ``<table>_id`` (F1)."""
     out = []
     for p in views:
         if not p.makes_id:
@@ -1208,8 +1245,12 @@ def rpc_edges(views: Sequence[RpcView]) -> list[tuple[str, str, str, str]]:
     return out
 
 
-def example_value(f: Mapping[str, Any]) -> Any:
-    """A value a request field accepts, from its type and bounds (None: leave it out)."""
+def example_value(
+    f: Mapping[str, Any], enums: Mapping[str, Sequence[tuple[str, int]]] | None = None
+) -> Any:
+    """A value a request field accepts, from its type and bounds (None: leave it out). F3: the
+    least privileged one -- ``bool`` false, an enum's first value other than number 0 (proto3's
+    zero is ``*_UNSPECIFIED``); ``enums`` maps an enum's full name to its values."""
     b = f.get("bounds") or {}
     if f["label"] != "single":
         return None
@@ -1222,18 +1263,26 @@ def example_value(f: Mapping[str, Any]) -> Any:
         text = text.ljust(max(lo, 1), "x")
         return text[: int(hi)] if hi is not None else text
     if t == "bool":
-        return True
+        return False
     if t in ("double", "float"):
         return b.get("ge", b["gt"] + 1 if "gt" in b else 0.0)
     if t.endswith("int32") or t.endswith("int64") or t in ("fixed32", "fixed64"):
         if "ge" in b:
             return b["ge"]
         return b["gt"] + 1 if "gt" in b else 0
-    return None  # an enum, a message: left out
+    if enums and t in enums:
+        for name, number in enums[t]:
+            if number != 0:
+                return name
+    return None  # a message, or an enum that has only its zero value: left out
 
 
-def rpc_message(view: RpcView, bound: Mapping[str, Any]) -> dict[str, Any]:
-    """The request of a step: the ids bound from earlier responses, and -- for an rpc that
+def rpc_message(
+    view: RpcView,
+    bound: Mapping[str, Any],
+    enums: Mapping[str, Sequence[tuple[str, int]]] | None = None,
+) -> dict[str, Any]:
+    """The request of a step: the values bound from earlier responses, and -- for an rpc that
     writes -- an example of every scalar field."""
     msg: dict[str, Any] = {}
     writes = bool(view.creates or view.writes or view.deletes)
@@ -1241,10 +1290,52 @@ def rpc_message(view: RpcView, bound: Mapping[str, Any]) -> dict[str, Any]:
         if f["name"] in bound:
             msg[f["name"]] = bound[f["name"]]
         elif writes:
-            v = example_value(f)
+            v = example_value(f, enums)
             if v is not None:
                 msg[f["name"]] = v
     return msg
+
+
+def natural_fields(view: RpcView) -> list[tuple[str, str, str]]:
+    """``(request field, table, col)``: a request string field ``<s>_<col>``, ``col`` not ``id``,
+    where ``s`` is the singular of a table the rpc uses (F2). A field of a oneof is not one."""
+    out = []
+    for f in view.inputs:
+        name = f["name"]
+        if f["label"] != "single" or f["type"] != "string" or f.get("oneof"):
+            continue
+        if _is_id_name(name) or "_" not in name:
+            continue
+        hit = None
+        for i, ch in enumerate(name):
+            if ch != "_" or i == 0 or i == len(name) - 1:
+                continue
+            s, col = name[:i], name[i + 1 :]
+            for t in sorted(view.tables):
+                if _singular(t) == s:
+                    hit = (name, t, col)
+                    break
+            if hit:
+                break
+        if hit:
+            out.append(hit)
+    return out
+
+
+def _provides(view: RpcView, table: str, col: str) -> bool:
+    """Whether ``view`` reads or creates ``table`` and answers a field ``col``."""
+    if table not in view.tables:
+        return False
+    return any(p[-1] == col for p in view.out_paths) or any(col in el for _, el in view.out_lists)
+
+
+def _lookup_for(views: Sequence[RpcView], table: str, col: str) -> RpcView | None:
+    """F2(b): the first implemented rpc in sorted key order that reads ``table``, has no id-like
+    input and answers a repeated message field whose elements have ``col``."""
+    for v in sorted(views, key=lambda v: v.key):
+        if table in v.tables and not v.id_inputs and any(col in el for _, el in v.out_lists):
+            return v
+    return None
 
 
 @dataclass
@@ -1254,6 +1345,8 @@ class RpcPlanStep:
     binds: dict[str, int]  # request field -> the 1-based step whose response id feeds it
     intent: str = "ok"  # ok | refuse | any
     same_as: int | None = None  # the 1-based step whose request fields this one repeats
+    role: str = "step"  # step | lookup
+    nat: dict[str, tuple[int, str]] = field(default_factory=dict)  # field -> (step, col)
 
 
 @dataclass
@@ -1261,16 +1354,21 @@ class RpcPlan:
     kind: str
     steps: list[RpcPlanStep]
     why: str
+    unbound: str | None = None  # "no_source:<field>": the plan cannot be run
 
     @property
     def id(self) -> str:
-        raw = (
-            self.kind
-            + "|"
-            + "|".join(
-                f"{s.key}@{s.caller}:{sorted(s.binds.items())}:{s.intent}" for s in self.steps
-            )
-        )
+        parts = []
+        for s in self.steps:
+            part = f"{s.key}@{s.caller}:{sorted(s.binds.items())}:{s.intent}"
+            if s.role != "step":
+                part += f":{s.role}"
+            if s.nat:
+                part += f":{sorted(s.nat.items())}"
+            parts.append(part)
+        raw = self.kind + "|" + "|".join(parts)
+        if self.unbound:
+            raw += "|" + self.unbound
         return "rf-" + hashlib.sha256(raw.encode()).hexdigest()[:10]
 
 
@@ -1278,11 +1376,95 @@ def _caller(view: RpcView, who: str) -> str | None:
     return None if view.public else who
 
 
+def expand_natural(plan: RpcPlan, views: Sequence[RpcView]) -> RpcPlan:
+    """F2: bind every natural key of ``plan``'s steps -- from an earlier step that answers the
+    column, else from a lookup step inserted before the step that needs it -- or mark the plan
+    ``unbound``. Idempotent: a field already bound is left alone."""
+    by_key = {v.key: v for v in views}
+    steps = list(plan.steps)
+    i = 0
+    while i < len(steps):
+        st = steps[i]
+        for fld, table, col in natural_fields(by_key[st.key]):
+            if fld in st.nat or fld in st.binds:
+                continue
+            src = None
+            for j in range(i):
+                prev = steps[j]
+                if prev.intent == "ok" and _provides(by_key[prev.key], table, col):
+                    src = j + 1
+            if src is None:
+                look = _lookup_for(views, table, col)
+                if look is None:
+                    return RpcPlan(plan.kind, steps, plan.why, unbound=f"no_source:{fld}")
+                for s in steps:  # the lookup takes 1-based position i + 1
+                    s.binds = {f: (k + 1 if k >= i + 1 else k) for f, k in s.binds.items()}
+                    s.nat = {f: ((k + 1 if k >= i + 1 else k), c) for f, (k, c) in s.nat.items()}
+                    if s.same_as is not None and s.same_as >= i + 1:
+                        s.same_as += 1
+                steps.insert(i, RpcPlanStep(look.key, _caller(look, "A"), {}, role="lookup"))
+                i += 1
+                st = steps[i]
+                src = i
+            st.nat[fld] = (src, col)
+        i += 1
+    return RpcPlan(plan.kind, steps, plan.why, unbound=plan.unbound)
+
+
+def natural_value(body: Any, col: str, *, lists_first: bool = False) -> Any:
+    """The value of the response field ``col``: a top-level or one-message-deep scalar, or the
+    smallest ``col`` among the elements of a repeated message field (sorted, so the choice is
+    deterministic); None when the body has none."""
+
+    def scalar() -> Any:
+        if not isinstance(body, Mapping):
+            return None
+        if isinstance(body.get(col), (str, int)) and not isinstance(body.get(col), bool):
+            return body[col]
+        for k in sorted(body):
+            sub = body[k]
+            if isinstance(sub, Mapping) and isinstance(sub.get(col), (str, int)):
+                return sub[col]
+        return None
+
+    def smallest() -> Any:
+        if not isinstance(body, Mapping):
+            return None
+        for k in sorted(body):
+            seq = body[k]
+            if isinstance(seq, list):
+                vals = [
+                    e[col] for e in seq if isinstance(e, Mapping) and isinstance(e.get(col), str)
+                ]
+                if vals:
+                    return min(vals)
+        return None
+
+    for pick in (smallest, scalar) if lists_first else (scalar, smallest):
+        got = pick()
+        if got is not None:
+            return got
+    return None
+
+
+def id_source(body: Any) -> tuple[Any, str] | None:
+    """``(id, the response field it came from)`` of an answer, as :func:`extract_id` reads it."""
+    if not isinstance(body, Mapping):
+        return None
+    if isinstance(body.get("id"), (str, int)) and not isinstance(body.get("id"), bool):
+        return body["id"], "id"
+    holders = [k for k in sorted(body) if isinstance(body[k], Mapping) and "id" in body[k]]
+    if len(holders) == 1 and isinstance(body[holders[0]]["id"], (str, int)):
+        return body[holders[0]]["id"], f"{holders[0]}.id"
+    return None
+
+
 def static_rpc_plans(views: Sequence[RpcView]) -> list[RpcPlan]:
     """The flows the contract and the closures support, before anything runs: ``pair``
-    (one per edge), ``owner_guard`` (the consumer as another user), ``after_delete`` (a
-    read after the row is deleted) and ``account`` (a public rpc that creates users, then
-    the public rpc that takes the same fields)."""
+    (one per edge), ``owner_guard`` (the consumer as another user), ``owner_chain`` (another user
+    attaching a child row to the first user's parent row, F4), ``after_delete`` (a read after the
+    row is deleted) and ``account`` (a public rpc that creates users, then the public rpc that
+    takes the same fields). Natural keys are bound or the plan is ``unbound`` (F2)."""
     by_key = {v.key: v for v in views}
     plans: list[RpcPlan] = []
     for table, p, c, field_ in rpc_edges(views):
@@ -1308,12 +1490,32 @@ def static_rpc_plans(views: Sequence[RpcView]) -> list[RpcPlan]:
                     f"{c} compares the owner: another user must be refused",
                 )
             )
+        if field_ != "id" and cv.creates and not (set(cv.creates) <= {table}) and not cv.public:
+            plans.append(
+                RpcPlan(
+                    "owner_chain",
+                    [
+                        RpcPlanStep(p, _caller(pv, "A"), {}),
+                        RpcPlanStep(c, "B", {field_: 1}, "refuse"),
+                    ],
+                    f"{c} adds a {', '.join(cv.creates)} row under a {table} row it does not own:"
+                    " another user must be refused",
+                )
+            )
         if cv.deletes:
             for r in views:
                 if r.key == c or table not in r.tables or r.deletes or r.creates or r.writes:
                     continue
                 if r.id_inputs:
-                    f2 = next((f for f in r.id_inputs if f == field_ or f == "id"), r.id_inputs[0])
+                    # F1: only a field that names this table's row takes its id
+                    named = [
+                        f
+                        for f in r.id_inputs
+                        if f in ("id", f"{_singular(table)}_id", f"{table}_id")
+                    ]
+                    if not named:
+                        continue
+                    f2 = field_ if field_ in named else named[0]
                     plans.append(
                         RpcPlan(
                             "after_delete",
@@ -1357,6 +1559,7 @@ def static_rpc_plans(views: Sequence[RpcView]) -> list[RpcPlan]:
     seen: set[str] = set()
     out = []
     for p in plans:
+        p = expand_natural(p, views)
         if p.id not in seen:
             seen.add(p.id)
             out.append(p)
@@ -1380,7 +1583,27 @@ def rpc_lifecycle_creators(views: Sequence[RpcView]) -> list[tuple[str, RpcView,
     return out
 
 
+def rpc_step_ok(kind: str, intent: str, code: str) -> bool:
+    """Whether a step answered as its plan means (D3): never a fault; ``OK`` where the plan
+    expects a success; a refusal where it expects one -- for the guard kinds only NOT_FOUND or
+    PERMISSION_DENIED (a missing or wrong session is not an ownership refusal)."""
+    if code in RPC_FAULTS:
+        return False
+    if intent == "ok":
+        return code == "OK"
+    if intent == "refuse":
+        return code in (GUARD_REFUSALS if kind in GUARD_KINDS else RPC_REFUSALS)
+    return True
+
+
 def rpc_flows_json(flows: Sequence[Mapping[str, Any]]) -> str:
     """``rpc-flows.json``: sorted keys, two-space indent, one trailing newline."""
-    doc = {"schema": RPC_FLOWS_SCHEMA, "flows": list(flows), "summary": summary(flows, 0, 0)}
+    count = {"verified": 0, "unverified": 0, "failed": 0, "unbound": 0}
+    for f in flows:
+        count[f["status"]] = count.get(f["status"], 0) + 1
+    doc = {
+        "schema": RPC_FLOWS_SCHEMA,
+        "flows": list(flows),
+        "summary": {"flows": len(flows), **count, "edges": 0, "machines": 0},
+    }
     return to_json(doc)

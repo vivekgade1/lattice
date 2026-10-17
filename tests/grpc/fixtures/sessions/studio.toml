@@ -1,0 +1,9 @@
+# The sessions app: a grpc-go service whose sessions can be revoked or deleted (round 2).
+[app]
+app = "harness:make_app"
+db = "harness:build_db"
+runtime = "harness:RUNTIME"
+
+[grpc]
+protos = ["proto/sessions/v1/sessions.proto"]
+proto_paths = ["proto"]

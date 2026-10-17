@@ -1,0 +1,78 @@
+{
+ "desk.v1.Identity/SignUp": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Identity/SignIn": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Identity/WhoAmI": {
+  "code": "OK",
+  "answered": true
+ },
+ "desk.v1.Identity/SignOut": {
+  "code": "OK",
+  "answered": true
+ },
+ "desk.v1.Queues/ListQueues": {
+  "code": "OK",
+  "answered": true
+ },
+ "desk.v1.Queues/GetQueue": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Tickets/OpenTicket": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Tickets/GetTicket": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Tickets/ListTickets": {
+  "code": "OK",
+  "answered": true
+ },
+ "desk.v1.Tickets/UpdateTicket": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Tickets/HoldTicket": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Tickets/ResolveTicket": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Tickets/ReopenTicket": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Tickets/CloseTicket": {
+  "code": "PERMISSION_DENIED",
+  "answered": true
+ },
+ "desk.v1.Tickets/DeleteTicket": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Tickets/AddRemark": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Tickets/ListRemarks": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "desk.v1.Tickets/MergeTickets": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ },
+ "(absent)": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ }
+}

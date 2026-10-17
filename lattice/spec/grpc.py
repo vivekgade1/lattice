@@ -393,14 +393,12 @@ def rpc_login(
 
 
 def reconcile(root: Path, model: RepoModel, *, timeout: float = 30.0) -> dict[str, Any]:
-    """Which extracted rpcs the server answers: start the app's binary (the harness of
-    ``studio.toml`` ``[app]``) on a throwaway SQLite file and call each registered rpc with
-    an empty message -- as the harness's first user (``USERS``) for an rpc that is not
-    public, so an interceptor's refusal is not read as an answer -- and an rpc the proto
-    does not declare. The result maps ``<Service>/<Method>`` to ``{code, answered}``
-    (``answered``: the code is not UNIMPLEMENTED); no port, no timing."""
-    import tempfile
-
+    """Which extracted rpcs the server answers: the app's binary (the harness of ``studio.toml``
+    ``[app]``) on a throwaway SQLite file, each registered rpc called with an empty message -- as
+    the harness's first user (``USERS``) for an rpc that is not public -- and an rpc the proto
+    does not declare. The harness is read from ``root`` and :func:`reconcile_with` does the work;
+    the result maps ``<Service>/<Method>`` to ``{code, answered}`` (``answered``: the code is not
+    UNIMPLEMENTED); no port, no timing."""
     from lattice.importer.frontends.go_gin import GoExtractError, _harness_attr, _studio_app
 
     cfg = _studio_app(root)
@@ -413,39 +411,150 @@ def reconcile(root: Path, model: RepoModel, *, timeout: float = 30.0) -> dict[st
         users = dict(_harness_attr(root, cfg["app"].split(":")[0] + ":USERS"))
     except (AttributeError, ImportError, TypeError, ValueError):
         users = {}
-    out: dict[str, Any] = {}
+    return reconcile_with(
+        model, make_app=make_app, build_db=build_db, runtime=runtime, users=users, timeout=timeout
+    )
+
+
+def _call_fresh(
+    rpc: Any,
+    transport: Any,
+    runtime: Any,
+    first_user: str | None,
+    login: Any,
+    service: str,
+    method: str,
+    public: bool,
+) -> dict[str, Any]:
+    """One rpc, called with a token obtained by a login made immediately before it (RC1): a
+    failed login is ``login_failed`` (no code, not answered), never an answer."""
+    token = None
+    if not public and first_user is not None and (runtime.auth.can_login or login is not None):
+        try:
+            token = runtime.auth.token(transport, first_user, login)
+        except Exception:  # noqa: BLE001 -- any failure to log in is the reason, not an answer
+            return {"code": None, "answered": None, "reason": "login_failed"}
+    try:
+        answer = rpc.call(service, method, {}, bearer(token))
+    except BridgeError as err:
+        if err.kind != "streaming_not_supported":
+            raise
+        return {"code": None, "answered": None, "reason": f"bridge:{err.kind}"}
+    return {"code": answer.code, "answered": answer.code != "UNIMPLEMENTED"}
+
+
+def _with_protos(app: Any, protos: Sequence[str], proto_paths: Sequence[str]) -> Any:
+    """``app`` with the contract's protos named, when it names none (a harness that leaves them
+    unset: the rpc transport needs them to describe the contract)."""
+    import dataclasses
+
+    if not protos or getattr(app, "protos", ()) or not dataclasses.is_dataclass(app):
+        return app
+    names = {f.name for f in dataclasses.fields(app)}
+    if not {"protos", "proto_paths"} <= names:
+        return app
+    return dataclasses.replace(app, protos=tuple(protos), proto_paths=tuple(proto_paths))
+
+
+def reconcile_with(
+    model: RepoModel,
+    *,
+    make_app: Any,
+    build_db: Any,
+    runtime: Any,
+    users: Mapping[str, Any],
+    protos: Sequence[str] = (),
+    proto_paths: Sequence[str] = (),
+    login: Any = None,
+    timeout: float = 30.0,
+) -> dict[str, Any]:
+    """:func:`reconcile` over a harness given as values -- no ``studio.toml`` -- and independent
+    of the state an earlier call leaves (round 2, D1). RC1: every rpc that is not public is
+    called with a token from a login made immediately before it (the first of ``users``). RC2:
+    the rpcs are called twice on one process, forward (sorted by ``<Service>/<Method>``) and
+    reverse. RC3: an rpc whose answer differs between the passes (or that no pass could log in for)
+    is called again alone -- a fresh
+    database, a fresh process, a fresh login -- and that answer (``isolated: true``) stands. The
+    result maps ``<Service>/<Method>`` to ``{code, answered}`` in the contract's order, with
+    ``reason`` for a failed login, then ``(absent)``; ``order: {disagreed: [...]}`` and
+    ``auth_refused: [...]`` (a non-public rpc a fresh token did not get past the interceptor
+    of) appear only when not empty. ``protos`` / ``proto_paths`` name the contract for an app
+    that does not (absolute, or relative to the working directory)."""
+    import tempfile
+
+    first_user = next(iter(users), None)
+    ordered: list[tuple[str, str, str, bool]] = []
+    for r in model.routes:
+        if r.transport == "grpc" and r.rpc is not None:
+            ordered.append(
+                (f"{r.rpc.service}/{r.rpc.method}", r.rpc.service, r.rpc.method, r.auth == "Public")
+            )
+    by_key = {k: (s, m, pub) for k, s, m, pub in ordered}
+
+    def sig(res: Mapping[str, Any]) -> tuple[Any, Any]:
+        return res.get("code"), res.get("reason")
+
+    forward: dict[str, dict[str, Any]] = {}
+    reverse: dict[str, dict[str, Any]] = {}
+    absent: dict[str, Any] = {}
     with tempfile.TemporaryDirectory(prefix="lattice-grpc-reconcile-") as tmp:
         db = build_db(Path(tmp) / "reconcile.db")
-        app = make_app(db)
+        app = _with_protos(make_app(db), protos, proto_paths)
         try:
             with runtime.open(app) as transport:
                 rpc = transport.rpc()
-                token = None
-                if runtime.auth.can_login and users:
-                    token = runtime.auth.token(transport, next(iter(users)))
-                for r in model.routes:
-                    if r.transport != "grpc" or r.rpc is None:
-                        continue
-                    caller = token if r.auth != "Public" else None
-                    answer = rpc.call(r.rpc.service, r.rpc.method, {}, bearer(caller))
-                    out[f"{r.rpc.service}/{r.rpc.method}"] = {
-                        "code": answer.code,
-                        "answered": answer.code != "UNIMPLEMENTED",
-                    }
+                for key in sorted(by_key):
+                    s, m, pub = by_key[key]
+                    forward[key] = _call_fresh(
+                        rpc, transport, runtime, first_user, login, s, m, pub
+                    )
+                for key in sorted(by_key, reverse=True):
+                    s, m, pub = by_key[key]
+                    reverse[key] = _call_fresh(
+                        rpc, transport, runtime, first_user, login, s, m, pub
+                    )
                 # a method the proto does not declare: the server must refuse it
-                absent = rpc.bridge.request(
+                probe = rpc.bridge.request(
                     {
                         "op": "probe",
                         "target": rpc.target,
                         "path": "/lattice.reconcile.v1.Absent/NoSuchRpc",
                     }
                 )
-                out["(absent)"] = {
-                    "code": absent["code"],
-                    "answered": absent["code"] != "UNIMPLEMENTED",
-                }
+                absent = {"code": probe["code"], "answered": probe["code"] != "UNIMPLEMENTED"}
         finally:
             runtime.close(app)
+    # a pass that could not even log in answers nothing: it is no agreement either
+    disagreed = sorted(
+        k
+        for k in by_key
+        if sig(forward[k]) != sig(reverse[k]) or forward[k].get("reason") == "login_failed"
+    )
+    final: dict[str, dict[str, Any]] = {k: forward[k] for k in by_key}
+    for key in disagreed:
+        s, m, pub = by_key[key]
+        with tempfile.TemporaryDirectory(prefix="lattice-grpc-reconcile-") as tmp:
+            db = build_db(Path(tmp) / "isolated.db")
+            app = _with_protos(make_app(db), protos, proto_paths)
+            try:
+                with runtime.open(app) as transport:
+                    alone = _call_fresh(
+                        transport.rpc(), transport, runtime, first_user, login, s, m, pub
+                    )
+            finally:
+                runtime.close(app)
+        final[key] = {**alone, "isolated": True}
+    out: dict[str, Any] = {k: final[k] for k, _, _, _ in ordered}
+    out["(absent)"] = absent
+    refused = sorted(
+        k
+        for k, (_, _, pub) in by_key.items()
+        if not pub and final[k].get("code") == "UNAUTHENTICATED"
+    )
+    if disagreed:
+        out["order"] = {"disagreed": disagreed}
+    if refused:
+        out["auth_refused"] = refused
     return out
 
 
@@ -477,12 +586,15 @@ def run_rpc_flows(
     login: Any = None,
 ) -> list[dict[str, Any]]:
     """Recover the flows of ``extract["grpc"]``, run each on a throwaway database against the
-    app's own binary, and verify what ran (see ``lattice.importer.workflows``, D6). ``spec``
-    supplies the users (the first two are A and B), the profile and ``protos`` the replay
-    uses. Every flow is answered with its steps recorded as concrete ``Rpc`` steps and a
-    status: ``verified`` (every step answered as planned, and the recorded scenario passes
-    layer D on a fresh database), ``unverified`` (the replay disagreed) or ``failed`` (a
-    step answered otherwise than planned, or the flow could not run)."""
+    app's own binary, and verify what ran (see ``lattice.importer.workflows``, D6 and round 2's
+    D2-D4). ``spec`` supplies the users (the first two are A and B), the profile and ``protos``
+    the replay uses. Every flow is answered with its steps recorded as concrete ``Rpc`` steps --
+    each with its ``role`` (``step`` or ``lookup``) and ``bound`` (which earlier step and response
+    field fed each request field) -- and a status: ``verified`` (every step answered as planned,
+    and the recorded scenario passes layer D on a fresh database), ``unverified`` (the replay
+    disagreed), ``failed`` (a step answered otherwise than planned, or the flow could not run) or
+    ``unbound`` (a request field names a row by a natural key and nothing supplies it: the flow
+    was not run). Schema ``lattice.rpc-flows/2``."""
     import tempfile
 
     from lattice.importer import workflows as wf
@@ -490,6 +602,7 @@ def run_rpc_flows(
 
     views = wf.rpc_views(extract)
     by_key = {v.key: v for v in views}
+    enums = wf.rpc_enums(extract)
     handles = list(spec.users)
     if not handles:
         return []
@@ -504,7 +617,8 @@ def run_rpc_flows(
             db = build_db(Path(tmp) / "flow.db")
             app = make_app(db)
             recorded: list[dict[str, Any]] = []
-            ids: dict[int, Any] = {}
+            ids: dict[int, tuple[Any, str]] = {}
+            bodies: dict[int, Any] = {}
             try:
                 with runtime.open(app) as t:
                     rpc = t.rpc(spec.protos)
@@ -519,8 +633,21 @@ def run_rpc_flows(
                             if handle not in tokens:
                                 tokens[handle] = runtime.auth.token(t, handle, login)
                             token = tokens[handle]
-                        bound = {f: ids[k] for f, k in st.binds.items() if k in ids}
-                        msg = wf.rpc_message(view, bound)
+                        bound = {f: ids[k][0] for f, k in st.binds.items() if k in ids}
+                        record = {
+                            f: {"step": k, "from_field": ids[k][1]}
+                            for f, k in st.binds.items()
+                            if k in ids
+                        }
+                        for f, (k, col) in st.nat.items():
+                            value = wf.natural_value(
+                                bodies.get(k), col, lists_first=steps[k - 1].role == "lookup"
+                            )
+                            if value is None:
+                                return recorded, f"step {n}: no {col} from step {k} for {f}"
+                            bound[f] = value
+                            record[f] = {"step": k, "from_field": col}
+                        msg = wf.rpc_message(view, bound, enums)
                         if st.same_as is not None and st.same_as <= len(recorded):
                             before = recorded[st.same_as - 1]["message"]
                             msg = {
@@ -528,6 +655,7 @@ def run_rpc_flows(
                                 for f in view.inputs
                                 if f["name"] in before
                             }
+                            record = {}
                         answer = rpc.call(view.service, view.method, msg, bearer(token))
                         recorded.append(
                             {
@@ -537,10 +665,13 @@ def run_rpc_flows(
                                 "user": handle,
                                 "message": msg,
                                 "code": answer.code,
+                                "role": st.role,
+                                "bound": record,
                             }
                         )
                         if answer.ok:
-                            got = wf.extract_id(answer.body)
+                            bodies[n] = answer.body
+                            got = wf.id_source(answer.body)
                             if got is not None:
                                 ids[n] = got
             except Exception as err:  # noqa: BLE001 -- a flow that cannot run is reported
@@ -556,18 +687,15 @@ def run_rpc_flows(
             "why": plan.why,
             "steps": recorded,
         }
+        if plan.unbound:
+            flow.update(status="unbound", reason=plan.unbound, steps=[])
+            return flow
         if stop is not None or len(recorded) != len(plan.steps):
             flow.update(status="failed", reason=stop or "the flow stopped early")
             return flow
         for n, (st, rec) in enumerate(zip(plan.steps, recorded, strict=True), 1):
-            code = rec["code"]
-            bad = (
-                code in wf.RPC_FAULTS
-                or (st.intent == "ok" and code != "OK")
-                or (st.intent == "refuse" and code not in wf.RPC_REFUSALS)
-            )
-            if bad:
-                flow.update(status="failed", reason=f"step {n} ({st.key}) answered {code}")
+            if not wf.rpc_step_ok(plan.kind, st.intent, rec["code"]):
+                flow.update(status="failed", reason=f"step {n} ({st.key}) answered {rec['code']}")
                 return flow
         scenario = _scenario_of(plan.id, recorded)
         from dataclasses import replace
@@ -591,21 +719,32 @@ def run_rpc_flows(
         return flow
 
     for plan in plans:
+        if plan.unbound:
+            results.append(settle(plan, [], None))
+            continue
         recorded, stop = run_steps(plan.steps)
         results.append(settle(plan, recorded, stop))
 
     # lifecycles: chains of the writers of a created row, found by running them
-    def chains(writers: list[Any], field_of: Mapping[str, str], first: Any) -> list[list[Any]]:
+    def chains(
+        writers: list[Any], field_of: Mapping[str, str], first: list[Any], at: int
+    ) -> list[list[Any]]:
         found: list[list[Any]] = []
+
+        def work(chain: list[Any]) -> int:
+            return sum(s.role == "step" for s in chain)
 
         def extend(chain: list[Any], used: frozenset[str]) -> None:
             grew = False
-            if len(chain) < wf.LIFECYCLE_MAX:
+            if work(chain) < wf.LIFECYCLE_MAX:
                 for w in writers:
                     if w.key in used:
                         continue
-                    step = wf.RpcPlanStep(w.key, wf._caller(w, "A"), {field_of[w.key]: 1})
-                    steps = [*chain, step]
+                    step = wf.RpcPlanStep(w.key, wf._caller(w, "A"), {field_of[w.key]: at})
+                    grown = wf.expand_natural(wf.RpcPlan("lifecycle", [*chain, step], ""), views)
+                    if grown.unbound:
+                        continue
+                    steps = grown.steps
                     recorded, stop = run_steps(steps)
                     if (
                         stop is None
@@ -614,21 +753,37 @@ def run_rpc_flows(
                     ):
                         grew = True
                         extend(steps, used | {w.key})
-            if not grew and len(chain) >= 3:
+            if not grew and work(chain) >= 3:
                 found.append(chain)
 
-        extend([first], frozenset())
+        extend(first, frozenset())
         found.sort(key=lambda c: (-len(c), [s.key for s in c]))
         return found
 
     for table, creator, writers in wf.rpc_lifecycle_creators(views):
         field_of = {c: f for t, p, c, f in wf.rpc_edges(views) if t == table and p == creator.key}
-        first = wf.RpcPlanStep(creator.key, wf._caller(creator, "A"), {})
-        for chain in chains(writers, field_of, first)[:4]:
+        start = wf.expand_natural(
+            wf.RpcPlan(
+                "lifecycle", [wf.RpcPlanStep(creator.key, wf._caller(creator, "A"), {})], ""
+            ),
+            views,
+        )
+        if start.unbound:
+            results.append(
+                settle(
+                    wf.RpcPlan("lifecycle", start.steps, f"{table}: {creator.key}", start.unbound),
+                    [],
+                    None,
+                )
+            )
+            continue
+        at = next(i for i, s in enumerate(start.steps, 1) if s.key == creator.key)
+        for chain in chains(writers, field_of, start.steps, at)[:4]:
             plan = wf.RpcPlan(
                 "lifecycle",
                 chain,
-                f"{table}: " + " -> ".join(s.key.rsplit("/", 1)[-1] for s in chain),
+                f"{table}: "
+                + " -> ".join(s.key.rsplit("/", 1)[-1] for s in chain if s.role == "step"),
             )
             recorded, stop = run_steps(chain)
             results.append(settle(plan, recorded, stop))

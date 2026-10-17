@@ -1,0 +1,2066 @@
+[
+ {
+  "id": "rf-0adb33ef4b",
+  "kind": "after_delete",
+  "why": "desk.v1.Tickets/ListTickets lists the ticket_notes rows after desk.v1.Tickets/DeleteTicket deleted one",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "service": "desk.v1.Tickets",
+    "method": "DeleteTicket",
+    "user": "ann",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/ListTickets",
+    "service": "desk.v1.Tickets",
+    "method": "ListTickets",
+    "user": "ann",
+    "message": {},
+    "code": "OK",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-503989e07f",
+  "kind": "after_delete",
+  "why": "desk.v1.Tickets/ListRemarks reads the ticket_notes row after desk.v1.Tickets/DeleteTicket deleted it",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "service": "desk.v1.Tickets",
+    "method": "DeleteTicket",
+    "user": "ann",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/ListRemarks",
+    "service": "desk.v1.Tickets",
+    "method": "ListRemarks",
+    "user": "ann",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-82016ebd21",
+  "kind": "after_delete",
+  "why": "desk.v1.Tickets/ListRemarks reads the tickets row after desk.v1.Tickets/DeleteTicket deleted it",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "service": "desk.v1.Tickets",
+    "method": "DeleteTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ListRemarks",
+    "service": "desk.v1.Tickets",
+    "method": "ListRemarks",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-ce1b3a2ffe",
+  "kind": "after_delete",
+  "why": "desk.v1.Tickets/GetTicket reads the tickets row after desk.v1.Tickets/DeleteTicket deleted it",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "service": "desk.v1.Tickets",
+    "method": "DeleteTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/GetTicket",
+    "service": "desk.v1.Tickets",
+    "method": "GetTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-dbc36964bd",
+  "kind": "after_delete",
+  "why": "desk.v1.Tickets/GetTicket reads the ticket_notes row after desk.v1.Tickets/DeleteTicket deleted it",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "service": "desk.v1.Tickets",
+    "method": "DeleteTicket",
+    "user": "ann",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/GetTicket",
+    "service": "desk.v1.Tickets",
+    "method": "GetTicket",
+    "user": "ann",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-f0501a06f3",
+  "kind": "after_delete",
+  "why": "desk.v1.Tickets/ListTickets lists the tickets rows after desk.v1.Tickets/DeleteTicket deleted one",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "service": "desk.v1.Tickets",
+    "method": "DeleteTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ListTickets",
+    "service": "desk.v1.Tickets",
+    "method": "ListTickets",
+    "user": "ann",
+    "message": {},
+    "code": "OK",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-dc2b35d930",
+  "kind": "lifecycle",
+  "why": "tickets: OpenTicket -> HoldTicket -> ResolveTicket -> ReopenTicket",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/HoldTicket",
+    "service": "desk.v1.Tickets",
+    "method": "HoldTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ResolveTicket",
+    "user": "ann",
+    "message": {
+     "id": 1,
+     "resolution": "wf-resolution"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ReopenTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-e1754cdc9f",
+  "kind": "lifecycle",
+  "why": "tickets: OpenTicket -> ResolveTicket -> ReopenTicket -> HoldTicket",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ResolveTicket",
+    "user": "ann",
+    "message": {
+     "id": 1,
+     "resolution": "wf-resolution"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ReopenTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/HoldTicket",
+    "service": "desk.v1.Tickets",
+    "method": "HoldTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-b401824fdc",
+  "kind": "owner_chain",
+  "why": "desk.v1.Tickets/AddRemark adds a ticket_notes row under a tickets row it does not own: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ben",
+    "message": {
+     "ticket_id": 1,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "ticket_id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-0d7df70085",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/ListRemarks compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/ListRemarks",
+    "service": "desk.v1.Tickets",
+    "method": "ListRemarks",
+    "user": "ben",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-11db08aede",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/DeleteTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "service": "desk.v1.Tickets",
+    "method": "DeleteTicket",
+    "user": "ben",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-1209d1fc8c",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/ResolveTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ResolveTicket",
+    "user": "ben",
+    "message": {
+     "id": 1,
+     "resolution": "wf-resolution"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-20da634023",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/UpdateTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/UpdateTicket",
+    "service": "desk.v1.Tickets",
+    "method": "UpdateTicket",
+    "user": "ben",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-248981cd1f",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/ReopenTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ReopenTicket",
+    "user": "ben",
+    "message": {
+     "id": 1
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-46e4c0bab3",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/ReopenTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ReopenTicket",
+    "user": "ben",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-539deebccf",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/AddRemark compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ben",
+    "message": {
+     "ticket_id": 1,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "ticket_id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-6955eb45b1",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/HoldTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/HoldTicket",
+    "service": "desk.v1.Tickets",
+    "method": "HoldTicket",
+    "user": "ben",
+    "message": {
+     "id": 1
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-72009ad78c",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/UpdateTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/UpdateTicket",
+    "service": "desk.v1.Tickets",
+    "method": "UpdateTicket",
+    "user": "ben",
+    "message": {
+     "id": 1
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-acf83993c4",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/ListRemarks compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ListRemarks",
+    "service": "desk.v1.Tickets",
+    "method": "ListRemarks",
+    "user": "ben",
+    "message": {
+     "id": 1
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-ce8dbe3fd0",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/ResolveTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ResolveTicket",
+    "user": "ben",
+    "message": {
+     "id": 0,
+     "resolution": "wf-resolution"
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-db3ffcfaf0",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/GetTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/GetTicket",
+    "service": "desk.v1.Tickets",
+    "method": "GetTicket",
+    "user": "ben",
+    "message": {
+     "id": 1
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-ddb40edc01",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/DeleteTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "service": "desk.v1.Tickets",
+    "method": "DeleteTicket",
+    "user": "ben",
+    "message": {
+     "id": 1
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-ee4a6cd2fc",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/HoldTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/HoldTicket",
+    "service": "desk.v1.Tickets",
+    "method": "HoldTicket",
+    "user": "ben",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-ef9b375588",
+  "kind": "owner_guard",
+  "why": "desk.v1.Tickets/GetTicket compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/GetTicket",
+    "service": "desk.v1.Tickets",
+    "method": "GetTicket",
+    "user": "ben",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-11dfe13abc",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/AddRemark creates a ticket_notes row; desk.v1.Tickets/ListRemarks takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/ListRemarks",
+    "service": "desk.v1.Tickets",
+    "method": "ListRemarks",
+    "user": "ann",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-1b4ce6d886",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/AddRemark creates a ticket_notes row; desk.v1.Tickets/UpdateTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/UpdateTicket",
+    "service": "desk.v1.Tickets",
+    "method": "UpdateTicket",
+    "user": "ann",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-2c4d286a83",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/AddRemark creates a ticket_notes row; desk.v1.Tickets/CloseTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/CloseTicket",
+    "service": "desk.v1.Tickets",
+    "method": "CloseTicket",
+    "user": "ann",
+    "message": {
+     "id": 0
+    },
+    "code": "PERMISSION_DENIED",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-5bb91eb1fb",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/AddRemark creates a ticket_notes row; desk.v1.Tickets/ReopenTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ReopenTicket",
+    "user": "ann",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-64e31ab40c",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/OpenTicket creates a tickets row; desk.v1.Tickets/ReopenTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ReopenTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "FAILED_PRECONDITION",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "failed",
+  "reason": "step 3 (desk.v1.Tickets/ReopenTicket) answered FAILED_PRECONDITION"
+ },
+ {
+  "id": "rf-7d8c39596c",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/OpenTicket creates a tickets row; desk.v1.Tickets/ListRemarks takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ListRemarks",
+    "service": "desk.v1.Tickets",
+    "method": "ListRemarks",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-90eade7cf0",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/OpenTicket creates a tickets row; desk.v1.Tickets/GetTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/GetTicket",
+    "service": "desk.v1.Tickets",
+    "method": "GetTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-9e3a2bed56",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/OpenTicket creates a tickets row; desk.v1.Tickets/CloseTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/CloseTicket",
+    "service": "desk.v1.Tickets",
+    "method": "CloseTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "PERMISSION_DENIED",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "failed",
+  "reason": "step 3 (desk.v1.Tickets/CloseTicket) answered PERMISSION_DENIED"
+ },
+ {
+  "id": "rf-a588f597b6",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/OpenTicket creates a tickets row; desk.v1.Tickets/ResolveTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ResolveTicket",
+    "user": "ann",
+    "message": {
+     "id": 1,
+     "resolution": "wf-resolution"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-b9dc83cf15",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/OpenTicket creates a tickets row; desk.v1.Tickets/HoldTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/HoldTicket",
+    "service": "desk.v1.Tickets",
+    "method": "HoldTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-c36a123ba0",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/OpenTicket creates a tickets row; desk.v1.Tickets/DeleteTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "service": "desk.v1.Tickets",
+    "method": "DeleteTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-c7aa84bb45",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/AddRemark creates a ticket_notes row; desk.v1.Tickets/DeleteTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "service": "desk.v1.Tickets",
+    "method": "DeleteTicket",
+    "user": "ann",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-d3b221af2d",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/AddRemark creates a ticket_notes row; desk.v1.Tickets/HoldTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/HoldTicket",
+    "service": "desk.v1.Tickets",
+    "method": "HoldTicket",
+    "user": "ann",
+    "message": {
+     "id": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-d586b9c38f",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/OpenTicket creates a tickets row; desk.v1.Tickets/UpdateTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/UpdateTicket",
+    "service": "desk.v1.Tickets",
+    "method": "UpdateTicket",
+    "user": "ann",
+    "message": {
+     "id": 1
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "failed",
+  "reason": "step 3 (desk.v1.Tickets/UpdateTicket) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-e2525bae2e",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/AddRemark creates a ticket_notes row; desk.v1.Tickets/GetTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/GetTicket",
+    "service": "desk.v1.Tickets",
+    "method": "GetTicket",
+    "user": "ann",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-f5ea622d75",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/OpenTicket creates a tickets row; desk.v1.Tickets/AddRemark takes its id as ticket_id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Queues/ListQueues",
+    "service": "desk.v1.Queues",
+    "method": "ListQueues",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/OpenTicket",
+    "service": "desk.v1.Tickets",
+    "method": "OpenTicket",
+    "user": "ann",
+    "message": {
+     "queue_slug": "billing",
+     "subject": "wf-subject",
+     "body": "wf-body",
+     "priority": "PRIORITY_LOW"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "queue_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 1,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "ticket_id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-fa2bbf9e4e",
+  "kind": "pair",
+  "why": "desk.v1.Tickets/AddRemark creates a ticket_notes row; desk.v1.Tickets/ResolveTicket takes its id as id",
+  "steps": [
+   {
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "service": "desk.v1.Tickets",
+    "method": "AddRemark",
+    "user": "ann",
+    "message": {
+     "ticket_id": 0,
+     "text": "wf-text",
+     "internal": false
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "service": "desk.v1.Tickets",
+    "method": "ResolveTicket",
+    "user": "ann",
+    "message": {
+     "id": 0,
+     "resolution": "wf-resolution"
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (desk.v1.Tickets/AddRemark) answered INVALID_ARGUMENT"
+ }
+]

@@ -1,0 +1,18 @@
+{
+  "schema": "lattice.grpc.sessions-truth/1",
+  "app": "sessions",
+  "written": "2026-10-17",
+  "note": "hand-written before any round-2 reconcile code; the answer of each rpc called alone on a fresh database, as ann (the first user), with an empty message",
+  "rpcs": {
+    "sessions.v1.Sessions/Login": {"state": "implemented", "auth": "Public", "alone": "INVALID_ARGUMENT", "revokes_session": false, "changes_state": false},
+    "sessions.v1.Sessions/SignOut": {"state": "implemented", "auth": "Member", "alone": "OK", "revokes_session": true, "changes_state": true},
+    "sessions.v1.Sessions/DeleteMe": {"state": "implemented", "auth": "Member", "alone": "OK", "revokes_session": true, "changes_state": true},
+    "sessions.v1.Sessions/Secret": {"state": "implemented", "auth": "Member", "alone": "OK", "revokes_session": false, "changes_state": false},
+    "sessions.v1.Sessions/Stub": {"state": "unimplemented", "auth": "Member", "alone": "UNIMPLEMENTED", "revokes_session": false, "changes_state": false},
+    "sessions.v1.Sessions/Health": {"state": "implemented", "auth": "Public", "alone": "OK", "revokes_session": false, "changes_state": false}
+  },
+  "absent": "UNIMPLEMENTED",
+  "contract_order": ["Login", "SignOut", "DeleteMe", "Secret", "Stub", "Health"],
+  "round1_defect": "one login, contract order: SignOut revokes the token, so DeleteMe, Secret and Stub answer UNAUTHENTICATED from the interceptor; round 1 recorded Stub as answered (code != UNIMPLEMENTED)",
+  "order_dependent_when_one_database_is_reused": ["DeleteMe deletes ann: a later login as ann fails, so Secret, SignOut and Stub cannot be called as ann"]
+}

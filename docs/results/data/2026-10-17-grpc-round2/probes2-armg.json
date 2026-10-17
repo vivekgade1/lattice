@@ -1,0 +1,618 @@
+{
+ "schema": "lattice.grpc-probes2/1",
+ "arm": "G",
+ "library_sha256": {
+  "lattice/spec/grpc.py": "814b3bc0d27fb648c7ff90eeb61d53107b4cf48a577d88770ce0e12eb3ba9bde",
+  "lattice/importer/workflows.py": "5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098",
+  "dogfood/grpc_flow_scorer.py": "8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3",
+  "dogfood/grpc_probes2.py": "7ab7dd3f7ee32c8423100218f26c2f01685148a91f59d637ac157084a5868936"
+ },
+ "frozen_before": {
+  "round1_frozen_files_checked": 11,
+  "round1_frozen_files_changed": [],
+  "N_truth_sha256_ok": true,
+  "deskd_freeze_sha256_ok": true,
+  "deskd_files_changed": [],
+  "tracked_files_changed": [
+   "lattice/importer/workflows.py",
+   "lattice/spec/grpc.py"
+  ],
+  "tracked_unexpected": [],
+  "untracked_unexpected": [],
+  "ok": true
+ },
+ "frozen_after": {
+  "round1_frozen_files_checked": 11,
+  "round1_frozen_files_changed": [],
+  "N_truth_sha256_ok": true,
+  "deskd_freeze_sha256_ok": true,
+  "deskd_files_changed": [],
+  "tracked_files_changed": [
+   "lattice/importer/workflows.py",
+   "lattice/spec/grpc.py"
+  ],
+  "tracked_unexpected": [],
+  "untracked_unexpected": [],
+  "ok": true
+ },
+ "probes": [
+  {
+   "id": "PR2-N",
+   "prediction": "identical to round 1: 10/10 answered; bytes equal",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "implemented answered": "10/10",
+    "bytes equal round 1": true,
+    "extra keys": []
+   },
+   "detail": {
+    "notes.v1.Accounts/Register": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Accounts/Login": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Accounts/Me": {
+     "code": "OK",
+     "answered": true
+    },
+    "notes.v1.Notes/CreateNote": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Notes/GetNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ListNotes": {
+     "code": "OK",
+     "answered": true
+    },
+    "notes.v1.Notes/UpdateNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/PublishNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ArchiveNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/DeleteNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ShareNote": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    },
+    "(absent)": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    }
+   }
+  },
+  {
+   "id": "PR2-DESK (dev)",
+   "prediction": "implemented 17/17 answered, no auth_refused; MergeTickets, Backlog 1/1 UNIMPLEMENTED; absent 1/1",
+   "pass_rule": "100%",
+   "status": "PASS",
+   "observed": {
+    "implemented answered": "17/17",
+    "unimplemented (model routes)": "1/1",
+    "absent": "1/1",
+    "auth_refused": [],
+    "order": {},
+    "Reports/Backlog in the library output": false,
+    "Reports/Backlog by one supplementary _call_fresh (not library output)": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    },
+    "seconds": 2.23
+   },
+   "detail": {
+    "desk.v1.Identity/SignUp": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Identity/SignIn": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Identity/WhoAmI": {
+     "code": "OK",
+     "answered": true
+    },
+    "desk.v1.Identity/SignOut": {
+     "code": "OK",
+     "answered": true
+    },
+    "desk.v1.Queues/ListQueues": {
+     "code": "OK",
+     "answered": true
+    },
+    "desk.v1.Queues/GetQueue": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Tickets/OpenTicket": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Tickets/GetTicket": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Tickets/ListTickets": {
+     "code": "OK",
+     "answered": true
+    },
+    "desk.v1.Tickets/UpdateTicket": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Tickets/HoldTicket": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Tickets/ResolveTicket": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Tickets/ReopenTicket": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Tickets/CloseTicket": {
+     "code": "PERMISSION_DENIED",
+     "answered": true
+    },
+    "desk.v1.Tickets/DeleteTicket": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Tickets/AddRemark": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Tickets/ListRemarks": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "desk.v1.Tickets/MergeTickets": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    },
+    "(absent)": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    }
+   }
+  },
+  {
+   "id": "PR2-ORDER",
+   "prediction": "0 disagreements on N; 0-2 on deskd (p); >= 1 on sessions; all resolved; final = truth",
+   "pass_rule": "every disagreement resolved isolated; final codes = truth",
+   "status": "PASS",
+   "observed": {
+    "N": {
+     "disagreed": []
+    },
+    "sessions": {
+     "disagreed": [
+      "sessions.v1.Sessions/DeleteMe",
+      "sessions.v1.Sessions/Secret",
+      "sessions.v1.Sessions/SignOut",
+      "sessions.v1.Sessions/Stub"
+     ],
+     "all isolated": true,
+     "final codes equal the truth (alone)": true,
+     "login_failed": []
+    },
+    "deskd": {
+     "disagreed": [],
+     "all isolated": true,
+     "count in 0-2 (p)": true
+    }
+   },
+   "detail": null
+  },
+  {
+   "id": "PR2-SESS",
+   "prediction": "round 1: Stub answered:true with UNAUTHENTICATED (the defect); round 2: Stub UNIMPLEMENTED, Secret answered, 0 login_failed",
+   "pass_rule": "round 1 reproduces the defect AND round 2 exact",
+   "status": "PASS",
+   "observed": {
+    "round 1 (control, cea85fc library)": {
+     "Login": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "SignOut": {
+      "code": "OK",
+      "answered": true
+     },
+     "DeleteMe": {
+      "code": "UNAUTHENTICATED",
+      "answered": true
+     },
+     "Secret": {
+      "code": "UNAUTHENTICATED",
+      "answered": true
+     },
+     "Stub": {
+      "code": "UNAUTHENTICATED",
+      "answered": true
+     },
+     "Health": {
+      "code": "OK",
+      "answered": true
+     }
+    },
+    "round 1 defect reproduced": true,
+    "round 2": {
+     "Login": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "SignOut": {
+      "code": "OK",
+      "answered": true,
+      "isolated": true
+     },
+     "DeleteMe": {
+      "code": "OK",
+      "answered": true,
+      "isolated": true
+     },
+     "Secret": {
+      "code": "OK",
+      "answered": true,
+      "isolated": true
+     },
+     "Stub": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "isolated": true
+     },
+     "Health": {
+      "code": "OK",
+      "answered": true
+     },
+     "order": {
+      "disagreed": [
+       "sessions.v1.Sessions/DeleteMe",
+       "sessions.v1.Sessions/Secret",
+       "sessions.v1.Sessions/SignOut",
+       "sessions.v1.Sessions/Stub"
+      ]
+     }
+    }
+   },
+   "detail": null
+  },
+  {
+   "id": "PF2-N",
+   "prediction": "verified 15-20 (p; round 1: 17), verified-but-failing 0, unbound 0",
+   "pass_rule": "S2 with 0 vbf, verified >= 3; edge recall and coverage reported (N truth has no links)",
+   "status": "PASS",
+   "observed": {
+    "recovered": 17,
+    "recovered_by_status": {
+     "verified": 17,
+     "unverified": 0,
+     "failed": 0,
+     "unbound": 0
+    },
+    "verified": 17,
+    "verified_but_failing": 0,
+    "failing_codes": {},
+    "unbound_reasons": {},
+    "in 15-20 (p)": true,
+    "seconds": 4.6
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 17,
+     "recovered_by_status": {
+      "verified": 17,
+      "unverified": 0,
+      "failed": 0,
+      "unbound": 0
+     },
+     "verified": 17,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 0,
+      "bound": null,
+      "gated": false,
+      "value": null,
+      "pass": true
+     },
+     "coverage": {
+      "num": 0,
+      "den": 0,
+      "bound": null,
+      "gated": false,
+      "value": null,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 0
+     },
+     "truth_defects": [],
+     "failing_codes": {},
+     "unbound_reasons": {}
+    },
+    "vbf ids": []
+   }
+  },
+  {
+   "id": "PF2-DESK (dev, tuned-on)",
+   "prediction": "recovered 30-55, verified 8-25, unbound 0-6; edge recall 0.35-0.70; coverage 3-6 of 7; exact 0-1 of 7 (p)",
+   "pass_rule": "S2: verified >= 1, 0 vbf, edge recall >= 0.30, coverage >= 2",
+   "status": "PASS",
+   "observed": {
+    "recovered": 41,
+    "recovered_by_status": {
+     "verified": 20,
+     "unverified": 0,
+     "failed": 21,
+     "unbound": 0
+    },
+    "verified": 20,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 21,
+     "den": 34,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.6176,
+     "pass": true
+    },
+    "coverage": {
+     "num": 4,
+     "den": 7,
+     "bound": 2,
+     "gated": true,
+     "value": 0.5714,
+     "pass": true
+    },
+    "exact": {
+     "num": 0,
+     "den": 7
+    },
+    "failing_codes": {
+     "FAILED_PRECONDITION": 1,
+     "INVALID_ARGUMENT": 19,
+     "PERMISSION_DENIED": 1
+    },
+    "unbound_reasons": {},
+    "truth_flows_passing": 7,
+    "seconds": 10.6
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 41,
+     "recovered_by_status": {
+      "verified": 20,
+      "unverified": 0,
+      "failed": 21,
+      "unbound": 0
+     },
+     "verified": 20,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 21,
+      "den": 34,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.6176,
+      "pass": true
+     },
+     "coverage": {
+      "num": 4,
+      "den": 7,
+      "bound": 2,
+      "gated": true,
+      "value": 0.5714,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 7
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "FAILED_PRECONDITION": 1,
+      "INVALID_ARGUMENT": 19,
+      "PERMISSION_DENIED": 1
+     },
+     "unbound_reasons": {},
+     "truth_flows_passing": 7,
+     "recovered_by_kind_status": {
+      "after_delete": {
+       "failed": 3,
+       "verified": 3
+      },
+      "lifecycle": {
+       "verified": 2
+      },
+      "owner_chain": {
+       "verified": 1
+      },
+      "owner_guard": {
+       "failed": 7,
+       "verified": 8
+      },
+      "pair": {
+       "failed": 11,
+       "verified": 6
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth flow failures": []
+   }
+  },
+  {
+   "id": "PF2-REPLAY",
+   "prediction": "all pass (p)",
+   "pass_rule": "100%",
+   "status": "PASS",
+   "observed": {
+    "N": {
+     "verified": 17,
+     "replays": 3,
+     "failing per replay": [
+      0,
+      0,
+      0
+     ]
+    },
+    "deskd": {
+     "verified": 20,
+     "replays": 3,
+     "failing per replay": [
+      0,
+      0,
+      0
+     ]
+    }
+   },
+   "detail": null
+  },
+  {
+   "id": "PF2-LEAK",
+   "prediction": "0",
+   "pass_rule": "0",
+   "status": "PASS",
+   "observed": {
+    "live processes+bridges after reconcile and flows": 0,
+    "after a forced startup failure (reconcile raises, flows fail)": 0,
+    "reconcile raised": "ProcessStartError",
+    "flows of the broken app": [
+     "failed"
+    ],
+    "stray app or bridge processes in /proc": 0
+   },
+   "detail": []
+  },
+  {
+   "id": "PR1",
+   "prediction": "every row as round 1's final results",
+   "pass_rule": "all PASS rows still PASS",
+   "status": "PASS",
+   "observed": {
+    "0": {
+     "rows": 11,
+     "round-1 PASS rows still PASS": "11/11",
+     "regressed": [],
+     "status now": {
+      "P0-PARSE": "PASS",
+      "P0-UNREAD": "PASS",
+      "P0-VAL": "PASS",
+      "P0-EXT": "PASS",
+      "P0-MODEL": "PASS",
+      "P0-SPEC": "PASS",
+      "P0-EMIT": "PASS",
+      "P0-SITES": "PASS",
+      "P0-DET": "PASS",
+      "P0-NW": "PASS",
+      "P0-BC": "PASS"
+     }
+    },
+    "G": {
+     "rows": 11,
+     "round-1 PASS rows still PASS": "10/10",
+     "regressed": [],
+     "status now": {
+      "PG-BR": "PASS",
+      "PG-REC": "PASS",
+      "PG-D": "PASS",
+      "PG-C": "PASS",
+      "PG-J": "PASS",
+      "PG-MIX": "PASS",
+      "PG-AUTH": "PASS",
+      "PG-WF": "PASS",
+      "PG-LEAK": "PASS",
+      "PG-X": "PASS",
+      "PG-HO": "NOT RUN"
+     },
+     "PG-WF (counts may differ; reported)": {
+      "passed": 1,
+      "deselected": 26,
+      "seconds": 7.7,
+      "flows recovered": 17,
+      "by kind and status": {
+       "account": {
+        "verified": 1
+       },
+       "after_delete": {
+        "verified": 2
+       },
+       "lifecycle": {
+        "verified": 4
+       },
+       "owner_guard": {
+        "verified": 5
+       },
+       "pair": {
+        "verified": 5
+       }
+      },
+      "verified": 17,
+      "predicted range 3-6": "missed"
+     }
+    }
+   },
+   "detail": null
+  },
+  {
+   "id": "PX2",
+   "prediction": "1.5-8 s; 15-90 s (p)",
+   "pass_rule": "<= 30 s; <= 180 s",
+   "status": "PASS",
+   "observed": {
+    "reconcile on deskd (s)": 2.23,
+    "flows on deskd (s)": 10.6
+   },
+   "detail": null
+  },
+  {
+   "id": "PM-S / PM-SG (Arm M)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here",
+   "detail": null
+  },
+  {
+   "id": "Arm L",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the build round is its own node; out of scope",
+   "detail": null
+  },
+  {
+   "id": "PG-HO2 (HO2-*)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the gated held-out stage: a new app by a new agent, scored once by the orchestrator after the freeze; it does not exist in this node's view and heldout2/ was not opened",
+   "detail": null
+  }
+ ]
+}

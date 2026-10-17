@@ -345,3 +345,11 @@ stages explicit paths only (never `git add -A`). No API key, no model call anywh
 ## Amendment 1 (orchestrator rulings, 2026-10-17; defaults, overturnable)
 
 Q1: approved (RC1-RC3; name-based skipping rejected as the main rule). Q2: `deskd` stays in scratch, referenced by hash 8670bf84. Q3: accepted as a disclosed post-hoc rule. Q4: accepted. Q5: already fixed on the branch (cea85fc's parent commit 'tests: list Spike I's added fields in ADDED_DEFAULTS'); not part of round 2. Q6: yes, `lattice.rpc-flows/2`. Q7: no: the new held-out author gets only the D1/D2 scope and a requirement of idiom diversity, not the specific shapes. Q8: yes, one rerun, only for a runner crash before any metric is written. Q9: the erratum (blind PG-HO 6/7, 5/7 under the new vacuity rule) is recorded in the round-2 results and in a note appended to the round-1 results doc at merge time. Q10: build from `spike-i-grpc`; round 1 merges only after round 2.
+
+## Amendment 2 (build node, development stage, 2026-10-17; hashes only, no ruling changed)
+
+Frozen before any scored probe (21:34 UTC) and unchanged since (`docs/results/data/2026-10-17-grpc-round2/freeze-lib.sha256`, `freeze-dev.sha256`, `freeze2.sha256`):
+`lattice/spec/grpc.py` `814b3bc0d27fb648c7ff90eeb61d53107b4cf48a577d88770ce0e12eb3ba9bde`; `lattice/importer/workflows.py` `5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098`;
+`dogfood/grpc_flow_scorer.py` `8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3`;
+`tests/grpc/fixtures/sessions/truth.json` `0e9b0d375e40b70405189f4990fb299838669fc5e2ee4f5e7b0367e8d9c40b8b`; `tests/grpc/fixtures/deskd_links.json` `604df9394960c9aff35df770e1d4d1daa0c744d9d10c0125364d81bdd3647aa8`.
+`dogfood/grpc_probes2.py` (dev-stage runner, no `--arm H2`) `7ab7dd3f7ee32c8423100218f26c2f01685148a91f59d637ac157084a5868936`. The H2 arm is not built; the orchestrator's gated stage adds it and hashes it before opening `heldout2/truth.json`.
