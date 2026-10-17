@@ -115,3 +115,55 @@ Freeze hashes (before scoring gated probes, unchanged at the end): `freeze.sha25
 - N's stated counts (9 unary, 8 implemented, 9 endpoints) contradict its fixed shape: 11 unary, 10 implemented, 1 unimplemented, 1 streaming, 11 endpoints (13 if bindings were routes). Truth was written from the shape.
 - "49 sites in 15 modules" is 51 sites in 19 modules at `6a318e5`.
 - `minishop.BROKEN` has 4 variants, not 10.
+
+## Held-out stage (PG-HO, Arm H)
+
+### Step 1: scorer written and hashed before `truth.json` was opened
+
+`dogfood/grpc_probes.py --arm H` implements the seven section 5 metrics (rpc recall/precision with state, codes micro recall/precision, auth wrong/unclear, tables recall, reconcile, flows, determinism). Before it scores, it verifies the held-out `freeze.sha256` over the held-out files and the library freeze listing (`freeze-final.sha256`) and refuses to score if either differs. Before this hash was recorded I had read only `freeze.sha256`, `harness.py`, `FILES.txt` and the `.proto` files; `truth.json` was not opened.
+
+Scorer sha256 (first version, recorded before `truth.json` was opened): `245da7f5832eda18564fcf701059192b0698668e135710ca914a01005504d7e1` (also in `docs/results/data/2026-10-17-grpc/heldout/scorer.sha256`).
+
+### Step 2: freeze checks, then the scored runs
+
+Before scoring: held-out `freeze.sha256` itself hashes to `8670bf84cdcc9175797507f05e55e62f11716659dc9a0e7a6368aa14dab729f6` (as announced), and all 31 listed held-out files match (`sha256sum -c`: 0 differences). The frozen library listing (`freeze-final.sha256`, 12 files: `goextract_proto.go`, `goextract_grpc.go`, `grpcbridge/{call,describe,main}.go`, `go.mod`, `go.sum`, 3 stubs, `go_grpc.py`, `spec/grpc.py`) matches: 0 differences. Both checks repeated after the last run: 0 differences. `git status` shows only `dogfood/grpc_probes.py`, this doc and `docs/results/data/2026-10-17-grpc/heldout/` changed; nothing staged or committed. Arm M (Streak) and Arm L stay NOT RUN (no Streak, no Docker, no model calls).
+
+The runner needed adaptation to the held-out harness, none of it in the library: (a) it sets `DESKD_READY=grpc` (documented by the harness; without it `ProcessApp` has no gRPC port); (b) the harness's `make_app` leaves `protos`/`proto_paths`/`proto_root` unset, so the runner fills them from the harness constants with `dataclasses.replace`; (c) there is no `studio.toml`, so the library's `reconcile()` cannot be used and the runner repeats its loop with the harness (empty message to every non-streaming rpc, as the first user for a non-public rpc, plus an absent method); (d) the spec for flow replay has an empty profile, the harness users, and absolute proto paths.
+
+**Run history (all disclosed).**
+
+| run | scorer sha256 | outcome |
+|---|---|---|
+| 1 | `245da7f5832eda18564fcf701059192b0698668e135710ca914a01005504d7e1` | crashed in HO-FLOWS before writing any output: `validate()` read the spec's relative proto paths from the working directory (S026). No number was seen. Runner fix: absolute proto paths; a runner exception in a metric is now recorded as FAIL, not a crash. |
+| 2 | `69e4959645db69310f66ffca5d6416706cebe62b52af08484ffc296f408be4aa` | first scored run. 6 of 7 pass; HO-REC FAIL (see below). Output kept: `heldout/probes-armh-run2.json`. |
+| 3 | `5406bbbea96872396f5b8c58042992fa230b0fbf8440148a3d67f1c7abedfee2` | runner fix to HO-REC only (fresh login before every non-public call). 7 of 7 pass. Output: `heldout/probes-armh.json`. |
+
+Runs 2 and 3 read the same extract; every number except HO-REC is identical between them. Nothing was tuned: no threshold, truth reading, matching rule or library file changed between runs 2 and 3.
+
+**Run 2's HO-REC miss was a runner flaw, not the app.** The runner (mirroring `lattice.spec.grpc.reconcile`) logged in once as `ann` and reused the token for every rpc in sorted order. `Identity/SignOut` answers OK and revokes that session, so the later rpcs saw UNAUTHENTICATED; `Tickets/MergeTickets` (truth: unimplemented) was then refused by the auth interceptor with UNAUTHENTICATED instead of reaching the embedded Unimplemented handler (observed UNAUTHENTICATED, predicted UNIMPLEMENTED; implemented 17/17, unregistered 1/1, absent 1/1). Run 3 logs in fresh per call: MergeTickets answers UNIMPLEMENTED, 1/1. **Finding on the library:** `lattice.spec.grpc.reconcile` reuses one token the same way (and iterates in proto order, where `SignOut` precedes `Queues` and `Tickets`), so on an app with a sign-out rpc it can report an unimplemented rpc as answered-by-an-interceptor. Not fixed (frozen).
+
+### Results (run 3, the final runner; predicted vs observed)
+
+| metric | predicted (p) | pass rule | observed | verdict |
+|---|---|---|---|---|
+| HO-RPC recall / precision, state included | 0.90-1.00 / 0.95-1.00 | >= 0.90 / >= 0.95 | 1.000 / 1.000 (21 truth rpcs, 21 extracted, 21 matched; 17 implemented, 1 unimplemented `MergeTickets`, 2 streaming, 1 not registered `Reports/Backlog`) | PASS |
+| HO-CODES micro recall / precision | 0.70-0.90 / 0.90-1.00 | >= 0.70 / >= 0.90 | 1.000 (68/68) / 0.986 (68/69) | PASS |
+| HO-AUTH wrong / unclear | 0; unclear 0-0.3 | 0 wrong (hard) | 0 wrong, 0 unclear of 17 implemented rpcs (unclear share 0.0) | PASS |
+| HO-TABLES recall | 1.0 | >= 0.9 | 1.000 (5/5), precision 1.000 | PASS |
+| HO-REC | 100% | 100% | implemented 17/17, unimplemented 1/1, unregistered `Reports/Backlog` 1/1 (UNIMPLEMENTED), absent 1/1 | PASS (run 2: FAIL, runner flaw above) |
+| HO-FLOWS | all truth flows pass; 0 verified-but-failing | 0 verified-but-failing; recall reported | truth flows replayed as `Rpc` scenarios: 7/7 pass; recovered flows 38, **0 verified**, 38 failed, 0 verified-but-failing; truth flows recovered exactly 0/7, covered 0/7 | PASS by the rule, **vacuously**; recall 0/7 is a miss |
+| HO-DET | identical | 10/10 | 10/10 identical (extract, bridge describe, model; 2 roots, random `PYTHONHASHSEED`), 0 path/time/port leaks | PASS |
+
+Probes: **PG-HO 7 passed, 0 failed** (final runner); Arm M NOT RUN; Arm L NOT RUN. Other checks: `pytest tests/grpc` 112 passed; `ruff check` and `ruff format --check` on `dogfood/grpc_probes.py` clean.
+
+### Findings (every miss, predicted vs observed)
+
+1. **Recovered flows: 0 of 38 verified, recall 0/7 (predicted: >= 3 verified, recall reported).** The workflow recoverer filled request messages from bounds and field names (`queue_slug` = `"wf-queue_slug"`, `ticket_id` = 0, `internal` = true) and the first step fails: `OpenTicket` NOT_FOUND (20 flows; the queue slug names no seeded queue) or `AddRemark` PERMISSION_DENIED (18 flows; a member sending `internal: true`). Kinds found: `pair`, `owner_guard`, `after_delete`; no lifecycle or account flow. A value that must name an existing row (a slug, a foreign key) or respect a role has no source in the importer. On N it did not matter because N's inputs are free text. The "0 verified-but-failing" rule holds only because nothing was verified.
+2. **HO-CODES extra code**: `Tickets/DeleteTicket` UNKNOWN (`plain_error` at `internal/svc/tickets.go:285` and `:288`). The truth lists no UNKNOWN for it; a plain `error` return does map to UNKNOWN in grpc-go, so this is a truth/extractor disagreement, counted as a precision miss (0.986, still above 0.90). One `grpc_code_not_literal` unread at `internal/svc/tickets.go:242` was reported rather than guessed.
+3. **Expected findings, observed as expected**: `Reports` (declared, never registered): `Backlog` extracted with state `not_registered`, no route, and the server answers UNIMPLEMENTED (model has 18 endpoints = 17 implemented + `MergeTickets`). `MergeTickets` extracted `unimplemented`; the server answers UNIMPLEMENTED. `WatchQueue` and `ImportTickets` (streaming): extracted state `streaming`, excluded with reason `streaming_not_supported`, not in the model, never called (reported not supported, not guessed).
+4. **Library `reconcile` reuses one token** (see above).
+5. **Harness gap**: `deskd/harness.py` leaves `ProcessApp.protos`/`proto_paths`/`proto_root` unset and has no `studio.toml`, so neither the library's `reconcile()` nor an Rpc spec runs without the runner adding them (deviation (b), (c)).
+
+### Deviations from the pre-registration
+
+Scored in three runs (one crash, two scored), not strictly once; the library's `reconcile()` is re-implemented in the runner; the flow-recall matching (exact rpc sequence, and subsequence of a verified flow) is the runner's own definition (the prereg says only "recall reported"); HO-CODES excludes `OK`, uses implemented rpcs only; HO-AUTH checks implemented rpcs only; the owner-check truth was not scored (not among the seven metrics). Metric ids are `HO-*` rather than one `PG-HO` row.
