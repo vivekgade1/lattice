@@ -1311,7 +1311,7 @@ def test_lattice_spec_impact_is_one_authoring_entry():
     from lattice.spec.__main__ import AUTHORING
 
     assert AUTHORING["impact"] == "lattice.spec.impact_report"
-    assert list(AUTHORING)[-2:] == ["implementation", "impact"]
+    assert list(AUTHORING)[-4:] == ["implementation", "rationale", "glossary", "impact"]
 
 
 def test_the_machine_edge_diff_is_what_changed_targets_say():
