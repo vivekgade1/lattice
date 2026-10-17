@@ -1,0 +1,213 @@
+[
+  {
+    "catchers": [
+      "FROZEN",
+      "tests/mcp/test_change_impact.py::test_the_tool_exists_only_with_the_impact_table",
+      "tests/mcp/test_change_impact.py::test_without_the_table_tools_list_is_byte_identical",
+      "tests/spec/test_impact_report.py::test_a_fault_mid_run_leaves_no_owned_container",
+      "tests/spec/test_impact_report.py::test_a_go808_finding_names_its_machine",
+      "tests/spec/test_impact_report.py::test_differs_follows_the_checkers_subset",
+      "tests/spec/test_impact_report.py::test_reading_a_change_never_opens_the_state_store",
+      "tests/spec/test_impact_report.py::test_the_report_is_not_cached_under_the_inventory",
+      "tests/spec/test_impact_report.py::test_tier1_flows_are_run_and_classified",
+      "tests/spec/test_impact_report.py::test_tier1_keeps_a_finding_with_no_target",
+      "tests/spec/test_impact_report.py::test_tier1_reword_is_empty_and_status_changed_is_exact",
+      "tests/spec/test_impact_report.py::test_tier1_runs_the_candidate_not_the_base",
+      "tests/spec/test_impact_report.py::test_tier2_an_added_body_key_is_compatible_not_a_claim",
+      "tests/spec/test_impact_report.py::test_tier2_claims_need_the_premise_that_the_corpus_step_passed",
+      "tests/spec/test_impact_report.py::test_tier2_prefix_must_be_identical",
+      "tests/spec/test_impact_report.py::test_tier2_the_spec_only_mode_equals_the_full_mode_on_the_determined_set",
+      "tests/spec/test_impact_report.py::test_tier3_a_changed_scenario_points_at_its_route_the_handler_and_the_closure",
+      "tests/spec/test_impact_report.py::test_tier3_a_function_literal_maps_to_its_enclosing_declaration",
+      "tests/spec/test_impact_report.py::test_tier3_ambiguous_and_missing_declarations_are_unread_never_guessed",
+      "tests/spec/test_impact_report.py::test_tier3_every_chain_ends_in_a_code_location_and_holds_an_extract_fact",
+      "tests/spec/test_impact_report.py::test_tier3_report_has_no_absolute_path_or_time"
+    ],
+    "id": "control",
+    "pass": true,
+    "seconds": 1.7,
+    "tail": "....................                                                     [100%]\n20 passed in 1.15s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_a_go808_finding_names_its_machine",
+      "tests/spec/test_impact_report.py::test_tier1_keeps_a_finding_with_no_target"
+    ],
+    "id": "IX1",
+    "killed": true,
+    "mutant": "T1 drops A findings",
+    "preregistered_catcher": "PT1 on dev fixture edge_removed (GO808)",
+    "seconds": 0.6,
+    "tail": "\ntests/spec/test_impact_report.py:374: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_a_go808_finding_names_its_machine\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.23s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_tier1_reword_is_empty_and_status_changed_is_exact",
+      "tests/spec/test_impact_report.py::test_tier1_runs_the_candidate_not_the_base"
+    ],
+    "id": "IX2",
+    "killed": true,
+    "mutant": "T1 reuses the base report (no candidate run)",
+    "preregistered_catcher": "PT1",
+    "seconds": 1.0,
+    "tail": "\ntests/spec/test_impact_report.py:261: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_tier1_reword_is_empty_and_status_changed_is_exact\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.52s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_tier2_prefix_must_be_identical"
+    ],
+    "id": "IX3",
+    "killed": true,
+    "mutant": "D4a ignores earlier requests",
+    "preregistered_catcher": "PT2 precision; unit prefix_differs",
+    "seconds": 0.5,
+    "tail": "\ntests/spec/test_impact_report.py:630: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_tier2_prefix_must_be_identical\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.13s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_differs_follows_the_checkers_subset",
+      "tests/spec/test_impact_report.py::test_tier2_an_added_body_key_is_compatible_not_a_claim"
+    ],
+    "id": "IX4",
+    "killed": true,
+    "mutant": "an added body key counts as incompatible",
+    "preregistered_catcher": "PT2 precision; unit",
+    "seconds": 0.5,
+    "tail": "\ntests/spec/test_impact_report.py:503: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_differs_follows_the_checkers_subset\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.13s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_tier2_claims_need_the_premise_that_the_corpus_step_passed"
+    ],
+    "id": "IX5",
+    "killed": true,
+    "mutant": "D4a skips the baseline-passed premise",
+    "preregistered_catcher": "unit base_prefix_failed (minishop)",
+    "seconds": 0.5,
+    "tail": "\ntests/spec/test_impact_report.py:574: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_tier2_claims_need_the_premise_that_the_corpus_step_passed\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.14s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_tier2_the_spec_only_mode_equals_the_full_mode_on_the_determined_set"
+    ],
+    "id": "IX6",
+    "killed": true,
+    "mutant": "T2 reads the candidate run",
+    "preregistered_catcher": "PT2i",
+    "seconds": 0.9,
+    "tail": "\ntests/spec/test_impact_report.py:737: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_tier2_the_spec_only_mode_equals_the_full_mode_on_the_determined_set\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.45s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_tier3_ambiguous_and_missing_declarations_are_unread_never_guessed",
+      "tests/spec/test_impact_report.py::test_tier3_a_function_literal_maps_to_its_enclosing_declaration"
+    ],
+    "id": "IX7",
+    "killed": true,
+    "mutant": ".funcN and ambiguous matches resolved to the first hit",
+    "preregistered_catcher": "PU",
+    "seconds": 0.5,
+    "tail": "\ntests/spec/test_impact_report.py:1057: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_tier3_ambiguous_and_missing_declarations_are_unread_never_guessed\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.14s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_tier3_every_chain_ends_in_a_code_location_and_holds_an_extract_fact"
+    ],
+    "id": "IX8",
+    "killed": true,
+    "mutant": "locations from grep of path strings",
+    "preregistered_catcher": "PU (via must end in an extract fact); PT3 lift",
+    "seconds": 0.5,
+    "tail": "\ntests/spec/test_impact_report.py:1003: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_tier3_every_chain_ends_in_a_code_location_and_holds_an_extract_fact\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.15s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_tier3_report_has_no_absolute_path_or_time",
+      "tests/spec/test_impact_report.py::test_tier3_a_changed_scenario_points_at_its_route_the_handler_and_the_closure"
+    ],
+    "id": "IX9",
+    "killed": true,
+    "mutant": "absolute paths or unsorted sets",
+    "preregistered_catcher": "PD",
+    "seconds": 0.5,
+    "tail": "\ntests/spec/test_impact_report.py:1011: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_tier3_report_has_no_absolute_path_or_time\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.15s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_the_report_is_not_cached_under_the_inventory"
+    ],
+    "id": "IX10",
+    "killed": true,
+    "mutant": "the report cached under the inventory",
+    "preregistered_catcher": "PW",
+    "seconds": 0.5,
+    "tail": "\ntests/spec/test_impact_report.py:1191: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_the_report_is_not_cached_under_the_inventory\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.15s"
+  },
+  {
+    "catchers": [
+      "FROZEN"
+    ],
+    "id": "IX11",
+    "killed": true,
+    "mutant": "the Studio pipeline switched to the new runner",
+    "preregistered_catcher": "PB (change record), PS",
+    "seconds": 0.0,
+    "tail": "\nfrozen files changed: ['lattice/studio/server.py']"
+  },
+  {
+    "catchers": [
+      "tests/mcp/test_change_impact.py::test_the_tool_exists_only_with_the_impact_table",
+      "tests/mcp/test_change_impact.py::test_without_the_table_tools_list_is_byte_identical"
+    ],
+    "id": "IX12",
+    "killed": true,
+    "mutant": "change_impact listed without [impact]",
+    "preregistered_catcher": "PB",
+    "seconds": 0.5,
+    "tail": "\ntests/mcp/test_change_impact.py:79: AssertionError\n=========================== short test summary info ============================\nFAILED tests/mcp/test_change_impact.py::test_the_tool_exists_only_with_the_impact_table\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.35s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_a_fault_mid_run_leaves_no_owned_container"
+    ],
+    "id": "IX13",
+    "killed": true,
+    "mutant": "no container cleanup on a check exception",
+    "preregistered_catcher": "LEAK fault run",
+    "seconds": 0.5,
+    "tail": "\ntests/spec/test_impact_report.py:395: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_a_fault_mid_run_leaves_no_owned_container\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.14s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_tier1_flows_are_run_and_classified"
+    ],
+    "id": "IX14",
+    "killed": true,
+    "mutant": "a flow's D failure counted as workflow_fails",
+    "preregistered_catcher": "PT1f",
+    "seconds": 0.9,
+    "tail": "\ntests/spec/test_impact_report.py:446: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_tier1_flows_are_run_and_classified\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.50s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_tier1_keeps_a_finding_with_no_target"
+    ],
+    "id": "IX15",
+    "killed": true,
+    "mutant": "a null-target finding dropped",
+    "preregistered_catcher": "PT1 (an A or untargeted finding in a dev fixture)",
+    "seconds": 0.8,
+    "tail": "\ntests/spec/test_impact_report.py:339: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_tier1_keeps_a_finding_with_no_target\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.38s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_impact_report.py::test_reading_a_change_never_opens_the_state_store"
+    ],
+    "id": "IX16",
+    "killed": true,
+    "mutant": "StateStore opened to read --change",
+    "preregistered_catcher": "PW (the state dir gains a meta.json write)",
+    "seconds": 0.5,
+    "tail": "\ntests/spec/test_impact_report.py:175: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_impact_report.py::test_reading_a_change_never_opens_the_state_store\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.16s"
+  }
+]

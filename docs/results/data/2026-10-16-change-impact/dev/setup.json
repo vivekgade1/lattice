@@ -1,0 +1,17 @@
+{
+  "go_files": 36,
+  "inventory_sha256": {
+    "S": "012a47904b6f4170890035227f0d04b4f3f9d8ea76c39e7a8c8106eed8fe3363",
+    "S-root2": "012a47904b6f4170890035227f0d04b4f3f9d8ea76c39e7a8c8106eed8fe3363",
+    "S4": "8da89aa5739611be25afa8b7caaa65bf467d4cda73bf94cf36ae909b22b18e0e"
+  },
+  "notes": [
+    "S: studio.toml go_src rewritten to the clone",
+    "S-root2: studio.toml go_src rewritten to the clone",
+    "S4: studio.toml go_src rewritten to the clone"
+  ],
+  "setup_seconds": 3.1,
+  "streak_ref": "a0679e9",
+  "streak_ref2": "1d00ede",
+  "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+}

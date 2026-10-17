@@ -657,6 +657,20 @@ def _has_implementation_table(root: Path) -> bool:
     return isinstance(cfg.get("implementation"), dict)
 
 
+IMPACT_SECTIONS = ("summary", "tier1", "tier2", "tier3", "flows", "unread", "decidability")
+IMPACT_OBSERVE_TIMEOUT = 900.0
+
+
+def _has_impact_table(root: Path) -> bool:
+    """Whether ``root/studio.toml`` has an ``[impact]`` table (the ``change_impact`` tool is
+    registered only then)."""
+    try:
+        cfg = tomllib.loads((root / "studio.toml").read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return False
+    return isinstance(cfg.get("impact"), dict)
+
+
 class Toolbox:
     """The tools over one backend. ``readonly`` hides change_propose and check_run."""
 
@@ -1001,6 +1015,8 @@ class Toolbox:
         if _has_implementation_table(self.root):
             self._build_implementation()
         self._build_notes()
+        if _has_impact_table(self.root):
+            self._build_impact()
 
     # -- the owner's rationale and glossary (Spike G): read-only, only when a file exists
     def _notes_paths(self) -> Any:
@@ -1387,6 +1403,184 @@ class Toolbox:
             ["question"],
             workflow_find,
         )
+
+    # -- change impact (Spike D): one read-only tool, only with [impact]
+    def _impact_candidate(self, a: Mapping[str, Any]) -> tuple[str | None, Path | None]:
+        change, candidate = (_str(a, k, required=False) for k in ("change", "candidate"))
+        if bool(change) == bool(candidate):
+            raise ToolError("no_candidate: give exactly one of `change` (cN) and `candidate`")
+        if not candidate:
+            return change, None
+        path = (self.root / candidate).resolve()
+        if self.root.resolve() not in (path, *path.parents) or not path.is_dir():
+            raise ToolError(f"no_candidate: {candidate!r} is not a directory of this project")
+        return None, path
+
+    def _impact_observe(self, change: str | None, candidate: Path | None) -> dict[str, Any]:
+        """The CLI as a subprocess (tier 1 too): the harness's chdir and sys.path never touch
+        this server. A fresh container owner, a timeout, a process-group kill, and the owner's
+        containers removed in `finally`."""
+        import contextlib
+        import signal
+        import subprocess
+        import sys
+        import uuid
+
+        from lattice.studio.state import remove_owned_containers
+
+        token = f"impact-{uuid.uuid4().hex[:12]}"
+        argv = [sys.executable, "-m", "lattice.cli", "spec", "impact", "--project", str(self.root)]
+        argv += ["--candidate", str(candidate)] if candidate else ["--change", str(change)]
+        argv += ["--tiers", "123", "--json"]
+        env = dict(os.environ, LATTICE_CONTAINER_OWNER=token)
+        proc = subprocess.Popen(  # noqa: S603
+            argv,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            env=env,
+            start_new_session=True,
+        )
+        try:
+            out, err = proc.communicate(timeout=IMPACT_OBSERVE_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            with contextlib.suppress(OSError):
+                os.killpg(proc.pid, signal.SIGKILL)
+            proc.communicate()
+            raise ToolError(
+                f"timeout: the observed run took more than {int(IMPACT_OBSERVE_TIMEOUT)}s"
+            ) from None
+        finally:
+            with contextlib.suppress(OSError):
+                os.killpg(proc.pid, signal.SIGKILL)
+            remove_owned_containers(token)
+        if proc.returncode not in (0, 3):
+            first = (err.strip().splitlines() or ["failed"])[-1]
+            code = first.removeprefix("error: ")
+            raise ToolError(code if re.match(r"^[a-z_]+:", code) else f"impact_failed: {code}")
+        try:
+            return dict(json.loads(out))
+        except ValueError:
+            raise ToolError("impact_failed: the report is not JSON") from None
+
+    def _build_impact(self) -> None:
+        from lattice.spec import impact_report as ir
+
+        S = {"type": "string"}
+
+        def change_impact(a: Mapping[str, Any]) -> dict[str, Any]:
+            section = _str(a, "section", required=False) or "summary"
+            if section not in IMPACT_SECTIONS:
+                raise ToolError(f"bad_section: section must be one of {', '.join(IMPACT_SECTIONS)}")
+            limit = a.get("limit", 50)
+            if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 200:
+                raise ToolError("bad_limit: limit must be an integer 1..200")
+            observe = a.get("observe", False)
+            if not isinstance(observe, bool):
+                raise ToolError("bad_observe: observe must be a boolean")
+            change, candidate = self._impact_candidate(a)
+            if observe and self.readonly:
+                raise ToolError(
+                    "readonly: observe=true runs the app and Docker; a --readonly server "
+                    "does not start processes or containers"
+                )
+            if observe:
+                if not ir.project_has_app(self.root):
+                    raise ToolError("no_app: studio.toml hooks up no app ([app] app and db)")
+                report = self._impact_observe(change, candidate)
+            else:
+                try:
+                    inp = ir.build_inputs(
+                        project=self.root,
+                        candidate=candidate,
+                        change=change,
+                        state_dir=ir.default_state_dir(self.root) if change else None,
+                    )
+                    if inp.inventory is None:
+                        raise ToolError(inp.inventory_error or "inventory_missing: no inventory")
+                    report = ir.build_report(inp, tiers="23", runner=None, baseline="none")
+                except ir.ImpactError as e:
+                    raise ToolError(str(e)) from None
+            return _impact_view(report, section, limit)
+
+        self._reg(
+            "change_impact",
+            "What a spec change touches: the code locations and the checks and workflows that "
+            "fail, in tiers. Give `change` (a Studio change id, cN, ready or accepted) or "
+            "`candidate` (a project-relative directory with the candidate's REQUIREMENTS.md, "
+            "spec.py and spec.trace.json). Default: tier 2 (determined from the spec change and "
+            "the verified flows) and tier 3 (static code locations from the inventory), a pure "
+            "read. `observe: true` also runs the candidate on the app (tier 1, observed; starts "
+            "Docker; refused by a --readonly server). Which workflows fail is mostly not "
+            "decidable before the change exists: tier 3 flows are `may_fail`, not claims. "
+            "`section`: summary (default, under 4k characters), tier1, tier2, tier3, flows, "
+            "unread, decidability. Read-only: the project, the spec, the inventory and the state "
+            "are never written.",
+            {
+                "change": {**S, "description": "a Studio change id, e.g. c3"},
+                "candidate": {**S, "description": "a project-relative directory"},
+                "observe": {"type": "boolean"},
+                "section": {"type": "string", "enum": list(IMPACT_SECTIONS)},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 200},
+            },
+            [],
+            change_impact,
+        )
+
+
+def _impact_view(report: Mapping[str, Any], section: str, limit: int) -> dict[str, Any]:
+    """The tool's answer from a full report: the summary (under 4k characters) or one section,
+    at most `limit` items."""
+    head = {"schema": report["schema"], "tiers": report["tiers"]}
+    t1, t2, t3 = report["tier1"], report["tier2"], report["tier3"]
+    if section == "summary":
+        out: dict[str, Any] = {
+            **head,
+            "section": "summary",
+            "rules": {
+                k: len(v) if isinstance(v, list) else v for k, v in report["diff"]["rules"].items()
+            },
+            "targets": {k: len(v) for k, v in report["diff"]["targets"].items()},
+            "summary": report["summary"]["tiers"],
+            "workflows": report["summary"]["workflows"],
+            "note": report["summary"]["note"],
+            "determined": [d["claim"] for d in t2["determined"][:3]],
+            "files": t3.get("files", [])[:10],
+            "sections": list(IMPACT_SECTIONS),
+        }
+        while len(json.dumps(out)) > 3800 and (out["files"] or out["determined"]):
+            out["files" if out["files"] else "determined"].pop()
+        return out
+    if section == "tier1":
+        items = t1.get("failing", [])
+        extra = {"resolved": t1.get("resolved", [])[:limit], "counts": t1.get("counts", {})}
+    elif section == "tier2":
+        items = t2.get("determined", [])
+        extra = {"flows": t2.get("flows", [])[:limit]}
+    elif section == "tier3":
+        items = t3.get("locations", [])
+        extra = {"counts": t3.get("counts", {}), "external": t3.get("external")}
+    elif section == "flows":
+        items = [
+            *t1.get("flows", []),
+            *t2.get("flows", []),
+            *t3.get("flows", []),
+        ]
+        extra = {}
+    elif section == "unread":
+        items = t3.get("unread", [])
+        extra = {}
+    else:
+        items = t2.get("decidability", [])
+        extra = {}
+    return {
+        **head,
+        "section": section,
+        "total": len(items),
+        "returned": min(len(items), limit),
+        "items": items[:limit],
+        **extra,
+    }
 
 
 def cap_result(data: Any, cap: int = OUTPUT_CAP) -> tuple[str, bool]:

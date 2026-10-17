@@ -1,0 +1,19 @@
+control: ok
+IX1: KILLED -- T1 drops A findings [tests/spec/test_impact_report.py::test_a_go808_finding_names_its_machine, tests/spec/test_impact_report.py::test_tier1_keeps_a_finding_with_no_target]
+IX2: KILLED -- T1 reuses the base report (no candidate run) [tests/spec/test_impact_report.py::test_tier1_reword_is_empty_and_status_changed_is_exact, tests/spec/test_impact_report.py::test_tier1_runs_the_candidate_not_the_base]
+IX3: KILLED -- D4a ignores earlier requests [tests/spec/test_impact_report.py::test_tier2_prefix_must_be_identical]
+IX4: KILLED -- an added body key counts as incompatible [tests/spec/test_impact_report.py::test_differs_follows_the_checkers_subset, tests/spec/test_impact_report.py::test_tier2_an_added_body_key_is_compatible_not_a_claim]
+IX5: KILLED -- D4a skips the baseline-passed premise [tests/spec/test_impact_report.py::test_tier2_claims_need_the_premise_that_the_corpus_step_passed]
+IX6: KILLED -- T2 reads the candidate run [tests/spec/test_impact_report.py::test_tier2_the_spec_only_mode_equals_the_full_mode_on_the_determined_set]
+IX7: KILLED -- .funcN and ambiguous matches resolved to the first hit [tests/spec/test_impact_report.py::test_tier3_ambiguous_and_missing_declarations_are_unread_never_guessed, tests/spec/test_impact_report.py::test_tier3_a_function_literal_maps_to_its_enclosing_declaration]
+IX8: KILLED -- locations from grep of path strings [tests/spec/test_impact_report.py::test_tier3_every_chain_ends_in_a_code_location_and_holds_an_extract_fact]
+IX9: KILLED -- absolute paths or unsorted sets [tests/spec/test_impact_report.py::test_tier3_report_has_no_absolute_path_or_time, tests/spec/test_impact_report.py::test_tier3_a_changed_scenario_points_at_its_route_the_handler_and_the_closure]
+IX10: KILLED -- the report cached under the inventory [tests/spec/test_impact_report.py::test_the_report_is_not_cached_under_the_inventory]
+IX11: KILLED -- the Studio pipeline switched to the new runner [FROZEN]
+IX12: KILLED -- change_impact listed without [impact] [tests/mcp/test_change_impact.py::test_the_tool_exists_only_with_the_impact_table, tests/mcp/test_change_impact.py::test_without_the_table_tools_list_is_byte_identical]
+IX13: KILLED -- no container cleanup on a check exception [tests/spec/test_impact_report.py::test_a_fault_mid_run_leaves_no_owned_container]
+IX14: KILLED -- a flow's D failure counted as workflow_fails [tests/spec/test_impact_report.py::test_tier1_flows_are_run_and_classified]
+IX15: KILLED -- a null-target finding dropped [tests/spec/test_impact_report.py::test_tier1_keeps_a_finding_with_no_target]
+IX16: KILLED -- StateStore opened to read --change [tests/spec/test_impact_report.py::test_reading_a_change_never_opens_the_state_store]
+16/16 killed
+$PY dogfood/impact_mutants.py --scratch $S/mut --out $D/mutants.json  9.65s user 5.14s system 97% cpu 15.246 total
