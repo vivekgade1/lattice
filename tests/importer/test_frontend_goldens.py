@@ -79,6 +79,12 @@ ADDED_DEFAULTS: dict[str, Any] = {
     # pivot plan 2026-10-05, A.2: Route.rel_tables (tables written through ORM
     # relationships; Flask / Django front ends), omitted from to_dict() at its default
     "rel_tables": [],
+    # Spike I (gRPC): Route.transport / .rpc / .http_bindings and RaiseSite.code, omitted
+    # from to_dict() at their defaults
+    "transport": "http",
+    "rpc": None,
+    "http_bindings": [],
+    "code": None,
 }
 # report.json: volatile fields -> placeholder, and the sections the goldens ignore
 REPORT_PLACEHOLDERS = {("repo",): "<repo>", ("schema",): "<schema>",
