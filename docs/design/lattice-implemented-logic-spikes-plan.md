@@ -230,10 +230,11 @@ pre-registration may be written earlier and is independent of the others' builds
    matrix re-measured at the end with each previously `absent`/`partial` Python-vs-Go cell either closed or listed
    with a reason; byte-identical Python and Go outputs; 10 identical runs; >= 10 mutants.
 
-**Environment blocker (checked 2026-10-16):** the .NET SDK is not installed on this machine (`dotnet` not found; Go
-and Python are). Building the Roslyn helper and running .NET apps needs it, so installing the SDK (and a pinned
-version) is a prerequisite decision for the owner, and Docker images for .NET are an alternative. Without it the
-extractor cannot be built or verified, and any .NET result would be reported NOT RUN.
+**Environment (2026-10-16): resolved.** The .NET SDK 10.0.401 (LTS, ASP.NET Core and runtime 10.0.12) was installed
+with `brew install dotnet` at the owner's request (arm64, no sudo; `export DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec`,
+`DOTNET_CLI_TELEMETRY_OPTOUT=1`). A smoke test restored `Microsoft.CodeAnalysis.CSharp` (Roslyn) from NuGet and built a
+console project with 0 errors. The pre-registration pins SDK 10.0.401 and the NuGet package versions; a missing SDK or
+offline NuGet restore is reported NOT RUN, never skipped silently.
 
 **Order:** J0 (the parity matrix, read-only, can start now) -> pre-registration -> after Spikes D, E, F, H and I.
 Closing the Go-versus-Python gaps found by J0 may be split into their own nodes and can run before .NET.
