@@ -418,3 +418,7 @@ except the one `forms` line in `python -m lattice.spec`'s usage. Existing tests 
 
 - O1: accept gating H without E's before/after runs; H's Tier 2 widening is additive and E can adopt it later. O2: confirmed: the kill rig means minishop `BROKEN` + `SEC_BROKEN` variants plus the agent's mutants; on Streak, D's reference diffs plus the agent's. O3: approved forms' generated checks run only through the `forms` subcommands or an explicit `--forms` flag, never a plain `lattice spec check`. O4: no new lint code; a form/hand-written disagreement is reported in `forms contradictions` and Tier 2 only.
 - The Streak arm (PS0-PSx) is NOT RUN here. The separate-agent frozen rule-shape set must be hashed and committed before the builder runs any gated probe, and the builder never opens it.
+
+## Amendment 2 (frozen set delivered, 2026-10-17)
+
+The separate agent wrote the frozen set to a scratch directory outside the repository; it has not been opened by the builder or the orchestrator. MANIFEST.sha256 sha256 = 182fe629e10241eded91e307abe8296db0a5877a08941fbdecef81a69d83af13 (9 files; 20 rules, 16 forms, 14 author mutants, 500 truth cells, 32 contradiction pairs, 29 invalid forms, 18 not-expressible rules). Ruling: rules R12-R14 (row-count limits) are violated on the clean minishop app by construction; they stay in the set as "violated on ok" per PG1o, which allows that, and section 3.1's "fix or exclude" applies only to hand-written checks that are wrong. The builder's runner copy of the manifest is data/2026-10-17-typed-conditions/shapes.manifest.sha256.
