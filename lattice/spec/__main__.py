@@ -313,6 +313,7 @@ AUTHORING = {
     "ask": "lattice.spec.ask",
     "appmap": "lattice.spec.appmap",
     "forms": "lattice.spec.forms",
+    "implement": "lattice.studio.implement",
     "implementation": "lattice.spec.implementation",
     "rationale": "lattice.spec.rationale",
     "glossary": "lattice.spec.glossary",

@@ -1,0 +1,103 @@
+{
+ "flows": [
+  {
+   "id": "wf-cancel-twice",
+   "name": "ann cancels an order twice",
+   "status": "verified",
+   "steps": [
+    {
+     "caller": "ann",
+     "expect_status": 200,
+     "i": 0,
+     "json": null,
+     "kind": "request",
+     "method": "POST",
+     "path": "/orders/1/cancel",
+     "route": "POST /orders/{}/cancel"
+    },
+    {
+     "caller": "ann",
+     "expect_status": 409,
+     "i": 1,
+     "json": null,
+     "kind": "request",
+     "method": "POST",
+     "path": "/orders/1/cancel",
+     "route": "POST /orders/{}/cancel"
+    }
+   ]
+  },
+  {
+   "id": "wf-add",
+   "name": "ben adds a line",
+   "status": "verified",
+   "steps": [
+    {
+     "caller": "ben",
+     "expect_status": 201,
+     "i": 0,
+     "json": {
+      "product_id": 1,
+      "quantity": 1
+     },
+     "kind": "request",
+     "method": "POST",
+     "path": "/orders/3/items",
+     "route": "POST /orders/{}/items"
+    }
+   ]
+  },
+  {
+   "id": "wf-list",
+   "name": "ann lists her orders",
+   "status": "verified",
+   "steps": [
+    {
+     "caller": "ann",
+     "expect_status": 200,
+     "i": 0,
+     "json": null,
+     "kind": "request",
+     "method": "GET",
+     "path": "/orders",
+     "route": "GET /orders"
+    }
+   ]
+  },
+  {
+   "id": "wf-read-ann",
+   "name": "ann reads her order",
+   "status": "verified",
+   "steps": [
+    {
+     "caller": "ann",
+     "expect_status": 200,
+     "i": 0,
+     "json": null,
+     "kind": "request",
+     "method": "GET",
+     "path": "/orders/1",
+     "route": "GET /orders/{}"
+    }
+   ]
+  },
+  {
+   "id": "wf-read-ben",
+   "name": "ben cannot read ann's order",
+   "status": "verified",
+   "steps": [
+    {
+     "caller": "ben",
+     "expect_status": 404,
+     "i": 0,
+     "json": null,
+     "kind": "request",
+     "method": "GET",
+     "path": "/orders/1",
+     "route": "GET /orders/{}"
+    }
+   ]
+  }
+ ],
+ "mode": "observed"
+}

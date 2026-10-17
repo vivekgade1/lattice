@@ -1,0 +1,319 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R1",
+     "new_text": "A buyer can cancel their own pending order, and cancelling it again is refused with 400.",
+     "old": "R1",
+     "old_text": "A buyer can cancel their own pending order, and cancelling it again is refused with 409."
+    }
+   ],
+   "removed": [],
+   "unchanged": 4
+  },
+  "targets": {
+   "added": [],
+   "modified": [
+    "scenario:ann cancels her pending order"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "df603938683895650115d359feea331e8a35a84eadc048a045d5172cb3ec37a6",
+   "spec": "21b80cf10c6dd5645be9bbef510f88d135ee83745e4be03632abb97cef3b273d",
+   "trace": "e78aaf3f4db23df271f86c62f0aef1c2f6573e891b57f5ab52fcd5735c25420f"
+  },
+  "candidate": {
+   "requirements": "b4794a7d8c1caac5751af202c9d91f0d899335928718a4efa2e0b953cd859ce1",
+   "spec": "cf43df89e178a6774e98bdef46571c05b59d171141c0a98a7f590b48760ef80f",
+   "trace": "66cc6996c7b1e05ae697b112bf62cb4b9a2f8c6bf151a878a27ae4c6a4efcc4f"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": null,
+   "stale": false,
+   "workflows_sha256": "de2214c30320ecd9e29ab2375fe1ba12f2decd731149542e5283721272527170"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 1,
+   "scenario_fails": 1
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 1,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 2,
+    "determined": 1,
+    "flows": 1,
+    "undecidable": 0
+   },
+   "3": {
+    "flows": 0,
+    "locations": 0,
+    "unread": 0
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 1,
+   "t3_may_fail": 0
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 1
+   },
+   "by_layer": {
+    "D": 1
+   },
+   "failing": 1,
+   "flows_run": 5,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "ann cancels her pending order / step 2",
+    "code": null,
+    "endpoint": "POST /orders/1/cancel",
+    "evidence": [
+     {
+      "at": "check:D:ann cancels her pending order / step 2",
+      "kind": "check",
+      "what": "[D silent] POST /orders/1/cancel as ann (ann cancels her pending order / step 2)"
+     },
+     {
+      "at": "spec:spec.py:130",
+      "kind": "spec",
+      "what": "ann cancels her pending order step 2"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-7882f2e84b",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 130,
+    "observation": "runtime",
+    "problems": [
+     "status: expected 400, got 409"
+    ],
+    "rule": "scenario: ann cancels her pending order",
+    "rules": [
+     "R1"
+    ],
+    "summary": "[D silent] POST /orders/1/cancel as ann (ann cancels her pending order / step 2)",
+    "target": "scenario:ann cancels her pending order",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 6,
+   "flows_note": null,
+   "scenario_steps": 3
+  },
+  "decidability": [
+   {
+    "claims": [
+     "scenario:ann cancels her pending order fails at step <= 2"
+    ],
+    "kind": "target",
+    "state": "determined",
+    "subject": "scenario:ann cancels her pending order"
+   },
+   {
+    "claims": [
+     "scenario:ann cancels her pending order fails at step <= 2"
+    ],
+    "kind": "changed",
+    "state": "determined",
+    "subject": "rule:R1"
+   }
+  ],
+  "determined": [
+   {
+    "against": {
+     "expect": {
+      "body": null,
+      "db": null,
+      "status": 409
+     },
+     "provenance": "flow",
+     "source": "flow:wf-cancel-twice",
+     "step": 1
+    },
+    "candidate_expect": {
+     "body": null,
+     "db": null,
+     "status": 400
+    },
+    "claim": "scenario:ann cancels her pending order fails at step <= 2",
+    "evidence": [
+     {
+      "at": "spec:spec.py:130",
+      "kind": "spec",
+      "what": "candidate step 2 expects status 400"
+     },
+     {
+      "at": "flow:wf-cancel-twice:step 1",
+      "kind": "extract",
+      "what": "a verified flow's observed answer: status 409"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t2-92a7d90fe9",
+    "kind": "scenario_fails",
+    "line": 130,
+    "rules": [
+     "R1"
+    ],
+    "status": "determined",
+    "step": 2,
+    "target": "scenario:ann cancels her pending order",
+    "tier": 2,
+    "why": "status:409->400"
+   }
+  ],
+  "flows": [
+   {
+    "candidate_status": 400,
+    "claim": "flow:wf-cancel-twice fails at step 1 after the change",
+    "evidence": [
+     {
+      "at": "spec:spec.py:130",
+      "kind": "spec",
+      "what": "candidate step 2 of ann cancels her pending order expects status 400 for the same request after the same prefix"
+     },
+     {
+      "at": "flow:wf-cancel-twice:step 1",
+      "kind": "extract",
+      "what": "the flow's observed answer is status 409"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t2-62a891287b",
+    "kind": "flow_fails_after_change",
+    "line": 130,
+    "observed_status": 409,
+    "rules": [
+     "R1"
+    ],
+    "scenario": "scenario:ann cancels her pending order",
+    "status": "determined",
+    "step": 1,
+    "target": "flow:wf-cancel-twice",
+    "tier": 2
+   }
+  ],
+  "runtime_replay": {
+   "status": "not_run: no harness"
+  }
+ },
+ "tier3": {
+  "counts": {},
+  "external": {
+   "count": 0
+  },
+  "flows": [],
+  "locations": [],
+  "unread": []
+ },
+ "tier4": {
+  "before": {
+   "failing_count": 1,
+   "flows_run": 5,
+   "matches_report": true
+  },
+  "counts": {},
+  "failing": [],
+  "flows": [],
+  "implementation": {
+   "branch_build": "rebuild/i4d9a6e47a1",
+   "branch_spec": "implement/i4d9a6e47a1",
+   "build_tree": "917ca1b12e33e40a09cfc6db1fd59440ae65e3c7",
+   "diff_sha256": "893206dfcc837609647e08fb6b4e40cd38bff57fc6a54090860efa54f3d62c67",
+   "files": [
+    "shop/routes.py"
+   ],
+   "spec_tree": "371d2e9a002b69d78789fd797d6c8dbc625de60a"
+  },
+  "notes": [
+   "the after run raised: the app would not start"
+  ],
+  "owner": {
+   "checked": [
+    "branch",
+    "cached",
+    "head",
+    "refs",
+    "stash",
+    "status",
+    "worktrees"
+   ],
+   "untouched": true
+  },
+  "rebuild": {
+   "agent": "stub",
+   "gates": [
+    {
+     "command": "./gate.py",
+     "exit_code": 0
+    }
+   ],
+   "model": null,
+   "rounds": 1,
+   "status": "passed"
+  },
+  "regressions": [],
+  "resolved": [],
+  "still_failing": [],
+  "t2_check": [],
+  "t2_confirmed": null,
+  "t3_vs_edit": {
+   "declarations": null,
+   "files": null,
+   "status": "not_applicable: no edit"
+  },
+  "verdict": "fail"
+ },
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "not_run:not_requested",
+  "4": "not_run:error: RuntimeError: the app would not start"
+ }
+}

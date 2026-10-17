@@ -1,0 +1,106 @@
+ERROR tests/importer/test_adapt.py
+ERROR tests/importer/test_frontend_goldens.py::test_the_output_is_byte_identical_to_the_golden[template-cases.json]
+ERROR tests/importer/test_frontend_goldens.py::test_the_output_is_byte_identical_to_the_golden[template-model.json]
+ERROR tests/importer/test_frontend_goldens.py::test_the_output_is_byte_identical_to_the_golden[template-natives.py]
+ERROR tests/importer/test_frontend_goldens.py::test_the_output_is_byte_identical_to_the_golden[template-profile.py]
+ERROR tests/importer/test_frontend_goldens.py::test_the_output_is_byte_identical_to_the_golden[template-report.json]
+ERROR tests/importer/test_frontend_goldens.py::test_the_output_is_byte_identical_to_the_golden[template-routes]
+ERROR tests/importer/test_frontend_goldens.py::test_the_same_files[template]
+ERROR tests/importer/test_importer_cli.py
+ERROR tests/importer/test_importer_context.py
+ERROR tests/importer/test_lift_template.py
+ERROR tests/importer/test_lifters.py::test_a_composed_route_renders_one_endpoint
+ERROR tests/importer/test_lifters.py::test_a_modifier_without_its_write_rejects_the_route
+ERROR tests/importer/test_lifters.py::test_admin_list_is_not_the_owned_list
+ERROR tests/importer/test_lifters.py::test_admin_list_lifts_the_unfiltered_list_with_a_projection
+ERROR tests/importer/test_lifters.py::test_an_unclaimed_statement_rejects_the_route_with_its_line
+ERROR tests/importer/test_lifters.py::test_an_unread_parameter_rejects_the_route
+ERROR tests/importer/test_lifters.py::test_create_lifts_to_insert_with_owner_and_defaults
+ERROR tests/importer/test_lifters.py::test_create_refuses_other_shapes[change0]
+ERROR tests/importer/test_lifters.py::test_create_refuses_other_shapes[change1]
+ERROR tests/importer/test_lifters.py::test_create_refuses_other_shapes[change2]
+ERROR tests/importer/test_lifters.py::test_create_refuses_other_shapes[change3]
+ERROR tests/importer/test_lifters.py::test_delete_lifts_to_delete_and_a_message_row
+ERROR tests/importer/test_lifters.py::test_delete_refuses_other_shapes[change0]
+ERROR tests/importer/test_lifters.py::test_delete_refuses_other_shapes[change1]
+ERROR tests/importer/test_lifters.py::test_delete_refuses_other_shapes[change2]
+ERROR tests/importer/test_lifters.py::test_get_or_404_accepts_is_none_and_status_constants
+ERROR tests/importer/test_lifters.py::test_get_or_404_lifts_the_lookup_and_its_guard
+ERROR tests/importer/test_lifters.py::test_get_or_404_needs_the_guard_right_after_the_lookup
+ERROR tests/importer/test_lifters.py::test_get_or_404_refuses_other_shapes[change0]
+ERROR tests/importer/test_lifters.py::test_get_or_404_refuses_other_shapes[change1]
+ERROR tests/importer/test_lifters.py::test_get_or_404_refuses_other_shapes[change2]
+ERROR tests/importer/test_lifters.py::test_get_or_404_refuses_other_shapes[change3]
+ERROR tests/importer/test_lifters.py::test_get_or_404_refuses_other_shapes[change4]
+ERROR tests/importer/test_lifters.py::test_login_lifts_through_the_authenticate_helper_and_natives
+ERROR tests/importer/test_lifters.py::test_login_refuses_other_shapes[change0]
+ERROR tests/importer/test_lifters.py::test_login_refuses_other_shapes[change1]
+ERROR tests/importer/test_lifters.py::test_login_refuses_other_shapes[change2]
+ERROR tests/importer/test_lifters.py::test_login_refuses_other_shapes[change3]
+ERROR tests/importer/test_lifters.py::test_me_refuses_anything_but_the_caller
+ERROR tests/importer/test_lifters.py::test_me_returns_the_caller_projected
+ERROR tests/importer/test_lifters.py::test_owner_check_accepts_either_order
+ERROR tests/importer/test_lifters.py::test_owner_check_accepts_equivalent_spellings[not (current_user.id == item.owner_id or current_user.is_superuser)]
+ERROR tests/importer/test_lifters.py::test_owner_check_accepts_equivalent_spellings[not (current_user.id == item.owner_id) and not current_user.is_superuser]
+ERROR tests/importer/test_lifters.py::test_owner_check_accepts_equivalent_spellings[not (current_user.is_superuser or item.owner_id == current_user.id)]
+ERROR tests/importer/test_lifters.py::test_owner_check_accepts_equivalent_spellings[not current_user.is_superuser and not (item.owner_id == current_user.id)]
+ERROR tests/importer/test_lifters.py::test_owner_check_lifts_to_require_owner_is
+ERROR tests/importer/test_lifters.py::test_owner_check_needs_a_403
+ERROR tests/importer/test_lifters.py::test_owner_check_refuses_other_conditions[item.owner_id != current_user.id]
+ERROR tests/importer/test_lifters.py::test_owner_check_refuses_other_conditions[not (current_user.is_active or item.owner_id == current_user.id)]
+ERROR tests/importer/test_lifters.py::test_owner_check_refuses_other_conditions[not (current_user.is_superuser and item.owner_id == current_user.id)]
+ERROR tests/importer/test_lifters.py::test_owner_check_refuses_other_conditions[not (current_user.is_superuser or item.owner_id != current_user.id)]
+ERROR tests/importer/test_lifters.py::test_owner_check_refuses_other_conditions[not current_user.is_active and (item.owner_id != current_user.id)]
+ERROR tests/importer/test_lifters.py::test_owner_check_refuses_other_conditions[not current_user.is_superuser and (item.owner_id == current_user.id)]
+ERROR tests/importer/test_lifters.py::test_owner_check_refuses_other_conditions[not current_user.is_superuser and (item.title != current_user.id)]
+ERROR tests/importer/test_lifters.py::test_owner_check_refuses_other_conditions[not current_user.is_superuser and not (item.owner_id != current_user.id)]
+ERROR tests/importer/test_lifters.py::test_owner_check_refuses_other_conditions[not current_user.is_superuser or (item.owner_id != current_user.id)]
+ERROR tests/importer/test_lifters.py::test_owner_check_without_admins_lifts_the_plain_owner_guard
+ERROR tests/importer/test_lifters.py::test_page_list_accepts_inlined_queries_and_a_direct_envelope
+ERROR tests/importer/test_lifters.py::test_page_list_lifts_the_owned_list
+ERROR tests/importer/test_lifters.py::test_page_list_refuses_a_default_page_size_over_the_bound
+ERROR tests/importer/test_lifters.py::test_page_list_refuses_other_shapes[change0]
+ERROR tests/importer/test_lifters.py::test_page_list_refuses_other_shapes[change1]
+ERROR tests/importer/test_lifters.py::test_page_list_refuses_other_shapes[change2]
+ERROR tests/importer/test_lifters.py::test_page_list_refuses_other_shapes[change3]
+ERROR tests/importer/test_lifters.py::test_page_list_refuses_other_shapes[change4]
+ERROR tests/importer/test_lifters.py::test_page_list_refuses_other_shapes[change5]
+ERROR tests/importer/test_lifters.py::test_partial_update_accepts_the_inline_dump
+ERROR tests/importer/test_lifters.py::test_partial_update_lifts_to_update_with_unset_params
+ERROR tests/importer/test_lifters.py::test_partial_update_refuses_a_body_read_again
+ERROR tests/importer/test_lifters.py::test_partial_update_refuses_other_shapes[change0]
+ERROR tests/importer/test_lifters.py::test_partial_update_refuses_other_shapes[change1]
+ERROR tests/importer/test_lifters.py::test_partial_update_refuses_other_shapes[change2]
+ERROR tests/importer/test_lifters.py::test_returns_hands_back_a_held_row
+ERROR tests/importer/test_lifters.py::test_unclear_auth_is_never_lifted
+ERROR tests/importer/test_lifters.py::test_unique_check_inline_lookup
+ERROR tests/importer/test_lifters.py::test_unique_check_refuses_other_shapes[change0]
+ERROR tests/importer/test_lifters.py::test_unique_check_refuses_other_shapes[change1]
+ERROR tests/importer/test_lifters.py::test_unique_check_refuses_other_shapes[change2]
+ERROR tests/importer/test_lifters.py::test_unique_check_refuses_other_shapes[change3]
+ERROR tests/importer/test_lifters.py::test_unique_check_refuses_other_shapes[change4]
+ERROR tests/importer/test_lifters.py::test_unique_check_through_a_lookup_helper
+ERROR tests/importer/test_llm_lift.py
+ERROR tests/importer/test_llm_lift_coverage.py
+ERROR tests/importer/test_llm_lift_t2.py
+ERROR tests/importer/test_outside.py
+ERROR tests/importer/test_profile_gen.py::test_template_joined_program_checks
+ERROR tests/importer/test_profile_gen.py::test_template_native_wrappers_behave_like_the_reference
+ERROR tests/importer/test_profile_gen.py::test_template_natives_equal_the_reference_up_to_listed_differences
+ERROR tests/importer/test_profile_gen.py::test_template_programs_check_identically[items.lattice.py]
+ERROR tests/importer/test_profile_gen.py::test_template_programs_check_identically[login.lattice.py]
+ERROR tests/importer/test_profile_gen.py::test_template_programs_check_identically[users.lattice.py]
+ERROR tests/importer/test_profile_gen.py::test_template_schemas_equal_the_reference
+ERROR tests/importer/test_profile_gen.py::test_template_settings_equal_the_reference
+ERROR tests/importer/test_sql_lift_template.py
+ERROR tests/importer/test_trace.py
+ERROR tests/spec/test_phase0_exit.py
+ERROR tests/spec/test_probes.py
+FAILED tests/importer/test_import_token_answers.py::test_the_emitted_app_answers_like_the_original_on_every_route[in_dependency]
+FAILED tests/importer/test_import_token_answers.py::test_the_emitted_app_answers_like_the_original_on_every_route[in_helper]
+FAILED tests/importer/test_mine.py::test_multivendor_recall_and_precision
+FAILED tests/importer/test_policy.py::test_a_policy_matching_lattice_is_not_declared
+FAILED tests/importer/test_policy.py::test_not_null_names_explicit_nulls_only
+FAILED tests/importer/test_policy.py::test_page_bounds_name_the_out_of_bound_cases
+FAILED tests/importer/test_policy.py::test_the_templates_token_policies_come_from_get_current_user
+FAILED tests/studio/test_projects.py::test_prefix_routing_and_the_bare_default
