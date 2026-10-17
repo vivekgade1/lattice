@@ -1135,3 +1135,24 @@ Errors start with their code: `inventory_missing`, `bad_inventory`, `bad_workflo
 
 ### The CLI
 `python -m lattice.spec implementation --spec MOD:SPEC [--trace T] --inventory DIR [--app-root DIR] [--json] [--rule R] [--status S]` prints the report (`lattice.implementation-report/1`: per rule `implemented_verified | implemented_unverified | required_not_implemented | no_element`, the routes, flows and machines no rule requires, the exclusions with their reason); exit 0 report produced, 2 not. `python -m lattice.spec ask ... --inventory DIR [--app-root DIR]` is the ask above. Without a trace the requirements are the spec's cells and scenarios.
+
+## v1.23 additions (change impact: the code a spec change touches and what fails)
+
+**Documentation only: no new route, `GET /api/model` and `checks.impact` are byte-identical (the Studio pipeline is not edited), the web UI and the mock are unchanged.** Everything below applies only when `studio.toml` has an `[impact]` table.
+
+### studio.toml `[impact]`
+```toml
+[impact]
+# no keys are needed: the table switches the MCP tool on. The inventory comes from [implementation]
+```
+Without the table the MCP instructions and `tools/list` are what they were; with it `tools/list` is that list plus one tool, `change_impact`, after the `[implementation]` tools if there are any, else after `change_list`.
+
+### MCP tool (read-only; listed also under `--readonly`)
+- `change_impact {change? | candidate?, observe?: bool = false, section?: summary|tier1|tier2|tier3|flows|unread|decidability, limit? <= 200}`: exactly one of `change` (a Studio change id `cN`, status `ready` or `accepted`; the record is read as a plain file under the state directory, `StateStore` is never opened, and `private` is never served over HTTP) and `candidate` (a project-relative directory with the candidate's `REQUIREMENTS.md`, `spec.py`, `spec.trace.json`). The default answer is **tier 2 and tier 3**, an in-process pure read: it needs `[implementation]` (the inventory). `observe: true` also runs tier 1 by starting the CLI as a subprocess (`lattice spec impact --tiers 123 --json`: a fresh `LATTICE_CONTAINER_OWNER`, a timeout of at most 900 s, a process-group kill, the owner's containers removed in `finally`); it needs an `[app]` and is **refused under `--readonly`** (`readonly`: a read-only server starts no process and no container). `summary` is under 4k characters.
+- Errors start with their code: `change_not_ready`, `no_candidate`, `inventory_missing`, `no_app`, `readonly`, `timeout`, `bad_section`, `bad_limit`, `bad_observe`, `bad_inputs`, `bad_spec`.
+
+### The tiers
+Every item carries a `tier`: **1 observed** (the candidate's checks, layers A, C and D, plus each verified flow, on today's app: a failing check is a fact; layer X only with `--race`, never gated), **2 determined** (follows from the spec change plus the steps observed to pass, without running the candidate: a scenario whose expectation contradicts a step that passed on the same request after the same prefix fails at that step or earlier), **3 static** (code locations from the inventory's extract: sound but incomplete, the unknowns are listed in `unread`), **4 observed after the change** (Spike E's; the slot is kept, `null`). **Which workflows fail is mostly not decidable before the change exists:** a flow records today's answers and passes today by construction, so only a changed invariant (tier 1) and an exact-prefix contradiction (tier 2) decide a workflow; every other flow is tier 3 `may_fail`, never a claim.
+
+### The CLI
+`lattice spec impact --project DIR (--candidate CDIR | --change cN [--state-dir SD]) [--inventory INV] [--tiers 123] [--layers ACD] [--baseline run|none|FILE] [--no-flows] [--race] [--json] [--section S] [--out FILE]` prints the report (`lattice.impact/1`: `input`, `diff`, `tiers`, `tier1`..`tier4`, `summary`; canonical JSON, sorted, relative paths, no time or host). Exit 0: the report was produced; 2: the inputs are unusable, or `--out` is inside the project, the app root or the inventory; 3: tier 1 could not run (`tier1` says `not_run` and the report has `error`). It never writes the project, the spec, the inventory or the state directory, never calls a model, `go` or git.

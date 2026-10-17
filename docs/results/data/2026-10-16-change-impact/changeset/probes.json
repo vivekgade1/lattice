@@ -1,0 +1,1127 @@
+[
+  {
+    "id": "C-set",
+    "observed": {
+      "changes": 21,
+      "excluded": [],
+      "kinds": [
+        "K1",
+        "K10",
+        "K11",
+        "K12",
+        "K13",
+        "K14",
+        "K15",
+        "K2",
+        "K3",
+        "K4",
+        "K5",
+        "K6",
+        "K7",
+        "K8",
+        "K9"
+      ],
+      "survive": 21
+    },
+    "pass": true,
+    "predicted": ">= 18 changes, >= 15 survive",
+    "probe": "the change set",
+    "ran": true
+  },
+  {
+    "id": "PT1",
+    "observed": {
+      "exact": "22/22",
+      "false": 0,
+      "missed": 0,
+      "nonempty": 19,
+      "per_change": {
+        "c01": {
+          "engine": 6,
+          "false": [],
+          "missed": [],
+          "truth": 6
+        },
+        "c02": {
+          "engine": 1,
+          "false": [],
+          "missed": [],
+          "truth": 1
+        },
+        "c03": {
+          "engine": 3,
+          "false": [],
+          "missed": [],
+          "truth": 3
+        },
+        "c04": {
+          "engine": 12,
+          "false": [],
+          "missed": [],
+          "truth": 12
+        },
+        "c05": {
+          "engine": 1,
+          "false": [],
+          "missed": [],
+          "truth": 1
+        },
+        "c06": {
+          "engine": 2,
+          "false": [],
+          "missed": [],
+          "truth": 2
+        },
+        "c07": {
+          "engine": 1,
+          "false": [],
+          "missed": [],
+          "truth": 1
+        },
+        "c08": {
+          "engine": 1,
+          "false": [],
+          "missed": [],
+          "truth": 1
+        },
+        "c09": {
+          "engine": 4,
+          "false": [],
+          "missed": [],
+          "truth": 4
+        },
+        "c10": {
+          "engine": 2,
+          "false": [],
+          "missed": [],
+          "truth": 2
+        },
+        "c11": {
+          "engine": 2,
+          "false": [],
+          "missed": [],
+          "truth": 2
+        },
+        "c12": {
+          "engine": 1,
+          "false": [],
+          "missed": [],
+          "truth": 1
+        },
+        "c13": {
+          "engine": 1,
+          "false": [],
+          "missed": [],
+          "truth": 1
+        },
+        "c14": {
+          "engine": 2,
+          "false": [],
+          "missed": [],
+          "truth": 2
+        },
+        "c15": {
+          "engine": 0,
+          "false": [],
+          "missed": [],
+          "truth": 0
+        },
+        "c16": {
+          "engine": 1,
+          "false": [],
+          "missed": [],
+          "truth": 1
+        },
+        "c17": {
+          "engine": 1,
+          "false": [],
+          "missed": [],
+          "truth": 1
+        },
+        "c18": {
+          "engine": 1,
+          "false": [],
+          "missed": [],
+          "truth": 1
+        },
+        "c19": {
+          "engine": 2,
+          "false": [],
+          "missed": [],
+          "truth": 2
+        },
+        "c20": {
+          "engine": 3,
+          "false": [],
+          "missed": [],
+          "truth": 3
+        },
+        "c21": {
+          "engine": 0,
+          "false": [],
+          "missed": [],
+          "truth": 0
+        },
+        "control": {
+          "engine": 0,
+          "false": [],
+          "missed": [],
+          "truth": 0
+        }
+      }
+    },
+    "pass": true,
+    "predicted": "exact on all; the control 0",
+    "probe": "C: T1 failing (layer, rule, case) vs the independent rerun, every change",
+    "ran": true
+  },
+  {
+    "id": "PT1l",
+    "observed": {
+      "differ": [],
+      "equal": "47/47"
+    },
+    "pass": true,
+    "predicted": "100%",
+    "probe": "T1 labels vs label_impact recomputed from the independent rerun",
+    "ran": true
+  },
+  {
+    "id": "PT2",
+    "observed": {
+      "claims": 4,
+      "correct": 4,
+      "per_change": {
+        "c01": {
+          "claims": 0,
+          "truth_failing_scenarios": 3
+        },
+        "c02": {
+          "claims": 0,
+          "truth_failing_scenarios": 1
+        },
+        "c03": {
+          "claims": 0,
+          "truth_failing_scenarios": 3
+        },
+        "c04": {
+          "claims": 0,
+          "truth_failing_scenarios": 12
+        },
+        "c05": {
+          "claims": 0,
+          "truth_failing_scenarios": 1
+        },
+        "c06": {
+          "claims": 0,
+          "truth_failing_scenarios": 1
+        },
+        "c07": {
+          "claims": 0,
+          "truth_failing_scenarios": 1
+        },
+        "c08": {
+          "claims": 0,
+          "truth_failing_scenarios": 1
+        },
+        "c09": {
+          "claims": 0,
+          "truth_failing_scenarios": 4
+        },
+        "c10": {
+          "claims": 2,
+          "truth_failing_scenarios": 2
+        },
+        "c11": {
+          "claims": 0,
+          "truth_failing_scenarios": 1
+        },
+        "c12": {
+          "claims": 1,
+          "truth_failing_scenarios": 1
+        },
+        "c13": {
+          "claims": 0,
+          "truth_failing_scenarios": 1
+        },
+        "c14": {
+          "claims": 0,
+          "truth_failing_scenarios": 2
+        },
+        "c15": {
+          "claims": 0,
+          "truth_failing_scenarios": 0
+        },
+        "c16": {
+          "claims": 0,
+          "truth_failing_scenarios": 1
+        },
+        "c17": {
+          "claims": 1,
+          "truth_failing_scenarios": 1
+        },
+        "c18": {
+          "claims": 0,
+          "truth_failing_scenarios": 1
+        },
+        "c19": {
+          "claims": 0,
+          "truth_failing_scenarios": 2
+        },
+        "c20": {
+          "claims": 0,
+          "truth_failing_scenarios": 3
+        },
+        "c21": {
+          "claims": 0,
+          "truth_failing_scenarios": 0
+        }
+      },
+      "precision": 1.0,
+      "recall": 0.095,
+      "recall_n": "4/42",
+      "step_agreement": "4/4",
+      "wrong": []
+    },
+    "pass": true,
+    "predicted": "precision 1.0; recall 0.10-0.40 (p)",
+    "probe": "T2 determined scenario claims vs the T1 truth",
+    "ran": true
+  },
+  {
+    "id": "PT2i",
+    "observed": {
+      "per_change": {
+        "c01": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c02": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c03": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c04": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c05": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c06": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c07": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c08": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c09": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c10": {
+          "full": 2,
+          "same": true,
+          "spec_only": 2,
+          "spec_only_status": [
+            "conditional"
+          ]
+        },
+        "c11": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c12": {
+          "full": 1,
+          "same": true,
+          "spec_only": 1,
+          "spec_only_status": [
+            "conditional"
+          ]
+        },
+        "c13": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c14": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c15": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c16": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c17": {
+          "full": 1,
+          "same": true,
+          "spec_only": 1,
+          "spec_only_status": [
+            "conditional"
+          ]
+        },
+        "c18": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c19": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c20": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        },
+        "c21": {
+          "full": 0,
+          "same": true,
+          "spec_only": 0,
+          "spec_only_status": []
+        }
+      }
+    },
+    "pass": true,
+    "predicted": "identical",
+    "probe": "spec-only mode (--tiers 23 --baseline FILE) vs full mode: same determined set",
+    "ran": true
+  },
+  {
+    "id": "PT2d",
+    "observed": {
+      "complete": "21/21",
+      "incomplete": []
+    },
+    "pass": true,
+    "predicted": "complete",
+    "probe": "decidability: one entry per changed rule and target, reasons from D4's list",
+    "ran": true
+  },
+  {
+    "id": "PT2w",
+    "observed": {
+      "claims": 0,
+      "correct": 0,
+      "per_change": {
+        "c01": {
+          "claims": [],
+          "truth": []
+        },
+        "c02": {
+          "claims": [],
+          "truth": []
+        },
+        "c03": {
+          "claims": [],
+          "truth": [
+            "wf-2818e45412",
+            "wf-801d529a0f"
+          ]
+        },
+        "c04": {
+          "claims": [],
+          "truth": []
+        },
+        "c05": {
+          "claims": [],
+          "truth": []
+        },
+        "c06": {
+          "claims": [],
+          "truth": []
+        },
+        "c07": {
+          "claims": [],
+          "truth": []
+        },
+        "c08": {
+          "claims": [],
+          "truth": [
+            "wf-11a98b3683",
+            "wf-3de8783507",
+            "wf-45bfc39e84",
+            "wf-597f2899e4",
+            "wf-b2acc9eac6",
+            "wf-ee191140a0"
+          ]
+        },
+        "c09": {
+          "claims": [],
+          "truth": []
+        },
+        "c10": {
+          "claims": [],
+          "truth": []
+        },
+        "c11": {
+          "claims": [],
+          "truth": []
+        },
+        "c12": {
+          "claims": [],
+          "truth": []
+        },
+        "c13": {
+          "claims": [],
+          "truth": []
+        },
+        "c14": {
+          "claims": [],
+          "truth": []
+        },
+        "c15": {
+          "claims": [],
+          "truth": []
+        },
+        "c16": {
+          "claims": [],
+          "truth": []
+        },
+        "c17": {
+          "claims": [],
+          "truth": []
+        },
+        "c18": {
+          "claims": [],
+          "truth": []
+        },
+        "c19": {
+          "claims": [],
+          "truth": []
+        },
+        "c20": {
+          "claims": [],
+          "truth": []
+        },
+        "c21": {
+          "claims": [],
+          "truth": []
+        }
+      },
+      "vacuous": true
+    },
+    "pass": true,
+    "predicted": "0 claims on Streak (r): vacuous",
+    "probe": "T2 fails_after_change vs the flow truth on S+ref",
+    "ran": true
+  },
+  {
+    "id": "PT3",
+    "observed": {
+      "all_files_baseline_precision": 0.029,
+      "changes": 21,
+      "changes_with_zero_true_files": 2,
+      "decl_precision": 0.043,
+      "decl_recall": 0.628,
+      "file_precision": 0.109,
+      "file_recall": 0.864,
+      "median_files_per_change": 8,
+      "per_change": {
+        "c01": {
+          "added_files": null,
+          "decls_hit": 2,
+          "decls_pred": 59,
+          "decls_true": 2,
+          "files_hit": 1,
+          "files_pred": 14,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c02": {
+          "added_files": null,
+          "decls_hit": 2,
+          "decls_pred": 41,
+          "decls_true": 2,
+          "files_hit": 1,
+          "files_pred": 10,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c03": {
+          "added_files": null,
+          "decls_hit": 4,
+          "decls_pred": 19,
+          "decls_true": 5,
+          "files_hit": 2,
+          "files_pred": 8,
+          "files_true": 2,
+          "missed_files": []
+        },
+        "c04": {
+          "added_files": null,
+          "decls_hit": 1,
+          "decls_pred": 38,
+          "decls_true": 2,
+          "files_hit": 1,
+          "files_pred": 8,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c05": {
+          "added_files": null,
+          "decls_hit": 1,
+          "decls_pred": 16,
+          "decls_true": 3,
+          "files_hit": 1,
+          "files_pred": 7,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c06": {
+          "added_files": null,
+          "decls_hit": 1,
+          "decls_pred": 39,
+          "decls_true": 2,
+          "files_hit": 1,
+          "files_pred": 14,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c07": {
+          "added_files": null,
+          "decls_hit": 1,
+          "decls_pred": 4,
+          "decls_true": 2,
+          "files_hit": 1,
+          "files_pred": 3,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c08": {
+          "added_files": null,
+          "decls_hit": 2,
+          "decls_pred": 25,
+          "decls_true": 4,
+          "files_hit": 1,
+          "files_pred": 8,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c09": {
+          "added_files": null,
+          "decls_hit": 2,
+          "decls_pred": 12,
+          "decls_true": 3,
+          "files_hit": 2,
+          "files_pred": 5,
+          "files_true": 2,
+          "missed_files": []
+        },
+        "c10": {
+          "added_files": null,
+          "decls_hit": 1,
+          "decls_pred": 46,
+          "decls_true": 1,
+          "files_hit": 1,
+          "files_pred": 11,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c11": {
+          "added_files": null,
+          "decls_hit": 1,
+          "decls_pred": 57,
+          "decls_true": 2,
+          "files_hit": 1,
+          "files_pred": 15,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c12": {
+          "added_files": null,
+          "decls_hit": 2,
+          "decls_pred": 26,
+          "decls_true": 2,
+          "files_hit": 1,
+          "files_pred": 6,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c13": {
+          "added_files": null,
+          "decls_hit": 2,
+          "decls_pred": 15,
+          "decls_true": 2,
+          "files_hit": 1,
+          "files_pred": 5,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c14": {
+          "added_files": null,
+          "decls_hit": 0,
+          "decls_pred": 34,
+          "decls_true": 2,
+          "files_hit": 0,
+          "files_pred": 10,
+          "files_true": 1,
+          "missed_files": [
+            "internal/nudges/nudger.go"
+          ]
+        },
+        "c15": {
+          "added_files": [],
+          "decls_hit": 0,
+          "decls_pred": 69,
+          "decls_true": 0,
+          "files_hit": 0,
+          "files_pred": 14,
+          "files_true": 0,
+          "missed_files": []
+        },
+        "c16": {
+          "added_files": null,
+          "decls_hit": 2,
+          "decls_pred": 36,
+          "decls_true": 2,
+          "files_hit": 1,
+          "files_pred": 8,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c17": {
+          "added_files": null,
+          "decls_hit": 1,
+          "decls_pred": 26,
+          "decls_true": 1,
+          "files_hit": 1,
+          "files_pred": 6,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c18": {
+          "added_files": null,
+          "decls_hit": 1,
+          "decls_pred": 11,
+          "decls_true": 2,
+          "files_hit": 1,
+          "files_pred": 4,
+          "files_true": 2,
+          "missed_files": [
+            "internal/account/routes.go"
+          ]
+        },
+        "c19": {
+          "added_files": null,
+          "decls_hit": 0,
+          "decls_pred": 24,
+          "decls_true": 1,
+          "files_hit": 0,
+          "files_pred": 7,
+          "files_true": 1,
+          "missed_files": [
+            "internal/nudges/nudger.go"
+          ]
+        },
+        "c20": {
+          "added_files": null,
+          "decls_hit": 1,
+          "decls_pred": 11,
+          "decls_true": 3,
+          "files_hit": 1,
+          "files_pred": 5,
+          "files_true": 1,
+          "missed_files": []
+        },
+        "c21": {
+          "added_files": [],
+          "decls_hit": 0,
+          "decls_pred": 20,
+          "decls_true": 0,
+          "files_hit": 0,
+          "files_pred": 7,
+          "files_true": 0,
+          "missed_files": []
+        }
+      },
+      "total_files": 36
+    },
+    "pass": false,
+    "predicted": "file recall 0.85-1.0, declaration recall 0.65-0.90; precision files 0.20-0.50, declarations 0.05-0.25 (p); pass: files >= 0.80, declarations >= 0.60, precision >= 2x the all-files baseline, median files <= 12, <= 1 change with zero true files",
+    "probe": "T3 vs the reference edits, micro-averaged",
+    "ran": true
+  },
+  {
+    "id": "PT3w",
+    "observed": {
+      "may_fail_total": 352,
+      "per_change": {
+        "c01": {
+          "hit": 0,
+          "may_fail": 64,
+          "truth": 0
+        },
+        "c02": {
+          "hit": 0,
+          "may_fail": 27,
+          "truth": 0
+        },
+        "c03": {
+          "hit": 2,
+          "may_fail": 2,
+          "truth": 2
+        },
+        "c04": {
+          "hit": 0,
+          "may_fail": 16,
+          "truth": 0
+        },
+        "c05": {
+          "hit": 0,
+          "may_fail": 2,
+          "truth": 0
+        },
+        "c06": {
+          "hit": 0,
+          "may_fail": 3,
+          "truth": 0
+        },
+        "c07": {
+          "hit": 0,
+          "may_fail": 2,
+          "truth": 0
+        },
+        "c08": {
+          "hit": 6,
+          "may_fail": 11,
+          "truth": 6
+        },
+        "c09": {
+          "hit": 0,
+          "may_fail": 2,
+          "truth": 0
+        },
+        "c10": {
+          "hit": 0,
+          "may_fail": 31,
+          "truth": 0
+        },
+        "c11": {
+          "hit": 0,
+          "may_fail": 27,
+          "truth": 0
+        },
+        "c12": {
+          "hit": 0,
+          "may_fail": 7,
+          "truth": 0
+        },
+        "c13": {
+          "hit": 0,
+          "may_fail": 5,
+          "truth": 0
+        },
+        "c14": {
+          "hit": 0,
+          "may_fail": 7,
+          "truth": 0
+        },
+        "c15": {
+          "hit": 0,
+          "may_fail": 66,
+          "truth": 0
+        },
+        "c16": {
+          "hit": 0,
+          "may_fail": 64,
+          "truth": 0
+        },
+        "c17": {
+          "hit": 0,
+          "may_fail": 7,
+          "truth": 0
+        },
+        "c18": {
+          "hit": 0,
+          "may_fail": 2,
+          "truth": 0
+        },
+        "c19": {
+          "hit": 0,
+          "may_fail": 3,
+          "truth": 0
+        },
+        "c20": {
+          "hit": 0,
+          "may_fail": 2,
+          "truth": 0
+        },
+        "c21": {
+          "hit": 0,
+          "may_fail": 2,
+          "truth": 0
+        }
+      },
+      "recall": 1.0,
+      "recall_n": "8/8"
+    },
+    "pass": true,
+    "predicted": "recall >= 0.8 (p)",
+    "probe": "T3 may_fail flows vs the flow truth",
+    "ran": true
+  },
+  {
+    "id": "PU",
+    "observed": {
+      "checked": 768,
+      "failing": 1,
+      "failures": [
+        {
+          "change": "c06",
+          "file": "internal/nudges/checkin.go",
+          "line": 94,
+          "why": "the symbol 'AfterCheckIn' is not on internal/nudges/checkin.go:94"
+        }
+      ],
+      "literals": {
+        "NewRouter.func4": true,
+        "setTestClock.func1": true
+      },
+      "locations": 768,
+      "unquotable": 0,
+      "unread_missing": []
+    },
+    "pass": false,
+    "predicted": "100%",
+    "probe": "every T3 location passes Spike C's check_code; every extract unread in a reported range listed; the 2 literals map to their enclosing declarations",
+    "ran": true
+  },
+  {
+    "id": "PD",
+    "observed": {
+      "clean": "20/21",
+      "per_change": {
+        "c01": {
+          "bytes": 125010,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c02": {
+          "bytes": 77118,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c03": {
+          "bytes": 51441,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c04": {
+          "bytes": 82788,
+          "identical": true,
+          "leaks": [
+            "2026-03-04T12:00",
+            "2026-03-04T12:00",
+            "2026-03-04T12:00"
+          ],
+          "second_root_identical": true
+        },
+        "c05": {
+          "bytes": 26185,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c06": {
+          "bytes": 45593,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c07": {
+          "bytes": 11949,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c08": {
+          "bytes": 58212,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c09": {
+          "bytes": 16081,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c10": {
+          "bytes": 98557,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c11": {
+          "bytes": 101975,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c12": {
+          "bytes": 45368,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c13": {
+          "bytes": 34486,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c14": {
+          "bytes": 57646,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c15": {
+          "bytes": 101615,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c16": {
+          "bytes": 110315,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c17": {
+          "bytes": 44074,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c18": {
+          "bytes": 21190,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c19": {
+          "bytes": 31655,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c20": {
+          "bytes": 20213,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        },
+        "c21": {
+          "bytes": 25277,
+          "identical": true,
+          "leaks": [],
+          "second_root_identical": true
+        }
+      }
+    },
+    "pass": false,
+    "predicted": "identical; none",
+    "probe": "T2+T3 mode: 10 processes per change with random PYTHONHASHSEED, plus a second scratch root; scan for /Users, /private, ISO times",
+    "ran": true
+  },
+  {
+    "id": "PT1x",
+    "observed": {
+      "c01": {
+        "distinct": 1,
+        "n": 10,
+        "sha": [
+          "725548891dc3564a2ce450fe4941895cf686bee2b2e76b8cca9f12e4958caea2"
+        ]
+      },
+      "c02": {
+        "distinct": 1,
+        "n": 10,
+        "sha": [
+          "66f235d765d864e2dc487b6308e975453901ed85e4e35aa45e29d97368218e29"
+        ]
+      },
+      "c03": {
+        "distinct": 1,
+        "n": 10,
+        "sha": [
+          "363ef3b7cfd02e57f1e46cce2ec78351db1ff83384e946b15a62ea6f8de77445"
+        ]
+      }
+    },
+    "pass": true,
+    "predicted": "10/10",
+    "probe": "T1 run 10x on the first 3 changes (by sorted id): byte-identical",
+    "ran": true
+  },
+  {
+    "id": "LEAK",
+    "observed": {
+      "after": [],
+      "before": []
+    },
+    "pass": true,
+    "predicted": "0",
+    "probe": "containers owned by this work after the stage",
+    "ran": true
+  },
+  {
+    "id": "C-wall",
+    "observed": {
+      "seconds": 4665
+    },
+    "pass": null,
+    "predicted": "-",
+    "probe": "wall time of the stage",
+    "ran": true
+  }
+]

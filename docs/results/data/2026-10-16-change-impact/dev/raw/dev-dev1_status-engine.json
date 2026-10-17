@@ -1,0 +1,883 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R9",
+     "new_text": "A password is 8 to 72 bytes, an email must be valid, and a timezone must be an IANA zone name (e.g. `Europe/Berlin`); anything else answers 400 `validation_failed` and creates no user.",
+     "old": "R9",
+     "old_text": "A password is 8 to 72 bytes, an email must be valid, and a timezone must be an IANA zone name (e.g. `Europe/Berlin`); anything else answers 422 `validation_failed` and creates no user."
+    }
+   ],
+   "removed": [],
+   "unchanged": 147
+  },
+  "targets": {
+   "added": [],
+   "modified": [
+    "scenario:password_length_bounds"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "dc034e13387fc8de8cac2d28bf8a3493ea9c0b63bd55a07d4e9650ad1104056e",
+   "spec": "97e23e30bbfae822611db17c497b93d0d7d3c66a349669bb67e0efa85c6d0880",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 1,
+   "closure": 9,
+   "direct": 8,
+   "scenario_fails": 1
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 1,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 2,
+    "determined": 1,
+    "flows": 0,
+    "undecidable": 0
+   },
+   "3": {
+    "flows": 2,
+    "locations": 17,
+    "unread": 1
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 2
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 1
+   },
+   "by_layer": {
+    "D": 1
+   },
+   "failing": 1,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "password_length_bounds / step 1",
+    "code": null,
+    "endpoint": "POST /v1/auth/register",
+    "evidence": [
+     {
+      "at": "check:D:password_length_bounds / step 1",
+      "kind": "check",
+      "what": "[D silent] POST /v1/auth/register (password_length_bounds / step 1)"
+     },
+     {
+      "at": "spec:spec.py:445",
+      "kind": "spec",
+      "what": "password_length_bounds step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-a42be1b480",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 445,
+    "observation": "runtime",
+    "problems": [
+     "status: expected 400, got 422"
+    ],
+    "rule": "scenario: password_length_bounds",
+    "rules": [
+     "R9"
+    ],
+    "summary": "[D silent] POST /v1/auth/register (password_length_bounds / step 1)",
+    "target": "scenario:password_length_bounds",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "claims": [
+     "scenario:password_length_bounds fails at step <= 1"
+    ],
+    "kind": "target",
+    "state": "determined",
+    "subject": "scenario:password_length_bounds"
+   },
+   {
+    "claims": [
+     "scenario:password_length_bounds fails at step <= 1"
+    ],
+    "kind": "changed",
+    "state": "determined",
+    "subject": "rule:R9"
+   }
+  ],
+  "determined": [
+   {
+    "against": {
+     "expect": {
+      "body": {
+       "error": {
+        "code": "validation_failed",
+        "field": "password"
+       }
+      },
+      "db": {
+       "users": {
+        "count": 2
+       }
+      },
+      "status": 422
+     },
+     "provenance": "run",
+     "source": "scenario:password_length_bounds",
+     "step": 1
+    },
+    "candidate_expect": {
+     "body": {
+      "error": {
+       "code": "validation_failed",
+       "field": "password"
+      }
+     },
+     "db": {
+      "users": {
+       "count": 2
+      }
+     },
+     "status": 400
+    },
+    "claim": "scenario:password_length_bounds fails at step <= 1",
+    "evidence": [
+     {
+      "at": "spec:spec.py:445",
+      "kind": "spec",
+      "what": "candidate step 1 expects status 400, body {\"error\":{\"code\":\"validation_failed\",\"field\":\"password\"}}, db {\"users\":{\"count\":2}}"
+     },
+     {
+      "at": "spec:base/spec.py:445",
+      "kind": "spec",
+      "what": "scenario:password_length_bounds step 1 passed on the app and expects status 422, body {\"error\":{\"code\":\"validation_failed\",\"field\":\"password\"}}, db {\"users\":{\"count\":2}}"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t2-e029a57209",
+    "kind": "scenario_fails",
+    "line": 445,
+    "rules": [
+     "R9"
+    ],
+    "status": "determined",
+    "step": 1,
+    "target": "scenario:password_length_bounds",
+    "tier": 2,
+    "why": "status:422->400"
+   }
+  ],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 9,
+    "direct": 8,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 4,
+   "flows_may_fail": 2,
+   "locations": 17,
+   "seeds": {
+    "machines": 0,
+    "routes": 1,
+    "tables": 0
+   },
+   "unread": 1
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/auth/routes.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go",
+   "internal/period/period.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0da61e11ce",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d2be956db1",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/auth/register"
+    ],
+    "rules": [
+     "R9"
+    ],
+    "target": "flow:wf-0da61e11ce",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7416497e52",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/auth/register"
+    ],
+    "rules": [
+     "R9"
+    ],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:25",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-48969e9ce3",
+    "kind": "direct",
+    "line": 25,
+    "rules": [
+     "R9"
+    ],
+    "symbol": null,
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 54,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:48",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-b903e32629",
+    "kind": "closure",
+    "line": 48,
+    "rules": [
+     "R9"
+    ],
+    "symbol": "validEmail",
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 59,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:56",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-9d7192b03a",
+    "kind": "closure",
+    "line": 56,
+    "rules": [
+     "R9"
+    ],
+    "symbol": "isDuplicate",
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 115,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:62",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-c2bbd204bd",
+    "kind": "direct",
+    "line": 62,
+    "rules": [
+     "R9"
+    ],
+    "symbol": "register",
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:63",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-ba8bc13941",
+    "kind": "direct",
+    "line": 63,
+    "rules": [
+     "R9"
+    ],
+    "symbol": null,
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:63",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:63",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:63",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:63",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:63"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:67",
+      "kind": "code",
+      "what": "param email"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param email"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-23ccc8c089",
+    "kind": "direct",
+    "line": 67,
+    "rules": [
+     "R9"
+    ],
+    "symbol": null,
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67"
+    ],
+    "what": "param email"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:69",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-159d446388",
+    "kind": "direct",
+    "line": 69,
+    "rules": [
+     "R9"
+    ],
+    "symbol": null,
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:69",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:69",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:69",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:69",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:69"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:72",
+      "kind": "code",
+      "what": "param password"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param password"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-3b0213620b",
+    "kind": "direct",
+    "line": 72,
+    "rules": [
+     "R9"
+    ],
+    "symbol": null,
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72"
+    ],
+    "what": "param password"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:74",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-573075c73c",
+    "kind": "direct",
+    "line": 74,
+    "rules": [
+     "R9"
+    ],
+    "symbol": null,
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:74",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:74",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:74",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:74",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:74"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:78",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-e8e8626f6a",
+    "kind": "direct",
+    "line": 78,
+    "rules": [
+     "R9"
+    ],
+    "symbol": null,
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:78",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:78",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:78",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:78",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> raise:422 validation_failed -> code:internal/auth/routes.go:78"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-00e3fcfa9a",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R9"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-3d3971f622",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R9"
+    ],
+    "symbol": "Now",
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-d2c7286d3f",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R9"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-8fed56051b",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R9"
+    ],
+    "symbol": "Q",
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-ef672f563d",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R9"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-741d75dee9",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R9"
+    ],
+    "symbol": "Location",
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 118,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:115",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-013dc72d71",
+    "kind": "closure",
+    "line": 115,
+    "rules": [
+     "R9"
+    ],
+    "symbol": "ValidZone",
+    "target": "scenario:invalid_email_is_refused",
+    "tier": 3,
+    "via": [
+     "check:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 2 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "rule:R9 -> scenario:invalid_email_is_refused / step 3 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "rule:R9 -> scenario:password_length_bounds / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115"
+    ],
+    "what": "call declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   }
+  ]
+ },
+ "tier4": null,
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "not_run:spike_e"
+ }
+}

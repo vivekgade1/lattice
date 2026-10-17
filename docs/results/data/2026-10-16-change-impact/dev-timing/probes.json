@@ -1,0 +1,75 @@
+[
+  {
+    "id": "PX",
+    "observed": {
+      "t1_full_s": 70.3,
+      "t2_t3_s": 0.1
+    },
+    "pass": true,
+    "predicted": "0.3-1.5 s; 65-90 s (p); <= 3 s; <= 180 s",
+    "probe": "wall time on S: T2+T3; T1 (2 ACD runs + 59 flows)",
+    "ran": true,
+    "seconds": 0.2
+  },
+  {
+    "id": "PW",
+    "observed": {
+      "changed": 0,
+      "diffs": {},
+      "mcp": {
+        "observe_refused": 10,
+        "ok": 20
+      },
+      "new": 0,
+      "observe_ok": true,
+      "rcs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "shim_calls": []
+    },
+    "pass": true,
+    "predicted": "0 changed, 0 new, 0 shim calls",
+    "probe": "no write: snapshots around the CLI x10, the MCP tool x10 (stdio, --readonly, observe, plus one non-readonly observe), with a recording claude shim",
+    "ran": true,
+    "seconds": 146.7
+  },
+  {
+    "id": "LEAK",
+    "observed": {
+      "before": [],
+      "fault": {
+        "error": "RuntimeError: injected fault in the candidate's check",
+        "left": [],
+        "rc": 3
+      },
+      "left_after_timeout": [],
+      "mcp_timeout_reported": true
+    },
+    "pass": true,
+    "predicted": "0",
+    "probe": "containers owned by this work after a fault run and an MCP timeout",
+    "ran": true,
+    "seconds": 33.6
+  }
+]

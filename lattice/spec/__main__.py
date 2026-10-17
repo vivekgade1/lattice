@@ -312,6 +312,7 @@ AUTHORING = {
     "review": "lattice.spec.review",
     "ask": "lattice.spec.ask",
     "implementation": "lattice.spec.implementation",
+    "impact": "lattice.spec.impact_report",
 }
 
 

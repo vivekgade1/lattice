@@ -1,0 +1,425 @@
+{
+ "diff": {
+  "rules": {
+   "added": [
+    {
+     "id": "R34",
+     "text": "`DELETE /v1/devices/{id}` of one of the caller's device rows whose `installation_id` is not the caller's installation (the access token's `sid`) answers 403 with code `forbidden` and deletes nothing: a session unregisters only its own installation's device."
+    }
+   ],
+   "changed": [],
+   "removed": [],
+   "unchanged": 148
+  },
+  "targets": {
+   "added": [
+    "scenario:device_of_another_installation_is_forbidden"
+   ],
+   "modified": [],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "021ebf61a7efb0332ff85515e527f77c2fddfc789c00838cc821b4d30026c7e0",
+   "spec": "2f2f2bbdba8fd81ef8c1b8d6d1f8c36ba9dd11bf31214da8a581b58bbe3c7057",
+   "trace": "78b72bddbfe3db97b5b75a29f02f36e2b69c56f5d23d65c871a76cf23e329e28"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 1,
+   "closure": 2,
+   "direct": 3
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 1,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 2
+   },
+   "3": {
+    "flows": 2,
+    "locations": 5,
+    "unread": 1
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 2
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 1
+   },
+   "by_layer": {
+    "D": 1
+   },
+   "failing": 1,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "device_of_another_installation_is_forbidden / step 1",
+    "code": null,
+    "endpoint": "DELETE /v1/devices/100",
+    "evidence": [
+     {
+      "at": "check:D:device_of_another_installation_is_forbidden / step 1",
+      "kind": "check",
+      "what": "[D silent] DELETE /v1/devices/100 as ann (device_of_another_installation_is_forbidden / step 1)"
+     },
+     {
+      "at": "spec:spec.py:677",
+      "kind": "spec",
+      "what": "device_of_another_installation_is_forbidden step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-32115d97de",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 677,
+    "observation": "runtime",
+    "problems": [
+     "status: expected 403, got 204",
+     "body: expected {'error': {'code': 'forbidden'}} within None",
+     "db devices where {'user_id': 1}: expected 2 rows, found 1"
+    ],
+    "rule": "scenario: device_of_another_installation_is_forbidden",
+    "rules": [
+     "R34"
+    ],
+    "summary": "[D silent] DELETE /v1/devices/100 as ann (device_of_another_installation_is_forbidden / step 1)",
+    "target": "scenario:device_of_another_installation_is_forbidden",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "scenario:device_of_another_installation_is_forbidden"
+   },
+   {
+    "kind": "added",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "rule:R34"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 2,
+    "direct": 3,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 3,
+   "flows_may_fail": 2,
+   "locations": 5,
+   "seeds": {
+    "machines": 0,
+    "routes": 1,
+    "tables": 0
+   },
+   "unread": 1
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/account/devices.go",
+   "internal/account/routes.go",
+   "internal/httpapi/registry.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2818e45412",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4d36b00192",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/devices/{}"
+    ],
+    "rules": [
+     "R34"
+    ],
+    "target": "flow:wf-2818e45412",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-801d529a0f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1e17936c44",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/devices/{}"
+    ],
+    "rules": [
+     "R34"
+    ],
+    "target": "flow:wf-801d529a0f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "end_line": 152,
+    "evidence": [
+     {
+      "at": "code:internal/account/devices.go:137",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/account/devices.go",
+    "id": "t3-dffaf65d83",
+    "kind": "direct",
+    "line": 137,
+    "rules": [
+     "R34"
+    ],
+    "symbol": "deleteDevice",
+    "target": "scenario:device_of_another_installation_is_forbidden",
+    "tier": 3,
+    "via": [
+     "check:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> handler:account.handler.deleteDevice -> code:internal/account/devices.go:137",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> handler:account.handler.deleteDevice -> code:internal/account/devices.go:137",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 2 -> route:DELETE /v1/devices/{} -> handler:account.handler.deleteDevice -> code:internal/account/devices.go:137",
+     "rule:R34 -> text -> route:DELETE /v1/devices/{} -> handler:account.handler.deleteDevice -> code:internal/account/devices.go:137",
+     "scenario:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> handler:account.handler.deleteDevice -> code:internal/account/devices.go:137"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/devices.go:143",
+      "kind": "code",
+      "what": "owner use devices.user_id"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "owner use devices.user_id"
+     }
+    ],
+    "file": "internal/account/devices.go",
+    "id": "t3-3a3fb1e6f7",
+    "kind": "direct",
+    "line": 143,
+    "rules": [
+     "R34"
+    ],
+    "symbol": null,
+    "target": "scenario:device_of_another_installation_is_forbidden",
+    "tier": 3,
+    "via": [
+     "check:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> owner:devices.user_id -> code:internal/account/devices.go:143",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> owner:devices.user_id -> code:internal/account/devices.go:143",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 2 -> route:DELETE /v1/devices/{} -> owner:devices.user_id -> code:internal/account/devices.go:143",
+     "rule:R34 -> text -> route:DELETE /v1/devices/{} -> owner:devices.user_id -> code:internal/account/devices.go:143",
+     "scenario:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> owner:devices.user_id -> code:internal/account/devices.go:143"
+    ],
+    "what": "owner use devices.user_id"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:24",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param id"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-bf881ec791",
+    "kind": "direct",
+    "line": 24,
+    "rules": [
+     "R34"
+    ],
+    "symbol": null,
+    "target": "scenario:device_of_another_installation_is_forbidden",
+    "tier": 3,
+    "via": [
+     "check:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> param:id -> code:internal/account/routes.go:24",
+     "check:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> registered -> code:internal/account/routes.go:24",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> param:id -> code:internal/account/routes.go:24",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> registered -> code:internal/account/routes.go:24",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 2 -> route:DELETE /v1/devices/{} -> param:id -> code:internal/account/routes.go:24"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-33a1f1f55c",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R34"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:device_of_another_installation_is_forbidden",
+    "tier": 3,
+    "via": [
+     "check:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 2 -> route:DELETE /v1/devices/{} -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R34 -> text -> route:DELETE /v1/devices/{} -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "scenario:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-febaef057f",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R34"
+    ],
+    "symbol": "Q",
+    "target": "scenario:device_of_another_installation_is_forbidden",
+    "tier": 3,
+    "via": [
+     "check:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R34 -> scenario:device_of_another_installation_is_forbidden / step 2 -> route:DELETE /v1/devices/{} -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R34 -> text -> route:DELETE /v1/devices/{} -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "scenario:device_of_another_installation_is_forbidden / step 1 -> route:DELETE /v1/devices/{} -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of DELETE /v1/devices/{} is not read from the code",
+    "what": "scenario:device_of_another_installation_is_forbidden / step 1"
+   }
+  ]
+ },
+ "tier4": null,
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "not_run:spike_e"
+ }
+}

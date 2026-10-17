@@ -1,0 +1,964 @@
+{
+ "diff": {
+  "rules": {
+   "added": [
+    {
+     "id": "R149",
+     "text": "A habit version is never negative."
+    }
+   ],
+   "changed": [],
+   "removed": [],
+   "unchanged": 148
+  },
+  "targets": {
+   "added": [
+    "invariant:every_habit_version_nonnegative"
+   ],
+   "modified": [],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "20fa1c32b9739e21e4c752e5a40460eab03ed4003d98b8a02e977e3098a4db36",
+   "spec": "536e1d86ddc5c29a771d453c4daa1ae78f3014e03ae42da2bbc30cbcc03de0c4",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "direct": 2,
+   "table_peer": 28
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 0,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 2
+   },
+   "3": {
+    "flows": 0,
+    "locations": 30,
+    "unread": 0
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 0
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {},
+   "by_layer": {},
+   "failing": 0,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "invariant:every_habit_version_nonnegative"
+   },
+   {
+    "kind": "added",
+    "reason": "no_linked_check",
+    "state": "undecidable",
+    "subject": "rule:R149"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 0,
+    "direct": 2,
+    "insertion": 0,
+    "table_peer": 28
+   },
+   "files": 7,
+   "flows_may_fail": 0,
+   "locations": 30,
+   "seeds": {
+    "machines": 0,
+    "routes": 0,
+    "tables": 1
+   },
+   "unread": 0
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/account/routes.go",
+   "internal/completions/routes.go",
+   "internal/db/models.go",
+   "internal/habits/routes.go",
+   "internal/home/routes.go",
+   "internal/progress/routes.go",
+   "internal/sync/routes.go"
+  ],
+  "flows": [],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:22",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-cc2af7445a",
+    "kind": "table_peer",
+    "line": 22,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:DELETE /v1/me -> code:internal/account/routes.go:22"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 165,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:134",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-8b9f048b12",
+    "kind": "table_peer",
+    "line": 134,
+    "rules": [],
+    "symbol": "remove",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:DELETE /v1/me -> handler:account.handler.remove -> code:internal/account/routes.go:134"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:25",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-013548ca2b",
+    "kind": "table_peer",
+    "line": 25,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:POST /v1/habits/:id/completions -> code:internal/completions/routes.go:25"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:26",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-12e75887c9",
+    "kind": "table_peer",
+    "line": 26,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/habits/:id/completions -> code:internal/completions/routes.go:26"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:27",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-8e61f7654d",
+    "kind": "table_peer",
+    "line": 27,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:DELETE /v1/habits/:id/completions/:cid -> code:internal/completions/routes.go:27"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:28",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-370d5ceee3",
+    "kind": "table_peer",
+    "line": 28,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:POST /v1/completions/batch -> code:internal/completions/routes.go:28"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 127,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:57",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-5fefb0c9e5",
+    "kind": "table_peer",
+    "line": 57,
+    "rules": [],
+    "symbol": "batch",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:POST /v1/completions/batch -> handler:completions.handler.batch -> code:internal/completions/routes.go:57"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 260,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:217",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-3f3fb6da6f",
+    "kind": "table_peer",
+    "line": 217,
+    "rules": [],
+    "symbol": "create",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:POST /v1/habits/:id/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 309,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:263",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-fd30707d16",
+    "kind": "table_peer",
+    "line": 263,
+    "rules": [],
+    "symbol": "list",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/habits/:id/completions -> handler:completions.handler.list -> code:internal/completions/routes.go:263"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 355,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:312",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-9b1a30ac21",
+    "kind": "table_peer",
+    "line": 312,
+    "rules": [],
+    "symbol": "remove",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:DELETE /v1/habits/:id/completions/:cid -> handler:completions.handler.remove -> code:internal/completions/routes.go:312"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 75,
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:58",
+      "kind": "code",
+      "what": "struct"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "struct"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-6e48acfe00",
+    "kind": "direct",
+    "line": 58,
+    "rules": [],
+    "symbol": "Habit",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> struct:Habit -> code:internal/db/models.go:58"
+    ],
+    "what": "struct"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:70",
+      "kind": "code",
+      "what": "column version"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column version"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-c1c146e235",
+    "kind": "direct",
+    "line": 70,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> column:version -> code:internal/db/models.go:70"
+    ],
+    "what": "column version"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:24",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-62d896bbb1",
+    "kind": "table_peer",
+    "line": 24,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:POST /v1/habits -> code:internal/habits/routes.go:24"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:25",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-ef70f0ca34",
+    "kind": "table_peer",
+    "line": 25,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/habits -> code:internal/habits/routes.go:25"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:26",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-178ef215d6",
+    "kind": "table_peer",
+    "line": 26,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/habits/:id -> code:internal/habits/routes.go:26"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:27",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-6adb916ec9",
+    "kind": "table_peer",
+    "line": 27,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:PATCH /v1/habits/:id -> code:internal/habits/routes.go:27"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:28",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-a3936e93c6",
+    "kind": "table_peer",
+    "line": 28,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:DELETE /v1/habits/:id -> code:internal/habits/routes.go:28"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 202,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:118",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-684df55dc1",
+    "kind": "table_peer",
+    "line": 118,
+    "rules": [],
+    "symbol": "create",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 235,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:205",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-feded4bb42",
+    "kind": "table_peer",
+    "line": 205,
+    "rules": [],
+    "symbol": "list",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/habits -> handler:habits.handler.list -> code:internal/habits/routes.go:205"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 249,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:238",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-9fd88ec4eb",
+    "kind": "table_peer",
+    "line": 238,
+    "rules": [],
+    "symbol": "get",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/habits/:id -> handler:habits.handler.get -> code:internal/habits/routes.go:238"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 384,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:252",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-08940876b9",
+    "kind": "table_peer",
+    "line": 252,
+    "rules": [],
+    "symbol": "patch",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:PATCH /v1/habits/:id -> handler:habits.handler.patch -> code:internal/habits/routes.go:252"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 451,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:400",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-e49263e65d",
+    "kind": "table_peer",
+    "line": 400,
+    "rules": [],
+    "symbol": "remove",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:DELETE /v1/habits/:id -> handler:habits.handler.remove -> code:internal/habits/routes.go:400"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/home/routes.go:18",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/home/routes.go",
+    "id": "t3-d6d801c9f0",
+    "kind": "table_peer",
+    "line": 18,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/home -> code:internal/home/routes.go:18"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/home/routes.go:29",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/home/routes.go",
+    "id": "t3-90891f704f",
+    "kind": "table_peer",
+    "line": 29,
+    "rules": [],
+    "symbol": "home",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/home -> handler:home.handler.home -> code:internal/home/routes.go:29"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-51d27f1ebd",
+    "kind": "table_peer",
+    "line": 19,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/habits/:id/progress -> code:internal/progress/routes.go:19"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:20",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-74608c0a92",
+    "kind": "table_peer",
+    "line": 20,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/habits/:id/history -> code:internal/progress/routes.go:20"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 65,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:45",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-46cc49a4a6",
+    "kind": "table_peer",
+    "line": 45,
+    "rules": [],
+    "symbol": "progress",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/habits/:id/progress -> handler:progress.handler.progress -> code:internal/progress/routes.go:45"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 113,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:68",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-dc4cd9e560",
+    "kind": "table_peer",
+    "line": 68,
+    "rules": [],
+    "symbol": "history",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/habits/:id/history -> handler:progress.handler.history -> code:internal/progress/routes.go:68"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:17",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-d740ea12cc",
+    "kind": "table_peer",
+    "line": 17,
+    "rules": [],
+    "symbol": null,
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/sync -> code:internal/sync/routes.go:17"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 108,
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:31",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-0f69cd1dc5",
+    "kind": "table_peer",
+    "line": 31,
+    "rules": [],
+    "symbol": "sync",
+    "target": "invariant:every_habit_version_nonnegative",
+    "tier": 3,
+    "via": [
+     "invariant:every_habit_version_nonnegative -> table:habits -> route:GET /v1/sync -> handler:sync.handler.sync -> code:internal/sync/routes.go:31"
+    ],
+    "what": "handler on a changed table"
+   }
+  ],
+  "stale": false,
+  "unread": []
+ },
+ "tier4": null,
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "not_run:spike_e"
+ }
+}
