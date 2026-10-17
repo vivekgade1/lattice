@@ -1,0 +1,3831 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R51",
+     "new_text": "`name` is 1 to 100 characters and not only whitespace, `description` at most 1000 characters, `period` one of `week`, `month`, `year`, and `target_count` an integer from 1 to 7 for `week`, 31 for `month` and 366 for `year`; anything else answers 422 `validation_failed` with that `field`.",
+     "old": "R51",
+     "old_text": "`name` is 1 to 100 characters and not only whitespace, `description` at most 500 characters, `period` one of `week`, `month`, `year`, and `target_count` an integer from 1 to 7 for `week`, 31 for `month` and 366 for `year`; anything else answers 422 `validation_failed` with that `field`."
+    }
+   ],
+   "removed": [],
+   "unchanged": 147
+  },
+  "targets": {
+   "added": [],
+   "modified": [
+    "scenario:habit_description_bounds",
+    "scenario:patch_validation_changes_nothing"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "1d4d32ce0404b0c186bf87d3300ab09b202a63d43c90e6e8849c2d51f3d2077b",
+   "spec": "c58b878cf3dc6db8417e16df18552d307758b9877bcfe48ca9a7d60c8ab173ef",
+   "trace": "ce999b59fb5f610d878ad62355ad734e587a1942ea8385bdcf7e85126f0169f8"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 1,
+   "closure": 32,
+   "direct": 35
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 1,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 3
+   },
+   "3": {
+    "flows": 64,
+    "locations": 67,
+    "unread": 2
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 64
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 1
+   },
+   "by_layer": {
+    "D": 1
+   },
+   "failing": 1,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "habit_description_bounds / step 2",
+    "code": null,
+    "endpoint": "POST /v1/habits",
+    "evidence": [
+     {
+      "at": "check:D:habit_description_bounds / step 2",
+      "kind": "check",
+      "what": "[D silent] POST /v1/habits as ann (habit_description_bounds / step 2)"
+     },
+     {
+      "at": "spec:spec.py:745",
+      "kind": "spec",
+      "what": "habit_description_bounds step 2"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-55d502b14a",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 745,
+    "observation": "runtime",
+    "problems": [
+     "status: expected 201, got 422",
+     "db habits where {'name': 'd'}: expected 1 rows, found 0",
+     "db habits where {'name': 'd'}: no row, expected one with {'user_id': 1, 'description': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'}"
+    ],
+    "rule": "scenario: habit_description_bounds",
+    "rules": [
+     "R51"
+    ],
+    "summary": "[D silent] POST /v1/habits as ann (habit_description_bounds / step 2)",
+    "target": "scenario:habit_description_bounds",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "scenario:habit_description_bounds"
+   },
+   {
+    "kind": "target",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "scenario:patch_validation_changes_nothing"
+   },
+   {
+    "kind": "changed",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "rule:R51"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 32,
+    "direct": 35,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 8,
+   "flows_may_fail": 64,
+   "locations": 67,
+   "seeds": {
+    "machines": 0,
+    "routes": 2,
+    "tables": 1
+   },
+   "unread": 2
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/db/bodies.go",
+   "internal/db/changeseq.go",
+   "internal/db/models.go",
+   "internal/db/owned.go",
+   "internal/habits/routes.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go",
+   "internal/period/period.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-053146a70c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1509ad3968",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-053146a70c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-087fea1dbb",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-acc63ce89e",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-087fea1dbb",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-09db39abfe",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-12f0110dc0",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-09db39abfe",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-72c42ca361",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-e72b1f1de4",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-11a98b3683",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-12302559ed",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-b37a78e091",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-12302559ed",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-193d117356",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-1e4314104c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-52267f393a",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-21a2d02394",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-623f4efce5",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-2610c56483",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2d3eecc464",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-b54b56e201",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "target": "flow:wf-2d3eecc464",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2da750f4e8",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-c6502a0838",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-2da750f4e8",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-677b85d255",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3c5a04e0ae",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-803d306685",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-3c5a04e0ae",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3d2436d2dd",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-786156fd08",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "target": "flow:wf-3d2436d2dd",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-cf16b6c618",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-3de8783507",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-45bfc39e84",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ebfcee7920",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-45bfc39e84",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4dfc4c5bed",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-19542f2588",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-4dfc4c5bed",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4e49f96210",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-51cc1a9800",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-4e49f96210",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-52994a9544",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-eecd1d524d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-52994a9544",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-597f2899e4",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-aeba6de2f4",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-597f2899e4",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4e0579b456",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5cf3da443e",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-13139283ff",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-5cf3da443e",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-90241b758a",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-9de860d627",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6c2282fd50",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-723d9ea9da",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-6c2282fd50",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7cb46f3072",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-717a23507f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-7f0f99bdcf",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-8f187fff4a",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-7f0f99bdcf",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-80123a60e5",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-e311ae5e40",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "target": "flow:wf-80123a60e5",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8ae8af75df",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-5f481616f9",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "target": "flow:wf-8ae8af75df",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8b2744d526",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-6fa89c5bf1",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-8b2744d526",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9523e7a835",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-2fbf685d96",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-9523e7a835",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9ead6d0f00",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f69f25c3da",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "target": "flow:wf-9ead6d0f00",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9f87f3f1d9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7afdd90699",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-9f87f3f1d9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a1793fed29",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-0c895e7374",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-a1793fed29",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-6caac3fa86",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a9ac9b88a4",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-dd91961721",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "target": "flow:wf-a9ac9b88a4",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2acc9eac6",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7b49ed467f",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-b2acc9eac6",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2ee5de88e",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-adeddd7e77",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-b2ee5de88e",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b595a756b6",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-5794fc5420",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "target": "flow:wf-b595a756b6",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b95fd71de1",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1f095da0cf",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-b95fd71de1",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-bd46b71ee2",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-2013261ba0",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-bd46b71ee2",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c00e2afaf3",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ae56375d94",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-c00e2afaf3",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c675dd6cb3",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-aa47cd548b",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-c675dd6cb3",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c71e6bbb49",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-e80a801836",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-c71e6bbb49",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cc7886ea28",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-9e92d1521e",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "target": "flow:wf-cc7886ea28",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ce853d194f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ddcead13c1",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-ce853d194f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7f6530d6e0",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ea4183cec0",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3b60190a9d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-544cacc36d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-379b863907",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-d650036584",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d8340207d1",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-337132d8d5",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-d8340207d1",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-da24bc5b11",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-402a80c177",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-da24bc5b11",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-11605a17b4",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-dbac494b10",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-de433cd704",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ca4a393def",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-de433cd704",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-61e0ae93d2",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "target": "flow:wf-e3249cec66",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ebadb4a811",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-93728fe9d8",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-ebadb4a811",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ee191140a0",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-fdc0e1e02e",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "target": "flow:wf-ee191140a0",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f679309f8a",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1e474fa076",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-f679309f8a",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7864fa7959",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-f67bf44692",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-878caacd5f",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-f961306c88",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-503de8a9e6",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-05114602c8",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d8e9cd2e06",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R51"
+    ],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "end_line": 16,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:16",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-3a98d107c1",
+    "kind": "closure",
+    "line": 16,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "Instant",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 48,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:43",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-d0a2c55c6c",
+    "kind": "closure",
+    "line": 43,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "HabitBody",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 20,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:13",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-b3502e0298",
+    "kind": "closure",
+    "line": 13,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "LockUser",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:24",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-94d1dbce7d",
+    "kind": "closure",
+    "line": 24,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "NextChangeSeq",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 75,
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:58",
+      "kind": "code",
+      "what": "struct"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "struct"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-cdab947eae",
+    "kind": "direct",
+    "line": 58,
+    "rules": [
+     "R51"
+    ],
+    "symbol": "Habit",
+    "target": "invariant:habit_name_not_empty",
+    "tier": 3,
+    "via": [
+     "rule:R51 -> invariant:habit_name_not_empty -> struct:Habit -> code:internal/db/models.go:58",
+     "rule:R51 -> invariant:habit_target_in_bounds -> struct:Habit -> code:internal/db/models.go:58"
+    ],
+    "what": "struct"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:63",
+      "kind": "code",
+      "what": "column name"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column name"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-6ad31aeb04",
+    "kind": "direct",
+    "line": 63,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "invariant:habit_name_not_empty",
+    "tier": 3,
+    "via": [
+     "rule:R51 -> invariant:habit_name_not_empty -> column:name -> code:internal/db/models.go:63",
+     "rule:R51 -> invariant:habit_target_in_bounds -> column:name -> code:internal/db/models.go:63"
+    ],
+    "what": "column name"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:65",
+      "kind": "code",
+      "what": "column target_count"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column target_count"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-203fd71195",
+    "kind": "direct",
+    "line": 65,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "invariant:habit_name_not_empty",
+    "tier": 3,
+    "via": [
+     "rule:R51 -> invariant:habit_name_not_empty -> column:target_count -> code:internal/db/models.go:65",
+     "rule:R51 -> invariant:habit_target_in_bounds -> column:target_count -> code:internal/db/models.go:65"
+    ],
+    "what": "column target_count"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:66",
+      "kind": "code",
+      "what": "column period"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column period"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-a6f3744a7d",
+    "kind": "direct",
+    "line": 66,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "invariant:habit_name_not_empty",
+    "tier": 3,
+    "via": [
+     "rule:R51 -> invariant:habit_name_not_empty -> column:period -> code:internal/db/models.go:66",
+     "rule:R51 -> invariant:habit_target_in_bounds -> column:period -> code:internal/db/models.go:66"
+    ],
+    "what": "column period"
+   },
+   {
+    "end_line": 21,
+    "evidence": [
+     {
+      "at": "code:internal/db/owned.go:14",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/owned.go",
+    "id": "t3-4dc28a856a",
+    "kind": "closure",
+    "line": 14,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": "OwnedHabit",
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:24",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-6d663ce1fe",
+    "kind": "direct",
+    "line": 24,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> registered -> code:internal/habits/routes.go:24",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> registered -> code:internal/habits/routes.go:24",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> registered -> code:internal/habits/routes.go:24",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> registered -> code:internal/habits/routes.go:24",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> registered -> code:internal/habits/routes.go:24"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:27",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param id"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-1a0041ba26",
+    "kind": "direct",
+    "line": 27,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> param:id -> code:internal/habits/routes.go:27",
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> registered -> code:internal/habits/routes.go:27"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 40,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:33",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-9ce2fdcfb0",
+    "kind": "closure",
+    "line": 33,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "name",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:34",
+      "kind": "code",
+      "what": "param name"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param name"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-c1fb6878aa",
+    "kind": "direct",
+    "line": 34,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> param:name -> code:internal/habits/routes.go:34",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> param:name -> code:internal/habits/routes.go:34",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> param:name -> code:internal/habits/routes.go:34",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> param:name -> code:internal/habits/routes.go:34",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> param:name -> code:internal/habits/routes.go:34"
+    ],
+    "what": "param name"
+   },
+   {
+    "end_line": 51,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:42",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-6076475336",
+    "kind": "closure",
+    "line": 42,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "description",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:43",
+      "kind": "code",
+      "what": "param description"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param description"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-3161232cf6",
+    "kind": "direct",
+    "line": 43,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> param:description -> code:internal/habits/routes.go:43",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> param:description -> code:internal/habits/routes.go:43",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> param:description -> code:internal/habits/routes.go:43",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> param:description -> code:internal/habits/routes.go:43",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> param:description -> code:internal/habits/routes.go:43"
+    ],
+    "what": "param description"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:53",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-0997c491ff",
+    "kind": "closure",
+    "line": 53,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "targetCount",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:54",
+      "kind": "code",
+      "what": "param target_count"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param target_count"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-a390b1aa90",
+    "kind": "direct",
+    "line": 54,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> param:target_count -> code:internal/habits/routes.go:54",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> param:target_count -> code:internal/habits/routes.go:54",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> param:target_count -> code:internal/habits/routes.go:54",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> param:target_count -> code:internal/habits/routes.go:54",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> param:target_count -> code:internal/habits/routes.go:54"
+    ],
+    "what": "param target_count"
+   },
+   {
+    "end_line": 72,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:63",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-915a5e7ccf",
+    "kind": "closure",
+    "line": 63,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "endDate",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 79,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:74",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-2fca4c1a0d",
+    "kind": "closure",
+    "line": 74,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "sameDate",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 86,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:81",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-7691b56f1c",
+    "kind": "closure",
+    "line": 81,
+    "rules": [
+     "R51"
+    ],
+    "symbol": "sameString",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 102,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:88",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-73cf3374b9",
+    "kind": "closure",
+    "line": 88,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "nameTaken",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 115,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:104",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-d8c018aa0d",
+    "kind": "closure",
+    "line": 104,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "atLimit",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 202,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:118",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-08f827c7b0",
+    "kind": "direct",
+    "line": 118,
+    "rules": [
+     "R51"
+    ],
+    "symbol": "create",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:120",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-70227e4a49",
+    "kind": "direct",
+    "line": 120,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:120",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:120",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:120",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:120",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:120"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:124",
+      "kind": "code",
+      "what": "param id"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param id"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-4b0e6418ca",
+    "kind": "direct",
+    "line": 124,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> param:id -> code:internal/habits/routes.go:124",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> param:id -> code:internal/habits/routes.go:124",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> param:id -> code:internal/habits/routes.go:124",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> param:id -> code:internal/habits/routes.go:124",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> param:id -> code:internal/habits/routes.go:124"
+    ],
+    "what": "param id"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:128",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-10cab4b66c",
+    "kind": "direct",
+    "line": 128,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:128",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:128",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:128",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:128",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:128"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:132",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-7fff631744",
+    "kind": "direct",
+    "line": 132,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:132",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:132",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:132",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:132",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:132"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:136",
+      "kind": "code",
+      "what": "param period"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param period"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-8b08837ba6",
+    "kind": "direct",
+    "line": 136,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> param:period -> code:internal/habits/routes.go:136",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> param:period -> code:internal/habits/routes.go:136",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> param:period -> code:internal/habits/routes.go:136",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> param:period -> code:internal/habits/routes.go:136",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> param:period -> code:internal/habits/routes.go:136"
+    ],
+    "what": "param period"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:138",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-40ec8bfced",
+    "kind": "direct",
+    "line": 138,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:138",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:138",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:138",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:138",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:138"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:140",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-26466de2d6",
+    "kind": "direct",
+    "line": 140,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:140",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:140",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:140",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:140",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:140"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:159",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-77e14857d6",
+    "kind": "direct",
+    "line": 159,
+    "rules": [
+     "R51"
+    ],
+    "symbol": null,
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:159",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:159",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:159",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:159",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> raise:422 validation_failed -> code:internal/habits/routes.go:159"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "end_line": 384,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:252",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-78a8a37acf",
+    "kind": "direct",
+    "line": 252,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": "patch",
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> handler:habits.handler.patch -> code:internal/habits/routes.go:252"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:254",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-19d913044b",
+    "kind": "direct",
+    "line": 254,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> raise:422 validation_failed -> code:internal/habits/routes.go:254"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:258",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-54a63dc1c6",
+    "kind": "direct",
+    "line": 258,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> raise:422 validation_failed -> code:internal/habits/routes.go:258"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:262",
+      "kind": "code",
+      "what": "param version"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param version"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-fc66e444d5",
+    "kind": "direct",
+    "line": 262,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> param:version -> code:internal/habits/routes.go:262"
+    ],
+    "what": "param version"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:264",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-adf910592a",
+    "kind": "direct",
+    "line": 264,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> raise:422 validation_failed -> code:internal/habits/routes.go:264"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:267",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-c20aa41179",
+    "kind": "direct",
+    "line": 267,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> raise:422 validation_failed -> code:internal/habits/routes.go:267"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:283",
+      "kind": "code",
+      "what": "param name"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param name"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-f7678564a6",
+    "kind": "direct",
+    "line": 283,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> param:name -> code:internal/habits/routes.go:283"
+    ],
+    "what": "param name"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:284",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-f35f59b1ca",
+    "kind": "direct",
+    "line": 284,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> raise:422 validation_failed -> code:internal/habits/routes.go:284"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:288",
+      "kind": "code",
+      "what": "param description"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param description"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-7684ee41db",
+    "kind": "direct",
+    "line": 288,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> param:description -> code:internal/habits/routes.go:288"
+    ],
+    "what": "param description"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:289",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-1943335158",
+    "kind": "direct",
+    "line": 289,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> raise:422 validation_failed -> code:internal/habits/routes.go:289"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:293",
+      "kind": "code",
+      "what": "param target_count"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param target_count"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-fd273266a5",
+    "kind": "direct",
+    "line": 293,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> param:target_count -> code:internal/habits/routes.go:293"
+    ],
+    "what": "param target_count"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:294",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-65f0772087",
+    "kind": "direct",
+    "line": 294,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> raise:422 validation_failed -> code:internal/habits/routes.go:294"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:298",
+      "kind": "code",
+      "what": "param start_date"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param start_date"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-0b7c8eda17",
+    "kind": "direct",
+    "line": 298,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> param:start_date -> code:internal/habits/routes.go:298"
+    ],
+    "what": "param start_date"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:301",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-282ae1e7de",
+    "kind": "direct",
+    "line": 301,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> raise:422 validation_failed -> code:internal/habits/routes.go:301"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:305",
+      "kind": "code",
+      "what": "param end_date"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param end_date"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-238af9ce50",
+    "kind": "direct",
+    "line": 305,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> param:end_date -> code:internal/habits/routes.go:305"
+    ],
+    "what": "param end_date"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:313",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-327220a726",
+    "kind": "direct",
+    "line": 313,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> raise:422 validation_failed -> code:internal/habits/routes.go:313"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:318",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-870b070800",
+    "kind": "direct",
+    "line": 318,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": null,
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> raise:422 validation_failed -> code:internal/habits/routes.go:318"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "end_line": 397,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:387",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-a541922ef8",
+    "kind": "closure",
+    "line": 387,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": "setTarget",
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:setTarget -> code:internal/habits/routes.go:387"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-56f43591e7",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 139,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:134",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-0c560b7cb4",
+    "kind": "closure",
+    "line": 134,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": "CanonicalUUID",
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 148,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:142",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-c8a5413492",
+    "kind": "closure",
+    "line": 142,
+    "rules": [
+     "R5",
+     "R7"
+    ],
+    "symbol": "PathUUID",
+    "target": "scenario:patch_validation_changes_nothing",
+    "tier": 3,
+    "via": [
+     "scenario:patch_validation_changes_nothing / step 6 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-683d2278d1",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-d584238da4",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "Now",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-8fdf7f6210",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:59",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-ecae8b5690",
+    "kind": "closure",
+    "line": 59,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "Today",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-fb217f3b6a",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "Q",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-5d809b32c4",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 24,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:24",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-6c9a6a1d95",
+    "kind": "closure",
+    "line": 24,
+    "rules": [
+     "R51"
+    ],
+    "symbol": "Valid",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:27",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-6467f6afcc",
+    "kind": "closure",
+    "line": 27,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "MaxTarget",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 55,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-2693794cb8",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "FormatDate",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:58",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-a1e9e8e7a3",
+    "kind": "closure",
+    "line": 58,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "FormatDatePtr",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-903cfceadd",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "Date",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Date -> code:internal/period/period.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 70,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:70",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-e4ab8bf539",
+    "kind": "closure",
+    "line": 70,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "AddDays",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-031a1a5ce3",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "Location",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 129,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:122",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-c2d44e862d",
+    "kind": "closure",
+    "line": 122,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "Today",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Today -> code:internal/period/period.go:122"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 142,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:132",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-9cc918f27e",
+    "kind": "closure",
+    "line": 132,
+    "rules": [
+     "R5",
+     "R7",
+     "R51"
+    ],
+    "symbol": "Start",
+    "target": "scenario:habit_description_bounds",
+    "tier": 3,
+    "via": [
+     "check:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R51 -> scenario:habit_description_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R51 -> scenario:habit_description_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R51 -> scenario:habit_name_bounds / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R51 -> scenario:habit_name_bounds / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Start -> code:internal/period/period.go:132"
+    ],
+    "what": "call declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/habits/routes.go",
+    "kind": "extract_unread",
+    "line": 55,
+    "reason": "the bound `period.MaxTarget(kind)` of `target_count` is not a constant",
+    "what": "bound"
+   },
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   }
+  ]
+ },
+ "tier4": null,
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "not_run:spike_e"
+ }
+}

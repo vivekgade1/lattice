@@ -1,0 +1,71 @@
+{
+ "checks": {
+  "add_no_tty": true,
+  "add_pty_writes_same_file": true,
+  "approve_no_tty": true,
+  "claudecode_pty": true,
+  "from_authoritative": true,
+  "glossary_add_no_tty": true,
+  "pty_writes_one_file": true,
+  "unknown_rule": true
+ },
+ "id": "PAP",
+ "observed": {
+  "add_no_tty": {
+   "code_seen": true,
+   "rc": 2,
+   "unchanged": true
+  },
+  "add_pty": {
+   "changed": [
+    "REQUIREMENTS.rationale.json"
+   ],
+   "new": [],
+   "rc": 0
+  },
+  "approve_no_tty": {
+   "code_seen": true,
+   "rc": 2,
+   "unchanged": true
+  },
+  "approve_pty": {
+   "anchor_ok": true,
+   "approved_by": "tester",
+   "author": "hand",
+   "changed": [],
+   "new": [
+    "REQUIREMENTS.rationale.json"
+   ],
+   "owner": "tester",
+   "rc": 0,
+   "sha_ok": true,
+   "status": "approved"
+  },
+  "claudecode_pty": {
+   "code_seen": true,
+   "rc": 2,
+   "unchanged": true
+  },
+  "from_authoritative": {
+   "code_seen": true,
+   "rc": 2,
+   "unchanged": true
+  },
+  "glossary_add_no_tty": {
+   "code_seen": true,
+   "rc": 2,
+   "unchanged": true
+  },
+  "unknown_rule": {
+   "code_seen": true,
+   "rc": 2,
+   "unchanged": true
+  }
+ },
+ "output_sha256": "16b508d911e10b6fa16036e76451e2bc48f5c1fe19bbe16d8c2bc77caea0607c",
+ "pass": true,
+ "predicted": "refusals (exit 2, codes as D4); the pty run writes exactly 1 file whose note verifies approved_sha",
+ "probe": "approval guard: approve/add without a TTY, with CLAUDECODE under a pty, --from = authoritative, unknown rule; then under a pty with neither",
+ "ran": true,
+ "seconds": 1.2
+}

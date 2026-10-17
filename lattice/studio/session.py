@@ -28,6 +28,11 @@ ask, explain and change also allow the read-only multi-project tools (``project_
 v1.20): the session's server lists them only when it finds a workspace. ``project_set_active``
 and every write tool stay out.
 
+**Rationale and glossary** (API.md v1.23). When the project has an owner-held rationale or glossary
+file beside its trace, ask, explain and change also allow ``rationale_get`` / ``glossary_get``
+(the tool whose file exists) and add one rule to the system prompt (:func:`notes_tools`); without
+such a file the tool lists and prompts are exactly as before.
+
 **Connected servers** (API.md v1.13). There is no ``--strict-mcp-config``: with
 ``--setting-sources ""`` a session also sees the claude.ai connectors of the owner's account
 (not their plugins, plugin servers, skills or hooks). In ask, explain and change the **read**
@@ -121,6 +126,12 @@ _MULTI_TOOLS = tuple(
 _IMPL_TOOLS = tuple(
     f"mcp__lattice__{n}" for n in ("implementation_get", "workflow_get", "workflow_find")
 )
+# API v1.23: the owner's rationale and glossary tools, listed by the session's server only when the
+# respective file exists; allowed in ask, explain and change only then (see `notes_tools`)
+_NOTES_TOOLS = {
+    "rationale": "mcp__lattice__rationale_get",
+    "glossary": "mcp__lattice__glossary_get",
+}
 _CHANGE_TOOLS = tuple(f"mcp__lattice__{n}" for n in ("change_propose", "change_get", "change_list"))
 _DENIED = ("Edit", "Write", "MultiEdit", "NotebookEdit", "Bash")
 
@@ -138,6 +149,14 @@ _IMPL_RULES = (
     "workflow_get and workflow_find are facts read from the code (static unless marked "
     "observed, an absence is inferred), not the spec: cite code:<path>:<line> for them, and "
     "never present a static fact as tested."
+)
+# API v1.23: appended to the chat's rules only when a rationale or glossary file exists
+_NOTES_RULES = (
+    "This project keeps the owner's approved reasons and definitions: "
+    "mcp__lattice__rationale_get and glossary_get return them ([rationale:Rn] is the owner's "
+    "approved reason for a rule and [term:x] the owner's definition). When asked why, cite the "
+    "rationale; if the rule has none, say no rationale is recorded and do not offer one as the "
+    "owner's. Rationale and term citations never ground a yes/no/value answer by themselves."
 )
 # API v1.13 (spike 4): the chat modes see the owner's connected claude.ai servers, read-only
 _EXTERNAL_RULES = (
@@ -275,6 +294,8 @@ _MCP_LABELS = {
     "implementation_get": "Read the implementation",
     "workflow_get": "Read a flow or machine",
     "workflow_find": "Searched the implementation",
+    "rationale_get": "Read the rationale",
+    "glossary_get": "Read the glossary",
 }
 
 
@@ -588,6 +609,24 @@ def _has_implementation(project: Path) -> bool:
     return isinstance(data.get("implementation"), dict)
 
 
+def notes_tools(project: Path, mode: str) -> tuple[str, ...]:
+    """The rationale / glossary tools a session of `mode` may use: those whose files exist in
+    `project` (API v1.23); none in rebuild mode or without any such file."""
+    if mode not in ("ask", "explain", "change"):
+        return ()
+    from lattice.spec.rationale import notes_paths
+
+    paths = notes_paths(Path(project) / "spec.trace.json")
+    if paths is None:
+        return ()
+    out = []
+    if paths.has_rationale:
+        out.append(_NOTES_TOOLS["rationale"])
+    if paths.has_glossary:
+        out.append(_NOTES_TOOLS["glossary"])
+    return tuple(out)
+
+
 def system_prompt(
     mode: str, project: Path, selected: Sequence[str] = (), change: str | None = None
 ) -> str:
@@ -596,6 +635,8 @@ def system_prompt(
         parts.append(_EXTERNAL_RULES)
         if _has_implementation(project):
             parts.append(_IMPL_RULES)
+        if notes_tools(project, mode):
+            parts.append(_NOTES_RULES)
     if change:
         parts.append(f"The open change is {change}.")
     rules = project_rules(project)
@@ -661,6 +702,7 @@ def build_argv(
     resume: str | None = None,
     external_allowed: Sequence[str] = (),
     external_denied: Sequence[str] = (),
+    extra_allowed: Sequence[str] = (),
 ) -> list[str]:
     """The ``claude`` argv of one turn. The prompt text goes last behind ``--`` because
     ``--allowedTools`` and ``--mcp-config`` are variadic.
@@ -670,9 +712,14 @@ def build_argv(
     owner's plugins, skills, hooks or plugin servers. `external_allowed` (read tools of
     connected servers, lattice/studio/mcp_intake.py) join the mode's allowlist;
     `external_denied` (write and unknown tools) join ``--disallowedTools``. Under ``dontAsk``
-    any other external tool is denied too."""
+    any other external tool is denied too. `extra_allowed` (API v1.23: the rationale / glossary
+    tools of a project that has such files) join the allowlist too."""
     prof = MODE_PROFILES[mode]
-    allowed = [*prof.allowed, *(t for t in external_allowed if t not in external_denied)]
+    allowed = [
+        *prof.allowed,
+        *extra_allowed,
+        *(t for t in external_allowed if t not in external_denied),
+    ]
     denied = [*prof.disallowed, *external_denied]
     argv = [
         claude_bin,
@@ -819,6 +866,7 @@ class SessionManager:
             resume = s.transcript.claude_session_id
             turn = s.transcript.turns
             prompt = system_prompt(s.mode, s.project, selected, s.change)
+            notes = notes_tools(s.project, s.mode)  # API v1.23
 
             def argv_of_turn() -> list[str]:
                 # in the turn's thread: a discovery may take seconds (cached 5 minutes)
@@ -834,6 +882,7 @@ class SessionManager:
                     resume=resume,
                     external_allowed=ext_allowed,
                     external_denied=ext_denied,
+                    **({"extra_allowed": notes} if notes else {}),
                 )
                 self.last_argv[sid] = argv
                 return argv

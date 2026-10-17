@@ -145,3 +145,96 @@ flags a rule using an undefined term. Deterministic coverage metrics (percentage
 undefined terms); byte-identical behaviour when absent; the chat cites the rationale beside the rule. The
 marketplace is not required for G; shared rule packs and moving the language front ends behind the module
 interface remain possible later work.
+
+## Addendum 2026-10-16 (later): Spike H, a typed condition form for common rule shapes (owner agreed)
+
+**H, typed rule conditions.** Not a general rule language. A small typed condition form for the most common rule
+shapes: bounds on a field, limits on a count of rows, ownership, and state transitions (trigger, condition,
+outcome as nodes). Lattice generates the scenario and the invariant for such a rule **from the form**, so the
+two cannot disagree, and spec-level contradictions between two forms are decided logically (widening Spike D's
+Tier 2). Everything else stays as English rules, scenarios and invariants. It is optional per rule; with no forms
+present every existing output is byte-identical. Authoring: a model may draft a form from a rule, the owner
+approves it (same approval rule as Spike G); nothing is auto-accepted.
+
+Registered test (to be pre-registered, opus, before any code): on Streak, the checks generated from the forms must
+match the hand-written scenarios and invariants for the covered rules (same pass/fail on today's app and on the
+mutated apps of the kill rig), with a hash-frozen set of rule shapes written by a separate agent and a stated
+expectation of what the form cannot express (time, money, rate limits, external services, cross-request flows are
+out of scope and reported as `not expressible`, never guessed). Order: after D, E and F have landed (it consumes
+D's contradiction machinery and E's before/after runs). Risks: expressiveness creep into a programming language
+(mitigated by a closed node set and an `unread/not expressible` list); mapping forms to code conditions is a
+separate, later question and is not claimed here.
+
+## Addendum 2026-10-16 (later): Spike I, gRPC support (owner request)
+
+**I, gRPC in import and build.** Today every front end (`FrontEnd.detect/extract/runtime`) and the checker runtime
+(harness, access matrix, `Step`) assume HTTP: a method, a path, a JSON body, a status code. Nothing in the
+repository speaks gRPC. Scope, unary first:
+
+1. **Contract source.** The `.proto` files are the declared surface: services, rpcs, messages and fields (with
+   `google.api.http` / validate options where present). The importer reads them deterministically (no model).
+2. **Import.** A gRPC front end for Go (`grpc-go`) extending `goextract`: service registrations, rpc handler
+   methods, status codes returned (`codes.X` via `status.Error`), interceptors as auth/guard evidence, and the
+   same table/ownership/state-write evidence the Gin front end already reads. Output is the same framework-neutral
+   `RepoModel`, with rpcs as endpoints (`Service/Method`) and gRPC codes carried as outcomes. Servers that also
+   expose HTTP through grpc-gateway are modelled once, with both bindings listed.
+3. **Spec language.** A `Step` and the access matrix gain an rpc form (`service`, `method`, message body,
+   metadata/auth, expected gRPC code and fields). HTTP specs stay byte-identical; a spec with no rpc steps behaves
+   exactly as before. Per the language rules (`docs/lattice-language-rules.md`): the new form is gated per target,
+   not cut down to the lowest common denominator.
+4. **Runtime and checking.** The harness starts the app as today and drives rpc steps through a gRPC client
+   (reflection or the `.proto` descriptor set; the client dependency, `grpcio` vs a pinned binary, is a
+   pre-registration decision). Layers A (static), B (behaviour vs spec), C (SQL invariants after each rpc),
+   D (scenarios) and the workflow layer (flows over rpcs) run on throwaway databases as now.
+5. **Build.** The rebuild loop's prompt and gates take the `.proto` as part of the contract; the builder fixes code,
+   never the proto/spec; generated stubs are produced by the project's own command, declared in `studio.toml`.
+6. **Report and chat.** Implementation report, `workflow_find`, change impact (D) and the app map (F) list rpcs
+   beside routes, with gRPC codes, and cite `code:<path>:<line>`.
+
+Out of scope for the first round (listed as `not supported`, never guessed): client/server/bidirectional streaming,
+non-Go servers, gRPC-Web, deadlines and retries as checked behaviour, load balancing. Registered test (to be
+pre-registered, opus, before any code): a small gRPC Go app plus the existing Streak behaviour reproduced as a
+gRPC service as the development corpus, and a held-out gRPC Go app written by a separate agent with ground truth,
+scored once after the freeze; rpc recall/precision, code mapping, flows replayed, byte-compat of every HTTP output,
+10 identical runs, >= 10 mutants, and a build-from-spec round on a toy proto. Honest risk: a client dependency and
+Docker/process orchestration are new surface; streaming and interceptor-heavy auth will be partial first.
+Order: after Spikes D, E, F and H have landed (it extends the spec language, the importer and the checker); its
+pre-registration may be written earlier and is independent of the others' builds.
+
+## Addendum 2026-10-16 (later): Spike J, .NET (ASP.NET Core) at parity with Python and Go (owner request)
+
+**J, .NET as a first-class stack, equal support across Python, Go and .NET.** "Equal" is made measurable:
+
+1. **Parity matrix first (node J0).** Built from the repository, not memory. Rows are every capability supported
+   for Python apps today: importer front end, candidate-spec emission, layer A static checks (`pycheck`, `gocheck`),
+   the runtime harness, layers B, C, D, X, R, the workflow layer, implementation report and chat, change impact and
+   implement, perf engines, contracts, the improve loop, build-from-spec, and (decision below) code generation.
+   Columns are Python, Go and .NET. Each cell is `supported`, `partial` (with the gap named), or `absent`, with the
+   file that proves it. **Where Go is behind Python, that gap is part of this spike's scope**: equal support means all
+   three columns reach the same row set, not only that .NET catches up to Go.
+2. **.NET stack.** ASP.NET Core (controllers and minimal APIs), EF Core models and migrations, MySQL first (Pomelo),
+   gRPC via Spike I. Deterministic extraction by a Roslyn-based helper beside `goextract` (no LLM; unreadable idioms
+   are listed, never guessed): routes and route groups, filters/middleware/`[Authorize]` as auth evidence, model
+   binding and data annotations / FluentValidation as bounds, `DbContext` entities, status/state writes, ownership
+   conditions in LINQ, call closure. Output is the same framework-neutral `RepoModel`. A `FrontEnd` shim
+   (`detect`: `*.csproj` with `Microsoft.AspNetCore`; `extract`; `runtime`: process runtime via the project's
+   harness) is registered like the others. A layer A checker for .NET provides the findings `pycheck`/`gocheck` give.
+3. **Language rules hold** (`docs/lattice-language-rules.md`): each construct is gated per target with an exit
+   condition; nothing is cut to the lowest common denominator. **Ruled out (owner, 2026-10-16): no C# code generator.**
+   The Lattice-language generators (`gogen`, `emit`, `tsgen`) are not used by the spec checker, importer or Studio
+   (verified by imports); the spike delivers import, check, workflow, impact and build-from-spec for existing .NET
+   apps. The reference interpreter (`lattice.api`, `lattice.check`) stays the single semantics for all three stacks.
+4. **Registered test (opus pre-registration before any code):** development corpus (Streak reproduced as an
+   ASP.NET Core app, written by a separate agent against the Streak spec) and a held-out .NET app with independent
+   ground truth, scored once after the freeze; route and table recall/precision, workflows replayed, the parity
+   matrix re-measured at the end with each previously `absent`/`partial` Python-vs-Go cell either closed or listed
+   with a reason; byte-identical Python and Go outputs; 10 identical runs; >= 10 mutants.
+
+**Environment (2026-10-16): resolved.** The .NET SDK 10.0.401 (LTS, ASP.NET Core and runtime 10.0.12) was installed
+with `brew install dotnet` at the owner's request (arm64, no sudo; `export DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec`,
+`DOTNET_CLI_TELEMETRY_OPTOUT=1`). A smoke test restored `Microsoft.CodeAnalysis.CSharp` (Roslyn) from NuGet and built a
+console project with 0 errors. The pre-registration pins SDK 10.0.401 and the NuGet package versions; a missing SDK or
+offline NuGet restore is reported NOT RUN, never skipped silently.
+
+**Order:** J0 (the parity matrix, read-only, can start now) -> pre-registration -> after Spikes D, E, F, H and I.
+Closing the Go-versus-Python gaps found by J0 may be split into their own nodes and can run before .NET.

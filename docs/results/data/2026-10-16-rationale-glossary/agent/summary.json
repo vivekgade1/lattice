@@ -1,0 +1,1174 @@
+{
+ "claude_version": "2.1.299 (Claude Code)",
+ "freeze": [
+  "8e8710024a4311925f7b17da40a0e3c29c3820384da5015e275f5de9a32fd2e7  dogfood/rationale_agent.py",
+  "b05d8fcc8c91c348af527606143404fcc7dbce8d2aaea4bbeebad01411b8315a  dogfood/rationale_agent_scorer.py",
+  "97f89a25a7a6406be4a26d245849ffe77610935695fdc042f3a4a09493cc1d3d  dogfood/rationale_agent_cases.json",
+  "a45678bc422fcdf43cd1b8730f54a4057a85304890f138b8251ee1235530ba2a  dogfood/rationale_agent_world.json",
+  "4928e9a11fe81821517dee76a7e913ceaad15f1297b6cb4de38b9cc7f05deb2c  dogfood/rationale_probes.py",
+  "ca65bcb4a10ca1e020523c4a8fd7f4fbc76f5b5af5afa5f11f3c22411301c728  dogfood/implementation_agent.py",
+  "3be9520c6d94fe70816f11c92357be42f73f8bfc86948d51a056d3a1a20c4e7d  dogfood/implementation_agent_scorer.py",
+  "92fb5a76aec490ca059cfea2f09d787ad4377243c3bb6545921f5f4cbb322d08  dogfood/contracts/agent_scorer.py",
+  "2251501bd34c508b1ff046661592b01356ec2eb725c6a106061f05c8ad9e0dd8  prompt",
+  "f9d5e88a786cb89edd846f2f404ddf927c9a6416d40dbfc343e3aee818521c88  claude --version: 2.1.299 (Claude Code)"
+ ],
+ "budget_usd": 7.5,
+ "model": "sonnet",
+ "PQ1": {
+  "rows": [
+   {
+    "rule": "R63",
+    "status": "RAN",
+    "reason": null,
+    "exit": 0,
+    "cost_usd": 0.0142,
+    "stopped": null,
+    "authoritative_absent": true,
+    "others_unchanged": true,
+    "entry": {
+     "rule": "R63",
+     "anchor": "447e017cbe2d931482f9cc06df1c23a802d6d1de73590efb80f2d549ec9a2264",
+     "why": "Changing a habit's period would break the meaning of its history: existing habit_targets rows, check-ins and progress are bucketed by week/month/year, and target_count limits depend on the period. Rejecting it outright keeps those records consistent, and refusing explicitly (rather than silently ignoring the field) tells the client the change isn't supported.",
+     "tradeoff": "Users who want a different period must create a new habit, losing continuity with the old one's history, in exchange for avoiding re-bucketing and recomputing past progress.",
+     "owner": null,
+     "status": "proposed",
+     "author": "llm:sonnet",
+     "approved_by": null,
+     "approved_sha": null,
+     "basis": [
+      {
+       "target": "rule:R60",
+       "quote": "any subset of `{name, description, target_count, start_date, end_date, archived}`"
+      },
+      {
+       "target": "rule:R65",
+       "quote": "rows of earlier periods never change"
+      }
+     ],
+     "refs": [],
+     "rejected_basis": [],
+     "dropped": []
+    },
+    "stderr": "",
+    "gated_ok": true,
+    "basis": 2,
+    "rejected_basis": 0,
+    "valid_basis": true,
+    "basis_empty": false
+   },
+   {
+    "rule": "R56",
+    "status": "RAN",
+    "reason": null,
+    "exit": 0,
+    "cost_usd": 0.0988,
+    "stopped": null,
+    "authoritative_absent": true,
+    "others_unchanged": true,
+    "entry": {
+     "rule": "R56",
+     "anchor": "ae2b7148b5769b327a03380942cf2f7ef2ff1c4da7172308c0aacea325b35fbc",
+     "why": "A cap on active habits probably keeps per-user data and per-request work bounded, since progress, nudges and check-ins are computed per habit. It may also keep the habit list usable and discourage over-committing. Archived and deleted habits do not count, so users can free capacity by archiving or deleting.",
+     "tradeoff": "Power users with many habits are blocked at 50 and must archive or delete to add more. Restoring an archived habit can also be refused with the same limit. The check adds a count query on every create and restore.",
+     "owner": null,
+     "status": "proposed",
+     "author": "llm:sonnet",
+     "approved_by": null,
+     "approved_sha": null,
+     "basis": [
+      {
+       "target": "rule:R69",
+       "quote": "restoring when the user already has 50 active habits answers 409 `habit_limit`"
+      },
+      {
+       "target": "invariant:at_most_50_active_habits",
+       "quote": "A user has at most 50 non-archived, non-deleted habits."
+      }
+     ],
+     "refs": [],
+     "rejected_basis": [],
+     "dropped": []
+    },
+    "stderr": "",
+    "gated_ok": true,
+    "basis": 2,
+    "rejected_basis": 0,
+    "valid_basis": true,
+    "basis_empty": false
+   },
+   {
+    "rule": "R75",
+    "status": "RAN",
+    "reason": null,
+    "exit": 0,
+    "cost_usd": 0.0146,
+    "stopped": null,
+    "authoritative_absent": true,
+    "others_unchanged": true,
+    "entry": {
+     "rule": "R75",
+     "anchor": "fb2e198fe0991a78f2280b677bad8f3bc54f9509770688c9fe2af506f13907ab",
+     "why": "A bounded backfill window keeps streak and period history from being rewritten arbitrarily far in the past, so old streaks and stats stay stable and clients can't silently alter long-settled records. It also limits how far back the streak recomputation must reach.",
+     "tradeoff": "Users who forgot to log or return after a long gap cannot enter check-ins older than 60 days, even for genuine activity, so they lose those streak credits.",
+     "owner": null,
+     "status": "proposed",
+     "author": "llm:sonnet",
+     "approved_by": null,
+     "approved_sha": null,
+     "basis": [],
+     "refs": [],
+     "rejected_basis": [],
+     "dropped": []
+    },
+    "stderr": "",
+    "gated_ok": true,
+    "basis": 0,
+    "rejected_basis": 0,
+    "valid_basis": false,
+    "basis_empty": true
+   },
+   {
+    "rule": "R29",
+    "status": "RAN",
+    "reason": null,
+    "exit": 0,
+    "cost_usd": 0.0178,
+    "stopped": null,
+    "authoritative_absent": true,
+    "others_unchanged": true,
+    "entry": {
+     "rule": "R29",
+     "anchor": "fc006a57e4c7ec501a7e2023a23f653a665e8b082d9a44c403c1d1400b13386a",
+     "why": "A per-user cap keeps one signed-in client from overloading the service or crowding out others. A fixed clock-minute window is simple to implement and predictable, and Retry-After tells clients exactly when to retry. Writing nothing on a rejected request means throttled calls have no side effects and are safe to retry.",
+     "tradeoff": "Fixed windows are cheap and easy to reason about but allow bursts across a window boundary (up to 240 requests in a short span). Legitimate heavy clients may hit 429s, and batch or sync requests are the way to do more work per request.",
+     "owner": null,
+     "status": "proposed",
+     "author": "llm:sonnet",
+     "approved_by": null,
+     "approved_sha": null,
+     "basis": [
+      {
+       "target": "scenario:rate_limit_120_per_minute",
+       "quote": "POST /v1/habits as ann -> 429 -- body {\"error\": {\"code\": \"rate_limited\"}}; habits where {'name': 'one more'} count=0"
+      },
+      {
+       "target": "scenario:rate_limit_120_per_minute",
+       "quote": "GET /v1/me as ben -> 200"
+      }
+     ],
+     "refs": [],
+     "rejected_basis": [],
+     "dropped": []
+    },
+    "stderr": "",
+    "gated_ok": true,
+    "basis": 2,
+    "rejected_basis": 0,
+    "valid_basis": true,
+    "basis_empty": false
+   },
+   {
+    "rule": "R133",
+    "status": "RAN",
+    "reason": null,
+    "exit": 0,
+    "cost_usd": 0.0225,
+    "stopped": null,
+    "authoritative_absent": true,
+    "others_unchanged": true,
+    "entry": {
+     "rule": "R133",
+     "anchor": "7abe06e9102281c3ce87274d67b4df6079548e55beaa709109cbc63976d37509",
+     "why": "Caps push volume so a user with many habits behind or unreachable isn't flooded with notifications in one day, which would annoy them and may lead them to disable push or uninstall. Excess nudges are still kept in the in-app list.",
+     "tradeoff": "Some habits that need attention may get no push on a busy day, and later habits in id order lose out to earlier ones; the user has to open the app to see them.",
+     "owner": null,
+     "status": "proposed",
+     "author": "llm:sonnet",
+     "approved_by": null,
+     "approved_sha": null,
+     "basis": [
+      {
+       "target": "rule:R135",
+       "quote": "a user at most 3 pushes per local day; every nudge, pushed or not, stays in the in-app list"
+      },
+      {
+       "target": "rule:R127",
+       "quote": "in habit id order"
+      }
+     ],
+     "refs": [],
+     "rejected_basis": [],
+     "dropped": []
+    },
+    "stderr": "",
+    "gated_ok": true,
+    "basis": 2,
+    "rejected_basis": 0,
+    "valid_basis": true,
+    "basis_empty": false
+   },
+   {
+    "rule": "R26",
+    "status": "RAN",
+    "reason": null,
+    "exit": 0,
+    "cost_usd": 0.0198,
+    "stopped": null,
+    "authoritative_absent": true,
+    "others_unchanged": true,
+    "entry": {
+     "rule": "R26",
+     "anchor": "6564cd63737b11c2ddae0785d77ef11746b8dc295e43e29960b706e080aff4bf",
+     "why": "Account deletion is meant as a true erasure: the user and everything tied to them are removed with no tombstones, so no personal data or credentials linger. Invalidating the old token and login confirms the account is really gone and cannot be used again.",
+     "tradeoff": "Deletion is irreversible, with no recovery or audit trail. It requires cascading removal across many tables, and the user's data cannot be restored if deleted by mistake.",
+     "owner": null,
+     "status": "proposed",
+     "author": "llm:sonnet",
+     "approved_by": null,
+     "approved_sha": null,
+     "basis": [
+      {
+       "target": "rule:R22",
+       "quote": "one whose user no longer exists, answers 401 with code `invalid_token`"
+      },
+      {
+       "target": "rule:R26",
+       "quote": "permanently deletes the user with their notification prefs, devices, refresh tokens, habits, habit targets, check-ins and nudges (no tombstones)"
+      }
+     ],
+     "refs": [],
+     "rejected_basis": [],
+     "dropped": []
+    },
+    "stderr": "",
+    "gated_ok": true,
+    "basis": 2,
+    "rejected_basis": 0,
+    "valid_basis": true,
+    "basis_empty": false
+   }
+  ],
+  "n": 6,
+  "of": 6,
+  "gated_pass": "6/6",
+  "gate_evaluated": true,
+  "gate_met": true,
+  "valid_basis": "5/6",
+  "basis_empty": 1,
+  "usd": 0.1877
+ },
+ "PQ2": {
+  "sessions": [
+   {
+    "id": "A1",
+    "key": "RATIONALE-APPROVED",
+    "referent": "R63",
+    "question": "Why can't the period of a habit be changed after it is created?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 15.9
+    },
+    "cost_usd": 0.3734659,
+    "tokens": 83874,
+    "turns": 7,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:12:05+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": true,
+      "E3": true,
+      "E4": null,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E3",
+      "E6"
+     ],
+     "pass": true,
+     "labels": [
+      "RATIONALE-APPROVED"
+     ],
+     "citations": [
+      {
+       "kind": "rationale",
+       "id": "R63",
+       "quote": "a habit's period is fixed so that its history and its habit_targets rows never mix weeks, months and years."
+      }
+     ]
+    },
+    "tools": [
+     "model_get",
+     "glossary_get!",
+     "Grep",
+     "Grep",
+     "rationale_get",
+     "rule_get"
+    ]
+   },
+   {
+    "id": "A2",
+    "key": "RATIONALE-APPROVED",
+    "referent": "R56",
+    "question": "Why is a user limited to 50 active habits?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 8.7
+    },
+    "cost_usd": 0.0820505,
+    "tokens": 14433,
+    "turns": 4,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:12:14+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": true,
+      "E3": true,
+      "E4": null,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E3",
+      "E6"
+     ],
+     "pass": true,
+     "labels": [
+      "RATIONALE-APPROVED"
+     ],
+     "citations": [
+      {
+       "kind": "rationale",
+       "id": "R56",
+       "quote": "the home screen returns every active habit in one unpaginated response, so the count is capped."
+      },
+      {
+       "kind": "rationale",
+       "id": "R56",
+       "quote": "heavy users must archive habits to add more."
+      }
+     ]
+    },
+    "tools": [
+     "rationale_get",
+     "model_get",
+     "rule_get"
+    ]
+   },
+   {
+    "id": "A3",
+    "key": "RATIONALE-APPROVED",
+    "referent": "R75",
+    "question": "Why are check-ins dated more than 60 days ago refused?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 14.5
+    },
+    "cost_usd": 0.1058169,
+    "tokens": 15813,
+    "turns": 6,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:12:29+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": true,
+      "E3": true,
+      "E4": null,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E3",
+      "E6"
+     ],
+     "pass": true,
+     "labels": [
+      "RATIONALE-APPROVED"
+     ],
+     "citations": [
+      {
+       "kind": "rationale",
+       "id": "R75",
+       "quote": "FIXTURE: check-ins older than 60 days would rewrite long-closed history periods."
+      }
+     ]
+    },
+    "tools": [
+     "model_get",
+     "glossary_get",
+     "Grep",
+     "rationale_get",
+     "rule_get"
+    ]
+   },
+   {
+    "id": "A4",
+    "key": "RATIONALE-APPROVED",
+    "referent": "R29",
+    "question": "Why is a signed-in user limited to 120 requests per minute?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 7.3
+    },
+    "cost_usd": 0.0727286,
+    "tokens": 14055,
+    "turns": 3,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:12:36+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": true,
+      "E3": true,
+      "E4": null,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E3",
+      "E6"
+     ],
+     "pass": true,
+     "labels": [
+      "RATIONALE-APPROVED"
+     ],
+     "citations": [
+      {
+       "kind": "rationale",
+       "id": "R29",
+       "quote": "FIXTURE: one signed-in client must not starve the API for everyone else."
+      },
+      {
+       "kind": "rationale",
+       "id": "R29",
+       "quote": "FIXTURE: a sync burst can hit 429 and must retry after the window."
+      }
+     ]
+    },
+    "tools": [
+     "model_get",
+     "rationale_get"
+    ]
+   },
+   {
+    "id": "A5",
+    "key": "RATIONALE-APPROVED",
+    "referent": "R133",
+    "question": "Why does a user get at most 3 pushes per local day?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 8.4
+    },
+    "cost_usd": 0.0818488,
+    "tokens": 14405,
+    "turns": 4,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:12:44+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": true,
+      "E3": true,
+      "E4": null,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E3",
+      "E6"
+     ],
+     "pass": true,
+     "labels": [
+      "RATIONALE-APPROVED"
+     ],
+     "citations": [
+      {
+       "kind": "rationale",
+       "id": "R133",
+       "quote": "more than three pushes a day reads as spam and gets the app's notifications turned off."
+      }
+     ]
+    },
+    "tools": [
+     "model_get",
+     "rationale_get",
+     "rule_get"
+    ]
+   },
+   {
+    "id": "A6",
+    "key": "RATIONALE-PROPOSED-ONLY",
+    "referent": "R26",
+    "question": "Why is deleting an account a hard delete?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 11.9
+    },
+    "cost_usd": 0.0826008,
+    "tokens": 14281,
+    "turns": 5,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:12:56+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": false,
+      "E3": null,
+      "E4": false,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E4",
+      "E6"
+     ],
+     "pass": false,
+     "labels": [
+      "RATIONALE-PROPOSED-ONLY"
+     ],
+     "citations": [
+      {
+       "kind": "rationale",
+       "id": "R26",
+       "quote": "hard delete"
+      }
+     ]
+    },
+    "tools": [
+     "model_get",
+     "glossary_get!",
+     "rationale_get",
+     "glossary_get"
+    ]
+   },
+   {
+    "id": "A7",
+    "key": "RATIONALE-PROPOSED-ONLY",
+    "referent": "R20",
+    "question": "Why does reusing a rotated refresh token revoke the whole session?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 10.1
+    },
+    "cost_usd": 0.07522469999999999,
+    "tokens": 14598,
+    "turns": 4,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:13:06+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": false,
+      "E3": null,
+      "E4": false,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E4",
+      "E6"
+     ],
+     "pass": false,
+     "labels": [
+      "RATIONALE-PROPOSED-ONLY"
+     ],
+     "citations": [
+      {
+       "kind": "rationale",
+       "id": "R20",
+       "quote": "active-window"
+      }
+     ]
+    },
+    "tools": [
+     "model_get",
+     "rationale_get",
+     "glossary_get"
+    ]
+   },
+   {
+    "id": "A8",
+    "key": "RATIONALE-STALE",
+    "referent": "R8",
+    "question": "Why is the email stored lower-cased at registration?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 8.0
+    },
+    "cost_usd": 0.0744981,
+    "tokens": 14520,
+    "turns": 4,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:13:14+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": true,
+      "E3": null,
+      "E4": true,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E4",
+      "E6"
+     ],
+     "pass": true,
+     "labels": [
+      "RATIONALE-STALE"
+     ],
+     "citations": []
+    },
+    "tools": [
+     "model_get",
+     "rationale_get",
+     "glossary_get"
+    ]
+   },
+   {
+    "id": "A9",
+    "key": "RATIONALE-STALE",
+    "referent": "R70",
+    "question": "Why does deleting a habit keep its rows in the database?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 20.9
+    },
+    "cost_usd": 0.1376532,
+    "tokens": 21845,
+    "turns": 9,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:13:35+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": true,
+      "E3": null,
+      "E4": true,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E4",
+      "E6"
+     ],
+     "pass": true,
+     "labels": [
+      "RATIONALE-STALE"
+     ],
+     "citations": []
+    },
+    "tools": [
+     "model_get",
+     "rationale_get",
+     "glossary_get",
+     "Grep",
+     "Grep",
+     "Read",
+     "rule_get",
+     "rationale_get"
+    ]
+   },
+   {
+    "id": "A10",
+    "key": "NO-RATIONALE",
+    "referent": "R132",
+    "question": "Why do quiet hours suppress a nudge's push?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 13.7
+    },
+    "cost_usd": 0.1035471,
+    "tokens": 16733,
+    "turns": 8,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:13:49+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": false,
+      "E3": null,
+      "E4": false,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E4",
+      "E6"
+     ],
+     "pass": false,
+     "labels": [
+      "NO-RATIONALE"
+     ],
+     "citations": [
+      {
+       "kind": "rationale",
+       "id": "R132",
+       "quote": " is "
+      }
+     ]
+    },
+    "tools": [
+     "model_get",
+     "rationale_get",
+     "glossary_get!",
+     "Grep",
+     "Grep",
+     "rule_get",
+     "rule_get"
+    ]
+   },
+   {
+    "id": "A11",
+    "key": "NO-RATIONALE",
+    "referent": "R139",
+    "question": "Why does dismissing a nudge apply to every device of the user?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 18.0
+    },
+    "cost_usd": 0.13699050000000002,
+    "tokens": 18525,
+    "turns": 8,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:14:07+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": true,
+      "E3": null,
+      "E4": true,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E4",
+      "E6"
+     ],
+     "pass": true,
+     "labels": [
+      "NO-RATIONALE"
+     ],
+     "citations": []
+    },
+    "tools": [
+     "glossary_get!",
+     "model_get",
+     "Grep",
+     "rationale_get",
+     "Grep",
+     "Read",
+     "rationale_get"
+    ]
+   },
+   {
+    "id": "A12",
+    "key": "TERM-DEFINED",
+    "referent": "term:active-window",
+    "question": "What does \"active window\" mean in this spec?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 7.3
+    },
+    "cost_usd": 0.0730378,
+    "tokens": 14179,
+    "turns": 3,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:14:14+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": true,
+      "E3": null,
+      "E4": null,
+      "E5": true,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E5",
+      "E6"
+     ],
+     "pass": true,
+     "labels": [
+      "TERM-DEFINED"
+     ],
+     "citations": [
+      {
+       "kind": "term",
+       "id": "active-window",
+       "quote": "The active window is `as = max(period_start, start_date)` to `ae = min(period_end, end_date)` (`ae = period_end` when `end_date` is null), and `A = ae - as + 1` is its number of days."
+      }
+     ]
+    },
+    "tools": [
+     "glossary_get",
+     "glossary_get"
+    ]
+   },
+   {
+    "id": "A13",
+    "key": "TERM-UNDEFINED",
+    "referent": "daily pass",
+    "question": "What does \"daily pass\" mean in this spec?",
+    "status": "SCORED",
+    "reason": null,
+    "run": {
+     "rc": 0,
+     "timed_out": false,
+     "wall_s": 16.5
+    },
+    "cost_usd": 0.15961769999999997,
+    "tokens": 27852,
+    "turns": 9,
+    "model_resolved": "claude-sonnet-5-5",
+    "claude_version": "2.1.299 (Claude Code)",
+    "usage_limit": false,
+    "infra_failure": null,
+    "world_changed": [],
+    "started_utc": "2026-10-16T22:14:31+00:00",
+    "score": {
+     "items": {
+      "E1": true,
+      "E2": true,
+      "E3": null,
+      "E4": null,
+      "E5": null,
+      "E6": true
+     },
+     "applicable": [
+      "E1",
+      "E2",
+      "E6"
+     ],
+     "pass": true,
+     "labels": [
+      "TERM-UNDEFINED"
+     ],
+     "citations": []
+    },
+    "tools": [
+     "glossary_get!",
+     "model_get",
+     "Grep",
+     "glossary_get",
+     "rationale_get",
+     "rule_get",
+     "rationale_get",
+     "rule_get"
+    ]
+   }
+  ],
+  "n": 13,
+  "of": 13,
+  "pass": 10,
+  "e6": "13/13",
+  "items": {
+   "E1": "13/13",
+   "E2": "10/13",
+   "E3": "5/5",
+   "E4": "3/6",
+   "E5": "1/1",
+   "E6": "13/13"
+  },
+  "pass_rule": ">= 11/13 sessions satisfy every applicable item and E6 holds 13/13",
+  "evaluated": true,
+  "met": false,
+  "usd": 1.5591,
+  "tokens": 285113,
+  "stop": null
+ },
+ "PQ3": {
+  "rows": [
+   {
+    "id": "Q1",
+    "question": "Why can't a habit's period be changed after creation?",
+    "status": "RAN",
+    "reason": null,
+    "cost_usd": 0.131368,
+    "kind": "value",
+    "citations": [
+     "rule:R63",
+     "rationale:R63",
+     "rationale:R63"
+    ],
+    "rationale": [
+     {
+      "rule": "R63",
+      "status": "approved",
+      "via": null,
+      "why": "FIXTURE: a habit's period is fixed so that its history and its habit_targets rows never mix weeks, months and years.",
+      "tradeoff": "FIXTURE: a user who wants another period must create a new habit.",
+      "owner": "fixture-owner",
+      "approved_by": "fixture-owner"
+     }
+    ],
+    "expected_rationale": [
+     {
+      "rule": "R63",
+      "status": "approved",
+      "via": null,
+      "why": "FIXTURE: a habit's period is fixed so that its history and its habit_targets rows never mix weeks, months and years.",
+      "tradeoff": "FIXTURE: a user who wants another period must create a new habit.",
+      "owner": "fixture-owner",
+      "approved_by": "fixture-owner"
+     }
+    ],
+    "key_equals_function": true,
+    "leaked": false,
+    "world_unchanged": true,
+    "cited_referent": true,
+    "answer": "A PATCH that contains `period` is refused with 422 validation_failed (field `period`) and nothing changes. The owner's rationale: a habit's period is fixed so its history and habit_targets rows never mix weeks, months and years.",
+    "explanation": "R63 states the rule, and the owner-approved rationale for R63 gives the reason and the trade-off: a user who wants another period must create a new habit.",
+    "gated_ok": true
+   },
+   {
+    "id": "Q2",
+    "question": "Can a user have 51 active habits?",
+    "status": "RAN",
+    "reason": null,
+    "cost_usd": 0.035602,
+    "kind": "no",
+    "citations": [
+     "invariant:at_most_50_active_habits",
+     "rule:R56",
+     "rule:R69"
+    ],
+    "rationale": [
+     {
+      "rule": "R56",
+      "status": "approved",
+      "via": null,
+      "why": "FIXTURE: the home screen returns every active habit in one unpaginated response, so the count is capped.",
+      "tradeoff": "FIXTURE: heavy users must archive habits to add more.",
+      "owner": "fixture-owner",
+      "approved_by": "fixture-owner"
+     },
+     {
+      "rule": "R69",
+      "status": "none",
+      "via": null
+     }
+    ],
+    "expected_rationale": [
+     {
+      "rule": "R56",
+      "status": "approved",
+      "via": null,
+      "why": "FIXTURE: the home screen returns every active habit in one unpaginated response, so the count is capped.",
+      "tradeoff": "FIXTURE: heavy users must archive habits to add more.",
+      "owner": "fixture-owner",
+      "approved_by": "fixture-owner"
+     },
+     {
+      "rule": "R69",
+      "status": "none",
+      "via": null
+     }
+    ],
+    "key_equals_function": true,
+    "leaked": false,
+    "world_unchanged": true,
+    "cited_referent": true,
+    "answer": "No. A user can have at most 50 active (non-archived, non-deleted) habits.",
+    "explanation": "The invariant caps active habits at 50, and creating or restoring a habit beyond that is refused with 409 `habit_limit`.",
+    "gated_ok": true
+   },
+   {
+    "id": "Q3",
+    "question": "Why is the email lower-cased at registration?",
+    "status": "RAN",
+    "reason": null,
+    "cost_usd": 0.052,
+    "kind": "not_specified",
+    "citations": [
+     "rule:R8",
+     "rule:R10"
+    ],
+    "rationale": [
+     {
+      "rule": "R8",
+      "status": "stale",
+      "via": null
+     },
+     {
+      "rule": "R10",
+      "status": "none",
+      "via": null
+     }
+    ],
+    "expected_rationale": [
+     {
+      "rule": "R8",
+      "status": "stale",
+      "via": null
+     },
+     {
+      "rule": "R10",
+      "status": "none",
+      "via": null
+     }
+    ],
+    "key_equals_function": true,
+    "leaked": false,
+    "world_unchanged": true,
+    "cited_referent": true,
+    "answer": "No rationale is recorded for lower-casing the email.",
+    "explanation": "R8 states that the email is stored lower-cased, and R10 compares emails case-insensitively for duplicates, but neither has an owner-approved rationale. The digest does not give the reason, so I won't offer one as the owner's.",
+    "gated_ok": true
+   },
+   {
+    "id": "Q4",
+    "question": "What is the active window of a habit?",
+    "status": "RAN",
+    "reason": null,
+    "cost_usd": 0.07367,
+    "kind": "value",
+    "citations": [
+     "rule:R97"
+    ],
+    "rationale": [
+     {
+      "rule": "R97",
+      "status": "none",
+      "via": null
+     }
+    ],
+    "expected_rationale": [
+     {
+      "rule": "R97",
+      "status": "none",
+      "via": null
+     }
+    ],
+    "key_equals_function": true,
+    "leaked": false,
+    "world_unchanged": true,
+    "cited_referent": false,
+    "answer": "The active window runs from as = max(period_start, start_date) to ae = min(period_end, end_date) (ae = period_end when end_date is null); A = ae - as + 1 is its number of days.",
+    "explanation": "Rule R97 and the owner's glossary term both define the active window within the current period. It is used to pro-rate the target and count check-ins.",
+    "gated_ok": true
+   }
+  ],
+  "n": 4,
+  "of": 4,
+  "gated_pass": "4/4",
+  "gate_evaluated": true,
+  "gate_met": true,
+  "cited_referent": 3,
+  "usd": 0.2926
+ },
+ "total_usd": 2.0396,
+ "stop": null,
+ "wall_s": 206.1
+}

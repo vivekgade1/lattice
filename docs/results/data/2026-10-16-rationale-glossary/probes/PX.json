@@ -1,0 +1,20 @@
+{
+ "id": "PX",
+ "in_predicted_range": {
+  "coverage": false,
+  "digest_overhead_le_15pct": true,
+  "glossary_lint": false
+ },
+ "observed": {
+  "digest_overhead_pct": -0.9,
+  "digest_plain_ms": 3.2,
+  "digest_with_notes_ms": 3.2,
+  "glossary_lint_ms": 6.4,
+  "rationale_coverage_ms": 0.4
+ },
+ "pass": true,
+ "predicted": "glossary lint 20-150 ms; rationale coverage 5-50 ms; digest build overhead <= 15% (pass: each <= 1 s)",
+ "probe": "wall, one call after load on S",
+ "ran": true,
+ "seconds": 0.1
+}

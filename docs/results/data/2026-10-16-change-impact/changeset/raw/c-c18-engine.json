@@ -1,0 +1,741 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R11",
+     "new_text": "Registering a user also creates their `notification_prefs` row with `push_enabled` true, `quiet_start` `\"22:00\"`, `quiet_end` `\"08:00\"` and `nudge_time` `\"19:00\"`.",
+     "old": "R11",
+     "old_text": "Registering a user also creates their `notification_prefs` row with `push_enabled` true, `quiet_start` `\"22:00\"`, `quiet_end` `\"08:00\"` and `nudge_time` `\"20:00\"`."
+    }
+   ],
+   "removed": [],
+   "unchanged": 147
+  },
+  "targets": {
+   "added": [],
+   "modified": [
+    "scenario:register_answers_the_user_with_a_lowercased_email"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "21cb1ce555c60f4b31af80b76a73f54fd8605fdae7dfad1691493e4f5a8acda4",
+   "spec": "59741ba48928009701a5f26169982377bbf24900cdd79870856a9ddbbc96de84",
+   "trace": "ea09d88ebb4fea400b084407de9b565f9de57c13dbbee7342517d8866b20e9a0"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 1,
+   "closure": 9,
+   "direct": 5
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 1,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 2
+   },
+   "3": {
+    "flows": 2,
+    "locations": 14,
+    "unread": 1
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 2
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 1
+   },
+   "by_layer": {
+    "D": 1
+   },
+   "failing": 1,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "register_answers_the_user_with_a_lowercased_email / step 1",
+    "code": null,
+    "endpoint": "POST /v1/auth/register",
+    "evidence": [
+     {
+      "at": "check:D:register_answers_the_user_with_a_lowercased_email / step 1",
+      "kind": "check",
+      "what": "[D silent] POST /v1/auth/register (register_answers_the_user_with_a_lowercased_email / step 1)"
+     },
+     {
+      "at": "spec:spec.py:430",
+      "kind": "spec",
+      "what": "register_answers_the_user_with_a_lowercased_email step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-e22e58dc78",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 430,
+    "observation": "runtime",
+    "problems": [
+     "db NotificationPrefs where {'push_enabled': True, 'quiet_start': '22:00', 'quiet_end': '08:00', 'nudge_time': '19:00', 'last_pass_date': None}: expected 1 rows, found 0"
+    ],
+    "rule": "scenario: register_answers_the_user_with_a_lowercased_email",
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "summary": "[D silent] POST /v1/auth/register (register_answers_the_user_with_a_lowercased_email / step 1)",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:register_answers_the_user_with_a_lowercased_email"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R11"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 9,
+    "direct": 5,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 4,
+   "flows_may_fail": 2,
+   "locations": 14,
+   "seeds": {
+    "machines": 0,
+    "routes": 1,
+    "tables": 0
+   },
+   "unread": 1
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/auth/routes.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go",
+   "internal/period/period.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0da61e11ce",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-13fe2e1e13",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/auth/register"
+    ],
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "target": "flow:wf-0da61e11ce",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f00ae7e762",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/auth/register"
+    ],
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:25",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-0ce6a0d67a",
+    "kind": "direct",
+    "line": 25,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": null,
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 54,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:48",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-0dc4ee1424",
+    "kind": "closure",
+    "line": 48,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "validEmail",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 59,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:56",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-9654255008",
+    "kind": "closure",
+    "line": 56,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "isDuplicate",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 115,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:62",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-8c01eb5e0f",
+    "kind": "direct",
+    "line": 62,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "register",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:67",
+      "kind": "code",
+      "what": "param email"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param email"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-52576832d6",
+    "kind": "direct",
+    "line": 67,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": null,
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67"
+    ],
+    "what": "param email"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:72",
+      "kind": "code",
+      "what": "param password"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param password"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-8228ee6c1f",
+    "kind": "direct",
+    "line": 72,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": null,
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72"
+    ],
+    "what": "param password"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:77",
+      "kind": "code",
+      "what": "param timezone"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param timezone"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-b2369eec20",
+    "kind": "direct",
+    "line": 77,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": null,
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:timezone -> code:internal/auth/routes.go:77",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:timezone -> code:internal/auth/routes.go:77",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> param:timezone -> code:internal/auth/routes.go:77",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:timezone -> code:internal/auth/routes.go:77"
+    ],
+    "what": "param timezone"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-3cab7c913a",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-cd7fa63127",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "Now",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-cf09841388",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-cd3de29454",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "Q",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-3ace11eb4d",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-2e90c7cd24",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "Location",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 118,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:115",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-448e682272",
+    "kind": "closure",
+    "line": 115,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "ValidZone",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115"
+    ],
+    "what": "call declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   }
+  ]
+ },
+ "tier4": null,
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "not_run:spike_e"
+ }
+}

@@ -1,0 +1,9 @@
+RATIONALE-PROPOSED-ONLY
+
+The spec states the behavior, but the owner has not approved a reason for it, so I can't say why it works this way.
+
+- **The rule:** R20 says "A refresh token that was already rotated (reuse) answers 401 with code `refresh_token_reused` and revokes every refresh token of that user and installation, so the session must log in again." R7 repeats this as the one exception to "a refused request writes nothing". R20 links to the scenario `refresh_token_reuse_revokes_the_session` and to open question Q12.
+- **The rationale:** R20's rationale status is `proposed_only`. A proposal exists, but nothing is approved, and I can't show an unapproved proposal. The approved notes only cover R8, R29, R56, R63, R70, R75 and R133. R8 and R70 are stale. None of them concerns R20, so there is no `rationale:R20` to quote.
+- **The glossary:** it defines only `active-window` and `past-period`, and neither covers refresh-token reuse.
+
+I changed nothing. If you want the reason recorded, the owner would need to approve the pending proposal for R20 in Lattice Studio.

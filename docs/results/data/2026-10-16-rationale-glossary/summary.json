@@ -1,0 +1,62 @@
+{
+ "frozen": {
+  "seeded": "1f285734716d5f8c8f14e5df30a997f6674b39bf243f0c69b6adad662b175a10",
+  "world": "b5bb61a06a2cc2555da585db153ecc85c3457e3123c94c03e2e0173f3f354d5e"
+ },
+ "gated_failed": [],
+ "output_sha256": {
+  "PA": "7661d9f5baa14d31aa1d7e95eef3f27c30bbfc8f5d80f6637c1fc2a720bcfb44",
+  "PAP": "16b508d911e10b6fa16036e76451e2bc48f5c1fe19bbe16d8c2bc77caea0607c",
+  "PB": "87a09271118750f01670d1c000464e8264651b4cf601a8a2e60c0d59bd61f84c",
+  "PBp": null,
+  "PC": "61762aa441a2070de5817142d94af86f88e514a55791bc4c42d586f51edb020e",
+  "PD10": null,
+  "PDR": "b0b65e8e876bd24cbc93429f767decab03b9644e17c3234b8bb08cd83d08bb52",
+  "PG": "bf7f3bab23ea030107ee0343cc7892e75ce58bbcab37961dd36408df363317ce",
+  "PI": "aaeb94285fc0baebac78e259a70aae2781590616ff3a2c29c8742c65982ba309",
+  "PL": "d4a211509c6f6831926c4ad93897fc1b62afdd5743c3fb22816ad61c5d053085",
+  "PM": "5296f4fa603756d6a57307d5ba654a018ab3b8a0eb068354ecbd750c314fb5d2",
+  "PR": "d59dda9e7b4a12fca3d2a6053ecee24adad998306cc8bd5f08dbfeb9cb670747",
+  "PS": "3f50c531559cf6fe21eeccf155440fee675d8caca117e758e5f9fda09c42f516",
+  "PV": null,
+  "PW": null,
+  "PX": null
+ },
+ "pass": {
+  "PA": true,
+  "PAP": true,
+  "PB": true,
+  "PBp": true,
+  "PC": true,
+  "PD10": true,
+  "PDR": true,
+  "PG": true,
+  "PI": true,
+  "PL": null,
+  "PM": true,
+  "PR": true,
+  "PS": true,
+  "PV": true,
+  "PW": true,
+  "PX": true
+ },
+ "ran": [
+  "PS",
+  "PB",
+  "PBp",
+  "PR",
+  "PC",
+  "PL",
+  "PG",
+  "PV",
+  "PAP",
+  "PDR",
+  "PA",
+  "PI",
+  "PM",
+  "PD10",
+  "PX",
+  "PW"
+ ],
+ "seconds": 72.7
+}

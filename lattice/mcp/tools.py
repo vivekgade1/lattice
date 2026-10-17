@@ -657,6 +657,20 @@ def _has_implementation_table(root: Path) -> bool:
     return isinstance(cfg.get("implementation"), dict)
 
 
+IMPACT_SECTIONS = ("summary", "tier1", "tier2", "tier3", "flows", "unread", "decidability")
+IMPACT_OBSERVE_TIMEOUT = 900.0
+
+
+def _has_impact_table(root: Path) -> bool:
+    """Whether ``root/studio.toml`` has an ``[impact]`` table (the ``change_impact`` tool is
+    registered only then)."""
+    try:
+        cfg = tomllib.loads((root / "studio.toml").read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return False
+    return isinstance(cfg.get("impact"), dict)
+
+
 class Toolbox:
     """The tools over one backend. ``readonly`` hides change_propose and check_run."""
 
@@ -799,10 +813,11 @@ class Toolbox:
                 raise ToolError(f"no rule {rid!r}; ids look like R12")
             cl = code_links(self.root, v, f"rule:{rid}")
             return {
-                **r,
+                **{k: x for k, x in r.items() if k != "rationale_status"},  # rationale has it
                 "question_details": [v.questions[q] for q in r["questions"] if q in v.questions],
                 "code_links": cl["links"][:10],
                 "code_links_source": cl["source"],
+                **self._rule_notes(rid),
             }
 
         self._reg(
@@ -999,6 +1014,196 @@ class Toolbox:
         self._reg("change_list", "The change sets: id, request, status.", {}, [], change_list)
         if _has_implementation_table(self.root):
             self._build_implementation()
+        self._build_notes()
+        if _has_impact_table(self.root):
+            self._build_impact()
+
+    # -- the owner's rationale and glossary (Spike G): read-only, only when a file exists
+    def _notes_paths(self) -> Any:
+        """The four rationale / glossary files beside the project's trace (None: no trace)."""
+        from lattice.spec.rationale import notes_paths
+
+        return notes_paths(self.root / "spec.trace.json")
+
+    def _notes(self, *, rationale: bool = True, glossary: bool = True) -> tuple[Any, Any]:
+        """(Trace, Notes or None) of the project, loading only the requested files;
+        ``bad_rationale`` / ``bad_glossary`` / ``no_spec`` become tool errors (D14)."""
+        from lattice.spec.glossary import Notes, load_glossary
+        from lattice.spec.rationale import NotesError, load_set
+        from lattice.spec.rules import Trace
+
+        try:
+            trace = Trace.from_json((self.root / "spec.trace.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError, KeyError, TypeError) as e:
+            raise ToolError(f"no_spec: cannot read the project's trace ({e})") from None
+        paths = self._notes_paths()
+        if paths is None or not paths.any:
+            return trace, None
+        try:
+            return trace, Notes(
+                paths,
+                load_set(trace, paths) if rationale else None,
+                load_glossary(paths) if glossary else None,
+            )
+        except NotesError as e:
+            raise ToolError(str(e)) from None
+
+    def _rule_notes(self, rid: str) -> dict[str, Any]:
+        """rule_get's extra keys: ``rationale`` (state; why / tradeoff / owner when approved) and
+        ``terms`` (the approved terms the rule uses). Empty without any rationale / glossary
+        file."""
+        paths = self._notes_paths()
+        if paths is None or not paths.any:
+            return {}
+        trace, notes = self._notes(rationale=paths.has_rationale, glossary=paths.has_glossary)
+        out: dict[str, Any] = {}
+        if notes is not None and notes.rationale is not None:
+            rs = notes.rationale
+            ap = rs.approved_for(rid)
+            out["rationale"] = {"state": rs.status(rid)}
+            if ap is not None:
+                n = ap.note
+                out["rationale"].update(
+                    why=n.why, tradeoff=n.tradeoff, owner=n.owner, approved_by=n.approved_by
+                )
+        if notes is not None and notes.glossary is not None:
+            from lattice.spec.glossary import analyse, term_view, terms_by_rule
+
+            spec, _trace = self._spec_trace()
+            used = terms_by_rule(analyse(spec, trace), notes.glossary)
+            out["terms"] = [
+                {k: term_view(t)[k] for k in ("term", "slug", "definition")}
+                for t in used.get(rid, [])
+            ]
+        return out
+
+    def _build_notes(self) -> None:
+        paths = self._notes_paths()
+        if paths is None:
+            return
+        S = {"type": "string"}
+        RO = "Read-only: nothing is written, approved or rejected from here."
+
+        def limit_of(a: Mapping[str, Any]) -> int:
+            limit = a.get("limit", 50)
+            if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 200:
+                raise ToolError("bad_limit: limit must be an integer 1..200")
+            return limit
+
+        if paths.has_rationale:
+
+            def rationale_get(a: Mapping[str, Any]) -> dict[str, Any]:
+                from lattice.spec.rationale import STATES, empty_set, note_view
+
+                limit = limit_of(a)
+                rule = canon_target(_str(a, "rule", required=False)).removeprefix("rule:")
+                state = _str(a, "state", required=False)
+                if state and state not in STATES:
+                    raise ToolError(f"bad_state: state must be one of {', '.join(STATES)}")
+                trace, notes = self._notes(glossary=False)
+                rs = notes.rationale if notes is not None and notes.rationale else None
+                rs = rs or empty_set(trace)
+                if rule and rule not in {r.id for r in trace.rules}:
+                    raise ToolError(f"unknown_rule: no rule {rule!r}; ids look like R12")
+                rows = [
+                    note_view(r)
+                    for r in rs.resolved
+                    if (not rule or rule in (r.note.rule, r.rule))
+                    and (not state or r.state == state)
+                ]
+                m = rs.metrics()
+                out: dict[str, Any] = {
+                    "file": m["file"],
+                    "metrics": m,
+                    "total": len(rows),
+                    "returned": min(len(rows), limit),
+                    "notes": rows[:limit],
+                    "proposals": {
+                        "proposed": sum(1 for p in rs.proposals if p.status == "proposed"),
+                        "rejected": sum(1 for p in rs.proposals if p.status == "rejected"),
+                    },
+                    "note": "only current or moved notes carry the owner's reason; proposals are "
+                    "counted, never shown. " + RO,
+                }
+                if rule:
+                    out["rule"] = rule
+                    out["rule_state"] = rs.status(rule)
+                return out
+
+            self._reg(
+                "rationale_get",
+                "The owner's approved rationale (why a rule exists, its trade-off, who decided): "
+                "notes with their state (current|moved|edited|ambiguous|stale; only current or "
+                "moved carry text), coverage metrics (RC, RN, RP) and the proposals as counts, "
+                "never as text. `rule` shows one rule's state (approved|proposed_only|stale|"
+                "ambiguous|edited|none). If a rule has none, say no rationale is recorded: never "
+                "offer a reason as the owner's. " + RO,
+                {
+                    "rule": {**S, "description": "a rule id, e.g. R63"},
+                    "state": {"type": "string", "enum": ["current", "moved", "edited",
+                                                          "ambiguous", "stale"]},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 200},
+                },
+                [],
+                rationale_get,
+            )  # fmt: skip
+
+        if paths.has_glossary:
+
+            def glossary_get(a: Mapping[str, Any]) -> dict[str, Any]:
+                from lattice.spec.glossary import run_lint, term_view
+
+                limit = limit_of(a)
+                lint = a.get("lint", False)
+                if not isinstance(lint, bool):
+                    raise ToolError("argument 'lint' must be a boolean")
+                name = _str(a, "term", required=False)
+                spec, _t = self._spec_trace()
+                trace, notes = self._notes()
+                gset = notes.glossary if notes is not None else None
+                if name:
+                    t = gset.term_by(name) if gset is not None else None
+                    if t is None:
+                        raise ToolError(f"unknown_term: no approved term {name!r}")
+                    return {"term": term_view(t), "note": RO}
+                res = run_lint(spec, trace, notes, self._notes_paths())
+                if lint:
+                    return {
+                        "file": res.metrics["file"],
+                        "metrics": res.metrics,
+                        "total": len(res.findings),
+                        "returned": min(len(res.findings), limit),
+                        "findings": res.findings[:limit],
+                        "note": "G001 undefined term, G002 unused approved term, G003 a note or "
+                        "term that is not current, G004 a proposal pending. " + RO,
+                    }
+                terms = [term_view(t) for t in (gset.defining if gset is not None else [])]
+                return {
+                    "file": res.metrics["file"],
+                    "metrics": res.metrics,
+                    "total": len(terms),
+                    "returned": min(len(terms), limit),
+                    "terms": terms[:limit],
+                    "ignore": list(gset.ignore) if gset is not None else [],
+                    "proposals": {"proposed": res.metrics["GP"]},
+                    "note": "only owner-approved terms define a word; proposals are counted, "
+                    "never shown. " + RO,
+                }
+
+            self._reg(
+                "glossary_get",
+                "The owner's approved business glossary: the terms with their definitions and "
+                "coverage metrics (GU, GT, GR, GC, GA, GP, GX); with `lint` the findings (G001 "
+                "undefined term, G002 unused term, G003 not current, G004 proposal pending); with "
+                "`term` one approved term. Proposals are counted, never shown. " + RO,
+                {
+                    "term": {**S, "description": "a term, alias or slug, e.g. active-window"},
+                    "lint": {"type": "boolean"},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 200},
+                },
+                [],
+                glossary_get,
+            )
 
     # -- the implementation diff (Spike C): three read-only tools, only with [implementation]
     def _spec_trace(self) -> tuple[Any, Any]:
@@ -1198,6 +1403,184 @@ class Toolbox:
             ["question"],
             workflow_find,
         )
+
+    # -- change impact (Spike D): one read-only tool, only with [impact]
+    def _impact_candidate(self, a: Mapping[str, Any]) -> tuple[str | None, Path | None]:
+        change, candidate = (_str(a, k, required=False) for k in ("change", "candidate"))
+        if bool(change) == bool(candidate):
+            raise ToolError("no_candidate: give exactly one of `change` (cN) and `candidate`")
+        if not candidate:
+            return change, None
+        path = (self.root / candidate).resolve()
+        if self.root.resolve() not in (path, *path.parents) or not path.is_dir():
+            raise ToolError(f"no_candidate: {candidate!r} is not a directory of this project")
+        return None, path
+
+    def _impact_observe(self, change: str | None, candidate: Path | None) -> dict[str, Any]:
+        """The CLI as a subprocess (tier 1 too): the harness's chdir and sys.path never touch
+        this server. A fresh container owner, a timeout, a process-group kill, and the owner's
+        containers removed in `finally`."""
+        import contextlib
+        import signal
+        import subprocess
+        import sys
+        import uuid
+
+        from lattice.studio.state import remove_owned_containers
+
+        token = f"impact-{uuid.uuid4().hex[:12]}"
+        argv = [sys.executable, "-m", "lattice.cli", "spec", "impact", "--project", str(self.root)]
+        argv += ["--candidate", str(candidate)] if candidate else ["--change", str(change)]
+        argv += ["--tiers", "123", "--json"]
+        env = dict(os.environ, LATTICE_CONTAINER_OWNER=token)
+        proc = subprocess.Popen(  # noqa: S603
+            argv,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            env=env,
+            start_new_session=True,
+        )
+        try:
+            out, err = proc.communicate(timeout=IMPACT_OBSERVE_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            with contextlib.suppress(OSError):
+                os.killpg(proc.pid, signal.SIGKILL)
+            proc.communicate()
+            raise ToolError(
+                f"timeout: the observed run took more than {int(IMPACT_OBSERVE_TIMEOUT)}s"
+            ) from None
+        finally:
+            with contextlib.suppress(OSError):
+                os.killpg(proc.pid, signal.SIGKILL)
+            remove_owned_containers(token)
+        if proc.returncode not in (0, 3):
+            first = (err.strip().splitlines() or ["failed"])[-1]
+            code = first.removeprefix("error: ")
+            raise ToolError(code if re.match(r"^[a-z_]+:", code) else f"impact_failed: {code}")
+        try:
+            return dict(json.loads(out))
+        except ValueError:
+            raise ToolError("impact_failed: the report is not JSON") from None
+
+    def _build_impact(self) -> None:
+        from lattice.spec import impact_report as ir
+
+        S = {"type": "string"}
+
+        def change_impact(a: Mapping[str, Any]) -> dict[str, Any]:
+            section = _str(a, "section", required=False) or "summary"
+            if section not in IMPACT_SECTIONS:
+                raise ToolError(f"bad_section: section must be one of {', '.join(IMPACT_SECTIONS)}")
+            limit = a.get("limit", 50)
+            if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 200:
+                raise ToolError("bad_limit: limit must be an integer 1..200")
+            observe = a.get("observe", False)
+            if not isinstance(observe, bool):
+                raise ToolError("bad_observe: observe must be a boolean")
+            change, candidate = self._impact_candidate(a)
+            if observe and self.readonly:
+                raise ToolError(
+                    "readonly: observe=true runs the app and Docker; a --readonly server "
+                    "does not start processes or containers"
+                )
+            if observe:
+                if not ir.project_has_app(self.root):
+                    raise ToolError("no_app: studio.toml hooks up no app ([app] app and db)")
+                report = self._impact_observe(change, candidate)
+            else:
+                try:
+                    inp = ir.build_inputs(
+                        project=self.root,
+                        candidate=candidate,
+                        change=change,
+                        state_dir=ir.default_state_dir(self.root) if change else None,
+                    )
+                    if inp.inventory is None:
+                        raise ToolError(inp.inventory_error or "inventory_missing: no inventory")
+                    report = ir.build_report(inp, tiers="23", runner=None, baseline="none")
+                except ir.ImpactError as e:
+                    raise ToolError(str(e)) from None
+            return _impact_view(report, section, limit)
+
+        self._reg(
+            "change_impact",
+            "What a spec change touches: the code locations and the checks and workflows that "
+            "fail, in tiers. Give `change` (a Studio change id, cN, ready or accepted) or "
+            "`candidate` (a project-relative directory with the candidate's REQUIREMENTS.md, "
+            "spec.py and spec.trace.json). Default: tier 2 (determined from the spec change and "
+            "the verified flows) and tier 3 (static code locations from the inventory), a pure "
+            "read. `observe: true` also runs the candidate on the app (tier 1, observed; starts "
+            "Docker; refused by a --readonly server). Which workflows fail is mostly not "
+            "decidable before the change exists: tier 3 flows are `may_fail`, not claims. "
+            "`section`: summary (default, under 4k characters), tier1, tier2, tier3, flows, "
+            "unread, decidability. Read-only: the project, the spec, the inventory and the state "
+            "are never written.",
+            {
+                "change": {**S, "description": "a Studio change id, e.g. c3"},
+                "candidate": {**S, "description": "a project-relative directory"},
+                "observe": {"type": "boolean"},
+                "section": {"type": "string", "enum": list(IMPACT_SECTIONS)},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 200},
+            },
+            [],
+            change_impact,
+        )
+
+
+def _impact_view(report: Mapping[str, Any], section: str, limit: int) -> dict[str, Any]:
+    """The tool's answer from a full report: the summary (under 4k characters) or one section,
+    at most `limit` items."""
+    head = {"schema": report["schema"], "tiers": report["tiers"]}
+    t1, t2, t3 = report["tier1"], report["tier2"], report["tier3"]
+    if section == "summary":
+        out: dict[str, Any] = {
+            **head,
+            "section": "summary",
+            "rules": {
+                k: len(v) if isinstance(v, list) else v for k, v in report["diff"]["rules"].items()
+            },
+            "targets": {k: len(v) for k, v in report["diff"]["targets"].items()},
+            "summary": report["summary"]["tiers"],
+            "workflows": report["summary"]["workflows"],
+            "note": report["summary"]["note"],
+            "determined": [d["claim"] for d in t2["determined"][:3]],
+            "files": t3.get("files", [])[:10],
+            "sections": list(IMPACT_SECTIONS),
+        }
+        while len(json.dumps(out)) > 3800 and (out["files"] or out["determined"]):
+            out["files" if out["files"] else "determined"].pop()
+        return out
+    if section == "tier1":
+        items = t1.get("failing", [])
+        extra = {"resolved": t1.get("resolved", [])[:limit], "counts": t1.get("counts", {})}
+    elif section == "tier2":
+        items = t2.get("determined", [])
+        extra = {"flows": t2.get("flows", [])[:limit]}
+    elif section == "tier3":
+        items = t3.get("locations", [])
+        extra = {"counts": t3.get("counts", {}), "external": t3.get("external")}
+    elif section == "flows":
+        items = [
+            *t1.get("flows", []),
+            *t2.get("flows", []),
+            *t3.get("flows", []),
+        ]
+        extra = {}
+    elif section == "unread":
+        items = t3.get("unread", [])
+        extra = {}
+    else:
+        items = t2.get("decidability", [])
+        extra = {}
+    return {
+        **head,
+        "section": section,
+        "total": len(items),
+        "returned": min(len(items), limit),
+        "items": items[:limit],
+        **extra,
+    }
 
 
 def cap_result(data: Any, cap: int = OUTPUT_CAP) -> tuple[str, bool]:

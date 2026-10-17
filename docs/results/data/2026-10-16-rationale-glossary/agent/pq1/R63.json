@@ -1,0 +1,40 @@
+{
+ "rule": "R63",
+ "status": "RAN",
+ "reason": null,
+ "exit": 0,
+ "cost_usd": 0.0142,
+ "stopped": null,
+ "authoritative_absent": true,
+ "others_unchanged": true,
+ "entry": {
+  "rule": "R63",
+  "anchor": "447e017cbe2d931482f9cc06df1c23a802d6d1de73590efb80f2d549ec9a2264",
+  "why": "Changing a habit's period would break the meaning of its history: existing habit_targets rows, check-ins and progress are bucketed by week/month/year, and target_count limits depend on the period. Rejecting it outright keeps those records consistent, and refusing explicitly (rather than silently ignoring the field) tells the client the change isn't supported.",
+  "tradeoff": "Users who want a different period must create a new habit, losing continuity with the old one's history, in exchange for avoiding re-bucketing and recomputing past progress.",
+  "owner": null,
+  "status": "proposed",
+  "author": "llm:sonnet",
+  "approved_by": null,
+  "approved_sha": null,
+  "basis": [
+   {
+    "target": "rule:R60",
+    "quote": "any subset of `{name, description, target_count, start_date, end_date, archived}`"
+   },
+   {
+    "target": "rule:R65",
+    "quote": "rows of earlier periods never change"
+   }
+  ],
+  "refs": [],
+  "rejected_basis": [],
+  "dropped": []
+ },
+ "stderr": "",
+ "gated_ok": true,
+ "basis": 2,
+ "rejected_basis": 0,
+ "valid_basis": true,
+ "basis_empty": false
+}

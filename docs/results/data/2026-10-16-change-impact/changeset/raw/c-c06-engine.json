@@ -1,0 +1,1772 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R42",
+     "new_text": "`nudges`: `id` (a server UUID), `habit_id`, `for_date` (a local date), `kind` (`on_track` | `behind` | `unreachable` | `achieved`), `message`, `delivery` (`pending` | `sent` | `suppressed`), `delivery_reason` (nullable: `quiet_hours` | `push_disabled` | `no_device` | `daily_limit` | `in_app_only` | `after_daily_pass` | `dismissed` | `push_failed`), `change_seq`, `created_at`, `updated_at`, `dismissed_at` (nullable), `deleted_at` (nullable); one row per (`habit_id`, `for_date`).",
+     "old": "R42",
+     "old_text": "`nudges`: `id` (a server UUID), `habit_id`, `for_date` (a local date), `kind` (`on_track` | `behind` | `unreachable` | `achieved`), `message`, `delivery` (`pending` | `sent` | `failed` | `suppressed`), `delivery_reason` (nullable: `quiet_hours` | `push_disabled` | `no_device` | `daily_limit` | `in_app_only` | `after_daily_pass` | `dismissed`), `change_seq`, `created_at`, `updated_at`, `dismissed_at` (nullable), `deleted_at` (nullable); one row per (`habit_id`, `for_date`)."
+    },
+    {
+     "new": "R134",
+     "new_text": "Delivery rule 7: otherwise the push service sends the nudge's message to every device of the user; the nudge becomes `sent` (reason null) if at least one send succeeded, else `suppressed` with reason `push_failed`.",
+     "old": "R134",
+     "old_text": "Delivery rule 7: otherwise the push service sends the nudge's message to every device of the user; the nudge becomes `sent` if at least one send succeeded, else `failed` (reason null in both cases)."
+    }
+   ],
+   "removed": [],
+   "unchanged": 146
+  },
+  "targets": {
+   "added": [],
+   "modified": [
+    "invariant:nudge_reason_matches_delivery",
+    "machine:Nudge.delivery",
+    "profile:Nudge",
+    "scenario:pass_failed_push"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "bf52c7a04a842e4f69c165b21747c9aef6f660d49f39bc225f36e31c2b06678c",
+   "spec": "45b41ab563cea14faea5ec6cd9a8fcb4067506f11a7d211149b8e911474971a6",
+   "trace": "252c4a3a1ef1540ad3083016304c891bac1b186de09690cc814005243ad476d5"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 2,
+   "closure": 20,
+   "direct": 11,
+   "table_peer": 16
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 2,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 6
+   },
+   "3": {
+    "flows": 3,
+    "locations": 47,
+    "unread": 1
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 3
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 2
+   },
+   "by_layer": {
+    "C": 1,
+    "D": 1
+   },
+   "failing": 2,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "pass_failed_push / step 2",
+    "code": null,
+    "endpoint": "service nudger",
+    "evidence": [
+     {
+      "at": "check:C:pass_failed_push / step 2",
+      "kind": "check",
+      "what": "[C silent] service nudger (pass_failed_push / step 2)"
+     },
+     {
+      "at": "spec:spec.py:1606",
+      "kind": "spec",
+      "what": "pass_failed_push step 2"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-1bb9d46928",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "C",
+    "line": 1606,
+    "observation": "runtime",
+    "problems": [],
+    "rule": "A sent nudge has no reason; a suppressed one has one.",
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "summary": "[C silent] service nudger (pass_failed_push / step 2)",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "pass_failed_push / step 2",
+    "code": null,
+    "endpoint": "service nudger",
+    "evidence": [
+     {
+      "at": "check:D:pass_failed_push / step 2",
+      "kind": "check",
+      "what": "[D silent] service nudger (pass_failed_push / step 2)"
+     },
+     {
+      "at": "spec:spec.py:1606",
+      "kind": "spec",
+      "what": "pass_failed_push step 2"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-7d7113a944",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1606,
+    "observation": "runtime",
+    "problems": [
+     "service nudger did not bring about nudges where {'habit_id': '00000000-0000-4000-8000-000000000100', 'for_date': '2026-03-04'} count=1 equals {'delivery': 'suppressed', 'delivery_reason': 'push_failed'} within 30s (last observed: {\"nudges where {'habit_id': '00000000-0000-4000-8000-000000000100', 'for_date': '2026-03-04'}\": 1})",
+     "db nudges where {'habit_id': '00000000-0000-4000-8000-000000000100', 'for_date': '2026-03-04'}: delivery is 'failed', expected 'suppressed'",
+     "db nudges where {'habit_id': '00000000-0000-4000-8000-000000000100', 'for_date': '2026-03-04'}: delivery_reason is None, expected 'push_failed'"
+    ],
+    "rule": "scenario: pass_failed_push",
+    "rules": [
+     "R134"
+    ],
+    "summary": "[D silent] service nudger (pass_failed_push / step 2)",
+    "target": "scenario:pass_failed_push",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "invariant:nudge_reason_matches_delivery"
+   },
+   {
+    "kind": "target",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "machine:Nudge.delivery"
+   },
+   {
+    "kind": "target",
+    "reason": "profile_or_users_changed",
+    "state": "undecidable",
+    "subject": "profile:Nudge"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:pass_failed_push"
+   },
+   {
+    "kind": "changed",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "rule:R42"
+   },
+   {
+    "kind": "changed",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "rule:R134"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 20,
+    "direct": 11,
+    "insertion": 0,
+    "table_peer": 16
+   },
+   "files": 14,
+   "flows_may_fail": 3,
+   "locations": 47,
+   "seeds": {
+    "machines": 1,
+    "routes": 2,
+    "tables": 1
+   },
+   "unread": 1
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/account/routes.go",
+   "internal/completions/routes.go",
+   "internal/db/changeseq.go",
+   "internal/db/models.go",
+   "internal/habits/routes.go",
+   "internal/home/routes.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/pagination.go",
+   "internal/httpapi/registry.go",
+   "internal/nudges/checkin.go",
+   "internal/nudges/nudger.go",
+   "internal/nudges/routes.go",
+   "internal/period/period.go",
+   "internal/sync/routes.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-12302559ed",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-394cbe47f2",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/nudges"
+    ],
+    "rules": [
+     "R134"
+    ],
+    "target": "flow:wf-12302559ed",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-27340d7d06",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/nudges"
+    ],
+    "rules": [
+     "R134"
+    ],
+    "target": "flow:wf-717a23507f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3cd25d982c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/nudges"
+    ],
+    "rules": [
+     "R134"
+    ],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:21",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-881d2975b8",
+    "kind": "direct",
+    "line": 21,
+    "rules": [
+     "R134"
+    ],
+    "symbol": null,
+    "target": "scenario:pass_failed_push",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_failed_push / step 1 -> route:PUT /v1/me -> registered -> code:internal/account/routes.go:21",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 1 -> route:PUT /v1/me -> registered -> code:internal/account/routes.go:21"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:22",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-06dd9f7bc4",
+    "kind": "table_peer",
+    "line": 22,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:DELETE /v1/me -> code:internal/account/routes.go:22"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 58,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-03e3177f32",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "me",
+    "target": "scenario:pass_failed_push",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_failed_push / step 1 -> route:PUT /v1/me -> call:streak/internal/account:handler.me -> code:internal/account/routes.go:45",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 1 -> route:PUT /v1/me -> call:streak/internal/account:handler.me -> code:internal/account/routes.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 131,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:73",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-6bd4294cd8",
+    "kind": "direct",
+    "line": 73,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "put",
+    "target": "scenario:pass_failed_push",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_failed_push / step 1 -> route:PUT /v1/me -> handler:account.handler.put -> code:internal/account/routes.go:73",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 1 -> route:PUT /v1/me -> handler:account.handler.put -> code:internal/account/routes.go:73"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 165,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:134",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-6a53b445af",
+    "kind": "table_peer",
+    "line": 134,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": "remove",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:DELETE /v1/me -> handler:account.handler.remove -> code:internal/account/routes.go:134"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:25",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-17f2ca3c74",
+    "kind": "table_peer",
+    "line": 25,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:POST /v1/habits/:id/completions -> code:internal/completions/routes.go:25"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:27",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-e88eb3bcf0",
+    "kind": "table_peer",
+    "line": 27,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:DELETE /v1/habits/:id/completions/:cid -> code:internal/completions/routes.go:27"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:28",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-e689d86b8f",
+    "kind": "table_peer",
+    "line": 28,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:POST /v1/completions/batch -> code:internal/completions/routes.go:28"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 127,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:57",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-0639cc2299",
+    "kind": "table_peer",
+    "line": 57,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": "batch",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:POST /v1/completions/batch -> handler:completions.handler.batch -> code:internal/completions/routes.go:57"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 260,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:217",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-c3e899e363",
+    "kind": "table_peer",
+    "line": 217,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": "create",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:POST /v1/habits/:id/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 355,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:312",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-3752a4daf8",
+    "kind": "table_peer",
+    "line": 312,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": "remove",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:DELETE /v1/habits/:id/completions/:cid -> handler:completions.handler.remove -> code:internal/completions/routes.go:312"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 20,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:13",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-eb5c462a13",
+    "kind": "closure",
+    "line": 13,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "LockUser",
+    "target": "scenario:pass_failed_push",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_failed_push / step 1 -> route:PUT /v1/me -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 1 -> route:PUT /v1/me -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 111,
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:98",
+      "kind": "code",
+      "what": "struct"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "struct"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-0c35e4c304",
+    "kind": "direct",
+    "line": 98,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": "Nudge",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> struct:Nudge -> code:internal/db/models.go:98",
+     "profile:Nudge -> table:nudges -> struct:Nudge -> code:internal/db/models.go:98",
+     "rule:R134 -> invariant:nudge_reason_matches_delivery -> struct:Nudge -> code:internal/db/models.go:98",
+     "rule:R42 -> invariant:nudge_reason_matches_delivery -> struct:Nudge -> code:internal/db/models.go:98",
+     "rule:R42 -> invariant:one_nudge_per_day -> struct:Nudge -> code:internal/db/models.go:98"
+    ],
+    "what": "struct"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:102",
+      "kind": "code",
+      "what": "column kind"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column kind"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-e3c228be67",
+    "kind": "direct",
+    "line": 102,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> column:kind -> code:internal/db/models.go:102",
+     "profile:Nudge -> table:nudges -> column:kind -> code:internal/db/models.go:102",
+     "rule:R134 -> invariant:nudge_reason_matches_delivery -> column:kind -> code:internal/db/models.go:102",
+     "rule:R42 -> invariant:nudge_reason_matches_delivery -> column:kind -> code:internal/db/models.go:102",
+     "rule:R42 -> invariant:one_nudge_per_day -> column:kind -> code:internal/db/models.go:102"
+    ],
+    "what": "column kind"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:104",
+      "kind": "code",
+      "what": "column delivery"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column delivery"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-5bcb7d2f28",
+    "kind": "direct",
+    "line": 104,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> column:delivery -> code:internal/db/models.go:104",
+     "profile:Nudge -> table:nudges -> column:delivery -> code:internal/db/models.go:104",
+     "rule:R134 -> invariant:nudge_reason_matches_delivery -> column:delivery -> code:internal/db/models.go:104",
+     "rule:R42 -> invariant:nudge_reason_matches_delivery -> column:delivery -> code:internal/db/models.go:104",
+     "rule:R42 -> invariant:one_nudge_per_day -> column:delivery -> code:internal/db/models.go:104"
+    ],
+    "what": "column delivery"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:105",
+      "kind": "code",
+      "what": "column delivery_reason"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column delivery_reason"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-d1bde0c3c0",
+    "kind": "direct",
+    "line": 105,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> column:delivery_reason -> code:internal/db/models.go:105",
+     "profile:Nudge -> table:nudges -> column:delivery_reason -> code:internal/db/models.go:105",
+     "rule:R134 -> invariant:nudge_reason_matches_delivery -> column:delivery_reason -> code:internal/db/models.go:105",
+     "rule:R42 -> invariant:nudge_reason_matches_delivery -> column:delivery_reason -> code:internal/db/models.go:105",
+     "rule:R42 -> invariant:one_nudge_per_day -> column:delivery_reason -> code:internal/db/models.go:105"
+    ],
+    "what": "column delivery_reason"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:28",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-1f534e1cc5",
+    "kind": "table_peer",
+    "line": 28,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:DELETE /v1/habits/:id -> code:internal/habits/routes.go:28"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 451,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:400",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-2599c75060",
+    "kind": "table_peer",
+    "line": 400,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": "remove",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:DELETE /v1/habits/:id -> handler:habits.handler.remove -> code:internal/habits/routes.go:400"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/home/routes.go:18",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/home/routes.go",
+    "id": "t3-3cec7c7d58",
+    "kind": "table_peer",
+    "line": 18,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:GET /v1/home -> code:internal/home/routes.go:18"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/home/routes.go:29",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/home/routes.go",
+    "id": "t3-25087f964e",
+    "kind": "table_peer",
+    "line": 29,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": "home",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:GET /v1/home -> handler:home.handler.home -> code:internal/home/routes.go:29"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-5fa95a1d8c",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:pass_failed_push",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_failed_push / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 35,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:25",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-2a9cdf9f77",
+    "kind": "closure",
+    "line": 25,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "ParseLimit",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:ParseLimit -> code:internal/httpapi/pagination.go:25"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:38",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-099ce30c3b",
+    "kind": "closure",
+    "line": 38,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "EncodeCursor",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:EncodeCursor -> code:internal/httpapi/pagination.go:38"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:44",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-91e747d234",
+    "kind": "closure",
+    "line": 44,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "DecodeCursor",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:DecodeCursor -> code:internal/httpapi/pagination.go:44"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 66,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:62",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-60428edeb7",
+    "kind": "closure",
+    "line": 62,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "cursorMAC",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:cursorMAC -> code:internal/httpapi/pagination.go:62"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 80,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:70",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-b2188b02eb",
+    "kind": "closure",
+    "line": 70,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "ListParams",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:ListParams -> code:internal/httpapi/pagination.go:70"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 85,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:85",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-8037e45b2f",
+    "kind": "closure",
+    "line": 85,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "NewPage",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:NewPage -> code:internal/httpapi/pagination.go:85"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-2ee02fde9e",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:pass_failed_push",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_failed_push / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-e453e8aacd",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "Now",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-ba8d427bb3",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:59",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-4189047b81",
+    "kind": "closure",
+    "line": 59,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "Today",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-c1c5e5fb5f",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "Q",
+    "target": "scenario:pass_failed_push",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_failed_push / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-848ac516a5",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:pass_failed_push",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_failed_push / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 99,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/checkin.go:94",
+      "kind": "code",
+      "what": "write of nudges.delivery"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "write of nudges.delivery"
+     }
+    ],
+    "file": "internal/nudges/checkin.go",
+    "id": "t3-6949d99dfb",
+    "kind": "direct",
+    "line": 94,
+    "rules": [
+     "R123",
+     "R127"
+    ],
+    "symbol": "AfterCheckIn",
+    "target": "machine:Nudge.delivery",
+    "tier": 3,
+    "via": [
+     "machine:Nudge.delivery -> machine writes -> status_write:nudges.AfterCheckIn -> code:internal/nudges/checkin.go:94"
+    ],
+    "what": "write of nudges.delivery"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/nudges/nudger.go:125",
+      "kind": "code",
+      "what": "edge evidence nudges.delivery"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "edge evidence nudges.delivery"
+     }
+    ],
+    "file": "internal/nudges/nudger.go",
+    "id": "t3-4657c8255b",
+    "kind": "direct",
+    "line": 125,
+    "rules": [
+     "R123",
+     "R127"
+    ],
+    "symbol": null,
+    "target": "machine:Nudge.delivery",
+    "tier": 3,
+    "via": [
+     "machine:Nudge.delivery -> machine writes -> machine edge -> code:internal/nudges/nudger.go:125"
+    ],
+    "what": "edge evidence nudges.delivery"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/nudges/nudger.go:180",
+      "kind": "code",
+      "what": "write of nudges.delivery"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "edge evidence nudges.delivery"
+     }
+    ],
+    "file": "internal/nudges/nudger.go",
+    "id": "t3-5db72bf800",
+    "kind": "direct",
+    "line": 180,
+    "rules": [
+     "R123",
+     "R127"
+    ],
+    "symbol": null,
+    "target": "machine:Nudge.delivery",
+    "tier": 3,
+    "via": [
+     "machine:Nudge.delivery -> machine writes -> machine edge -> code:internal/nudges/nudger.go:180",
+     "machine:Nudge.delivery -> machine writes -> status_write:nudges.decideDeliveries -> code:internal/nudges/nudger.go:180"
+    ],
+    "what": "write of nudges.delivery"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/nudges/routes.go:16",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/nudges/routes.go",
+    "id": "t3-4bc26cb6e8",
+    "kind": "direct",
+    "line": 16,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:GET /v1/nudges -> code:internal/nudges/routes.go:16",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> registered -> code:internal/nudges/routes.go:16"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/nudges/routes.go:17",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/nudges/routes.go",
+    "id": "t3-e5c560d286",
+    "kind": "table_peer",
+    "line": 17,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:POST /v1/nudges/:id/dismiss -> code:internal/nudges/routes.go:17"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 30,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/routes.go:23",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/nudges/routes.go",
+    "id": "t3-adef01c7a7",
+    "kind": "closure",
+    "line": 23,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "active",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/nudges:active -> code:internal/nudges/routes.go:23"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 54,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/routes.go:33",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/nudges/routes.go",
+    "id": "t3-a84b482454",
+    "kind": "direct",
+    "line": 33,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": "list",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:GET /v1/nudges -> handler:nudges.handler.list -> code:internal/nudges/routes.go:33",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> handler:nudges.handler.list -> code:internal/nudges/routes.go:33"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 102,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/routes.go:57",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/nudges/routes.go",
+    "id": "t3-661fc444e4",
+    "kind": "table_peer",
+    "line": 57,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": "dismiss",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:POST /v1/nudges/:id/dismiss -> handler:nudges.handler.dismiss -> code:internal/nudges/routes.go:57"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-c82b1ffbee",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "Date",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/period:Date -> code:internal/period/period.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-15679f9dc5",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "Location",
+    "target": "scenario:pass_failed_push",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_failed_push / step 1 -> route:PUT /v1/me -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 1 -> route:PUT /v1/me -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 118,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:115",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-54ceeec044",
+    "kind": "closure",
+    "line": 115,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "ValidZone",
+    "target": "scenario:pass_failed_push",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_failed_push / step 1 -> route:PUT /v1/me -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 1 -> route:PUT /v1/me -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 129,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:122",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-9d7b6db548",
+    "kind": "closure",
+    "line": 122,
+    "rules": [
+     "R134"
+    ],
+    "symbol": "Today",
+    "target": "scenario:pass_sends_at_most_three",
+    "tier": 3,
+    "via": [
+     "rule:R134 -> scenario:pass_sends_at_most_three / step 2 -> route:GET /v1/nudges -> call:streak/internal/period:Today -> code:internal/period/period.go:122"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:17",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-ab7a5287eb",
+    "kind": "table_peer",
+    "line": 17,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": null,
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:GET /v1/sync -> code:internal/sync/routes.go:17"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 108,
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:31",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-8b6a7f9083",
+    "kind": "table_peer",
+    "line": 31,
+    "rules": [
+     "R42",
+     "R134"
+    ],
+    "symbol": "sync",
+    "target": "invariant:nudge_reason_matches_delivery",
+    "tier": 3,
+    "via": [
+     "invariant:nudge_reason_matches_delivery -> table:nudges -> route:GET /v1/sync -> handler:sync.handler.sync -> code:internal/sync/routes.go:31"
+    ],
+    "what": "handler on a changed table"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   }
+  ]
+ },
+ "tier4": null,
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "not_run:spike_e"
+ }
+}

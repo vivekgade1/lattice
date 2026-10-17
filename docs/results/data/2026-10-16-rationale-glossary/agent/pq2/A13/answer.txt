@@ -1,0 +1,14 @@
+TERM-UNDEFINED
+
+The owner's approved glossary has no entry for "daily pass". Looking up `daily pass` returns `unknown_term: no approved term 'daily pass'`, so there is no `term:<slug>` to quote. The spec does use the term, and its rules describe it:
+
+- **R126:** the background service `nudger` checks every minute and once at start-up. Its text is "whether the user's local time has reached their `nudge_time` and their `last_pass_date` is before their local today; if so it runs that user's daily pass and sets `last_pass_date` to the local today."
+- **R127:** "A daily pass, for each eligible habit of the user in id order, creates today's nudge or rewrites its `kind` and `message` (unless dismissed), then decides the delivery of each of today's nudges that is still `pending`, in habit id order, by the first rule that applies."
+- **R36:** `last_pass_date` is "the local date of the user's last daily pass".
+- **R123:** a nudge created by a check-in write before that day's pass has `delivery` `pending`. One created after the pass has `delivery` `suppressed` with reason `after_daily_pass`.
+
+In short, a daily pass is the nudger's once-per-local-day run for one user. It starts once the user's local time reaches their `nudge_time`. It creates or refreshes that day's nudges for each eligible habit, then decides the delivery of the pending ones.
+
+No rationale is recorded for R126 or R127. `rationale_get` reports state `none` for both. The rationale file has 5 current notes, 2 stale notes and 2 unapproved proposals, and none of them bears on those two rules.
+
+I changed nothing.

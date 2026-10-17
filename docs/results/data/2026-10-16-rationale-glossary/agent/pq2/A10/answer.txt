@@ -1,0 +1,16 @@
+NO-RATIONALE
+
+The spec has a rule for quiet hours, but the owner has recorded no reason for it.
+
+- **The rule:** R132 says "if the user's local time is inside their quiet hours (from `quiet_start` inclusive to `quiet_end` exclusive, crossing midnight when `quiet_start` is later than `quiet_end`; no quiet hours when they are equal), the nudge becomes `suppressed` with reason `quiet_hours`."
+- **Rationale status:** `rationale:R132` is `none`. No rationale exists for it, not even an unapproved proposal. The approved notes cover only R29, R56, R63, R75 and R133, plus stale notes on R8 and R70.
+- **Glossary:** `quiet-hours` has no approved term, so there is no definition to cite.
+
+I can't tell you why quiet hours suppress a push without inventing a reason. The spec only states what happens.
+
+The spec does give some related context:
+- R11 sets the defaults for a new user: quiet hours 22:00–08:00.
+- R25 lets the user change them.
+- Line 46 of REQUIREMENTS.md, M7, lists quiet hours as a notification preference per user.
+
+None of these state a reason. If you want one recorded, the owner needs to propose and approve it in Lattice Studio. I changed nothing.

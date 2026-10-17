@@ -1,0 +1,251 @@
+{
+ "checks": {
+  "K0": true,
+  "K0_pct": true,
+  "K1": true,
+  "K1_R88_matches": true,
+  "K1_pct": true,
+  "K2": true,
+  "K3": true,
+  "K4": true
+ },
+ "id": "PR",
+ "observed": {
+  "K0": {
+   "RC": [
+    6,
+    146,
+    4.1
+   ],
+   "RC_all": [
+    6,
+    148
+   ],
+   "RN": {
+    "ambiguous": 0,
+    "current": 6,
+    "edited": 0,
+    "moved": 0,
+    "stale": 0
+   },
+   "matches": {},
+   "states": {
+    "R133": [
+     "current",
+     "R133"
+    ],
+    "R29": [
+     "current",
+     "R29"
+    ],
+    "R56": [
+     "current",
+     "R56"
+    ],
+    "R63": [
+     "current",
+     "R63"
+    ],
+    "R75": [
+     "current",
+     "R75"
+    ],
+    "R88": [
+     "current",
+     "R88"
+    ]
+   }
+  },
+  "K1": {
+   "RC": [
+    5,
+    147,
+    3.4
+   ],
+   "RC_all": [
+    5,
+    149
+   ],
+   "RN": {
+    "ambiguous": 1,
+    "current": 0,
+    "edited": 0,
+    "moved": 5,
+    "stale": 0
+   },
+   "matches": {
+    "R88": [
+     "R89",
+     "R95"
+    ]
+   },
+   "states": {
+    "R133": [
+     "moved",
+     "R134"
+    ],
+    "R29": [
+     "moved",
+     "R30"
+    ],
+    "R56": [
+     "moved",
+     "R57"
+    ],
+    "R63": [
+     "moved",
+     "R64"
+    ],
+    "R75": [
+     "moved",
+     "R76"
+    ],
+    "R88": [
+     "ambiguous",
+     "R88"
+    ]
+   }
+  },
+  "K2": {
+   "RC": [
+    5,
+    146,
+    3.4
+   ],
+   "RC_all": [
+    5,
+    148
+   ],
+   "RN": {
+    "ambiguous": 0,
+    "current": 5,
+    "edited": 0,
+    "moved": 0,
+    "stale": 1
+   },
+   "matches": {},
+   "states": {
+    "R133": [
+     "current",
+     "R133"
+    ],
+    "R29": [
+     "current",
+     "R29"
+    ],
+    "R56": [
+     "current",
+     "R56"
+    ],
+    "R63": [
+     "current",
+     "R63"
+    ],
+    "R75": [
+     "stale",
+     "R75"
+    ],
+    "R88": [
+     "current",
+     "R88"
+    ]
+   }
+  },
+  "K3": {
+   "RC": [
+    5,
+    146,
+    3.4
+   ],
+   "RC_all": [
+    5,
+    148
+   ],
+   "RN": {
+    "ambiguous": 0,
+    "current": 5,
+    "edited": 1,
+    "moved": 0,
+    "stale": 0
+   },
+   "matches": {},
+   "states": {
+    "R133": [
+     "current",
+     "R133"
+    ],
+    "R29": [
+     "current",
+     "R29"
+    ],
+    "R56": [
+     "current",
+     "R56"
+    ],
+    "R63": [
+     "edited",
+     "R63"
+    ],
+    "R75": [
+     "current",
+     "R75"
+    ],
+    "R88": [
+     "current",
+     "R88"
+    ]
+   }
+  },
+  "K4": {
+   "RC": [
+    5,
+    145,
+    3.4
+   ],
+   "RC_all": [
+    5,
+    147
+   ],
+   "RN": {
+    "ambiguous": 0,
+    "current": 5,
+    "edited": 0,
+    "moved": 0,
+    "stale": 1
+   },
+   "matches": {},
+   "states": {
+    "R133": [
+     "stale",
+     "R133"
+    ],
+    "R29": [
+     "current",
+     "R29"
+    ],
+    "R56": [
+     "current",
+     "R56"
+    ],
+    "R63": [
+     "current",
+     "R63"
+    ],
+    "R75": [
+     "current",
+     "R75"
+    ],
+    "R88": [
+     "current",
+     "R88"
+    ]
+   }
+  }
+ },
+ "output_sha256": "d59dda9e7b4a12fca3d2a6053ecee24adad998306cc8bd5f08dbfeb9cb670747",
+ "pass": true,
+ "predicted": "K0 6 current RC 6/146 = 4.1%; K1 5 moved + R88 ambiguous RC 5/147 = 3.4%; K2 R75 stale 5/146; K3 R63 edited 5/146; K4 R133 stale 5/145",
+ "probe": "anchors on K0..K4: current, moved, ambiguous (R88/R94), stale, edited; RC",
+ "ran": true,
+ "seconds": 0.0
+}

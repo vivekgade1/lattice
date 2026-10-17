@@ -1,0 +1,76 @@
+{
+ "checks": {
+  "anchor": true,
+  "author_llm": true,
+  "authoritative_unchanged": true,
+  "bad_basis_listed": true,
+  "forged_dropped_and_noted": true,
+  "glossary_out_is_authoritative_refused": true,
+  "glossary_proposed_owner_null": true,
+  "out_is_authoritative_refused": true,
+  "owner_null_and_unapproved": true,
+  "two_entries_proposed": true
+ },
+ "id": "PDR",
+ "observed": {
+  "anchor_ok": true,
+  "approved_by": [
+   "None"
+  ],
+  "auth_unchanged": true,
+  "authors": [
+   "llm:stubmodel"
+  ],
+  "basis_r63": [
+   "rule:R63"
+  ],
+  "dropped_r63": [
+   "approved_by",
+   "author",
+   "owner",
+   "status"
+  ],
+  "glossary_model": {
+   "bad_basis_listed": true,
+   "dropped_has_owner": true,
+   "gauth_unchanged": true,
+   "llm": 1,
+   "owners": [
+    "None"
+   ],
+   "rc": 0,
+   "statuses": [
+    "proposed"
+   ]
+  },
+  "glossary_out_is_authoritative": {
+   "code": true,
+   "rc": 2,
+   "unchanged": true
+  },
+  "n": 2,
+  "out_is_authoritative": {
+   "code": true,
+   "no_model_call": true,
+   "rc": 2,
+   "unchanged": true
+  },
+  "owners": [
+   "None"
+  ],
+  "rc": 0,
+  "rejected_basis_r63": [
+   "rule:R63|this sentenc",
+   "scenario:no_such_scenario|whatever tex"
+  ],
+  "statuses": [
+   "proposed"
+  ]
+ },
+ "output_sha256": "b0b65e8e876bd24cbc93429f767decab03b9644e17c3234b8bb08cd83d08bb52",
+ "pass": true,
+ "predicted": "entries proposed, owner null (forged one dropped and noted), bad basis in rejected_basis; authoritative files byte-unchanged; --out = authoritative refused",
+ "probe": "rationale draft and glossary draft --model with a stub generator (forged owner, bad citation, status: approved)",
+ "ran": true,
+ "seconds": 0.1
+}

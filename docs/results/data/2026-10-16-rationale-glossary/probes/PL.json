@@ -1,0 +1,30 @@
+{
+ "id": "PL",
+ "in_range": {
+  "GC": true,
+  "GR": true,
+  "GT": true,
+  "GU": true
+ },
+ "observed": {
+  "G003": 0,
+  "GA": 0,
+  "GC": {
+   "d": 116,
+   "n": 0,
+   "pct": 0.0
+  },
+  "GP": 0,
+  "GR": 116,
+  "GT": 37,
+  "GU": 293,
+  "GX": 0,
+  "file": "REQUIREMENTS.glossary.json"
+ },
+ "output_sha256": "d4a211509c6f6831926c4ad93897fc1b62afdd5743c3fb22816ad61c5d053085",
+ "pass": null,
+ "predicted": "GU 300 (250-350), GT 37 (34-40), GR 115 (95-135), GC 0/GR",
+ "probe": "S with an empty authoritative glossary (terms: []), report-only",
+ "ran": true,
+ "seconds": 0.0
+}
