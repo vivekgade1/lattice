@@ -618,6 +618,36 @@
       "text": "The web UI has an Improve view (the proposals, the applies, Draft, Verify, and, for a config draft with apply enabled and no live record, \"Apply on a branch...\" behind a confirmation, then the record with a NOT MERGED banner, the six commands to copy and \"Discard...\") and, when the workspace manifest names one, a Contracts view (the links, \"Check contracts\" and \"Preview impact\" only on demand, the linked questions with Resolve and Dismiss with a note, and the deliveries); every call goes through api.js, and no route of the UI merges, pushes or closes a ledger entry.",
       "section": "Lattice Studio server: requirements > Improvement drafts and applies",
       "line": 165
+    },
+    {
+      "id": "R104",
+      "text": "GET /api/appmap answers 200 with `lattice.appmap/1`; on a project whose studio.toml has no `[implementation]` table its `state` is `not_configured` and it has no other key than `schema`, `state`, `inputs` and `why`, with or without `?section=`, it answers the same under `/p/<name>/api/appmap`, and it runs and writes nothing.",
+      "section": "Lattice Studio server: requirements > App map and impact",
+      "line": 169
+    },
+    {
+      "id": "R105",
+      "text": "A `section` of GET /api/appmap that is not summary, rules, workflows, machines, access, endpoints or unread answers 422 with the code `bad_section`; GET /api/appmap/element without a `key`, or with one over 300 characters, answers 422 with the code `bad_key`, and on a map that is not `ok` every key is unknown: 404 with the code `unknown_key` and an empty `nearest`.",
+      "section": "Lattice Studio server: requirements > App map and impact",
+      "line": 170
+    },
+    {
+      "id": "R106",
+      "text": "GET /api/impact answers 422 with the code `bad_change` unless `change` is `c` and one to six digits, and 422 with the code `bad_section` for a `section` that is not summary, tier1, tier2, tier3, flows, unread or decidability; on a project whose studio.toml has no `[impact]` table a valid id answers 200 with `lattice.studio-impact/1`, `state` `impact_not_configured` and `report` null, and runs nothing.",
+      "section": "Lattice Studio server: requirements > App map and impact",
+      "line": 171
+    },
+    {
+      "id": "R107",
+      "text": "There is no write route for the app map or the impact: POST and DELETE on /api/appmap, /api/appmap/element and /api/impact answer 404 `no such route`, and the model, the files and the state stay as they were.",
+      "section": "Lattice Studio server: requirements > App map and impact",
+      "line": 172
+    },
+    {
+      "id": "R108",
+      "text": "The three routes answer under a project prefix like every other (`/p/<name>/api/appmap`, `/p/<name>/api/appmap/element`, `/p/<name>/api/impact`), and an unknown project answers 404 `no such project` on each.",
+      "section": "Lattice Studio server: requirements > App map and impact",
+      "line": 173
     }
   ],
   "links": {
@@ -915,6 +945,21 @@
     ],
     "R101": [
       "scenario:improve_ids_and_waits_are_validated"
+    ],
+    "R104": [
+      "scenario:the_app_map_is_not_configured_without_an_implementation"
+    ],
+    "R105": [
+      "scenario:app_map_inputs_are_validated"
+    ],
+    "R106": [
+      "scenario:impact_inputs_are_validated"
+    ],
+    "R107": [
+      "scenario:app_map_and_impact_have_no_write_route"
+    ],
+    "R108": [
+      "scenario:app_map_and_impact_answer_under_a_project_prefix"
     ]
   },
   "unchecked": {

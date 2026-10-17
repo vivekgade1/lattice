@@ -44,6 +44,8 @@ import * as areas from "./views/areas.js";
 import * as plans from "./views/plan.js";
 import * as improve from "./views/improve.js";
 import * as contracts from "./views/contracts.js";
+import * as appmap from "./views/appmap.js";
+import * as impact from "./views/impact.js";
 
 // Grouped navigator. `attn(m)` returns a short reason when the item needs attention (it
 // draws the dot); `count(m)` shows a number only where it helps.
@@ -71,6 +73,11 @@ const GROUPS = [
     // v1.21: listed only when GET /api/workspace names a workspace this project is part of
     { id: "contracts", label: "Contracts", mod: contracts, when: () => !!state.workspace,
       count: () => contracts.openCount() || null, attn: () => (contracts.openCount() ? `${contracts.openCount()} open` : null) },
+  ] },
+  // v1.25: always listed (its empty states teach the setup); no count, no attention dot
+  { id: "app", title: "App", views: [
+    { id: "appmap", label: "App map", mod: appmap },
+    { id: "impact", label: "Impact", mod: impact },
   ] },
 ];
 const VIEWS = GROUPS.flatMap((g) => g.views.map((v) => ({ ...v, group: g.id, lens: !!g.lens, groupTitle: g.title })));

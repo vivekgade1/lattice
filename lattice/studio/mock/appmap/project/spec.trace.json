@@ -1,0 +1,122 @@
+{
+  "source": "REQUIREMENTS.md",
+  "rules": [
+    {
+      "id": "R1",
+      "text": "A user signs in with POST /api/login.",
+      "section": "Fixture app",
+      "line": 3
+    },
+    {
+      "id": "R2",
+      "text": "A user creates a project; it answers 201.",
+      "section": "Fixture app",
+      "line": 4
+    },
+    {
+      "id": "R3",
+      "text": "A draft project can be published; it then is published.",
+      "section": "Fixture app",
+      "line": 5
+    },
+    {
+      "id": "R4",
+      "text": "Tickets can be exported with GET /api/tickets/export.",
+      "section": "Fixture app",
+      "line": 6
+    },
+    {
+      "id": "R5",
+      "text": "A project can be restored after it is archived.",
+      "section": "Fixture app",
+      "line": 7
+    },
+    {
+      "id": "R6",
+      "text": "The service is for small teams.",
+      "section": "Fixture app",
+      "line": 8
+    },
+    {
+      "id": "R7",
+      "text": "A ticket belongs to a project.",
+      "section": "Fixture app",
+      "line": 9
+    },
+    {
+      "id": "R8",
+      "text": "A project has at most 50 tickets.",
+      "section": "Fixture app",
+      "line": 10
+    },
+    {
+      "id": "R9",
+      "text": "The service answers GET /health with 200.",
+      "section": "Fixture app",
+      "line": 11
+    },
+    {
+      "id": "R10",
+      "text": "A queued job can be activated.",
+      "section": "Fixture app",
+      "line": 12
+    },
+    {
+      "id": "R11",
+      "text": "The clock can be set in tests.",
+      "section": "Fixture app",
+      "line": 13
+    },
+    {
+      "id": "R12",
+      "text": "A project's kind is public or private.",
+      "section": "Fixture app",
+      "line": 14
+    }
+  ],
+  "links": {
+    "R1": [
+      "scenario:login"
+    ],
+    "R2": [
+      "scenario:create_project"
+    ],
+    "R3": [
+      "scenario:publish_project",
+      "machine:Project.status"
+    ],
+    "R5": [
+      "scenario:restore_project"
+    ],
+    "R7": [
+      "profile:Ticket.project_id"
+    ],
+    "R8": [
+      "invariant:tickets_bounded"
+    ],
+    "R9": [
+      "scenario:health"
+    ],
+    "R10": [
+      "scenario:activate_job",
+      "machine:Job.status"
+    ],
+    "R11": [
+      "scenario:clock_then_create"
+    ],
+    "R12": [
+      "invariant:kind_is_known",
+      "invariant:garbled"
+    ]
+  },
+  "unchecked": {
+    "R4": "no scenario exercises the export"
+  },
+  "context": [
+    "R6"
+  ],
+  "questions": [],
+  "replaces": {},
+  "retired": {},
+  "retired_targets": []
+}

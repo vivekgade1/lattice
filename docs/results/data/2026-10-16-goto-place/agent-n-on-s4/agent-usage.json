@@ -1,0 +1,172 @@
+{
+ "model": "sonnet",
+ "max_turns": 12,
+ "timeout_s": 600,
+ "usd_cap": 1.0,
+ "spent_usd_list_estimate": 0.3219,
+ "stopped": null,
+ "asked": 4,
+ "ok": 4,
+ "of": 4,
+ "input_tokens": 20,
+ "output_tokens": 3221,
+ "cache_read_tokens": 724004,
+ "cache_creation_tokens": 54306,
+ "turns": 17,
+ "wall_s": 44.7,
+ "change_impact_calls": 0,
+ "per_question": {
+  "N-1": {
+   "wall_s": 7.7,
+   "tools": [
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "GET /v1/sync"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "element": "impl:route:GET /v1/sync"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0480254,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 462,
+   "cache_read_tokens": 138414,
+   "cache_creation_tokens": 7389,
+   "subtype": "success",
+   "status": "ok",
+   "set": "N_not_built",
+   "final_text_chars": 812
+  },
+  "N-2": {
+   "wall_s": 9.0,
+   "tools": [
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "routes",
+      "limit": 200
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "rules",
+      "status": "required_not_implemented",
+      "limit": 200
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0907762,
+   "turns": 3,
+   "input_tokens": 4,
+   "output_tokens": 716,
+   "cache_read_tokens": 140762,
+   "cache_creation_tokens": 17383,
+   "subtype": "success",
+   "status": "ok",
+   "set": "N_not_built",
+   "final_text_chars": 1341
+  },
+  "N-3": {
+   "wall_s": 12.8,
+   "tools": [
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "rules",
+      "status": "required_not_implemented",
+      "limit": 200
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "section": "summary"
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.08860209999999999,
+   "turns": 3,
+   "input_tokens": 6,
+   "output_tokens": 909,
+   "cache_read_tokens": 222361,
+   "cache_creation_tokens": 14316,
+   "subtype": "success",
+   "status": "ok",
+   "set": "N_not_built",
+   "final_text_chars": 1273
+  },
+  "N-4": {
+   "wall_s": 15.2,
+   "tools": [
+    {
+     "name": "mcp__lattice__graph_get",
+     "input": {
+      "focus": "cell:ann|POST /v1/nudges/{}/dismiss"
+     }
+    },
+    {
+     "name": "mcp__lattice__implementation_get",
+     "input": {
+      "element": "impl:route:POST /v1/nudges/{}/dismiss",
+      "section": "routes"
+     }
+    },
+    {
+     "name": "mcp__lattice__model_get",
+     "input": {
+      "section": "views"
+     }
+    },
+    {
+     "name": "mcp__lattice__rule_get",
+     "input": {
+      "id": "R138"
+     }
+    },
+    {
+     "name": "mcp__lattice__code_links",
+     "input": {
+      "target": "POST /v1/nudges/{}/dismiss"
+     }
+    },
+    {
+     "name": "mcp__lattice__workflow_find",
+     "input": {
+      "question": "POST /v1/nudges/{}/dismiss"
+     }
+    },
+    {
+     "name": "mcp__lattice__spec_ask",
+     "input": {
+      "question": "What does the access matrix expect for ann on POST /v1/nudges/{}/dismiss?",
+      "selected": [
+       "cell:ann|POST /v1/nudges/{}/dismiss"
+      ]
+     }
+    }
+   ],
+   "timed_out": false,
+   "cost_usd": 0.0944707,
+   "turns": 8,
+   "input_tokens": 6,
+   "output_tokens": 1134,
+   "cache_read_tokens": 222467,
+   "cache_creation_tokens": 15218,
+   "subtype": "success",
+   "status": "ok",
+   "set": "N_not_built",
+   "final_text_chars": 1334
+  }
+ },
+ "extra_observe": {}
+}

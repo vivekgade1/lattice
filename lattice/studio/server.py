@@ -22,6 +22,13 @@ blocks, delays or alters an accept (lattice/contracts/linked.py).
 ``lattice improve draft|verify|apply|apply --discard`` of this project; the two POSTs are the
 only writes, are off unless the server was started with ``--allow-apply`` and never merge, push
 or close a ledger entry (lattice/improve/apply.py).
+``GET /api/appmap[?section=S]``, ``GET /api/appmap/element?key=K`` and ``GET /api/impact?change=cN
+[&section=S]`` (API.md v1.25) are the app map (``lattice.appmap/1``: a pure join of the
+implementation report and the review data, lattice/spec/appmap.py) and the impact of a drafted
+change (Spike D's report, tiers 2 and 3, plus the change's own check and a hash-matched saved
+tier 1); all three are read-only, run no process and write nothing. With ``[impact]``,
+``POST /api/ask`` answers "what breaks if ..." questions without a model
+(lattice/spec/impact_ask.py).
 
 **The project directory** holds ``REQUIREMENTS.md``, ``spec.py`` (defines ``SPEC``),
 ``spec.trace.json`` and, optionally, ``studio.toml``::
@@ -62,6 +69,9 @@ or close a ledger entry (lattice/improve/apply.py).
     inventory = "../inv"        # the directory `lattice import inventory` wrote, outside the target
     app_root = "."              # optional: the app's root (default: the project directory)
     package = "."               # optional: the Go module directory (default: the inventory's)
+
+    [impact]                    # API v1.24/v1.25: switches change impact on; no key is needed
+    reports = "../impact"       # optional: a directory of `lattice spec impact --out cN.json` files
 
 The project directory and the ``sys_path`` entries are put on ``sys.path``. Without
 ``[app] app`` and ``[app] db`` the app overlay, ``verify`` and the change impact are off.
@@ -136,6 +146,8 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 from lattice.improve.events import EventLog
 from lattice.llm.client import Generator
+from lattice.spec import appmap as appmap_mod
+from lattice.spec import impact_ask
 from lattice.spec.ask import VerifyConfig, ask, build_digest
 from lattice.spec.draft import load_spec
 from lattice.spec.incremental import (
@@ -218,6 +230,17 @@ def _linked_api_error(e: Any) -> ApiError:
     return ApiError(HTTPStatus(e.status), e.message, e.code)
 
 
+class KeyRefused(ApiError):
+    """GET /api/appmap/element: an unknown key, with the keys nearest to it (API v1.25)."""
+
+    def __init__(self, status: HTTPStatus, detail: str, code: str, nearest: Sequence[str]) -> None:
+        super().__init__(status, detail, code)
+        self.nearest = list(nearest)
+
+    def body(self) -> dict[str, Any]:  # type: ignore[override]
+        return {**super().body(), "nearest": self.nearest}
+
+
 class ApplyRefused(ApiError):
     """A refusal of POST /api/improve/{id}/apply that carries one more key (API v1.21)."""
 
@@ -262,6 +285,7 @@ class StudioConfig:
     state: dict[str, Any] = dataclasses.field(default_factory=dict)
     engines: Any = dataclasses.field(default_factory=dict)  # [engines] (API v1.14), as written
     implementation: dict[str, Any] = dataclasses.field(default_factory=dict)  # API v1.22
+    impact: dict[str, Any] | None = None  # API v1.24/v1.25: the [impact] table; None = absent
 
     @classmethod
     def load(cls, root: Path) -> StudioConfig:
@@ -280,6 +304,7 @@ class StudioConfig:
             dict(data.get("implementation") or {})
             if isinstance(data.get("implementation"), dict)
             else {},
+            dict(data["impact"]) if isinstance(data.get("impact"), dict) else None,
         )
 
     @property
@@ -1846,6 +1871,101 @@ class Studio:
         with self.lock:
             return list(self._cache[4]) if self._cache else []
 
+    # -- the app map and the impact of a drafted change (API v1.25; read-only, nothing cached)
+    def _appmap(self) -> appmap_mod.AppMap:
+        """The app map of this project, built from the files and the inventory as they are now
+        (the inventory loader re-hashes the source set on every call). Writes nothing."""
+        raw: dict[str, bytes | None] = {}
+        for name in (SPEC_FILE, TRACE_FILE, REQUIREMENTS):
+            try:
+                raw[name] = (self.root / name).read_bytes()
+            except OSError:
+                raw[name] = None
+        sources = appmap_mod.sources_of(
+            spec=raw[SPEC_FILE], trace=raw[TRACE_FILE], requirements=raw[REQUIREMENTS]
+        )
+        spec = trace = None
+        err: str | None = None
+        try:
+            snap = self.snapshot()
+            spec, trace = snap.spec, snap.trace
+        except ApiError as e:
+            err = f"no_spec: {e.detail}"
+        except Exception as e:  # noqa: BLE001 -- a trace that does not parse is a state, not a 500
+            err = f"no_spec: {type(e).__name__}: {e}"
+        with self.lock:
+            last = json.loads(json.dumps(self.last_check)) if self.last_check else None
+        return appmap_mod.appmap_of_project(
+            self.root, spec=spec, trace=trace, sources=sources, last_check=last, spec_error=err
+        )
+
+    def get_appmap(self, section: str | None) -> dict[str, Any]:
+        """``GET /api/appmap[?section=S]``: ``lattice.appmap/1``, always 200 (its ``state`` says
+        why a map is not there). Needs only ``[implementation]``."""
+        bad = appmap_mod.refuse_section(section)
+        if bad is not None:
+            raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, *bad)
+        doc = self._appmap().doc
+        return appmap_mod.section_of(doc, section) if section else doc
+
+    def get_appmap_element(self, key: str | None) -> dict[str, Any]:
+        """``GET /api/appmap/element?key=K``: one element, its row and its static neighbourhood."""
+        bad = appmap_mod.refuse_key(key)
+        if bad is not None:
+            raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, *bad)
+        assert key is not None
+        try:
+            return appmap_mod.element(self._appmap(), key)
+        except appmap_mod.ElementError as e:
+            raise KeyRefused(HTTPStatus.NOT_FOUND, e.detail, e.code, nearest=e.nearest) from None
+
+    def _impact_reports_dir(self) -> Path | None:
+        table = self.config.impact or {}
+        raw = table.get("reports")
+        if not isinstance(raw, str) or not raw:
+            return None
+        p = Path(raw).expanduser()
+        return p if p.is_absolute() else self.root / p
+
+    def _impact_body(self, change: str) -> dict[str, Any]:
+        """The whole ``lattice.studio-impact/1`` body of `change`: Spike D's report built in
+        process (tiers 2 and 3, no app, no container), the change's own check and the saved tier 1
+        if its hashes match. Reads the change record as a plain file; never opens ``StateStore``."""
+        with self.lock:
+            rec = self.changes.get(change)
+            check = ((rec or {}).get("checks") or {}).get("impact")
+            check = json.loads(json.dumps(check)) if check is not None else None
+        return impact_ask.impact_view(
+            project=self.root,
+            state_dir=self.store.root if self.store is not None else None,
+            change=change,
+            configured=self.config.impact is not None,
+            studio_check=check,
+            reports=self._impact_reports_dir(),
+        )
+
+    def get_impact(self, change: str | None, section: str | None) -> dict[str, Any]:
+        """``GET /api/impact?change=cN[&section=S]``."""
+        bad = impact_ask.refuse_change(change) or impact_ask.refuse_section(section)
+        if bad is not None:
+            raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, *bad)
+        assert change is not None
+        return impact_ask.with_section(self._impact_body(change), section)
+
+    def _routed_ask(self, question: str) -> dict[str, Any] | None:
+        """With ``[impact]``: the model-free answer to an impact question, else None (the
+        question goes the old way, untouched)."""
+        if self.config.impact is None or not impact_ask.is_routed(question):
+            return None
+
+        def am() -> appmap_mod.AppMap | None:
+            try:
+                return self._appmap()
+            except Exception:  # noqa: BLE001 -- no neighbourhood is better than no answer
+                return None
+
+        return impact_ask.route(question, lookup=self._impact_body, appmap=am)
+
     # -- ask
     def _inventory(self) -> Any:
         """The implementation inventory of ``[implementation]`` (API v1.22), re-read and
@@ -1881,6 +2001,10 @@ class Studio:
         question = str(body.get("question") or "").strip()
         if not question:
             raise ApiError(HTTPStatus.UNPROCESSABLE_ENTITY, "question is empty")
+        routed = self._routed_ask(question)  # API v1.25: only with [impact]; 0 model calls
+        if routed is not None:
+            log(f"ask: routed to impact ({question[:60]!r})")
+            return routed
         selected = [str(s) for s in body.get("selected") or []]
         snap = self.snapshot()
         verify = bool(body.get("verify")) and self.harness is not None
@@ -2533,6 +2657,19 @@ class Handler(BaseHTTPRequestHandler):
             return None
         if path == "/api/model":
             return self._dispatch(st.get_model)
+        if path in ("/api/appmap", "/api/appmap/element", "/api/impact"):  # API v1.25
+            query = parse_qs(urlparse(self.path).query)
+            if path == "/api/appmap":
+                section = (query.get("section") or [None])[-1]
+                return self._dispatch(lambda: st.get_appmap(section))
+            if path == "/api/appmap/element":
+                key = (query.get("key") or [None])[-1]
+                return self._dispatch(lambda: st.get_appmap_element(key))
+            return self._dispatch(
+                lambda: st.get_impact(
+                    (query.get("change") or [None])[-1], (query.get("section") or [None])[-1]
+                )
+            )
         if path.startswith("/api/changes/") and "/" not in path.removeprefix("/api/changes/"):
             cid = path.removeprefix("/api/changes/")
             raw = (parse_qs(urlparse(self.path).query).get("wait") or ["0"])[-1]

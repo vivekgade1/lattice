@@ -1,0 +1,28 @@
+{
+ "extract_sha256": "eec73db136e2d74db7889621ae2a196253229abe7d8af965b5f4e9bb2745ccbc",
+ "frontend": "go_gin",
+ "package": ".",
+ "schema": "lattice.implementation-inventory/1",
+ "source": {
+  "files": [
+   {
+    "path": "api/api.go",
+    "sha256": "98ce056ee3c6c08ff2619a04658a70f961d5bd747b1ad388de16c91d2d315512"
+   },
+   {
+    "path": "go.mod",
+    "sha256": "a72a263b79b4e967f14e1f9eb37c261c5ff61e4f129407dfcb6e2bb704a4a4d0"
+   },
+   {
+    "path": "main.go",
+    "sha256": "ed66d884751610c6277870244ff14e0e69266ba7ce14392b7056f7356d0c58e9"
+   },
+   {
+    "path": "models/models.go",
+    "sha256": "d3372067d553147bc2d83b205836614778da9b2d3a60950f45c0d0e7ccd6e16d"
+   }
+  ],
+  "sha256": "d3251b5b99b5d8d9f2804def565ed99d135496787603483c7b6bf073326ba23f"
+ },
+ "workflows_sha256": "c018cbd98bac4f7861212285e743a2af926d0b6d16902d9fc1c85c9c64e4b3ed"
+}

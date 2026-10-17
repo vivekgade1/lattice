@@ -1,0 +1,50 @@
+{
+ "c1": {
+  "rc": 0,
+  "tiers": {
+   "1": "run",
+   "2": "run",
+   "3": "run",
+   "4": "not_run:spike_e"
+  },
+  "tier1_failing": [
+   "t1-8ab799b855"
+  ],
+  "tier1_flows": [],
+  "tier2": [],
+  "agent_status": "ok",
+  "agent_stated_ids_found": [
+   "t1-8ab799b855"
+  ],
+  "agent_missing_ids": [],
+  "agent_tools": [
+   "mcp__lattice__change_impact",
+   "mcp__lattice__change_impact"
+  ],
+  "observe_true_called": true
+ },
+ "c2": {
+  "rc": 0,
+  "tiers": {
+   "1": "run",
+   "2": "run",
+   "3": "run",
+   "4": "not_run:spike_e"
+  },
+  "tier1_failing": [
+   "t1-9d387130c4"
+  ],
+  "tier1_flows": [],
+  "tier2": [],
+  "agent_status": "ok",
+  "agent_stated_ids_found": [
+   "t1-9d387130c4"
+  ],
+  "agent_missing_ids": [],
+  "agent_tools": [
+   "mcp__lattice__change_impact",
+   "mcp__lattice__change_impact"
+  ],
+  "observe_true_called": true
+ }
+}

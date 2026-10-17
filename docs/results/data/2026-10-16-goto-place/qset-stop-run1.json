@@ -1,0 +1,22 @@
+{
+ "changes": {
+  "c1": {
+   "status": "ready",
+   "byte_equal": false,
+   "got": {
+    "REQUIREMENTS.md": "5a6aaf6a7a70a275c68ed31b9c77d772299ca6e2faf768bd4451540c8ce1fd3e",
+    "spec.py": "ece8a0e2dc3077f32d89061157753227e9cf91f70ac7c1da036ebcdc51b26aa1",
+    "spec.trace.json": "f29dc0a6decfdb7e17dfbd754d862e25029c09f530fe87c88f867e41f9fcef00"
+   },
+   "want": {
+    "REQUIREMENTS.md": "5a6aaf6a7a70a275c68ed31b9c77d772299ca6e2faf768bd4451540c8ce1fd3e",
+    "spec.py": "ece8a0e2dc3077f32d89061157753227e9cf91f70ac7c1da036ebcdc51b26aa1",
+    "spec.trace.json": "87d2b2181ff2597b526fc6189ceb29564407af8770a8405a788e370db1a8824a"
+   }
+  }
+ },
+ "notes": [
+  "S: studio.toml go_src rewritten to the clone",
+  "S4: studio.toml go_src rewritten to the clone"
+ ]
+}

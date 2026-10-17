@@ -172,6 +172,13 @@ export const api = {
   linkedQuestionClear: (id, verb, note = "") =>
     call("POST", `/api/linked-questions/${encodeURIComponent(id)}/${verb === "dismiss" ? "dismiss" : "resolve"}`, note ? { note } : {}),
   linkedNotifications: () => call("GET", "/api/linked-notifications"),
+
+  // v1.25: the app map (lattice.appmap/1), one element with its neighbourhood, and the impact of a
+  // drafted change (lattice.studio-impact/1). All reads; the server runs no process for them.
+  appmap: (section = "") => call("GET", `/api/appmap${section ? `?section=${encodeURIComponent(section)}` : ""}`),
+  appmapElement: (key) => call("GET", `/api/appmap/element?key=${encodeURIComponent(key)}`),
+  impact: (change, section = "") =>
+    call("GET", `/api/impact?change=${encodeURIComponent(change)}${section ? `&section=${encodeURIComponent(section)}` : ""}`),
 };
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

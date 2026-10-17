@@ -1,0 +1,210 @@
+{
+ "changes": {
+  "c1": {
+   "status": "ready",
+   "byte_equal": true,
+   "trace_patched": true,
+   "got": {
+    "REQUIREMENTS.md": "5a6aaf6a7a70a275c68ed31b9c77d772299ca6e2faf768bd4451540c8ce1fd3e",
+    "spec.py": "ece8a0e2dc3077f32d89061157753227e9cf91f70ac7c1da036ebcdc51b26aa1",
+    "spec.trace.json": "87d2b2181ff2597b526fc6189ceb29564407af8770a8405a788e370db1a8824a"
+   },
+   "want": {
+    "REQUIREMENTS.md": "5a6aaf6a7a70a275c68ed31b9c77d772299ca6e2faf768bd4451540c8ce1fd3e",
+    "spec.py": "ece8a0e2dc3077f32d89061157753227e9cf91f70ac7c1da036ebcdc51b26aa1",
+    "spec.trace.json": "87d2b2181ff2597b526fc6189ceb29564407af8770a8405a788e370db1a8824a"
+   }
+  },
+  "c2": {
+   "status": "ready",
+   "byte_equal": true,
+   "trace_patched": true,
+   "got": {
+    "REQUIREMENTS.md": "c42d2cda4972f4ade0dbf8d64ee0c52411deba207bdf31bb03b57fc366f488b3",
+    "spec.py": "cf84f5094a50b59971028594152508b455a35f1dfda7a381815d04048c792a0c",
+    "spec.trace.json": "4d69485ef7c848f3c6640cc8ff56eac7648b3cbff3a01d3382a1215bcef65f3f"
+   },
+   "want": {
+    "REQUIREMENTS.md": "c42d2cda4972f4ade0dbf8d64ee0c52411deba207bdf31bb03b57fc366f488b3",
+    "spec.py": "cf84f5094a50b59971028594152508b455a35f1dfda7a381815d04048c792a0c",
+    "spec.trace.json": "4d69485ef7c848f3c6640cc8ff56eac7648b3cbff3a01d3382a1215bcef65f3f"
+   }
+  },
+  "c3": {
+   "status": "ready",
+   "byte_equal": true,
+   "trace_patched": true,
+   "got": {
+    "REQUIREMENTS.md": "7b82c62788806ec617162d216a2b98675da982cd348b54a8ef4e8c9ccde042f6",
+    "spec.py": "c81b12986f7e189e034d202ea96428849c1ba79af13f14823b35132720eeecd3",
+    "spec.trace.json": "c9a573f5aa8821a1833841b0d40d050b573326651389f15ab8c27c86d60b6f1d"
+   },
+   "want": {
+    "REQUIREMENTS.md": "7b82c62788806ec617162d216a2b98675da982cd348b54a8ef4e8c9ccde042f6",
+    "spec.py": "c81b12986f7e189e034d202ea96428849c1ba79af13f14823b35132720eeecd3",
+    "spec.trace.json": "c9a573f5aa8821a1833841b0d40d050b573326651389f15ab8c27c86d60b6f1d"
+   }
+  },
+  "c4": {
+   "status": "ready",
+   "byte_equal": true,
+   "trace_patched": true,
+   "got": {
+    "REQUIREMENTS.md": "de79055bb3ed2cf11118557b797718936321a6bee4924dd983b3c8c25aaf7cd6",
+    "spec.py": "b89db3f1eb3175d5f3b9822f1b0a684e6aa4c317ab86a10acb9af5f13b7c09e5",
+    "spec.trace.json": "2653dc22658bd7ad25d5776175829478f162355bdee9782871dd825650bc5cb2"
+   },
+   "want": {
+    "REQUIREMENTS.md": "de79055bb3ed2cf11118557b797718936321a6bee4924dd983b3c8c25aaf7cd6",
+    "spec.py": "b89db3f1eb3175d5f3b9822f1b0a684e6aa4c317ab86a10acb9af5f13b7c09e5",
+    "spec.trace.json": "2653dc22658bd7ad25d5776175829478f162355bdee9782871dd825650bc5cb2"
+   }
+  },
+  "c5": {
+   "status": "ready",
+   "byte_equal": true,
+   "trace_patched": true,
+   "got": {
+    "REQUIREMENTS.md": "3b614ceeac9869db539f5265383dc8b75e3931395ec667c5653ac6b6d4f9c525",
+    "spec.py": "c502189ec0739602cddd9fd7c3756e40d11ebf5cd2d067a58d46761a8f92ba64",
+    "spec.trace.json": "90e029ad7e5675d69ad2d051d03e90555068ca0e83215da0c0c94da3172864dc"
+   },
+   "want": {
+    "REQUIREMENTS.md": "3b614ceeac9869db539f5265383dc8b75e3931395ec667c5653ac6b6d4f9c525",
+    "spec.py": "c502189ec0739602cddd9fd7c3756e40d11ebf5cd2d067a58d46761a8f92ba64",
+    "spec.trace.json": "90e029ad7e5675d69ad2d051d03e90555068ca0e83215da0c0c94da3172864dc"
+   }
+  },
+  "c6": {
+   "status": "ready",
+   "byte_equal": true,
+   "trace_patched": true,
+   "got": {
+    "REQUIREMENTS.md": "fabb43ccbbc6ea8339b8cb01457a7e1f1143954447c4955bd3db1d455ba35f94",
+    "spec.py": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+    "spec.trace.json": "a65ee302f1ef8541b139f8f86cf10608c8988a4bb41e94c5bedcd81f45dc60b7"
+   },
+   "want": {
+    "REQUIREMENTS.md": "fabb43ccbbc6ea8339b8cb01457a7e1f1143954447c4955bd3db1d455ba35f94",
+    "spec.py": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+    "spec.trace.json": "a65ee302f1ef8541b139f8f86cf10608c8988a4bb41e94c5bedcd81f45dc60b7"
+   }
+  }
+ },
+ "notes": [
+  "S: studio.toml go_src rewritten to the clone",
+  "S4: studio.toml go_src rewritten to the clone"
+ ],
+ "scored": {
+  "map": {
+   "by_set": {
+    "M_access": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 5,
+     "n": 5,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "M_machines": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 3,
+     "n": 3,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "M_rules": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 5,
+     "n": 5,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "M_workflows": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 5,
+     "n": 5,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "N_not_built": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 4,
+     "n": 4,
+     "not_run": 0,
+     "unscored": 0
+    }
+   },
+   "changes": {},
+   "correct": 22,
+   "errors": [],
+   "gate": {
+    "pass": true,
+    "rule": "22/22 exact"
+   },
+   "lenient_note": "report-only (Amendment 2): negations and named recorded replays exempted",
+   "n": 22,
+   "not_run": 0,
+   "surface": "map",
+   "unscored": 0,
+   "unsupported_failure_claims": 0,
+   "unsupported_failure_claims_lenient": 0
+  },
+  "router": {
+   "by_set": {
+    "C_control": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 4,
+     "n": 4,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "H_hypothetical": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 6,
+     "n": 6,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "I_impact": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 12,
+     "n": 12,
+     "not_run": 0,
+     "unscored": 0
+    }
+   },
+   "changes": {
+    "c1": "verified",
+    "c2": "verified",
+    "c3": "verified",
+    "c4": "verified",
+    "c5": "verified",
+    "c6": "verified"
+   },
+   "correct": 22,
+   "errors": [],
+   "gate": {
+    "pass": true,
+    "rule": "22/22 exact; 0 unsupported failure claims; 0 model calls on routed questions"
+   },
+   "lenient_note": "report-only (Amendment 2): negations and named recorded replays exempted",
+   "model_calls_on_routed": 0,
+   "model_calls_unknown": 0,
+   "n": 22,
+   "not_run": 0,
+   "surface": "router",
+   "unscored": 0,
+   "unsupported_failure_claims": 0,
+   "unsupported_failure_claims_lenient": 0
+  }
+ },
+ "shim_calls": 0
+}

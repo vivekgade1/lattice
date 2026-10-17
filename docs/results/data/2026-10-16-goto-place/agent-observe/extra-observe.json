@@ -1,0 +1,64 @@
+{
+ "c1": {
+  "wall_s": 162.7,
+  "tools": [
+   {
+    "name": "mcp__lattice__change_impact",
+    "input": {
+     "change": "c1",
+     "observe": true
+    }
+   },
+   {
+    "name": "mcp__lattice__change_impact",
+    "input": {
+     "change": "c1",
+     "observe": true,
+     "section": "tier1"
+    }
+   }
+  ],
+  "timed_out": false,
+  "cost_usd": 0.3182019,
+  "turns": 3,
+  "input_tokens": 6,
+  "output_tokens": 697,
+  "cache_read_tokens": 146159,
+  "cache_creation_tokens": 74151,
+  "subtype": "success",
+  "status": "ok",
+  "text": "**Applying c1 to today's app fails one item, observed (tier 1).**\n\n- **Item `t1-8ab799b855`** is the check `the_100th_active_habit_is_accepted / step 1` (layer D, `spec.py:860`). It is a `POST /v1/habits` as `ann`, tied to rule R56 and target `scenario:the_100th_active_habit_is_accepted`.\n- **What the app did:** it returned 409 where the spec expects 201. The database holds 99 active habits for `ann` where 100 were expected, and no Habit named `new` exists.\n- **Cause:** the app still enforces the old habit limit, so the 100th active habit is refused. The tool labels this `not_built_yet`.\n- **Not a baseline failure:** `also_fails_on_base` is false, so this check passes on today's app without c1.\n\n**Tier 2 (determined):** nothing is determined. 9 items are undecidable and 0 are determined.\n\n**Tier 3 (static, may fail, not failures):** 64 flows may fail, across 77 code locations. The first files listed are `internal/habits/routes.go`, `internal/completions/routes.go`, `internal/account/routes.go`, `internal/home/routes.go` and `internal/db/owned.go`. 6 items are unread.\n\n**Tier 4:** not run.\n\nThe tool says which flows fail can mostly not be decided before the change is implemented. The 59 flows that ran in the observed check found no workflow failures.",
+  "question": "What fails on today's app if c1 is applied? Run the observed check (change_impact with observe true) and report the failing items with their ids."
+ },
+ "c2": {
+  "wall_s": 169.9,
+  "tools": [
+   {
+    "name": "mcp__lattice__change_impact",
+    "input": {
+     "change": "c2",
+     "observe": true
+    }
+   },
+   {
+    "name": "mcp__lattice__change_impact",
+    "input": {
+     "change": "c2",
+     "observe": true,
+     "section": "tier1"
+    }
+   }
+  ],
+  "timed_out": false,
+  "cost_usd": 0.0478631,
+  "turns": 3,
+  "input_tokens": 6,
+  "output_tokens": 700,
+  "cache_read_tokens": 215551,
+  "cache_creation_tokens": 4824,
+  "subtype": "success",
+  "status": "ok",
+  "text": "If c2 is applied, one item fails on today's app. This is the observed check (tier 1), run against the app.\n\n**Tier 1, observed failure: `t1-9d387130c4`**\n- **Case:** `scenario:habit_name_bounds`, step 3, at `spec.py:732`. It is a layer D check, labelled `not_built_yet`.\n- **Request:** `POST /v1/habits` as ann.\n- **Rules involved:** R4, R5, R7, R51.\n- **Expected:** status 422 with `{'error': {'code': 'validation_failed', 'field': 'name'}}`.\n- **Got:**\n  - The app returned 201 and created the habit, with a 54-character name of \"n\" characters.\n  - The `habits` table has 1 row where the check expected 0.\n- **On the base spec:** `also_fails_on_base` is false, so the failure comes from c2 and not from existing drift.\n\nThe change touches 1 rule (147 unchanged). I didn't read the changed rule's text, so I can't say which one it is. Its likely connection to the name-length limit is my inference from the failing scenario.\n\n**Not decided:**\n- **Tier 2 (determined):** 0 failures. 2 items are undecidable.\n- **Tier 3 (static):** 64 flows and 44 code locations may fail. These are not failures. Files include `internal/httpapi/body.go`, `internal/habits/routes.go` and `internal/db/models.go`.\n- **Tier 4:** not run.",
+  "question": "What fails on today's app if c2 is applied? Run the observed check (change_impact with observe true) and report the failing items with their ids."
+ }
+}

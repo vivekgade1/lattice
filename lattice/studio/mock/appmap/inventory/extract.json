@@ -1,0 +1,2061 @@
+{
+ "auth": {
+  "caller_keys": {
+   "caller": "struct"
+  },
+  "login_encoding": "json",
+  "login_path": null,
+  "middleware": "api.RequireUser.func1",
+  "notes": [],
+  "password_column": null,
+  "password_field": null,
+  "scheme": "bearer",
+  "token_field": null,
+  "username_field": null,
+  "users_table": "User"
+ },
+ "constructors": [],
+ "dialect": "mysql",
+ "error_writer": null,
+ "error_writers": [],
+ "excluded": [],
+ "go": "1.22",
+ "main": [
+  "main.go"
+ ],
+ "middleware": [
+  {
+   "authenticating": true,
+   "bearer": true,
+   "file": "api/api.go",
+   "func": "api.RequireUser.func1",
+   "line": 64,
+   "mentions_admin": false,
+   "raises": [
+    {
+     "code": "unauthorized",
+     "file": "api/api.go",
+     "in": "api.RequireUser.func1",
+     "kind": "abort",
+     "line": 67,
+     "status": 401
+    },
+    {
+     "code": "unauthorized",
+     "file": "api/api.go",
+     "in": "api.RequireUser.func1",
+     "kind": "abort",
+     "line": 72,
+     "status": 401
+    }
+   ],
+   "records_caller": [
+    "caller"
+   ],
+   "unread": [],
+   "users_table": "User",
+   "wrappers": []
+  }
+ ],
+ "models": [
+  {
+   "fields": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 43,
+     "max_length": null,
+     "min_length": null,
+     "name": "email",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    }
+   ],
+   "file": "api/api.go",
+   "line": 42,
+   "name": "loginReq",
+   "package": "example.com/wf/api"
+  },
+  {
+   "fields": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 85,
+     "max_length": null,
+     "min_length": null,
+     "name": "id",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    },
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 86,
+     "max_length": null,
+     "min_length": null,
+     "name": "name",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    },
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 87,
+     "max_length": null,
+     "min_length": null,
+     "name": "kind",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    }
+   ],
+   "file": "api/api.go",
+   "line": 84,
+   "name": "projectReq",
+   "package": "example.com/wf/api"
+  },
+  {
+   "fields": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 172,
+     "max_length": null,
+     "min_length": null,
+     "name": "project_id",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    },
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 173,
+     "max_length": null,
+     "min_length": null,
+     "name": "subject",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    }
+   ],
+   "file": "api/api.go",
+   "line": 171,
+   "name": "ticketReq",
+   "package": "example.com/wf/api"
+  },
+  {
+   "fields": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 237,
+     "max_length": null,
+     "min_length": null,
+     "name": "project_id",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    },
+    {
+     "annotation": "[]batchItem",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 238,
+     "max_length": null,
+     "min_length": null,
+     "name": "items",
+     "required": false,
+     "source": "body",
+     "type": null
+    }
+   ],
+   "file": "api/api.go",
+   "line": 236,
+   "name": "batchReq",
+   "package": "example.com/wf/api"
+  },
+  {
+   "fields": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 254,
+     "max_length": null,
+     "min_length": null,
+     "name": "name",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    }
+   ],
+   "file": "api/api.go",
+   "line": 253,
+   "name": "jobReq",
+   "package": "example.com/wf/api"
+  }
+ ],
+ "module": "example.com/wf",
+ "notes": [],
+ "routes": [
+  {
+   "auth": "Public",
+   "auth_reason": "no authenticating middleware in the chain (engine)",
+   "body_models": [
+    "loginReq"
+   ],
+   "calls": [],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.Login.func1",
+    "line": 47,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 16,
+   "member": false,
+   "method": "POST",
+   "middleware": [],
+   "owner_uses": [],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 43,
+     "max_length": null,
+     "min_length": null,
+     "name": "email",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/login",
+   "path_exact": true,
+   "path_template": "/api/login",
+   "raises": [
+    {
+     "code": "bad_request",
+     "file": "api/api.go",
+     "in": "api.Login.func1",
+     "kind": "abort",
+     "line": 50,
+     "status": 400
+    },
+    {
+     "code": "bad_credentials",
+     "file": "api/api.go",
+     "in": "api.Login.func1",
+     "kind": "abort",
+     "line": 55,
+     "status": 401
+    }
+   ],
+   "router_chain": [
+    "engine"
+   ],
+   "status_code": 200,
+   "status_codes": [
+    200
+   ],
+   "tables": [
+    "User"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [
+    "projectReq"
+   ],
+   "calls": [
+    "example.com/wf/api:caller",
+    "example.com/wf/api:validKind"
+   ],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.CreateProject.func1",
+    "line": 95,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 18,
+   "member": true,
+   "method": "POST",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [
+    {
+     "column": "owner_id",
+     "file": "api/api.go",
+     "how": "assign",
+     "line": 101,
+     "model": "Project",
+     "table": "projects"
+    }
+   ],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 85,
+     "max_length": null,
+     "min_length": null,
+     "name": "id",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    },
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 86,
+     "max_length": null,
+     "min_length": null,
+     "name": "name",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    },
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 87,
+     "max_length": null,
+     "min_length": null,
+     "name": "kind",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/projects",
+   "path_exact": true,
+   "path_template": "/api/projects",
+   "raises": [
+    {
+     "code": "invalid",
+     "file": "api/api.go",
+     "in": "api.CreateProject.func1",
+     "kind": "abort",
+     "line": 98,
+     "status": 422
+    },
+    {
+     "code": "conflict",
+     "file": "api/api.go",
+     "in": "api.CreateProject.func1",
+     "kind": "abort",
+     "line": 103,
+     "status": 409
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 201,
+   "status_codes": [
+    201
+   ],
+   "tables": [
+    "Project"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [],
+   "calls": [
+    "example.com/wf/api:caller",
+    "example.com/wf/api:ownedProject"
+   ],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.GetProject.func1",
+    "line": 123,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 19,
+   "member": true,
+   "method": "GET",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [
+    {
+     "column": "owner_id",
+     "file": "api/api.go",
+     "how": "compare",
+     "line": 124,
+     "model": "Project",
+     "table": "projects"
+    }
+   ],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 19,
+     "max_length": null,
+     "min_length": null,
+     "name": "id",
+     "required": true,
+     "source": "path",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/projects/:id",
+   "path_exact": true,
+   "path_template": "/api/projects/{id}",
+   "raises": [
+    {
+     "code": "not_found",
+     "file": "api/api.go",
+     "in": "api.GetProject.func1",
+     "kind": "abort",
+     "line": 126,
+     "status": 404
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 200,
+   "status_codes": [
+    200
+   ],
+   "tables": [
+    "Project"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [],
+   "calls": [
+    "example.com/wf/api:caller",
+    "example.com/wf/api:ownedProject"
+   ],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.Publish.func1",
+    "line": 135,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 20,
+   "member": true,
+   "method": "POST",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [
+    {
+     "column": "owner_id",
+     "file": "api/api.go",
+     "how": "compare",
+     "line": 136,
+     "model": "Project",
+     "table": "projects"
+    }
+   ],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 20,
+     "max_length": null,
+     "min_length": null,
+     "name": "id",
+     "required": true,
+     "source": "path",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/projects/:id/publish",
+   "path_exact": true,
+   "path_template": "/api/projects/{id}/publish",
+   "raises": [
+    {
+     "code": "not_found",
+     "file": "api/api.go",
+     "in": "api.Publish.func1",
+     "kind": "abort",
+     "line": 138,
+     "status": 404
+    },
+    {
+     "code": null,
+     "file": "api/api.go",
+     "in": "api.Publish.func1",
+     "kind": "abort",
+     "line": 143,
+     "status": 500
+    },
+    {
+     "code": "not_draft",
+     "file": "api/api.go",
+     "in": "api.Publish.func1",
+     "kind": "abort",
+     "line": 149,
+     "status": 409
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 200,
+   "status_codes": [
+    200
+   ],
+   "tables": [
+    "Project"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [],
+   "calls": [
+    "example.com/wf/api:caller",
+    "example.com/wf/api:ownedProject"
+   ],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.Archive.func1",
+    "line": 155,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 21,
+   "member": true,
+   "method": "POST",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [
+    {
+     "column": "owner_id",
+     "file": "api/api.go",
+     "how": "compare",
+     "line": 156,
+     "model": "Project",
+     "table": "projects"
+    }
+   ],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 21,
+     "max_length": null,
+     "min_length": null,
+     "name": "id",
+     "required": true,
+     "source": "path",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/projects/:id/archive",
+   "path_exact": true,
+   "path_template": "/api/projects/{id}/archive",
+   "raises": [
+    {
+     "code": "not_found",
+     "file": "api/api.go",
+     "in": "api.Archive.func1",
+     "kind": "abort",
+     "line": 158,
+     "status": 404
+    },
+    {
+     "code": "already_archived",
+     "file": "api/api.go",
+     "in": "api.Archive.func1",
+     "kind": "abort",
+     "line": 166,
+     "status": 409
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 204,
+   "status_codes": [
+    204
+   ],
+   "tables": [
+    "Project"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [
+    "ticketReq"
+   ],
+   "calls": [
+    "example.com/wf/api:caller",
+    "example.com/wf/api:ownedProject"
+   ],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.CreateTicket.func1",
+    "line": 178,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 22,
+   "member": true,
+   "method": "POST",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [
+    {
+     "column": "owner_id",
+     "file": "api/api.go",
+     "how": "compare",
+     "line": 184,
+     "model": "Project",
+     "table": "projects"
+    }
+   ],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 172,
+     "max_length": null,
+     "min_length": null,
+     "name": "project_id",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    },
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 173,
+     "max_length": null,
+     "min_length": null,
+     "name": "subject",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/tickets",
+   "path_exact": true,
+   "path_template": "/api/tickets",
+   "raises": [
+    {
+     "code": "invalid",
+     "file": "api/api.go",
+     "in": "api.CreateTicket.func1",
+     "kind": "abort",
+     "line": 181,
+     "status": 422
+    },
+    {
+     "code": "not_found",
+     "file": "api/api.go",
+     "in": "api.CreateTicket.func1",
+     "kind": "abort",
+     "line": 185,
+     "status": 404
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 201,
+   "status_codes": [
+    201
+   ],
+   "tables": [
+    "Project",
+    "Ticket"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [],
+   "calls": [],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.ListTickets.func1",
+    "line": 195,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 23,
+   "member": true,
+   "method": "GET",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [],
+   "params": [],
+   "path": "/api/tickets",
+   "path_exact": true,
+   "path_template": "/api/tickets",
+   "raises": [],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 200,
+   "status_codes": [
+    200
+   ],
+   "tables": [
+    "Ticket"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [],
+   "calls": [],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.GetTicket.func1",
+    "line": 204,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 24,
+   "member": true,
+   "method": "GET",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 24,
+     "max_length": null,
+     "min_length": null,
+     "name": "id",
+     "required": true,
+     "source": "path",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/tickets/:id",
+   "path_exact": true,
+   "path_template": "/api/tickets/{id}",
+   "raises": [
+    {
+     "code": "not_found",
+     "file": "api/api.go",
+     "in": "api.GetTicket.func1",
+     "kind": "abort",
+     "line": 207,
+     "status": 404
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 200,
+   "status_codes": [
+    200
+   ],
+   "tables": [
+    "Ticket"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [],
+   "calls": [],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.DeleteTicket.func1",
+    "line": 216,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 25,
+   "member": true,
+   "method": "DELETE",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 25,
+     "max_length": null,
+     "min_length": null,
+     "name": "id",
+     "required": true,
+     "source": "path",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/tickets/:id",
+   "path_exact": true,
+   "path_template": "/api/tickets/{id}",
+   "raises": [
+    {
+     "code": "invalid",
+     "file": "api/api.go",
+     "in": "api.DeleteTicket.func1",
+     "kind": "abort",
+     "line": 219,
+     "status": 422
+    },
+    {
+     "code": "not_found",
+     "file": "api/api.go",
+     "in": "api.DeleteTicket.func1",
+     "kind": "abort",
+     "line": 224,
+     "status": 404
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 204,
+   "status_codes": [
+    204
+   ],
+   "tables": [
+    "Ticket"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [
+    "batchReq"
+   ],
+   "calls": [],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.Batch.func1",
+    "line": 243,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 26,
+   "member": true,
+   "method": "POST",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 237,
+     "max_length": null,
+     "min_length": null,
+     "name": "project_id",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    },
+    {
+     "annotation": "[]batchItem",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 238,
+     "max_length": null,
+     "min_length": null,
+     "name": "items",
+     "required": false,
+     "source": "body",
+     "type": null
+    }
+   ],
+   "path": "/api/batch",
+   "path_exact": true,
+   "path_template": "/api/batch",
+   "raises": [
+    {
+     "code": "invalid",
+     "file": "api/api.go",
+     "in": "api.Batch.func1",
+     "kind": "abort",
+     "line": 246,
+     "status": 422
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 200,
+   "status_codes": [
+    200
+   ],
+   "tables": [],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [
+    "jobReq"
+   ],
+   "calls": [
+    "example.com/wf/api:caller"
+   ],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.CreateJob.func1",
+    "line": 259,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 27,
+   "member": true,
+   "method": "POST",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [
+    {
+     "column": "owner_id",
+     "file": "api/api.go",
+     "how": "assign",
+     "line": 265,
+     "model": "Job",
+     "table": "jobs"
+    }
+   ],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 254,
+     "max_length": null,
+     "min_length": null,
+     "name": "name",
+     "required": true,
+     "source": "body",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/jobs",
+   "path_exact": true,
+   "path_template": "/api/jobs",
+   "raises": [
+    {
+     "code": "invalid",
+     "file": "api/api.go",
+     "in": "api.CreateJob.func1",
+     "kind": "abort",
+     "line": 262,
+     "status": 422
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 201,
+   "status_codes": [
+    201
+   ],
+   "tables": [
+    "Job"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [],
+   "calls": [
+    "example.com/wf/api:caller"
+   ],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.Activate.func1",
+    "line": 273,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 28,
+   "member": true,
+   "method": "POST",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [
+    {
+     "column": "owner_id",
+     "file": "api/api.go",
+     "how": "compare",
+     "line": 274,
+     "model": "Job",
+     "table": "jobs"
+    }
+   ],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 28,
+     "max_length": null,
+     "min_length": null,
+     "name": "id",
+     "required": true,
+     "source": "path",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/jobs/:id/activate",
+   "path_exact": true,
+   "path_template": "/api/jobs/{id}/activate",
+   "raises": [
+    {
+     "code": "not_queued",
+     "file": "api/api.go",
+     "in": "api.Activate.func1",
+     "kind": "abort",
+     "line": 277,
+     "status": 409
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 204,
+   "status_codes": [
+    204
+   ],
+   "tables": [
+    "Job"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [],
+   "calls": [
+    "example.com/wf/api:caller"
+   ],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.StartRun.func1",
+    "line": 286,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 29,
+   "member": true,
+   "method": "POST",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [
+    {
+     "column": "owner_id",
+     "file": "api/api.go",
+     "how": "compare",
+     "line": 288,
+     "model": "Job",
+     "table": "jobs"
+    }
+   ],
+   "params": [
+    {
+     "annotation": "string",
+     "choices": [],
+     "default": null,
+     "file": "api/api.go",
+     "ge": null,
+     "le": null,
+     "line": 29,
+     "max_length": null,
+     "min_length": null,
+     "name": "id",
+     "required": true,
+     "source": "path",
+     "type": "Str"
+    }
+   ],
+   "path": "/api/jobs/:id/runs",
+   "path_exact": true,
+   "path_template": "/api/jobs/{id}/runs",
+   "raises": [
+    {
+     "code": "not_found",
+     "file": "api/api.go",
+     "in": "api.StartRun.func1",
+     "kind": "abort",
+     "line": 289,
+     "status": 404
+    },
+    {
+     "code": "job_not_active",
+     "file": "api/api.go",
+     "in": "api.StartRun.func1",
+     "kind": "abort",
+     "line": 293,
+     "status": 409
+    }
+   ],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 201,
+   "status_codes": [
+    201
+   ],
+   "tables": [
+    "Job",
+    "Run"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Customer",
+   "auth_reason": "authenticated by api.RequireUser.func1 (api/api.go:64): a 401 refusal and the caller recorded under caller; chain engine > Group(\"/api\")",
+   "body_models": [],
+   "calls": [],
+   "condition": null,
+   "error_writer": null,
+   "file": "api/api.go",
+   "guards": [
+    {
+     "detail": "unauthorized",
+     "file": "api/api.go",
+     "kind": "authenticated",
+     "line": 67,
+     "source": "api.RequireUser.func1",
+     "status": 401
+    }
+   ],
+   "handler": {
+    "file": "api/api.go",
+    "func": "api.Stats.func1",
+    "line": 35,
+    "module": "example.com/wf/api",
+    "wrappers": []
+   },
+   "line": 30,
+   "member": true,
+   "method": "GET",
+   "middleware": [
+    {
+     "file": "api/api.go",
+     "func": "api.RequireUser.func1",
+     "line": 64,
+     "resolved": true,
+     "via": "Group at api/api.go:17"
+    }
+   ],
+   "owner_uses": [],
+   "params": [],
+   "path": "/api/stats",
+   "path_exact": true,
+   "path_template": "/api/stats",
+   "raises": [],
+   "router_chain": [
+    "engine",
+    "Group(\"/api\")"
+   ],
+   "status_code": 200,
+   "status_codes": [
+    200
+   ],
+   "tables": [
+    "Ticket"
+   ],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Public",
+   "auth_reason": "no authenticating middleware in the chain (engine)",
+   "body_models": [],
+   "calls": [],
+   "condition": null,
+   "error_writer": null,
+   "file": "main.go",
+   "guards": [],
+   "handler": {
+    "file": "main.go",
+    "func": "main.main.func1",
+    "line": 27,
+    "module": "example.com/wf",
+    "wrappers": []
+   },
+   "line": 27,
+   "member": false,
+   "method": "GET",
+   "middleware": [],
+   "owner_uses": [],
+   "params": [],
+   "path": "/health",
+   "path_exact": true,
+   "path_template": "/health",
+   "raises": [],
+   "router_chain": [
+    "engine"
+   ],
+   "status_code": 200,
+   "status_codes": [
+    200
+   ],
+   "tables": [],
+   "tx": false,
+   "unread": []
+  },
+  {
+   "auth": "Public",
+   "auth_reason": "no authenticating middleware in the chain (engine)",
+   "body_models": [],
+   "calls": [],
+   "condition": "os.Getenv(\"TEST_CLOCK\") != \"\"",
+   "error_writer": null,
+   "file": "main.go",
+   "guards": [],
+   "handler": {
+    "file": "main.go",
+    "func": "main.main.func2",
+    "line": 30,
+    "module": "example.com/wf",
+    "wrappers": []
+   },
+   "line": 30,
+   "member": false,
+   "method": "PUT",
+   "middleware": [],
+   "owner_uses": [],
+   "params": [],
+   "path": "/test/clock",
+   "path_exact": true,
+   "path_template": "/test/clock",
+   "raises": [],
+   "router_chain": [
+    "engine"
+   ],
+   "status_code": 204,
+   "status_codes": [
+    204
+   ],
+   "tables": [],
+   "tx": false,
+   "unread": []
+  }
+ ],
+ "schema": "lattice.goextract/1",
+ "sentinels": [
+  {
+   "code": null,
+   "file": "api/api.go",
+   "line": 120,
+   "message": "not found",
+   "name": "errNotFound",
+   "package": "example.com/wf/api",
+   "status": null
+  }
+ ],
+ "status_writes": [
+  {
+   "column": "status",
+   "file": "api/api.go",
+   "guard": "",
+   "in": "api.CreateProject",
+   "line": 101,
+   "model": "Project",
+   "root": "POST /api/projects",
+   "table": "projects",
+   "value": "draft",
+   "value_line": 101
+  },
+  {
+   "column": "status",
+   "file": "api/api.go",
+   "guard": "",
+   "in": "api.Publish",
+   "line": 142,
+   "model": "Project",
+   "root": "POST /api/projects/{id}/publish",
+   "table": "projects",
+   "value": "published",
+   "value_line": 142
+  },
+  {
+   "column": "status",
+   "file": "api/api.go",
+   "guard": "",
+   "in": "api.Archive",
+   "line": 163,
+   "model": "Project",
+   "root": "POST /api/projects/{id}/archive",
+   "table": "projects",
+   "value": "archived",
+   "value_line": 163
+  },
+  {
+   "column": "status",
+   "file": "api/api.go",
+   "guard": "",
+   "in": "api.CreateJob",
+   "line": 265,
+   "model": "Job",
+   "root": "POST /api/jobs",
+   "table": "jobs",
+   "value": "queued",
+   "value_line": 265
+  },
+  {
+   "column": "status",
+   "file": "api/api.go",
+   "guard": "",
+   "in": "api.Activate",
+   "line": 274,
+   "model": "Job",
+   "root": "POST /api/jobs/{id}/activate",
+   "table": "jobs",
+   "value": "active",
+   "value_line": 274
+  },
+  {
+   "column": "state",
+   "file": "api/api.go",
+   "guard": "",
+   "in": "api.StartRun",
+   "line": 296,
+   "model": "Run",
+   "root": "POST /api/jobs/{id}/runs",
+   "table": "runs",
+   "value": "running",
+   "value_line": 296
+  }
+ ],
+ "tables": [
+  {
+   "checks": [],
+   "columns": [
+    {
+     "default": null,
+     "field": "ID",
+     "foreign_key": null,
+     "go_type": "uint64",
+     "index": false,
+     "line": 6,
+     "max_length": null,
+     "name": "id",
+     "nullable": false,
+     "primary_key": true,
+     "required": true,
+     "type": "Int",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "Email",
+     "foreign_key": null,
+     "go_type": "string",
+     "index": true,
+     "line": 7,
+     "max_length": 200,
+     "name": "email",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Str",
+     "unique": true
+    }
+   ],
+   "file": "models/models.go",
+   "line": 5,
+   "migrated_at": [
+    {
+     "file": "models/models.go",
+     "line": 42
+    }
+   ],
+   "name_unread": false,
+   "package": "example.com/wf/models",
+   "source": "migrate",
+   "struct": "User",
+   "table": "users",
+   "unique_together": []
+  },
+  {
+   "checks": [],
+   "columns": [
+    {
+     "default": null,
+     "field": "ID",
+     "foreign_key": null,
+     "go_type": "string",
+     "index": false,
+     "line": 12,
+     "max_length": 36,
+     "name": "id",
+     "nullable": false,
+     "primary_key": true,
+     "required": true,
+     "type": "Str",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "OwnerID",
+     "foreign_key": null,
+     "go_type": "uint64",
+     "index": true,
+     "line": 13,
+     "max_length": null,
+     "name": "owner_id",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Int",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "Name",
+     "foreign_key": null,
+     "go_type": "string",
+     "index": false,
+     "line": 14,
+     "max_length": 80,
+     "name": "name",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Str",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "Kind",
+     "foreign_key": null,
+     "go_type": "string",
+     "index": false,
+     "line": 15,
+     "max_length": 10,
+     "name": "kind",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Str",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "Status",
+     "foreign_key": null,
+     "go_type": "string",
+     "index": false,
+     "line": 16,
+     "max_length": 10,
+     "name": "status",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Str",
+     "unique": false
+    }
+   ],
+   "file": "models/models.go",
+   "line": 11,
+   "migrated_at": [
+    {
+     "file": "models/models.go",
+     "line": 42
+    }
+   ],
+   "name_unread": false,
+   "package": "example.com/wf/models",
+   "source": "migrate",
+   "struct": "Project",
+   "table": "projects",
+   "unique_together": []
+  },
+  {
+   "checks": [],
+   "columns": [
+    {
+     "default": null,
+     "field": "ID",
+     "foreign_key": null,
+     "go_type": "uint64",
+     "index": false,
+     "line": 21,
+     "max_length": null,
+     "name": "id",
+     "nullable": false,
+     "primary_key": true,
+     "required": true,
+     "type": "Int",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "ProjectID",
+     "foreign_key": null,
+     "go_type": "string",
+     "index": true,
+     "line": 22,
+     "max_length": 36,
+     "name": "project_id",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Str",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "Subject",
+     "foreign_key": null,
+     "go_type": "string",
+     "index": false,
+     "line": 23,
+     "max_length": 80,
+     "name": "subject",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Str",
+     "unique": false
+    }
+   ],
+   "file": "models/models.go",
+   "line": 20,
+   "migrated_at": [
+    {
+     "file": "models/models.go",
+     "line": 42
+    }
+   ],
+   "name_unread": false,
+   "package": "example.com/wf/models",
+   "source": "migrate",
+   "struct": "Ticket",
+   "table": "tickets",
+   "unique_together": []
+  },
+  {
+   "checks": [],
+   "columns": [
+    {
+     "default": null,
+     "field": "ID",
+     "foreign_key": null,
+     "go_type": "uint64",
+     "index": false,
+     "line": 28,
+     "max_length": null,
+     "name": "id",
+     "nullable": false,
+     "primary_key": true,
+     "required": true,
+     "type": "Int",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "OwnerID",
+     "foreign_key": null,
+     "go_type": "uint64",
+     "index": false,
+     "line": 29,
+     "max_length": null,
+     "name": "owner_id",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Int",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "Name",
+     "foreign_key": null,
+     "go_type": "string",
+     "index": false,
+     "line": 30,
+     "max_length": 80,
+     "name": "name",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Str",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "Status",
+     "foreign_key": null,
+     "go_type": "string",
+     "index": false,
+     "line": 31,
+     "max_length": 10,
+     "name": "status",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Str",
+     "unique": false
+    }
+   ],
+   "file": "models/models.go",
+   "line": 27,
+   "migrated_at": [
+    {
+     "file": "models/models.go",
+     "line": 42
+    }
+   ],
+   "name_unread": false,
+   "package": "example.com/wf/models",
+   "source": "migrate",
+   "struct": "Job",
+   "table": "jobs",
+   "unique_together": []
+  },
+  {
+   "checks": [],
+   "columns": [
+    {
+     "default": null,
+     "field": "ID",
+     "foreign_key": null,
+     "go_type": "uint64",
+     "index": false,
+     "line": 36,
+     "max_length": null,
+     "name": "id",
+     "nullable": false,
+     "primary_key": true,
+     "required": true,
+     "type": "Int",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "JobID",
+     "foreign_key": null,
+     "go_type": "uint64",
+     "index": true,
+     "line": 37,
+     "max_length": null,
+     "name": "job_id",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Int",
+     "unique": false
+    },
+    {
+     "default": null,
+     "field": "State",
+     "foreign_key": null,
+     "go_type": "string",
+     "index": false,
+     "line": 38,
+     "max_length": 10,
+     "name": "state",
+     "nullable": false,
+     "primary_key": false,
+     "required": true,
+     "type": "Str",
+     "unique": false
+    }
+   ],
+   "file": "models/models.go",
+   "line": 35,
+   "migrated_at": [
+    {
+     "file": "models/models.go",
+     "line": 42
+    }
+   ],
+   "name_unread": false,
+   "package": "example.com/wf/models",
+   "source": "migrate",
+   "struct": "Run",
+   "table": "runs",
+   "unique_together": []
+  }
+ ],
+ "unread": []
+}

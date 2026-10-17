@@ -1,0 +1,3919 @@
+{
+  "app": {
+    "extract_sha256": "d30a96cc735d8df5a59b459af0e5a7d52a9f4d01bc65345457b953cf96719efb",
+    "framework": "gin",
+    "module": "example.com/wf",
+    "workflow_extract_sha256": "305e12bece39541cd683473b1f4dc59a9c4958bc8a05777e55e59c2d18e055fe"
+  },
+  "capped": [],
+  "edges": [
+    {
+      "alternatives": [],
+      "consumer": "POST /api/jobs/{id}/activate",
+      "evidence": [
+        {
+          "at": "api/api.go:274",
+          "what": "param_use"
+        },
+        {
+          "at": "api/api.go:266",
+          "what": "create"
+        }
+      ],
+      "id": "we-80b00647f7",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /api/jobs",
+      "table": "jobs"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /api/jobs/{id}/runs",
+      "evidence": [
+        {
+          "at": "api/api.go:288",
+          "what": "param_use"
+        },
+        {
+          "at": "api/api.go:266",
+          "what": "create"
+        }
+      ],
+      "id": "we-96e8737f9a",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /api/jobs",
+      "table": "jobs"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /api/projects/{id}",
+      "evidence": [
+        {
+          "at": "api/api.go:124",
+          "what": "param_use"
+        },
+        {
+          "at": "api/api.go:102",
+          "what": "create"
+        }
+      ],
+      "id": "we-5dd9501020",
+      "id_source": "client",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /api/projects",
+      "table": "projects"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /api/projects/{id}/archive",
+      "evidence": [
+        {
+          "at": "api/api.go:156",
+          "what": "param_use"
+        },
+        {
+          "at": "api/api.go:102",
+          "what": "create"
+        }
+      ],
+      "id": "we-bd54df7528",
+      "id_source": "client",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /api/projects",
+      "table": "projects"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /api/projects/{id}/publish",
+      "evidence": [
+        {
+          "at": "api/api.go:136",
+          "what": "param_use"
+        },
+        {
+          "at": "api/api.go:102",
+          "what": "create"
+        }
+      ],
+      "id": "we-2498addc2a",
+      "id_source": "client",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /api/projects",
+      "table": "projects"
+    },
+    {
+      "alternatives": [],
+      "consumer": "POST /api/tickets",
+      "evidence": [
+        {
+          "at": "api/api.go:184",
+          "what": "param_use"
+        },
+        {
+          "at": "api/api.go:102",
+          "what": "create"
+        }
+      ],
+      "id": "we-2d2ec9a143",
+      "id_source": "client",
+      "key": "id",
+      "param": "project_id",
+      "param_source": "body",
+      "producer": "POST /api/projects",
+      "table": "projects"
+    },
+    {
+      "alternatives": [],
+      "consumer": "DELETE /api/tickets/{id}",
+      "evidence": [
+        {
+          "at": "api/api.go:223",
+          "what": "param_use"
+        },
+        {
+          "at": "api/api.go:189",
+          "what": "create"
+        }
+      ],
+      "id": "we-ec711d343f",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /api/tickets",
+      "table": "tickets"
+    },
+    {
+      "alternatives": [],
+      "consumer": "GET /api/tickets/{id}",
+      "evidence": [
+        {
+          "at": "api/api.go:206",
+          "what": "param_use"
+        },
+        {
+          "at": "api/api.go:189",
+          "what": "create"
+        }
+      ],
+      "id": "we-36a6218cdb",
+      "id_source": "response",
+      "key": "id",
+      "param": "id",
+      "param_source": "path",
+      "producer": "POST /api/tickets",
+      "table": "tickets"
+    }
+  ],
+  "flows": [
+    {
+      "edge_refs": [
+        "we-80b00647f7"
+      ],
+      "focus_from": 0,
+      "id": "wf-c6709a41c7",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [
+        "wm-3e117ee6e2"
+      ],
+      "merged_kinds": [
+        "machine"
+      ],
+      "name": "create jobs > activate jobs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/jobs",
+        "POST /api/jobs/{id}/activate"
+      ],
+      "skeleton": [
+        "POST /api/jobs",
+        "POST /api/jobs/{}/activate"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:27",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:259",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:266",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "name": "wfc6709a-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/jobs",
+          "value_sources": {
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            204,
+            401,
+            409
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:28",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:273",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:274",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs/{id}/activate",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/jobs/{id}/activate",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-96e8737f9a"
+      ],
+      "focus_from": 0,
+      "id": "wf-0cbe22f40a",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create jobs > runs jobs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/jobs",
+        "POST /api/jobs/{id}/runs"
+      ],
+      "skeleton": [
+        "POST /api/jobs",
+        "POST /api/jobs/{}/runs"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:27",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:259",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:266",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "name": "wf0cbe22-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/jobs",
+          "value_sources": {
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            409
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:29",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:286",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:288",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:297",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs/{id}/runs",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/jobs/{id}/runs",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-5dd9501020"
+      ],
+      "focus_from": 0,
+      "id": "wf-890a039bf9",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "merged_kinds": [
+        "effect"
+      ],
+      "name": "create projects > read projects",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "GET /api/projects/{id}"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "GET /api/projects/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf890a03-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:19",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:123",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:124",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 1,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/projects/{id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-bd54df7528"
+      ],
+      "focus_from": 0,
+      "id": "wf-afe980a070",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [
+        "wm-a26eaab35a"
+      ],
+      "merged_kinds": [
+        "machine"
+      ],
+      "name": "create projects > archive projects",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/projects/{id}/archive"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/projects/{}/archive"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wfafe980-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            204,
+            401,
+            404,
+            409
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:21",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:155",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:156",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001/archive",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects/{id}/archive",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-2498addc2a"
+      ],
+      "focus_from": 0,
+      "id": "wf-2ca4cbbc48",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [
+        "wm-a26eaab35a"
+      ],
+      "merged_kinds": [
+        "machine"
+      ],
+      "name": "create projects > publish projects",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/projects/{id}/publish"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/projects/{}/publish"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf2ca4cb-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401,
+            404,
+            409,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:20",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:135",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:136",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001/publish",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects/{id}/publish",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-2d2ec9a143"
+      ],
+      "focus_from": 0,
+      "id": "wf-93b26bb3de",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create projects > create tickets",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf93b26b-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wf93b26b-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-ec711d343f"
+      ],
+      "focus_from": 1,
+      "id": "wf-5696c7b184",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "name": "create projects > create tickets > delete tickets",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "DELETE /api/tickets/{id}"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "DELETE /api/tickets/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf5696c7-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wf5696c7-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            204,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:25",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:216",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:223",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "DELETE",
+          "path": "/api/tickets/{id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "DELETE /api/tickets/{id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-36a6218cdb"
+      ],
+      "focus_from": 1,
+      "id": "wf-d86ad1d438",
+      "inferred_name": true,
+      "kind": "pair",
+      "machine_refs": [],
+      "merged_kinds": [
+        "effect"
+      ],
+      "name": "create projects > create tickets > read tickets",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "GET /api/tickets/{id}"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "GET /api/tickets/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wfd86ad1-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wfd86ad1-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:24",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:204",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:206",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/tickets/{id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/tickets/{id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 0,
+      "id": "wf-ed1c827c3e",
+      "inferred_name": true,
+      "kind": "lifecycle",
+      "machine_refs": [],
+      "name": "create jobs > activate jobs > runs jobs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/jobs",
+        "POST /api/jobs/{id}/activate",
+        "POST /api/jobs/{id}/runs"
+      ],
+      "skeleton": [
+        "POST /api/jobs",
+        "POST /api/jobs/{}/activate",
+        "POST /api/jobs/{}/runs"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:27",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:259",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:266",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "name": "wfed1c82-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/jobs",
+          "value_sources": {
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            204,
+            401,
+            409
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:28",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:273",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:274",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs/{id}/activate",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/jobs/{id}/activate",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            409
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:29",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:286",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:288",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:297",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 2,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs/{id}/runs",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/jobs/{id}/runs",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 0,
+      "id": "wf-e010137f44",
+      "inferred_name": true,
+      "kind": "lifecycle",
+      "machine_refs": [],
+      "name": "create projects > create tickets > publish projects > archive projects > delete tickets",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "POST /api/projects/{id}/publish",
+        "POST /api/projects/{id}/archive",
+        "DELETE /api/tickets/{id}"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "POST /api/projects/{}/publish",
+        "POST /api/projects/{}/archive",
+        "DELETE /api/tickets/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wfe01013-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wfe01013-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401,
+            404,
+            409,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:20",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:135",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:136",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001/publish",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects/{id}/publish",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            204,
+            401,
+            404,
+            409
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:21",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:155",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:156",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 3,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001/archive",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects/{id}/archive",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            204,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:25",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:216",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:223",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 4,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "DELETE",
+          "path": "/api/tickets/{id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "DELETE /api/tickets/{id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-80b00647f7"
+      ],
+      "focus_from": 0,
+      "id": "wf-aa204bd852",
+      "inferred_name": true,
+      "kind": "owner_guard",
+      "machine_refs": [],
+      "name": "create jobs > activate jobs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/jobs",
+        "POST /api/jobs/{id}/activate"
+      ],
+      "skeleton": [
+        "POST /api/jobs",
+        "POST /api/jobs/{}/activate"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:27",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:259",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:266",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "name": "wfaa204b-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/jobs",
+          "value_sources": {
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ben",
+          "code_statuses": [
+            204,
+            401,
+            409
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:28",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:273",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:274",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs/{id}/activate",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/jobs/{id}/activate",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-96e8737f9a"
+      ],
+      "focus_from": 0,
+      "id": "wf-fb266187ce",
+      "inferred_name": true,
+      "kind": "owner_guard",
+      "machine_refs": [],
+      "name": "create jobs > runs jobs",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/jobs",
+        "POST /api/jobs/{id}/runs"
+      ],
+      "skeleton": [
+        "POST /api/jobs",
+        "POST /api/jobs/{}/runs"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:27",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:259",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:266",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "name": "wffb2661-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/jobs",
+          "value_sources": {
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ben",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            409
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:29",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:286",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:288",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:297",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/jobs/{id}/runs",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/jobs/{id}/runs",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-5dd9501020"
+      ],
+      "focus_from": 0,
+      "id": "wf-6fbb91910d",
+      "inferred_name": true,
+      "kind": "owner_guard",
+      "machine_refs": [],
+      "name": "create projects > read projects",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "GET /api/projects/{id}"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "GET /api/projects/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf6fbb91-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ben",
+          "code_statuses": [
+            200,
+            401,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:19",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:123",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:124",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 1,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/projects/{id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-bd54df7528"
+      ],
+      "focus_from": 0,
+      "id": "wf-66b1fc1cad",
+      "inferred_name": true,
+      "kind": "owner_guard",
+      "machine_refs": [],
+      "name": "create projects > archive projects",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/projects/{id}/archive"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/projects/{}/archive"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf66b1fc-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ben",
+          "code_statuses": [
+            204,
+            401,
+            404,
+            409
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:21",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:155",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:156",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001/archive",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects/{id}/archive",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-2498addc2a"
+      ],
+      "focus_from": 0,
+      "id": "wf-c4358c54b2",
+      "inferred_name": true,
+      "kind": "owner_guard",
+      "machine_refs": [],
+      "name": "create projects > publish projects",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/projects/{id}/publish"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/projects/{}/publish"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wfc4358c-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ben",
+          "code_statuses": [
+            200,
+            401,
+            404,
+            409,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:20",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:135",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:136",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001/publish",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects/{id}/publish",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [
+        "we-2d2ec9a143"
+      ],
+      "focus_from": 0,
+      "id": "wf-63d322e840",
+      "inferred_name": true,
+      "kind": "owner_guard",
+      "machine_refs": [],
+      "name": "create projects > create tickets",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf63d322-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ben",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wf63d322-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 1,
+      "id": "wf-e9d27072f1",
+      "inferred_name": true,
+      "kind": "after_delete",
+      "machine_refs": [],
+      "merged_kinds": [
+        "effect"
+      ],
+      "name": "create projects > create tickets > delete tickets > read tickets",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "DELETE /api/tickets/{id}",
+        "GET /api/tickets/{id}"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "DELETE /api/tickets/{}",
+        "GET /api/tickets/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wfe9d270-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wfe9d270-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            204,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:25",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:216",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:223",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "DELETE",
+          "path": "/api/tickets/{id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "DELETE /api/tickets/{id}",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:24",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:204",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:206",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 3,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/tickets/{id}",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/tickets/{id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 1,
+      "id": "wf-f8682cd65b",
+      "inferred_name": true,
+      "kind": "effect",
+      "machine_refs": [],
+      "name": "create projects > archive projects > read projects",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/projects/{id}/archive",
+        "GET /api/projects/{id}"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/projects/{}/archive",
+        "GET /api/projects/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wff8682c-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            204,
+            401,
+            404,
+            409
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:21",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:155",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:156",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001/archive",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects/{id}/archive",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:19",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:123",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:124",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/projects/{id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 1,
+      "id": "wf-334870feef",
+      "inferred_name": true,
+      "kind": "effect",
+      "machine_refs": [],
+      "name": "create projects > publish projects > read projects",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/projects/{id}/publish",
+        "GET /api/projects/{id}"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/projects/{}/publish",
+        "GET /api/projects/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf334870-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401,
+            404,
+            409,
+            500
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:20",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:135",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:136",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 1,
+          "inserted": null,
+          "json": {},
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001/publish",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/projects/{id}/publish",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:19",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:123",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:124",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/projects/{id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 2,
+      "id": "wf-43422b3ae2",
+      "inferred_name": true,
+      "kind": "effect",
+      "machine_refs": [],
+      "name": "create projects > create tickets > delete tickets > read stats",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "DELETE /api/tickets/{id}",
+        "GET /api/stats"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "DELETE /api/tickets/{}",
+        "GET /api/stats"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf43422b-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wf43422b-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            204,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:25",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:216",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:223",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "DELETE",
+          "path": "/api/tickets/{id}",
+          "refusal": null,
+          "role": "focus",
+          "route": "DELETE /api/tickets/{id}",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:30",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:35",
+              "what": "handler"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 3,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/stats",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/stats",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 2,
+      "id": "wf-84da4e3650",
+      "inferred_name": true,
+      "kind": "effect",
+      "machine_refs": [],
+      "name": "create projects > create tickets > delete tickets > read tickets",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "DELETE /api/tickets/{id}",
+        "GET /api/tickets"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "DELETE /api/tickets/{}",
+        "GET /api/tickets"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf84da4e-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wf84da4e-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 1,
+              "id_source": "response",
+              "param": "id",
+              "source": "path",
+              "value": null
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            204,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:25",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:216",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:223",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 204,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "DELETE",
+          "path": "/api/tickets/{id}",
+          "refusal": null,
+          "role": "focus",
+          "route": "DELETE /api/tickets/{id}",
+          "value_sources": {}
+        },
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:23",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:195",
+              "what": "handler"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 3,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/tickets",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 1,
+      "id": "wf-e312476b5c",
+      "inferred_name": true,
+      "kind": "effect",
+      "machine_refs": [],
+      "name": "create projects > create tickets > read projects",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "GET /api/projects/{id}"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "GET /api/projects/{}"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wfe31247-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wfe31247-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "id",
+              "source": "path",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401,
+            404
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:19",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:123",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:124",
+              "what": "param_use"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/projects/00000000-0000-4000-8000-000000000001",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/projects/{id}",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 1,
+      "id": "wf-865e9839c8",
+      "inferred_name": true,
+      "kind": "effect",
+      "machine_refs": [],
+      "name": "create projects > create tickets > read stats",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "GET /api/stats"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "GET /api/stats"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf865e98-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wf865e98-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:30",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:35",
+              "what": "handler"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/stats",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/stats",
+          "value_sources": {}
+        }
+      ]
+    },
+    {
+      "edge_refs": [],
+      "focus_from": 1,
+      "id": "wf-42521b29f2",
+      "inferred_name": true,
+      "kind": "effect",
+      "machine_refs": [],
+      "name": "create projects > create tickets > read tickets",
+      "reason": "static run: the flow was not executed",
+      "routes": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "GET /api/tickets"
+      ],
+      "skeleton": [
+        "POST /api/projects",
+        "POST /api/tickets",
+        "GET /api/tickets"
+      ],
+      "source": "static",
+      "status": "unverified",
+      "steps": [
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            409,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:18",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:95",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:102",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 0,
+          "inserted": null,
+          "json": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "public",
+            "name": "wf42521b-name"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/projects",
+          "refusal": null,
+          "role": "setup",
+          "route": "POST /api/projects",
+          "value_sources": {
+            "id": "generated",
+            "kind": "literal",
+            "name": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [
+            {
+              "from": 0,
+              "id_source": "client",
+              "param": "project_id",
+              "source": "body",
+              "value": "00000000-0000-4000-8000-000000000001"
+            }
+          ],
+          "caller": "ann",
+          "code_statuses": [
+            201,
+            401,
+            404,
+            422
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:22",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:178",
+              "what": "handler"
+            },
+            {
+              "at": "api/api.go:184",
+              "what": "param_use"
+            },
+            {
+              "at": "api/api.go:189",
+              "what": "create"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 201,
+          "i": 1,
+          "inserted": null,
+          "json": {
+            "project_id": "00000000-0000-4000-8000-000000000001",
+            "subject": "wf42521b-subject"
+          },
+          "kind": "request",
+          "method": "POST",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "focus",
+          "route": "POST /api/tickets",
+          "value_sources": {
+            "subject": "default"
+          }
+        },
+        {
+          "attempts": 0,
+          "bindings": [],
+          "caller": "ann",
+          "code_statuses": [
+            200,
+            401
+          ],
+          "evidence": [
+            {
+              "at": "api/api.go:23",
+              "what": "route"
+            },
+            {
+              "at": "api/api.go:195",
+              "what": "handler"
+            }
+          ],
+          "expect_from": "static",
+          "expect_status": 200,
+          "i": 2,
+          "inserted": null,
+          "json": null,
+          "kind": "request",
+          "method": "GET",
+          "path": "/api/tickets",
+          "refusal": null,
+          "role": "setup",
+          "route": "GET /api/tickets",
+          "value_sources": {}
+        }
+      ]
+    }
+  ],
+  "machines": [
+    {
+      "column": "status",
+      "edges": [
+        {
+          "evidence": [
+            {
+              "at": "api/api.go:274",
+              "what": "from"
+            },
+            {
+              "at": "api/api.go:274",
+              "what": "write"
+            }
+          ],
+          "from": "queued",
+          "observed": 0,
+          "source": "static",
+          "to": "active"
+        }
+      ],
+      "id": "wm-3e117ee6e2",
+      "initial": [
+        "queued"
+      ],
+      "model": "Job",
+      "observed_initial": [],
+      "spec_object": {
+        "column": "status",
+        "edges": [
+          [
+            "queued",
+            "active"
+          ]
+        ],
+        "initial": [
+          "queued"
+        ],
+        "table": "Job"
+      },
+      "states": [
+        "active",
+        "queued"
+      ],
+      "status": "static",
+      "sweeps": [],
+      "table": "jobs",
+      "unread": []
+    },
+    {
+      "column": "status",
+      "edges": [
+        {
+          "evidence": [
+            {
+              "at": "api/api.go:162",
+              "what": "from"
+            },
+            {
+              "at": "api/api.go:163",
+              "what": "write"
+            }
+          ],
+          "from": "draft",
+          "observed": 0,
+          "source": "static",
+          "to": "archived"
+        },
+        {
+          "evidence": [
+            {
+              "at": "api/api.go:141",
+              "what": "from"
+            },
+            {
+              "at": "api/api.go:142",
+              "what": "write"
+            }
+          ],
+          "from": "draft",
+          "observed": 0,
+          "source": "static",
+          "to": "published"
+        },
+        {
+          "evidence": [
+            {
+              "at": "api/api.go:162",
+              "what": "from"
+            },
+            {
+              "at": "api/api.go:163",
+              "what": "write"
+            }
+          ],
+          "from": "published",
+          "observed": 0,
+          "source": "static",
+          "to": "archived"
+        }
+      ],
+      "id": "wm-a26eaab35a",
+      "initial": [
+        "draft"
+      ],
+      "model": "Project",
+      "observed_initial": [],
+      "spec_object": {
+        "column": "status",
+        "edges": [
+          [
+            "draft",
+            "archived"
+          ],
+          [
+            "draft",
+            "published"
+          ],
+          [
+            "published",
+            "archived"
+          ]
+        ],
+        "initial": [
+          "draft"
+        ],
+        "table": "Project"
+      },
+      "states": [
+        "archived",
+        "draft",
+        "published"
+      ],
+      "status": "static",
+      "sweeps": [],
+      "table": "projects",
+      "unread": []
+    }
+  ],
+  "run": {
+    "caps": {
+      "max_flows": 96,
+      "max_steps": 8
+    },
+    "harness": null,
+    "mode": "static",
+    "services_swept": [],
+    "users": [
+      "ann",
+      "ben"
+    ]
+  },
+  "schema": "lattice.workflows/1",
+  "summary": {
+    "edges": 8,
+    "failed": 0,
+    "flows": 24,
+    "machines": 2,
+    "unverified": 24,
+    "verified": 0
+  },
+  "unread": [
+    {
+      "file": "",
+      "line": 0,
+      "reason": "no public POST creates the users table and a login route together",
+      "what": "account"
+    },
+    {
+      "file": "main.go",
+      "line": 30,
+      "reason": "PUT /test/clock is registered under `os.Getenv(\"TEST_CLOCK\") != \"\"`: never used",
+      "what": "route"
+    }
+  ]
+}

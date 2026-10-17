@@ -311,6 +311,7 @@ AUTHORING = {
     "probe": "lattice.spec.probe",
     "review": "lattice.spec.review",
     "ask": "lattice.spec.ask",
+    "appmap": "lattice.spec.appmap",
     "implementation": "lattice.spec.implementation",
     "rationale": "lattice.spec.rationale",
     "glossary": "lattice.spec.glossary",
