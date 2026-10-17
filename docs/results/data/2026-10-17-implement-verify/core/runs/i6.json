@@ -1,0 +1,174 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [],
+   "removed": [
+    {
+     "id": "R4",
+     "text": "Stock is never negative."
+    }
+   ],
+   "unchanged": 4
+  },
+  "targets": {
+   "added": [],
+   "modified": [],
+   "removed": [
+    "invariant:stock_non_negative"
+   ]
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "df603938683895650115d359feea331e8a35a84eadc048a045d5172cb3ec37a6",
+   "spec": "21b80cf10c6dd5645be9bbef510f88d135ee83745e4be03632abb97cef3b273d",
+   "trace": "e78aaf3f4db23df271f86c62f0aef1c2f6573e891b57f5ab52fcd5735c25420f"
+  },
+  "candidate": {
+   "requirements": "bfbb273969c9da17ff19d763890c5299b341feea90eb37226987cc0016b0a60d",
+   "spec": "e63fe72ed8cd00c663441141d58269f66c88f86d25d9d3822e66824b580ce614",
+   "trace": "d38c5d6b6e2e37e15948a7ae0f28be8167f2c08642b1f33d083d4134f1b20102"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": null,
+   "stale": false,
+   "workflows_sha256": "de2214c30320ecd9e29ab2375fe1ba12f2decd731149542e5283721272527170"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {},
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 0,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 2
+   },
+   "3": {
+    "flows": 0,
+    "locations": 0,
+    "unread": 0
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 0
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {},
+   "by_layer": {},
+   "failing": 0,
+   "flows_run": 5,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 6,
+   "flows_note": null,
+   "scenario_steps": 3
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "removed_only",
+    "state": "undecidable",
+    "subject": "invariant:stock_non_negative"
+   },
+   {
+    "kind": "removed",
+    "reason": "removed_only",
+    "state": "undecidable",
+    "subject": "rule:R4"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_run: no harness"
+  }
+ },
+ "tier3": {
+  "counts": {},
+  "external": {
+   "count": 0
+  },
+  "flows": [],
+  "locations": [],
+  "unread": []
+ },
+ "tier4": {
+  "before": {
+   "failing_count": 0,
+   "flows_run": 5,
+   "matches_report": true
+  },
+  "counts": {},
+  "failing": [],
+  "flows": [],
+  "implementation": null,
+  "notes": [],
+  "owner": {
+   "checked": [
+    "branch",
+    "cached",
+    "head",
+    "refs",
+    "stash",
+    "status",
+    "worktrees"
+   ],
+   "untouched": true
+  },
+  "rebuild": null,
+  "regressions": [],
+  "resolved": [],
+  "still_failing": [],
+  "t2_check": [],
+  "t2_confirmed": null,
+  "t3_vs_edit": {
+   "declarations": null,
+   "files": null,
+   "status": "not_applicable: no edit"
+  },
+  "verdict": "nothing_to_build"
+ },
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "not_run:not_requested",
+  "4": "run"
+ }
+}

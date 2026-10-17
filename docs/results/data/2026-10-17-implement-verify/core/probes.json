@@ -1,0 +1,1050 @@
+[
+ {
+  "id": "PV",
+  "observed": {
+   "changes": {
+    "i1": {
+     "code": 0,
+     "counts": {
+      "failing_after": 0,
+      "flow_before_failed": 0,
+      "flow_changed": 1,
+      "flow_unchanged": 4,
+      "flows_run": 5,
+      "may_fail_unbacked": 0,
+      "regressions": 0,
+      "resolved": 1,
+      "still_failing": 0,
+      "t2_contradicted": 0,
+      "unexpected_regressions": 0,
+      "unreported": 0,
+      "workflow_fails": 0
+     },
+     "rounds": 1,
+     "tiers4": "run",
+     "verdict": "pass"
+    },
+    "i10": {
+     "out": false,
+     "refused": "spec_contradiction"
+    },
+    "i11": {
+     "code": 0,
+     "counts": {
+      "failing_after": 0,
+      "flow_before_failed": 0,
+      "flow_changed": 1,
+      "flow_unchanged": 4,
+      "flows_run": 5,
+      "may_fail_unbacked": 0,
+      "regressions": 0,
+      "resolved": 1,
+      "still_failing": 0,
+      "t2_contradicted": 0,
+      "unexpected_regressions": 0,
+      "unreported": 0,
+      "workflow_fails": 0
+     },
+     "rounds": 1,
+     "tiers4": "run",
+     "verdict": "pass"
+    },
+    "i2": {
+     "code": 0,
+     "counts": {
+      "failing_after": 0,
+      "flow_before_failed": 0,
+      "flow_changed": 1,
+      "flow_unchanged": 4,
+      "flows_run": 5,
+      "may_fail_unbacked": 0,
+      "regressions": 0,
+      "resolved": 1,
+      "still_failing": 0,
+      "t2_contradicted": 0,
+      "unexpected_regressions": 0,
+      "unreported": 0,
+      "workflow_fails": 0
+     },
+     "rounds": 2,
+     "tiers4": "run",
+     "verdict": "pass"
+    },
+    "i3": {
+     "code": 0,
+     "counts": {
+      "failing_after": 0,
+      "flow_before_failed": 0,
+      "flow_changed": 2,
+      "flow_unchanged": 3,
+      "flows_run": 5,
+      "may_fail_unbacked": 0,
+      "regressions": 0,
+      "resolved": 1,
+      "still_failing": 0,
+      "t2_contradicted": 0,
+      "unexpected_regressions": 1,
+      "unreported": 1,
+      "workflow_fails": 0
+     },
+     "rounds": 1,
+     "tiers4": "run",
+     "verdict": "fail"
+    },
+    "i4": {
+     "code": 0,
+     "counts": {
+      "failing_after": 0,
+      "flow_before_failed": 0,
+      "flow_changed": 2,
+      "flow_unchanged": 3,
+      "flows_run": 5,
+      "may_fail_unbacked": 0,
+      "regressions": 0,
+      "resolved": 1,
+      "still_failing": 0,
+      "t2_contradicted": 0,
+      "unexpected_regressions": 1,
+      "unreported": 1,
+      "workflow_fails": 0
+     },
+     "rounds": 1,
+     "tiers4": "run",
+     "verdict": "fail"
+    },
+    "i5": {
+     "code": 0,
+     "counts": {},
+     "rounds": null,
+     "tiers4": "run",
+     "verdict": "nothing_to_build"
+    },
+    "i6": {
+     "code": 0,
+     "counts": {},
+     "rounds": null,
+     "tiers4": "run",
+     "verdict": "nothing_to_build"
+    },
+    "i7": {
+     "code": 0,
+     "counts": {},
+     "rounds": null,
+     "tiers4": "run",
+     "verdict": "nothing_to_build"
+    },
+    "i8": {
+     "code": 0,
+     "counts": {},
+     "rounds": 2,
+     "tiers4": "not_run:rebuild_gave_up",
+     "verdict": "not_built"
+    },
+    "i9": {
+     "code": 0,
+     "counts": {},
+     "rounds": 2,
+     "tiers4": "not_run:rebuild_gave_up",
+     "verdict": "not_built"
+    }
+   },
+   "count_misses": [],
+   "i11_same_as_i1_but_agent": true,
+   "i1_shape": true,
+   "i3_i4_unreported": true
+  },
+  "predicted": "11/11 verdicts, rounds and counts as the table of section 3",
+  "status": "PASS",
+  "verdict_exact": "11/11"
+ },
+ {
+  "id": "PR",
+  "observed": {
+   "i1": {
+    "before_truth": [
+     [
+      "D",
+      "scenario: ann cancels her pending order",
+      "ann cancels her pending order / step 2"
+     ]
+    ],
+    "failing_after": 0,
+    "regressions": 0,
+    "resolved": [
+     [
+      "D",
+      "scenario: ann cancels her pending order",
+      "ann cancels her pending order / step 2"
+     ]
+    ],
+    "still_failing": 0
+   },
+   "i11": {
+    "before_truth": [
+     [
+      "D",
+      "scenario: ann cancels her pending order",
+      "ann cancels her pending order / step 2"
+     ]
+    ],
+    "failing_after": 0,
+    "regressions": 0,
+    "resolved": [
+     [
+      "D",
+      "scenario: ann cancels her pending order",
+      "ann cancels her pending order / step 2"
+     ]
+    ],
+    "still_failing": 0
+   },
+   "i2": {
+    "before_truth": [
+     [
+      "D",
+      "scenario: ann cancels her pending order",
+      "ann cancels her pending order / step 2"
+     ]
+    ],
+    "failing_after": 0,
+    "regressions": 0,
+    "resolved": [
+     [
+      "D",
+      "scenario: ann cancels her pending order",
+      "ann cancels her pending order / step 2"
+     ]
+    ],
+    "still_failing": 0
+   }
+  },
+  "predicted": "i1, i2, i11: resolved = the independent before set; 0 regressions, still failing, failing",
+  "status": "PASS"
+ },
+ {
+  "id": "PBF",
+  "note": "10/10 applicable; i10 has no tier 4 (refused by D2 before any run)",
+  "observed": {
+   "i1": true,
+   "i10": null,
+   "i11": true,
+   "i2": true,
+   "i3": true,
+   "i4": true,
+   "i5": true,
+   "i6": true,
+   "i7": true,
+   "i8": true,
+   "i9": true
+  },
+  "predicted": "11/11 true (i10 is refused before a before run exists: not applicable)",
+  "status": "PASS"
+ },
+ {
+  "id": "PU",
+  "observed": {
+   "i3": {
+    "unreported": [
+     "wf-list"
+    ],
+    "verdict": "fail"
+   },
+   "i4": {
+    "unreported": [
+     "wf-read-ben"
+    ],
+    "verdict": "fail"
+   }
+  },
+  "predicted": "i3, i4: 1 unreported each, verdict fail",
+  "status": "PASS"
+ },
+ {
+  "id": "PT2",
+  "observed": {
+   "i1": {
+    "t2_flow_claim": true,
+    "t2_scenario_claim": true
+   },
+   "planted": {
+    "contradicted": [
+     "flow:wf-add"
+    ],
+    "verdict": "fail"
+   }
+  },
+  "predicted": "i1: both T2 claims confirmed; a planted wf-add claim is t2_contradicted",
+  "status": "PASS"
+ },
+ {
+  "id": "PSB",
+  "observed": [
+   {
+    "case": "all match",
+    "got": true,
+    "want": true
+   },
+   {
+    "case": "method differs",
+    "got": false,
+    "want": false
+   },
+   {
+    "case": "route differs",
+    "got": false,
+    "want": false
+   },
+   {
+    "case": "user differs",
+    "got": false,
+    "want": false
+   },
+   {
+    "case": "status differs",
+    "got": false,
+    "want": false
+   },
+   {
+    "case": "route template matches another id",
+    "got": true,
+    "want": true
+   },
+   {
+    "case": "details missing",
+    "got": null,
+    "want": null
+   },
+   {
+    "case": "the backing step fails after",
+    "got": false,
+    "want": false
+   }
+  ],
+  "predicted": "8/8",
+  "status": "PASS"
+ },
+ {
+  "id": "PT3E",
+  "observed": [
+   {
+    "case": "one file in T3 (api/api.go line 98)",
+    "got": {
+     "missed": [],
+     "precision": 1.0,
+     "recall": 1.0,
+     "touched": [
+      "api/api.go"
+     ]
+    },
+    "want": {
+     "missed": [],
+     "precision": 1.0,
+     "recall": 1.0,
+     "touched": [
+      "api/api.go"
+     ]
+    }
+   },
+   {
+    "case": "one file outside T3",
+    "got": {
+     "missed": [
+      "models/models.go"
+     ],
+     "precision": 0.0,
+     "recall": 0.0,
+     "touched": [
+      "models/models.go"
+     ]
+    },
+    "want": {
+     "missed": [
+      "models/models.go"
+     ],
+     "precision": 0.0,
+     "recall": 0.0,
+     "touched": [
+      "models/models.go"
+     ]
+    }
+   },
+   {
+    "case": "a test file, the spec and the stub",
+    "got": {
+     "missed": [],
+     "precision": 0.0,
+     "recall": null,
+     "touched": []
+    },
+    "want": {
+     "missed": [],
+     "precision": 0.0,
+     "recall": null,
+     "touched": []
+    }
+   },
+   {
+    "case": "a new file",
+    "got": {
+     "missed": [
+      "api/new.go"
+     ],
+     "precision": 0.0,
+     "recall": 0.0,
+     "touched": [
+      "api/new.go"
+     ]
+    },
+    "want": {
+     "missed": [
+      "api/new.go"
+     ],
+     "precision": 0.0,
+     "recall": 0.0,
+     "touched": [
+      "api/new.go"
+     ]
+    }
+   },
+   {
+    "case": "declarations of d1",
+    "got": {
+     "precision": 0.2,
+     "recall": 1.0,
+     "touched": [
+      "api/api.go:CreateProject"
+     ]
+    },
+    "want": {
+     "precision": 0.2,
+     "recall": 1.0,
+     "touched": [
+      "api/api.go:CreateProject"
+     ]
+    }
+   },
+   {
+    "case": "python: no tree",
+    "got": "not_applicable: no extract",
+    "want": "not_applicable: no extract"
+   }
+  ],
+  "predicted": "4 synthetic diffs exact vs counts by hand",
+  "status": "PASS"
+ },
+ {
+  "id": "PH",
+  "observed": [
+   {
+    "case": "bad_report (tier4 already set)",
+    "got": "bad_report",
+    "left_nothing": true,
+    "want": "bad_report"
+   },
+   {
+    "case": "report_mismatch (base byte)",
+    "got": "report_mismatch",
+    "left_nothing": true,
+    "want": "report_mismatch"
+   },
+   {
+    "case": "report_mismatch (candidate byte)",
+    "got": "report_mismatch",
+    "left_nothing": true,
+    "want": "report_mismatch"
+   },
+   {
+    "case": "report_mismatch (inventory hash)",
+    "got": "report_mismatch",
+    "left_nothing": true,
+    "want": "report_mismatch"
+   },
+   {
+    "case": "stale_inventory",
+    "got": "stale_inventory",
+    "left_nothing": true,
+    "want": "stale_inventory"
+   },
+   {
+    "case": "spec_contradiction",
+    "got": "spec_contradiction",
+    "left_nothing": true,
+    "want": "spec_contradiction"
+   },
+   {
+    "case": "branch_exists",
+    "got": "branch_exists",
+    "left_nothing": true,
+    "want": "branch_exists"
+   },
+   {
+    "case": "protected branch",
+    "got": "branch_protected",
+    "left_nothing": true,
+    "want": "branch_protected"
+   },
+   {
+    "case": "--work inside the project",
+    "got": "bad_paths",
+    "left_nothing": true,
+    "want": "bad_paths"
+   },
+   {
+    "case": "--out inside the project",
+    "got": "bad_paths",
+    "left_nothing": true,
+    "want": "bad_paths"
+   }
+  ],
+  "predicted": "10/10 codes",
+  "status": "PASS"
+ },
+ {
+  "id": "PG",
+  "observed": {
+   "i1": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i1-raise": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "exit_code": 3,
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i10": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i11": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i2": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i3": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i4": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i5": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i6": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i7": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i8": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i9": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   },
+   "i9-fg": {
+    "drift": {
+     "changed": [],
+     "new": [],
+     "removed": []
+    },
+    "head_same": true,
+    "owner_untouched": true
+   }
+  },
+  "predicted": "0 changed, 0 new beyond the allowed list (11 runs, a failing-gate run, a raise mid-run)",
+  "status": "PASS"
+ },
+ {
+  "id": "PNM",
+  "observed": {
+   "i1": {
+    "S_parent_is_head": true,
+    "b_ancestor_of_head": false,
+    "branch_unmoved": true,
+    "build_parent_is_S": true,
+    "head_unchanged": true,
+    "one_new_commit": true
+   },
+   "i1-ff": {
+    "S_parent_is_head": true,
+    "b_ancestor_of_head": false,
+    "branch_unmoved": true,
+    "build_parent_is_S": true,
+    "head_unchanged": true,
+    "one_new_commit": true
+   },
+   "i11": {
+    "S_parent_is_head": true,
+    "b_ancestor_of_head": false,
+    "branch_unmoved": true,
+    "build_parent_is_S": true,
+    "head_unchanged": true,
+    "one_new_commit": true
+   },
+   "i2": {
+    "S_parent_is_head": true,
+    "b_ancestor_of_head": false,
+    "branch_unmoved": true,
+    "build_parent_is_S": true,
+    "head_unchanged": true,
+    "one_new_commit": true
+   },
+   "i3": {
+    "S_parent_is_head": true,
+    "b_ancestor_of_head": false,
+    "branch_unmoved": true,
+    "build_parent_is_S": true,
+    "head_unchanged": true,
+    "one_new_commit": true
+   },
+   "i4": {
+    "S_parent_is_head": true,
+    "b_ancestor_of_head": false,
+    "branch_unmoved": true,
+    "build_parent_is_S": true,
+    "head_unchanged": true,
+    "one_new_commit": true
+   }
+  },
+  "predicted": "B not an ancestor of HEAD, HEAD unchanged, rebuild/<eid> = S + 1 commit, S^ = HEAD",
+  "status": "PASS"
+ },
+ {
+  "id": "PSC",
+  "observed": {
+   "i1": {
+    "extra": [],
+    "files": [
+     "REQUIREMENTS.md",
+     "spec.py",
+     "spec.trace.json",
+     "stub-rebuild.json"
+    ],
+    "has_stub": true,
+    "trailer": true
+   },
+   "i1-untracked": {
+    "extra": [],
+    "files": [
+     "REQUIREMENTS.md",
+     "spec.py",
+     "spec.trace.json",
+     "stub-rebuild.json"
+    ],
+    "has_stub": true,
+    "trailer": true
+   },
+   "i11": {
+    "extra": [],
+    "files": [
+     "REQUIREMENTS.md",
+     "spec.py",
+     "spec.trace.json",
+     "stub-rebuild.json"
+    ],
+    "has_stub": true,
+    "trailer": true
+   },
+   "i3": {
+    "extra": [],
+    "files": [
+     "REQUIREMENTS.md",
+     "spec.py",
+     "spec.trace.json",
+     "stub-rebuild.json"
+    ],
+    "has_stub": true,
+    "trailer": true
+   },
+   "i5": {
+    "extra": [],
+    "files": [
+     "REQUIREMENTS.md",
+     "spec.trace.json",
+     "stub-rebuild.json"
+    ],
+    "has_stub": true,
+    "trailer": true
+   }
+  },
+  "predicted": "S changes exactly the 3 spec files (+ stub-rebuild.json in test modes), trailer present",
+  "status": "PASS"
+ },
+ {
+  "id": "PC",
+  "observed": {
+   "i1": {
+    "kept_review_worktrees": 1,
+    "live_processes": 0,
+    "tmp_entries": 1,
+    "tmp_left": [
+     "lattice-rebuild"
+    ],
+    "want": 1,
+    "work_left": []
+   },
+   "i1-defwork": {
+    "kept_review_worktrees": 1,
+    "live_processes": 0,
+    "tmp_entries": 1,
+    "tmp_left": [
+     "lattice-rebuild"
+    ],
+    "want": 1,
+    "work_left": []
+   },
+   "i10": {
+    "kept_review_worktrees": 0,
+    "live_processes": 0,
+    "tmp_entries": 0,
+    "tmp_left": [],
+    "want": 0,
+    "work_left": []
+   },
+   "i11": {
+    "kept_review_worktrees": 1,
+    "live_processes": 0,
+    "tmp_entries": 1,
+    "tmp_left": [
+     "lattice-rebuild"
+    ],
+    "want": 1,
+    "work_left": []
+   },
+   "i2": {
+    "kept_review_worktrees": 1,
+    "live_processes": 0,
+    "tmp_entries": 1,
+    "tmp_left": [
+     "lattice-rebuild"
+    ],
+    "want": 1,
+    "work_left": []
+   },
+   "i3": {
+    "kept_review_worktrees": 1,
+    "live_processes": 0,
+    "tmp_entries": 1,
+    "tmp_left": [
+     "lattice-rebuild"
+    ],
+    "want": 1,
+    "work_left": []
+   },
+   "i4": {
+    "kept_review_worktrees": 1,
+    "live_processes": 0,
+    "tmp_entries": 1,
+    "tmp_left": [
+     "lattice-rebuild"
+    ],
+    "want": 1,
+    "work_left": []
+   },
+   "i5": {
+    "kept_review_worktrees": 0,
+    "live_processes": 0,
+    "tmp_entries": 0,
+    "tmp_left": [],
+    "want": 0,
+    "work_left": []
+   },
+   "i6": {
+    "kept_review_worktrees": 0,
+    "live_processes": 0,
+    "tmp_entries": 0,
+    "tmp_left": [],
+    "want": 0,
+    "work_left": []
+   },
+   "i7": {
+    "kept_review_worktrees": 0,
+    "live_processes": 0,
+    "tmp_entries": 0,
+    "tmp_left": [],
+    "want": 0,
+    "work_left": []
+   },
+   "i8": {
+    "kept_review_worktrees": 1,
+    "live_processes": 0,
+    "tmp_entries": 1,
+    "tmp_left": [
+     "lattice-rebuild"
+    ],
+    "want": 1,
+    "work_left": []
+   },
+   "i9": {
+    "kept_review_worktrees": 1,
+    "live_processes": 0,
+    "tmp_entries": 1,
+    "tmp_left": [
+     "lattice-rebuild"
+    ],
+    "want": 1,
+    "work_left": []
+   }
+  },
+  "predicted": "worktrees after = before + the kept review worktree or + 0; no leftover dir or process",
+  "status": "PASS"
+ },
+ {
+  "id": "PX",
+  "max_s": 9.74,
+  "observed": {
+   "i1": 5.3,
+   "i11": 4.08,
+   "i2": 9.74,
+   "i3": 6.17,
+   "i4": 4.06,
+   "i5": 1.39,
+   "i6": 1.75,
+   "i7": 1.84,
+   "i8": 5.51,
+   "i9": 4.3
+  },
+  "predicted": "<= 30 s per MS change (p: 2-8 s)",
+  "status": "PASS",
+  "total_s": 44.1
+ },
+ {
+  "id": "PM",
+  "observed": {
+   "children_seen": 7,
+   "claude_calls": 0,
+   "kinds": [
+    "gate",
+    "side"
+   ],
+   "with_key": 0
+  },
+  "predicted": "0 claude calls in stub and oracle mode; no ANTHROPIC key in any child environment",
+  "status": "PASS"
+ },
+ {
+  "id": "PD",
+  "observed": {
+   "i1": {
+    "bytes": 10907,
+    "exit_codes": [
+     0
+    ],
+    "identical": 10,
+    "of": 10,
+    "scan": []
+   },
+   "i11": {
+    "bytes": 10909,
+    "exit_codes": [
+     0
+    ],
+    "identical": 10,
+    "of": 10,
+    "scan": []
+   },
+   "i3": {
+    "bytes": 11120,
+    "exit_codes": [
+     0
+    ],
+    "identical": 10,
+    "of": 10,
+    "scan": []
+   }
+  },
+  "predicted": "10/10 identical for i1, i3, i11 (random PYTHONHASHSEED, two roots); no path, time or sha",
+  "status": "PASS"
+ },
+ {
+  "id": "PBC",
+  "observed": {
+   "MCP instructions and tools/list (plain, implementation, impact configs)": {
+    "bytes": 24005,
+    "exit": 0,
+    "identical": true
+   },
+   "dogfood/studio (check.sh's command) on both trees": {
+    "base": {
+     "exit": 0,
+     "lines": [
+      "PASS: 0 findings (D 0, X 0); 509 cases run",
+      "scenarios: 62 in N, N each on average (start N, db N, steps N, stop N)"
+     ]
+    },
+    "current": {
+     "exit": 0,
+     "lines": [
+      "PASS: 0 findings (D 0, X 0); 509 cases run",
+      "scenarios: 62 in N, N each on average (start N, db N, steps N, stop N)"
+     ]
+    }
+   },
+   "empty diff of the D8 'Never' files vs 6a318e5": {
+    "empty": true
+   },
+   "frozen sha256 (prereg section 9)": {
+    "all_equal": true,
+    "differ": []
+   },
+   "lattice --help": {
+    "bytes": 2877,
+    "exit": 0,
+    "identical": true
+   },
+   "lattice spec (usage)": {
+    "bytes": 77,
+    "exit": 2,
+    "identical": true
+   },
+   "lattice spec impact (7 fixtures tiers 2 + the Go fixture tiers 2,3)": {
+    "bytes": 38872,
+    "exit": 0,
+    "identical": true
+   },
+   "lattice spec impact --help": {
+    "bytes": 1409,
+    "exit": 0,
+    "identical": true
+   },
+   "lattice/spec/__main__.py: one additive line": {
+    "changed_lines": [
+     "+    \"implement\": \"lattice.studio.implement\","
+    ]
+   },
+   "output minus tiers[4] and tier4 == input (core runs)": {
+    "i1": true,
+    "i11": true,
+    "i2": true,
+    "i3": true,
+    "i4": true,
+    "i5": true,
+    "i6": true,
+    "i7": true,
+    "i8": true,
+    "i9": true
+   },
+   "pytest (spec, mcp, studio, importer, gocheck): same failing ids": {
+    "after": 105,
+    "before": 106,
+    "fixed": [
+     "FAILED tests/studio/test_projects.py::test_prefix_routing_and_the_bare_default"
+    ],
+    "new_failures": []
+   },
+   "python -m lattice.spec check --help": {
+    "bytes": 4034,
+    "exit": 0,
+    "identical": true
+   }
+  },
+  "predicted": "all identical / empty / equal",
+  "status": "PASS"
+ },
+ {
+  "id": "PAg-MS",
+  "predicted": null,
+  "reason": "the USD 3.00 real-agent budget is not approved (amendment 1); no model run",
+  "status": "NOT RUN"
+ },
+ {
+  "id": "SO",
+  "predicted": null,
+  "reason": "no Streak checkout and no Docker daemon here (amendment 1, Q4: orchestrator step)",
+  "status": "NOT RUN"
+ },
+ {
+  "id": "SO3",
+  "predicted": null,
+  "reason": "no Streak checkout and no Docker daemon here (amendment 1, Q4: orchestrator step)",
+  "status": "NOT RUN"
+ },
+ {
+  "id": "SA",
+  "predicted": null,
+  "reason": "no Streak checkout and no Docker daemon here (amendment 1, Q4: orchestrator step)",
+  "status": "NOT RUN"
+ },
+ {
+  "id": "SL",
+  "predicted": null,
+  "reason": "no Streak checkout and no Docker daemon here (amendment 1, Q4: orchestrator step)",
+  "status": "NOT RUN"
+ },
+ {
+  "id": "SG",
+  "predicted": null,
+  "reason": "no Streak checkout and no Docker daemon here (amendment 1, Q4: orchestrator step)",
+  "status": "NOT RUN"
+ }
+]

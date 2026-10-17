@@ -1,0 +1,67 @@
+{
+  "source": "REQUIREMENTS.md",
+  "rules": [
+    {
+      "id": "R1",
+      "text": "A buyer can cancel their own pending order, and cancelling it again is refused with 409.",
+      "section": "Mini shop > Orders",
+      "line": 5
+    },
+    {
+      "id": "R2",
+      "text": "A buyer can add a line to a pending order and the stored line has the requested quantity.",
+      "section": "Mini shop > Orders",
+      "line": 6
+    },
+    {
+      "id": "R3",
+      "text": "An order's total is the sum of its lines.",
+      "section": "Mini shop > Orders",
+      "line": 7
+    },
+    {
+      "id": "R4",
+      "text": "Stock is never negative.",
+      "section": "Mini shop > Orders",
+      "line": 8
+    },
+    {
+      "id": "R5",
+      "text": "An order moves from pending to paid or cancelled, and from paid to shipped.",
+      "section": "Mini shop > Orders",
+      "line": 9
+    },
+    {
+      "id": "R6",
+      "text": "Cancelling order 1 for the first time is refused with 409.",
+      "section": "Mini shop > Orders",
+      "line": 10
+    }
+  ],
+  "links": {
+    "R1": [
+      "scenario:ann cancels her pending order"
+    ],
+    "R2": [
+      "scenario:ann adds a line to a new order"
+    ],
+    "R3": [
+      "invariant:order_total"
+    ],
+    "R4": [
+      "invariant:stock_non_negative"
+    ],
+    "R5": [
+      "machine:Order.status"
+    ],
+    "R6": [
+      "scenario:ann cancels order 1 first"
+    ]
+  },
+  "unchecked": {},
+  "context": [],
+  "questions": [],
+  "replaces": {},
+  "retired": {},
+  "retired_targets": []
+}

@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.lattice/
+.lattice-scope/
+shop.db
