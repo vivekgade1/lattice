@@ -1,0 +1,24 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+pa_set: 0.7 s
+pw_set: 17.4 s
+pg3_set: 51.6 s
+PG1: FAIL
+PG1t: FAIL
+PG1o: PASS
+PG1k: FAIL
+PG2: REPORTED
+PG5: FAIL
+PG5c: REPORTED
+PT2f: PASS
+PT2e: PASS
+PT2x: PASS
+PNX: PASS
+PT2w: PASS
+PA: PASS
+PW: PASS
+PG3: PASS
+PG4: PASS
+PX-generate: PASS
+PX: PASS
+PH: PASS
+wall: REPORTED

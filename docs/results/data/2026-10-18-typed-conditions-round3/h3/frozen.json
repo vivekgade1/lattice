@@ -1,0 +1,1955 @@
+[
+  {
+    "apps": 33,
+    "bad_gne_h_and_h_eq_t": [
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_items_zero_to_latest",
+        "k6": false,
+        "k7": false,
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "m_line_limit_4",
+        "k6": false,
+        "k7": false,
+        "rule": "R16"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_admin_cancel_then_404",
+        "k6": false,
+        "k7": true,
+        "rule": "R19"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_cancelled_line_then_409",
+        "k6": false,
+        "k7": false,
+        "rule": "R24"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_cancelled_line_then_409",
+        "k6": false,
+        "k7": false,
+        "rule": "R27"
+      }
+    ],
+    "cells": 726,
+    "form_states": {
+      "F1": "current",
+      "F10": "current",
+      "F11": "current",
+      "F12": "current",
+      "F13": "current",
+      "F14": "current",
+      "F15": "current",
+      "F16": "current",
+      "F17": "current",
+      "F18": "current",
+      "F19": "current",
+      "F2": "current",
+      "F20": "current",
+      "F21": "current",
+      "F22": "current",
+      "F3": "current",
+      "F4": "current",
+      "F5": "current",
+      "F6": "current",
+      "F7": "current",
+      "F8": "current",
+      "F9": "current"
+    },
+    "formed_rules": 22,
+    "forms_that_could_not_generate": {},
+    "forms_usable": 22,
+    "g_eq_h": 721,
+    "g_ne_h": [
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_items_zero_to_latest",
+        "k6": false,
+        "k7": false,
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "m_line_limit_4",
+        "k6": false,
+        "k7": false,
+        "rule": "R16"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_admin_cancel_then_404",
+        "k6": false,
+        "k7": true,
+        "rule": "R19"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_cancelled_line_then_409",
+        "k6": false,
+        "k7": false,
+        "rule": "R24"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_cancelled_line_then_409",
+        "k6": false,
+        "k7": false,
+        "rule": "R27"
+      }
+    ],
+    "generate_whole_set_error": null,
+    "notes": [
+      "F2:at_bound: the witness request does not carry the field",
+      "F2:beyond: the witness request does not carry the field",
+      "F12: db_unchecked:other_get_orders_order_id",
+      "F12: db_unchecked:anon_get_orders_order_id",
+      "F14: db_unchecked:other_get_orders_order_id",
+      "F14: db_unchecked:anon_get_orders_order_id",
+      "F14: db_unchecked:other_post_orders_order_id_cancel",
+      "F14: db_unchecked:anon_post_orders_order_id_cancel",
+      "F15: db_unchecked:other_get_orders_order_id",
+      "F15: db_unchecked:anon_get_orders_order_id",
+      "F16: db_unchecked:other_post_orders_order_id_cancel",
+      "F16: db_unchecked:anon_post_orders_order_id_cancel"
+    ],
+    "probe": "PG1",
+    "run_wall_s": 143.74,
+    "status": "FAIL",
+    "unattributed_generated_findings": [],
+    "what": "G vs H per cell"
+  },
+  {
+    "bad_outside_k6_k7": [
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_items_zero_to_latest",
+        "k6": false,
+        "k7": false,
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "m_line_limit_4",
+        "k6": false,
+        "k7": false,
+        "rule": "R16"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_cancelled_line_then_409",
+        "k6": false,
+        "k7": false,
+        "rule": "R24"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_cancelled_line_then_409",
+        "k6": false,
+        "k7": false,
+        "rule": "R27"
+      }
+    ],
+    "g_eq_t": 719,
+    "k6_cells": 66,
+    "k6_misses": [
+      {
+        "G": false,
+        "H": false,
+        "T": true,
+        "app": "sec_bounds",
+        "k6": true,
+        "k7": false,
+        "rule": "R10"
+      },
+      {
+        "G": false,
+        "H": false,
+        "T": true,
+        "app": "sec_mass",
+        "k6": true,
+        "k7": false,
+        "rule": "R12"
+      }
+    ],
+    "k6_rules": [
+      "R10",
+      "R12"
+    ],
+    "k7_cells": [
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "m_admin_cancel_then_404",
+        "k6": false,
+        "k7": true,
+        "rule": "R19"
+      }
+    ],
+    "k7_rules": [
+      "R17",
+      "R19",
+      "R20",
+      "R21"
+    ],
+    "probe": "PG1t",
+    "scored": 726,
+    "status": "FAIL",
+    "what": "G vs truth per cell (K6 and K7 cells apart)"
+  },
+  {
+    "bad": [],
+    "g_fail_on_ok": [
+      "R13",
+      "R14",
+      "R15",
+      "R16"
+    ],
+    "probe": "PG1o",
+    "status": "PASS",
+    "t_violated_on_ok": [
+      "R13",
+      "R14",
+      "R15",
+      "R16"
+    ],
+    "what": "on ok, G fails exactly the rules T marks violated"
+  },
+  {
+    "apps_non_ok": 32,
+    "g_kills": [
+      "m_admin_cannot_cancel",
+      "m_admin_lines_any_state",
+      "m_admin_reads_any",
+      "m_buyers_cancel_any",
+      "m_cancel_min_32bit",
+      "m_cancelled_hidden",
+      "m_line_price_discounted",
+      "m_lines_on_paid",
+      "m_paid_cancel_then_409",
+      "m_paid_orders_public",
+      "m_product_id_unbounded",
+      "m_quantity_cap_1000",
+      "m_read_min_32bit",
+      "m_shipped_orders_public",
+      "m_total_subtracts",
+      "sec_auth",
+      "sec_authz",
+      "sec_bounds",
+      "sec_leak",
+      "sec_state",
+      "wrong_answer"
+    ],
+    "g_only": [],
+    "h_kills": [
+      "m_admin_cancel_then_404",
+      "m_admin_cannot_cancel",
+      "m_admin_lines_any_state",
+      "m_admin_reads_any",
+      "m_buyers_cancel_any",
+      "m_cancel_min_32bit",
+      "m_cancelled_hidden",
+      "m_cancelled_line_then_409",
+      "m_items_zero_to_latest",
+      "m_line_price_discounted",
+      "m_lines_on_paid",
+      "m_paid_cancel_then_409",
+      "m_paid_orders_public",
+      "m_product_id_unbounded",
+      "m_quantity_cap_1000",
+      "m_read_min_32bit",
+      "m_shipped_orders_public",
+      "m_total_subtracts",
+      "sec_auth",
+      "sec_authz",
+      "sec_bounds",
+      "sec_leak",
+      "sec_state",
+      "wrong_answer"
+    ],
+    "h_only": [
+      "m_admin_cancel_then_404",
+      "m_cancelled_line_then_409",
+      "m_items_zero_to_latest"
+    ],
+    "probe": "PG1k",
+    "status": "FAIL",
+    "what": "G kills (flips vs ok, formed rules) a superset of H's"
+  },
+  {
+    "both_include_d": 164,
+    "cells_both_fail": 166,
+    "diff": [
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "ok",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "ok",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "ok",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "ok",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "partial_write",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "partial_write",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "partial_write",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "partial_write",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "wrong_answer",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "wrong_answer",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "wrong_answer",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "wrong_answer",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "total_drift",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "total_drift",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "total_drift",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "total_drift",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "wrong_quantity",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "wrong_quantity",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "wrong_quantity",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_authz",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_authz",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_authz",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_authz",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_auth",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_auth",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_auth",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_auth",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_bounds",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_bounds",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_bounds",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_bounds",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_mass",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_mass",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_mass",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_mass",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_state",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_state",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_state",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_state",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_leak",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_leak",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_leak",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "sec_leak",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_read_min_32bit",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_read_min_32bit",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_read_min_32bit",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_read_min_32bit",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_items_zero_to_latest",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_items_zero_to_latest",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_items_zero_to_latest",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_items_zero_to_latest",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancel_min_32bit",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancel_min_32bit",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancel_min_32bit",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancel_min_32bit",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_product_id_unbounded",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_product_id_unbounded",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_product_id_unbounded",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_product_id_unbounded",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_total_subtracts",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_total_subtracts",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_total_subtracts",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_total_subtracts",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_quantity_cap_1000",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_quantity_cap_1000",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_quantity_cap_1000",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_quantity_cap_1000",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_line_price_discounted",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_line_price_discounted",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_line_price_discounted",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_line_price_discounted",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_ink_limit_2",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_ink_limit_2",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_ink_limit_2",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_same_product_limit_3",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_same_product_limit_3",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_same_product_limit_3",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_case_line_limit_1",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_case_line_limit_1",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_case_line_limit_1",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_line_limit_4",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_line_limit_4",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_line_limit_4",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_reads_any",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_reads_any",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_reads_any",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_reads_any",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_cancel_then_404",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_cancel_then_404",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_cancel_then_404",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_cancel_then_404",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_paid_orders_public",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_paid_orders_public",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_paid_orders_public",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_paid_orders_public",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_buyers_cancel_any",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_buyers_cancel_any",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_buyers_cancel_any",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_buyers_cancel_any",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_shipped_orders_public",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_shipped_orders_public",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_shipped_orders_public",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_shipped_orders_public",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_paid_cancel_then_409",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_paid_cancel_then_409",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_paid_cancel_then_409",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_paid_cancel_then_409",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_lines_on_paid",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_lines_on_paid",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_lines_on_paid",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_lines_on_paid",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancelled_hidden",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancelled_hidden",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancelled_hidden",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancelled_hidden",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_cannot_cancel",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_cannot_cancel",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_cannot_cancel",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_cannot_cancel",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_lines_any_state",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_lines_any_state",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_lines_any_state",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_admin_lines_any_state",
+        "rule": "R16"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancelled_line_then_409",
+        "rule": "R13"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancelled_line_then_409",
+        "rule": "R14"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancelled_line_then_409",
+        "rule": "R15"
+      },
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "m_cancelled_line_then_409",
+        "rule": "R16"
+      }
+    ],
+    "h_includes_d": 164,
+    "layer_d_agreement": 1.0,
+    "probe": "PG2",
+    "same_layer_sets": 39,
+    "status": "REPORTED",
+    "what": "layer of the failing check where both fail; layer-D agreement"
+  },
+  {
+    "accepted_invalid": [
+      "I7"
+    ],
+    "invalid": 29,
+    "probe": "PG5",
+    "status": "FAIL",
+    "valid_forms": 22,
+    "valid_refused": [],
+    "what": "invalid.json refused; the set's valid forms accepted"
+  },
+  {
+    "codes_not_exact": [],
+    "exact": 28,
+    "of": 29,
+    "probe": "PG5c",
+    "status": "REPORTED",
+    "what": "exact F-code on invalid.json"
+  },
+  {
+    "class_e": {
+      "compatible": 4,
+      "contradict": 6,
+      "false_pos": 0,
+      "found": 5
+    },
+    "errors": [],
+    "false_neg": [
+      "P19"
+    ],
+    "false_pos": [],
+    "items_outside_the_pair": [
+      {
+        "id": "P11",
+        "n": 1
+      },
+      {
+        "id": "P22",
+        "n": 1
+      }
+    ],
+    "pairs": 28,
+    "per_class": {
+      "a": {
+        "compatible": 3,
+        "contradict": 3,
+        "false_pos": 0,
+        "found": 3
+      },
+      "b": {
+        "compatible": 2,
+        "contradict": 2,
+        "false_pos": 0,
+        "found": 2
+      },
+      "c": {
+        "compatible": 2,
+        "contradict": 2,
+        "false_pos": 0,
+        "found": 2
+      },
+      "d": {
+        "compatible": 2,
+        "contradict": 2,
+        "false_pos": 0,
+        "found": 2
+      },
+      "e": {
+        "compatible": 4,
+        "contradict": 6,
+        "false_pos": 0,
+        "found": 5
+      }
+    },
+    "precision": 1.0,
+    "probe": "PT2f",
+    "recall_abcd": "9/9",
+    "status": "PASS",
+    "true_neg": 13,
+    "true_pos": 14,
+    "undecided": [],
+    "what": "forms contradictions on pairs.json"
+  },
+  {
+    "class_e": {
+      "compatible": 4,
+      "contradict": 6,
+      "false_pos": 0,
+      "found": 5
+    },
+    "class_e_missed": [
+      "P19"
+    ],
+    "path_or_query_found": [
+      "P21",
+      "P22"
+    ],
+    "path_or_query_pairs": [
+      "P19",
+      "P21",
+      "P22"
+    ],
+    "probe": "PT2e",
+    "recall": 0.8333333333333334,
+    "status": "PASS",
+    "what": "class e recall >= 0.75 and >= 1 path/query-bound pair found"
+  },
+  {
+    "failed_rederivation": [],
+    "items": 20,
+    "not_rederived_weak": [
+      "fc:c:F121:F122",
+      "fc:c:F125:F126"
+    ],
+    "probe": "PT2x",
+    "status": "PASS",
+    "what": "witness, strong: the runner re-derives the witness and calls incompatible itself"
+  },
+  {
+    "accepted": [],
+    "probe": "PNX",
+    "refused_with_other_code": [],
+    "rules": 16,
+    "status": "PASS",
+    "what": "not_expressible attempts refused with F001 or F017",
+    "with_attempt": 11
+  },
+  {
+    "determined_total": 3,
+    "exit_code": 0,
+    "expected_items": 3,
+    "got_items": 3,
+    "probe": "PT2w",
+    "status": "PASS",
+    "tiers": [
+      2
+    ],
+    "what": "impact CLI: tier2.determined gains exactly the new form items (tier 2)"
+  },
+  {
+    "approve_claudecode": true,
+    "approve_no_tty": true,
+    "draft_changed_files": [],
+    "draft_drafted": 1,
+    "draft_new_files": [
+      "REQUIREMENTS.forms.proposed.json"
+    ],
+    "draft_status": "proposed",
+    "edited_generates_nothing": true,
+    "edited_state": "edited",
+    "moved_state": [
+      "moved",
+      "R1"
+    ],
+    "no_door_for_proposals": true,
+    "nothing_written": true,
+    "probe": "PA",
+    "proposal_generates_nothing": true,
+    "reworded_state": "stale",
+    "status": "PASS",
+    "what": "approval states, approve refusals, draft, on the set"
+  },
+  {
+    "changed": {
+      "app": [],
+      "project": []
+    },
+    "generated": 68,
+    "new": {
+      "app": [],
+      "project": []
+    },
+    "nonzero_exits": 0,
+    "note": "a non-zero exit of `forms check` / `contradictions` is reported, not gated (they report findings by exit code)",
+    "probe": "PW",
+    "shim_calls": 0,
+    "status": "PASS",
+    "what": "snapshots around show/check/generate/contradictions/coverage x10 and a check run with forms, on the set"
+  },
+  {
+    "cd_distinct": {
+      "ok": 1
+    },
+    "generate_distinct": 1,
+    "path_or_time_leaks": [],
+    "probe": "PG3",
+    "status": "PASS",
+    "what": "forms generate x10 and CD reports x10 on the set, random PYTHONHASHSEED, two roots"
+  },
+  {
+    "invariants": 11,
+    "probe": "PG4",
+    "problems": [],
+    "raises": {},
+    "scenarios": 57,
+    "status": "PASS",
+    "what": "generated invariants compile (sqlite, mysql); scenarios validate; 0 L011/L012; no raise",
+    "whole_set_error": null
+  },
+  {
+    "gate": "<= 1 s",
+    "median_s": 0.00202,
+    "probe": "PX-generate",
+    "status": "PASS",
+    "what": "generate on the set (median of 50)"
+  },
+  {
+    "gate": "<= 240 s",
+    "probe": "PX",
+    "scoring_only_s": 145.2,
+    "seconds": 215.0,
+    "status": "PASS",
+    "what": "wall time of the whole arm (scoring, PA, PW, PG3, PG4)"
+  },
+  {
+    "freeze3_mismatch": [],
+    "manifest_file_sha": "1d0b8256344a8ac67345de519abf62c76ddb4846c755ce2ef10194fafbec3d98",
+    "manifest_file_sha_expected": "1d0b8256344a8ac67345de519abf62c76ddb4846c755ce2ef10194fafbec3d98",
+    "manifest_file_sha_ok": true,
+    "probe": "PH",
+    "runner3_mismatch": [],
+    "set_files_detail": "ok",
+    "set_files_ok": true,
+    "status": "PASS",
+    "what": "hash discipline (after the scored run)"
+  },
+  {
+    "probe": "wall",
+    "seconds": 215.0,
+    "status": "REPORTED",
+    "what": "total"
+  }
+]

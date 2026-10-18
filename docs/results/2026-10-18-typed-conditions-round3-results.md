@@ -168,3 +168,68 @@ before `7 failed, 2816 passed, 37 skipped, 124 warnings, 98 errors`; after `7 fa
 H3 was not run: PG1 is predicted to fail (K7 cells in ownership forms with no `given`, p about 0.5 in prereg risk 2), PG1t should hold outside K6 and K7,
 PT2e and PNX should pass on the evidence of H2 but H3 has its own readings (the set's author read the earlier D-sections, Amendment 2). The Streak arm,
 MySQL execution and the drafter are not touched. The scorer, reader and mutant files are final and hashed; a change to any of them from here makes the rows it can move post hoc.
+
+## 11. Gated stage on H3: pre-run record (2026-10-18, before the first frozen run)
+
+Verified at 08:00 UTC, before any run: `sha256sum -c freeze3.sha256` OK (3 files); `sha256sum -c runner3.sha256` OK (3 files); `shapes3.manifest.sha256`
+sha256 `1d0b8256344a8ac67345de519abf62c76ddb4846c755ce2ef10194fafbec3d98` = Amendment 2 = the set's `MANIFEST.sha256` (byte-identical, `cmp`); `sha256sum -c MANIFEST.sha256`
+in the set directory: 11/11 OK. Hashes recorded before the first run: scorer `dogfood/forms_probes3.py` `c35cb27e...`, reader `dogfood/forms_reader3.py` `bcd638fd...`
+(full values in `runner3.sha256`, which passed). Git state: nothing staged or committed by this node.
+
+### 11.1 The scored run (frozen stage, H3, run once)
+
+Command (prereg section 9, `--stage frozen --shapes hshapes3 --manifest shapes3.manifest.sha256 --freeze freeze3.sha256 --runner runner3.sha256`), 08:00-08:04 UTC, wall 215.0 s. Output:
+`data/2026-10-18-typed-conditions-round3/h3/frozen.json` and `h3/run1.log`. **Run count: 1. No re-run. No crash before a metric; the reader needed no fix (reader hash unchanged,
+`bcd638fd...`, scorer `c35cb27e...`, both re-verified by PH after the run). No row is post hoc.** Set: 22 formed rules (22 forms, all `current`), 33 apps, 726 cells; 0 forms that could not generate.
+Not run in this node: Streak (PS0-PSx) NOT RUN (no checkout, no Docker). Gated stage result: **PG1, PG1t, PG1k, PG5 FAIL; the other 13 gated rows PASS; round 3 gate NOT met.**
+
+| row | gate | prediction (p) | observed (m) | verdict |
+|---|---|---|---|---|
+| PG1 | 0 cells G != H with H == T | G == H 97-100%; 0-3 cells | G == H 721 / 726 (99.3%); **5 cells G != H, all with H == T** | **FAIL** |
+| PG1t | 100% outside K6 (and K7) | outside K6 98.5-100%; K6 misses 0-3 | G == T 719 / 726; **4 misses outside K6 and K7**; K6: 66 cells, 2 misses; K7: 1 cell | **FAIL** |
+| PG1o | exact | exact (0-1 extra) | exact: G fails R13-R16 on `ok`, as T | PASS |
+| PG1k | G kills a superset of H | G = H + 0-3; H-only 0-1 | G 21 kills, H 24; **H-only 3**, G-only 0 | **FAIL** |
+| PG2 | reported | same layer set 40-70%; layer D 90-100% | same layer set 39 / 166 (23.5%); layer-D agreement 164 / 164 | reported (set-agreement far below prediction) |
+| PG3 | 10/10 | 10/10 | 10/10 (1 distinct `generate`, 1 distinct CD report; no path or time leaks) | PASS |
+| PG4 | 100%, 0 raises | 100% | 11 invariants, 57 scenarios, no problem, 0 raises | PASS |
+| PG5 | 0 invalid accepted, 0 valid refused | 0 accepted; 0-1 valid refused | **1 of 29 invalid accepted (I7)**; 0 of 22 valid refused | **FAIL** |
+| PG5c | reported | 85-100% | exact code 28 / 29 (the 29th is I7, accepted) | reported |
+| PT2f | precision 1.0, recall a-d 1.0, 0 raises | precision 1.0, recall 0.9-1.0 | precision 1.0 (TP 14, FP 0, TN 13); recall a-d 9 / 9; 0 errors; `items_outside_the_pair`: P11 (1), P22 (1) | PASS |
+| PT2e | >= 0.75 and >= 1 path/query pair found | 0.67-1.0 | class e recall 5 / 6 = **0.833**; path/query pairs P19, P21, P22: found P21, P22, **missed P19**; 0 false positives (4 compatible) | PASS |
+| PT2x | 100% of re-derivable | 100%; weak 0-3 | 20 items, 0 failed, 2 weak (`fc:c:F121:F122`, `fc:c:F125:F126`, class c) | PASS |
+| PT2w | exact | exact | 3 expected, 3 got, tier 2, exit 0 | PASS |
+| PNX | 0 accepted; F001/F017 on every refusal | 0 accepted; 95-100% | 16 rules, 11 with an attempted form; 0 accepted; 0 refused with another code | PASS |
+| PA | all | all | all (edited, stale, moved `R1`, draft writes proposals only, no-TTY and `CLAUDECODE` refuse) | PASS |
+| PW | 0, 0, 0 | 0, 0, 0 | 0 changed, 0 new, 0 shim calls (68 forms generated x10 pattern, 0 non-zero exits) | PASS |
+| PX | `generate` <= 1 s; arm <= 240 s | 0.5-5 ms; 110-200 s | `generate` median **2.02 ms**; arm **215.0 s** (scoring 145.2 s) | PASS (arm above the predicted 110-200 s, inside the gate) |
+| PH | OK | OK | freeze3, runner3, manifest file sha, 11 set files all OK after the run | PASS |
+
+PRC, PC3, PR1, PR2, PB and the mutants (HZ/HY/HX) are not part of this stage: their dev results are section 4 and 6 (PRC FAIL, PR1 FAIL, PR2 FAIL (one row) as already reported).
+
+### 11.2 Every miss, predicted vs observed
+
+All five PG1 cells are G != H with H == T (the library disagrees with the hand-written check H and with truth T). In the scorer's convention H and T "true" means the app is flagged.
+Causes below are **readings of the code and the set, not experiments**; none was tested by a change, and none was tuned.
+
+| cell / row | observed | predicted | reading (label: reading) |
+|---|---|---|---|
+| `m_items_zero_to_latest` x R7 (PG1, PG1t, PG1k H-only) | G passes the mutant (not flagged), H and T flag it | residual (a) closed: 0 | F2 (R7, `POST /orders/{order_id}/items`, `path.order_id ge 1`) generated **no** `at_bound`/`beyond` case: notes `F2:at_bound: the witness request does not carry the field` (and `beyond`). Reading: `_place` finds the placeholder through the endpoint template `named`; the hand-written spec reaches this endpoint only through scenario steps with concrete paths, so `known_templates` returns the `{}` form of the template and `{order_id}` is not found in it (forms.py `_place`, `bound()`). The same defect explains the missed class-e pair P19 (it uses the same shape, F137). On H2 and the dev fixtures the endpoint was named by a contract or program |
+| `m_cancelled_line_then_409` x R24, R27 (PG1 2 cells, PG1t 2, PG1k H-only) | G passes (not flagged), H and T flag | write-then-refuse on a transition refusal: 0 | transition forms F19, F22 (`from ["pending"]`, `refused 409 db unchanged`): the mutant writes a line on a **cancelled** order then answers 409; G did not flag it. Not diagnosed further (no experiment run): candidate is that no generated refused case reaches a cancelled order whose line count is then asserted |
+| `m_line_limit_4` x R16 (PG1, PG1t) | G flags the mutant, H and T do not (a G false positive) | none predicted | F11 (row_limit `by [order_id]`, max 4, `given` products only) vs a mutant that enforces exactly four lines but after the stock check. Not diagnosed; candidate: a generated case reaches a state where order of checks (400 vs 409) or the seeded line count differs from the hand-written case |
+| `m_admin_cancel_then_404` x R19 (K7; PG1 cell, PG1k H-only) | G passes, H and T flag | registered K7 cell (Amendment 2): expected | F14 (R19, ownership, `row: "/orders/3"`, no `given`) generated notes `db_unchecked:other_post_orders_order_id_cancel` (also `anon_...`, `other_get...`): the `unchanged` assertion is not made, as ruled. The mutant here is an **admin** other-user cancel, a case Amendment 2 did not discuss. K7 rules on H3: R17, R19, R20, R21 (forms F12, F14, F15, F16, 12 `db_unchecked` notes); 1 cell is a miss. PG1 carries no K7 exemption, so this cell counts in PG1's 5 |
+| `sec_bounds` x R10, `sec_mass` x R12 (K6) | G false, H false, T true: G and H both miss | K6 misses 0-3 | column-only bounds (`Order.total ge 0`, `OrderItem.price ge 0`), K6 as in round 2: 2 misses, outside the PG1t gate |
+| PG5 `I7` | accepted (not refused F004) | 0 accepted | F201 = `path.order_id ge 1.5` on an int placeholder: `check` accepts a float bound on a path placeholder. D0(a) promised F021 for a path value the type cannot hold; here it is a float bound on an int path, which the cause-8 check (empty or special characters only; the bound arithmetic) does not catch |
+| PG2 same-layer-set 39/166 | G reports layers C and D, H only D on the row_limit rules R13-R16 | 40-70% | residual (f), unchanged by design; on H2 it was 101 / 225. Layer-D agreement 164 / 164 |
+| PX arm 215.0 s | inside 240 s | 110-200 s | 726 cells at about 0.296 s per cell against round 2's 0.197 s |
+
+Counting: PG1 5 cells = 1 K7 + 4 others; PG1t's 4 misses outside K6/K7 are exactly the 4 non-K7 PG1 cells; PG1k H-only 3 = `m_items_zero_to_latest`, `m_cancelled_line_then_409`, `m_admin_cancel_then_404` (the flips of `m_line_limit_4` are a G false positive and G-only 0).
+Prereg risk 2 (p(PG1 met) about 0.5) and risk 9 (gate met about 0.4): not met; the likeliest-miss prediction (PG1/PG1t, then PT2e) was right for PG1/PG1t, and PT2e passed.
+
+### 11.3 Post hoc rows (never gated)
+
+PD1 and PD2 were **not re-run in this node**. They are the section 5 numbers from the development stage, with the same library and runner (hashes verified OK before the run), kept apart from the gated rows above:
+PD2 (H2): PG1 1 cell (K7), PG1k H-only 0, PNX 12 / 12, class e 4 / 4; PD1 (round-1 set): 397 / 400, precision 17 / 18. The H3 run shows the dev-stage fixtures and H2 hid the F2 shape in 11.2 (placeholder reachable only through concrete scenario paths): H2 remains clean on it.
+
+### 11.4 Deviations in this stage
+
+None from the prereg's order. The run was made once; no reader or scorer change; no re-run. The H3 author's disclosed read of the D1-D6 sections (Amendment 2) applies to every row above. The H3 data copy stays in the scratchpad (`hshapes3`); the results copy is `h3/frozen.json`.
