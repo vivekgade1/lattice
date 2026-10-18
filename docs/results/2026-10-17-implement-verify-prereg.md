@@ -474,3 +474,18 @@ then run once by a separate run node. The frozen core runner, the engine files a
 The real-agent budgets are approved by the owner as registered (USD 12 for SA, USD 3 for PAg-MS), hard caps; a usage limit
 is NOT RUN, never a pass. This is a departure from "run the frozen runner unchanged" because that runner has no code for
 these rows; it is stated, not hidden.
+
+## Amendment 3 (orchestrator rulings on the Streak-arm runner's ambiguities, 2026-10-18, before any Streak run)
+The runner `dogfood/implement_probes_streak.py` (sha256 recorded in `docs/results/data/2026-10-18-implement-verify-streak-arm/freeze.sha256`)
+is frozen. Rulings on its 11 resolved ambiguities: (1) c15 and c21 (empty `ref.diff`) run through the claude path behind a
+logging shim and are expected to end `nothing_to_build` with no agent call: accepted. (2) The `post-checkout` hook building
+`bin/streak-api` in the scratch repo is accepted (Streak sources unchanged). (3) The default gate is the owner's `./check.sh`
+(all layers), `round_timeout` 1800 and `gate_timeout` 2400: accepted; a B/X failure is reported as such. (4) The driver venv
+is the children's environment: accepted. (5) SO "resolved exact" is the multiset comparison on (layer, rule, case, endpoint):
+accepted. (6) SO3 is file-level against D's truth; declaration rows are report-only: accepted. (7) SO-rep repeats the whole
+pipeline: accepted. (8) The SL fault method (`sitecustomize` raising in the after run, default change c14): accepted. (9) The
+USD 12 (SA) and USD 3 (PAg-MS) caps are TOTALS on the CLI's list estimate: accepted. (10) **Engine drift:** the engine version
+that counts is the tree the runner runs on (the `next-phases` tip merged into this branch), not the pre-merge hash list;
+the runner reports the five engine files that differ from 6a318e5 and D's own freeze mismatches, and they are stated in the
+results as drift, not hidden. (11) SG scope as built: accepted. The two synthetic smoke runs (c90, c91) are disclosed and
+excluded from every scored value. The run is scored once.
