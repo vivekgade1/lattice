@@ -1,0 +1,702 @@
+{
+  "fixture": "gotickets",
+  "source": "T-S3.md",
+  "module": "example.com/gotickets",
+  "stack": {
+    "web": "github.com/gin-gonic/gin v1.10.0",
+    "orm": "gorm.io/gorm v1.25.12",
+    "driver": "github.com/glebarez/sqlite v1.11.0",
+    "crypto": "golang.org/x/crypto v0.23.0",
+    "cgo": false
+  },
+  "main": {
+    "router": {
+      "code": "r := gin.New(); r.Use(gin.LoggerWithWriter(io.Discard), gin.Recovery())",
+      "ref": [
+        "main.go:46",
+        "main.go:47"
+      ]
+    },
+    "automigrate": {
+      "models": [
+        "User",
+        "Queue",
+        "Ticket",
+        "Handoff"
+      ],
+      "ref": "main.go:41"
+    },
+    "env": {
+      "PORT": {
+        "required": true,
+        "ref": "main.go:23"
+      },
+      "DB_PATH": {
+        "required": true,
+        "ref": "main.go:23"
+      },
+      "TICKETS_SECRET": {
+        "required": false,
+        "default": "gotickets-dev-secret",
+        "ref": "main.go:28",
+        "default_ref": "main.go:20"
+      }
+    },
+    "mount_ref": "main.go:48"
+  },
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "auth": "public",
+      "extractor_role": null,
+      "handler": "Health",
+      "ref": "api/api.go:36"
+    },
+    {
+      "method": "POST",
+      "path": "/login",
+      "auth": "public",
+      "extractor_role": null,
+      "handler": "Login",
+      "ref": "api/api.go:37"
+    },
+    {
+      "method": "GET",
+      "path": "/queues",
+      "auth": "public",
+      "extractor_role": null,
+      "handler": "ListQueues",
+      "ref": "api/api.go:38"
+    },
+    {
+      "method": "GET",
+      "path": "/me",
+      "auth": "RequireUser",
+      "extractor_role": "Customer",
+      "handler": "Me",
+      "ref": "api/api.go:41"
+    },
+    {
+      "method": "POST",
+      "path": "/queues/:qid/tickets",
+      "auth": "RequireUser",
+      "extractor_role": "Customer",
+      "handler": "CreateTicket",
+      "ref": "api/api.go:42"
+    },
+    {
+      "method": "GET",
+      "path": "/tickets",
+      "auth": "RequireUser",
+      "extractor_role": "Customer",
+      "handler": "ListTickets",
+      "ref": "api/api.go:43"
+    },
+    {
+      "method": "GET",
+      "path": "/tickets/:tid",
+      "auth": "RequireUser",
+      "extractor_role": "Customer",
+      "handler": "GetTicket",
+      "ref": "api/api.go:44"
+    },
+    {
+      "method": "POST",
+      "path": "/tickets/:tid/close",
+      "auth": "RequireUser",
+      "extractor_role": "Customer",
+      "handler": "CloseTicket",
+      "ref": "api/api.go:45"
+    },
+    {
+      "method": "POST",
+      "path": "/tickets/:tid/reopen",
+      "auth": "RequireUser",
+      "extractor_role": "Customer",
+      "handler": "ReopenTicket",
+      "ref": "api/api.go:46"
+    },
+    {
+      "method": "POST",
+      "path": "/tickets/:tid/handoffs",
+      "auth": "RequireUser",
+      "extractor_role": "Customer",
+      "handler": "CreateHandoff",
+      "ref": "api/api.go:47"
+    },
+    {
+      "method": "GET",
+      "path": "/handoffs",
+      "auth": "RequireUser",
+      "extractor_role": "Customer",
+      "handler": "ListHandoffs",
+      "ref": "api/api.go:48"
+    }
+  ],
+  "route_count": 11,
+  "tables": [
+    {
+      "name": "users",
+      "struct": "models.User",
+      "ref": "models/models.go:8",
+      "owned": false,
+      "columns": [
+        {
+          "name": "id",
+          "go_type": "uint",
+          "tags": {
+            "gorm": "primaryKey",
+            "json": "id"
+          },
+          "ref": "models/models.go:9",
+          "primary_key": true
+        },
+        {
+          "name": "name",
+          "go_type": "string",
+          "tags": {
+            "gorm": "size:64;uniqueIndex",
+            "json": "name"
+          },
+          "ref": "models/models.go:10",
+          "size": 64,
+          "unique": true
+        },
+        {
+          "name": "password_hash",
+          "go_type": "string",
+          "tags": {
+            "gorm": "size:128",
+            "json": "-"
+          },
+          "ref": "models/models.go:11",
+          "size": 128,
+          "private": true
+        }
+      ]
+    },
+    {
+      "name": "queues",
+      "struct": "models.Queue",
+      "ref": "models/models.go:15",
+      "owned": false,
+      "shared": true,
+      "columns": [
+        {
+          "name": "id",
+          "go_type": "uint",
+          "tags": {
+            "gorm": "primaryKey",
+            "json": "id"
+          },
+          "ref": "models/models.go:16",
+          "primary_key": true
+        },
+        {
+          "name": "name",
+          "go_type": "string",
+          "tags": {
+            "json": "name"
+          },
+          "ref": "models/models.go:17"
+        }
+      ]
+    },
+    {
+      "name": "tickets",
+      "struct": "models.Ticket",
+      "ref": "models/models.go:21",
+      "owned": true,
+      "owner": "reporter_id",
+      "columns": [
+        {
+          "name": "id",
+          "go_type": "uint",
+          "tags": {
+            "gorm": "primaryKey",
+            "json": "id"
+          },
+          "ref": "models/models.go:22",
+          "primary_key": true
+        },
+        {
+          "name": "queue_id",
+          "go_type": "uint",
+          "tags": {
+            "gorm": "index",
+            "json": "queue_id"
+          },
+          "ref": "models/models.go:23",
+          "index": true
+        },
+        {
+          "name": "reporter_id",
+          "go_type": "uint",
+          "tags": {
+            "gorm": "index",
+            "json": "reporter_id"
+          },
+          "ref": "models/models.go:24",
+          "index": true
+        },
+        {
+          "name": "title",
+          "go_type": "string",
+          "tags": {
+            "gorm": "size:80",
+            "json": "title"
+          },
+          "ref": "models/models.go:25",
+          "size": 80
+        },
+        {
+          "name": "status",
+          "go_type": "string",
+          "tags": {
+            "gorm": "size:16;default:open",
+            "json": "status"
+          },
+          "ref": "models/models.go:26",
+          "size": 16,
+          "default": "open"
+        }
+      ]
+    },
+    {
+      "name": "handoffs",
+      "struct": "models.Handoff",
+      "ref": "models/models.go:30",
+      "owned": "unclear",
+      "columns": [
+        {
+          "name": "id",
+          "go_type": "uint",
+          "tags": {
+            "gorm": "primaryKey",
+            "json": "id"
+          },
+          "ref": "models/models.go:31",
+          "primary_key": true
+        },
+        {
+          "name": "ticket_id",
+          "go_type": "uint",
+          "tags": {
+            "gorm": "index",
+            "json": "ticket_id"
+          },
+          "ref": "models/models.go:32",
+          "index": true
+        },
+        {
+          "name": "from_user_id",
+          "go_type": "uint",
+          "tags": {
+            "gorm": "index",
+            "json": "from_user_id"
+          },
+          "ref": "models/models.go:33",
+          "index": true
+        },
+        {
+          "name": "to_user_id",
+          "go_type": "uint",
+          "tags": {
+            "gorm": "index",
+            "json": "to_user_id"
+          },
+          "ref": "models/models.go:34",
+          "index": true
+        }
+      ]
+    }
+  ],
+  "table_count": 4,
+  "association_tags": [],
+  "auth": {
+    "login": {
+      "route": "POST /login",
+      "body": {
+        "username": "string binding:required",
+        "password": "string binding:required"
+      },
+      "body_ref": "api/api.go:64",
+      "bind_error": {
+        "status": 422,
+        "detail": "invalid body",
+        "ref": "api/api.go:74"
+      },
+      "password_check": "bcrypt.CompareHashAndPassword, else an equal plain value",
+      "password_ref": "api/api.go:83",
+      "bad_credentials": {
+        "status": 401,
+        "detail": "Incorrect username or password",
+        "ref": "api/api.go:80"
+      },
+      "response": {
+        "access_token": "<id>.<hex hmac-sha256(id)>",
+        "token_type": "bearer"
+      },
+      "response_ref": "api/api.go:89",
+      "user_in_response": false,
+      "stored_token": false,
+      "hmac_ref": "api/api.go:59"
+    },
+    "extractor": {
+      "name": "RequireUser",
+      "role": "Customer",
+      "ref": "api/api.go:94",
+      "steps": [
+        "bearer scheme",
+        "split <id>.<sig> on '.'",
+        "verify HMAC",
+        "db.First(&u, id)",
+        "c.Set(\"uid\", u.ID)"
+      ],
+      "verify_ref": "api/api.go:98",
+      "lookup_ref": "api/api.go:104",
+      "set_ref": "api/api.go:108",
+      "refusal": {
+        "status": 401,
+        "detail": "Not authenticated",
+        "ref": [
+          "api/api.go:99",
+          "api/api.go:105"
+        ]
+      },
+      "handlers_read": "c.GetUint(\"uid\")"
+    }
+  },
+  "behaviour": {
+    "GET /me": {
+      "status": 200,
+      "body": "models.User (id, name)",
+      "ref": "api/api.go:123"
+    },
+    "GET /queues": {
+      "status": 200,
+      "body": "every queue",
+      "ref": "api/api.go:114"
+    },
+    "POST /queues/:qid/tickets": {
+      "ref": "api/api.go:139",
+      "outcomes": [
+        {
+          "status": 400,
+          "detail": "bad id",
+          "when": "strconv.Atoi(qid) error",
+          "ref": "api/api.go:142"
+        },
+        {
+          "status": 404,
+          "detail": "Not found",
+          "when": "missing queue",
+          "ref": "api/api.go:148"
+        },
+        {
+          "status": 422,
+          "detail": "invalid body",
+          "when": "title binding:required,max=80",
+          "ref": "api/api.go:135"
+        },
+        {
+          "status": 409,
+          "detail": "already open",
+          "when": "open ticket of the caller on the queue",
+          "ref": "api/api.go:162"
+        },
+        {
+          "status": 201,
+          "when": "Create(&Ticket{QueueID, ReporterID: uid, Title, Status: open})",
+          "ref": "api/api.go:165"
+        }
+      ]
+    },
+    "GET /tickets": {
+      "ref": "api/api.go:180",
+      "query": {
+        "page_size": {
+          "tag": "form:\"page_size\" binding:\"omitempty,min=1,max=100\"",
+          "ref": "api/api.go:175",
+          "note": "omitempty: page_size=0 is the zero value, skipped (200); default limit 100"
+        },
+        "status": {
+          "tag": "form:\"status\" binding:\"omitempty,oneof=open closed\"",
+          "ref": "api/api.go:176"
+        }
+      },
+      "outcomes": [
+        {
+          "status": 422,
+          "detail": "invalid query",
+          "ref": "api/api.go:184"
+        },
+        {
+          "status": 200,
+          "when": "Where(reporter_id = uid) + status filter",
+          "ref": "api/api.go:191"
+        }
+      ]
+    },
+    "GET /tickets/:tid": {
+      "ref": "api/api.go:202",
+      "outcomes": [
+        {
+          "status": 400,
+          "detail": "bad id",
+          "ref": "api/api.go:204"
+        },
+        {
+          "status": 404,
+          "detail": "Not found",
+          "ref": "api/api.go:210"
+        },
+        {
+          "status": 200
+        }
+      ]
+    },
+    "POST /tickets/:tid/close": {
+      "ref": "api/api.go:219",
+      "outcomes": [
+        {
+          "status": 400,
+          "detail": "bad id",
+          "ref": "api/api.go:221"
+        },
+        {
+          "status": 404,
+          "detail": "Not found",
+          "ref": "api/api.go:227"
+        },
+        {
+          "status": 409,
+          "detail": "not open",
+          "ref": "api/api.go:232"
+        },
+        {
+          "status": 200,
+          "when": "Update(\"status\", \"closed\")",
+          "ref": "api/api.go:235"
+        }
+      ]
+    },
+    "POST /tickets/:tid/reopen": {
+      "ref": "api/api.go:244",
+      "outcomes": [
+        {
+          "status": 400,
+          "detail": "bad id",
+          "ref": "api/api.go:246"
+        },
+        {
+          "status": 404,
+          "detail": "Not found",
+          "ref": "api/api.go:252"
+        },
+        {
+          "status": 409,
+          "detail": "not closed",
+          "ref": "api/api.go:257"
+        },
+        {
+          "status": 200,
+          "when": "Update(\"status\", \"open\")",
+          "ref": "api/api.go:260"
+        }
+      ]
+    },
+    "POST /tickets/:tid/handoffs": {
+      "ref": "api/api.go:273",
+      "outcomes": [
+        {
+          "status": 400,
+          "detail": "bad id",
+          "ref": "api/api.go:276"
+        },
+        {
+          "status": 404,
+          "detail": "Not found",
+          "when": "ticket scoped by reporter",
+          "ref": "api/api.go:282"
+        },
+        {
+          "status": 422,
+          "detail": "invalid body",
+          "when": "to_user_id uint binding:required,min=1",
+          "ref": "api/api.go:269"
+        },
+        {
+          "status": 404,
+          "detail": "No such user",
+          "ref": "api/api.go:293"
+        },
+        {
+          "status": 201,
+          "when": "Create(&Handoff{TicketID, FromUserID: uid, ToUserID})",
+          "ref": "api/api.go:296"
+        }
+      ]
+    },
+    "GET /handoffs": {
+      "status": 200,
+      "when": "Where(from_user_id = uid OR to_user_id = uid)",
+      "ref": "api/api.go:310"
+    }
+  },
+  "owners": {
+    "tickets": {
+      "verdict": "owned",
+      "column": "reporter_id",
+      "evidence_count": 7,
+      "evidence": [
+        {
+          "kind": "assign",
+          "route": "POST /queues/:qid/tickets",
+          "ref": "api/api.go:165"
+        },
+        {
+          "kind": "compare",
+          "route": "POST /queues/:qid/tickets",
+          "ref": "api/api.go:160"
+        },
+        {
+          "kind": "compare",
+          "route": "GET /tickets",
+          "ref": "api/api.go:191"
+        },
+        {
+          "kind": "compare",
+          "route": "GET /tickets/:tid",
+          "ref": "api/api.go:210"
+        },
+        {
+          "kind": "compare",
+          "route": "POST /tickets/:tid/close",
+          "ref": "api/api.go:227"
+        },
+        {
+          "kind": "compare",
+          "route": "POST /tickets/:tid/reopen",
+          "ref": "api/api.go:252"
+        },
+        {
+          "kind": "compare",
+          "route": "POST /tickets/:tid/handoffs",
+          "ref": "api/api.go:282"
+        }
+      ]
+    },
+    "handoffs": {
+      "verdict": "unclear",
+      "candidates": [
+        {
+          "column": "from_user_id",
+          "evidence": [
+            {
+              "kind": "assign",
+              "route": "POST /tickets/:tid/handoffs",
+              "ref": "api/api.go:296"
+            },
+            {
+              "kind": "compare",
+              "route": "GET /handoffs",
+              "ref": "api/api.go:310"
+            }
+          ]
+        },
+        {
+          "column": "to_user_id",
+          "evidence": [
+            {
+              "kind": "compare",
+              "route": "GET /handoffs",
+              "ref": "api/api.go:310"
+            }
+          ]
+        }
+      ]
+    },
+    "queues": {
+      "verdict": "shared"
+    },
+    "users": {
+      "verdict": "not owned"
+    }
+  },
+  "private": {
+    "User": [
+      "password_hash"
+    ],
+    "ref": "models/models.go:11"
+  },
+  "machines": [
+    {
+      "table": "tickets",
+      "column": "status",
+      "initial": "open",
+      "initial_ref": "api/api.go:165",
+      "edges": [
+        {
+          "from": "open",
+          "to": "closed",
+          "route": "POST /tickets/:tid/close",
+          "guard_ref": "api/api.go:231",
+          "ref": "api/api.go:235"
+        },
+        {
+          "from": "closed",
+          "to": "open",
+          "route": "POST /tickets/:tid/reopen",
+          "guard_ref": "api/api.go:256",
+          "ref": "api/api.go:260"
+        }
+      ]
+    }
+  ],
+  "bind_status": {
+    "status": 422,
+    "rule": "every bind refusal is 422",
+    "binds": [
+      {
+        "route": "POST /login",
+        "ref": "api/api.go:74"
+      },
+      {
+        "route": "POST /queues/:qid/tickets",
+        "ref": "api/api.go:153"
+      },
+      {
+        "route": "GET /tickets",
+        "ref": "api/api.go:183"
+      },
+      {
+        "route": "POST /tickets/:tid/handoffs",
+        "ref": "api/api.go:287"
+      }
+    ]
+  },
+  "harness": {
+    "module": "gotickets_harness",
+    "make_app": "gotickets_harness:make_app",
+    "build_db": "gotickets_harness:build_db",
+    "runtime": "gotickets_harness:RUNTIME",
+    "users": {
+      "ann": [
+        "ann",
+        "pw-ann"
+      ],
+      "ben": [
+        "ben",
+        "pw-ben"
+      ]
+    },
+    "seed": {
+      "users": 2,
+      "queues": 2,
+      "tickets": 0,
+      "password": "equal plain value"
+    }
+  }
+}
