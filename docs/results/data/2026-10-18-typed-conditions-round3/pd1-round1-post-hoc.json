@@ -1,0 +1,490 @@
+[
+  {
+    "apps": 25,
+    "bad_gne_h_and_h_eq_t": [
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "k7": false,
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "k7": false,
+        "rule": "R20"
+      }
+    ],
+    "cells": 400,
+    "form_states": {
+      "F1": "current",
+      "F10": "current",
+      "F11": "current",
+      "F12": "current",
+      "F13": "current",
+      "F14": "current",
+      "F15": "current",
+      "F16": "current",
+      "F2": "current",
+      "F3": "current",
+      "F4": "current",
+      "F5": "current",
+      "F6": "current",
+      "F7": "current",
+      "F8": "current",
+      "F9": "current"
+    },
+    "formed_rules": 16,
+    "forms_that_could_not_generate": {},
+    "forms_usable": 16,
+    "g_eq_h": 398,
+    "g_ne_h": [
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "k7": false,
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "k7": false,
+        "rule": "R20"
+      }
+    ],
+    "generate_whole_set_error": null,
+    "notes": [
+      "F11: db_unchecked:other_get_orders",
+      "F11: db_unchecked:anon_get_orders",
+      "F12: db_unchecked:other_post_orders_cancel",
+      "F12: db_unchecked:anon_post_orders_cancel",
+      "F13: db_unchecked:other_get_orders",
+      "F13: db_unchecked:anon_get_orders"
+    ],
+    "post_hoc": true,
+    "probe": "PG1",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "run_wall_s": 61.38,
+    "status": "REPORTED",
+    "status_gate": "FAIL",
+    "unattributed_generated_findings": [],
+    "what": "G vs H per cell"
+  },
+  {
+    "bad_outside_k6_k7": [
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "k7": false,
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "k6": false,
+        "k7": false,
+        "rule": "R20"
+      }
+    ],
+    "g_eq_t": 397,
+    "k6_cells": 100,
+    "k6_misses": [
+      {
+        "G": false,
+        "H": false,
+        "T": true,
+        "app": "h_no_stock_check",
+        "k6": true,
+        "k7": false,
+        "rule": "R4"
+      }
+    ],
+    "k6_rules": [
+      "R10",
+      "R11",
+      "R4",
+      "R9"
+    ],
+    "k7_cells": [],
+    "k7_rules": [
+      "R15",
+      "R16",
+      "R17"
+    ],
+    "post_hoc": true,
+    "probe": "PG1t",
+    "round2_value": "397 / 400",
+    "scored": 400,
+    "status": "REPORTED",
+    "status_gate": "FAIL",
+    "what": "G vs truth per cell (K6 and K7 cells apart)"
+  },
+  {
+    "bad": [],
+    "g_fail_on_ok": [
+      "R12",
+      "R13",
+      "R14"
+    ],
+    "post_hoc": true,
+    "probe": "PG1o",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "t_violated_on_ok": [
+      "R12",
+      "R13",
+      "R14"
+    ],
+    "what": "on ok, G fails exactly the rules T marks violated"
+  },
+  {
+    "apps_non_ok": 24,
+    "g_kills": [
+      "h_add_any_state",
+      "h_cancel_400",
+      "h_cancel_from_paid",
+      "h_cancel_no_owner",
+      "h_cancel_refused_writes",
+      "h_cancel_typo_state",
+      "h_product_id_min0",
+      "h_qty_max101",
+      "h_qty_min0",
+      "h_read_admin_bypass",
+      "h_read_hides_cancelled",
+      "h_read_other_403",
+      "sec_auth",
+      "sec_authz",
+      "sec_bounds",
+      "sec_leak",
+      "sec_state",
+      "wrong_answer"
+    ],
+    "g_only": [],
+    "h_kills": [
+      "h_add_any_state",
+      "h_cancel_400",
+      "h_cancel_from_paid",
+      "h_cancel_no_owner",
+      "h_cancel_refused_writes",
+      "h_cancel_typo_state",
+      "h_product_id_min0",
+      "h_qty_max101",
+      "h_qty_min0",
+      "h_read_admin_bypass",
+      "h_read_hides_cancelled",
+      "h_read_other_403",
+      "sec_auth",
+      "sec_authz",
+      "sec_bounds",
+      "sec_leak",
+      "sec_state",
+      "wrong_answer"
+    ],
+    "h_only": [],
+    "post_hoc": true,
+    "probe": "PG1k",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "G kills (flips vs ok, formed rules) a superset of H's"
+  },
+  {
+    "both_include_d": 101,
+    "cells_both_fail": 104,
+    "diff": [
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "h_cancel_typo_state",
+        "rule": "R18"
+      }
+    ],
+    "h_includes_d": 101,
+    "layer_d_agreement": 1.0,
+    "post_hoc": true,
+    "probe": "PG2",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "same_layer_sets": 103,
+    "status": "REPORTED",
+    "status_gate": "REPORTED",
+    "what": "layer of the failing check where both fail; layer-D agreement"
+  },
+  {
+    "accepted_invalid": [],
+    "invalid": 29,
+    "post_hoc": true,
+    "probe": "PG5",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "valid_forms": 16,
+    "valid_refused": [],
+    "what": "invalid.json refused; the set's valid forms accepted"
+  },
+  {
+    "codes_not_exact": [
+      {
+        "also_acceptable_hit": true,
+        "got": [
+          "F001"
+        ],
+        "id": "I26",
+        "want": "F017"
+      }
+    ],
+    "exact": 28,
+    "of": 29,
+    "post_hoc": true,
+    "probe": "PG5c",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "status": "REPORTED",
+    "status_gate": "REPORTED",
+    "what": "exact F-code on invalid.json"
+  },
+  {
+    "class_e": {
+      "compatible": 2,
+      "contradict": 3,
+      "false_pos": 0,
+      "found": 3
+    },
+    "errors": [],
+    "false_neg": [],
+    "false_pos": [
+      {
+        "id": "P15",
+        "items": [
+          "fc:e:PA:PB"
+        ]
+      }
+    ],
+    "items_outside_the_pair": [],
+    "pairs": 32,
+    "per_class": {
+      "a": {
+        "compatible": 6,
+        "contradict": 6,
+        "false_pos": 0,
+        "found": 6
+      },
+      "b": {
+        "compatible": 3,
+        "contradict": 1,
+        "false_pos": 1,
+        "found": 1
+      },
+      "c": {
+        "compatible": 2,
+        "contradict": 4,
+        "false_pos": 0,
+        "found": 4
+      },
+      "d": {
+        "compatible": 2,
+        "contradict": 3,
+        "false_pos": 0,
+        "found": 3
+      },
+      "e": {
+        "compatible": 2,
+        "contradict": 3,
+        "false_pos": 0,
+        "found": 3
+      }
+    },
+    "post_hoc": true,
+    "precision": 0.9444444444444444,
+    "probe": "PT2f",
+    "recall_abcd": "14/14",
+    "round2_value": "precision 17/18",
+    "status": "REPORTED",
+    "status_gate": "FAIL",
+    "true_neg": 14,
+    "true_pos": 17,
+    "undecided": [],
+    "what": "forms contradictions on pairs.json"
+  },
+  {
+    "class_e": {
+      "compatible": 2,
+      "contradict": 3,
+      "false_pos": 0,
+      "found": 3
+    },
+    "class_e_missed": [],
+    "path_or_query_found": [],
+    "path_or_query_pairs": [],
+    "post_hoc": true,
+    "probe": "PT2e",
+    "recall": 1.0,
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "status": "REPORTED",
+    "status_gate": "FAIL",
+    "what": "class e recall >= 0.75 and >= 1 path/query-bound pair found"
+  },
+  {
+    "failed_rederivation": [],
+    "items": 23,
+    "not_rederived_weak": [
+      "fc:c:PA:PB",
+      "fc:c:PA:PB",
+      "fc:c:PA:PB",
+      "fc:c:PA:PB"
+    ],
+    "post_hoc": true,
+    "probe": "PT2x",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "witness, strong: the runner re-derives the witness and calls incompatible itself"
+  },
+  {
+    "accepted": [],
+    "post_hoc": true,
+    "probe": "PNX",
+    "refused_with_other_code": [],
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "rules": 18,
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "not_expressible attempts refused with F001 or F017",
+    "with_attempt": 8
+  },
+  {
+    "determined_total": 1,
+    "exit_code": 0,
+    "expected_items": 1,
+    "got_items": 1,
+    "post_hoc": true,
+    "probe": "PT2w",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "tiers": [
+      2
+    ],
+    "what": "impact CLI: tier2.determined gains exactly the new form items (tier 2)"
+  },
+  {
+    "approve_claudecode": true,
+    "approve_no_tty": true,
+    "draft_changed_files": [],
+    "draft_drafted": 1,
+    "draft_new_files": [
+      "REQUIREMENTS.forms.proposed.json"
+    ],
+    "draft_status": "proposed",
+    "edited_generates_nothing": true,
+    "edited_state": "edited",
+    "moved_state": [
+      "moved",
+      "R1"
+    ],
+    "no_door_for_proposals": true,
+    "nothing_written": true,
+    "post_hoc": true,
+    "probe": "PA",
+    "proposal_generates_nothing": true,
+    "reworded_state": "stale",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "approval states, approve refusals, draft, on the set"
+  },
+  {
+    "changed": {
+      "app": [],
+      "project": []
+    },
+    "generated": 42,
+    "new": {
+      "app": [],
+      "project": []
+    },
+    "nonzero_exits": 0,
+    "note": "a non-zero exit of `forms check` / `contradictions` is reported, not gated (they report findings by exit code)",
+    "post_hoc": true,
+    "probe": "PW",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "shim_calls": 0,
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "snapshots around show/check/generate/contradictions/coverage x10 and a check run with forms, on the set"
+  },
+  {
+    "cd_distinct": {
+      "ok": 1
+    },
+    "generate_distinct": 1,
+    "path_or_time_leaks": [],
+    "post_hoc": true,
+    "probe": "PG3",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "forms generate x10 and CD reports x10 on the set, random PYTHONHASHSEED, two roots"
+  },
+  {
+    "invariants": 9,
+    "post_hoc": true,
+    "probe": "PG4",
+    "problems": [],
+    "raises": {},
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "scenarios": 33,
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "generated invariants compile (sqlite, mysql); scenarios validate; 0 L011/L012; no raise",
+    "whole_set_error": null
+  },
+  {
+    "gate": "<= 1 s",
+    "median_s": 0.00109,
+    "post_hoc": true,
+    "probe": "PX-generate",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "generate on the set (median of 50)"
+  },
+  {
+    "gate": "<= 240 s",
+    "post_hoc": true,
+    "probe": "PX",
+    "round2_value": "n/a (not run in round 2 on this set)",
+    "scoring_only_s": 62.4,
+    "seconds": 116.5,
+    "status": "REPORTED",
+    "status_gate": "PASS",
+    "what": "wall time of the whole arm (scoring, PA, PW, PG3, PG4)"
+  },
+  {
+    "probe": "wall",
+    "seconds": 116.5,
+    "status": "REPORTED",
+    "what": "total"
+  }
+]

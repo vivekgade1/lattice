@@ -1,0 +1,183 @@
+{
+  "schema": "lattice.forms/1",
+  "source": "REQUIREMENTS.md",
+  "forms": [
+    {
+      "id": "F1",
+      "rule": "R6",
+      "anchor": "04d5d5d48d1a4b65d3246b05fe96b2381c29e678162cde8c30e903d5744a1ea7",
+      "kind": "bound",
+      "form": {
+        "field": {
+          "param": "GET /orders/{order_id}",
+          "path": "path.order_id"
+        },
+        "cond": {
+          "op": "ge",
+          "value": 1
+        },
+        "caller": "ann",
+        "request": {
+          "path": "/orders/1"
+        },
+        "given": {
+          "orders": [
+            {
+              "id": 1,
+              "user_id": 1,
+              "status": "pending",
+              "total": 0.0
+            }
+          ]
+        },
+        "accepted": {
+          "status": 200
+        },
+        "refused": {
+          "status": 404
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "5ac5b7dd3319574694649ae6cc5364d9de3fee0640852a2250dcccedcc3c6bfe"
+    },
+    {
+      "id": "F2",
+      "rule": "R7",
+      "anchor": "7d9a20844439646132932ac1c16a4f300a69d2f2ad2f7f4782df6ca137e9bd40",
+      "kind": "bound",
+      "form": {
+        "field": {
+          "param": "GET /orders",
+          "path": "query.limit"
+        },
+        "cond": {
+          "op": "ge",
+          "value": 1
+        },
+        "caller": "ann",
+        "request": {
+          "path": "/orders",
+          "params": {
+            "limit": 10
+          }
+        },
+        "accepted": {
+          "status": 200
+        },
+        "refused": {
+          "status": 422
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "9eefcc5627c9297cd0fc6acacb425c459a36e09572839a1a9479bfef5de0b926"
+    },
+    {
+      "id": "F3",
+      "rule": "R8",
+      "anchor": "10f47af4cecd43cb7871e07c1db8d621d9a97639e0d8a339554443832e81e0f1",
+      "kind": "ownership",
+      "form": {
+        "table": "Order",
+        "scope": "owner",
+        "endpoints": [
+          "POST /orders/{order_id}/cancel"
+        ],
+        "owner": "ann",
+        "other": "ben",
+        "row": "/orders/1",
+        "refused_other": {
+          "status": 404
+        },
+        "refused_anon": {
+          "status": 401
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "434222af1d1e9a947e2ad5dd553709f21b7c69b8701b20909768a1d5925d4a09"
+    },
+    {
+      "id": "F4",
+      "rule": "R9",
+      "anchor": "5a8e101b802fd9f05323d69bab8e5562a62fc7ec6d433e8d235338184c5d06df",
+      "kind": "row_limit",
+      "form": {
+        "table": "OrderItem",
+        "by": [
+          "order_id"
+        ],
+        "max": 3,
+        "endpoint": "POST /orders/{}/items",
+        "caller": "ann",
+        "request": {
+          "path": "/orders/20/items",
+          "json": {
+            "product_id": 1,
+            "quantity": 1
+          }
+        },
+        "given": {
+          "orders": [
+            {
+              "id": 20,
+              "user_id": 1,
+              "status": "pending",
+              "total": 0.0
+            }
+          ]
+        },
+        "refused": {
+          "status": 409
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "6825b5a0b0ea511ab76d2e6d1012a92244f6b315f57692fb2bf21db14bbea344"
+    },
+    {
+      "id": "F5",
+      "rule": "R10",
+      "anchor": "c7cdc32ba9de763e74c854db6c3a07330fdc65a5eb1e27b9ae1deb4b75faa067",
+      "kind": "row_limit",
+      "form": {
+        "table": "OrderItem",
+        "by": [
+          "product_id"
+        ],
+        "max": 2,
+        "endpoint": "POST /orders/{}/items",
+        "caller": "ann",
+        "request": {
+          "path": "/orders/20/items",
+          "json": {
+            "product_id": 1,
+            "quantity": 1
+          }
+        },
+        "given": {
+          "orders": [
+            {
+              "id": 20,
+              "user_id": 1,
+              "status": "pending",
+              "total": 0.0
+            }
+          ]
+        },
+        "refused": {
+          "status": 409
+        }
+      },
+      "status": "approved",
+      "author": "hand",
+      "approved_by": "dev",
+      "approved_sha": "ca9b2e515e174cec534e20e7cc3a42bf9dfaaf4e165985ba6d9d4235b234956c"
+    }
+  ]
+}

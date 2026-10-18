@@ -516,6 +516,8 @@ class _Checker:
         return found[0], c, found[2]
 
     def lit(self, ptr: str, scalar: Scalar | None, v: Any) -> bool:
+        if isinstance(v, dict | list):  # a value position: F017 for a node name, else F001
+            return self.value_lit(ptr, scalar, v)
         if not lit_ok(scalar, v):
             self.err("F004", ptr, f"literal {v!r} does not type against {scalar or 'the field'}")
             return False
@@ -603,7 +605,8 @@ class _Checker:
         else:
             for c, v in db[k].items():
                 if isinstance(v, dict | list):
-                    self.err("F004", f"{ptr}/db/equals/{c}", "not a literal")
+                    code = "F017" if _names_node(v) else "F001"
+                    self.err(code, f"{ptr}/db/equals/{c}", "not a literal")
 
     # -- fields and conditions
     def field(self, ptr: str, f: Any, stores: Any = None) -> FieldRef | None:
@@ -753,10 +756,15 @@ class _Checker:
         )  # fmt: skip
         if not self.keys(ptr, form, allowed, ("field", "cond")):
             return
+        n0 = len(self.diags)
         ref = self.field(f"{ptr}/field", form["field"], form.get("stores"))
         if "stores" in form and (ref is None or ref.endpoint is None):
             self.column(f"{ptr}/stores", form["stores"])
         self.cond(f"{ptr}/cond", form["cond"], ref)
+        if ref is not None and (ref.path or "").startswith("path.") and len(self.diags) == n0:
+            vals = bound_values(form["cond"], ref.scalar)
+            if any(v is not None and re.search(r"^$|[/?#]", str(v)) for v in vals):
+                self.err("F021", f"{ptr}/cond", "a path value the placeholder cannot hold")
         ep = None
         if "endpoint" in form:
             ep = self.endpoint(f"{ptr}/endpoint", form["endpoint"])
@@ -1255,9 +1263,12 @@ def _witness_of(endpoint: str, req: Mapping[str, Any]) -> _Witness:
     )
 
 
-def _place(w: _Witness, where: str, name: str, value: Any) -> _Witness | None:
+def _place(
+    w: _Witness, where: str, name: str, value: Any, tpl: str | None = None
+) -> _Witness | None:
     """The witness with the field set at ``where`` ('body'|'query'|'path') and ``name``
-    (dotted for a body); None when the witness does not carry the field."""
+    (dotted for a body); None when the witness does not carry the field. A path placeholder is
+    found by the endpoint's template ``tpl`` (cause 8): only that segment changes."""
     out = w.copy()
     if where == "body":
         if out.json is None:
@@ -1271,9 +1282,14 @@ def _place(w: _Witness, where: str, name: str, value: Any) -> _Witness | None:
         out.params[name] = value
         return out
     ph = "{" + name + "}"
-    if ph not in out.path:
+    if ph in out.path:
+        out.path = out.path.replace(ph, str(value))
+        return out
+    cs, ts = out.path.split("?")[0].split("/"), (tpl or "").partition(" ")[2].split("/")
+    if len(cs) != len(ts) or ph not in ts:
         return None
-    out.path = out.path.replace(ph, str(value))
+    cs[ts.index(ph)] = str(value)
+    out.path = "/".join(cs) + out.path[len(out.path.split("?")[0]) :]
     return out
 
 
@@ -1440,6 +1456,7 @@ class _Gen:
         self.links: dict[str, list[str]] = {}
         self.no_invariant: dict[str, str] = {}
         self.notes: list[str] = []
+        self.limits: list[Form] = []  # the set's row_limit forms (siblings of the one generating)
         self.templates = known_templates(spec)
 
     def named(self, endpoint: str) -> str:
@@ -1568,11 +1585,16 @@ class _Gen:
             if value is None:
                 self.notes.append(f"{f.id}:{case}: no value beyond the bound")
                 continue
-            w = _place(base, where, name, value) if where else None
+            w = _place(base, where, name, value, named) if where else None
             if w is None:
                 self.notes.append(f"{f.id}:{case}: the witness request does not carry the field")
                 continue
             locus = _db_locus(table, schema_cols, w, named, column, value)
+            first = _path_names(named.partition(" ")[2])[:1]
+            tf = resolve_table(self.spec.profile, table) if table else None
+            if where == "path" and tf and first == [name] and _ph_table(self.spec, named) == table:
+                if (kc := _keycol(tf[2])) and isinstance(value, int) and abs(value) < 2**63:
+                    locus.setdefault(kc, value)  # the row the first placeholder addresses
             given = _merge_given(form.get("given"))
             note = f"{f.id}: db_locus:given_only"
             if table is None and outcome.get("db") == "unchanged" and note not in self.notes:
@@ -1627,11 +1649,23 @@ class _Gen:
         }
         base = _fresh_base(self.spec, given0, table, key)
         accepted = self.accepted(form.get("accepted"), named)
+        sib = {  # the columns another row_limit form of the set counts this table's rows by
+            c for g in self.limits if g.id != f.id for c in g.form["by"]
+            if (resolve_table(self.spec.profile, g.form["table"]) or ("",))[0] == table
+        }  # fmt: skip
+        spread = sorted((sib & set(proto)) - set(locus) - {key})
         for case, k, outcome in (
             ("below", mx - 1, accepted),
             ("at_limit", mx, form["refused"]),
         ):
-            rows = [{**proto, **({key: base + i} if key else {})} for i in range(k - m)]
+            rows = [
+                {
+                    **proto,
+                    **({key: base + i} if key else {}),
+                    **{c: _vary(proto[c], i) for c in spread},
+                }
+                for i in range(k - m)
+            ]
             given = _merge_given(other, {table: [*have, *rows]} if have or rows else None)
             db = {table: {"where": dict(locus), "count": mx}}
             self.add_scenario(f, rule, case, given, self.step(w, user, outcome["status"], db))
@@ -1664,6 +1698,8 @@ class _Gen:
                 if case != "owner":
                     outcome = _refused(outcome)
                 db = _expect_db(self.spec, outcome, table, locus, given)
+                if db is None and outcome.get("db") == "unchanged":
+                    self.notes.append(f"{f.id}: db_unchecked:{case}_{slug}")
                 self.add_scenario(
                     f, rule, f"{case}_{slug}", given, self.step(w, user, outcome["status"], db)
                 )
@@ -1703,6 +1739,13 @@ class _Gen:
             self.add_scenario(f, rule, case, given, self.step(w, user, outcome["status"], db))
 
 
+def _vary(v: Any, i: int) -> Any:
+    """The ``i``-th value distinct from ``v`` and from the other ``i`` (a bool has none)."""
+    if isinstance(v, bool):
+        return v
+    return v + i + 1 if isinstance(v, int | float) else f"{v}{i + 1}"
+
+
 def _infer_scalar(cond: Mapping[str, Any]) -> Scalar | None:
     if cond["node"] == "Len":
         return Scalar.STR
@@ -1727,6 +1770,7 @@ def generate(spec: Spec, forms: Sequence[Form | Resolved]) -> Generated:
         items.append((normalised(x.form if isinstance(x, Resolved) else x), x.rule))
     items.sort(key=lambda p: (_fnum(p[0].id), p[0].id))
     gen = _Gen(spec)
+    gen.limits = [f for f, _ in items if f.kind == "row_limit"]
     for f, rule in items:
         getattr(gen, f.kind)(f, rule)
     return Generated(

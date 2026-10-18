@@ -1,0 +1,39 @@
+{
+  "schema": "lattice.typed-conditions.rc/1",
+  "provenance": "Transcribed by the build node from the root-cause node's findings as recorded in Amendment 2 of docs/results/2026-10-18-typed-conditions-round3-prereg.md (commits f17ee04, c3b67e6), BEFORE the build node's first library edit. The RC node's own report lived in the orchestrator's session record and was not delivered to this checkout; the per-residual fields the prereg section 3 asks for (G/H/T verdicts, generated cases, requests and db states) are therefore NOT RUN here: only the stated cause, the ruling and the classification are available. This file is not independent evidence.",
+  "written_before_first_library_edit": true,
+  "residuals": {
+    "b": {
+      "cell": "m_cancel_sneaky x R19 (G passes, H and T fail)",
+      "cause": "ownership() in lattice/spec/forms.py silently drops refused_other: {db: unchanged} when the path placeholder is not a column of the table and the form states no given row (_expect_db returns None for an empty locus)",
+      "classification": "set-error / D1 gap, plus a silent drop (library defect in reporting)",
+      "ruling": "D3 'unchanged' is asserted only on rows the form's own given states; the generator emits a db_unchecked:<case> note instead of dropping silently (about 4 lines); the 30-line owner-row synthesis is NOT built; (b) is a registered predicted K7 cell (reported, outside the PG1t gate)",
+      "budget_lines": 4,
+      "hypothesis_confirmed": "b2 (db assertion lost on a derived locus without given), in a stronger form than registered"
+    },
+    "c": {
+      "cell": "m_pair2 x R15 (G fails, H and T pass)",
+      "cause": "row_limit() rule C gives every synthesised counted row the same value on non-by columns, so a sibling row_limit form's invariant is violated on other forms' given states",
+      "classification": "library defect",
+      "ruling": "synthesised counted rows are pairwise distinct on any column that another row_limit form of the set counts by (about 15-20 lines in forms.py)",
+      "budget_lines": 20,
+      "hypothesis_confirmed": "c3 (the sibling invariant fails on a state another scenario reaches) with c2's mechanism (identical values on non-by columns)"
+    },
+    "d": {
+      "cell": "PNX N12, N13 (accepted.db.equals values {sub}, {param} refused F004 only)",
+      "cause": "outcome() hard-codes F004 for any non-literal db.equals value; the node names are already in the cause-7 list",
+      "classification": "library defect",
+      "ruling": "cause 7's order covers every non-Lit position including Outcome.db.equals values; a 1-line change to F017/F001; H2's expectation stands",
+      "budget_lines": 1,
+      "hypothesis_confirmed": "d1"
+    },
+    "e": {
+      "cell": "PT2f class e P24, P25",
+      "cause": "NOT ADDRESSED by Amendment 2. D0 default stands: no separate change unless RC shows (e) does not follow from (a); the prereg predicts it follows from (a) (hypothesis e1)",
+      "classification": "not found / unverified; no forms_tier2.py code lands; PD2 (post hoc) shows whether (e) follows from (a)",
+      "ruling": "none",
+      "budget_lines": 0,
+      "hypothesis_confirmed": null
+    }
+  }
+}

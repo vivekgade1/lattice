@@ -1,0 +1,651 @@
+[
+  {
+    "missing": [],
+    "mtime_rc": 1792306159836078241,
+    "probe": "PRC",
+    "provenance": "Transcribed by the build node from the root-cause node's findings as recorded in Amendment 2 of docs/results/2026-10-18-typed-conditions-round3-prereg.md (commits f17ee04, c3b67e6), BEFORE the build node's first library edit. The RC node's own report lived in the orchestrator's session record and was not delivered to this checkout; the per-residual fields the prereg section 3 asks for (G/H/T verdicts, generated cases, requests and db states) are therefore NOT RUN here: only the stated cause, the ruling and the classification are available. This file is not independent evidence.",
+    "residuals": [
+      "b",
+      "c",
+      "d",
+      "e"
+    ],
+    "residuals_without_a_cause": [
+      "e"
+    ],
+    "status": "FAIL",
+    "what": "RC report exists, before code; every residual has a cause or 'not found' with hypotheses ruled out",
+    "written_before_first_library_edit": true
+  },
+  {
+    "cases": {
+      "PC3-db-unchecked": {
+        "notes": [
+          "F3: db_unchecked:other_post_orders_order_id_cancel",
+          "F3: db_unchecked:anon_post_orders_order_id_cancel"
+        ],
+        "pass": true
+      },
+      "PC3-f021": {
+        "codes": [
+          "F021"
+        ],
+        "pass": true
+      },
+      "PC3-nested": {
+        "pass": true,
+        "paths": [
+          "/orders/5/items/1",
+          "/orders/5/items/0"
+        ]
+      },
+      "PC3-outcome-values": {
+        "list": [
+          "F001"
+        ],
+        "param": [
+          "F017"
+        ],
+        "pass": true,
+        "refused_list": [
+          "F001"
+        ]
+      },
+      "PC3-path": {
+        "at": [
+          "/orders/1",
+          200
+        ],
+        "beyond": [
+          "/orders/0",
+          404,
+          {
+            "Order": {
+              "count": 0,
+              "where": {
+                "id": 0
+              }
+            }
+          }
+        ],
+        "pass": true
+      },
+      "PC3-query": {
+        "at": [
+          "/orders",
+          {
+            "limit": 1
+          }
+        ],
+        "beyond": [
+          "/orders",
+          {
+            "limit": 0
+          }
+        ],
+        "pass": true
+      },
+      "PC3-sibling-limits": {
+        "f4_product_ids": [
+          2,
+          3,
+          4
+        ],
+        "f5_order_ids": [
+          21,
+          22
+        ],
+        "pass": true
+      }
+    },
+    "passed": "7/7",
+    "probe": "PC3",
+    "status": "PASS",
+    "what": "one dev case per round-3 change (fixtures/forms_r3 + inline)"
+  },
+  {
+    "bytes_identical": false,
+    "differing_cases_other": [],
+    "differing_cases_path_query_bound": [],
+    "invariants_links_no_invariant_identical": true,
+    "notes_added_db_unchecked_ruled_by_amendment_2": [
+      "F6: db_unchecked:other_get_orders",
+      "F6: db_unchecked:anon_get_orders",
+      "F6: db_unchecked:other_post_orders_cancel",
+      "F6: db_unchecked:anon_post_orders_cancel"
+    ],
+    "notes_added_or_gone_other": [],
+    "probe": "PR1[r1]",
+    "status": "FAIL",
+    "what": "forms generate bytes vs 3679ab2: only path/query-bound cases differ"
+  },
+  {
+    "bytes_identical": false,
+    "differing_cases_other": [],
+    "differing_cases_path_query_bound": [],
+    "invariants_links_no_invariant_identical": true,
+    "notes_added_db_unchecked_ruled_by_amendment_2": [
+      "F3: db_unchecked:other_get_orders",
+      "F3: db_unchecked:anon_get_orders",
+      "F3: db_unchecked:other_post_orders_cancel",
+      "F3: db_unchecked:anon_post_orders_cancel"
+    ],
+    "notes_added_or_gone_other": [],
+    "probe": "PR1[r2]",
+    "status": "FAIL",
+    "what": "forms generate bytes vs 3679ab2: only path/query-bound cases differ"
+  },
+  {
+    "not_pass": {
+      "PR1": "FAIL"
+    },
+    "probe": "PR2",
+    "rc": 1,
+    "rows": {
+      "DEV-GH[r1]": "REPORTED",
+      "DEV-GH[r2]": "REPORTED",
+      "DEV-PT2f[pairs]": "REPORTED",
+      "DEV-PT2w[pairs]": "PASS",
+      "PA[r1]": "PASS",
+      "PA[r2]": "PASS",
+      "PB": "PASS",
+      "PB-d7ba7de": "PASS",
+      "PC": "PASS",
+      "PG3[r1]": "PASS",
+      "PG3[r2]": "PASS",
+      "PG4[r1]": "PASS",
+      "PG4[r2]": "PASS",
+      "PR1": "FAIL",
+      "PT2w[dev]": "PASS",
+      "PW[r1]": "PASS",
+      "PW[r2]": "PASS",
+      "PX-generate[r1]": "PASS",
+      "PX-generate[r2]": "PASS",
+      "wall": "REPORTED"
+    },
+    "status": "FAIL",
+    "what": "round-2 runner --stage dev: as round 2"
+  },
+  {
+    "commands": [
+      {
+        "cmd": "lattice --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec check --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec lint --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec impact --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec usage",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 2
+      },
+      {
+        "cmd": "lint --json base",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 1
+      },
+      {
+        "cmd": "check --json CD base",
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0
+      },
+      {
+        "cmd": "lint --json attack",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 1
+      },
+      {
+        "cmd": "check --json CD attack",
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json base",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json bad_invariant",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json conflict",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json new_request",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json removed_rule",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json reword",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json status_changed",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "appmap --json (mock project)",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "rationale coverage --json (mock project)",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      }
+    ],
+    "differing_commands": [],
+    "frozen_check": {
+      "files_changed": [],
+      "ok": true,
+      "sets": {
+        "lattice/check": {
+          "got": "ca52b5a0076a04328c97c1cdafdd50af1a557ac671795697f9ec448146ba57bf",
+          "match": true,
+          "want": "ca52b5a0076a04328c97c1cdafdd50af1a557ac671795697f9ec448146ba57bf"
+        },
+        "lattice/gocheck": {
+          "got": "e9515e859e4aebff1020d8fffa721e8859396b9545d4d7b2b768d4980a367c3f",
+          "match": true,
+          "want": "e9515e859e4aebff1020d8fffa721e8859396b9545d4d7b2b768d4980a367c3f"
+        },
+        "tests/spec/fixtures/forms": {
+          "got": "ee956fc0472296d5eeb58b743c79bcd8014249032a9699d63ec4a6cd6e5cd0be",
+          "match": true,
+          "want": "ee956fc0472296d5eeb58b743c79bcd8014249032a9699d63ec4a6cd6e5cd0be"
+        },
+        "tests/spec/fixtures/forms_r2": {
+          "got": "b3dafdc48c59c2cc424da2f4655050b27b952ffb33b400d3f6b0702e4957a3a6",
+          "match": true,
+          "want": "b3dafdc48c59c2cc424da2f4655050b27b952ffb33b400d3f6b0702e4957a3a6"
+        },
+        "tests/spec/fixtures/impact": {
+          "got": "291eab2058ca5c86079b73287d1feff42e97afcd9a53f2358322df7b75473d1b",
+          "match": true,
+          "want": "291eab2058ca5c86079b73287d1feff42e97afcd9a53f2358322df7b75473d1b"
+        }
+      }
+    },
+    "identical": "18/18",
+    "probe": "PB",
+    "pytest_failing_ids_identical": true,
+    "status": "PASS",
+    "what": "byte-compat against git archive 3679ab2 (no forms file anywhere); frozen hashes and sets"
+  },
+  {
+    "commands": [
+      {
+        "cmd": "lattice --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec check --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec lint --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec impact --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec usage",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 2
+      },
+      {
+        "cmd": "lint --json base",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 1
+      },
+      {
+        "cmd": "check --json CD base",
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0
+      },
+      {
+        "cmd": "lint --json attack",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 1
+      },
+      {
+        "cmd": "check --json CD attack",
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json base",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json bad_invariant",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json conflict",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json new_request",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json removed_rule",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json reword",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json status_changed",
+        "diff_lines": [
+          "impact: 0.1s"
+        ],
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0,
+        "rc_old": 0,
+        "timing_stderr_only": [
+          "impact: 0.1s"
+        ]
+      },
+      {
+        "cmd": "appmap --json (mock project)",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "rationale coverage --json (mock project)",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      }
+    ],
+    "differing_commands": [],
+    "frozen_check": {
+      "files_changed": [],
+      "ok": true,
+      "sets": {
+        "lattice/check": {
+          "got": "ca52b5a0076a04328c97c1cdafdd50af1a557ac671795697f9ec448146ba57bf",
+          "match": true,
+          "want": "ca52b5a0076a04328c97c1cdafdd50af1a557ac671795697f9ec448146ba57bf"
+        },
+        "lattice/gocheck": {
+          "got": "e9515e859e4aebff1020d8fffa721e8859396b9545d4d7b2b768d4980a367c3f",
+          "match": true,
+          "want": "e9515e859e4aebff1020d8fffa721e8859396b9545d4d7b2b768d4980a367c3f"
+        },
+        "tests/spec/fixtures/forms": {
+          "got": "ee956fc0472296d5eeb58b743c79bcd8014249032a9699d63ec4a6cd6e5cd0be",
+          "match": true,
+          "want": "ee956fc0472296d5eeb58b743c79bcd8014249032a9699d63ec4a6cd6e5cd0be"
+        },
+        "tests/spec/fixtures/forms_r2": {
+          "got": "b3dafdc48c59c2cc424da2f4655050b27b952ffb33b400d3f6b0702e4957a3a6",
+          "match": true,
+          "want": "b3dafdc48c59c2cc424da2f4655050b27b952ffb33b400d3f6b0702e4957a3a6"
+        },
+        "tests/spec/fixtures/impact": {
+          "got": "291eab2058ca5c86079b73287d1feff42e97afcd9a53f2358322df7b75473d1b",
+          "match": true,
+          "want": "291eab2058ca5c86079b73287d1feff42e97afcd9a53f2358322df7b75473d1b"
+        }
+      }
+    },
+    "identical": "17/18",
+    "probe": "PB-d7ba7de",
+    "status": "PASS",
+    "what": "byte-compat against git archive d7ba7de (no forms file anywhere); frozen hashes and sets"
+  },
+  {
+    "changed": {
+      "app": [],
+      "project": []
+    },
+    "fixture": "forms/minishop",
+    "generated": 22,
+    "new": {
+      "app": [],
+      "project": []
+    },
+    "nonzero_exits": 0,
+    "probe": "PW[r1]",
+    "shim_calls": 0,
+    "status": "PASS",
+    "what": "snapshot around show/check/generate/contradictions/coverage x10 and a check run with forms"
+  },
+  {
+    "changed": {
+      "app": [],
+      "project": []
+    },
+    "fixture": "forms_r2/minishop",
+    "generated": 23,
+    "new": {
+      "app": [],
+      "project": []
+    },
+    "nonzero_exits": 0,
+    "probe": "PW[r2]",
+    "shim_calls": 0,
+    "status": "PASS",
+    "what": "snapshot around show/check/generate/contradictions/coverage x10 and a check run with forms"
+  },
+  {
+    "changed": {
+      "app": [],
+      "project": []
+    },
+    "fixture": "forms_r3/minishop",
+    "generated": 13,
+    "new": {
+      "app": [],
+      "project": []
+    },
+    "nonzero_exits": 0,
+    "probe": "PW[r3]",
+    "shim_calls": 0,
+    "status": "PASS",
+    "what": "snapshot around show/check/generate/contradictions/coverage x10 and a check run with forms"
+  },
+  {
+    "approve_claudecode": true,
+    "approve_no_tty": true,
+    "draft_changed_files": [],
+    "draft_drafted": 1,
+    "draft_new_files": [
+      "REQUIREMENTS.forms.proposed.json"
+    ],
+    "draft_status": "proposed",
+    "edited_generates_nothing": true,
+    "edited_state": "edited",
+    "fixture": "forms/minishop",
+    "moved_state": [
+      "moved",
+      "R1"
+    ],
+    "no_door_for_proposals": true,
+    "nothing_written": true,
+    "probe": "PA[r1]",
+    "proposal_generates_nothing": true,
+    "reworded_state": "stale",
+    "status": "PASS",
+    "what": "approval, states and draft"
+  },
+  {
+    "cd_distinct": {
+      "ok": 1,
+      "total_drift": 1
+    },
+    "fixture": "forms/minishop",
+    "generate_distinct": 1,
+    "path_or_time_leaks": [],
+    "probe": "PG3[r1]",
+    "status": "PASS",
+    "what": "forms generate x10 and CD reports x10, random PYTHONHASHSEED, two scratch roots"
+  },
+  {
+    "cd_distinct": {
+      "ok": 1,
+      "total_drift": 1
+    },
+    "fixture": "forms_r2/minishop",
+    "generate_distinct": 1,
+    "path_or_time_leaks": [],
+    "probe": "PG3[r2]",
+    "status": "PASS",
+    "what": "forms generate x10 and CD reports x10, random PYTHONHASHSEED, two scratch roots"
+  },
+  {
+    "cd_distinct": {
+      "ok": 1,
+      "total_drift": 1
+    },
+    "fixture": "forms_r3/minishop",
+    "generate_distinct": 1,
+    "path_or_time_leaks": [],
+    "probe": "PG3[r3]",
+    "status": "PASS",
+    "what": "forms generate x10 and CD reports x10, random PYTHONHASHSEED, two scratch roots"
+  },
+  {
+    "fixture": "forms/minishop",
+    "invariants": 6,
+    "probe": "PG4[r1]",
+    "problems": [],
+    "scenarios": 16,
+    "status": "PASS",
+    "what": "every generated invariant compiles (sqlite, mysql); scenarios validate; no L011/L012"
+  },
+  {
+    "fixture": "forms/minishop",
+    "gate": "<= 1 s",
+    "median_s": 0.00069,
+    "predicted": "0.05-0.3 s",
+    "probe": "PX-generate[r1]",
+    "status": "PASS",
+    "what": "generate on the dev forms (median of 50)"
+  },
+  {
+    "fixture": "forms_r2/minishop",
+    "invariants": 5,
+    "probe": "PG4[r2]",
+    "problems": [],
+    "scenarios": 18,
+    "status": "PASS",
+    "what": "every generated invariant compiles (sqlite, mysql); scenarios validate; no L011/L012"
+  },
+  {
+    "fixture": "forms_r2/minishop",
+    "gate": "<= 1 s",
+    "median_s": 0.00079,
+    "predicted": "0.05-0.3 s",
+    "probe": "PX-generate[r2]",
+    "status": "PASS",
+    "what": "generate on the dev forms (median of 50)"
+  },
+  {
+    "fixture": "forms_r3/minishop",
+    "invariants": 2,
+    "probe": "PG4[r3]",
+    "problems": [],
+    "scenarios": 11,
+    "status": "PASS",
+    "what": "every generated invariant compiles (sqlite, mysql); scenarios validate; no L011/L012"
+  },
+  {
+    "fixture": "forms_r3/minishop",
+    "gate": "<= 1 s",
+    "median_s": 0.00049,
+    "predicted": "0.05-0.3 s",
+    "probe": "PX-generate[r3]",
+    "status": "PASS",
+    "what": "generate on the dev forms (median of 50)"
+  },
+  {
+    "freeze3_mismatch": [],
+    "probe": "PH",
+    "runner3_mismatch": [],
+    "status": "PASS",
+    "what": "hash discipline (dev, files as they stand)"
+  },
+  {
+    "probe": "wall",
+    "seconds": 381.5,
+    "status": "REPORTED",
+    "what": "total"
+  }
+]
