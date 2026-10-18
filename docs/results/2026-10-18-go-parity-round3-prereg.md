@@ -578,3 +578,25 @@ $PY -m ruff check <changed .py>; $PY -m ruff format --check <created .py>; gofmt
 11. **Q11 Held-out gates.** Accept H-PI3 >= 0.50, H-JUDGE >= 0.75 and the held-out mutant gate >= 13/16 with class gates, or set
     them differently before the freeze?
 12. **Q12 Merge.** G3 merges into `next-phases` only on the owner's yes; is a partial merge (passing tiers only) acceptable, as for J1?
+
+## Amendment 1 (orchestrator rulings on section 11, 2026-10-18, before any code)
+- **Q1:** B1, B2 and B3 (when B3 exists) each in their own worktree from `np-go-round3`; the orchestrator merges them before
+  the freeze. At most 4 agents run in parallel.
+- **Q2:** Tier 3 (K11, the Python inventory) is split into its own pre-registered round after G3 merges. G3 gates Tiers 0, 1, 2
+  and 4 only; B3 is not built in this round.
+- **Q3:** Go lifting (J0 row 2) stays an owner decision outside G3.
+- **Q4:** the server-dialect layer R/B port is a separate node to be pre-registered later; no MySQL seed path now (K4 skips
+  honestly).
+- **Q5:** K7 stays runner-only; the S4 brief requires the dotted harness module form; G-c remains a reported finding.
+- **Q6:** K9 not done: `check.py` stays frozen and P2-DEF is reported, not gated (the owner may reopen it).
+- **Q7:** Tier 0 (the S3 re-score of PI4-3 and PR3-3) runs on the round-2 library BEFORE any G3 library edit, and that is the
+  scored value; any later G3-library value is reported as a separate row.
+- **Q8:** the held-out author and mutant writer are sonnet through the `claude` CLI, with the same isolation and transcript audit
+  as Spike I round 4.
+- **Q9:** confirmed: M-R1 and Arm J run on the owner's machine in the scored run, and M-R1 may start one throwaway `mysql:8.4`
+  container per run (label `lattice.owner`, removed after).
+- **Q10:** job-scheduler membership tenancy is out of the Go parity goal for G3 (J-SM1/J-SM2 are reported only); a later round may
+  model it.
+- **Q11:** accepted: H-PI3 >= 0.50, H-JUDGE >= 0.75, held-out mutant gate >= 13/16 with the class gates.
+- **Q12:** G3 merges into `next-phases` after the orchestrator's independent re-run; a partial merge of the passing tiers is
+  acceptable (as for J1), with the failed rows stated in the merge message and the results.
