@@ -1,0 +1,383 @@
+{
+ "schema": "lattice.grpc-probes2/1",
+ "arm": "0",
+ "library_sha256": {
+  "lattice/spec/grpc.py": "edd41b1f3c28817975b66f9fad65219d45f9e7a33579ede6c52acbdfcef527d3",
+  "lattice/importer/workflows.py": "5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098",
+  "dogfood/grpc_flow_scorer.py": "8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3",
+  "dogfood/grpc_probes2.py": "0193add7bd620dbf2af90cddf66a8bccca85ba1ade5b06f048bd711c952755fa"
+ },
+ "frozen_before": {
+  "round1_frozen_files_checked": 11,
+  "round1_frozen_files_changed": [
+   "lattice/gocheck/src/goextract_grpc.go"
+  ],
+  "N_truth_sha256_ok": true,
+  "deskd_freeze_sha256_ok": true,
+  "deskd_files_changed": [],
+  "tracked_files_changed": [
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/spec/grpc.py"
+  ],
+  "tracked_unexpected": [
+   "lattice/gocheck/src/goextract_grpc.go"
+  ],
+  "untracked_unexpected": [
+   "docs/results/data/2026-10-18-grpc-round3/arm0.log",
+   "docs/results/data/2026-10-18-grpc-round3/armg.log",
+   "docs/results/data/2026-10-18-grpc-round3/flows-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-kilnworks.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-n.json",
+   "docs/results/data/2026-10-18-grpc-round3/freeze-dev3.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/arm0.log",
+   "docs/results/data/2026-10-18-grpc-round3/probes3-arm0.json",
+   "docs/results/data/2026-10-18-grpc-round3/probes3-armg.json",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-after-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-after.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-before-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-before.txt",
+   "docs/results/data/2026-10-18-grpc-round3/reconcile-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/reconcile-kilnworks.json",
+   "dogfood/grpc_mutants3.py",
+   "dogfood/grpc_probes3.py",
+   "dogfood/grpc_scorer3.py",
+   "dogfood/grpc_scorer3_cases.json",
+   "tests/grpc/fixtures/authwire/gate_traced/auth.go",
+   "tests/grpc/fixtures/authwire/gate_traced/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/gate_traced/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/gate_traced/go.mod",
+   "tests/grpc/fixtures/authwire/gate_traced/main.go",
+   "tests/grpc/fixtures/authwire/gate_traced/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/gate_traced/svc.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/auth.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/go.mod",
+   "tests/grpc/fixtures/authwire/gate_unknown/main.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/gate_unknown/svc.go",
+   "tests/grpc/fixtures/authwire/handler_check/auth.go",
+   "tests/grpc/fixtures/authwire/handler_check/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/handler_check/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/handler_check/go.mod",
+   "tests/grpc/fixtures/authwire/handler_check/main.go",
+   "tests/grpc/fixtures/authwire/handler_check/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/handler_check/svc.go",
+   "tests/grpc/fixtures/authwire/literal_logger/auth.go",
+   "tests/grpc/fixtures/authwire/literal_logger/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/literal_logger/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/literal_logger/go.mod",
+   "tests/grpc/fixtures/authwire/literal_logger/main.go",
+   "tests/grpc/fixtures/authwire/literal_logger/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/literal_logger/svc.go",
+   "tests/grpc/fixtures/authwire/logger/auth.go",
+   "tests/grpc/fixtures/authwire/logger/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/logger/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/logger/go.mod",
+   "tests/grpc/fixtures/authwire/logger/main.go",
+   "tests/grpc/fixtures/authwire/logger/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/logger/svc.go",
+   "tests/grpc/fixtures/authwire/mixed/auth.go",
+   "tests/grpc/fixtures/authwire/mixed/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/mixed/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/mixed/go.mod",
+   "tests/grpc/fixtures/authwire/mixed/main.go",
+   "tests/grpc/fixtures/authwire/mixed/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/mixed/svc.go",
+   "tests/grpc/fixtures/authwire/none/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/none/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/none/go.mod",
+   "tests/grpc/fixtures/authwire/none/main.go",
+   "tests/grpc/fixtures/authwire/none/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/none/svc.go",
+   "tests/grpc/fixtures/authwire/opts_split/auth.go",
+   "tests/grpc/fixtures/authwire/opts_split/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/opts_split/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/opts_split/go.mod",
+   "tests/grpc/fixtures/authwire/opts_split/main.go",
+   "tests/grpc/fixtures/authwire/opts_split/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/opts_split/svc.go",
+   "tests/grpc/fixtures/authwire/recover/auth.go",
+   "tests/grpc/fixtures/authwire/recover/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/recover/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/recover/go.mod",
+   "tests/grpc/fixtures/authwire/recover/main.go",
+   "tests/grpc/fixtures/authwire/recover/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/recover/svc.go",
+   "tests/grpc/fixtures/authwire/truth.json",
+   "tests/grpc/fixtures/wiring/gen/wiring/v1/messages.pb.go",
+   "tests/grpc/fixtures/wiring/gen/wiring/v1/wiring_grpc.pb.go",
+   "tests/grpc/fixtures/wiring/go.mod",
+   "tests/grpc/fixtures/wiring/internal/serve/desks.go",
+   "tests/grpc/fixtures/wiring/internal/serve/extras.go",
+   "tests/grpc/fixtures/wiring/internal/serve/mounts.go",
+   "tests/grpc/fixtures/wiring/internal/serve/orphans.go",
+   "tests/grpc/fixtures/wiring/internal/serve/plugins.go",
+   "tests/grpc/fixtures/wiring/internal/serve/serve_test.go",
+   "tests/grpc/fixtures/wiring/internal/serve/server.go",
+   "tests/grpc/fixtures/wiring/main.go",
+   "tests/grpc/fixtures/wiring/proto/wiring/v1/wiring.proto",
+   "tests/grpc/fixtures/wiring/truth.json",
+   "tests/grpc/test_auth3.py",
+   "tests/grpc/test_reconcile3.py",
+   "tests/grpc/test_wiring3.py"
+  ],
+  "ok": false
+ },
+ "frozen_after": {
+  "round1_frozen_files_checked": 11,
+  "round1_frozen_files_changed": [
+   "lattice/gocheck/src/goextract_grpc.go"
+  ],
+  "N_truth_sha256_ok": true,
+  "deskd_freeze_sha256_ok": true,
+  "deskd_files_changed": [],
+  "tracked_files_changed": [
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/spec/grpc.py"
+  ],
+  "tracked_unexpected": [
+   "lattice/gocheck/src/goextract_grpc.go"
+  ],
+  "untracked_unexpected": [
+   "docs/results/data/2026-10-18-grpc-round3/arm0.log",
+   "docs/results/data/2026-10-18-grpc-round3/armg.log",
+   "docs/results/data/2026-10-18-grpc-round3/flows-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-kilnworks.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-n.json",
+   "docs/results/data/2026-10-18-grpc-round3/freeze-dev3.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/arm0.log",
+   "docs/results/data/2026-10-18-grpc-round3/probes3-arm0.json",
+   "docs/results/data/2026-10-18-grpc-round3/probes3-armg.json",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-after-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-after.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-before-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-before.txt",
+   "docs/results/data/2026-10-18-grpc-round3/reconcile-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/reconcile-kilnworks.json",
+   "dogfood/grpc_mutants3.py",
+   "dogfood/grpc_probes3.py",
+   "dogfood/grpc_scorer3.py",
+   "dogfood/grpc_scorer3_cases.json",
+   "tests/grpc/fixtures/authwire/gate_traced/auth.go",
+   "tests/grpc/fixtures/authwire/gate_traced/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/gate_traced/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/gate_traced/go.mod",
+   "tests/grpc/fixtures/authwire/gate_traced/main.go",
+   "tests/grpc/fixtures/authwire/gate_traced/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/gate_traced/svc.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/auth.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/go.mod",
+   "tests/grpc/fixtures/authwire/gate_unknown/main.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/gate_unknown/svc.go",
+   "tests/grpc/fixtures/authwire/handler_check/auth.go",
+   "tests/grpc/fixtures/authwire/handler_check/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/handler_check/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/handler_check/go.mod",
+   "tests/grpc/fixtures/authwire/handler_check/main.go",
+   "tests/grpc/fixtures/authwire/handler_check/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/handler_check/svc.go",
+   "tests/grpc/fixtures/authwire/literal_logger/auth.go",
+   "tests/grpc/fixtures/authwire/literal_logger/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/literal_logger/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/literal_logger/go.mod",
+   "tests/grpc/fixtures/authwire/literal_logger/main.go",
+   "tests/grpc/fixtures/authwire/literal_logger/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/literal_logger/svc.go",
+   "tests/grpc/fixtures/authwire/logger/auth.go",
+   "tests/grpc/fixtures/authwire/logger/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/logger/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/logger/go.mod",
+   "tests/grpc/fixtures/authwire/logger/main.go",
+   "tests/grpc/fixtures/authwire/logger/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/logger/svc.go",
+   "tests/grpc/fixtures/authwire/mixed/auth.go",
+   "tests/grpc/fixtures/authwire/mixed/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/mixed/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/mixed/go.mod",
+   "tests/grpc/fixtures/authwire/mixed/main.go",
+   "tests/grpc/fixtures/authwire/mixed/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/mixed/svc.go",
+   "tests/grpc/fixtures/authwire/none/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/none/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/none/go.mod",
+   "tests/grpc/fixtures/authwire/none/main.go",
+   "tests/grpc/fixtures/authwire/none/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/none/svc.go",
+   "tests/grpc/fixtures/authwire/opts_split/auth.go",
+   "tests/grpc/fixtures/authwire/opts_split/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/opts_split/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/opts_split/go.mod",
+   "tests/grpc/fixtures/authwire/opts_split/main.go",
+   "tests/grpc/fixtures/authwire/opts_split/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/opts_split/svc.go",
+   "tests/grpc/fixtures/authwire/recover/auth.go",
+   "tests/grpc/fixtures/authwire/recover/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/recover/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/recover/go.mod",
+   "tests/grpc/fixtures/authwire/recover/main.go",
+   "tests/grpc/fixtures/authwire/recover/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/recover/svc.go",
+   "tests/grpc/fixtures/authwire/truth.json",
+   "tests/grpc/fixtures/wiring/gen/wiring/v1/messages.pb.go",
+   "tests/grpc/fixtures/wiring/gen/wiring/v1/wiring_grpc.pb.go",
+   "tests/grpc/fixtures/wiring/go.mod",
+   "tests/grpc/fixtures/wiring/internal/serve/desks.go",
+   "tests/grpc/fixtures/wiring/internal/serve/extras.go",
+   "tests/grpc/fixtures/wiring/internal/serve/mounts.go",
+   "tests/grpc/fixtures/wiring/internal/serve/orphans.go",
+   "tests/grpc/fixtures/wiring/internal/serve/plugins.go",
+   "tests/grpc/fixtures/wiring/internal/serve/serve_test.go",
+   "tests/grpc/fixtures/wiring/internal/serve/server.go",
+   "tests/grpc/fixtures/wiring/main.go",
+   "tests/grpc/fixtures/wiring/proto/wiring/v1/wiring.proto",
+   "tests/grpc/fixtures/wiring/truth.json",
+   "tests/grpc/test_auth3.py",
+   "tests/grpc/test_reconcile3.py",
+   "tests/grpc/test_wiring3.py"
+  ],
+  "ok": false
+ },
+ "probes": [
+  {
+   "id": "P2-BC",
+   "prediction": "all identical (p)",
+   "pass_rule": "all",
+   "status": "PASS",
+   "observed": {
+    "ast (grpc.py defs, workflows.py HTTP section)": "PASS",
+    "round-1 byte-compat emitter": "PASS",
+    "round-1 emitter outputs compared": 73,
+    "extract + RepoModel of N, T, deskd": "6 compared, 0 differ",
+    "HTTP workflow tests": {
+     "passed": 69
+    }
+   },
+   "detail": {
+    "ast": [],
+    "emitter": [],
+    "extra": []
+   }
+  },
+  {
+   "id": "P2-DET",
+   "prediction": "identical (p)",
+   "pass_rule": "10/10",
+   "status": "PASS",
+   "observed": {
+    "notes": {
+     "identical runs": 10,
+     "of": 10,
+     "leaks": [],
+     "artifacts": [
+      "extract",
+      "flows",
+      "plans",
+      "reconcile"
+     ]
+    },
+    "deskd": {
+     "identical runs": 10,
+     "of": 10,
+     "leaks": [],
+     "artifacts": [
+      "extract",
+      "flows",
+      "plans",
+      "reconcile"
+     ]
+    },
+    "roots": 2
+   },
+   "detail": {
+    "notes": [],
+    "deskd": []
+   }
+  },
+  {
+   "id": "P2-NW",
+   "prediction": "0 changed, 0 new, 0 calls",
+   "pass_rule": "all 0",
+   "status": "PASS",
+   "observed": {
+    "roots": [
+     "N",
+     "T",
+     "sessions",
+     "deskd",
+     "heldout2: NOT RUN (the gated stage; not given to this node)"
+    ],
+    "reconcile x3, flows x3": true,
+    "changed": 0,
+    "new": 0,
+    "claude calls": 0
+   },
+   "detail": []
+  },
+  {
+   "id": "P2-UNIT",
+   "prediction": ">= 30 tests green (p: 30-45)",
+   "pass_rule": "all green",
+   "status": "PASS",
+   "observed": {
+    "passed": 59,
+    "seconds": 17.6
+   },
+   "detail": []
+  },
+  {
+   "id": "P2-SCORE",
+   "prediction": ">= 30 cases (p: 32-40)",
+   "pass_rule": "100%",
+   "status": "PASS",
+   "observed": {
+    "cases": 37,
+    "agree": 37
+   },
+   "detail": []
+  },
+  {
+   "id": "REG",
+   "prediction": "the same failing ids before and after",
+   "pass_rule": "same set",
+   "status": "PASS",
+   "observed": {
+    "before": "7 failed, 2987 passed, 37 skipped, 124 warnings, 98 errors in 969.66s (0:16:09)",
+    "after": "7 failed, 3060 passed, 37 skipped, 124 warnings, 98 errors in 919.80s (0:15:19)",
+    "failing ids before": 95,
+    "failing ids after": 95
+   },
+   "detail": {
+    "only before": [],
+    "only after": []
+   }
+  },
+  {
+   "id": "PM-S / PM-SG (Arm M)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here",
+   "detail": null
+  },
+  {
+   "id": "Arm L",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the build round is its own node; out of scope",
+   "detail": null
+  },
+  {
+   "id": "PG-HO2 (HO2-*)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the gated held-out stage: a new app by a new agent, scored once by the orchestrator after the freeze; it does not exist in this node's view and heldout2/ was not opened",
+   "detail": null
+  }
+ ]
+}

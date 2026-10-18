@@ -479,8 +479,27 @@ def reconcile_with(
     ``reason`` for a failed login, then ``(absent)``; ``order: {disagreed: [...]}`` and
     ``auth_refused: [...]`` (a non-public rpc a fresh token did not get past the interceptor
     of) appear only when not empty. ``protos`` / ``proto_paths`` name the contract for an app
-    that does not (absolute, or relative to the working directory)."""
+    that does not (absolute, or relative to the working directory). Round 3, D3: every unary rpc
+    of that contract is called, not only the model's routes -- one that is not a route has
+    ``route: false`` and is called with a fresh login (a streaming one is not called, as
+    before)."""
     import tempfile
+
+    def contract_rpcs(rpc: Any) -> list[tuple[str, str, bool]]:
+        """Every rpc of the contract the transport describes -- ``(service, method, streaming)`` in
+        the protos' order (round 3, D3.1). A transport that names no protos (a fake) has none."""
+        protos = tuple(getattr(rpc, "protos", ()) or ())
+        if not protos:
+            return []
+        base = Path(rpc.root) if rpc.root is not None else Path.cwd()
+        roots = [str((base / p).resolve()) for p in rpc.proto_paths] or [str(base.resolve())]
+        files = [str((base / p).resolve()) for p in protos]
+        services = rpc.bridge.describe(files, [str(base.resolve()), *roots])["grpc"]["services"]
+        return [
+            (s["name"], r["name"], bool(r["client_streaming"] or r["server_streaming"]))
+            for s in services
+            for r in s["rpcs"]
+        ]
 
     first_user = next(iter(users), None)
     ordered: list[tuple[str, str, str, bool]] = []
@@ -497,12 +516,19 @@ def reconcile_with(
     forward: dict[str, dict[str, Any]] = {}
     reverse: dict[str, dict[str, Any]] = {}
     absent: dict[str, Any] = {}
+    extra: set[str] = set()  # unary contract rpcs that are not routes (D3.1)
     with tempfile.TemporaryDirectory(prefix="lattice-grpc-reconcile-") as tmp:
         db = build_db(Path(tmp) / "reconcile.db")
         app = _with_protos(make_app(db), protos, proto_paths)
         try:
             with runtime.open(app) as transport:
                 rpc = transport.rpc()
+                for svc, meth, streaming in contract_rpcs(rpc):
+                    key = f"{svc}/{meth}"
+                    if key not in by_key and not streaming:  # streaming ones are not called
+                        extra.add(key)
+                        by_key[key] = (svc, meth, False)
+                        ordered.append((key, svc, meth, False))
                 for key in sorted(by_key):
                     s, m, pub = by_key[key]
                     forward[key] = _call_fresh(
@@ -544,7 +570,9 @@ def reconcile_with(
             finally:
                 runtime.close(app)
         final[key] = {**alone, "isolated": True}
-    out: dict[str, Any] = {k: final[k] for k, _, _, _ in ordered}
+    out: dict[str, Any] = {
+        k: {**final[k], "route": False} if k in extra else final[k] for k, *_ in ordered
+    }
     out["(absent)"] = absent
     refused = sorted(
         k

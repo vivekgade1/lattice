@@ -1,0 +1,147 @@
+{
+ "wiring": {
+  "rpcs": 22,
+  "states equal the truth": 12,
+  "wrong (extract, truth)": {
+   "wiring.v1.Alpha/Get": [
+    "not_registered",
+    "implemented"
+   ],
+   "wiring.v1.Alpha/Put": [
+    "not_registered",
+    "implemented"
+   ],
+   "wiring.v1.Beta/Get": [
+    "not_registered",
+    "implemented"
+   ],
+   "wiring.v1.Beta/Put": [
+    "not_registered",
+    "unimplemented"
+   ],
+   "wiring.v1.Gamma/Get": [
+    "not_registered",
+    "implemented"
+   ],
+   "wiring.v1.Gamma/Put": [
+    "not_registered",
+    "implemented"
+   ],
+   "wiring.v1.Delta/Get": [
+    "not_registered",
+    "implemented"
+   ],
+   "wiring.v1.Delta/Put": [
+    "not_registered",
+    "unimplemented"
+   ],
+   "wiring.v1.Opaque/Get": [
+    "not_registered",
+    "unread"
+   ],
+   "wiring.v1.Opaque/Put": [
+    "not_registered",
+    "unread"
+   ]
+  }
+ },
+ "authwire": {
+  "cases": {
+   "logger": {
+    "auth": {
+     "Ping": "Public",
+     "Read": "Public"
+    },
+    "kinds": [
+     "other"
+    ],
+    "auth_equals_truth": true
+   },
+   "recover": {
+    "auth": {
+     "Ping": "Public",
+     "Read": "Public"
+    },
+    "kinds": [
+     "other"
+    ],
+    "auth_equals_truth": true
+   },
+   "gate_unknown": {
+    "auth": {
+     "Ping": "Public",
+     "Read": "Public"
+    },
+    "kinds": [
+     "other"
+    ],
+    "auth_equals_truth": false
+   },
+   "literal_logger": {
+    "auth": {
+     "Ping": "Public",
+     "Read": "Member"
+    },
+    "kinds": [
+     "other",
+     "auth_literal"
+    ],
+    "auth_equals_truth": true
+   },
+   "none": {
+    "auth": {
+     "Ping": "Public",
+     "Read": "Public"
+    },
+    "kinds": [],
+    "auth_equals_truth": true
+   },
+   "gate_traced": {
+    "auth": {
+     "Ping": "Public",
+     "Read": "Public"
+    },
+    "kinds": [
+     "other",
+     "other"
+    ],
+    "auth_equals_truth": false
+   },
+   "opts_split": {
+    "auth": {
+     "Ping": "Public",
+     "Read": "Public"
+    },
+    "kinds": [],
+    "auth_equals_truth": false
+   },
+   "handler_check": {
+    "auth": {
+     "Ping": "Public",
+     "Read": "Member"
+    },
+    "kinds": [],
+    "auth_equals_truth": true
+   },
+   "mixed": {
+    "auth": {
+     "Ping": "Public",
+     "Read": "Member"
+    },
+    "kinds": [
+     "auth_literal",
+     "other"
+    ],
+    "auth_equals_truth": false
+   }
+  },
+  "cases with auth equal to the truth": 5,
+  "rpcs labelled Public where the truth is not": [
+   "gate_unknown/Ping",
+   "gate_unknown/Read",
+   "gate_traced/Read",
+   "opts_split/Read",
+   "mixed/Ping"
+  ]
+ }
+}

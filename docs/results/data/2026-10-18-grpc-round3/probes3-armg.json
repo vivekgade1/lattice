@@ -1,0 +1,1171 @@
+{
+ "schema": "lattice.grpc-probes3/1",
+ "arm": "G",
+ "library_sha256": {
+  "dogfood/grpc_flow_scorer.py": "8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3",
+  "dogfood/grpc_probes2.py": "0193add7bd620dbf2af90cddf66a8bccca85ba1ade5b06f048bd711c952755fa",
+  "dogfood/grpc_probes3.py": "64a988a1dca7d075245720b16652390efb205bf7cc9f322d14bf63cc20cbd036",
+  "dogfood/grpc_scorer3.py": "019db509ded84f48ef95e7bfe7788a949305611a35ab3ae15706303298ea50be",
+  "dogfood/grpc_scorer3_cases.json": "be3ccbcbc61817bd76f6bbd8873e8da40f4574b4204169a0040f7690a2ae88db",
+  "lattice/gocheck/src/goextract.go": "652e7007380ef7fa3e16b77ac937fb300ab5023899c2e81408cfa7a2a28c376a",
+  "lattice/gocheck/src/goextract_grpc.go": "b2eda6fd8264445a172685ccb40c2bc1559c0effd43e5342743f83eef1a9315e",
+  "lattice/gocheck/src/goextract_proto.go": "ec4aa3157b407467708bdc341171e94e9a33aedf70ac6a46893d7b41590c9a50",
+  "lattice/gocheck/src/load.go": "72a35ec417e522243f7583f8cb7f605c5f0261a81ce28ee7d057fa5af4cbd17f",
+  "lattice/importer/frontends/go_grpc.py": "d22aefc60c5210ac515d1d8d0dc865d6dc803b38c45fd44f6ccd0f1d8c2f4ca4",
+  "lattice/importer/workflows.py": "5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098",
+  "lattice/spec/grpc.py": "edd41b1f3c28817975b66f9fad65219d45f9e7a33579ede6c52acbdfcef527d3"
+ },
+ "frozen_before": {
+  "frozen_files_changed": [],
+  "tracked_changed_vs_merge": [
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/spec/grpc.py"
+  ],
+  "unexpected": [],
+  "budgets": {
+   "lattice/gocheck/src/goextract_grpc.go": {
+    "insertions+deletions": 297,
+    "budget": 300,
+    "ok": true
+   },
+   "lattice/spec/grpc.py": {
+    "insertions+deletions": 32,
+    "budget": 80,
+    "ok": true
+   },
+   "lattice/importer/frontends/go_grpc.py": {
+    "insertions+deletions": 0,
+    "budget": 15,
+    "ok": true
+   }
+  },
+  "staged": [],
+  "deskd_freeze_sha256_ok": true,
+  "deskd_files_changed": [],
+  "kilnworks_freeze_sha256_ok": true,
+  "kilnworks_files_changed": [],
+  "dev_truth_hashes_changed": [],
+  "ok": true
+ },
+ "frozen_after": {
+  "frozen_files_changed": [],
+  "tracked_changed_vs_merge": [
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/spec/grpc.py"
+  ],
+  "unexpected": [],
+  "budgets": {
+   "lattice/gocheck/src/goextract_grpc.go": {
+    "insertions+deletions": 297,
+    "budget": 300,
+    "ok": true
+   },
+   "lattice/spec/grpc.py": {
+    "insertions+deletions": 32,
+    "budget": 80,
+    "ok": true
+   },
+   "lattice/importer/frontends/go_grpc.py": {
+    "insertions+deletions": 0,
+    "budget": 15,
+    "ok": true
+   }
+  },
+  "staged": [],
+  "deskd_freeze_sha256_ok": true,
+  "deskd_files_changed": [],
+  "kilnworks_freeze_sha256_ok": true,
+  "kilnworks_files_changed": [],
+  "dev_truth_hashes_changed": [],
+  "ok": true
+ },
+ "probes": [
+  {
+   "id": "PR3-N",
+   "prediction": "byte-equal to round 2",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "implemented answered": "10/10",
+    "bytes equal round 1": true,
+    "extra keys": []
+   },
+   "detail": {
+    "notes.v1.Accounts/Register": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Accounts/Login": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Accounts/Me": {
+     "code": "OK",
+     "answered": true
+    },
+    "notes.v1.Notes/CreateNote": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Notes/GetNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ListNotes": {
+     "code": "OK",
+     "answered": true
+    },
+    "notes.v1.Notes/UpdateNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/PublishNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ArchiveNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/DeleteNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ShareNote": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    },
+    "(absent)": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    }
+   }
+  },
+  {
+   "id": "PR3-DESK (dev)",
+   "prediction": "19/19 non-streaming truth rpcs + absent covered; Reports/Backlog UNIMPLEMENTED from the library; 0 auth_refused",
+   "pass_rule": "S5 coverage 1.00, agreement 1.00",
+   "status": "PASS",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "17/17",
+     "not_registered": "1/1",
+     "unimplemented": "1/1"
+    },
+    "denominator": 20,
+    "Reports/Backlog from the library": {
+     "code": "UNIMPLEMENTED",
+     "answered": false,
+     "route": false
+    },
+    "auth_refused": [],
+    "order disagreed": [],
+    "seconds": 2.14
+   },
+   "detail": {
+    "S5": {
+     "denominator": 20,
+     "covered": 20,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "17/17",
+      "not_registered": "1/1",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "output": {
+     "desk.v1.Identity/SignUp": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Identity/SignIn": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Identity/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Identity/SignOut": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Queues/ListQueues": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Queues/GetQueue": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/OpenTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/GetTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ListTickets": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Tickets/UpdateTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/HoldTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ResolveTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ReopenTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/CloseTicket": {
+      "code": "PERMISSION_DENIED",
+      "answered": true
+     },
+     "desk.v1.Tickets/DeleteTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/AddRemark": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ListRemarks": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/MergeTickets": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "desk.v1.Reports/Backlog": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   }
+  },
+  {
+   "id": "PR3-SESS",
+   "prediction": "as round 2: Stub UNIMPLEMENTED, 0 login_failed, 4 disagreements isolated",
+   "pass_rule": "exact; bytes equal to the merge commit's `reconcile`",
+   "status": "PASS",
+   "observed": {
+    "codes equal the truth (alone)": true,
+    "login_failed": 0,
+    "disagreed": [
+     "sessions.v1.Sessions/DeleteMe",
+     "sessions.v1.Sessions/Secret",
+     "sessions.v1.Sessions/SignOut",
+     "sessions.v1.Sessions/Stub"
+    ],
+    "bytes equal the merge commit": true
+   },
+   "detail": null
+  },
+  {
+   "id": "PF3-N",
+   "prediction": "N 17/17 verified, identical counts to round 2",
+   "pass_rule": "identical counts to round 2",
+   "status": "PASS",
+   "observed": {
+    "recovered": 17,
+    "recovered_by_status": {
+     "verified": 17,
+     "unverified": 0,
+     "failed": 0,
+     "unbound": 0
+    },
+    "verified": 17,
+    "verified_but_failing": 0,
+    "failing_codes": {},
+    "unbound_reasons": {},
+    "in 15-20 (p)": true,
+    "seconds": 6.7,
+    "differences from round 2": {}
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 17,
+     "recovered_by_status": {
+      "verified": 17,
+      "unverified": 0,
+      "failed": 0,
+      "unbound": 0
+     },
+     "verified": 17,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 0,
+      "bound": null,
+      "gated": false,
+      "value": null,
+      "pass": true
+     },
+     "coverage": {
+      "num": 0,
+      "den": 0,
+      "bound": null,
+      "gated": false,
+      "value": null,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 0
+     },
+     "truth_defects": [],
+     "failing_codes": {},
+     "unbound_reasons": {}
+    },
+    "vbf ids": []
+   }
+  },
+  {
+   "id": "PF3-DESK (dev)",
+   "prediction": "deskd 41 recovered / 20 verified, edge recall 21/34, coverage 4/7, as round 2",
+   "pass_rule": "identical counts to round 2",
+   "status": "PASS",
+   "observed": {
+    "recovered": 41,
+    "recovered_by_status": {
+     "verified": 20,
+     "unverified": 0,
+     "failed": 21,
+     "unbound": 0
+    },
+    "verified": 20,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 21,
+     "den": 34,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.6176,
+     "pass": true
+    },
+    "coverage": {
+     "num": 4,
+     "den": 7,
+     "bound": 2,
+     "gated": true,
+     "value": 0.5714,
+     "pass": true
+    },
+    "exact": {
+     "num": 0,
+     "den": 7
+    },
+    "failing_codes": {
+     "FAILED_PRECONDITION": 1,
+     "INVALID_ARGUMENT": 19,
+     "PERMISSION_DENIED": 1
+    },
+    "unbound_reasons": {},
+    "truth_flows_passing": 7,
+    "seconds": 11.6,
+    "differences from round 2": {}
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 41,
+     "recovered_by_status": {
+      "verified": 20,
+      "unverified": 0,
+      "failed": 21,
+      "unbound": 0
+     },
+     "verified": 20,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 21,
+      "den": 34,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.6176,
+      "pass": true
+     },
+     "coverage": {
+      "num": 4,
+      "den": 7,
+      "bound": 2,
+      "gated": true,
+      "value": 0.5714,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 7
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "FAILED_PRECONDITION": 1,
+      "INVALID_ARGUMENT": 19,
+      "PERMISSION_DENIED": 1
+     },
+     "unbound_reasons": {},
+     "truth_flows_passing": 7,
+     "recovered_by_kind_status": {
+      "after_delete": {
+       "failed": 3,
+       "verified": 3
+      },
+      "lifecycle": {
+       "verified": 2
+      },
+      "owner_chain": {
+       "verified": 1
+      },
+      "owner_guard": {
+       "failed": 7,
+       "verified": 8
+      },
+      "pair": {
+       "failed": 11,
+       "verified": 6
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth flow failures": []
+   }
+  },
+  {
+   "id": "PF3-LEAK",
+   "prediction": "0",
+   "pass_rule": "0",
+   "status": "PASS",
+   "observed": {
+    "live processes+bridges after reconcile and flows": 0,
+    "after a forced startup failure (reconcile raises, flows fail)": 0,
+    "reconcile raised": "ProcessStartError",
+    "flows of the broken app": [
+     "failed"
+    ],
+    "stray app or bridge processes in /proc": 0
+   },
+   "detail": []
+  },
+  {
+   "id": "PR2-ALL",
+   "prediction": "every round-2 PASS row still PASS except PR2-DESK's output bytes (declared)",
+   "pass_rule": "all other PASS rows PASS",
+   "status": "PASS",
+   "observed": {
+    "source": "round 2's runner run un-nested into docs/results/data/2026-10-18-grpc-round3/pr2all",
+    "0": {
+     "rows": 9,
+     "round-2 PASS rows still PASS": "6/6",
+     "regressed (declared: PR2-DESK)": [],
+     "regressed (other)": [],
+     "status now": {
+      "P2-BC": "PASS",
+      "P2-DET": "PASS",
+      "P2-NW": "PASS",
+      "P2-UNIT": "PASS",
+      "P2-SCORE": "PASS",
+      "REG": "PASS",
+      "PM-S / PM-SG (Arm M)": "NOT RUN",
+      "Arm L": "NOT RUN",
+      "PG-HO2 (HO2-*)": "NOT RUN"
+     }
+    },
+    "G": {
+     "rows": 13,
+     "round-2 PASS rows still PASS": "9/10",
+     "regressed (declared: PR2-DESK)": [
+      "PR2-DESK (dev)"
+     ],
+     "regressed (other)": [],
+     "status now": {
+      "PR2-N": "PASS",
+      "PR2-DESK (dev)": "FAIL",
+      "PR2-ORDER": "PASS",
+      "PR2-SESS": "PASS",
+      "PF2-N": "PASS",
+      "PF2-DESK (dev, tuned-on)": "PASS",
+      "PF2-REPLAY": "PASS",
+      "PF2-LEAK": "PASS",
+      "PR1": "PASS",
+      "PX2": "PASS",
+      "PM-S / PM-SG (Arm M)": "NOT RUN",
+      "Arm L": "NOT RUN",
+      "PG-HO2 (HO2-*)": "NOT RUN"
+     }
+    }
+   },
+   "detail": null
+  },
+  {
+   "id": "PD3-KILN/RPC (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.70-1.00 / precision 0.75-1.00 (point 0.90 / 0.95)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth rpcs": 20,
+    "extracted rpcs": 20,
+    "matched": 20,
+    "truth states": {
+     "implemented": 16,
+     "not_registered": 2,
+     "streaming": 1,
+     "unimplemented": 1
+    },
+    "streaming reported not supported": [
+     "kiln.v1.Pieces/TailKiln"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 17,
+    "round 2 strict": "recall 0.30 / precision 0.30 (6 of 20 rpcs; 14 `not_registered`)",
+    "would_pass": true
+   },
+   "detail": {
+    "missed (truth, state)": [],
+    "extra (extract, state)": []
+   }
+  },
+  {
+   "id": "PD3-KILN/CODES (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.45-0.90 / precision 0.85-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 0.8,
+    "precision": 0.941,
+    "truth codes": 40,
+    "extracted codes": 34,
+    "matched": 32,
+    "round 2 strict": "recall 0.125 / precision 1.00",
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [
+     [
+      "kiln.v1.Passport/SignIn",
+      "UNAUTHENTICATED"
+     ],
+     [
+      "kiln.v1.Passport/StepDown",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Pieces/AddPiece",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "PERMISSION_DENIED"
+     ],
+     [
+      "kiln.v1.Pieces/FirePiece",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Pieces/RemovePiece",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Projects/ArchiveProject",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Projects/OpenProject",
+      "RESOURCE_EXHAUSTED"
+     ]
+    ],
+    "extra": [
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "UNKNOWN"
+     ],
+     [
+      "kiln.v1.Pieces/RemovePiece",
+      "UNKNOWN"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "PD3-KILN/AUTH (post hoc, tuned-on, never gated)",
+   "prediction": "wrong 0 (p 0.8); unclear 0.00-0.60",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "denominator": 17,
+    "unclear": 17,
+    "unclear_share": 1.0,
+    "reason": "unclear_above_cap",
+    "wrong": [],
+    "round 2 strict": "2 wrong of 3 (ListStudios, LookupGlaze labelled Public, truth Member)",
+    "would_pass": false
+   },
+   "detail": {
+    "unclear rpcs": [
+     [
+      "kiln.v1.Catalog/ListGlazes",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Catalog/ListStudios",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Catalog/LookupGlaze",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Passport/SignIn",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Passport/SignOff",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Passport/StepDown",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Passport/WhoAmI",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Pieces/AddPiece",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Pieces/FirePiece",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Pieces/GetPiece",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Pieces/RemovePiece",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Projects/ArchiveProject",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Projects/GetProject",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Projects/ListProjects",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Projects/OpenProject",
+      "unclear"
+     ],
+     [
+      "kiln.v1.Projects/TransferProject",
+      "unclear"
+     ]
+    ],
+    "row": {
+     "denominator": 17,
+     "wrong": [],
+     "unclear": 17,
+     "unclear_share": 1.0,
+     "unclear_rpcs": [
+      [
+       "kiln.v1.Catalog/ListGlazes",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Catalog/ListStudios",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Catalog/LookupGlaze",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Passport/SignIn",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Passport/SignOff",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Passport/StepDown",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Passport/WhoAmI",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Pieces/AddPiece",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Pieces/ApplyGlaze",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Pieces/FirePiece",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Pieces/GetPiece",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Pieces/RemovePiece",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Projects/ArchiveProject",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Projects/GetProject",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Projects/ListProjects",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Projects/OpenProject",
+       "unclear"
+      ],
+      [
+       "kiln.v1.Projects/TransferProject",
+       "unclear"
+      ]
+     ],
+     "reason": "unclear_above_cap",
+     "pass": false
+    }
+   }
+  },
+  {
+   "id": "PD3-KILN/TABLES (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.85-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth": 7,
+    "extracted": 7,
+    "round 2 strict": "pass",
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "id": "PD3-KILN/REC (post hoc, tuned-on, never gated)",
+   "prediction": "coverage 0.95-1.00; agreement 0.85-1.00; 0-3 disagreements",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "16/16",
+     "not_registered": "2/2",
+     "unimplemented": "1/1"
+    },
+    "S5 reason": "",
+    "supplementary_calls": 0,
+    "S6": "not_exercised",
+    "auth_refused on truth-implemented non-public rpcs": [],
+    "order disagreed": [
+     "kiln.v1.Passport/StepDown"
+    ],
+    "all disagreements resolved isolated": true,
+    "rpcs answered by the library": 20,
+    "seconds": 2.08,
+    "round 2 strict": "4 of 20 rpcs answered by reconcile_with (the other 16 by the runner)",
+    "would_pass": true
+   },
+   "detail": {
+    "S5": {
+     "denominator": 20,
+     "covered": 20,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "16/16",
+      "not_registered": "2/2",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "S6": {
+     "status": "not_exercised",
+     "pass": true,
+     "effectful": [],
+     "reason": ""
+    },
+    "library output rpcs not in truth": [],
+    "codes": {
+     "kiln.v1.Catalog/ListStudios": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Catalog/ListGlazes": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Catalog/LookupGlaze": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Passport/SignIn": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Passport/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Passport/SignOff": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Passport/StepDown": {
+      "code": "OK",
+      "answered": true,
+      "isolated": true
+     },
+     "kiln.v1.Projects/OpenProject": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Projects/GetProject": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Projects/ListProjects": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Projects/ArchiveProject": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Projects/TransferProject": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "kiln.v1.Pieces/AddPiece": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Pieces/GetPiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Pieces/FirePiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Pieces/ApplyGlaze": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Pieces/RemovePiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Billing/QuoteFiring": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "kiln.v1.Billing/PayQuote": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "order": {
+      "disagreed": [
+       "kiln.v1.Passport/StepDown"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "PD3-KILN/FLOWS (post hoc, tuned-on, never gated)",
+   "prediction": "recovered 5-60; verified 0-12 (point 4); edge recall 0.00-0.55 (point 0.25); coverage 0-5 (point 2); 0 vbf",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "truth_flows": 9,
+    "truth_flows_passing": 9,
+    "truth_edges_total": 33,
+    "recovered": 17,
+    "recovered_by_status": {
+     "verified": 7,
+     "unverified": 0,
+     "failed": 10,
+     "unbound": 0
+    },
+    "recovered_by_kind_status": {
+     "after_delete": {
+      "failed": 1
+     },
+     "owner_chain": {
+      "failed": 1,
+      "verified": 1
+     },
+     "owner_guard": {
+      "failed": 4,
+      "verified": 3
+     },
+     "pair": {
+      "verified": 3,
+      "failed": 4
+     }
+    },
+    "verified": 7,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 11,
+     "den": 33,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.3333,
+     "pass": true
+    },
+    "coverage": {
+     "num": 6,
+     "den": 9,
+     "bound": 2,
+     "gated": true,
+     "value": 0.6667,
+     "pass": true
+    },
+    "exact": {
+     "num": 0,
+     "den": 9
+    },
+    "failing_codes": {
+     "NOT_FOUND": 10
+    },
+    "unbound_reasons": {},
+    "reasons": [],
+    "seconds": 1.7,
+    "round 2 strict": "recovered 0, verified 0, edge recall 0/33, coverage 0/9",
+    "would_pass": true
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 17,
+     "recovered_by_status": {
+      "verified": 7,
+      "unverified": 0,
+      "failed": 10,
+      "unbound": 0
+     },
+     "verified": 7,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 11,
+      "den": 33,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.3333,
+      "pass": true
+     },
+     "coverage": {
+      "num": 6,
+      "den": 9,
+      "bound": 2,
+      "gated": true,
+      "value": 0.6667,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 9
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "NOT_FOUND": 10
+     },
+     "unbound_reasons": {},
+     "truth_flows": 9,
+     "truth_flows_passing": 9,
+     "truth_edges_total": 33,
+     "recovered_by_kind_status": {
+      "after_delete": {
+       "failed": 1
+      },
+      "owner_chain": {
+       "failed": 1,
+       "verified": 1
+      },
+      "owner_guard": {
+       "failed": 4,
+       "verified": 3
+      },
+      "pair": {
+       "verified": 3,
+       "failed": 4
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth flow failures": [],
+    "not verified": [
+     {
+      "id": "rf-ece55f162b",
+      "kind": "after_delete",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-254ca65f06",
+      "kind": "owner_chain",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-076642ad81",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-1cbb239392",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-70db70f48e",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-a6d4b98fe9",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-49ed9cfdc4",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-baf1bcb697",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-f0665748cf",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-f7e45551e2",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     }
+    ]
+   }
+  },
+  {
+   "id": "PX3",
+   "prediction": "0.5-4 s; 2-10 s; 8-30 s (p)",
+   "pass_rule": "<= 30 s; <= 30 s; <= 180 s",
+   "status": "PASS",
+   "observed": {
+    "extract on kilnworks (s)": 0.03,
+    "reconcile on deskd (s)": 2.14,
+    "flows on deskd (s)": 11.6
+   },
+   "detail": null
+  },
+  {
+   "id": "PM-S / PM-SG (Arm M)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here",
+   "detail": null
+  },
+  {
+   "id": "Arm L",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the build round is its own node; out of scope",
+   "detail": null
+  },
+  {
+   "id": "PG-HO3 (HO3-*)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the gated held-out stage: a new app by a new agent, scored once by the orchestrator after the freeze; this node never opened heldout3/",
+   "detail": null
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+PASS     P2-BC                        {"ast (grpc.py defs, workflows.py HTTP section)": "PASS", "round-1 byte-compat emitter": "PASS", "round-1 emitter outputs compared": 73, "extract + RepoModel of N, T, deskd": "6 compared, 0 differ", "HTTP workflow tests"
+PASS     P2-DET                       {"notes": {"identical runs": 10, "of": 10, "leaks": [], "artifacts": ["extract", "flows", "plans", "reconcile"]}, "deskd": {"identical runs": 10, "of": 10, "leaks": [], "artifacts": ["extract", "flows", "plans", "reconci
+PASS     P2-NW                        {"roots": ["N", "T", "sessions", "deskd", "heldout2: NOT RUN (the gated stage; not given to this node)"], "reconcile x3, flows x3": true, "changed": 0, "new": 0, "claude calls": 0}
+PASS     P2-UNIT                      {"passed": 59, "seconds": 17.6}
+PASS     P2-SCORE                     {"cases": 37, "agree": 37}
+PASS     REG                          {"before": "7 failed, 2987 passed, 37 skipped, 124 warnings, 98 errors in 969.66s (0:16:09)", "after": "7 failed, 3060 passed, 37 skipped, 124 warnings, 98 errors in 919.80s (0:15:19)", "failing ids before": 95, "failing
+NOT RUN  PM-S / PM-SG (Arm M)         "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here"
+NOT RUN  Arm L                        "the build round is its own node; out of scope"
+NOT RUN  PG-HO2 (HO2-*)               "the gated held-out stage: a new app by a new agent, scored once by the orchestrator after the freeze; it does not exist in this node's view and heldout2/ was not opened"
+frozen files ok before: False after: False
+6 passed, 0 failed, 3 not run

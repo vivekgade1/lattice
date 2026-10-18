@@ -1,0 +1,20 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+PASS     PR3-N                                        {"implemented answered": "10/10", "bytes equal round 1": true, "extra keys": []}
+PASS     PR3-DESK (dev)                               {"S5 coverage": 1.0, "S5 agreement": 1.0, "S5 by class": {"absent": "1/1", "implemented": "17/17", "not_registered": "1/1", "unimplemented": "1/1"}, "denominator": 20, "Reports/Backlog from the librar
+PASS     PR3-SESS                                     {"codes equal the truth (alone)": true, "login_failed": 0, "disagreed": ["sessions.v1.Sessions/DeleteMe", "sessions.v1.Sessions/Secret", "sessions.v1.Sessions/SignOut", "sessions.v1.Sessions/Stub"], "
+PASS     PF3-N                                        {"recovered": 17, "recovered_by_status": {"verified": 17, "unverified": 0, "failed": 0, "unbound": 0}, "verified": 17, "verified_but_failing": 0, "failing_codes": {}, "unbound_reasons": {}, "in 15-20 
+PASS     PF3-DESK (dev)                               {"recovered": 41, "recovered_by_status": {"verified": 20, "unverified": 0, "failed": 21, "unbound": 0}, "verified": 20, "verified_but_failing": 0, "edge_recall": {"num": 21, "den": 34, "bound": 0.3, "
+PASS     PF3-LEAK                                     {"live processes+bridges after reconcile and flows": 0, "after a forced startup failure (reconcile raises, flows fail)": 0, "reconcile raised": "ProcessStartError", "flows of the broken app": ["failed
+PASS     PR2-ALL                                      {"source": "round 2's runner run un-nested into docs/results/data/2026-10-18-grpc-round3/pr2all", "0": {"rows": 9, "round-2 PASS rows still PASS": "6/6", "regressed (declared: PR2-DESK)": [], "regress
+REPORTED PD3-KILN/RPC (post hoc, tuned-on, never gated) {"recall": 1.0, "precision": 1.0, "truth rpcs": 20, "extracted rpcs": 20, "matched": 20, "truth states": {"implemented": 16, "not_registered": 2, "streaming": 1, "unimplemented": 1}, "streaming report
+REPORTED PD3-KILN/CODES (post hoc, tuned-on, never gated) {"recall": 0.8, "precision": 0.941, "truth codes": 40, "extracted codes": 34, "matched": 32, "round 2 strict": "recall 0.125 / precision 1.00", "would_pass": true}
+REPORTED PD3-KILN/AUTH (post hoc, tuned-on, never gated) {"denominator": 17, "unclear": 17, "unclear_share": 1.0, "reason": "unclear_above_cap", "wrong": [], "round 2 strict": "2 wrong of 3 (ListStudios, LookupGlaze labelled Public, truth Member)", "would_p
+REPORTED PD3-KILN/TABLES (post hoc, tuned-on, never gated) {"recall": 1.0, "precision": 1.0, "truth": 7, "extracted": 7, "round 2 strict": "pass", "would_pass": true}
+REPORTED PD3-KILN/REC (post hoc, tuned-on, never gated) {"S5 coverage": 1.0, "S5 agreement": 1.0, "S5 by class": {"absent": "1/1", "implemented": "16/16", "not_registered": "2/2", "unimplemented": "1/1"}, "S5 reason": "", "supplementary_calls": 0, "S6": "n
+REPORTED PD3-KILN/FLOWS (post hoc, tuned-on, never gated) {"truth_flows": 9, "truth_flows_passing": 9, "truth_edges_total": 33, "recovered": 17, "recovered_by_status": {"verified": 7, "unverified": 0, "failed": 10, "unbound": 0}, "recovered_by_kind_status": 
+PASS     PX3                                          {"extract on kilnworks (s)": 0.03, "reconcile on deskd (s)": 2.14, "flows on deskd (s)": 11.6}
+NOT RUN  PM-S / PM-SG (Arm M)                         "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here"
+NOT RUN  Arm L                                        "the build round is its own node; out of scope"
+NOT RUN  PG-HO3 (HO3-*)                               "the gated held-out stage: a new app by a new agent, scored once by the orchestrator after the freeze; this node never opened heldout3/"
+frozen files ok before: True after: True
+8 passed, 0 failed, 3 not run, 6 reported

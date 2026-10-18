@@ -350,6 +350,11 @@ func (g *gx) evalErr(b *Func, e *Env, x ast.Expr, at token.Pos, depth int, run *
 			return out
 		}
 		src, tuple, found := g.lastAssign(b, v.Name, at)
+		if _, local := e.lookup(v.Name); !found && !local {
+			if vi, ok := f.Pkg.Vars[v.Name]; ok && vi.value != nil {
+				return g.evalSentinel(vi, depth, run) // D2.3: a package-level sentinel
+			}
+		}
 		if !found {
 			notTraced(v.Pos(), "the error `"+v.Name+"` is not assigned in the function")
 			return out
@@ -421,6 +426,13 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 	file, line := f.Rel, g.line(c.Pos())
 	site := func(code int, kind string) xCode {
 		return xCode{Name: codeNameList[code], Number: code, Kind: kind, File: file, Line: line, In: qual(topFunc(b))}
+	}
+	if id, ok := unparen(c.Fun).(*ast.Ident); ok {
+		for _, p := range b.Params() {
+			if p.name == id.Name && g.src(p.typ) == "grpc.UnaryHandler" {
+				return out // the rpc's own answer, not the interceptor's
+			}
+		}
 	}
 	if path, name, ok := pkgCall(f, e, c); ok {
 		switch {
@@ -538,13 +550,43 @@ type grpcReg struct {
 	call  *ast.CallExpr
 	via   string
 	short string // the service's short name when the descriptor is outside the module
+	lost  bool   // referenced, but not reached from main (R6)
 }
 
 var registerRE = regexp.MustCompile(`^Register(\w+)Server$`)
 var gatewayRE = regexp.MustCompile(`^Register(\w+)Handler(Server|FromEndpoint|Client)?$`)
 
+// followDesc (R5): through a local's single value or a non-literal package variable.
+func (g *gx) followDesc(f *File, e *Env, x ast.Expr) (*File, *Env, ast.Expr) {
+	for i := 0; i < 4; i++ {
+		x = unparen(x)
+		if u, ok := x.(*ast.UnaryExpr); ok && u.Op == token.AND {
+			x = unparen(u.X)
+		}
+		var vi varInfo
+		switch v := x.(type) {
+		case *ast.Ident:
+			if vals := e.valuesOf(v.Name); len(vals) == 1 {
+				x = vals[0]
+				continue
+			}
+			vi = f.Pkg.Vars[v.Name]
+		case *ast.SelectorExpr:
+			if path, ok := impPath(f, e, v.X); ok && g.m.ByImport[path] != nil {
+				vi = g.m.ByImport[path].Vars[v.Sel.Name]
+			}
+		}
+		if _, lit := unparen(vi.value).(*ast.CompositeLit); vi.value == nil || lit {
+			break
+		}
+		f, e, x = vi.file, nil, vi.value
+	}
+	return f, e, x
+}
+
 // descOf reads a grpc.ServiceDesc: `&Foo_ServiceDesc`, `Foo_ServiceDesc`, or a literal.
 func (g *gx) descOf(f *File, e *Env, x ast.Expr) *grpcDesc {
+	f, e, x = g.followDesc(f, e, x)
 	x = unparen(x)
 	if u, ok := x.(*ast.UnaryExpr); ok && u.Op == token.AND {
 		x = unparen(u.X)
@@ -623,17 +665,137 @@ func (g *gx) descOf(f *File, e *Env, x ast.Expr) *grpcDesc {
 	return d
 }
 
-// findGrpcRegistrations lists the server registrations of the wired functions.
-func (g *gx) findGrpcRegistrations() ([]*grpcReg, []xExcluded) {
-	var regs []*grpcReg
-	var dropped []xExcluded
-	for _, fn := range g.m.AllFuncs() {
-		if fn.Lit != nil && fn.Parent != nil {
-			// literals are walked as part of their parent's body below
+// grpcWalk (D1.0-D1.1): g.wired plus the package variables a wired function reads (g.wired is not).
+type grpcWalk struct {
+	g     *gx
+	wired map[*Func]bool
+	queue []*Func
+	vars  map[string]*Func
+	refs  map[string]int // identifier -> uses outside declarations
+}
+
+func isGenFile(f *File) bool {
+	return strings.HasSuffix(f.Rel, ".pb.go") || strings.HasSuffix(f.Rel, ".pb.gw.go")
+}
+
+func (g *gx) newGrpcWalk() *grpcWalk {
+	w := &grpcWalk{g: g, wired: map[*Func]bool{}, vars: map[string]*Func{}, refs: map[string]int{}}
+	decl := map[*ast.Ident]bool{}
+	for _, p := range g.m.Pkgs {
+		for _, f := range p.Files {
+			if isGenFile(f) {
+				continue
+			}
+			ast.Inspect(f.AST, func(n ast.Node) bool {
+				switch v := n.(type) {
+				case *ast.FuncDecl:
+					decl[v.Name] = true
+				case *ast.ValueSpec:
+					for _, id := range v.Names {
+						decl[id] = true
+					}
+				case *ast.Ident:
+					if !decl[v] {
+						w.refs[v.Name]++
+					}
+				}
+				return true
+			})
 		}
+	}
+	if g.hasMain {
+		for _, fn := range g.m.AllFuncs() {
+			if g.wired[fn] {
+				w.add(fn)
+			}
+		}
+		for ; len(w.queue) > 0; w.queue = w.queue[1:] {
+			w.scan(w.queue[0])
+		}
+	}
+	return w
+}
+
+func (w *grpcWalk) add(fn *Func) {
+	if fn != nil && !w.wired[fn] {
+		w.wired[fn] = true
+		w.queue = append(w.queue, fn)
+	}
+}
+
+func (w *grpcWalk) isWired(fn *Func) bool { return !w.g.hasMain || w.wired[topFunc(fn)] }
+
+// useVar wires package variable name: its synthetic parent's body is the initializer.
+func (w *grpcWalk) useVar(pkg *Pkg, name string) {
+	vi, ok := pkg.Vars[name]
+	if !ok || vi.value == nil || isGenFile(vi.file) {
+		return
+	}
+	key := pkg.Rel + "." + name
+	if w.vars[key] == nil {
+		body := &ast.BlockStmt{List: []ast.Stmt{&ast.ExprStmt{X: vi.value}}}
+		w.vars[key] = &Func{Name: "var." + name, Short: "var." + name, Type: &ast.FuncType{}, Body: body, File: vi.file, Pos: vi.value.Pos()}
+	}
+	w.add(w.vars[key])
+}
+
+// scan applies the HTTP walker's rules to fn's body and reads the package variables it names.
+func (w *grpcWalk) scan(fn *Func) {
+	m, e := w.g.m, w.g.m.EnvOf(fn)
+	skip := map[*ast.Ident]bool{} // a field selector or key is no variable
+	ref := func(x ast.Expr) {
+		if f := w.g.funcRef(e, x, 0); f != nil && f.Lit == nil {
+			w.add(f)
+		}
+	}
+	ast.Inspect(fn.Body, func(n ast.Node) bool {
+		switch v := n.(type) {
+		case *ast.FuncLit:
+			w.add(m.LitFunc(v, fn))
+			return false
+		case *ast.CallExpr:
+			w.add(m.Callee(e, v))
+		case *ast.KeyValueExpr:
+			if id, ok := v.Key.(*ast.Ident); ok {
+				skip[id] = true
+			}
+		case *ast.SelectorExpr:
+			skip[v.Sel] = true
+			ref(v)
+			if path, ok := impPath(fn.File, e, v.X); ok && m.ByImport[path] != nil {
+				w.useVar(m.ByImport[path], v.Sel.Name)
+			}
+		case *ast.Ident:
+			ref(v)
+			if _, local := e.lookup(v.Name); !local && !skip[v] {
+				w.useVar(fn.File.Pkg, v.Name)
+			}
+		}
+		return true
+	})
+}
+
+// funcs lists every function and literal of the module, then the synthetic parents of the
+// package variables that were walked (sorted) with the literals in their initializers.
+func (w *grpcWalk) funcs() []*Func {
+	out, keys := w.g.m.AllFuncs(), []string{}
+	for k := range w.vars {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		out = append(out, w.g.bodies(w.vars[k])...)
+	}
+	return out
+}
+
+// findGrpcRegistrations lists the server registrations of the wired functions; unknown are
+// those in a function that is referenced but not reached (R6).
+func (g *gx) findGrpcRegistrations(w *grpcWalk) (regs []*grpcReg, dropped []xExcluded, unknown []*grpcReg) {
+	for _, fn := range w.funcs() {
 		e := g.m.EnvOf(fn)
 		f := fn.File
-		if strings.HasSuffix(f.Rel, "_grpc.pb.go") || strings.HasSuffix(f.Rel, ".pb.go") || strings.HasSuffix(f.Rel, ".pb.gw.go") {
+		if isGenFile(f) {
 			continue // generated code is not where a server is wired
 		}
 		stmtWalk(fn.Body, func(call *ast.CallExpr, _ []ast.Node) {
@@ -677,16 +839,20 @@ func (g *gx) findGrpcRegistrations() ([]*grpcReg, []xExcluded) {
 			if r == nil {
 				return
 			}
-			if !g.isWired(topFunc(fn)) {
+			r.impl, r.fn, r.e, r.call = call.Args[1], fn, e, call
+			if !w.isWired(fn) {
 				name := r.via
 				if r.desc != nil {
 					name = r.desc.name
 				}
 				dropped = append(dropped, xExcluded{Kind: "unwired", What: "rpc_registration", Method: "RPC",
 					Path: name, File: f.Rel, Line: g.line(call.Pos()), Reason: "not reachable from main"})
+				if w.refs[strings.TrimPrefix(topFunc(fn).Short, "var.")] > 0 {
+					r.lost = true
+					unknown = append(unknown, r)
+				}
 				return
 			}
-			r.impl, r.fn, r.e, r.call = call.Args[1], fn, e, call
 			regs = append(regs, r)
 		})
 	}
@@ -700,7 +866,7 @@ func (g *gx) findGrpcRegistrations() ([]*grpcReg, []xExcluded) {
 		seen[r.call.Pos()] = true
 		uniq = append(uniq, r)
 	}
-	return uniq, dropped
+	return uniq, dropped, unknown
 }
 
 // implType answers the struct type a registration's second argument is.
@@ -717,6 +883,24 @@ func (g *gx) implType(e *Env, x ast.Expr, depth int) *TypeInfo {
 			return g.implType(e, vals[0], depth+1)
 		}
 	}
+	if c, ok := unparen(x).(*ast.CallExpr); ok {
+		if callee := g.m.Callee(e, c); callee != nil {
+			set := map[*TypeInfo]bool{}
+			ast.Inspect(callee.Body, func(nd ast.Node) bool {
+				if ret, ok := nd.(*ast.ReturnStmt); ok && len(ret.Results) == 1 {
+					set[g.implType(g.m.EnvOf(callee), ret.Results[0], depth+1)] = true
+				}
+				_, lit := nd.(*ast.FuncLit)
+				return !lit
+			})
+			delete(set, nil)
+			for ti := range set {
+				if len(set) == 1 {
+					return ti
+				}
+			}
+		}
+	}
 	return nil
 }
 
@@ -728,25 +912,17 @@ func isStub(fn *Func) bool {
 // ---- interceptors ----------------------------------------------------------------------
 
 // interceptorFuncs resolves the unary interceptors of every grpc.NewServer call.
-func (g *gx) interceptorFuncs() []xInterceptor {
+func (g *gx) interceptorFuncs(w *grpcWalk) []xInterceptor {
 	var out []xInterceptor
 	seen := map[*Func]bool{}
-	for _, fn := range g.m.AllFuncs() {
-		if !g.isWired(topFunc(fn)) {
+	for _, fn := range w.funcs() {
+		if !w.isWired(fn) {
 			continue
 		}
 		e := g.m.EnvOf(fn)
 		f := fn.File
 		stmtWalk(fn.Body, func(call *ast.CallExpr, _ []ast.Node) {
-			path, name, ok := pkgCall(f, e, call)
-			if !ok || path != grpcPath || name != "NewServer" {
-				return
-			}
-			for _, opt := range call.Args {
-				oc, ok := unparen(opt).(*ast.CallExpr)
-				if !ok {
-					continue
-				}
+			for _, oc := range []*ast.CallExpr{call} { // a server option call, wherever it sits
 				opath, oname, ok := pkgCall(f, e, oc)
 				if !ok || opath != grpcPath {
 					continue
@@ -813,6 +989,9 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 	run := &grpcRun{memo: map[*Func]*errSrc{}, busy: map[*Func]bool{}}
 	es := g.errOfFunc(fn, 0, run)
 	if !es.has("UNAUTHENTICATED") {
+		if why := g.untracedReturn(fn, es, run); why != "" {
+			x.Kind, x.Reason = "auth_unknown", why
+		}
 		return x
 	}
 	ps := fn.Params()
@@ -910,6 +1089,33 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 		x.Kind, x.Reason = "auth_not_literal", why
 	}
 	return x
+}
+
+// untracedReturn (D2.1): "" when an interceptor that refuses nobody returns only the handler's
+// answer or errors traced to other codes, else file:line and why.
+func (g *gx) untracedReturn(fn *Func, es *errSrc, run *grpcRun) string {
+	rs := fn.Results()
+	refusal := func(r *errSrc, f string, line int) string {
+		if len(r.unread) > 0 {
+			return fmt.Sprintf("%s:%d %s", r.unread[0].File, r.unread[0].Line, r.unread[0].Reason)
+		} else if r.has("UNAUTHENTICATED") || r.has("PERMISSION_DENIED") {
+			return fmt.Sprintf("%s:%d returns an auth refusal the extractor did not read as the interceptor's own", f, line)
+		}
+		return ""
+	}
+	why := refusal(es, fn.File.Rel, g.line(fn.Pos))
+	for _, b := range g.bodies(fn)[1:] {
+		ast.Inspect(b.Body, func(n ast.Node) bool {
+			as, ok := n.(*ast.AssignStmt)
+			for i := 0; ok && why == "" && len(rs) > 0 && len(as.Lhs) == len(as.Rhs) && i < len(as.Lhs); i++ {
+				if id, isID := as.Lhs[i].(*ast.Ident); isID && id.Name == rs[len(rs)-1].name {
+					why = refusal(g.evalErr(b, g.m.EnvOf(b), as.Rhs[i], as.Pos(), 0, run), b.File.Rel, g.line(as.Pos()))
+				}
+			}
+			return why == ""
+		})
+	}
+	return why
 }
 
 // methodSet reads the methods an `if` test names: `set[info.FullMethod]`, `_, ok :=
@@ -1124,7 +1330,8 @@ func rpcKey(svc, name string) string { return svc + "/" + name }
 // findGrpc reads the module's gRPC contract and servers into g.res.Grpc.
 func (g *gx) findGrpc() {
 	u := g.readProtos(g.m.Root)
-	regs, unwired := g.findGrpcRegistrations()
+	w := g.newGrpcWalk()
+	regs, unwired, unknown := g.findGrpcRegistrations(w)
 	if len(u.files) == 0 && len(regs) == 0 && len(unwired) == 0 {
 		return
 	}
@@ -1133,14 +1340,14 @@ func (g *gx) findGrpc() {
 	gr.Protos, gr.Services, gr.Messages, gr.Enums = u.output()
 	g.res.Excluded = append(g.res.Excluded, unwired...)
 
-	ics := g.interceptorFuncs()
+	ics := g.interceptorFuncs(w)
 	gr.Interceptors = append(gr.Interceptors, ics...)
 	g.seedCallerFuncs(ics)
 
 	// registrations by service name
-	byService := map[string]*grpcReg{}
+	byService, unk := map[string]*grpcReg{}, map[string]*grpcReg{}
 	var order []string
-	for _, r := range regs {
+	for _, r := range append(regs[:len(regs):len(regs)], unknown...) {
 		name := ""
 		if r.desc != nil {
 			name = r.desc.name
@@ -1155,6 +1362,12 @@ func (g *gx) findGrpc() {
 			if len(hit) == 1 {
 				name = hit[0]
 			}
+		}
+		if r.lost {
+			if name != "" && unk[name] == nil {
+				unk[name] = r
+			}
+			continue
 		}
 		if name == "" {
 			if r.desc == nil {
@@ -1204,6 +1417,13 @@ func (g *gx) findGrpc() {
 				r.State = "streaming"
 				g.res.Excluded = append(g.res.Excluded, xExcluded{Kind: "streaming", What: "rpc", Method: "RPC",
 					Path: "/" + key, File: r.File, Line: r.Line, Reason: "streaming_not_supported"})
+				continue
+			case reg == nil && unk[svc.Name] != nil:
+				u := unk[svc.Name]
+				x := xUnread{File: u.fn.File.Rel, Line: g.line(u.call.Pos()), What: "registration_reachability_unknown",
+					Reason: "`" + g.src(u.call) + "` is referenced but no read path reaches it from main"}
+				r.State, r.Unread = "unread", append(r.Unread, x)
+				g.addUnread(x.File, x.Line, x.What, x.Reason)
 				continue
 			case reg == nil:
 				r.State = "not_registered"
@@ -1351,18 +1571,23 @@ func (g *gx) rpcAuth(gr *xGrpc, ics []xInterceptor, run *grpcRun) {
 					}
 				}
 			}
-			switch {
-			case len(auth) == 1 && auth[0].Kind == "auth_literal":
-				pub := false
-				for _, m := range auth[0].Public {
-					if m == full {
-						pub = true
-					}
+			var lits []xInterceptor
+			for _, ic := range auth {
+				if ic.Kind == "auth_literal" {
+					lits = append(lits, ic)
 				}
+			}
+			pub := false
+			for _, m := range append(lits, xInterceptor{})[0].Public {
+				pub = pub || m == full
+			}
+			switch {
+			case len(lits) == 1 && (len(auth) == 1 || !pub):
+				a := lits[0]
 				if pub {
-					r.Auth, r.AuthReason = "Public", fmt.Sprintf("%s lists %s as a method that skips authentication (%s:%d)", auth[0].Func, full, auth[0].File, auth[0].Line)
+					r.Auth, r.AuthReason = "Public", fmt.Sprintf("%s lists %s as a method that skips authentication (%s:%d)", a.Func, full, a.File, a.Line)
 				} else {
-					r.Auth, r.AuthReason = "Member", fmt.Sprintf("%s refuses callers without a valid token and does not list %s (%s:%d)", auth[0].Func, full, auth[0].File, auth[0].Line)
+					r.Auth, r.AuthReason = "Member", fmt.Sprintf("%s refuses callers without a valid token and does not list %s (%s:%d)", a.Func, full, a.File, a.Line)
 				}
 			case len(auth) > 0:
 				why := "several interceptors refuse unauthenticated callers"

@@ -1,0 +1,95 @@
+{
+  "schema": "lattice.grpc.wiring-truth/1",
+  "app": "wiring",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-3 extractor code ran; the registration state of each rpc by reading the Go, not by running it (the fixture is read, not run)",
+  "wiring": {
+    "Alpha": "func literal in the package-level slice `mounts`, called by ranging over it",
+    "Beta": "mountWorkshop (a helper taking a grpc.ServiceRegistrar) named in `mounts`; value-receiver Get, Put left to the embedded stub",
+    "Gamma": "mountWorkshop; the impl comes from NewGamma, which returns the interface",
+    "Delta": "RegisterService with the descriptor held in the package variable deltaDesc, called from installDelta named in the package-level map `extras`; Get promoted from the embedded *deltaCore, Put from the stub",
+    "Epsilon": "a func field (app.wire) of a struct literal ranged over in Build",
+    "Zeta": "passed as a func value to the variadic helper `with`",
+    "Eta": "registered on the grpc.ServiceRegistrar field of a bundle, impl by value",
+    "Dead": "its Register function is referenced from nowhere",
+    "Gone": "its Register function is referenced only from serve_test.go",
+    "Never": "no registration exists",
+    "Opaque": "registered inside plugA.Install, reached only through the installer interface that two types implement: referenced, not resolvable"
+  },
+  "rpcs": {
+    "wiring.v1.Alpha/Get": {
+      "state": "implemented"
+    },
+    "wiring.v1.Alpha/Put": {
+      "state": "implemented"
+    },
+    "wiring.v1.Beta/Get": {
+      "state": "implemented"
+    },
+    "wiring.v1.Beta/Put": {
+      "state": "unimplemented"
+    },
+    "wiring.v1.Gamma/Get": {
+      "state": "implemented"
+    },
+    "wiring.v1.Gamma/Put": {
+      "state": "implemented"
+    },
+    "wiring.v1.Delta/Get": {
+      "state": "implemented"
+    },
+    "wiring.v1.Delta/Put": {
+      "state": "unimplemented"
+    },
+    "wiring.v1.Epsilon/Get": {
+      "state": "implemented"
+    },
+    "wiring.v1.Epsilon/Put": {
+      "state": "implemented"
+    },
+    "wiring.v1.Zeta/Get": {
+      "state": "implemented"
+    },
+    "wiring.v1.Zeta/Put": {
+      "state": "implemented"
+    },
+    "wiring.v1.Eta/Get": {
+      "state": "implemented"
+    },
+    "wiring.v1.Eta/Put": {
+      "state": "implemented"
+    },
+    "wiring.v1.Dead/Get": {
+      "state": "not_registered"
+    },
+    "wiring.v1.Dead/Put": {
+      "state": "not_registered"
+    },
+    "wiring.v1.Gone/Get": {
+      "state": "not_registered"
+    },
+    "wiring.v1.Gone/Put": {
+      "state": "not_registered"
+    },
+    "wiring.v1.Never/Get": {
+      "state": "not_registered"
+    },
+    "wiring.v1.Never/Put": {
+      "state": "not_registered"
+    },
+    "wiring.v1.Opaque/Get": {
+      "state": "unread"
+    },
+    "wiring.v1.Opaque/Put": {
+      "state": "unread"
+    }
+  },
+  "unread_reason": {
+    "wiring.v1.Opaque": "registration_reachability_unknown"
+  },
+  "excluded_registrations": [
+    "wiring.v1.Dead",
+    "wiring.v1.Gone",
+    "wiring.v1.Opaque"
+  ]
+}

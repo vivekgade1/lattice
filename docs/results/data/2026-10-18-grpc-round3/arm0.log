@@ -1,0 +1,14 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+PASS     P3-BC                                        {"ast (grpc.py defs but reconcile_with; workflows.py, go_grpc.py bytes)": "PASS", "HTTP outputs (round-1/2 emitter) vs the merge commit": "PASS", "HTTP outputs compared": 73, "extract + RepoModel": "P
+PASS     P3-WIRE                                      {"rpcs": 22, "states equal the truth": 22, "wrong (extract, truth)": {}, "unread reasons": {"wiring.v1.Opaque/Get": ["registration_reachability_unknown"], "wiring.v1.Opaque/Put": ["registration_reacha
+PASS     P3-AUTHU                                     {"cases": 9, "cases exact": 9, "Public behind an auth_unknown interceptor": [], "truth hashed before extractor code": true}
+PASS     P3-DET                                       {"notes": {"identical runs": 10, "of": 10, "leaks": [], "artifacts": ["extract", "flows", "plans", "reconcile"], "ok": true}, "wiring": {"identical runs": 10, "of": 10, "leaks": [], "artifacts": ["ext
+PASS     P3-NW                                        {"roots": ["N", "T", "sessions", "wiring", "authwire", "deskd", "kilnworks", "heldout3: NOT RUN (the gated stage; this node never looked in it)"], "reconcile x3, flows x3 (N, sessions, deskd, kilnwork
+PASS     P3-UNIT                                      {"passed": 73, "seconds": 1.2, "in 25-45 (p)": false}
+PASS     P3-SCORE                                     {"cases": 30, "agree": 30, "in 20-30 (p)": true}
+PASS     REG                                          {"before": "7 failed, 2987 passed, 37 skipped, 124 warnings, 98 errors in 969.66s (0:16:09)", "after": "7 failed, 3060 passed, 37 skipped, 124 warnings, 98 errors in 919.80s (0:15:19)", "failing ids b
+NOT RUN  PM-S / PM-SG (Arm M)                         "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here"
+NOT RUN  Arm L                                        "the build round is its own node; out of scope"
+NOT RUN  PG-HO3 (HO3-*)                               "the gated held-out stage: a new app by a new agent, scored once by the orchestrator after the freeze; this node never opened heldout3/"
+frozen files ok before: True after: True
+8 passed, 0 failed, 3 not run, 0 reported
