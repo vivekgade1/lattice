@@ -1,0 +1,39 @@
+# verification, 2026-10-18, before any Streak run
+## freeze3.sha256 (library + impact_report)
+lattice/spec/forms.py: OK
+lattice/spec/forms_tier2.py: OK
+lattice/spec/impact_report.py: OK
+dogfood/forms_probes3.py: OK
+dogfood/forms_reader3.py: OK
+dogfood/forms_mutants3.py: OK
+## runner3.sha256 (scorer, reader, mutants3)
+dogfood/forms_probes3.py: OK
+dogfood/forms_reader3.py: OK
+dogfood/forms_mutants3.py: OK
+## round-1/2 runner files (informational)
+7449106201f93f6108addcd557f54ef353ccbb53322c05a3b4bda04eba3525c0  dogfood/forms_probes.py
+9e3ec0adf13f85c019c16d282072c7ad7b5d204009f8f20a37b8a80b92f4ff4c  dogfood/forms_probes2.py
+7b9483ff29f80b91164c594e0312beb50fc0e4b1ba5409cd83360967e2240597  dogfood/forms_mutants.py
+45889ed95d69b292e6a285a2af533d5a33b1c0bed53f1ad000b7aa61d583a2f1  dogfood/forms_mutants2.py
+## archived set hshapes: MANIFEST check
+   9 OK
+## archived set hshapes2: MANIFEST check
+  11 OK
+## archived set hshapes3: MANIFEST check
+  11 OK
+## streak/ shapes dir in any archived set:
+       0
+## --stage streak in any runner:
+dogfood/forms_probes.py:0
+dogfood/forms_reader3.py:0
+dogfood/forms_probes2.py:0
+dogfood/forms_probes3.py:0
+dogfood/forms_mutants.py:0
+dogfood/forms_mutants2.py:0
+dogfood/forms_mutants3.py:0
+## Streak ref
+a0679e9044486c98611febcd050a1fd23b6cd756
+archived to scratch with git archive; ~/Documents/streak status:
+ M studio.toml
+## worktree git status (explicit)
+?? docs/results/data/2026-10-18-typed-conditions-streak-arm/
