@@ -463,3 +463,14 @@ Before the Streak arm, the orchestrator records `freeze.sha256` of the three E f
 - Q1: drive the rebuild loop in change mode on the detached spec worktree. Q2: a flow that changes on a route D only listed as `may_fail`, with no candidate step backing the new answer, is `needs_owner`, not `fail`. Q3: a test-only `oracle` agent mode that replays D's reference diffs and calls no model is approved; it is never reachable from Studio or the CLI default. Q5: Tier 4 stays out of the Studio Impact view this round. Q6: `rebuild/<eid>` is accepted.
 - Q4: the Streak arm (SO, SO3, SA, SL, SG) is NOT RUN in this container and is a separate orchestrator step on a host with Streak and Docker. The USD 12 and USD 3 real-agent budgets are NOT approved by this amendment; they need the owner's yes before any model run.
 - The build node implements and gates only the Docker-free core (17 probes); it reports the Streak arm as NOT RUN, never skipped silently.
+
+## Amendment 2 (orchestrator ruling, 2026-10-18, before any Streak run)
+The frozen runner `dogfood/implement_probes.py` is core-only (the 2026-10-17 results section 9 says so). The Streak arm
+(SO, SO3, SA, SL, SG) and the real-agent probe PAg-MS therefore need **a new runner file,
+`dogfood/implement_probes_streak.py`, separate from the frozen files**, written by a build node from section 5 of
+`docs/results/2026-10-18-implement-verify-streak-arm-results.md` (the spec of the missing scorers), frozen (sha256
+recorded in `docs/results/data/2026-10-18-implement-verify-streak-arm/freeze.sha256`) **before any Streak run**, and
+then run once by a separate run node. The frozen core runner, the engine files and the frozen core results are not edited.
+The real-agent budgets are approved by the owner as registered (USD 12 for SA, USD 3 for PAg-MS), hard caps; a usage limit
+is NOT RUN, never a pass. This is a departure from "run the frozen runner unchanged" because that runner has no code for
+these rows; it is stated, not hidden.
