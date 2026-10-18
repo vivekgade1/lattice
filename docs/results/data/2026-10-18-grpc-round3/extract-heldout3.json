@@ -1,0 +1,2166 @@
+{
+ "schema": "lattice.goextract/1",
+ "module": "harborline",
+ "go": "1.24",
+ "dialect": "sqlite",
+ "main": [
+  "cmd/harbord/main.go"
+ ],
+ "tables": [],
+ "routes": [],
+ "middleware": [],
+ "constructors": [],
+ "sentinels": [
+  {
+   "name": "ErrForbidden",
+   "package": "harborline/internal/platform/fault",
+   "file": "internal/platform/fault/fault.go",
+   "line": 20,
+   "message": "forbidden for this role",
+   "status": null,
+   "code": null
+  },
+  {
+   "name": "ErrInvalid",
+   "package": "harborline/internal/platform/fault",
+   "file": "internal/platform/fault/fault.go",
+   "line": 17,
+   "message": "invalid request",
+   "status": null,
+   "code": null
+  },
+  {
+   "name": "ErrNotFound",
+   "package": "harborline/internal/platform/fault",
+   "file": "internal/platform/fault/fault.go",
+   "line": 16,
+   "message": "not found",
+   "status": null,
+   "code": null
+  },
+  {
+   "name": "ErrOccupied",
+   "package": "harborline/internal/platform/fault",
+   "file": "internal/platform/fault/fault.go",
+   "line": 18,
+   "message": "berth occupied",
+   "status": null,
+   "code": null
+  },
+  {
+   "name": "ErrWrongStep",
+   "package": "harborline/internal/platform/fault",
+   "file": "internal/platform/fault/fault.go",
+   "line": 19,
+   "message": "not allowed in the current state",
+   "status": null,
+   "code": null
+  },
+  {
+   "name": "ErrUnknown",
+   "package": "harborline/internal/platform/session",
+   "file": "internal/platform/session/session.go",
+   "line": 15,
+   "message": "session: unknown or revoked token",
+   "status": null,
+   "code": null
+  }
+ ],
+ "error_writer": null,
+ "error_writers": [],
+ "auth": null,
+ "models": [],
+ "status_writes": [],
+ "excluded": [
+  {
+   "kind": "unwired",
+   "what": "rpc_registration",
+   "method": "RPC",
+   "path": "harbor.v1.Berths",
+   "file": "internal/berths/offer.go",
+   "line": 15,
+   "reason": "not reachable from main"
+  },
+  {
+   "kind": "streaming",
+   "what": "rpc",
+   "method": "RPC",
+   "path": "/harbor.v1.Tides/WatchTides",
+   "file": "proto/harbor/v1/tides.proto",
+   "line": 12,
+   "reason": "streaming_not_supported"
+  }
+ ],
+ "unread": [
+  {
+   "file": "internal/app/options.go",
+   "line": 33,
+   "what": "interceptor_not_literal",
+   "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+  },
+  {
+   "file": "internal/berths/offer.go",
+   "line": 15,
+   "what": "registration_reachability_unknown",
+   "reason": "`harborv1.RegisterBerthsServer(r, &catalog{db: d.DB})` is referenced but no read path reaches it from main"
+  },
+  {
+   "file": "internal/yard/reasons.go",
+   "line": 30,
+   "what": "grpc_code_not_literal",
+   "reason": "the code of `status.Error(codeFor[r], detail)` is chosen at run time"
+  }
+ ],
+ "notes": [],
+ "grpc": {
+  "protos": [
+   {
+    "file": "proto/harbor/v1/accounts.proto",
+    "package": "harbor.v1",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/berths.proto",
+    "package": "harbor.v1",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/bookings.proto",
+    "package": "harbor.v1",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/fuel.proto",
+    "package": "harbor.v1",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": []
+   },
+   {
+    "file": "proto/harbor/v1/tides.proto",
+    "package": "harbor.v1",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/types.proto",
+    "package": "harbor.v1",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": []
+   },
+   {
+    "file": "proto/harbor/v1/vessels.proto",
+    "package": "harbor.v1",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/yard.proto",
+    "package": "harbor.v1",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ]
+   }
+  ],
+  "services": [
+   {
+    "name": "harbor.v1.Accounts",
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 10,
+    "rpcs": [
+     {
+      "name": "Login",
+      "input": "harbor.v1.LoginRequest",
+      "output": "harbor.v1.LoginResponse",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/accounts.proto",
+      "line": 11,
+      "state": "implemented",
+      "handler": {
+       "func": "accounts.Service.Login",
+       "module": "harborline/internal/accounts",
+       "file": "internal/accounts/service.go",
+       "line": 30,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "INVALID_ARGUMENT",
+        "number": 3,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 32,
+        "in": "accounts.Service.Login"
+       },
+       {
+        "name": "INTERNAL",
+        "number": 13,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 45,
+        "in": "accounts.Service.Login"
+       },
+       {
+        "name": "INTERNAL",
+        "number": 13,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 49,
+        "in": "accounts.Service.Login"
+       },
+       {
+        "name": "UNAUTHENTICATED",
+        "number": 16,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 42,
+        "in": "accounts.Service.Login"
+       }
+      ],
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:LoginRequest.GetPassword",
+       "harborline/gen/harbor/v1:LoginRequest.GetUsername",
+       "harborline/internal/accounts:roleOf",
+       "harborline/internal/platform/session:Store.Issue"
+      ]
+     },
+     {
+      "name": "WhoAmI",
+      "input": "harbor.v1.WhoAmIRequest",
+      "output": "harbor.v1.Profile",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/accounts.proto",
+      "line": 12,
+      "state": "implemented",
+      "handler": {
+       "func": "accounts.Service.WhoAmI",
+       "module": "harborline/internal/accounts",
+       "file": "internal/accounts/service.go",
+       "line": 55,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/internal/accounts:profileOf",
+       "harborline/internal/accounts:roleOf",
+       "harborline/internal/platform/actor:From"
+      ]
+     },
+     {
+      "name": "Logout",
+      "input": "harbor.v1.LogoutRequest",
+      "output": "harbor.v1.LogoutResponse",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/accounts.proto",
+      "line": 13,
+      "state": "implemented",
+      "handler": {
+       "func": "accounts.Service.Logout",
+       "module": "harborline/internal/accounts",
+       "file": "internal/accounts/service.go",
+       "line": 61,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "INTERNAL",
+        "number": 13,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 64,
+        "in": "accounts.Service.Logout"
+       }
+      ],
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/session:Store.Revoke"
+      ]
+     },
+     {
+      "name": "StepDown",
+      "input": "harbor.v1.StepDownRequest",
+      "output": "harbor.v1.Profile",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/accounts.proto",
+      "line": 15,
+      "state": "implemented",
+      "handler": {
+       "func": "accounts.Service.StepDown",
+       "module": "harborline/internal/accounts",
+       "file": "internal/accounts/service.go",
+       "line": 70,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "FAILED_PRECONDITION",
+        "number": 9,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 73,
+        "in": "accounts.Service.StepDown"
+       },
+       {
+        "name": "INTERNAL",
+        "number": 13,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 76,
+        "in": "accounts.Service.StepDown"
+       }
+      ],
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/internal/accounts:profileOf",
+       "harborline/internal/accounts:roleOf",
+       "harborline/internal/platform/actor:From"
+      ]
+     },
+     {
+      "name": "CloseAccount",
+      "input": "harbor.v1.CloseAccountRequest",
+      "output": "harbor.v1.CloseAccountResponse",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/accounts.proto",
+      "line": 16,
+      "state": "implemented",
+      "handler": {
+       "func": "accounts.Service.CloseAccount",
+       "module": "harborline/internal/accounts",
+       "file": "internal/accounts/service.go",
+       "line": 83,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "INVALID_ARGUMENT",
+        "number": 3,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 86,
+        "in": "accounts.Service.CloseAccount"
+       },
+       {
+        "name": "FAILED_PRECONDITION",
+        "number": 9,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 93,
+        "in": "accounts.Service.CloseAccount"
+       },
+       {
+        "name": "INTERNAL",
+        "number": 13,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 90,
+        "in": "accounts.Service.CloseAccount"
+       },
+       {
+        "name": "INTERNAL",
+        "number": 13,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 96,
+        "in": "accounts.Service.CloseAccount"
+       },
+       {
+        "name": "INTERNAL",
+        "number": 13,
+        "kind": "status_error",
+        "file": "internal/accounts/service.go",
+        "line": 99,
+        "in": "accounts.Service.CloseAccount"
+       }
+      ],
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:CloseAccountRequest.GetConfirm",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/session:Store.RevokeAll"
+      ]
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.Berths",
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 9,
+    "rpcs": [
+     {
+      "name": "ListBerths",
+      "input": "harbor.v1.ListBerthsRequest",
+      "output": "harbor.v1.ListBerthsResponse",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/berths.proto",
+      "line": 10,
+      "state": "unread",
+      "unread": [
+       {
+        "file": "internal/berths/offer.go",
+        "line": 15,
+        "what": "registration_reachability_unknown",
+        "reason": "`harborv1.RegisterBerthsServer(r, &catalog{db: d.DB})` is referenced but no read path reaches it from main"
+       }
+      ]
+     },
+     {
+      "name": "GetBerth",
+      "input": "harbor.v1.GetBerthRequest",
+      "output": "harbor.v1.Berth",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/berths.proto",
+      "line": 11,
+      "state": "unread",
+      "unread": [
+       {
+        "file": "internal/berths/offer.go",
+        "line": 15,
+        "what": "registration_reachability_unknown",
+        "reason": "`harborv1.RegisterBerthsServer(r, &catalog{db: d.DB})` is referenced but no read path reaches it from main"
+       }
+      ]
+     },
+     {
+      "name": "CreateBerth",
+      "input": "harbor.v1.CreateBerthRequest",
+      "output": "harbor.v1.Berth",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/berths.proto",
+      "line": 12,
+      "state": "unread",
+      "unread": [
+       {
+        "file": "internal/berths/offer.go",
+        "line": 15,
+        "what": "registration_reachability_unknown",
+        "reason": "`harborv1.RegisterBerthsServer(r, &catalog{db: d.DB})` is referenced but no read path reaches it from main"
+       }
+      ]
+     },
+     {
+      "name": "RetireBerth",
+      "input": "harbor.v1.RetireBerthRequest",
+      "output": "harbor.v1.Berth",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/berths.proto",
+      "line": 13,
+      "state": "unread",
+      "unread": [
+       {
+        "file": "internal/berths/offer.go",
+        "line": 15,
+        "what": "registration_reachability_unknown",
+        "reason": "`harborv1.RegisterBerthsServer(r, &catalog{db: d.DB})` is referenced but no read path reaches it from main"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.Bookings",
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 9,
+    "rpcs": [
+     {
+      "name": "BookBerth",
+      "input": "harbor.v1.BookBerthRequest",
+      "output": "harbor.v1.Booking",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/bookings.proto",
+      "line": 10,
+      "state": "implemented",
+      "handler": {
+       "func": "bookings.desk.BookBerth",
+       "module": "harborline/internal/bookings",
+       "file": "internal/bookings/desk.go",
+       "line": 24,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 27,
+        "in": "bookings.desk.BookBerth"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 31,
+        "in": "bookings.desk.BookBerth"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 41,
+        "in": "bookings.desk.BookBerth"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 43,
+        "in": "bookings.desk.BookBerth"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 46,
+        "in": "bookings.desk.BookBerth"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 55,
+        "in": "bookings.desk.BookBerth"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 57,
+        "in": "bookings.desk.BookBerth"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 60,
+        "in": "bookings.desk.BookBerth"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 64,
+        "in": "bookings.desk.BookBerth"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 67,
+        "in": "bookings.desk.BookBerth"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 73,
+        "in": "bookings.desk.BookBerth"
+       }
+      ],
+      "plain_error": true,
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:BookBerthRequest.GetBerthCode",
+       "harborline/gen/harbor/v1:BookBerthRequest.GetNights",
+       "harborline/gen/harbor/v1:BookBerthRequest.GetVesselHull",
+       "harborline/internal/platform/actor:From"
+      ]
+     },
+     {
+      "name": "GetBooking",
+      "input": "harbor.v1.GetBookingRequest",
+      "output": "harbor.v1.Booking",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/bookings.proto",
+      "line": 11,
+      "state": "implemented",
+      "handler": {
+       "func": "bookings.desk.GetBooking",
+       "module": "harborline/internal/bookings",
+       "file": "internal/bookings/desk.go",
+       "line": 93,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 88,
+        "in": "bookings.desk.visible"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/repo.go",
+        "line": 45,
+        "in": "bookings.repo.byID"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/repo.go",
+        "line": 48,
+        "in": "bookings.repo.byID"
+       }
+      ],
+      "plain_error": true,
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:GetBookingRequest.GetId",
+       "harborline/internal/bookings:desk.visible",
+       "harborline/internal/bookings:repo.byID",
+       "harborline/internal/bookings:scanBooking",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is"
+      ]
+     },
+     {
+      "name": "ListBookings",
+      "input": "harbor.v1.ListBookingsRequest",
+      "output": "harbor.v1.ListBookingsResponse",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/bookings.proto",
+      "line": 12,
+      "state": "implemented",
+      "handler": {
+       "func": "bookings.desk.ListBookings",
+       "module": "harborline/internal/bookings",
+       "file": "internal/bookings/desk.go",
+       "line": 101,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 104,
+        "in": "bookings.desk.ListBookings"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/repo.go",
+        "line": 60,
+        "in": "bookings.repo.list"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/repo.go",
+        "line": 67,
+        "in": "bookings.repo.list"
+       }
+      ],
+      "plain_error": true,
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:ListBookingsRequest.GetIncludeAll",
+       "harborline/internal/bookings:repo.list",
+       "harborline/internal/bookings:scanBooking",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is"
+      ]
+     },
+     {
+      "name": "CancelBooking",
+      "input": "harbor.v1.CancelBookingRequest",
+      "output": "harbor.v1.Booking",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/bookings.proto",
+      "line": 13,
+      "state": "implemented",
+      "handler": {
+       "func": "bookings.desk.CancelBooking",
+       "module": "harborline/internal/bookings",
+       "file": "internal/bookings/desk.go",
+       "line": 113,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 88,
+        "in": "bookings.desk.visible"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 119,
+        "in": "bookings.desk.CancelBooking"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/repo.go",
+        "line": 45,
+        "in": "bookings.repo.byID"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/repo.go",
+        "line": 48,
+        "in": "bookings.repo.byID"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/repo.go",
+        "line": 76,
+        "in": "bookings.repo.setStatus"
+       }
+      ],
+      "plain_error": true,
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:CancelBookingRequest.GetId",
+       "harborline/internal/bookings:desk.visible",
+       "harborline/internal/bookings:repo.byID",
+       "harborline/internal/bookings:repo.setStatus",
+       "harborline/internal/bookings:scanBooking",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is"
+      ]
+     },
+     {
+      "name": "CheckIn",
+      "input": "harbor.v1.CheckInRequest",
+      "output": "harbor.v1.Booking",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/bookings.proto",
+      "line": 14,
+      "state": "implemented",
+      "handler": {
+       "func": "bookings.desk.CheckIn",
+       "module": "harborline/internal/bookings",
+       "file": "internal/bookings/desk.go",
+       "line": 128,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 131,
+        "in": "bookings.desk.CheckIn"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/desk.go",
+        "line": 138,
+        "in": "bookings.desk.CheckIn"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/repo.go",
+        "line": 45,
+        "in": "bookings.repo.byID"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/repo.go",
+        "line": 48,
+        "in": "bookings.repo.byID"
+       },
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/bookings/repo.go",
+        "line": 76,
+        "in": "bookings.repo.setStatus"
+       }
+      ],
+      "plain_error": true,
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:CheckInRequest.GetBookingId",
+       "harborline/internal/bookings:repo.byID",
+       "harborline/internal/bookings:repo.setStatus",
+       "harborline/internal/bookings:scanBooking",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is"
+      ]
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.Fuel",
+    "file": "proto/harbor/v1/fuel.proto",
+    "line": 8,
+    "rpcs": [
+     {
+      "name": "QuoteFuel",
+      "input": "harbor.v1.QuoteFuelRequest",
+      "output": "harbor.v1.FuelQuote",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/fuel.proto",
+      "line": 9,
+      "state": "not_registered"
+     },
+     {
+      "name": "Dispense",
+      "input": "harbor.v1.DispenseRequest",
+      "output": "harbor.v1.FuelQuote",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/fuel.proto",
+      "line": 10,
+      "state": "not_registered"
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.Tides",
+    "file": "proto/harbor/v1/tides.proto",
+    "line": 10,
+    "rpcs": [
+     {
+      "name": "GetTideTable",
+      "input": "harbor.v1.GetTideTableRequest",
+      "output": "harbor.v1.TideTable",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/tides.proto",
+      "line": 11,
+      "state": "implemented",
+      "handler": {
+       "func": "tides.Station.GetTideTable",
+       "module": "harborline/internal/tides",
+       "file": "internal/tides/station.go",
+       "line": 42,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "INVALID_ARGUMENT",
+        "number": 3,
+        "kind": "status_error",
+        "file": "internal/tides/station.go",
+        "line": 44,
+        "in": "tides.Station.GetTideTable"
+       },
+       {
+        "name": "NOT_FOUND",
+        "number": 5,
+        "kind": "status_error",
+        "file": "internal/tides/station.go",
+        "line": 51,
+        "in": "tides.Station.GetTideTable"
+       },
+       {
+        "name": "INTERNAL",
+        "number": 13,
+        "kind": "status_error",
+        "file": "internal/tides/station.go",
+        "line": 48,
+        "in": "tides.Station.GetTideTable"
+       }
+      ],
+      "unread": [
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:GetTideTableRequest.GetStation",
+       "harborline/internal/tides:Station.readings"
+      ]
+     },
+     {
+      "name": "WatchTides",
+      "input": "harbor.v1.WatchTidesRequest",
+      "output": "harbor.v1.TideReading",
+      "client_streaming": false,
+      "server_streaming": true,
+      "file": "proto/harbor/v1/tides.proto",
+      "line": 12,
+      "state": "streaming"
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.Vessels",
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 9,
+    "rpcs": [
+     {
+      "name": "RegisterVessel",
+      "input": "harbor.v1.RegisterVesselRequest",
+      "output": "harbor.v1.Vessel",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/vessels.proto",
+      "line": 10,
+      "state": "not_registered"
+     },
+     {
+      "name": "GetVessel",
+      "input": "harbor.v1.GetVesselRequest",
+      "output": "harbor.v1.Vessel",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/vessels.proto",
+      "line": 11,
+      "state": "not_registered"
+     },
+     {
+      "name": "RenameVessel",
+      "input": "harbor.v1.RenameVesselRequest",
+      "output": "harbor.v1.Vessel",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/vessels.proto",
+      "line": 12,
+      "state": "not_registered"
+     },
+     {
+      "name": "ListVessels",
+      "input": "harbor.v1.ListVesselsRequest",
+      "output": "harbor.v1.ListVesselsResponse",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/vessels.proto",
+      "line": 13,
+      "state": "not_registered"
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.Yard",
+    "file": "proto/harbor/v1/yard.proto",
+    "line": 10,
+    "rpcs": [
+     {
+      "name": "OpenWorkOrder",
+      "input": "harbor.v1.OpenWorkOrderRequest",
+      "output": "harbor.v1.WorkOrder",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/yard.proto",
+      "line": 11,
+      "state": "implemented",
+      "handler": {
+       "func": "yard.workshop.OpenWorkOrder",
+       "module": "harborline/internal/yard",
+       "file": "internal/yard/yard.go",
+       "line": 45,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "unread": [
+       {
+        "file": "internal/yard/reasons.go",
+        "line": 30,
+        "what": "grpc_code_not_literal",
+        "reason": "the code of `status.Error(codeFor[r], detail)` is chosen at run time"
+       },
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:OpenWorkOrderRequest.GetBookingId",
+       "harborline/gen/harbor/v1:OpenWorkOrderRequest.GetKind",
+       "harborline/gen/harbor/v1:OpenWorkOrderRequest.GetNote",
+       "harborline/internal/berths:problem.Error",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/yard:reason.because",
+       "harborline/internal/yard:workshop.bookingOf"
+      ]
+     },
+     {
+      "name": "ListWorkOrders",
+      "input": "harbor.v1.ListWorkOrdersRequest",
+      "output": "harbor.v1.ListWorkOrdersResponse",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/yard.proto",
+      "line": 12,
+      "state": "implemented",
+      "handler": {
+       "func": "yard.workshop.ListWorkOrders",
+       "module": "harborline/internal/yard",
+       "file": "internal/yard/yard.go",
+       "line": 69,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "unread": [
+       {
+        "file": "internal/yard/reasons.go",
+        "line": 30,
+        "what": "grpc_code_not_literal",
+        "reason": "the code of `status.Error(codeFor[r], detail)` is chosen at run time"
+       },
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:ListWorkOrdersRequest.GetBookingId",
+       "harborline/internal/berths:problem.Error",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is",
+       "harborline/internal/yard:reason.because",
+       "harborline/internal/yard:workshop.bookingOf"
+      ]
+     },
+     {
+      "name": "CompleteWorkOrder",
+      "input": "harbor.v1.CompleteWorkOrderRequest",
+      "output": "harbor.v1.WorkOrder",
+      "client_streaming": false,
+      "server_streaming": false,
+      "file": "proto/harbor/v1/yard.proto",
+      "line": 13,
+      "state": "implemented",
+      "handler": {
+       "func": "yard.workshop.CompleteWorkOrder",
+       "module": "harborline/internal/yard",
+       "file": "internal/yard/yard.go",
+       "line": 96,
+       "wrappers": []
+      },
+      "auth": "unclear",
+      "auth_reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+      "codes": [
+       {
+        "name": "UNKNOWN",
+        "number": 2,
+        "kind": "plain_error",
+        "file": "internal/yard/yard.go",
+        "line": 97,
+        "in": "yard.workshop.CompleteWorkOrder"
+       }
+      ],
+      "plain_error": true,
+      "unread": [
+       {
+        "file": "internal/yard/reasons.go",
+        "line": 30,
+        "what": "grpc_code_not_literal",
+        "reason": "the code of `status.Error(codeFor[r], detail)` is chosen at run time"
+       },
+       {
+        "file": "internal/app/options.go",
+        "line": 33,
+        "what": "interceptor_not_literal",
+        "reason": "the interceptor `c.unary` is not a function the extractor can resolve"
+       }
+      ],
+      "calls": [
+       "harborline/gen/harbor/v1:CompleteWorkOrderRequest.GetId",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Need",
+       "harborline/internal/platform/actor:Principal.Is",
+       "harborline/internal/yard:reason.because"
+      ]
+     }
+    ]
+   }
+  ],
+  "messages": [
+   {
+    "name": "harbor.v1.LoginRequest",
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 19,
+    "fields": [
+     {
+      "name": "username",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 20
+     },
+     {
+      "name": "password",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 21
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.LoginResponse",
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 24,
+    "fields": [
+     {
+      "name": "token",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 25
+     },
+     {
+      "name": "user_id",
+      "number": 2,
+      "type": "int64",
+      "label": "single",
+      "line": 26
+     },
+     {
+      "name": "role",
+      "number": 3,
+      "type": "harbor.v1.Role",
+      "label": "single",
+      "line": 27
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.WhoAmIRequest",
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 30,
+    "fields": []
+   },
+   {
+    "name": "harbor.v1.Profile",
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 32,
+    "fields": [
+     {
+      "name": "id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 33
+     },
+     {
+      "name": "username",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 34
+     },
+     {
+      "name": "display_name",
+      "number": 3,
+      "type": "string",
+      "label": "single",
+      "line": 35
+     },
+     {
+      "name": "role",
+      "number": 4,
+      "type": "harbor.v1.Role",
+      "label": "single",
+      "line": 36
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.LogoutRequest",
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 39,
+    "fields": []
+   },
+   {
+    "name": "harbor.v1.LogoutResponse",
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 41,
+    "fields": [
+     {
+      "name": "revoked",
+      "number": 1,
+      "type": "bool",
+      "label": "single",
+      "line": 42
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.StepDownRequest",
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 45,
+    "fields": []
+   },
+   {
+    "name": "harbor.v1.CloseAccountRequest",
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 47,
+    "fields": [
+     {
+      "name": "confirm",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 49
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.CloseAccountResponse",
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 52,
+    "fields": [
+     {
+      "name": "closed_id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 53
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.ListBerthsRequest",
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 16,
+    "fields": [
+     {
+      "name": "pier",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 17
+     },
+     {
+      "name": "only_active",
+      "number": 2,
+      "type": "bool",
+      "label": "single",
+      "line": 18
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.ListBerthsResponse",
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 21,
+    "fields": [
+     {
+      "name": "berths",
+      "number": 1,
+      "type": "harbor.v1.Berth",
+      "label": "repeated",
+      "line": 22
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.GetBerthRequest",
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 25,
+    "fields": [
+     {
+      "name": "code",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 26
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.CreateBerthRequest",
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 29,
+    "fields": [
+     {
+      "name": "code",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 30
+     },
+     {
+      "name": "pier",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 31
+     },
+     {
+      "name": "length_m",
+      "number": 3,
+      "type": "int32",
+      "label": "single",
+      "line": 32
+     },
+     {
+      "name": "nightly_cents",
+      "number": 4,
+      "type": "int64",
+      "label": "single",
+      "line": 33
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.RetireBerthRequest",
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 36,
+    "fields": [
+     {
+      "name": "code",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 37
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.BookBerthRequest",
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 17,
+    "fields": [
+     {
+      "name": "berth_code",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 19
+     },
+     {
+      "name": "vessel_hull",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 21
+     },
+     {
+      "name": "nights",
+      "number": 3,
+      "type": "int32",
+      "label": "single",
+      "line": 22
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.GetBookingRequest",
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 25,
+    "fields": [
+     {
+      "name": "id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 26
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.ListBookingsRequest",
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 29,
+    "fields": [
+     {
+      "name": "include_all",
+      "number": 1,
+      "type": "bool",
+      "label": "single",
+      "line": 31
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.ListBookingsResponse",
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 34,
+    "fields": [
+     {
+      "name": "bookings",
+      "number": 1,
+      "type": "harbor.v1.Booking",
+      "label": "repeated",
+      "line": 35
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.CancelBookingRequest",
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 38,
+    "fields": [
+     {
+      "name": "id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 39
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.CheckInRequest",
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 42,
+    "fields": [
+     {
+      "name": "booking_id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 43
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.QuoteFuelRequest",
+    "file": "proto/harbor/v1/fuel.proto",
+    "line": 13,
+    "fields": [
+     {
+      "name": "grade",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 14
+     },
+     {
+      "name": "litres",
+      "number": 2,
+      "type": "int32",
+      "label": "single",
+      "line": 15
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.DispenseRequest",
+    "file": "proto/harbor/v1/fuel.proto",
+    "line": 18,
+    "fields": [
+     {
+      "name": "booking_id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 19
+     },
+     {
+      "name": "grade",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 20
+     },
+     {
+      "name": "litres",
+      "number": 3,
+      "type": "int32",
+      "label": "single",
+      "line": 21
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.FuelQuote",
+    "file": "proto/harbor/v1/fuel.proto",
+    "line": 24,
+    "fields": [
+     {
+      "name": "grade",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 25
+     },
+     {
+      "name": "litres",
+      "number": 2,
+      "type": "int32",
+      "label": "single",
+      "line": 26
+     },
+     {
+      "name": "total_cents",
+      "number": 3,
+      "type": "int64",
+      "label": "single",
+      "line": 27
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.GetTideTableRequest",
+    "file": "proto/harbor/v1/tides.proto",
+    "line": 15,
+    "fields": [
+     {
+      "name": "station",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 16
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.TideTable",
+    "file": "proto/harbor/v1/tides.proto",
+    "line": 19,
+    "fields": [
+     {
+      "name": "station",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 20
+     },
+     {
+      "name": "readings",
+      "number": 2,
+      "type": "harbor.v1.TideReading",
+      "label": "repeated",
+      "line": 21
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.WatchTidesRequest",
+    "file": "proto/harbor/v1/tides.proto",
+    "line": 24,
+    "fields": [
+     {
+      "name": "station",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 25
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.Berth",
+    "file": "proto/harbor/v1/types.proto",
+    "line": 22,
+    "fields": [
+     {
+      "name": "id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 23
+     },
+     {
+      "name": "code",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 24
+     },
+     {
+      "name": "pier",
+      "number": 3,
+      "type": "string",
+      "label": "single",
+      "line": 25
+     },
+     {
+      "name": "length_m",
+      "number": 4,
+      "type": "int32",
+      "label": "single",
+      "line": 26
+     },
+     {
+      "name": "nightly_cents",
+      "number": 5,
+      "type": "int64",
+      "label": "single",
+      "line": 27
+     },
+     {
+      "name": "active",
+      "number": 6,
+      "type": "bool",
+      "label": "single",
+      "line": 28
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.Vessel",
+    "file": "proto/harbor/v1/types.proto",
+    "line": 31,
+    "fields": [
+     {
+      "name": "id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 32
+     },
+     {
+      "name": "hull",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 33
+     },
+     {
+      "name": "name",
+      "number": 3,
+      "type": "string",
+      "label": "single",
+      "line": 34
+     },
+     {
+      "name": "length_m",
+      "number": 4,
+      "type": "int32",
+      "label": "single",
+      "line": 35
+     },
+     {
+      "name": "owner_id",
+      "number": 5,
+      "type": "int64",
+      "label": "single",
+      "line": 36
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.Booking",
+    "file": "proto/harbor/v1/types.proto",
+    "line": 39,
+    "fields": [
+     {
+      "name": "id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 40
+     },
+     {
+      "name": "berth_code",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 41
+     },
+     {
+      "name": "vessel_id",
+      "number": 3,
+      "type": "int64",
+      "label": "single",
+      "line": 42
+     },
+     {
+      "name": "nights",
+      "number": 4,
+      "type": "int32",
+      "label": "single",
+      "line": 43
+     },
+     {
+      "name": "status",
+      "number": 5,
+      "type": "harbor.v1.BookingStatus",
+      "label": "single",
+      "line": 44
+     },
+     {
+      "name": "total_cents",
+      "number": 6,
+      "type": "int64",
+      "label": "single",
+      "line": 45
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.WorkOrder",
+    "file": "proto/harbor/v1/types.proto",
+    "line": 48,
+    "fields": [
+     {
+      "name": "id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 49
+     },
+     {
+      "name": "booking_id",
+      "number": 2,
+      "type": "int64",
+      "label": "single",
+      "line": 50
+     },
+     {
+      "name": "kind",
+      "number": 3,
+      "type": "string",
+      "label": "single",
+      "line": 51
+     },
+     {
+      "name": "note",
+      "number": 4,
+      "type": "string",
+      "label": "single",
+      "line": 52
+     },
+     {
+      "name": "done",
+      "number": 5,
+      "type": "bool",
+      "label": "single",
+      "line": 53
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.TideReading",
+    "file": "proto/harbor/v1/types.proto",
+    "line": 56,
+    "fields": [
+     {
+      "name": "station",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 57
+     },
+     {
+      "name": "at",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 58
+     },
+     {
+      "name": "height_cm",
+      "number": 3,
+      "type": "int32",
+      "label": "single",
+      "line": 59
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.RegisterVesselRequest",
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 16,
+    "fields": [
+     {
+      "name": "hull",
+      "number": 1,
+      "type": "string",
+      "label": "single",
+      "line": 17
+     },
+     {
+      "name": "name",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 18
+     },
+     {
+      "name": "length_m",
+      "number": 3,
+      "type": "int32",
+      "label": "single",
+      "line": 19
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.GetVesselRequest",
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 22,
+    "fields": [
+     {
+      "name": "id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 23
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.RenameVesselRequest",
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 26,
+    "fields": [
+     {
+      "name": "id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 27
+     },
+     {
+      "name": "name",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 28
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.ListVesselsRequest",
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 31,
+    "fields": []
+   },
+   {
+    "name": "harbor.v1.ListVesselsResponse",
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 33,
+    "fields": [
+     {
+      "name": "vessels",
+      "number": 1,
+      "type": "harbor.v1.Vessel",
+      "label": "repeated",
+      "line": 34
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.OpenWorkOrderRequest",
+    "file": "proto/harbor/v1/yard.proto",
+    "line": 16,
+    "fields": [
+     {
+      "name": "booking_id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 17
+     },
+     {
+      "name": "kind",
+      "number": 2,
+      "type": "string",
+      "label": "single",
+      "line": 19
+     },
+     {
+      "name": "note",
+      "number": 3,
+      "type": "string",
+      "label": "single",
+      "line": 20
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.ListWorkOrdersRequest",
+    "file": "proto/harbor/v1/yard.proto",
+    "line": 23,
+    "fields": [
+     {
+      "name": "booking_id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 24
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.ListWorkOrdersResponse",
+    "file": "proto/harbor/v1/yard.proto",
+    "line": 27,
+    "fields": [
+     {
+      "name": "work_orders",
+      "number": 1,
+      "type": "harbor.v1.WorkOrder",
+      "label": "repeated",
+      "line": 28
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.CompleteWorkOrderRequest",
+    "file": "proto/harbor/v1/yard.proto",
+    "line": 31,
+    "fields": [
+     {
+      "name": "id",
+      "number": 1,
+      "type": "int64",
+      "label": "single",
+      "line": 32
+     }
+    ]
+   }
+  ],
+  "enums": [
+   {
+    "name": "harbor.v1.Role",
+    "file": "proto/harbor/v1/types.proto",
+    "line": 8,
+    "values": [
+     {
+      "name": "ROLE_UNSPECIFIED",
+      "number": 0
+     },
+     {
+      "name": "ROLE_SKIPPER",
+      "number": 1
+     },
+     {
+      "name": "ROLE_HARBORMASTER",
+      "number": 2
+     },
+     {
+      "name": "ROLE_YARD",
+      "number": 3
+     }
+    ]
+   },
+   {
+    "name": "harbor.v1.BookingStatus",
+    "file": "proto/harbor/v1/types.proto",
+    "line": 15,
+    "values": [
+     {
+      "name": "BOOKING_STATUS_UNSPECIFIED",
+      "number": 0
+     },
+     {
+      "name": "BOOKING_STATUS_RESERVED",
+      "number": 1
+     },
+     {
+      "name": "BOOKING_STATUS_CHECKED_IN",
+      "number": 2
+     },
+     {
+      "name": "BOOKING_STATUS_CANCELLED",
+      "number": 3
+     }
+    ]
+   }
+  ],
+  "registrations": [
+   {
+    "service": "Health",
+    "impl": "hs",
+    "via": "RegisterHealthServer",
+    "file": "internal/app/app.go",
+    "line": 61,
+    "streams": 0,
+    "external": true
+   },
+   {
+    "service": "harbor.v1.Accounts",
+    "impl": "accounts.NewService(db, sessions)",
+    "via": "RegisterAccountsServer",
+    "file": "internal/app/app.go",
+    "line": 51,
+    "streams": 0
+   },
+   {
+    "service": "harbor.v1.Bookings",
+    "impl": "d",
+    "via": "RegisterService",
+    "file": "internal/bookings/module.go",
+    "line": 24,
+    "streams": 0
+   },
+   {
+    "service": "harbor.v1.Tides",
+    "impl": "tideDesk{Station: x.station}",
+    "via": "RegisterTidesServer",
+    "file": "internal/app/extras.go",
+    "line": 21,
+    "streams": 1
+   },
+   {
+    "service": "harbor.v1.Yard",
+    "impl": "w",
+    "via": "RegisterYardServer",
+    "file": "internal/yard/yard.go",
+    "line": 27,
+    "streams": 0
+   }
+  ],
+  "interceptors": [
+   {
+    "func": "c.unary",
+    "file": "internal/app/options.go",
+    "line": 33,
+    "kind": "auth_not_literal",
+    "reason": "the interceptor `c.unary` is not a function the extractor can resolve",
+    "chained": true
+   }
+  ],
+  "gateway": [],
+  "status_writes": [],
+  "notes": []
+ }
+}
