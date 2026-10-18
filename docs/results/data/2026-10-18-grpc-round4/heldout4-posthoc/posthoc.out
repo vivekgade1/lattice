@@ -1,0 +1,644 @@
+[
+ {
+  "id": "HO4-RPC",
+  "prediction": "recall 0.55-1.00 / precision 0.60-1.00 (point 0.85 / 0.88)",
+  "pass_rule": "recall >= 0.90 and precision >= 0.95 (rpc name AND state must match; `unread` counts wrong)",
+  "status": "FAIL",
+  "observed": {
+   "recall": 0.5,
+   "precision": 0.5,
+   "truth rpcs": 22,
+   "extracted rpcs": 22,
+   "matched": 11,
+   "truth states": {
+    "implemented": 18,
+    "not_registered": 2,
+    "streaming": 1,
+    "unimplemented": 1
+   },
+   "streaming reported not supported": [
+    "toolshed.booking.v1.ReservationService/WatchReservation"
+   ],
+   "streaming not supported (all)": true,
+   "model endpoints": 10
+  },
+  "detail": {
+   "missed (truth, state)": [
+    [
+     "toolshed.billing.v1.InvoiceService/GetInvoice",
+     "not_registered"
+    ],
+    [
+     "toolshed.billing.v1.InvoiceService/ListInvoices",
+     "not_registered"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/CreateTool",
+     "implemented"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/GetTool",
+     "implemented"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/ListTools",
+     "implemented"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/RelocateTool",
+     "implemented"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/RetireTool",
+     "implemented"
+    ],
+    [
+     "toolshed.members.v1.MemberService/DeleteAccount",
+     "implemented"
+    ],
+    [
+     "toolshed.members.v1.MemberService/GetMember",
+     "implemented"
+    ],
+    [
+     "toolshed.members.v1.MemberService/ListMembers",
+     "implemented"
+    ],
+    [
+     "toolshed.members.v1.MemberService/UpdateMember",
+     "implemented"
+    ]
+   ],
+   "extra (extract, state)": [
+    [
+     "toolshed.billing.v1.InvoiceService/GetInvoice",
+     "unread"
+    ],
+    [
+     "toolshed.billing.v1.InvoiceService/ListInvoices",
+     "unread"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/CreateTool",
+     "unread"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/GetTool",
+     "unread"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/ListTools",
+     "unread"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/RelocateTool",
+     "unread"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/RetireTool",
+     "unread"
+    ],
+    [
+     "toolshed.members.v1.MemberService/DeleteAccount",
+     "unread"
+    ],
+    [
+     "toolshed.members.v1.MemberService/GetMember",
+     "unread"
+    ],
+    [
+     "toolshed.members.v1.MemberService/ListMembers",
+     "unread"
+    ],
+    [
+     "toolshed.members.v1.MemberService/UpdateMember",
+     "unread"
+    ]
+   ]
+  }
+ },
+ {
+  "id": "HO4-SAFE",
+  "prediction": "0-4 confident-wrong (point 0; P(0) about 0.7)",
+  "pass_rule": "S8: 0 confident-wrong states or auth labels",
+  "status": "FAIL",
+  "observed": {
+   "confident-wrong": 1,
+   "checked": 22
+  },
+  "detail": {
+   "wrong": [
+    [
+     "toolshed.auth.v1.SessionService/Login",
+     "auth",
+     "Member",
+     "Public"
+    ]
+   ]
+  }
+ },
+ {
+  "id": "HO4-CODES",
+  "prediction": "recall 0.25-0.85 / precision 0.75-1.00 (point 0.50 / 0.92)",
+  "pass_rule": "S9: micro recall >= 0.70 and micro precision >= 0.90 (implemented rpcs, OK excluded; unread is no extra)",
+  "status": "FAIL",
+  "observed": {
+   "recall": 0.0423,
+   "precision": 0.6,
+   "truth": 71,
+   "extracted": 5,
+   "matched": 3,
+   "unknown_extras": [],
+   "unread_rpcs": []
+  },
+  "detail": {
+   "missed": [
+    "toolshed.auth.v1.SessionService/Login:INVALIDARGUMENT",
+    "toolshed.auth.v1.SessionService/Logout:NOTFOUND",
+    "toolshed.auth.v1.SessionService/Logout:UNAUTHENTICATED",
+    "toolshed.auth.v1.SessionService/WhoAmI:UNAUTHENTICATED",
+    "toolshed.booking.v1.ReservationService/CancelReservation:FAILEDPRECONDITION",
+    "toolshed.booking.v1.ReservationService/CancelReservation:INTERNAL",
+    "toolshed.booking.v1.ReservationService/CancelReservation:NOTFOUND",
+    "toolshed.booking.v1.ReservationService/CancelReservation:PERMISSIONDENIED",
+    "toolshed.booking.v1.ReservationService/CancelReservation:UNAUTHENTICATED",
+    "toolshed.booking.v1.ReservationService/CheckOut:FAILEDPRECONDITION",
+    "toolshed.booking.v1.ReservationService/CheckOut:INTERNAL",
+    "toolshed.booking.v1.ReservationService/CheckOut:NOTFOUND",
+    "toolshed.booking.v1.ReservationService/CheckOut:PERMISSIONDENIED",
+    "toolshed.booking.v1.ReservationService/CheckOut:UNAUTHENTICATED",
+    "toolshed.booking.v1.ReservationService/CreateReservation:ALREADYEXISTS",
+    "toolshed.booking.v1.ReservationService/CreateReservation:FAILEDPRECONDITION",
+    "toolshed.booking.v1.ReservationService/CreateReservation:INTERNAL",
+    "toolshed.booking.v1.ReservationService/CreateReservation:INVALIDARGUMENT",
+    "toolshed.booking.v1.ReservationService/CreateReservation:NOTFOUND",
+    "toolshed.booking.v1.ReservationService/CreateReservation:PERMISSIONDENIED",
+    "toolshed.booking.v1.ReservationService/CreateReservation:UNAUTHENTICATED",
+    "toolshed.booking.v1.ReservationService/GetReservation:INTERNAL",
+    "toolshed.booking.v1.ReservationService/GetReservation:NOTFOUND",
+    "toolshed.booking.v1.ReservationService/GetReservation:PERMISSIONDENIED",
+    "toolshed.booking.v1.ReservationService/GetReservation:UNAUTHENTICATED",
+    "toolshed.booking.v1.ReservationService/ListReservations:INTERNAL",
+    "toolshed.booking.v1.ReservationService/ListReservations:INVALIDARGUMENT",
+    "toolshed.booking.v1.ReservationService/ListReservations:UNAUTHENTICATED",
+    "toolshed.booking.v1.ReservationService/ReturnTool:FAILEDPRECONDITION",
+    "toolshed.booking.v1.ReservationService/ReturnTool:INTERNAL",
+    "toolshed.booking.v1.ReservationService/ReturnTool:NOTFOUND",
+    "toolshed.booking.v1.ReservationService/ReturnTool:PERMISSIONDENIED",
+    "toolshed.booking.v1.ReservationService/ReturnTool:UNAUTHENTICATED",
+    "toolshed.catalog.v1.EquipmentService/CreateTool:ALREADYEXISTS",
+    "toolshed.catalog.v1.EquipmentService/CreateTool:INTERNAL",
+    "toolshed.catalog.v1.EquipmentService/CreateTool:INVALIDARGUMENT",
+    "toolshed.catalog.v1.EquipmentService/CreateTool:PERMISSIONDENIED",
+    "toolshed.catalog.v1.EquipmentService/CreateTool:UNAUTHENTICATED",
+    "toolshed.catalog.v1.EquipmentService/GetTool:INTERNAL",
+    "toolshed.catalog.v1.EquipmentService/GetTool:INVALIDARGUMENT",
+    "toolshed.catalog.v1.EquipmentService/GetTool:NOTFOUND",
+    "toolshed.catalog.v1.EquipmentService/ListTools:INTERNAL",
+    "toolshed.catalog.v1.EquipmentService/RelocateTool:INTERNAL",
+    "toolshed.catalog.v1.EquipmentService/RelocateTool:INVALIDARGUMENT",
+    "toolshed.catalog.v1.EquipmentService/RelocateTool:NOTFOUND",
+    "toolshed.catalog.v1.EquipmentService/RelocateTool:PERMISSIONDENIED",
+    "toolshed.catalog.v1.EquipmentService/RelocateTool:UNAUTHENTICATED",
+    "toolshed.catalog.v1.EquipmentService/RetireTool:FAILEDPRECONDITION",
+    "toolshed.catalog.v1.EquipmentService/RetireTool:INTERNAL",
+    "toolshed.catalog.v1.EquipmentService/RetireTool:INVALIDARGUMENT",
+    "toolshed.catalog.v1.EquipmentService/RetireTool:NOTFOUND",
+    "toolshed.catalog.v1.EquipmentService/RetireTool:PERMISSIONDENIED",
+    "toolshed.catalog.v1.EquipmentService/RetireTool:UNAUTHENTICATED",
+    "toolshed.members.v1.MemberService/DeleteAccount:FAILEDPRECONDITION",
+    "toolshed.members.v1.MemberService/DeleteAccount:INTERNAL",
+    "toolshed.members.v1.MemberService/DeleteAccount:INVALIDARGUMENT",
+    "toolshed.members.v1.MemberService/DeleteAccount:UNAUTHENTICATED",
+    "toolshed.members.v1.MemberService/GetMember:INTERNAL",
+    "toolshed.members.v1.MemberService/GetMember:NOTFOUND",
+    "toolshed.members.v1.MemberService/GetMember:UNAUTHENTICATED",
+    "toolshed.members.v1.MemberService/ListMembers:INTERNAL",
+    "toolshed.members.v1.MemberService/ListMembers:PERMISSIONDENIED",
+    "toolshed.members.v1.MemberService/ListMembers:UNAUTHENTICATED",
+    "toolshed.members.v1.MemberService/UpdateMember:INTERNAL",
+    "toolshed.members.v1.MemberService/UpdateMember:INVALIDARGUMENT",
+    "toolshed.members.v1.MemberService/UpdateMember:NOTFOUND",
+    "toolshed.members.v1.MemberService/UpdateMember:PERMISSIONDENIED",
+    "toolshed.members.v1.MemberService/UpdateMember:UNAUTHENTICATED"
+   ],
+   "extra": [
+    "toolshed.auth.v1.SessionService/Login:INVALID_ARGUMENT",
+    "toolshed.auth.v1.SessionService/Logout:NOT_FOUND"
+   ]
+  }
+ },
+ {
+  "id": "HO4-AUTH",
+  "prediction": "wrong 0 (P 0.85); unclear 0.00-1.00 (point 0.55)",
+  "pass_rule": "S7: 0 wrong (hard) and unclear <= 0.50 of the truth's implemented + unimplemented rpcs",
+  "status": "FAIL",
+  "observed": {
+   "denominator": 19,
+   "unclear": 9,
+   "unclear_share": 0.4737,
+   "reason": "wrong",
+   "wrong": [
+    [
+     "toolshed.auth.v1.SessionService/Login",
+     "Member",
+     "Public"
+    ]
+   ]
+  },
+  "detail": {
+   "unclear rpcs": [
+    [
+     "toolshed.catalog.v1.EquipmentService/CreateTool",
+     "(none)"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/GetTool",
+     "(none)"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/ListTools",
+     "(none)"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/RelocateTool",
+     "(none)"
+    ],
+    [
+     "toolshed.catalog.v1.EquipmentService/RetireTool",
+     "(none)"
+    ],
+    [
+     "toolshed.members.v1.MemberService/DeleteAccount",
+     "(none)"
+    ],
+    [
+     "toolshed.members.v1.MemberService/GetMember",
+     "(none)"
+    ],
+    [
+     "toolshed.members.v1.MemberService/ListMembers",
+     "(none)"
+    ],
+    [
+     "toolshed.members.v1.MemberService/UpdateMember",
+     "(none)"
+    ]
+   ],
+   "row": {
+    "denominator": 19,
+    "wrong": [
+     [
+      "toolshed.auth.v1.SessionService/Login",
+      "Member",
+      "Public"
+     ]
+    ],
+    "unclear": 9,
+    "unclear_share": 0.4737,
+    "unclear_rpcs": [
+     [
+      "toolshed.catalog.v1.EquipmentService/CreateTool",
+      "(none)"
+     ],
+     [
+      "toolshed.catalog.v1.EquipmentService/GetTool",
+      "(none)"
+     ],
+     [
+      "toolshed.catalog.v1.EquipmentService/ListTools",
+      "(none)"
+     ],
+     [
+      "toolshed.catalog.v1.EquipmentService/RelocateTool",
+      "(none)"
+     ],
+     [
+      "toolshed.catalog.v1.EquipmentService/RetireTool",
+      "(none)"
+     ],
+     [
+      "toolshed.members.v1.MemberService/DeleteAccount",
+      "(none)"
+     ],
+     [
+      "toolshed.members.v1.MemberService/GetMember",
+      "(none)"
+     ],
+     [
+      "toolshed.members.v1.MemberService/ListMembers",
+      "(none)"
+     ],
+     [
+      "toolshed.members.v1.MemberService/UpdateMember",
+      "(none)"
+     ]
+    ],
+    "reason": "wrong",
+    "pass": false
+   }
+  }
+ },
+ {
+  "id": "HO4-TABLES",
+  "prediction": "recall 0.85-1.00 (point 1.00)",
+  "pass_rule": "recall >= 0.90 (`tables_source` reported beside it)",
+  "status": "PASS",
+  "observed": {
+   "recall": 1.0,
+   "precision": 1.0,
+   "truth": 6,
+   "extracted": 6,
+   "tables_source": "harness_db"
+  },
+  "detail": {
+   "missed": [],
+   "extra": []
+  }
+ },
+ {
+  "id": "HO4-REC",
+  "prediction": "coverage 0.95-1.00; agreement 0.60-1.00 (point 0.92); P(login works) about 0.8",
+  "pass_rule": "S5 (coverage >= 0.95, agreement 1.00, supplementary 0) + S6 not FAIL + 0 auth_refused + 0 login_failed on truth-implemented non-public rpcs + every disagreement isolated",
+  "status": "PASS",
+  "observed": {
+   "S5 coverage": 1.0,
+   "S5 agreement": 1.0,
+   "S5 by class": {
+    "absent": "1/1",
+    "implemented": "18/18",
+    "not_registered": "2/2",
+    "unimplemented": "1/1"
+   },
+   "S5 reason": "",
+   "supplementary_calls": 0,
+   "S6": "exercised",
+   "auth_refused on truth-implemented non-public rpcs": [],
+   "order disagreed": [],
+   "all disagreements resolved isolated": true,
+   "rpcs answered by the library": 22,
+   "seconds": 3.9,
+   "login_failed on truth-implemented non-public rpcs": []
+  },
+  "detail": {
+   "S5": {
+    "denominator": 22,
+    "covered": 22,
+    "coverage": 1.0,
+    "agreement": 1.0,
+    "by_class": {
+     "absent": "1/1",
+     "implemented": "18/18",
+     "not_registered": "2/2",
+     "unimplemented": "1/1"
+    },
+    "wrong": [],
+    "missing": [],
+    "supplementary_calls": 0,
+    "reason": "",
+    "pass": true
+   },
+   "S6": {
+    "status": "exercised",
+    "pass": true,
+    "effectful": [
+     "toolshed.auth.v1.SessionService/Logout",
+     "toolshed.members.v1.MemberService/DeleteAccount",
+     "toolshed.members.v1.MemberService/UpdateMember"
+    ],
+    "not_in_both_passes": [],
+    "isolated": [],
+    "reason": ""
+   },
+   "library output rpcs not in truth": [],
+   "codes": {
+    "toolshed.auth.v1.SessionService/Login": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "toolshed.auth.v1.SessionService/Logout": {
+     "code": "OK",
+     "answered": true
+    },
+    "toolshed.auth.v1.SessionService/WhoAmI": {
+     "code": "OK",
+     "answered": true
+    },
+    "toolshed.booking.v1.ReservationService/CreateReservation": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "toolshed.booking.v1.ReservationService/GetReservation": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "toolshed.booking.v1.ReservationService/ListReservations": {
+     "code": "OK",
+     "answered": true
+    },
+    "toolshed.booking.v1.ReservationService/CancelReservation": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "toolshed.booking.v1.ReservationService/CheckOut": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "toolshed.booking.v1.ReservationService/ReturnTool": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "toolshed.booking.v1.ReservationService/ExtendReservation": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    },
+    "toolshed.catalog.v1.EquipmentService/ListTools": {
+     "code": "OK",
+     "answered": true,
+     "route": false
+    },
+    "toolshed.catalog.v1.EquipmentService/GetTool": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true,
+     "route": false
+    },
+    "toolshed.catalog.v1.EquipmentService/CreateTool": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true,
+     "route": false
+    },
+    "toolshed.catalog.v1.EquipmentService/RelocateTool": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true,
+     "route": false
+    },
+    "toolshed.catalog.v1.EquipmentService/RetireTool": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true,
+     "route": false
+    },
+    "toolshed.members.v1.MemberService/GetMember": {
+     "code": "OK",
+     "answered": true,
+     "route": false
+    },
+    "toolshed.members.v1.MemberService/ListMembers": {
+     "code": "OK",
+     "answered": true,
+     "route": false
+    },
+    "toolshed.members.v1.MemberService/UpdateMember": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true,
+     "route": false
+    },
+    "toolshed.members.v1.MemberService/DeleteAccount": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true,
+     "route": false
+    },
+    "toolshed.billing.v1.InvoiceService/GetInvoice": {
+     "code": "UNIMPLEMENTED",
+     "answered": false,
+     "route": false
+    },
+    "toolshed.billing.v1.InvoiceService/ListInvoices": {
+     "code": "UNIMPLEMENTED",
+     "answered": false,
+     "route": false
+    },
+    "(absent)": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    }
+   }
+  }
+ },
+ {
+  "id": "HO4-FLOWS",
+  "prediction": "recovered 0-60; verified 0-10 (point 3); edge recall 0.00-0.50 (point 0.20); coverage 0-5 (point 2); 0 vbf",
+  "pass_rule": "S2: verified >= 1, 0 verified-but-failing, edge recall >= 0.30, coverage >= 2 truth flows",
+  "status": "FAIL",
+  "observed": {
+   "truth_flows": 10,
+   "truth_flows_passing": 0,
+   "truth_edges_total": 35,
+   "recovered": 0,
+   "recovered_by_status": {
+    "verified": 0,
+    "unverified": 0,
+    "failed": 0,
+    "unbound": 0
+   },
+   "recovered_by_kind_status": {},
+   "verified": 0,
+   "verified_but_failing": 0,
+   "edge_recall": {
+    "num": 0,
+    "den": 0,
+    "bound": 0.3,
+    "gated": true,
+    "value": null,
+    "pass": false,
+    "reason": "vacuous"
+   },
+   "coverage": {
+    "num": 0,
+    "den": 0,
+    "bound": 2,
+    "gated": true,
+    "value": null,
+    "pass": false,
+    "reason": "vacuous"
+   },
+   "exact": {
+    "num": 0,
+    "den": 0
+   },
+   "failing_codes": {},
+   "unbound_reasons": {},
+   "reasons": [
+    "no_verified_flow",
+    "truth_not_scorable",
+    "edge_recall:vacuous",
+    "coverage:vacuous"
+   ],
+   "seconds": 0.0
+  },
+  "detail": {
+   "score": {
+    "pass": false,
+    "reasons": [
+     "no_verified_flow",
+     "truth_not_scorable",
+     "edge_recall:vacuous",
+     "coverage:vacuous"
+    ],
+    "recovered": 0,
+    "recovered_by_status": {
+     "verified": 0,
+     "unverified": 0,
+     "failed": 0,
+     "unbound": 0
+    },
+    "verified": 0,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 0,
+     "den": 0,
+     "bound": 0.3,
+     "gated": true,
+     "value": null,
+     "pass": false,
+     "reason": "vacuous"
+    },
+    "coverage": {
+     "num": 0,
+     "den": 0,
+     "bound": 2,
+     "gated": true,
+     "value": null,
+     "pass": false,
+     "reason": "vacuous"
+    },
+    "exact": {
+     "num": 0,
+     "den": 0
+    },
+    "truth_defects": [
+     "reserve_then_cancel_own_booking",
+     "reservation_owner_check_and_bypass",
+     "desk_checkout_and_return",
+     "logout_revokes_named_session",
+     "delete_account_cascades",
+     "admin_promotes_member_to_staff",
+     "staff_books_on_behalf_of_member",
+     "admin_tool_lifecycle",
+     "unserved_methods_answer_unimplemented",
+     "anonymous_browse_but_not_book"
+    ],
+    "failing_codes": {},
+    "unbound_reasons": {},
+    "truth_flows": 10,
+    "truth_flows_passing": 0,
+    "truth_edges_total": 35,
+    "recovered_by_kind_status": {}
+   },
+   "vbf ids": [],
+   "truth flow failures": [
+    "reserve_then_cancel_own_booking",
+    "reservation_owner_check_and_bypass",
+    "desk_checkout_and_return",
+    "logout_revokes_named_session",
+    "delete_account_cascades",
+    "admin_promotes_member_to_staff",
+    "staff_books_on_behalf_of_member",
+    "admin_tool_lifecycle",
+    "unserved_methods_answer_unimplemented",
+    "anonymous_browse_but_not_book"
+   ],
+   "not verified": []
+  }
+ }
+]
+tables_source None

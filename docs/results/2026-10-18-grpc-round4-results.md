@@ -222,3 +222,125 @@ P4-BC (including deskd byte-identical, which a first version of my own D3.3 brok
 n = 1 held-out is not here at all. The dev rows are tuned-on or fixture rows I wrote after reading harborline; P4-WIRE/AUTHI/CODES
 passing says the code does what my fixtures spell out, not that a new author's idioms are covered (three of harborline's five error
 idioms are not). The 749-line change is larger than any earlier round's and was reviewed only by its tests and mutants.
+
+## 10. PG-HO4 (gated held-out, toolshed): NOT RUN. Both permitted runs crashed before any metric
+
+Executed 2026-10-18 in this worktree (branch `spike-i-grpc-round4`, merged with Amendment 3a). No commit, no `git add`, no model call,
+no Docker, no Streak, no sub-agent; no library, runner, scorer or contract byte changed.
+
+**Preconditions (m, all OK).** runner `grpc_probes4.py` 82aca97b... , scorer `grpc_scorer4.py` e963747a... , contract `grpc_contract4.py`
+6666ac9b... , `freeze4.sha256` c6039e85... , scorer cases dabdd459... : each equals Amendment 2. `sha256sum --check freeze4.sha256`: OK. The
+held-out `freeze.sha256` (staging copy, 54 files) hashes to cc524717... = Amendment 3a = the committed `heldout4.freeze.sha256`; its
+`sha256sum --check`: OK. The runner's own preflight printed `{"ok": true, "problems": []}` on both runs. `IDIOMS.md` was not read until
+section 10.4 (after the gated stage had ended without a score; see the caveat there).
+
+### 10.1 The two runs (ledger `heldout4/h4-runs.json`: index 1 crashed, index 2 crashed, runner sha identical on both)
+
+| run | command (only `--heldout`, `--out`, `--scratch` as the prereg allows) | result |
+|---|---|---|
+| 1 | `--heldout .../grpc4h/stage` (the Amendment-3a layout: `cp -a` of toolshed plus `app -> .`) | `GoExtractError: no Go module directory at .../grpc4h/app`. Cause (r): `p3.load_app` does `parent = base.resolve().parent`, so the `app -> .` symlink resolves to `stage`, whose parent has no `app`. A staging-layout defect, not the app, not the library. No metric. |
+| 2 | `--heldout .../grpc4h/stage2` (same 54 files, byte-identical; `app/` a real directory, root entries symlinks into it; `freeze.sha256` identical, `--check` OK; runner bytes unchanged) | `CheckError: the spec is not valid: S027: scenario ... expect_code 'FAILEDPRECONDITION' is not a gRPC code` (ten scenarios). Cause (r): the frozen round-2 reader `grpc_probes2.py:1362` does `str(code).upper()`, while the held-out truth (as its `TRUTH_SCHEMA` and the brief said) names codes by the grpc-go `String()` form (`FailedPrecondition`), so `.upper()` yields `FAILEDPRECONDITION`, which the library's code table (`FAILED_PRECONDITION`) rejects. No metric file; `heldout4/` holds only the ledger. |
+
+Re-run 2 was taken because runs and layout were the only variables and the runner's bytes did not change (prereg 6.4 step 5). Run 2
+also crashed before any metric, so the rule is exhausted: **no third run** (a crash on the re-run is NOT RUN for every row), and the
+cause of run 2 sits in a frozen reader, so fixing it would change runner-chain bytes (STOP condition). Provenance label for any row:
+none exists (no row was written).
+
+### 10.2 HO4 rows, predicted against observed (gated stage)
+
+| id | prediction (p) | gated pass | observed |
+|---|---|---|---|
+| HO4-RPC | 0.55-1.00 / 0.60-1.00 (point 0.85 / 0.88) | >= 0.90 / >= 0.95 | **NOT RUN** |
+| HO4-SAFE | 0-4 (point 0; P(0) about 0.7) | 0 | **NOT RUN** |
+| HO4-CODES | 0.25-0.85 / 0.75-1.00 (point 0.50 / 0.92) | >= 0.70 / >= 0.90 | **NOT RUN** |
+| HO4-AUTH | wrong 0 (P 0.85); unclear 0.00-1.00 (point 0.55) | 0 wrong, unclear <= 0.50 | **NOT RUN** |
+| HO4-TABLES | 0.85-1.00 (point 1.00) | >= 0.90 | **NOT RUN** |
+| HO4-REC | coverage 0.95-1.00; agreement 0.60-1.00; P(login works) about 0.8 (Amendment 3 predicted the login failure) | coverage >= 0.95, agreement 1.00, 0 login_failed ... | **NOT RUN** |
+| HO4-FLOWS | verified 0-10; edge recall 0.00-0.50; coverage 0-5 | verified >= 1, 0 vbf, edge >= 0.30, coverage >= 2 | **NOT RUN** |
+| HO4-DET | identical | 10/10 | **NOT RUN** |
+| HO4-NW | 0, 0, 0 | all 0 | **NOT RUN** |
+
+Gated result: **0 of 9 rows scored; 0 passed; 9 NOT RUN** (a NOT RUN is not a pass). The predicted login failure (Amendment 3) cannot be
+scored as a hit or a miss; the prediction about its cause was wrong in kind (10.3).
+
+### 10.3 Post hoc diagnostics (NOT gated, NOT blind; labelled `post_hoc`; scripts and raw output in `data/.../heldout4-posthoc/`)
+
+All run from a scratch cwd on a COPY of the app (`scratchpad/grpc4h/diag/p/app`); the only edits to the copy are two, both named
+below. The staged held-out files were not modified.
+
+**A. Why the library's login is rejected ('unknown username or wrong password'): the harness's `build_db` returns `None`.**
+- `harness.build_db(path) -> None` ends without `return path`. The library convention (r: `grpc.py:553/595/677`, `grpc_contract4.py:56`,
+  every other harness e.g. `tests/grpc/fixtures/sessions/harness.py:107`) is `db = build_db(tmp/x.db); app = make_app(db)`, so `make_app`
+  received `None`, and `ProcessApp(db_path=str(None))` = **`'None'`**. The server then started with `DB_PATH=None`, i.e. it opened and
+  migrated a fresh, EMPTY SQLite file named `None` in the current working directory (that is the stray `None` file: 7 tables, 0 rows;
+  checked again in this session: the same bytes appeared at the worktree root after run 2 and were moved to
+  `scratchpad/grpc4h/evidence/None-run2.sqlite`). The seeded database (6 members, checked) sat unused at `c.db`.
+- Experiment (`login_diag.py`): as delivered, `make_app` db_path `'None'`, **6 of 6 logins fail** with exactly `UNAUTHENTICATED unknown
+  username or wrong password`. Passing the path to `make_app` (the only change), `make_app` db_path = the seeded file, **6 of 6 logins ok**
+  (alice, carol, bob, dave, erin, frank). So credentials, `username_field` (explicit `username`), hashing and the server are fine; D6 is
+  not implicated (the harness names its fields).
+- Whose defect: the build_db-return convention is not stated in the Appendix A text the author received ("`build_db(path)` creates and
+  seeds a SQLite file at `path`"). Same documentation class as the omitted `process_runtime` (Amendment 3), recorded as an orchestrator
+  documentation defect; the author's own Go replay never uses `build_db`'s return value. The Amendment-3 "predicted cause" (seeding or
+  credential-path mismatch) was right in kind (db path) and unproven in mechanism; now proven.
+- The contract check's own flow replay is also defective: for every flow it builds `Rpc(..., s["message"])` without applying `links`, so
+  10 of 10 flows fail at the first linked step even with a good harness (post hoc run of the frozen `grpc_contract4.py` on the copy with
+  `build_db` returning the path: import ok, build ok, **login 6 of 6 ok**, then `flow replay failed: AttributeError` because its failure
+  handler reads `finding.message`, an attribute `CheckFinding` lacks; with that handler bypassed in a scratch copy: 10 of 10 flows fail on
+  an empty linked field, e.g. `GetReservation {}` -> NOT_FOUND). Round-2's `_truth_replay` does the same (ignores `links`), which makes
+  `truth_flows_passing` 0 and HO4-FLOWS `truth_not_scorable` for ANY link-bearing truth, independent of login (it is the same
+  reason round 3 reported 0 of 8 on harborline; round-3 section 11's attribution of that to login alone was incomplete).
+
+**B. Post hoc rows through the unchanged round-4 scoring functions (`rpc_rows4`, `rec_row4`, `flows_row4`), copy with (i) `build_db` +`return path`, (ii) truth flow codes rewritten `CamelCase -> UPPER_SNAKE` (21 strings; 'truth.json' of the copy only). `HO4-DET`/`HO4-NW` not run.**
+
+| row | post hoc observed | would the gate pass? |
+|---|---|---|
+| RPC | recall **0.500**, precision **0.500** (22 truth, 22 extracted, 11 matched; 11 rpcs `unread`: Equipment x5, Member x4, Invoice x2) | no (>= 0.90 / 0.95) |
+| SAFE | **1** confident-wrong: `SessionService/Login` extracted `Member`, truth `Public` (anonymous). 0 state-direction errors | no (0) |
+| CODES | micro recall **0.0704** (5 of 71), precision **1.000**, 0 `UNKNOWN` extras (as scored through the frozen path before name normalisation: 0.0423 / 0.600; that figure is an artefact of the same upper() defect on the truth's code lists, so I report the normalised one, which I produced by mapping the truth names in my script) | no (0.70 / 0.90) |
+| AUTH | denominator 19, **1 wrong** (Login), unclear 9 = **0.474** (the 9 are the unread rpcs) | no (0 wrong) |
+| TABLES | recall **1.000**, precision 1.000 (6 of 6), `tables_source` = **`harness_db`** (the schema lives in `internal/storage/schema/0001_init.sql`, no `CREATE TABLE` in Go): measures the harness reader, not the extractor | yes (>= 0.90) |
+| REC (library output only) | coverage **1.00** (22/22), agreement **1.00** (absent 1/1, implemented 18/18, not_registered 2/2, unimplemented 1/1), supplementary 0, S6 exercised, 0 `auth_refused`, 0 `login_failed`, disagreements 0 | yes |
+| FLOWS | truth flows 10, truth flows replaying 0 of 10 (`truth_not_scorable`), recovered 0, verified 0, edge recall and coverage `vacuous` | no |
+
+Reading: with the login fixed REC is perfect, so the library's reconcile is not the weak point here. Note REC agrees with truth on
+all 22 including the two `not_registered` and the Invoice rpcs the static extractor left `unread`: the dynamic layer covers where the
+static layer is honest-unknown.
+
+### 10.4 Idiom attribution (a finding, not a fix). Caveat: read AFTER the gated stage ended unscored, so no gated number was influenced
+
+`IDIOMS.md` read after 10.3. Per idiom, what the extractor did:
+
+| idiom (author's words) | extractor outcome | consequence |
+|---|---|---|
+| Auth service: `init()` self-registration into `modreg` installer registry, `modreg.InstallAll` | **resolved** (D1.4); 3 rpcs `implemented` | hit |
+| Booking: `booking.NewModule(...).Mount(gs)`, module method calls generated `RegisterReservationServiceServer` | **resolved**; 6 `implemented` + Extend `unimplemented` + Watch streaming | hit |
+| Catalog: `catalog.ServiceDesc()` returns a **decorated copy** of the generated `ServiceDesc` (handlers wrapped), passed to `gs.RegisterService` | **unresolved** descriptor (`wire.go:53`) | 5 rpcs `unread`; D1.3 then blocks every other unregistered declared service |
+| Members: functional option `grpcserver.WithService(desc, impl)` collected by `grpcserver.New` which registers while constructing | **unresolved** (`builder.go:57`) | 4 rpcs `unread` |
+| Invoice: declared, never registered | `unread` instead of `not_registered` (D1.3 consequence; Q3 accepted) | 2 RPC misses, safe, not S8 |
+| Errors, auth service: inline `status.Error(codes.X, ..)` | read (Login 3 codes, Logout 2) | hits |
+| Errors, booking: package type `*refusal` with `GRPCStatus()` method returned from handlers | **not traced** (`grpc_error_not_traced`, 12 sites in `errors.go`); this is exactly D3.4's optional shape, not built | booking codes missing (0 extracted) |
+| Errors, equipment: plain sentinels, `translate()` in the decorated descriptor maps via `codeFor` | not reached (service unresolved) and the translator is not an interceptor (D3.1 limits translators to interceptors) | codes missing |
+| Errors, members: `status.New(..).WithDetails(..).Err()` through `deny()` | not reached (service unresolved) | codes missing |
+| Gate: codes from the interceptor | extractor read the interceptor (`authn.Gate.Unary.func1`, `auth_literal`) but attributes no `UNAUTHENTICATED` to rpcs | interceptor codes missing for all rpcs |
+| Auth decision: audience declared per method as a **custom proto method option**, read from the descriptor registry at call time (`g.audience(fullMethod) == AUDIENCE_ANONYMOUS`) | the extractor classed the gate `auth_literal` with an empty allowlist and so labelled **Login `Member`, a confident wrong** (reason text: "refuses callers without a valid token and does not list .../Login") | the only HO4-SAFE hit and the only AUTH wrong; a non-literal exemption (registry lookup) was read as a literal allowlist that is empty |
+| Schema: `.sql` file embedded with `go:embed`, applied by `storage.Migrate` | no Go `CREATE TABLE` in `.go`; tables from the harness db (D5.2) | TABLES 1.0 via `harness_db` |
+
+Of the four wiring idioms, 2 resolve and 2 do not, and the 2 that do not (a function returning a modified descriptor copy, a variadic
+option consumed by a builder) are shapes D1.1/D1.2 were meant to cover on harborline (parameter descriptor, functional-options
+constructor) but not in this form. The one safety miss is a new mechanism (a proto option) not on the `unclear` side of D2.5, an
+oversight in the "unknown mechanism => `unclear`" rule: the gate's exemption test was not a string allowlist at all.
+
+### 10.5 What this changes
+
+- PG-HO4: **0 of 9 scored; NOT RUN; not "failed"**. Nothing here supports "the library fixes round 3's misses" or its opposite on an
+  independent app. The only evidence is post hoc, on an app whose IDIOMS.md has now been read.
+- Predicted vs observed on the one predicted item: Amendment 3 expected REC and FLOWS to fail on login. Observed: they did not run, and
+  the cause was db-path plumbing (`build_db` returned `None`) plus, for FLOWS, a link-blind truth replay: both outside the library.
+- Process findings: (a) the Amendment-3a staging recipe (`app -> .`) is incompatible with `p3.load_app` (`resolve()`); (b) the frozen
+  reader upper-cases truth codes without underscores, incompatible with the truth schema the brief gave the author; (c) the contract
+  check and the round-2 truth replay ignore `links`; (d) the contract check's failure handler reads a nonexistent attribute; (e) the
+  Appendix A omitted the `build_db` return convention. Each is a defect in the orchestrator's or builder's chain, none was edited.
+- Tests (`tests/grpc`): 331 passed, 4 failed, the four frozen round-3 ids already recorded in Amendment 2 (`test_wiring3` Dead / Gone /
+  Never and `test_r6_dead_and_test_only_registrations_are_not_registered`). `ruff check` on `dogfood/grpc_probes4.py`,
+  `grpc_scorer4.py`, `grpc_contract4.py`: all checks passed. No Python or Go source was touched in this step (docs and data only).
