@@ -71,6 +71,14 @@ and writes it (:func:`write_rules`):
    the wall time per stage; ``candidate_spec.py`` the corrected spec, ``proposals.json``
    the mined proposals (pending review).
 
+8. **Go** (Spike J, node J1; :mod:`lattice.importer.go_rules`). The same import for a Go
+   (Gin + GORM) app: with ``--framework gin`` and no ``--app-factory``, the factory comes
+   from the module's ``studio.toml`` ``[app] app`` (``go_rules.harness_factory``); owner
+   columns are inferred from the extract's ``owner_uses`` where GORM declares no association
+   (``go_rules.infer_owners``, recorded as ``inferences`` in ``report.json["rules"]``, present
+   only when non-empty); and layer A's derived policy is written as ``go_policy.json``
+   (:mod:`lattice.gocheck.derive`). A Python front end goes through the paths above unchanged.
+
 Django keeps process-global state: one Django project per process (the CLI is one).
 """
 
@@ -806,6 +814,9 @@ class RulesImport:
     variant2: dict[str, Any] = field(default_factory=dict)
     # tables no route reads or writes (outside_api): listed, not in the denominator
     outside: dict[str, str] = field(default_factory=dict)
+    # Go only (go_rules): the owner columns inferred from the extract, layer A's derived policy
+    inferences: list[dict[str, Any]] = field(default_factory=list)
+    go_policy: dict[str, Any] | None = None
 
     def rules_dict(self) -> dict[str, Any]:
         data = self.rules.to_dict()
@@ -843,6 +854,8 @@ class RulesImport:
             },  # fmt: skip
         )
         data["notes"] = list(data.get("notes", [])) + self.notes
+        if self.inferences:  # Go only, and only when something was inferred
+            data["inferences"] = self.inferences
         return data
 
 
@@ -926,7 +939,14 @@ def import_rules(
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
     fe = select(framework, root, package)
-    factory, factory_name = find_factory(package, app_factory)
+    go_factory = None
+    if fe.name == "gin":  # Go (J1): the harness' factory, and owners inferred from the extract
+        from lattice.importer import go_rules
+
+        if app_factory is None:
+            go_factory = go_rules.harness_factory(root, package)
+        fe = go_rules.InferringFrontEnd(fe)
+    factory, factory_name = go_factory or find_factory(package, app_factory)
     model = fe.extract(root, package)
     runtime = _runtime(fe, root, package, model)
     result = lift_repo(root, package, factory, only=(), dialect=dialect, frontend=fe,
@@ -1002,6 +1022,12 @@ def import_rules(
         mark_uploads(again, uploads)
         variant2 = variant2_record(again)
         timing["variant2"] = clock() - t4
+        inferences = list(getattr(fe, "inferences", ()))
+        go_policy = None
+        if fe.name == "gin":
+            t5 = clock()
+            go_policy = _go_policy(root, package, inferences)
+            timing["go_policy"] = clock() - t5
         timing["total"] = clock() - t0
         return RulesImport(
             result,
@@ -1018,9 +1044,37 @@ def import_rules(
             notes=notes,
             variant2=variant2,
             outside=outside,
+            inferences=inferences,
+            go_policy=go_policy,
         )
     finally:
         seeder.close()
+
+
+def _go_policy(root: Path, package: str, inferences: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """``go_policy.json`` (Go only): layer A's policy derived from the app
+    (:func:`lattice.gocheck.derive.derive_go_policy`) with its baseline, and the state
+    machines the derivation drops (a machine is a decision: the app's own writes are not a
+    spec)."""
+    from lattice.gocheck.derive import derive_go_policy, policy_extract
+
+    module_dir = Path(root) / package
+    extract = policy_extract(module_dir)
+    owners = {i["table"]: i["column"] for i in inferences if i.get("column")}
+    policy = derive_go_policy(module_dir, extract, owners)
+    dropped: dict[tuple[str, str], list[Any]] = {}
+    for w in extract.get("status_writes", ()):
+        values = dropped.setdefault((w["model"], w["column"]), [])
+        if w["value"] not in values:
+            values.append(w["value"])
+    return {
+        "schema": "lattice.gopolicy/1",
+        "policy": policy.to_json(),
+        "baseline": sorted(policy.baseline),
+        "dropped_machines": [
+            {"table": t, "column": c, "values": v} for (t, c), v in sorted(dropped.items())
+        ],
+    }
 
 
 FILE_FIELDS = ("ImageField", "FileField", "UploadFile", "FileStorage", "File")
@@ -1271,6 +1325,8 @@ def write_rules(r: RulesImport, out: Path | str, *, package: str) -> Path:
         "candidate_spec.py": spec_source(r.spec, status=status, package=package),
         "proposals.json": json.dumps(proposals, indent=2, default=str) + "\n",
     }
+    if r.go_policy is not None:
+        extra["go_policy.json"] = json.dumps(r.go_policy, indent=2) + "\n"
     return write_import(close, out, repo_root=r.result.context.root, package=package,
                         app_factory=r.app_factory, rules=r.rules_dict(),
                         extra_files=extra)  # fmt: skip

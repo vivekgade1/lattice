@@ -1,0 +1,937 @@
+{
+  "arm": "S",
+  "base_ref": "HEAD",
+  "timings": {
+    "build_goapp_s": 4.143446767999876,
+    "build_goginapp_s": 15.040927065999995,
+    "s2_import_lazy_build_s": 12.016659978999996,
+    "pi7_import_walls": 10.223333333333333,
+    "r_s1": 2.657488227000158,
+    "b_s1": 3.141735914000037
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "PI1",
+      "probe": "rules-first import of S2: framework, routes, contracts, tables",
+      "ran": true,
+      "predicted": {
+        "framework": "gin",
+        "routes": 7,
+        "contracts": 7,
+        "tables": 3,
+        "public": [
+          "GET /health",
+          "POST /login"
+        ]
+      },
+      "observed": {
+        "framework": "gin",
+        "routes": 7,
+        "contracts": 7,
+        "tables": [
+          "configs",
+          "runs",
+          "users"
+        ],
+        "auth": {
+          "GET /health": "Public",
+          "POST /login": "Public",
+          "GET /configs": "Customer",
+          "POST /configs/{cid}/runs": "Customer",
+          "GET /runs": "Customer",
+          "GET /runs/{rid}": "Customer",
+          "POST /runs/{rid}/cancel": "Customer"
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "Member = the one non-Public role the extractor names for an authenticated route (observed: ['Customer'])"
+      }
+    },
+    {
+      "id": "PI2",
+      "probe": "owners and inferences[] of the S2 import",
+      "ran": true,
+      "predicted": {
+        "inferences": 1,
+        "evidence_lines": 4,
+        "how": "3 compare, 1 assign",
+        "owners": {
+          "Run": "user_id",
+          "Config": null,
+          "User": null
+        }
+      },
+      "observed": {
+        "inferences": [
+          {
+            "table": "Run",
+            "column": "user_id",
+            "evidence": [
+              "code:api/api.go:125",
+              "code:api/api.go:151",
+              "code:api/api.go:165",
+              "code:api/api.go:182"
+            ],
+            "rule": "owner_uses"
+          }
+        ],
+        "how": [
+          "assign",
+          "compare",
+          "compare",
+          "compare"
+        ],
+        "owners": {
+          "User": null,
+          "Config": null,
+          "Run": "user_id"
+        }
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PI3",
+      "probe": "rule items of the S2 import on the original (seed)",
+      "ran": true,
+      "predicted": {
+        "items": "28-48",
+        "verified_share": "0.65-0.90",
+        "refuted": "0-3",
+        "gate": "share >= 0.60; every refuted item has a correction or baseline entry with its reason; every unexercised item has a reason"
+      },
+      "observed": {
+        "items": 38,
+        "verdicts": {
+          "verified": 19,
+          "unexercised": 15,
+          "refuted": 4
+        },
+        "verified_share": 0.5,
+        "refuted": 4,
+        "refuted_without_correction": [
+          "R3 GET /runs 400"
+        ],
+        "unexercised_without_reason": [],
+        "refuted_items": {
+          "R3 POST /configs/{cid}/runs 404 Not found": "answered 422 'bad id'; stated 404 'Not found'",
+          "R3 GET /runs 400": "answered 200 None; stated 400 None",
+          "R3 GET /runs/{rid} 404 Not found": "answered 422 'bad id'; stated 404 'Not found'",
+          "R3 POST /runs/{rid}/cancel 404 Not found": "answered 422 'bad id'; stated 404 'Not found'"
+        }
+      },
+      "pass": false,
+      "evidence": {
+        "in_predicted_range": {
+          "items": true,
+          "share": false,
+          "refuted": false
+        }
+      }
+    },
+    {
+      "id": "PI4",
+      "probe": "the corrected spec re-probed on variant2",
+      "ran": true,
+      "predicted": "every seed-verified item still verified (>= 0.95)",
+      "observed": {
+        "seed_verified": 22,
+        "still_verified": 22,
+        "fraction": 1.0,
+        "lost": {}
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PI5",
+      "probe": "proposals.json (mining)",
+      "ran": true,
+      "predicted": "1-6 proposals including the machine runs.status queued -> cancelled",
+      "observed": {
+        "count": 3,
+        "kinds": [
+          "invariant"
+        ],
+        "machine_runs_status": false,
+        "all_pending": true,
+        "sentences": [
+          "Run's config_id is positive.",
+          "No two User rows share name.",
+          "No two User rows share token."
+        ]
+      },
+      "pass": false,
+      "evidence": {
+        "in_predicted_range": true
+      }
+    },
+    {
+      "id": "PI6",
+      "probe": "owner review: python -m lattice.importer review <dir> list",
+      "ran": true,
+      "predicted": "exit 0; item ids equal report.json's",
+      "observed": {
+        "exit": 0,
+        "listed": 19,
+        "report_unverified": 19,
+        "listed_not_in_report": [
+          "R3 GET /runs/{rid} 422 bad id #2",
+          "R3 POST /configs/{cid}/runs 422 bad id #2",
+          "R3 POST /runs/{rid}/cancel 422 bad id #2"
+        ],
+        "report_not_listed": [
+          "R3 GET /runs/{rid} 404 Not found",
+          "R3 POST /configs/{cid}/runs 404 Not found",
+          "R3 POST /runs/{rid}/cancel 404 Not found"
+        ],
+        "stderr": ""
+      },
+      "pass": false,
+      "evidence": {
+        "reading": "`review list` shows the items that are not verified; equality is checked against the report's not-verified items, exactly"
+      }
+    },
+    {
+      "id": "PR3",
+      "probe": "layer R on S2 with the imported candidate_spec.py",
+      "ran": true,
+      "predicted": "the same item verdicts as the import's seed run",
+      "observed": {
+        "items_import": 38,
+        "items_rerun": 38,
+        "differences [import, rerun]": {
+          "R3 GET /runs/{rid} 404 Not found": [
+            "refuted",
+            null
+          ],
+          "R3 GET /runs/{rid} 422 bad id #2": [
+            null,
+            "verified"
+          ],
+          "R3 POST /configs/{cid}/runs 404 Not found": [
+            "refuted",
+            null
+          ],
+          "R3 POST /configs/{cid}/runs 422 bad id #2": [
+            null,
+            "verified"
+          ],
+          "R3 POST /runs/{rid}/cancel 404 Not found": [
+            "refuted",
+            null
+          ],
+          "R3 POST /runs/{rid}/cancel 422 bad id #2": [
+            null,
+            "verified"
+          ]
+        }
+      },
+      "pass": false,
+      "evidence": {
+        "reading": "literal: report.json's final item verdicts (corrections included) against layer R of the corrected candidate_spec.py on the same seed"
+      }
+    },
+    {
+      "id": "PA3",
+      "probe": "edits on a scratch copy of S2 under go_spec_policy of its candidate spec",
+      "ran": true,
+      "predicted": {
+        "JM5": "GO801 on POST /runs/{rid}/cancel",
+        "JM6": "GO802 on the users response",
+        "original_outside_baseline": 0
+      },
+      "observed": {
+        "original_total": 0,
+        "original_outside_baseline": 0,
+        "original_outside": [],
+        "new_findings": {
+          "JM5": [],
+          "JM6": []
+        }
+      },
+      "pass": false,
+      "evidence": {
+        "reading": "a mutant's finding is new when its (code, message) is not among the original's: the baseline's key (GO802|POST /login|User.token) is shared with the mutant's own GO802 on the same route"
+      }
+    },
+    {
+      "id": "PI7",
+      "probe": "the S2 import 10x into separate scratch dirs",
+      "ran": true,
+      "predicted": "byte-identical after the timing normaliser",
+      "observed": {
+        "identical": 3,
+        "of": 3,
+        "differing_files": [],
+        "walls_s": [
+          11.4,
+          9.73,
+          9.54
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "normaliser: report.json cost.wall_s and rules.timing replaced; report.md left out (it renders the wall time)"
+      }
+    },
+    {
+      "id": "PA1",
+      "probe": "derive_go_policy on S2",
+      "ran": true,
+      "predicted": {
+        "tables": 3,
+        "users_table": "users",
+        "owners": {
+          "Run": "user_id"
+        },
+        "private": {
+          "User": [
+            "password",
+            "token"
+          ]
+        },
+        "admin_routes": [],
+        "machines": {},
+        "baseline": "0-2 keys"
+      },
+      "observed": {
+        "tables": 3,
+        "users_table": "User",
+        "owners": {
+          "Run": "user_id"
+        },
+        "private": {
+          "User": [
+            "password",
+            "token"
+          ]
+        },
+        "admin_routes": [],
+        "machines": {},
+        "baseline": [
+          "GO802|POST /login|User.token"
+        ]
+      },
+      "pass": false,
+      "evidence": {
+        "baseline_equals_separate_run": true,
+        "baseline_in_predicted_range": true,
+        "note": "users_table is compared with the pre-registration's `users` (the SQL name); D3 says the extract's auth users table, a struct name"
+      }
+    },
+    {
+      "id": "PA2",
+      "probe": "go_spec_policy with a spec that declares Run with no owner + the machine",
+      "ran": true,
+      "predicted": {
+        "run_owned": false,
+        "machine": [
+          "Run"
+        ],
+        "baseline": []
+      },
+      "observed": {
+        "run_owned": false,
+        "machine": [
+          "Run"
+        ],
+        "baseline": [],
+        "derived_baseline": [
+          "GO802|POST /login|User.token"
+        ]
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PA4",
+      "probe": "static: derive_go_policy on tests/gocheck/fixtures/goextract",
+      "ran": true,
+      "predicted": {
+        "owners": {
+          "Item": "owner_id",
+          "Audit": "actor"
+        },
+        "private": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "observed": {
+        "owners": {
+          "Item": "owner_id",
+          "Audit": "actor"
+        },
+        "private": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PG805",
+      "probe": "GO805 gated: gated_note() and GO_GATED",
+      "ran": true,
+      "predicted": "byte-identical to base",
+      "observed": {
+        "identical": true,
+        "pairing_count_informational": {
+          "goginapp": {
+            "compare_uses": 3,
+            "with_a_raise_within_3_lines": 2
+          },
+          "goextract": {
+            "compare_uses": 3,
+            "with_a_raise_within_3_lines": 1
+          }
+        }
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PR1",
+      "probe": "layer R on S1 (go_harness_rb, the safe app)",
+      "ran": true,
+      "predicted": {
+        "items": "18-30",
+        "verified_share": "0.55-0.85",
+        "refuted": 0
+      },
+      "observed": {
+        "items": 23,
+        "verdicts": {
+          "verified": 16,
+          "refuted": 0,
+          "unexercised": 7,
+          "unclear": 0
+        },
+        "verified_share": 0.6957,
+        "routes": {
+          "verified": 4,
+          "total": 4
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "unexercised_without_reason": [],
+        "in_predicted_range": {
+          "items": true,
+          "share": true
+        },
+        "unexercised": {
+          "T2 User.password": "no 2xx answer returned a User row",
+          "T1 Config": "no probe reached it",
+          "T4 Run.status": "no route writes Run.status through a parameter (every stored value is listed)",
+          "T5 User (id)": "no route creates User rows",
+          "T5 User (token)": "no route creates User rows",
+          "T5 Config (id)": "no route creates Config rows",
+          "T5 Run (id)": "no route can repeat the key: no create route of Run takes (id) or stamps it from the caller"
+        }
+      }
+    },
+    {
+      "id": "PR2",
+      "probe": "layer R on S1, app mutants JM1 and JM2",
+      "ran": true,
+      "predicted": "each refutes >= 1 item on GET /runs/{rid}",
+      "observed": {
+        "JM1": {
+          "refuted": [
+            "R1 GET /runs/{rid}"
+          ],
+          "on_route": [
+            "R1 GET /runs/{rid}"
+          ]
+        },
+        "JM2": {
+          "refuted": [
+            "R3 GET /runs/{rid} 404 Not found"
+          ],
+          "on_route": [
+            "R3 GET /runs/{rid} 404 Not found"
+          ]
+        }
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PR4",
+      "probe": "layer R on S1, 10x",
+      "ran": true,
+      "predicted": "identical item verdicts and findings",
+      "observed": {
+        "identical": 3,
+        "of": 3
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PB1",
+      "probe": "layer B on S1, safe app",
+      "ran": true,
+      "predicted": {
+        "cases": "6-30",
+        "findings": 0
+      },
+      "observed": {
+        "cases": 32,
+        "findings": []
+      },
+      "pass": true,
+      "evidence": {
+        "in_predicted_range": false,
+        "reading": "B takes rules=go_harness_rb.RULES (a 422 is a 422): the CLI has no --rules, and the default rule flags the Go app's 422 body (finding F-B422)"
+      }
+    },
+    {
+      "id": "PB2",
+      "probe": "layer B on S1, GOAPP_BUG=nocheck / nocancel",
+      "ran": true,
+      "predicted": {
+        "nocheck": ">= 1 B finding on POST /configs/{cid}/runs",
+        "nocancel": ">= 1 B finding on POST /runs/{rid}/cancel"
+      },
+      "observed": {
+        "nocheck": {
+          "endpoints": [
+            "POST /configs/{cid}/runs"
+          ],
+          "findings": 2
+        },
+        "nocancel": {
+          "endpoints": [
+            "POST /runs/{rid}/cancel"
+          ],
+          "findings": 2
+        }
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PB3",
+      "probe": "layer B on S1, 10x (safe app and nocheck)",
+      "ran": true,
+      "predicted": "identical finding sets",
+      "observed": {
+        "identical": 6,
+        "of": 6,
+        "safe": [],
+        "nocheck": [
+          "B|POST /configs/{cid}/runs|POST /configs/{cid}/runs | ann | cid=2",
+          "B|POST /configs/{cid}/runs|POST /configs/{cid}/runs | ben | cid=2"
+        ]
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PB-F",
+      "probe": "every file of section 7's frozen table has its listed sha256",
+      "ran": true,
+      "predicted": "all identical",
+      "observed": {
+        "files": 26,
+        "differ_from_prereg": [
+          "lattice/spec/check.py",
+          "lattice/spec/process.py",
+          "lattice/spec/implementation.py",
+          "lattice/spec/__main__.py",
+          "lattice/importer/emit_spec.py",
+          "lattice/importer/workflows.py",
+          "lattice/importer/frontends/__init__.py",
+          "lattice/gocheck/src/*.go except goextract.go and goextract_tables.go (20 files, `cat` in `ls` order)"
+        ],
+        "changed_by_this_node_since_base": [],
+        "moved_by_next_phases_since_prereg": [
+          "lattice/spec/check.py",
+          "lattice/spec/process.py",
+          "lattice/spec/implementation.py",
+          "lattice/spec/__main__.py",
+          "lattice/importer/emit_spec.py",
+          "lattice/importer/workflows.py",
+          "lattice/importer/frontends/__init__.py",
+          "lattice/gocheck/src/*.go except goextract.go and goextract_tables.go (20 files, `cat` in `ls` order)"
+        ]
+      },
+      "pass": false,
+      "evidence": {
+        "rebaselined_pass": true,
+        "rows": [
+          {
+            "file": "lattice/spec/check.py",
+            "prereg": "68f13b288cde",
+            "base": "1c1e84e278e8",
+            "now": "1c1e84e278e8"
+          },
+          {
+            "file": "lattice/spec/probes.py",
+            "prereg": "7f4fca836922",
+            "base": "7f4fca836922",
+            "now": "7f4fca836922"
+          },
+          {
+            "file": "lattice/spec/process.py",
+            "prereg": "ca402a564352",
+            "base": "047be55e9f42",
+            "now": "047be55e9f42"
+          },
+          {
+            "file": "lattice/spec/implementation.py",
+            "prereg": "7012db6e907e",
+            "base": "89bc16f4679a",
+            "now": "89bc16f4679a"
+          },
+          {
+            "file": "lattice/spec/__main__.py",
+            "prereg": "e7ca4bf4a0bf",
+            "base": "94542f340581",
+            "now": "94542f340581"
+          },
+          {
+            "file": "lattice/importer/emit_spec.py",
+            "prereg": "e3c764a21ce3",
+            "base": "c166e7313184",
+            "now": "c166e7313184"
+          },
+          {
+            "file": "lattice/importer/lift.py",
+            "prereg": "1e964e24aee0",
+            "base": "1e964e24aee0",
+            "now": "1e964e24aee0"
+          },
+          {
+            "file": "lattice/importer/profile_gen.py",
+            "prereg": "414fc40431f6",
+            "base": "414fc40431f6",
+            "now": "414fc40431f6"
+          },
+          {
+            "file": "lattice/importer/cli.py",
+            "prereg": "803d1d80ac72",
+            "base": "803d1d80ac72",
+            "now": "803d1d80ac72"
+          },
+          {
+            "file": "lattice/importer/review.py",
+            "prereg": "b548263a7d3e",
+            "base": "b548263a7d3e",
+            "now": "b548263a7d3e"
+          },
+          {
+            "file": "lattice/importer/report.py",
+            "prereg": "0955a69a0d57",
+            "base": "0955a69a0d57",
+            "now": "0955a69a0d57"
+          },
+          {
+            "file": "lattice/importer/mine.py",
+            "prereg": "b3399f96dd67",
+            "base": "b3399f96dd67",
+            "now": "b3399f96dd67"
+          },
+          {
+            "file": "lattice/importer/workflow_run.py",
+            "prereg": "9a3da5a40fc0",
+            "base": "9a3da5a40fc0",
+            "now": "9a3da5a40fc0"
+          },
+          {
+            "file": "lattice/importer/workflows.py",
+            "prereg": "beb576d70e0e",
+            "base": "5eba7e8ab6ac",
+            "now": "5eba7e8ab6ac"
+          },
+          {
+            "file": "lattice/importer/inventory.py",
+            "prereg": "55849494b1ec",
+            "base": "55849494b1ec",
+            "now": "55849494b1ec"
+          },
+          {
+            "file": "lattice/importer/frontends/go_gin.py",
+            "prereg": "9f24e9bb5ac8",
+            "base": "9f24e9bb5ac8",
+            "now": "9f24e9bb5ac8"
+          },
+          {
+            "file": "lattice/importer/frontends/__init__.py",
+            "prereg": "7bc4c98c37c7",
+            "base": "ae5cfcbb2272",
+            "now": "ae5cfcbb2272"
+          },
+          {
+            "file": "lattice/gocheck/__init__.py",
+            "prereg": "d3cdb84ddd40",
+            "base": "d3cdb84ddd40",
+            "now": "d3cdb84ddd40"
+          },
+          {
+            "file": "lattice/gocheck/src/*.go except goextract.go and goextract_tables.go (20 files, `cat` in `ls` order)",
+            "prereg": "b8662ae544cd",
+            "base": "1595f9d07270",
+            "now": "1595f9d07270"
+          },
+          {
+            "file": "lattice/pycheck/derive.py",
+            "prereg": "63fe9d219364",
+            "base": "63fe9d219364",
+            "now": "63fe9d219364"
+          },
+          {
+            "file": "lattice/pycheck/checks.py",
+            "prereg": "14603fcc11ae",
+            "base": "14603fcc11ae",
+            "now": "14603fcc11ae"
+          },
+          {
+            "file": "tests/spec/goapp/main.go",
+            "prereg": "cb90b6fbfc9a",
+            "base": "cb90b6fbfc9a",
+            "now": "cb90b6fbfc9a"
+          },
+          {
+            "file": "tests/spec/goapp/go.mod",
+            "prereg": "697277b1e629",
+            "base": "697277b1e629",
+            "now": "697277b1e629"
+          },
+          {
+            "file": "tests/spec/goapp/go.sum",
+            "prereg": "a52d37317a08",
+            "base": "a52d37317a08",
+            "now": "a52d37317a08"
+          },
+          {
+            "file": "tests/spec/go_harness.py",
+            "prereg": "061d3823255b",
+            "base": "061d3823255b",
+            "now": "061d3823255b"
+          },
+          {
+            "file": "tests/spec/test_process_runtime.py",
+            "prereg": "fd2bfeab04a9",
+            "base": "fd2bfeab04a9",
+            "now": "fd2bfeab04a9"
+          }
+        ],
+        "reading": "literal gate: the prereg's hashes; the re-baselined check compares the working tree with `HEAD` (next-phases now holds Spikes E, H, I)"
+      }
+    },
+    {
+      "id": "PB-X",
+      "probe": "default gocheck extract byte-identical on the 7 module dirs",
+      "ran": true,
+      "predicted": "identical to base",
+      "observed": {
+        "identical_to_base": 7,
+        "of": 7
+      },
+      "pass": true,
+      "evidence": {
+        "rows": [
+          {
+            "dir": "tests/gocheck/fixtures/goextract",
+            "base": "f74727094a25cc1d",
+            "now": "f74727094a25cc1d",
+            "prereg_prefix": "00f49cb06e6b3c33",
+            "same_as_base": true,
+            "same_as_prereg": false
+          },
+          {
+            "dir": "tests/gocheck/fixtures/app",
+            "base": "6c38c5d5f04ff8ab",
+            "now": "6c38c5d5f04ff8ab",
+            "prereg_prefix": "a8841a6f3fb1b58b",
+            "same_as_base": true,
+            "same_as_prereg": false
+          },
+          {
+            "dir": "tests/gocheck/fixtures/partial",
+            "base": "4b67b2e431c23403",
+            "now": "4b67b2e431c23403",
+            "prereg_prefix": "b02496cd2c3a5e19",
+            "same_as_base": true,
+            "same_as_prereg": false
+          },
+          {
+            "dir": "tests/gocheck/fixtures/goextract_workflow",
+            "base": "ee3b906bd4e4e799",
+            "now": "ee3b906bd4e4e799",
+            "prereg_prefix": "81532e404272d09e",
+            "same_as_base": true,
+            "same_as_prereg": false
+          },
+          {
+            "dir": "tests/spec/fixtures/implementation/app",
+            "base": "e10d5447c6cce57d",
+            "now": "e10d5447c6cce57d",
+            "prereg_prefix": "d30a96cc735d8df5",
+            "same_as_base": true,
+            "same_as_prereg": false
+          },
+          {
+            "dir": "lattice/studio/mock/appmap/app",
+            "base": "e10d5447c6cce57d",
+            "now": "e10d5447c6cce57d",
+            "prereg_prefix": "d30a96cc735d8df5",
+            "same_as_base": true,
+            "same_as_prereg": false
+          },
+          {
+            "dir": "tests/spec/goapp",
+            "base": "3c7670fc6e211212",
+            "now": "3c7670fc6e211212",
+            "prereg_prefix": "e95d65e81ca79469",
+            "same_as_base": true,
+            "same_as_prereg": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "PB-G",
+      "probe": "Go outputs byte-identical to base",
+      "ran": true,
+      "predicted": "all identical",
+      "observed": {
+        "workflows --static": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ],
+          "files": [
+            "workflows.json"
+          ],
+          "stderr": ""
+        },
+        "inventory": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ],
+          "files": [
+            "extract.json",
+            "inventory.json"
+          ],
+          "stderr": ""
+        },
+        "layer A findings and notes (implementation/app + its spec)": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ],
+          "err": ""
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "test_process_runtime.py's reports are PB-T's (same pass/fail ids)"
+      }
+    },
+    {
+      "id": "PB-P",
+      "probe": "Python outputs byte-identical to base",
+      "ran": true,
+      "predicted": "all identical",
+      "observed": {
+        "rules import (multivendor) byte-identical after the timing normaliser": false,
+        "differing files": [
+          "proposals.json",
+          "report.json"
+        ],
+        "report.json has no inferences key": true,
+        "no go_policy.json for a Python import": true,
+        "pycheck spec_policy source identical": false
+      },
+      "pass": false,
+      "evidence": {}
+    },
+    {
+      "id": "PB-H",
+      "probe": "help texts and MCP tools/list identical to base",
+      "ran": true,
+      "predicted": "all identical",
+      "observed": {
+        "lattice --help": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "python -m lattice.importer --help": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "python -m lattice.spec check --help": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "MCP tools/list": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        }
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PW",
+      "probe": "snapshot of the fixtures around every run; docker/claude shims",
+      "ran": true,
+      "predicted": {
+        "changed": 0,
+        "shim_calls": 0
+      },
+      "observed": {
+        "changed": [],
+        "shim_calls": []
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PX",
+      "probe": "wall time",
+      "ran": true,
+      "predicted": {
+        "s2_import": "15-90 s",
+        "r_s1": "2-15 s",
+        "b_s1": "3-20 s",
+        "gate": "<= 180 s; <= 30 s; <= 60 s"
+      },
+      "observed": {
+        "s2_import_with_go_build_s": 12.02,
+        "s2_import_prebuilt_mean_s": 10.22,
+        "r_s1_s": 2.66,
+        "b_s1_s": 3.14
+      },
+      "pass": true,
+      "evidence": {}
+    }
+  ]
+}

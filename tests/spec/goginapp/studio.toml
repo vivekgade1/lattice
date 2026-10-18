@@ -1,0 +1,6 @@
+# goginapp: the goapp service on Gin + GORM + glebarez/sqlite (Spike J, node J1, arm S2).
+# The harness is tests/spec/gogin_harness.py; run from the repository root.
+[app]
+app = "tests.spec.gogin_harness:make_app"
+db = "tests.spec.gogin_harness:build_db"
+runtime = "tests.spec.gogin_harness:RUNTIME"

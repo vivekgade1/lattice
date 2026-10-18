@@ -1,0 +1,102 @@
+[
+  {
+    "id": "inv-4a7e3a8e42",
+    "kind": "invariant",
+    "sentence": "Run's config_id is positive.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "run_config_id_positive",
+      "sentence": "Run's config_id is positive.",
+      "expr": "Run.config_id > 0"
+    },
+    "expr": "Run.config_id > 0",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "config_id": 1,
+          "user_id": 1,
+          "status": "queued"
+        },
+        {
+          "id": 9,
+          "config_id": 1,
+          "user_id": 2,
+          "status": "queued"
+        }
+      ],
+      "runs": [
+        "R-0014",
+        "R-0015"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/configs/1/runs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/configs/1/runs",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 201
+        }
+      ],
+      "app_rows": 2
+    },
+    "support": 2,
+    "source": "observed: Run.config_id > 0 on the rows the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "inv-add26e703e",
+    "kind": "invariant",
+    "sentence": "No two User rows share name.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_user_per_name",
+      "sentence": "No two User rows share name.",
+      "expr": "count(User, by=\"name\") <= 1"
+    },
+    "expr": "count(User, by=\"name\") <= 1",
+    "evidence": {
+      "rows": [],
+      "runs": [],
+      "requests": [],
+      "app_rows": 0
+    },
+    "support": 0,
+    "source": "static: User.name unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "inv-993835ace9",
+    "kind": "invariant",
+    "sentence": "No two User rows share token.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_user_per_token",
+      "sentence": "No two User rows share token.",
+      "expr": "count(User, by=\"token\") <= 1"
+    },
+    "expr": "count(User, by=\"token\") <= 1",
+    "evidence": {
+      "rows": [],
+      "runs": [],
+      "requests": [],
+      "app_rows": 0
+    },
+    "support": 0,
+    "source": "static: User.token unique=True",
+    "status": "pending"
+  }
+]

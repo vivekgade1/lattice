@@ -1,0 +1,21 @@
+{
+  "probes": {
+    "PI1": true,
+    "PA2": true,
+    "PA4": true,
+    "PG805": true,
+    "PB-X": true,
+    "PB-G": true,
+    "PB-P": true,
+    "PW": true
+  },
+  "tests": {
+    "tests/gocheck/test_go_derive.py::test_a_private_column_is_the_json_dash_never_a_name": true,
+    "tests/gocheck/test_go_derive.py::test_the_default_extract_has_no_json_key": true,
+    "tests/gocheck/test_go_derive.py::test_the_spec_policy_has_an_empty_baseline_and_the_spec_wins_for_declared_tables": true,
+    "tests/importer/test_go_rules.py::test_assign_only_owner": true,
+    "tests/importer/test_go_rules.py::test_inferences_reach_the_report_only_when_there_are_some": true,
+    "tests/importer/test_go_rules.py::test_the_python_path_never_asks_for_the_harness_factory": true,
+    "tests/importer/test_go_rules.py::test_two_candidates_unclear": true
+  }
+}

@@ -1,0 +1,18 @@
+control: {"id": "control", "tests_failing_on_control": [], "passes": true, "wall_s": 146.9}
+JM1: killed=True PR2
+JM2: killed=True PR2
+JM3: killed=True PB2
+JM4: killed=True PB2
+JM5: killed=False PA3+R
+JM6: killed=False PA3+R
+JM7: killed=True {'probe:PA4': [True, False], 'test:test_assign_only_owner': [True, False]}
+JM8: killed=True {'test:test_two_candidates_unclear': [True, False]}
+JM9: killed=True {'probe:PA2': [True, False], 'test:test_the_spec_policy_has_an_empty_baseline_and_the_spec_wins_for_declared_tables': [True, False]}
+JM10: killed=True {'probe:PA2': [True, False]}
+JM11: killed=True {'test:test_the_python_path_never_asks_for_the_harness_factory': [True, False]}
+JM12: killed=True {'probe:PA4': [True, False], 'test:test_a_private_column_is_the_json_dash_never_a_name': [True, False]}
+JM13: killed=True {'probe:PB-X': [True, False], 'test:test_the_default_extract_has_no_json_key': [True, False]}
+JM14: killed=True {'probe:PG805': [True, False], 'probe:PB-G': [True, False]}
+JM15: killed=True {'probe:PW': [True, False]}
+JM16: killed=True {'probe:PB-P': [True, False], 'test:test_inferences_reach_the_report_only_when_there_are_some': [True, False]}
+killed 14/16

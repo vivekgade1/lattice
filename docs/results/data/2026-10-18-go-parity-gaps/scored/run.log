@@ -1,0 +1,29 @@
+PI1: pass=True
+PI2: pass=True
+PI3: pass=False
+PI4: pass=True
+PI5: pass=False
+PI6: pass=False
+PR3: pass=False
+PA3: pass=False
+PI7: pass=True
+PA1: pass=False
+PA2: pass=True
+PA4: pass=True
+PG805: pass=True
+PR1: pass=True
+PR2: pass=True
+PR4: pass=True
+PB1: pass=True
+PB2: pass=True
+PB3: pass=True
+PB-F: pass=False
+PB-X: pass=True
+PB-G: pass=True
+PB-P: pass=True
+PB-H: pass=True
+PW: pass=True
+PX: pass=True
+passed 19: ['PI1', 'PI2', 'PI4', 'PI7', 'PA2', 'PA4', 'PG805', 'PR1', 'PR2', 'PR4', 'PB1', 'PB2', 'PB3', 'PB-X', 'PB-G', 'PB-P', 'PB-H', 'PW', 'PX']
+failed 7: ['PI3', 'PI5', 'PI6', 'PR3', 'PA3', 'PA1', 'PB-F']
+not run 0: []
