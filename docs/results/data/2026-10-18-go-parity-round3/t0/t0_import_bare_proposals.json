@@ -1,0 +1,525 @@
+[
+  {
+    "id": "inv-add26e703e",
+    "kind": "invariant",
+    "sentence": "No two User rows share name.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_user_per_name",
+      "sentence": "No two User rows share name.",
+      "expr": "count(User, by=\"name\") <= 1"
+    },
+    "expr": "count(User, by=\"name\") <= 1",
+    "evidence": {
+      "rows": [],
+      "runs": [],
+      "requests": [],
+      "app_rows": 0
+    },
+    "support": 0,
+    "source": "static: User.name unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "inv-ad0cf73c91",
+    "kind": "invariant",
+    "sentence": "Ticket's queue_id is positive.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "ticket_queue_id_positive",
+      "sentence": "Ticket's queue_id is positive.",
+      "expr": "is_null(Ticket.queue_id) or Ticket.queue_id > 0"
+    },
+    "expr": "is_null(Ticket.queue_id) or Ticket.queue_id > 0",
+    "evidence": {
+      "rows": [
+        {
+          "id": 1,
+          "queue_id": 50,
+          "reporter_id": 1,
+          "title": "Title 01",
+          "status": "closed"
+        },
+        {
+          "id": 5,
+          "queue_id": 54,
+          "reporter_id": 1,
+          "title": "Title 05",
+          "status": "closed"
+        },
+        {
+          "id": 2,
+          "queue_id": 51,
+          "reporter_id": 2,
+          "title": "Title 02",
+          "status": "open"
+        }
+      ],
+      "runs": [
+        "R-0043",
+        "R-0044",
+        "R-0057"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/tickets/1/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/tickets/5/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/tickets/2/reopen",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 3
+    },
+    "support": 3,
+    "source": "observed: Ticket.queue_id > 0 on the rows the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "inv-11aea027d0",
+    "kind": "invariant",
+    "sentence": "Ticket's queue_id is always set.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "ticket_queue_id_set",
+      "sentence": "Ticket's queue_id is always set.",
+      "expr": "not is_null(Ticket.queue_id)"
+    },
+    "expr": "not is_null(Ticket.queue_id)",
+    "evidence": {
+      "rows": [
+        {
+          "id": 1,
+          "queue_id": 50,
+          "reporter_id": 1,
+          "title": "Title 01",
+          "status": "closed"
+        },
+        {
+          "id": 5,
+          "queue_id": 54,
+          "reporter_id": 1,
+          "title": "Title 05",
+          "status": "closed"
+        },
+        {
+          "id": 2,
+          "queue_id": 51,
+          "reporter_id": 2,
+          "title": "Title 02",
+          "status": "open"
+        }
+      ],
+      "runs": [
+        "R-0043",
+        "R-0044",
+        "R-0057"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/tickets/1/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/tickets/5/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/tickets/2/reopen",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 3
+    },
+    "support": 3,
+    "source": "observed: Ticket.queue_id (nullable in the schema) set on every row the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "inv-1e7f9ff0d8",
+    "kind": "invariant",
+    "sentence": "Ticket's reporter_id is always set.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "ticket_reporter_id_set",
+      "sentence": "Ticket's reporter_id is always set.",
+      "expr": "not is_null(Ticket.reporter_id)"
+    },
+    "expr": "not is_null(Ticket.reporter_id)",
+    "evidence": {
+      "rows": [
+        {
+          "id": 1,
+          "queue_id": 50,
+          "reporter_id": 1,
+          "title": "Title 01",
+          "status": "closed"
+        },
+        {
+          "id": 5,
+          "queue_id": 54,
+          "reporter_id": 1,
+          "title": "Title 05",
+          "status": "closed"
+        },
+        {
+          "id": 2,
+          "queue_id": 51,
+          "reporter_id": 2,
+          "title": "Title 02",
+          "status": "open"
+        }
+      ],
+      "runs": [
+        "R-0043",
+        "R-0044",
+        "R-0057"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/tickets/1/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/tickets/5/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/tickets/2/reopen",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 3
+    },
+    "support": 3,
+    "source": "observed: Ticket.reporter_id (nullable in the schema) set on every row the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "inv-858e70f56a",
+    "kind": "invariant",
+    "sentence": "Ticket's status is always set.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "ticket_status_set",
+      "sentence": "Ticket's status is always set.",
+      "expr": "not is_null(Ticket.status)"
+    },
+    "expr": "not is_null(Ticket.status)",
+    "evidence": {
+      "rows": [
+        {
+          "id": 1,
+          "queue_id": 50,
+          "reporter_id": 1,
+          "title": "Title 01",
+          "status": "closed"
+        },
+        {
+          "id": 5,
+          "queue_id": 54,
+          "reporter_id": 1,
+          "title": "Title 05",
+          "status": "closed"
+        },
+        {
+          "id": 2,
+          "queue_id": 51,
+          "reporter_id": 2,
+          "title": "Title 02",
+          "status": "open"
+        }
+      ],
+      "runs": [
+        "R-0043",
+        "R-0044",
+        "R-0057"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/tickets/1/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/tickets/5/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/tickets/2/reopen",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 3
+    },
+    "support": 3,
+    "source": "observed: Ticket.status (nullable in the schema) set on every row the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "inv-76beaf1a8d",
+    "kind": "invariant",
+    "sentence": "Ticket's title is always set.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "ticket_title_set",
+      "sentence": "Ticket's title is always set.",
+      "expr": "not is_null(Ticket.title)"
+    },
+    "expr": "not is_null(Ticket.title)",
+    "evidence": {
+      "rows": [
+        {
+          "id": 1,
+          "queue_id": 50,
+          "reporter_id": 1,
+          "title": "Title 01",
+          "status": "closed"
+        },
+        {
+          "id": 5,
+          "queue_id": 54,
+          "reporter_id": 1,
+          "title": "Title 05",
+          "status": "closed"
+        },
+        {
+          "id": 2,
+          "queue_id": 51,
+          "reporter_id": 2,
+          "title": "Title 02",
+          "status": "open"
+        }
+      ],
+      "runs": [
+        "R-0043",
+        "R-0044",
+        "R-0057"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/tickets/1/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/tickets/5/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/tickets/2/reopen",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 3
+    },
+    "support": 3,
+    "source": "observed: Ticket.title (nullable in the schema) set on every row the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "mac-bcda897eeb",
+    "kind": "machine",
+    "sentence": "Ticket.status moves only closed -> open; open -> closed.",
+    "spec_object": {
+      "type": "Machine",
+      "table": "Ticket",
+      "column": "status",
+      "edges": [
+        [
+          "closed",
+          "open"
+        ],
+        [
+          "open",
+          "closed"
+        ]
+      ],
+      "initial": []
+    },
+    "expr": null,
+    "evidence": {
+      "transitions": [
+        {
+          "run": "R-0043",
+          "key": 1,
+          "request": {
+            "method": "POST",
+            "path": "/tickets/1/close",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": null,
+            "form": null,
+            "status": 200
+          },
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "run": "R-0044",
+          "key": 5,
+          "request": {
+            "method": "POST",
+            "path": "/tickets/5/close",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": null,
+            "form": null,
+            "status": 200
+          },
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "run": "R-0050",
+          "key": 1,
+          "request": {
+            "method": "POST",
+            "path": "/tickets/1/close",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": null,
+            "form": null,
+            "status": 200
+          },
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "run": "R-0057",
+          "key": 2,
+          "request": {
+            "method": "POST",
+            "path": "/tickets/2/reopen",
+            "user": "alice",
+            "token": null,
+            "params": null,
+            "json": null,
+            "form": null,
+            "status": 200
+          },
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "run": "R-0059",
+          "key": 2,
+          "request": {
+            "method": "POST",
+            "path": "/tickets/2/reopen",
+            "user": "alice",
+            "token": null,
+            "params": null,
+            "json": null,
+            "form": null,
+            "status": 200
+          },
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "created": [],
+      "transitions_seen": 5,
+      "rows_created": 0
+    },
+    "support": 5,
+    "source": "observed: Ticket.status transitions between snapshots",
+    "status": "pending"
+  }
+]
