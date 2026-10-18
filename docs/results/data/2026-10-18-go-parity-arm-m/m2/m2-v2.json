@@ -1,0 +1,431 @@
+{
+ "lattice": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/w-j1m/lib/v2/lattice/__init__.py",
+ "stated": {
+  "tables": {
+   "User": {
+    "sql": "users"
+   },
+   "NotificationPrefs": {
+    "sql": "notification_prefs"
+   },
+   "Device": {
+    "sql": "devices"
+   },
+   "RefreshToken": {
+    "sql": "refresh_tokens"
+   },
+   "Habit": {
+    "sql": "habits"
+   },
+   "HabitTarget": {
+    "sql": "habit_targets"
+   },
+   "Completion": {
+    "sql": "completions"
+   },
+   "Nudge": {
+    "sql": "nudges"
+   },
+   "TestClock": {
+    "sql": "test_clock"
+   }
+  },
+  "users_table": "User",
+  "owners": {
+   "NotificationPrefs": "user_id",
+   "Device": "user_id",
+   "RefreshToken": "user_id",
+   "Habit": "user_id"
+  },
+  "owner_via": {
+   "HabitTarget": [
+    "habit_id",
+    "Habit"
+   ],
+   "Completion": [
+    "habit_id",
+    "Habit"
+   ],
+   "Nudge": [
+    "habit_id",
+    "Habit"
+   ]
+  },
+  "private": {
+   "User": [
+    "hashed_password"
+   ],
+   "RefreshToken": [
+    "token_hash"
+   ]
+  },
+  "machines": {
+   "Nudge": {
+    "column": "delivery",
+    "edges": [
+     [
+      "pending",
+      "failed"
+     ],
+     [
+      "pending",
+      "sent"
+     ],
+     [
+      "pending",
+      "suppressed"
+     ]
+    ]
+   }
+  },
+  "admin_routes": [],
+  "open_routes": [],
+  "admin_role": "Admin",
+  "helper_depth": 3,
+  "rules": []
+ },
+ "derived": {
+  "tables": {
+   "TestClockRow": {
+    "sql": "test_clock"
+   },
+   "SchemaMigration": {
+    "sql": "schema_migrations"
+   },
+   "User": {
+    "sql": "users"
+   },
+   "NotificationPrefs": {
+    "sql": "notification_prefs"
+   },
+   "Device": {
+    "sql": "devices"
+   },
+   "RefreshToken": {
+    "sql": "refresh_tokens"
+   },
+   "Habit": {
+    "sql": "habits"
+   },
+   "HabitTarget": {
+    "sql": "habit_targets"
+   },
+   "Completion": {
+    "sql": "completions"
+   },
+   "Nudge": {
+    "sql": "nudges"
+   }
+  },
+  "users_table": "User",
+  "owners": {
+   "NotificationPrefs": "user_id",
+   "Device": "user_id",
+   "RefreshToken": "user_id",
+   "Habit": "user_id"
+  },
+  "owner_via": {},
+  "private": {
+   "User": [
+    "hashed_password"
+   ],
+   "RefreshToken": [
+    "token_hash"
+   ]
+  },
+  "machines": {},
+  "admin_routes": [],
+  "open_routes": [],
+  "admin_role": "Admin",
+  "helper_depth": 3,
+  "rules": []
+ },
+ "derived_baseline": [],
+ "overlay": {
+  "tables": {
+   "TestClockRow": {
+    "sql": "test_clock"
+   },
+   "SchemaMigration": {
+    "sql": "schema_migrations"
+   },
+   "User": {
+    "sql": "users"
+   },
+   "NotificationPrefs": {
+    "sql": "notification_prefs"
+   },
+   "Device": {
+    "sql": "devices"
+   },
+   "RefreshToken": {
+    "sql": "refresh_tokens"
+   },
+   "Habit": {
+    "sql": "habits"
+   },
+   "HabitTarget": {
+    "sql": "habit_targets"
+   },
+   "Completion": {
+    "sql": "completions"
+   },
+   "Nudge": {
+    "sql": "nudges"
+   },
+   "TestClock": {
+    "sql": "test_clock"
+   }
+  },
+  "users_table": "User",
+  "owners": {
+   "NotificationPrefs": "user_id",
+   "Device": "user_id",
+   "RefreshToken": "user_id",
+   "Habit": "user_id"
+  },
+  "owner_via": {
+   "HabitTarget": [
+    "habit_id",
+    "Habit"
+   ],
+   "Completion": [
+    "habit_id",
+    "Habit"
+   ],
+   "Nudge": [
+    "habit_id",
+    "Habit"
+   ]
+  },
+  "private": {
+   "User": [
+    "hashed_password"
+   ],
+   "RefreshToken": [
+    "token_hash"
+   ]
+  },
+  "machines": {
+   "Nudge": {
+    "column": "delivery",
+    "edges": [
+     [
+      "pending",
+      "failed"
+     ],
+     [
+      "pending",
+      "sent"
+     ],
+     [
+      "pending",
+      "suppressed"
+     ]
+    ]
+   }
+  },
+  "admin_routes": [],
+  "open_routes": [],
+  "admin_role": "Admin",
+  "helper_depth": 3,
+  "rules": []
+ },
+ "overlay_baseline": [],
+ "stated_vs_overlay_to_json_diff": {
+  "tables": {
+   "a": {
+    "User": {
+     "sql": "users"
+    },
+    "NotificationPrefs": {
+     "sql": "notification_prefs"
+    },
+    "Device": {
+     "sql": "devices"
+    },
+    "RefreshToken": {
+     "sql": "refresh_tokens"
+    },
+    "Habit": {
+     "sql": "habits"
+    },
+    "HabitTarget": {
+     "sql": "habit_targets"
+    },
+    "Completion": {
+     "sql": "completions"
+    },
+    "Nudge": {
+     "sql": "nudges"
+    },
+    "TestClock": {
+     "sql": "test_clock"
+    }
+   },
+   "b": {
+    "TestClockRow": {
+     "sql": "test_clock"
+    },
+    "SchemaMigration": {
+     "sql": "schema_migrations"
+    },
+    "User": {
+     "sql": "users"
+    },
+    "NotificationPrefs": {
+     "sql": "notification_prefs"
+    },
+    "Device": {
+     "sql": "devices"
+    },
+    "RefreshToken": {
+     "sql": "refresh_tokens"
+    },
+    "Habit": {
+     "sql": "habits"
+    },
+    "HabitTarget": {
+     "sql": "habit_targets"
+    },
+    "Completion": {
+     "sql": "completions"
+    },
+    "Nudge": {
+     "sql": "nudges"
+    },
+    "TestClock": {
+     "sql": "test_clock"
+    }
+   }
+  }
+ },
+ "stated_vs_derived_to_json_diff": {
+  "machines": {
+   "a": {
+    "Nudge": {
+     "column": "delivery",
+     "edges": [
+      [
+       "pending",
+       "failed"
+      ],
+      [
+       "pending",
+       "sent"
+      ],
+      [
+       "pending",
+       "suppressed"
+      ]
+     ]
+    }
+   },
+   "b": {}
+  },
+  "owner_via": {
+   "a": {
+    "HabitTarget": [
+     "habit_id",
+     "Habit"
+    ],
+    "Completion": [
+     "habit_id",
+     "Habit"
+    ],
+    "Nudge": [
+     "habit_id",
+     "Habit"
+    ]
+   },
+   "b": {}
+  },
+  "tables": {
+   "a": {
+    "User": {
+     "sql": "users"
+    },
+    "NotificationPrefs": {
+     "sql": "notification_prefs"
+    },
+    "Device": {
+     "sql": "devices"
+    },
+    "RefreshToken": {
+     "sql": "refresh_tokens"
+    },
+    "Habit": {
+     "sql": "habits"
+    },
+    "HabitTarget": {
+     "sql": "habit_targets"
+    },
+    "Completion": {
+     "sql": "completions"
+    },
+    "Nudge": {
+     "sql": "nudges"
+    },
+    "TestClock": {
+     "sql": "test_clock"
+    }
+   },
+   "b": {
+    "TestClockRow": {
+     "sql": "test_clock"
+    },
+    "SchemaMigration": {
+     "sql": "schema_migrations"
+    },
+    "User": {
+     "sql": "users"
+    },
+    "NotificationPrefs": {
+     "sql": "notification_prefs"
+    },
+    "Device": {
+     "sql": "devices"
+    },
+    "RefreshToken": {
+     "sql": "refresh_tokens"
+    },
+    "Habit": {
+     "sql": "habits"
+    },
+    "HabitTarget": {
+     "sql": "habit_targets"
+    },
+    "Completion": {
+     "sql": "completions"
+    },
+    "Nudge": {
+     "sql": "nudges"
+    }
+   }
+  }
+ },
+ "stated_vs_overlay_fields": {
+  "tables": {
+   "stated": "{'User': 'users', 'NotificationPrefs': 'notification_prefs', 'Device': 'devices', 'RefreshToken': 'refresh_tokens', 'Habit': 'habits', 'HabitTarget': 'habit_targets', 'Completion': 'completions', 'Nudge': 'nudges', 'TestClock': 'test_clock'}",
+   "overlay": "{'TestClockRow': 'test_clock', 'SchemaMigration': 'schema_migrations', 'User': 'users', 'NotificationPrefs': 'notification_prefs', 'Device': 'devices', 'RefreshToken': 'refresh_tokens', 'Habit': 'habits', 'HabitTarget': 'habit_targets', 'Completion': 'completions', 'Nudge': 'nudges', 'TestClock': 'test_clock'}"
+  }
+ },
+ "stated_vs_derived_fields": {
+  "tables": {
+   "stated": "{'User': 'users', 'NotificationPrefs': 'notification_prefs', 'Device': 'devices', 'RefreshToken': 'refresh_tokens', 'Habit': 'habits', 'HabitTarget': 'habit_targets', 'Completion': 'completions', 'Nudge': 'nudges', 'TestClock': 'test_clock'}",
+   "derived": "{'TestClockRow': 'test_clock', 'SchemaMigration': 'schema_migrations', 'User': 'users', 'NotificationPrefs': 'notification_prefs', 'Device': 'devices', 'RefreshToken': 'refresh_tokens', 'Habit': 'habits', 'HabitTarget': 'habit_targets', 'Completion': 'completions', 'Nudge': 'nudges'}"
+  },
+  "owner_via": {
+   "stated": "{'HabitTarget': ('habit_id', 'Habit'), 'Completion': ('habit_id', 'Habit'), 'Nudge': ('habit_id', 'Habit')}",
+   "derived": "{}"
+  },
+  "machines": {
+   "stated": "{'Nudge': ('delivery', frozenset({('pending', 'sent'), ('pending', 'failed'), ('pending', 'suppressed')}))}",
+   "derived": "{}"
+  }
+ },
+ "findings_stated": [],
+ "findings_overlay": [],
+ "findings_derived_with_baseline": [],
+ "findings_equal_stated_overlay": true
+}

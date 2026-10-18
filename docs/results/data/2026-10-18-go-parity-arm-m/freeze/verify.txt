@@ -1,0 +1,90 @@
+# verified in /Users/vivekgade/Documents/lattice-ma (HEAD 978b468) on 2026-10-18T22:58:54Z
+== freeze.sha256
+lattice/importer/go_rules.py: OK
+lattice/importer/rules.py: OK
+lattice/gocheck/derive.py: OK
+lattice/gocheck/src/goextract_closure.go: OK
+lattice/gocheck/src/goextract_assemble.go: OK
+lattice/gocheck/src/routes.go: OK
+lattice/spec/__main__.py: OK
+tests/importer/test_go_rules.py: OK
+tests/gocheck/test_go_derive.py: OK
+tests/spec/test_go_layers_rb.py: OK
+tests/importer/test_go_rules2.py: OK
+tests/gocheck/test_go_derive2.py: OK
+tests/spec/test_go_layers2.py: OK
+tests/gocheck/fixtures/goparity2/go.mod: OK
+tests/gocheck/fixtures/goparity2/main.go: OK
+tests/gocheck/fixtures/goparity2/truth.json: OK
+tests/gocheck/fixtures/goparity2mixed/go.mod: OK
+tests/gocheck/fixtures/goparity2mixed/main.go: OK
+tests/gocheck/fixtures/goparity2mixed/truth.json: OK
+dogfood/go_parity_probes2.py: OK
+dogfood/go_parity_mutants2.py: OK
+== s3runner.sha256
+dogfood/go_parity_s3.py: OK
+dogfood/go_parity_s3_mutants.py: OK
+tests/spec/test_go_parity_s3.py: OK
+== s3.freeze.sha256
+shasum: FILES.txt: No such file or directory
+FILES.txt: FAILED open or read
+tests/spec/gotickets/api/api.go: OK
+tests/spec/gotickets/go.mod: OK
+tests/spec/gotickets/go.sum: OK
+tests/spec/gotickets/main.go: OK
+tests/spec/gotickets/models/models.go: OK
+tests/spec/gotickets/studio.toml: OK
+tests/spec/gotickets/truth.json: OK
+tests/spec/gotickets_harness.py: OK
+shasum: WARNING: 1 listed file could not be read
+== fixtures.sha256
+tests/gocheck/fixtures/goparity2/go.mod: OK
+tests/gocheck/fixtures/goparity2/main.go: OK
+tests/gocheck/fixtures/goparity2/truth.json: OK
+tests/gocheck/fixtures/goparity2mixed/go.mod: OK
+tests/gocheck/fixtures/goparity2mixed/main.go: OK
+tests/gocheck/fixtures/goparity2mixed/truth.json: OK
+== frozen_193f7f6.sha256 (base table; files changed by later merges are expected to differ)
+lattice/spec/check.py: OK
+lattice/spec/probes.py: OK
+lattice/spec/process.py: OK
+lattice/spec/implementation.py: OK
+lattice/importer/emit_spec.py: OK
+lattice/importer/suite.py: OK
+lattice/importer/lift.py: OK
+lattice/importer/profile_gen.py: OK
+lattice/importer/cli.py: OK
+lattice/importer/review.py: OK
+lattice/importer/report.py: OK
+lattice/importer/mine.py: OK
+lattice/importer/workflow_run.py: OK
+lattice/importer/workflows.py: OK
+lattice/importer/inventory.py: OK
+lattice/importer/frontends/go_gin.py: OK
+lattice/importer/frontends/__init__.py: OK
+lattice/gocheck/__init__.py: OK
+lattice/gocheck/src/goextract.go: OK
+lattice/gocheck/src/goextract_tables.go: OK
+lattice/gocheck/src/goextract_workflow.go: OK
+lattice/gocheck/src/goextract_grpc.go: FAILED
+shasum: lattice/gocheck/src/*.go except goextract.go, goextract_tables.go, goextract_closure.go, goextract_assemble.go, routes.go (18 files, `cat` in `LC_ALL=C ls` order, which includes the three rows above): No such file or directory
+lattice/gocheck/src/*.go except goextract.go, goextract_tables.go, goextract_closure.go, goextract_assemble.go, routes.go (18 files, `cat` in `LC_ALL=C ls` order, which includes the three rows above): FAILED open or read
+lattice/pycheck/derive.py: OK
+lattice/pycheck/checks.py: OK
+tests/spec/goapp/main.go: OK
+tests/spec/go_harness.py: OK
+tests/spec/go_harness_rb.py: OK
+tests/spec/gogin_harness.py: OK
+tests/spec/goginapp/main.go: OK
+tests/spec/goginapp/api/api.go: OK
+tests/spec/goginapp/models/models.go: OK
+tests/spec/test_process_runtime.py: OK
+dogfood/go_parity_probes.py: OK
+dogfood/go_parity_mutants.py: OK
+tests/spec/goapp/go.mod: OK
+tests/spec/goapp/go.sum: OK
+tests/spec/goginapp/go.mod: OK
+tests/spec/goginapp/go.sum: OK
+tests/spec/goginapp/studio.toml: OK
+shasum: WARNING: 1 listed file could not be read
+shasum: WARNING: 1 computed checksum did NOT match

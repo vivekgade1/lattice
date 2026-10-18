@@ -1,0 +1,42 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/vivekgade/Documents/lattice-ma/lattice/importer/__main__.py", line 5, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/vivekgade/Documents/lattice-ma/lattice/importer/cli.py", line 164, in main
+    return _rules_only(p, args, root)
+  File "/Users/vivekgade/Documents/lattice-ma/lattice/importer/cli.py", line 236, in _rules_only
+    imported = import_rules(root, args.package, framework=framework,
+                            app_factory=args.app_factory, dialect=args.dialect)  # fmt: skip
+  File "/Users/vivekgade/Documents/lattice-ma/lattice/importer/rules.py", line 985, in import_rules
+    rules = run_probes(spec, sessions, seeder.make_db,
+                       observe=recorder.observe if recorder else None,
+                       **args("seed"))  # type: ignore[arg-type]  # fmt: skip
+  File "/Users/vivekgade/Documents/lattice-ma/lattice/spec/probes.py", line 3554, in run_probes
+    seed_db = Path(make_db(variant, tmp / "seed.db"))
+                   ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/vivekgade/Documents/lattice-ma/lattice/importer/rules.py", line 337, in make_db
+    self._write(variant, target)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/vivekgade/Documents/lattice-ma/lattice/importer/rules.py", line 351, in _write
+    sql_seed(path, self.tables, plan, uuid_storage=self.uuid_storage,
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+             datetime_storage=self.datetime_storage, schema_hook=self._schema)  # fmt: skip
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/vivekgade/Documents/lattice-ma/lattice/importer/suite.py", line 465, in sql_seed
+    schema_hook(path)
+    ~~~~~~~~~~~^^^^^^
+  File "/Users/vivekgade/Documents/lattice-ma/lattice/importer/rules.py", line 358, in _schema
+    with self.runtime.serve(self.app_factory, path):
+         ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/Users/vivekgade/Documents/lattice-ma/lattice/importer/transport.py", line 566, in serve
+    app = app_factory(db_path)
+  File "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/w-j1m/streak/harness.py", line 95, in make_app
+    url = _require_mysql(db)
+  File "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/w-j1m/streak/harness.py", line 85, in _require_mysql
+    raise RuntimeError(f"Streak runs on MySQL only (check --database mysql); got {ref!r}")
+RuntimeError: Streak runs on MySQL only (check --database mysql); got '/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-rules-seed-ufz3cquk/seed.db'
+$PV -m lattice.importer $S/streak --package . --rules-only --framework gin     0.61s user 0.08s system 113% cpu 0.611 total

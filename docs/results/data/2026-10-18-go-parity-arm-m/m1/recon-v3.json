@@ -1,0 +1,176 @@
+{
+ "lattice": "/Users/vivekgade/Documents/lattice-ma/lattice/__init__.py",
+ "factory": "harness:make_app",
+ "front_end": "gin",
+ "routes": 26,
+ "tables": [
+  "TestClockRow",
+  "SchemaMigration",
+  "User",
+  "NotificationPrefs",
+  "Device",
+  "RefreshToken",
+  "Habit",
+  "HabitTarget",
+  "Completion",
+  "Nudge"
+ ],
+ "dialect": "mysql",
+ "auth_users_table": "User",
+ "contracts": 26,
+ "programs": 0,
+ "scenarios": 0,
+ "inferences": [
+  {
+   "table": "NotificationPrefs",
+   "column": "user_id",
+   "evidence": [
+    "code:internal/account/routes.go:61",
+    "code:internal/account/routes.go:117",
+    "code:internal/completions/routes.go:105",
+    "code:internal/completions/routes.go:249",
+    "code:internal/completions/routes.go:348"
+   ],
+   "rule": "owner_uses"
+  },
+  {
+   "table": "Device",
+   "column": "user_id",
+   "evidence": [
+    "code:internal/account/devices.go:110",
+    "code:internal/account/devices.go:143",
+    "code:internal/auth/routes.go:281",
+    "code:internal/nudges/routes.go:90"
+   ],
+   "rule": "owner_uses"
+  },
+  {
+   "table": "RefreshToken",
+   "column": "user_id",
+   "evidence": [
+    "code:internal/auth/routes.go:278"
+   ],
+   "rule": "owner_uses"
+  },
+  {
+   "table": "Habit",
+   "column": "user_id",
+   "evidence": [
+    "code:internal/account/routes.go:141",
+    "code:internal/completions/routes.go:97",
+    "code:internal/completions/routes.go:241",
+    "code:internal/completions/routes.go:284",
+    "code:internal/completions/routes.go:330",
+    "code:internal/habits/routes.go:161",
+    "code:internal/habits/routes.go:171",
+    "code:internal/habits/routes.go:221",
+    "code:internal/habits/routes.go:243",
+    "code:internal/habits/routes.go:278",
+    "code:internal/habits/routes.go:414",
+    "code:internal/home/routes.go:37",
+    "code:internal/nudges/routes.go:43",
+    "code:internal/nudges/routes.go:73",
+    "code:internal/progress/routes.go:55",
+    "code:internal/progress/routes.go:87",
+    "code:internal/sync/routes.go:58"
+   ],
+   "rule": "owner_uses"
+  },
+  {
+   "rule": "status_facts",
+   "table": "NotificationPrefs",
+   "column": "quiet_start",
+   "choices": [
+    "22:00"
+   ],
+   "evidence": [
+    "code:internal/account/routes.go:50",
+    "code:internal/auth/routes.go:107"
+   ]
+  },
+  {
+   "rule": "status_facts",
+   "table": "NotificationPrefs",
+   "column": "quiet_end",
+   "choices": [
+    "08:00"
+   ],
+   "evidence": [
+    "code:internal/account/routes.go:50",
+    "code:internal/auth/routes.go:107"
+   ]
+  },
+  {
+   "rule": "status_facts",
+   "table": "NotificationPrefs",
+   "column": "nudge_time",
+   "choices": [
+    "20:00"
+   ],
+   "evidence": [
+    "code:internal/account/routes.go:51",
+    "code:internal/auth/routes.go:108"
+   ]
+  },
+  {
+   "rule": "status_facts",
+   "table": "Nudge",
+   "column": "delivery",
+   "choices": [
+    "failed",
+    "pending",
+    "sent",
+    "suppressed"
+   ],
+   "evidence": [
+    "code:internal/nudges/checkin.go:94",
+    "code:internal/nudges/nudger.go:180"
+   ]
+  },
+  {
+   "rule": "json_dash",
+   "table": "User",
+   "columns": [
+    "hashed_password"
+   ]
+  },
+  {
+   "rule": "json_dash",
+   "table": "RefreshToken",
+   "columns": [
+    "token_hash"
+   ]
+  }
+ ],
+ "validation_status": 400,
+ "ownership": {
+  "NotificationPrefs": "owner",
+  "Device": "owner",
+  "RefreshToken": "owner",
+  "Habit": "owner"
+ },
+ "ownership_reasons": {
+  "NotificationPrefs": "its one users foreign key, which account.handler.get, account.handler.put, completions.handler.batch, completions.handler.create, completions.handler.remove filter, check or set from the caller",
+  "Device": "its one users foreign key, which account.handler.deleteDevice, account.handler.postDevice, auth.handler.logout, nudges.handler.dismiss filter, check or set from the caller",
+  "RefreshToken": "its one users foreign key, which auth.handler.logout filter, check or set from the caller",
+  "Habit": "its one users foreign key, which account.handler.remove, completions.handler.batch, completions.handler.create, completions.handler.list, completions.handler.remove, habits.handler.create, habits.handler.get, habits.handler.list, habits.handler.patch, habits.handler.remove, home.handler.home, progress.handler.history, progress.handler.progress, sync.handler.sync filter, check or set from the caller"
+ },
+ "excluded": [
+  [
+   "ANY",
+   "*",
+   "framework"
+  ],
+  [
+   "ANY",
+   "*",
+   "framework"
+  ]
+ ],
+ "seed_users": [
+  "admin",
+  "alice",
+  "bob",
+  "carol"
+ ]
+}
