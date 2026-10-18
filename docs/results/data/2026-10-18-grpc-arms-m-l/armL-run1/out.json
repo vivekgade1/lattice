@@ -1,0 +1,404 @@
+{
+ "record": {
+  "id": "b1",
+  "project": "toybuild",
+  "changes": [],
+  "status": "gave_up",
+  "model": "sonnet",
+  "agent": "claude",
+  "max_rounds": 3,
+  "started": "2026-10-18T22:57:50Z",
+  "finished": "2026-10-18T22:58:38Z",
+  "rounds": [
+   {
+    "n": 1,
+    "started": "2026-10-18T22:57:52Z",
+    "finished": "2026-10-18T22:58:19Z",
+    "agent_summary": "I implemented `AddItem`, `GetItem`, `ListItems` and `RemoveItem` in `shelf.go`, so the seven in-scope scenarios no longer get `UNIMPLEMENTED`. `./check.sh` now reports `\"verdict\": \"pass\"`; I didn't open the per-check results. I didn't check its exit code either, because that command was blocked. - **Add:** an empty name or negative quantity returns `INVALID_ARGUMENT` before anything is stored, and a duplicate name returns `ALREADY_EXISTS`. The duplicate case relies on the table's unique constraint and matches `UNIQUE` in the SQLite error text, rather than querying first. - **Get and remove:**\u2026",
+    "files_changed": [
+     "shelf.go"
+    ],
+    "check": {
+     "verdict": "fail",
+     "counts": {
+      "C": 0,
+      "D": 0
+     },
+     "findings": [
+      {
+       "id": "f1",
+       "title": "spec files were edited (restored from the base commit): proto",
+       "target": "spec",
+       "signal_key": "studio:spec_edited",
+       "in_scope": false,
+       "regression": false
+      }
+     ]
+    },
+    "agent": {
+     "cost_usd": 0.10414109999999999,
+     "cost_usd_list_estimate": 0.10414109999999999,
+     "duration_ms": 23485,
+     "input_tokens": 14,
+     "output_tokens": 2767,
+     "cache_read_input_tokens": 88031,
+     "cache_creation_input_tokens": 16910,
+     "num_turns": 10,
+     "session_id": "c5a69547-24fa-4c05-9df9-a2f4b568508f"
+    },
+    "gates": [
+     {
+      "command": "./check.sh",
+      "exit_code": 0,
+      "seconds": 1.88,
+      "output_tail": "{\n \"verdict\": \"pass\",\n \"layers\": \"CD\",\n \"counts\": {\n  \"C\": 0,\n  \"D\": 0\n },\n \"notes\": [],\n \"unchecked\": [],\n \"accepted\": [],\n \"stale_baseline\": [],\n \"timings\": {\n  \"total_s\": 1.3509,\n  \"layers\": {\n   \"C\": 0.0015,\n   \"D\": 1.3455\n  },\n  \"setup\": {},\n  \"scenarios\": [\n   {\n    \"name\": \"add_and_get\",\n    \"seconds\": 1.1402,\n    \"db_clone_s\": 0.0009,\n    \"given_s\": 0.0,\n    \"app_start_s\": 1.0363,\n    \"steps_s\": 0.0202,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0027,\n    \"health_wait_s\": 1.0221,\n    \"rpc_s\": 0.0201,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_empty_name\",\n    \"seconds\": 0.0347,\n    \"db_clone_s\": 0.0009,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0173,\n    \"steps_s\": 0.0126,\n    \"app_stop_s\": 0.0017,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0022,\n    \"health_wait_s\": 0.0149,\n    \"rpc_s\": 0.0126,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_negative_qty\",\n    \"seconds\": 0.0329,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0159,\n    \"steps_s\": 0.0126,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0021,\n    \"health_wait_s\": 0.0137,\n    \"rpc_s\": 0.0125,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_duplicate_name\",\n    \"seconds\": 0.0344,\n    \"db_clone_s\": 0.0008,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0161,\n    \"steps_s\": 0.0137,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0006,\n    \"process_spawn_s\": 0.0022,\n    \"health_wait_s\": 0.0138,\n    \"rpc_s\": 0.0137,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"get_missing\",\n    \"seconds\": 0.0338,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0167,\n    \"steps_s\": 0.0127,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0018,\n    \"health_wait_s\": 0.0147,\n    \"rpc_s\": 0.0126,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"list_oldest_first\",\n    \"seconds\": 0.0352,\n    \"db_clone_s\": 0.0006,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.016,\n    \"steps_s\": 0.0148,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0007,\n    \"process_spawn_s\": 0.0018,\n    \"health_wait_s\": 0.0141,\n    \"rpc_s\": 0.0148,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.0343,\n    \"db_clone_s\": 0.0\n",
+      "layer_seconds": {
+       "C": 0.0015,
+       "D": 1.3455
+      }
+     }
+    ],
+    "spec_edited": [
+     "proto"
+    ],
+    "error": null,
+    "wall_s": 26.57,
+    "scope_passing": 7,
+    "scope_total": 7,
+    "regressions": [],
+    "newly_fixed": [
+     "scenario:add_and_get",
+     "scenario:add_empty_name",
+     "scenario:add_negative_qty",
+     "scenario:add_duplicate_name",
+     "scenario:get_missing",
+     "scenario:list_oldest_first",
+     "scenario:remove_then_again"
+    ]
+   },
+   {
+    "n": 2,
+    "started": "2026-10-18T22:58:19Z",
+    "finished": "2026-10-18T22:58:30Z",
+    "agent_summary": "I made no code changes this round. I never edited `proto/toy/v1/shelf.proto`, and its modification time is still the original 17:57 scaffold time. `proto/` holds nothing else, and `generate.sh` writes only to `gen/`. I re-ran `./check.sh` and it again reports `\"verdict\": \"pass\"`. I can't see what Studio compared, and I can't run git here. So I can't tell why it flagged `proto` as edited. Check that diff on your side. If it came from `gen/` or the generator output, that is a problem with the harness, not the code.",
+    "files_changed": [],
+    "check": {
+     "verdict": "fail",
+     "counts": {
+      "C": 0,
+      "D": 0
+     },
+     "findings": [
+      {
+       "id": "f1",
+       "title": "spec files were edited (restored from the base commit): proto",
+       "target": "spec",
+       "signal_key": "studio:spec_edited",
+       "in_scope": false,
+       "regression": false
+      }
+     ]
+    },
+    "agent": {
+     "cost_usd": 0.12623849999999998,
+     "cost_usd_list_estimate": 0.12623849999999998,
+     "duration_ms": 8283,
+     "input_tokens": 6,
+     "output_tokens": 547,
+     "cache_read_input_tokens": 52674,
+     "cache_creation_input_tokens": 2837,
+     "num_turns": 3,
+     "session_id": "c5a69547-24fa-4c05-9df9-a2f4b568508f"
+    },
+    "gates": [
+     {
+      "command": "./check.sh",
+      "exit_code": 0,
+      "seconds": 1.91,
+      "output_tail": "{\n \"verdict\": \"pass\",\n \"layers\": \"CD\",\n \"counts\": {\n  \"C\": 0,\n  \"D\": 0\n },\n \"notes\": [],\n \"unchecked\": [],\n \"accepted\": [],\n \"stale_baseline\": [],\n \"timings\": {\n  \"total_s\": 1.381,\n  \"layers\": {\n   \"C\": 0.0015,\n   \"D\": 1.3757\n  },\n  \"setup\": {},\n  \"scenarios\": [\n   {\n    \"name\": \"add_and_get\",\n    \"seconds\": 1.1609,\n    \"db_clone_s\": 0.003,\n    \"given_s\": 0.0,\n    \"app_start_s\": 1.058,\n    \"steps_s\": 0.0174,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0006,\n    \"process_spawn_s\": 0.0025,\n    \"health_wait_s\": 1.0457,\n    \"rpc_s\": 0.0174,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_empty_name\",\n    \"seconds\": 0.0386,\n    \"db_clone_s\": 0.0009,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0185,\n    \"steps_s\": 0.0154,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0023,\n    \"health_wait_s\": 0.0159,\n    \"rpc_s\": 0.0154,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_negative_qty\",\n    \"seconds\": 0.035,\n    \"db_clone_s\": 0.0009,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0174,\n    \"steps_s\": 0.0129,\n    \"app_stop_s\": 0.0017,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0019,\n    \"health_wait_s\": 0.0153,\n    \"rpc_s\": 0.0129,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_duplicate_name\",\n    \"seconds\": 0.0348,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0164,\n    \"steps_s\": 0.0139,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0022,\n    \"health_wait_s\": 0.014,\n    \"rpc_s\": 0.0139,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"get_missing\",\n    \"seconds\": 0.034,\n    \"db_clone_s\": 0.0008,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0163,\n    \"steps_s\": 0.013,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0021,\n    \"health_wait_s\": 0.0141,\n    \"rpc_s\": 0.013,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"list_oldest_first\",\n    \"seconds\": 0.0372,\n    \"db_clone_s\": 0.0022,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.016,\n    \"steps_s\": 0.0153,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0007,\n    \"process_spawn_s\": 0.002,\n    \"health_wait_s\": 0.0139,\n    \"rpc_s\": 0.0153,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.0353,\n    \"db_clone_s\": 0.0008,\n    \n",
+      "layer_seconds": {
+       "C": 0.0015,
+       "D": 1.3757
+      }
+     }
+    ],
+    "spec_edited": [
+     "proto"
+    ],
+    "error": null,
+    "wall_s": 11.11,
+    "scope_passing": 7,
+    "scope_total": 7,
+    "regressions": [],
+    "newly_fixed": [
+     "scenario:add_and_get",
+     "scenario:add_empty_name",
+     "scenario:add_negative_qty",
+     "scenario:add_duplicate_name",
+     "scenario:get_missing",
+     "scenario:list_oldest_first",
+     "scenario:remove_then_again"
+    ]
+   },
+   {
+    "n": 3,
+    "started": "2026-10-18T22:58:30Z",
+    "finished": "2026-10-18T22:58:38Z",
+    "agent_summary": "I made no changes this round, and I can't find any edit to `proto` on my side. `proto/toy/v1/shelf.proto` still has its original 17:57 scaffold timestamp, and I've only written to `shelf.go`. `generate.sh` writes only to `gen/`, which `.gitignore` excludes. I think the \"proto edited\" finding isn't coming from the code. It was identical in rounds 1 and 2, with all 7 in-scope checks passing. I can't run git here to compare the proto against the base commit. `studio.toml` lists `proto` under `[mcp] protected`, so please check how Studio's spec-file comparison treats it, for example generated out\u2026",
+    "files_changed": [],
+    "check": {
+     "verdict": "fail",
+     "counts": {
+      "C": 0,
+      "D": 0
+     },
+     "findings": [
+      {
+       "id": "f1",
+       "title": "spec files were edited (restored from the base commit): proto",
+       "target": "spec",
+       "signal_key": "studio:spec_edited",
+       "in_scope": false,
+       "regression": false
+      }
+     ]
+    },
+    "agent": {
+     "cost_usd": 0.1420079,
+     "cost_usd_list_estimate": 0.1420079,
+     "duration_ms": 5279,
+     "input_tokens": 4,
+     "output_tokens": 512,
+     "cache_read_input_tokens": 39814,
+     "cache_creation_input_tokens": 1665,
+     "num_turns": 2,
+     "session_id": "c5a69547-24fa-4c05-9df9-a2f4b568508f"
+    },
+    "gates": [
+     {
+      "command": "./check.sh",
+      "exit_code": 0,
+      "seconds": 1.9,
+      "output_tail": "{\n \"verdict\": \"pass\",\n \"layers\": \"CD\",\n \"counts\": {\n  \"C\": 0,\n  \"D\": 0\n },\n \"notes\": [],\n \"unchecked\": [],\n \"accepted\": [],\n \"stale_baseline\": [],\n \"timings\": {\n  \"total_s\": 1.381,\n  \"layers\": {\n   \"C\": 0.0016,\n   \"D\": 1.3756\n  },\n  \"setup\": {},\n  \"scenarios\": [\n   {\n    \"name\": \"add_and_get\",\n    \"seconds\": 1.1598,\n    \"db_clone_s\": 0.0012,\n    \"given_s\": 0.0,\n    \"app_start_s\": 1.0576,\n    \"steps_s\": 0.0195,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0006,\n    \"process_spawn_s\": 0.0026,\n    \"health_wait_s\": 1.0424,\n    \"rpc_s\": 0.0194,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_empty_name\",\n    \"seconds\": 0.0374,\n    \"db_clone_s\": 0.0008,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0183,\n    \"steps_s\": 0.0146,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0023,\n    \"health_wait_s\": 0.0159,\n    \"rpc_s\": 0.0145,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_negative_qty\",\n    \"seconds\": 0.0348,\n    \"db_clone_s\": 0.0008,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0169,\n    \"steps_s\": 0.0134,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.002,\n    \"health_wait_s\": 0.0147,\n    \"rpc_s\": 0.0134,\n    \"process_stop_s\": 0.0015,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_duplicate_name\",\n    \"seconds\": 0.035,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0157,\n    \"steps_s\": 0.015,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0018,\n    \"health_wait_s\": 0.0137,\n    \"rpc_s\": 0.015,\n    \"process_stop_s\": 0.0015,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"get_missing\",\n    \"seconds\": 0.0348,\n    \"db_clone_s\": 0.0006,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0169,\n    \"steps_s\": 0.0136,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.002,\n    \"health_wait_s\": 0.0147,\n    \"rpc_s\": 0.0136,\n    \"process_stop_s\": 0.0015,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"list_oldest_first\",\n    \"seconds\": 0.0376,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0174,\n    \"steps_s\": 0.0159,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0007,\n    \"process_spawn_s\": 0.0023,\n    \"health_wait_s\": 0.015,\n    \"rpc_s\": 0.0159,\n    \"process_stop_s\": 0.0015,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.0362,\n    \"db_clone_s\": 0.0007,\n \n",
+      "layer_seconds": {
+       "C": 0.0016,
+       "D": 1.3756
+      }
+     }
+    ],
+    "spec_edited": [
+     "proto"
+    ],
+    "error": null,
+    "wall_s": 8.15,
+    "scope_passing": 7,
+    "scope_total": 7,
+    "regressions": [],
+    "newly_fixed": [
+     "scenario:add_and_get",
+     "scenario:add_empty_name",
+     "scenario:add_negative_qty",
+     "scenario:add_duplicate_name",
+     "scenario:get_missing",
+     "scenario:list_oldest_first",
+     "scenario:remove_then_again"
+    ]
+   }
+  ],
+  "targets": [
+   {
+    "id": "scenario:add_and_get",
+    "label": "D silent add_and_get / step 1: code: expected OK, got UNIMPLEMENTED (method AddItem not implemented); message: expected {'id': 1, 'name': 'widget', 'qty': 3} within {'code': 'UNIMPLEMENTED', 'message': 'method AddItem not implemented'}; db Item: expected 1 rows, found 0",
+    "done": false
+   },
+   {
+    "id": "scenario:add_empty_name",
+    "label": "D silent add_empty_name / step 1: code: expected INVALID_ARGUMENT, got UNIMPLEMENTED (method AddItem not implemented)",
+    "done": false
+   },
+   {
+    "id": "scenario:add_negative_qty",
+    "label": "D silent add_negative_qty / step 1: code: expected INVALID_ARGUMENT, got UNIMPLEMENTED (method AddItem not implemented)",
+    "done": false
+   },
+   {
+    "id": "scenario:add_duplicate_name",
+    "label": "D silent add_duplicate_name / step 1: code: expected OK, got UNIMPLEMENTED (method AddItem not implemented); db Item: expected 1 rows, found 0",
+    "done": false
+   },
+   {
+    "id": "scenario:get_missing",
+    "label": "D silent get_missing / step 1: code: expected NOT_FOUND, got UNIMPLEMENTED (method GetItem not implemented)",
+    "done": false
+   },
+   {
+    "id": "scenario:list_oldest_first",
+    "label": "D silent list_oldest_first / step 1: code: expected OK, got UNIMPLEMENTED (method AddItem not implemented)",
+    "done": false
+   },
+   {
+    "id": "scenario:remove_then_again",
+    "label": "D silent remove_then_again / step 1: code: expected OK, got UNIMPLEMENTED (method AddItem not implemented); db Item: expected 1 rows, found 0",
+    "done": false
+   }
+  ],
+  "gates": [
+   "./check.sh"
+  ],
+  "base": "0b30a470cfd5a421f5b5b72b88f17d7b0caee1e2",
+  "branch": "rebuild/all-1",
+  "worktree": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/w-i/armL/repo/.lattice/rebuilds/toybuild-b1-6b8e9c",
+  "merge_hint": null,
+  "usage": {
+   "cost_usd": 0.372387,
+   "cost_usd_list_estimate": 0.372387,
+   "duration_ms": 37047,
+   "input_tokens": 24,
+   "output_tokens": 3826,
+   "cache_read_input_tokens": 180519,
+   "cache_creation_input_tokens": 21412,
+   "wall_s": 48.14
+  },
+  "warnings": [],
+  "error": null,
+  "pids": [],
+  "attempts": 1,
+  "timeline": [
+   {
+    "at": "2026-10-18T22:57:50Z",
+    "event": "started"
+   },
+   {
+    "at": "2026-10-18T22:58:38Z",
+    "event": "gave_up",
+    "cause": "no_progress"
+   }
+  ],
+  "interrupted": false,
+  "interrupted_at": null,
+  "interrupted_reason": null,
+  "session_id": "c5a69547-24fa-4c05-9df9-a2f4b568508f",
+  "scope": {
+   "kind": "all",
+   "id": "all",
+   "title": "All",
+   "rules": [
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R5",
+    "R6",
+    "R7",
+    "R8"
+   ]
+  },
+  "baseline": {
+   "at": "2026-10-18T22:57:52Z",
+   "seconds": 2.27,
+   "verdict": "fail",
+   "counts": {
+    "C": 0,
+    "D": 7
+   },
+   "findings": [
+    {
+     "id": "f1",
+     "title": "D silent add_and_get / step 1: code: expected OK, got UNIMPLEMENTED (method AddItem not implemented); message: expected {'id': 1, 'name': 'widget', 'qty': 3} within {'code': 'UNIMPLEMENTED', 'message': 'method AddItem not implemented'}; db Item: expected 1 rows, found 0",
+     "target": "scenario:add_and_get",
+     "rules": [
+      "R1"
+     ],
+     "in_scope": true
+    },
+    {
+     "id": "f2",
+     "title": "D silent add_empty_name / step 1: code: expected INVALID_ARGUMENT, got UNIMPLEMENTED (method AddItem not implemented)",
+     "target": "scenario:add_empty_name",
+     "rules": [
+      "R2"
+     ],
+     "in_scope": true
+    },
+    {
+     "id": "f3",
+     "title": "D silent add_negative_qty / step 1: code: expected INVALID_ARGUMENT, got UNIMPLEMENTED (method AddItem not implemented)",
+     "target": "scenario:add_negative_qty",
+     "rules": [
+      "R3"
+     ],
+     "in_scope": true
+    },
+    {
+     "id": "f4",
+     "title": "D silent add_duplicate_name / step 1: code: expected OK, got UNIMPLEMENTED (method AddItem not implemented); db Item: expected 1 rows, found 0",
+     "target": "scenario:add_duplicate_name",
+     "rules": [
+      "R4"
+     ],
+     "in_scope": true
+    },
+    {
+     "id": "f5",
+     "title": "D silent get_missing / step 1: code: expected NOT_FOUND, got UNIMPLEMENTED (method GetItem not implemented)",
+     "target": "scenario:get_missing",
+     "rules": [
+      "R5"
+     ],
+     "in_scope": true
+    },
+    {
+     "id": "f6",
+     "title": "D silent list_oldest_first / step 1: code: expected OK, got UNIMPLEMENTED (method AddItem not implemented)",
+     "target": "scenario:list_oldest_first",
+     "rules": [
+      "R6"
+     ],
+     "in_scope": true
+    },
+    {
+     "id": "f7",
+     "title": "D silent remove_then_again / step 1: code: expected OK, got UNIMPLEMENTED (method AddItem not implemented); db Item: expected 1 rows, found 0",
+     "target": "scenario:remove_then_again",
+     "rules": [
+      "R7"
+     ],
+     "in_scope": true
+    }
+   ],
+   "unmapped": [],
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 1,
+     "seconds": 2.27,
+     "output_tail": "{\n \"verdict\": \"fail\",\n \"layers\": \"CD\",\n \"counts\": {\n  \"C\": 0,\n  \"D\": 7\n },\n \"notes\": [],\n \"unchecked\": [],\n \"accepted\": [],\n \"stale_baseline\": [],\n \"timings\": {\n  \"total_s\": 1.3656,\n  \"layers\": {\n   \"C\": 0.0033,\n   \"D\": 1.3586\n  },\n  \"setup\": {},\n  \"scenarios\": [\n   {\n    \"name\": \"add_and_get\",\n    \"seconds\": 1.1567,\n    \"db_clone_s\": 0.0011,\n    \"given_s\": 0.0,\n    \"app_start_s\": 1.0501,\n    \"steps_s\": 0.0255,\n    \"app_stop_s\": 0.0017,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0006,\n    \"process_spawn_s\": 0.0024,\n    \"health_wait_s\": 1.0296,\n    \"rpc_s\": 0.0255,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_empty_name\",\n    \"seconds\": 0.0379,\n    \"db_clone_s\": 0.001,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.018,\n    \"steps_s\": 0.015,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0022,\n    \"health_wait_s\": 0.0156,\n    \"rpc_s\": 0.015,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_negative_qty\",\n    \"seconds\": 0.0343,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.017,\n    \"steps_s\": 0.0129,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0021,\n    \"health_wait_s\": 0.0148,\n    \"rpc_s\": 0.0128,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_duplicate_name\",\n    \"seconds\": 0.0324,\n    \"db_clone_s\": 0.0008,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0161,\n    \"steps_s\": 0.0117,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0021,\n    \"health_wait_s\": 0.0139,\n    \"rpc_s\": 0.0117,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"get_missing\",\n    \"seconds\": 0.0321,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0157,\n    \"steps_s\": 0.012,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0018,\n    \"health_wait_s\": 0.0137,\n    \"rpc_s\": 0.012,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"list_oldest_first\",\n    \"seconds\": 0.0318,\n    \"db_clone_s\": 0.001,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0153,\n    \"steps_s\": 0.0117,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0016,\n    \"health_wait_s\": 0.0136,\n    \"rpc_s\": 0.0117,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.0332,\n    \"db_clone_s\": 0.0007,\n  \n",
+     "layer_seconds": {
+      "C": 0.0033,
+      "D": 1.3586
+     }
+    }
+   ]
+  },
+  "target_branch": "build/toybuild",
+  "created_branch": true,
+  "base_ref": "HEAD",
+  "commit_range": {
+   "from": "0b30a470cfd5a421f5b5b72b88f17d7b0caee1e2",
+   "to": null
+  },
+  "integration_branch": "build/toybuild",
+  "integration_base": "0b30a470cfd5a421f5b5b72b88f17d7b0caee1e2",
+  "owner_head": "0b30a470cfd5a421f5b5b72b88f17d7b0caee1e2",
+  "merged_head": null,
+  "metrics": null,
+  "cause": "no_progress"
+ },
+ "log": [
+  "rebuild b1: started on rebuild/all-1 at 0b30a470cf (/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/w-i/armL/repo/.lattice/rebuilds/toybuild-b1-6b8e9c)",
+  "rebuild b1: baseline 7 finding(s), 7 in scope all",
+  "rebuild b1: round 1 fail (1 finding(s), 1 file(s) changed)",
+  "rebuild b1: round 2 fail (1 finding(s), 0 file(s) changed)",
+  "rebuild b1: round 3 fail (1 finding(s), 0 file(s) changed)"
+ ]
+}

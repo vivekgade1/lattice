@@ -1,0 +1,13 @@
+tests/grpc/fixtures/wiring4/truth.json: OK
+tests/grpc/fixtures/authwire4/truth.json: OK
+tests/grpc/fixtures/codes4/truth.json: OK
+tests/grpc/fixtures/tables4/truth.json: OK
+tests/grpc/fixtures/login4/truth.json: OK
+lattice/gocheck/src/goextract_grpc.go: OK
+lattice/importer/frontends/go_grpc.py: OK
+lattice/spec/grpc.py: OK
+lattice/importer/transport.py: OK
+dogfood/grpc_scorer4.py: OK
+dogfood/grpc_scorer4_cases.json: OK
+dogfood/grpc_probes4.py: OK
+dogfood/grpc_contract4.py: OK

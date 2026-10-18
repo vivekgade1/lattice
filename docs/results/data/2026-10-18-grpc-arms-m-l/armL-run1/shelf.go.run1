@@ -1,0 +1,88 @@
+package main
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"strings"
+
+	toyv1 "example.com/toybuild/gen/toy/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+// shelf serves toy.v1.Shelf over the items table.
+type shelf struct {
+	toyv1.UnimplementedShelfServer
+	db *sql.DB
+}
+
+func internal(err error) error { return status.Error(codes.Internal, err.Error()) }
+
+func (s *shelf) AddItem(ctx context.Context, req *toyv1.AddItemRequest) (*toyv1.Item, error) {
+	if req.GetName() == "" {
+		return nil, status.Error(codes.InvalidArgument, "name must not be empty")
+	}
+	if req.GetQty() < 0 {
+		return nil, status.Error(codes.InvalidArgument, "qty must not be negative")
+	}
+	res, err := s.db.ExecContext(ctx, "INSERT INTO items(name, qty) VALUES(?, ?)", req.GetName(), req.GetQty())
+	if err != nil {
+		if strings.Contains(err.Error(), "UNIQUE") {
+			return nil, status.Error(codes.AlreadyExists, "item name already exists")
+		}
+		return nil, internal(err)
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, internal(err)
+	}
+	return &toyv1.Item{Id: id, Name: req.GetName(), Qty: req.GetQty()}, nil
+}
+
+func (s *shelf) GetItem(ctx context.Context, req *toyv1.GetItemRequest) (*toyv1.Item, error) {
+	it := &toyv1.Item{}
+	err := s.db.QueryRowContext(ctx, "SELECT id, name, qty FROM items WHERE id = ?", req.GetId()).Scan(&it.Id, &it.Name, &it.Qty)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, status.Error(codes.NotFound, "item not found")
+	}
+	if err != nil {
+		return nil, internal(err)
+	}
+	return it, nil
+}
+
+func (s *shelf) ListItems(ctx context.Context, _ *toyv1.ListItemsRequest) (*toyv1.ListItemsResponse, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT id, name, qty FROM items ORDER BY id")
+	if err != nil {
+		return nil, internal(err)
+	}
+	defer rows.Close()
+	out := &toyv1.ListItemsResponse{}
+	for rows.Next() {
+		it := &toyv1.Item{}
+		if err := rows.Scan(&it.Id, &it.Name, &it.Qty); err != nil {
+			return nil, internal(err)
+		}
+		out.Items = append(out.Items, it)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, internal(err)
+	}
+	return out, nil
+}
+
+func (s *shelf) RemoveItem(ctx context.Context, req *toyv1.RemoveItemRequest) (*toyv1.RemoveItemResponse, error) {
+	res, err := s.db.ExecContext(ctx, "DELETE FROM items WHERE id = ?", req.GetId())
+	if err != nil {
+		return nil, internal(err)
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return nil, internal(err)
+	}
+	if n == 0 {
+		return nil, status.Error(codes.NotFound, "item not found")
+	}
+	return &toyv1.RemoveItemResponse{}, nil
+}

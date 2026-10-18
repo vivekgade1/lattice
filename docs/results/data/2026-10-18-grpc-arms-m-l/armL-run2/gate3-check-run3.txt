@@ -1,0 +1,10 @@
+PASS: 0 findings (C 0, D 0); 15 cases run
+
+timings: total 1.38s (C 0.00s, D 1.37s)
+scenarios: 7 in 1.37s, 0.20s each on average (start 0.16, db 0.00, steps 0.02, stop 0.00)
+slowest 5:
+  1.14s add_and_get (start 1.04, db 0.00, steps 0.02, 2 requests)
+  0.04s remove_then_again (start 0.02, db 0.00, steps 0.02, 4 requests)
+  0.04s list_oldest_first (start 0.02, db 0.00, steps 0.02, 4 requests)
+  0.04s add_duplicate_name (start 0.02, db 0.00, steps 0.02, 2 requests)
+  0.04s get_missing (start 0.02, db 0.00, steps 0.01, 1 requests)
