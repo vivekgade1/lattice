@@ -1,0 +1,1607 @@
+{
+ "schema": "lattice.grpc-probes4/1",
+ "arm": "G",
+ "library_sha256": {
+  "dogfood/grpc_contract4.py": "6666ac9bedc8dfb49edd18177091c40ece5dcf3b149a097e82bdf004a4a04610",
+  "dogfood/grpc_flow_scorer.py": "8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3",
+  "dogfood/grpc_probes3.py": "244e5e688287774daad66198134697c4b67443a8e71316ad4a2df84a97d3a978",
+  "dogfood/grpc_probes4.py": "82aca97b4d508d0537a567914be537b2529cc219a6d9effb630c0d1bfdf1350b",
+  "dogfood/grpc_scorer3.py": "019db509ded84f48ef95e7bfe7788a949305611a35ab3ae15706303298ea50be",
+  "dogfood/grpc_scorer3_cases.json": "be3ccbcbc61817bd76f6bbd8873e8da40f4574b4204169a0040f7690a2ae88db",
+  "dogfood/grpc_scorer4.py": "e963747ae1545e68a31b8b740fd259b687a6121a4712667d239287683a2bae90",
+  "dogfood/grpc_scorer4_cases.json": "dabdd4591adb8f15dc08ef6b24da031beb3dd528688ae285cfef6d0b8178cef1",
+  "lattice/gocheck/src/goextract.go": "652e7007380ef7fa3e16b77ac937fb300ab5023899c2e81408cfa7a2a28c376a",
+  "lattice/gocheck/src/goextract_grpc.go": "3f181be7e7c50204bdadbc0c1a22a0988f4c68fd610817c9782011d540aa4354",
+  "lattice/gocheck/src/goextract_proto.go": "ec4aa3157b407467708bdc341171e94e9a33aedf70ac6a46893d7b41590c9a50",
+  "lattice/gocheck/src/load.go": "72a35ec417e522243f7583f8cb7f605c5f0261a81ce28ee7d057fa5af4cbd17f",
+  "lattice/importer/frontends/go_grpc.py": "7543c9fabc0e7a9369f760e18d6f2220a712ea010df821bcd496ea81927db799",
+  "lattice/importer/outside.py": "5d7a5ed767b7060d10c8508c8ee930f5af6b570f8e9f3c4a22f0352a91f74328",
+  "lattice/importer/transport.py": "04979019468e5d4fd9dc33c7d98ef62c32c5ae41fd5211421ec43ca4cca9ae4a",
+  "lattice/importer/workflows.py": "5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098",
+  "lattice/spec/grpc.py": "1bd489dffd545aaedd923756a52aaebb84ab89e434f14a37aa048f707a204c80"
+ },
+ "frozen_before": {
+  "frozen_files_changed": [],
+  "named_frozen": {
+   "lattice/gocheck/src/goextract_proto.go": {
+    "base": "ec4aa3157b407467",
+    "now": "ec4aa3157b407467",
+    "same": true
+   },
+   "lattice/gocheck/src/goextract.go": {
+    "base": "652e7007380ef7fa",
+    "now": "652e7007380ef7fa",
+    "same": true
+   },
+   "lattice/gocheck/src/load.go": {
+    "base": "72a35ec417e52224",
+    "now": "72a35ec417e52224",
+    "same": true
+   },
+   "lattice/importer/workflows.py": {
+    "base": "5eba7e8ab6ac62ba",
+    "now": "5eba7e8ab6ac62ba",
+    "same": true
+   },
+   "lattice/importer/outside.py": {
+    "base": "5d7a5ed767b7060d",
+    "now": "5d7a5ed767b7060d",
+    "same": true
+   },
+   "dogfood/grpc_flow_scorer.py": {
+    "base": "8d896ee0ad1c22fd",
+    "now": "8d896ee0ad1c22fd",
+    "same": true
+   },
+   "dogfood/grpc_probes3.py": {
+    "base": "244e5e688287774d",
+    "now": "244e5e688287774d",
+    "same": true
+   },
+   "dogfood/grpc_scorer3.py": {
+    "base": "019db509ded84f48",
+    "now": "019db509ded84f48",
+    "same": true
+   },
+   "dogfood/grpc_scorer3_cases.json": {
+    "base": "be3ccbcbc61817bd",
+    "now": "be3ccbcbc61817bd",
+    "same": true
+   }
+  },
+  "tracked_changed_vs_base": [
+   "docs/results/2026-10-18-grpc-round4-prereg.md",
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/importer/frontends/go_grpc.py",
+   "lattice/importer/transport.py",
+   "lattice/spec/grpc.py"
+  ],
+  "unexpected": [],
+  "budgets": {
+   "lattice/gocheck/src/goextract_grpc.go": {
+    "insertions+deletions": 749,
+    "budget": 400,
+    "ok": false
+   },
+   "lattice/importer/frontends/go_grpc.py": {
+    "insertions+deletions": 49,
+    "budget": 50,
+    "ok": true
+   },
+   "lattice/spec/grpc.py": {
+    "insertions+deletions": 40,
+    "budget": 50,
+    "ok": true
+   },
+   "lattice/importer/transport.py": {
+    "insertions+deletions": 4,
+    "budget": 6,
+    "ok": true
+   }
+  },
+  "staged": [],
+  "deskd_freeze_ok": true,
+  "deskd_files_changed": [],
+  "kilnworks_freeze_ok": true,
+  "kilnworks_files_changed": [],
+  "harborline_freeze_ok": true,
+  "harborline_files_changed": [],
+  "dev_truth_hashes_changed": [],
+  "ok": false
+ },
+ "frozen_after": {
+  "frozen_files_changed": [],
+  "named_frozen": {
+   "lattice/gocheck/src/goextract_proto.go": {
+    "base": "ec4aa3157b407467",
+    "now": "ec4aa3157b407467",
+    "same": true
+   },
+   "lattice/gocheck/src/goextract.go": {
+    "base": "652e7007380ef7fa",
+    "now": "652e7007380ef7fa",
+    "same": true
+   },
+   "lattice/gocheck/src/load.go": {
+    "base": "72a35ec417e52224",
+    "now": "72a35ec417e52224",
+    "same": true
+   },
+   "lattice/importer/workflows.py": {
+    "base": "5eba7e8ab6ac62ba",
+    "now": "5eba7e8ab6ac62ba",
+    "same": true
+   },
+   "lattice/importer/outside.py": {
+    "base": "5d7a5ed767b7060d",
+    "now": "5d7a5ed767b7060d",
+    "same": true
+   },
+   "dogfood/grpc_flow_scorer.py": {
+    "base": "8d896ee0ad1c22fd",
+    "now": "8d896ee0ad1c22fd",
+    "same": true
+   },
+   "dogfood/grpc_probes3.py": {
+    "base": "244e5e688287774d",
+    "now": "244e5e688287774d",
+    "same": true
+   },
+   "dogfood/grpc_scorer3.py": {
+    "base": "019db509ded84f48",
+    "now": "019db509ded84f48",
+    "same": true
+   },
+   "dogfood/grpc_scorer3_cases.json": {
+    "base": "be3ccbcbc61817bd",
+    "now": "be3ccbcbc61817bd",
+    "same": true
+   }
+  },
+  "tracked_changed_vs_base": [
+   "docs/results/2026-10-18-grpc-round4-prereg.md",
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/importer/frontends/go_grpc.py",
+   "lattice/importer/transport.py",
+   "lattice/spec/grpc.py"
+  ],
+  "unexpected": [],
+  "budgets": {
+   "lattice/gocheck/src/goextract_grpc.go": {
+    "insertions+deletions": 749,
+    "budget": 400,
+    "ok": false
+   },
+   "lattice/importer/frontends/go_grpc.py": {
+    "insertions+deletions": 49,
+    "budget": 50,
+    "ok": true
+   },
+   "lattice/spec/grpc.py": {
+    "insertions+deletions": 40,
+    "budget": 50,
+    "ok": true
+   },
+   "lattice/importer/transport.py": {
+    "insertions+deletions": 4,
+    "budget": 6,
+    "ok": true
+   }
+  },
+  "staged": [],
+  "deskd_freeze_ok": true,
+  "deskd_files_changed": [],
+  "kilnworks_freeze_ok": true,
+  "kilnworks_files_changed": [],
+  "harborline_freeze_ok": true,
+  "harborline_files_changed": [],
+  "dev_truth_hashes_changed": [],
+  "ok": false
+ },
+ "probes": [
+  {
+   "id": "PR4-N",
+   "prediction": "byte-equal to round 2",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "implemented answered": "10/10",
+    "bytes equal round 1": true,
+    "extra keys": []
+   },
+   "detail": {
+    "notes.v1.Accounts/Register": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Accounts/Login": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Accounts/Me": {
+     "code": "OK",
+     "answered": true
+    },
+    "notes.v1.Notes/CreateNote": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Notes/GetNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ListNotes": {
+     "code": "OK",
+     "answered": true
+    },
+    "notes.v1.Notes/UpdateNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/PublishNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ArchiveNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/DeleteNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ShareNote": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    },
+    "(absent)": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    }
+   }
+  },
+  {
+   "id": "PR4-DESK",
+   "prediction": "19/19 non-streaming truth rpcs + absent covered; Reports/Backlog UNIMPLEMENTED from the library; 0 auth_refused",
+   "pass_rule": "S5 coverage 1.00, agreement 1.00",
+   "status": "PASS",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "17/17",
+     "not_registered": "1/1",
+     "unimplemented": "1/1"
+    },
+    "denominator": 20,
+    "Reports/Backlog from the library": {
+     "code": "UNIMPLEMENTED",
+     "answered": false,
+     "route": false
+    },
+    "auth_refused": [],
+    "order disagreed": [],
+    "seconds": 1.23
+   },
+   "detail": {
+    "S5": {
+     "denominator": 20,
+     "covered": 20,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "17/17",
+      "not_registered": "1/1",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "output": {
+     "desk.v1.Identity/SignUp": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Identity/SignIn": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Identity/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Identity/SignOut": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Queues/ListQueues": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Queues/GetQueue": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/OpenTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/GetTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ListTickets": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Tickets/UpdateTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/HoldTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ResolveTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ReopenTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/CloseTicket": {
+      "code": "PERMISSION_DENIED",
+      "answered": true
+     },
+     "desk.v1.Tickets/DeleteTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/AddRemark": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ListRemarks": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/MergeTickets": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "desk.v1.Reports/Backlog": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   }
+  },
+  {
+   "id": "PR4-SESS",
+   "prediction": "as round 2: Stub UNIMPLEMENTED, 0 login_failed, 4 disagreements isolated",
+   "pass_rule": "exact; bytes equal to the merge commit's `reconcile`",
+   "status": "PASS",
+   "observed": {
+    "codes equal the truth (alone)": true,
+    "login_failed": 0,
+    "disagreed": [
+     "sessions.v1.Sessions/DeleteMe",
+     "sessions.v1.Sessions/Secret",
+     "sessions.v1.Sessions/SignOut",
+     "sessions.v1.Sessions/Stub"
+    ],
+    "bytes equal the merge commit": true
+   },
+   "detail": null
+  },
+  {
+   "id": "PF4-N",
+   "prediction": "N 17/17 verified, identical counts to round 2",
+   "pass_rule": "identical counts to round 2",
+   "status": "PASS",
+   "observed": {
+    "recovered": 17,
+    "recovered_by_status": {
+     "verified": 17,
+     "unverified": 0,
+     "failed": 0,
+     "unbound": 0
+    },
+    "verified": 17,
+    "verified_but_failing": 0,
+    "failing_codes": {},
+    "unbound_reasons": {},
+    "in 15-20 (p)": true,
+    "seconds": 5.7,
+    "differences from round 2": {}
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 17,
+     "recovered_by_status": {
+      "verified": 17,
+      "unverified": 0,
+      "failed": 0,
+      "unbound": 0
+     },
+     "verified": 17,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 0,
+      "bound": null,
+      "gated": false,
+      "value": null,
+      "pass": true
+     },
+     "coverage": {
+      "num": 0,
+      "den": 0,
+      "bound": null,
+      "gated": false,
+      "value": null,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 0
+     },
+     "truth_defects": [],
+     "failing_codes": {},
+     "unbound_reasons": {}
+    },
+    "vbf ids": []
+   }
+  },
+  {
+   "id": "PF4-DESK",
+   "prediction": "deskd 41 recovered / 20 verified, edge recall 21/34, coverage 4/7, as round 2",
+   "pass_rule": "identical counts to round 2",
+   "status": "PASS",
+   "observed": {
+    "recovered": 41,
+    "recovered_by_status": {
+     "verified": 20,
+     "unverified": 0,
+     "failed": 21,
+     "unbound": 0
+    },
+    "verified": 20,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 21,
+     "den": 34,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.6176,
+     "pass": true
+    },
+    "coverage": {
+     "num": 4,
+     "den": 7,
+     "bound": 2,
+     "gated": true,
+     "value": 0.5714,
+     "pass": true
+    },
+    "exact": {
+     "num": 0,
+     "den": 7
+    },
+    "failing_codes": {
+     "FAILED_PRECONDITION": 1,
+     "INVALID_ARGUMENT": 19,
+     "PERMISSION_DENIED": 1
+    },
+    "unbound_reasons": {},
+    "truth_flows_passing": 7,
+    "seconds": 17.6,
+    "differences from round 2": {}
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 41,
+     "recovered_by_status": {
+      "verified": 20,
+      "unverified": 0,
+      "failed": 21,
+      "unbound": 0
+     },
+     "verified": 20,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 21,
+      "den": 34,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.6176,
+      "pass": true
+     },
+     "coverage": {
+      "num": 4,
+      "den": 7,
+      "bound": 2,
+      "gated": true,
+      "value": 0.5714,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 7
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "FAILED_PRECONDITION": 1,
+      "INVALID_ARGUMENT": 19,
+      "PERMISSION_DENIED": 1
+     },
+     "unbound_reasons": {},
+     "truth_flows_passing": 7,
+     "recovered_by_kind_status": {
+      "after_delete": {
+       "failed": 3,
+       "verified": 3
+      },
+      "lifecycle": {
+       "verified": 2
+      },
+      "owner_chain": {
+       "verified": 1
+      },
+      "owner_guard": {
+       "failed": 7,
+       "verified": 8
+      },
+      "pair": {
+       "failed": 11,
+       "verified": 6
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth flow failures": []
+   }
+  },
+  {
+   "id": "PF4-LEAK",
+   "prediction": "0",
+   "pass_rule": "0",
+   "status": "PASS",
+   "observed": {
+    "live processes+bridges after reconcile and flows": 0,
+    "after a forced startup failure (reconcile raises, flows fail)": 0,
+    "reconcile raised": "ProcessStartError",
+    "flows of the broken app": [
+     "failed"
+    ],
+    "stray app or bridge processes in /proc": 0
+   },
+   "detail": []
+  },
+  {
+   "id": "PR3-ALL",
+   "prediction": "every round-3 PASS row still PASS",
+   "pass_rule": "all PASS (a declared byte change listed in Amendment 1 first)",
+   "status": "FAIL",
+   "observed": {
+    "source": "round 3's runner run un-nested into /tmp/claude-0/-home-user-lattice/307195c7-09d5-5df9-b82b-62010344228d/scratchpad/grpc4/pr3",
+    "0": {
+     "rows": 11,
+     "round-3 PASS rows still PASS": "4/8",
+     "regressed": [
+      "P3-BC",
+      "P3-UNIT",
+      "P3-WIRE",
+      "REG"
+     ],
+     "status now": {
+      "P3-BC": "FAIL",
+      "P3-WIRE": "FAIL",
+      "P3-AUTHU": "PASS",
+      "P3-DET": "PASS",
+      "P3-NW": "PASS",
+      "P3-UNIT": "FAIL",
+      "P3-SCORE": "PASS",
+      "REG": "FAIL",
+      "PM-S / PM-SG (Arm M)": "NOT RUN",
+      "Arm L": "NOT RUN",
+      "PG-HO3 (HO3-*)": "NOT RUN"
+     }
+    },
+    "G": {
+     "rows": 17,
+     "round-3 PASS rows still PASS": "7/8",
+     "regressed": [
+      "PR2-ALL"
+     ],
+     "status now": {
+      "PR3-N": "PASS",
+      "PR3-DESK (dev)": "PASS",
+      "PR3-SESS": "PASS",
+      "PF3-N": "PASS",
+      "PF3-DESK (dev)": "PASS",
+      "PF3-LEAK": "PASS",
+      "PR2-ALL": "FAIL",
+      "PD3-KILN/RPC (post hoc, tuned-on, never gated)": "REPORTED",
+      "PD3-KILN/CODES (post hoc, tuned-on, never gated)": "REPORTED",
+      "PD3-KILN/AUTH (post hoc, tuned-on, never gated)": "REPORTED",
+      "PD3-KILN/TABLES (post hoc, tuned-on, never gated)": "REPORTED",
+      "PD3-KILN/REC (post hoc, tuned-on, never gated)": "REPORTED",
+      "PD3-KILN/FLOWS (post hoc, tuned-on, never gated)": "REPORTED",
+      "PX3": "PASS",
+      "PM-S / PM-SG (Arm M)": "NOT RUN",
+      "Arm L": "NOT RUN",
+      "PG-HO3 (HO3-*)": "NOT RUN"
+     }
+    }
+   },
+   "detail": null
+  },
+  {
+   "id": "PD4-KILN/RPC (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.55-1.00 / precision 0.60-1.00 (point 0.85 / 0.88)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth rpcs": 20,
+    "extracted rpcs": 20,
+    "matched": 20,
+    "truth states": {
+     "implemented": 16,
+     "not_registered": 2,
+     "streaming": 1,
+     "unimplemented": 1
+    },
+    "streaming reported not supported": [
+     "kiln.v1.Pieces/TailKiln"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 17,
+    "round 3 strict": "1.0 / 1.0",
+    "would_pass": true
+   },
+   "detail": {
+    "missed (truth, state)": [],
+    "extra (extract, state)": []
+   }
+  },
+  {
+   "id": "PD4-KILN/SAFE (post hoc, tuned-on, never gated)",
+   "prediction": "0-4 confident-wrong (point 0; P(0) about 0.7)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "confident-wrong": 0,
+    "checked": 20,
+    "round 3 strict": null,
+    "would_pass": true
+   },
+   "detail": {
+    "wrong": []
+   }
+  },
+  {
+   "id": "PD4-KILN/CODES (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.25-0.85 / precision 0.75-1.00 (point 0.50 / 0.92)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 0.8,
+    "precision": 0.9412,
+    "truth": 40,
+    "extracted": 34,
+    "matched": 32,
+    "unknown_extras": [
+     "kiln.v1.Pieces/ApplyGlaze:UNKNOWN",
+     "kiln.v1.Pieces/RemovePiece:UNKNOWN"
+    ],
+    "unread_rpcs": [
+     "kiln.v1.Passport/SignIn",
+     "kiln.v1.Passport/StepDown",
+     "kiln.v1.Pieces/AddPiece",
+     "kiln.v1.Pieces/ApplyGlaze",
+     "kiln.v1.Pieces/FirePiece",
+     "kiln.v1.Pieces/RemovePiece",
+     "kiln.v1.Projects/ArchiveProject",
+     "kiln.v1.Projects/OpenProject"
+    ],
+    "round 3 strict": "0.8 / 0.941",
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [
+     "kiln.v1.Passport/SignIn:UNAUTHENTICATED",
+     "kiln.v1.Passport/StepDown:FAILED_PRECONDITION",
+     "kiln.v1.Pieces/AddPiece:FAILED_PRECONDITION",
+     "kiln.v1.Pieces/ApplyGlaze:PERMISSION_DENIED",
+     "kiln.v1.Pieces/FirePiece:FAILED_PRECONDITION",
+     "kiln.v1.Pieces/RemovePiece:FAILED_PRECONDITION",
+     "kiln.v1.Projects/ArchiveProject:FAILED_PRECONDITION",
+     "kiln.v1.Projects/OpenProject:RESOURCE_EXHAUSTED"
+    ],
+    "extra": [
+     "kiln.v1.Pieces/ApplyGlaze:UNKNOWN",
+     "kiln.v1.Pieces/RemovePiece:UNKNOWN"
+    ]
+   }
+  },
+  {
+   "id": "PD4-KILN/AUTH (post hoc, tuned-on, never gated)",
+   "prediction": "wrong 0 (P 0.85); unclear 0.00-1.00 (point 0.55)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "denominator": 17,
+    "unclear": 0,
+    "unclear_share": 0.0,
+    "reason": "",
+    "wrong": [],
+    "round 3 strict": "0 wrong, unclear 17/17",
+    "would_pass": true
+   },
+   "detail": {
+    "unclear rpcs": [],
+    "row": {
+     "denominator": 17,
+     "wrong": [],
+     "unclear": 0,
+     "unclear_share": 0.0,
+     "unclear_rpcs": [],
+     "reason": "",
+     "pass": true
+    }
+   }
+  },
+  {
+   "id": "PD4-KILN/TABLES (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.85-1.00 (point 1.00)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth": 7,
+    "extracted": 7,
+    "tables_source": "go",
+    "round 3 strict": "1.0",
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "id": "PD4-KILN/REC (post hoc, tuned-on, never gated)",
+   "prediction": "coverage 0.95-1.00; agreement 0.60-1.00 (point 0.92); P(login works) about 0.8",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "16/16",
+     "not_registered": "2/2",
+     "unimplemented": "1/1"
+    },
+    "S5 reason": "",
+    "supplementary_calls": 0,
+    "S6": "not_exercised",
+    "auth_refused on truth-implemented non-public rpcs": [],
+    "order disagreed": [
+     "kiln.v1.Passport/StepDown"
+    ],
+    "all disagreements resolved isolated": true,
+    "rpcs answered by the library": 20,
+    "seconds": 1.55,
+    "login_failed on truth-implemented non-public rpcs": [],
+    "round 3 strict": "1.0 / 1.0",
+    "would_pass": true
+   },
+   "detail": {
+    "S5": {
+     "denominator": 20,
+     "covered": 20,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "16/16",
+      "not_registered": "2/2",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "S6": {
+     "status": "not_exercised",
+     "pass": true,
+     "effectful": [],
+     "reason": ""
+    },
+    "library output rpcs not in truth": [],
+    "codes": {
+     "kiln.v1.Catalog/ListStudios": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Catalog/ListGlazes": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Catalog/LookupGlaze": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Passport/SignIn": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Passport/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Passport/SignOff": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Passport/StepDown": {
+      "code": "OK",
+      "answered": true,
+      "isolated": true
+     },
+     "kiln.v1.Projects/OpenProject": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Projects/GetProject": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Projects/ListProjects": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Projects/ArchiveProject": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Projects/TransferProject": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "kiln.v1.Pieces/AddPiece": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Pieces/GetPiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Pieces/FirePiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Pieces/ApplyGlaze": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Pieces/RemovePiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Billing/QuoteFiring": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "kiln.v1.Billing/PayQuote": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "order": {
+      "disagreed": [
+       "kiln.v1.Passport/StepDown"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "PD4-KILN/FLOWS (post hoc, tuned-on, never gated)",
+   "prediction": "recovered 0-60; verified 0-10 (point 3); edge recall 0.00-0.50 (point 0.20); coverage 0-5 (point 2); 0 vbf",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "truth_flows": 9,
+    "truth_flows_passing": 9,
+    "truth_edges_total": 33,
+    "recovered": 17,
+    "recovered_by_status": {
+     "verified": 7,
+     "unverified": 0,
+     "failed": 10,
+     "unbound": 0
+    },
+    "recovered_by_kind_status": {
+     "after_delete": {
+      "failed": 1
+     },
+     "owner_chain": {
+      "verified": 1,
+      "failed": 1
+     },
+     "owner_guard": {
+      "failed": 4,
+      "verified": 3
+     },
+     "pair": {
+      "verified": 3,
+      "failed": 4
+     }
+    },
+    "verified": 7,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 11,
+     "den": 33,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.3333,
+     "pass": true
+    },
+    "coverage": {
+     "num": 6,
+     "den": 9,
+     "bound": 2,
+     "gated": true,
+     "value": 0.6667,
+     "pass": true
+    },
+    "exact": {
+     "num": 0,
+     "den": 9
+    },
+    "failing_codes": {
+     "NOT_FOUND": 10
+    },
+    "unbound_reasons": {},
+    "reasons": [],
+    "seconds": 4.8,
+    "round 3 strict": "17/7, edge 11/33, coverage 6/9",
+    "would_pass": true
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 17,
+     "recovered_by_status": {
+      "verified": 7,
+      "unverified": 0,
+      "failed": 10,
+      "unbound": 0
+     },
+     "verified": 7,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 11,
+      "den": 33,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.3333,
+      "pass": true
+     },
+     "coverage": {
+      "num": 6,
+      "den": 9,
+      "bound": 2,
+      "gated": true,
+      "value": 0.6667,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 9
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "NOT_FOUND": 10
+     },
+     "unbound_reasons": {},
+     "truth_flows": 9,
+     "truth_flows_passing": 9,
+     "truth_edges_total": 33,
+     "recovered_by_kind_status": {
+      "after_delete": {
+       "failed": 1
+      },
+      "owner_chain": {
+       "verified": 1,
+       "failed": 1
+      },
+      "owner_guard": {
+       "failed": 4,
+       "verified": 3
+      },
+      "pair": {
+       "verified": 3,
+       "failed": 4
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth flow failures": [],
+    "not verified": [
+     {
+      "id": "rf-ece55f162b",
+      "kind": "after_delete",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-e69bed0631",
+      "kind": "owner_chain",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-076642ad81",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-1cbb239392",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-70db70f48e",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-9f142dd77a",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-365377a179",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-49ed9cfdc4",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-baf1bcb697",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-f7e45551e2",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     }
+    ]
+   }
+  },
+  {
+   "id": "PD4-HARBOR/RPC (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.55-1.00 / precision 0.60-1.00 (point 0.85 / 0.88)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth rpcs": 25,
+    "extracted rpcs": 25,
+    "matched": 25,
+    "truth states": {
+     "implemented": 21,
+     "not_registered": 2,
+     "streaming": 1,
+     "unimplemented": 1
+    },
+    "streaming reported not supported": [
+     "harbor.v1.Tides/WatchTides"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 22,
+    "round 3 strict": "0.68 / 0.68",
+    "would_pass": true
+   },
+   "detail": {
+    "missed (truth, state)": [],
+    "extra (extract, state)": []
+   }
+  },
+  {
+   "id": "PD4-HARBOR/SAFE (post hoc, tuned-on, never gated)",
+   "prediction": "0-4 confident-wrong (point 0; P(0) about 0.7)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "confident-wrong": 0,
+    "checked": 25,
+    "round 3 strict": null,
+    "would_pass": true
+   },
+   "detail": {
+    "wrong": []
+   }
+  },
+  {
+   "id": "PD4-HARBOR/CODES (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.25-0.85 / precision 0.75-1.00 (point 0.50 / 0.92)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 0.4074,
+    "precision": 1.0,
+    "truth": 54,
+    "extracted": 22,
+    "matched": 22,
+    "unknown_extras": [],
+    "unread_rpcs": [
+     "harbor.v1.Berths/CreateBerth",
+     "harbor.v1.Bookings/BookBerth",
+     "harbor.v1.Bookings/CancelBooking",
+     "harbor.v1.Bookings/CheckIn",
+     "harbor.v1.Bookings/GetBooking",
+     "harbor.v1.Bookings/ListBookings",
+     "harbor.v1.Vessels/GetVessel",
+     "harbor.v1.Vessels/ListVessels",
+     "harbor.v1.Vessels/RegisterVessel",
+     "harbor.v1.Vessels/RenameVessel",
+     "harbor.v1.Yard/CompleteWorkOrder",
+     "harbor.v1.Yard/ListWorkOrders",
+     "harbor.v1.Yard/OpenWorkOrder"
+    ],
+    "round 3 strict": "0.222 / 0.667",
+    "would_pass": false
+   },
+   "detail": {
+    "missed": [
+     "harbor.v1.Berths/CreateBerth:ALREADY_EXISTS",
+     "harbor.v1.Berths/CreateBerth:INTERNAL",
+     "harbor.v1.Berths/CreateBerth:INVALID_ARGUMENT",
+     "harbor.v1.Berths/CreateBerth:PERMISSION_DENIED",
+     "harbor.v1.Berths/GetBerth:INTERNAL",
+     "harbor.v1.Berths/GetBerth:INVALID_ARGUMENT",
+     "harbor.v1.Berths/GetBerth:NOT_FOUND",
+     "harbor.v1.Berths/ListBerths:INTERNAL",
+     "harbor.v1.Bookings/BookBerth:INTERNAL",
+     "harbor.v1.Bookings/CancelBooking:INTERNAL",
+     "harbor.v1.Bookings/CheckIn:INTERNAL",
+     "harbor.v1.Bookings/GetBooking:INTERNAL",
+     "harbor.v1.Bookings/ListBookings:INTERNAL",
+     "harbor.v1.Vessels/GetVessel:INTERNAL",
+     "harbor.v1.Vessels/GetVessel:NOT_FOUND",
+     "harbor.v1.Vessels/ListVessels:INTERNAL",
+     "harbor.v1.Vessels/RegisterVessel:ALREADY_EXISTS",
+     "harbor.v1.Vessels/RegisterVessel:INTERNAL",
+     "harbor.v1.Vessels/RegisterVessel:INVALID_ARGUMENT",
+     "harbor.v1.Vessels/RenameVessel:INTERNAL",
+     "harbor.v1.Vessels/RenameVessel:INVALID_ARGUMENT",
+     "harbor.v1.Vessels/RenameVessel:NOT_FOUND",
+     "harbor.v1.Yard/CompleteWorkOrder:FAILED_PRECONDITION",
+     "harbor.v1.Yard/CompleteWorkOrder:INTERNAL",
+     "harbor.v1.Yard/CompleteWorkOrder:NOT_FOUND",
+     "harbor.v1.Yard/CompleteWorkOrder:PERMISSION_DENIED",
+     "harbor.v1.Yard/ListWorkOrders:INTERNAL",
+     "harbor.v1.Yard/ListWorkOrders:NOT_FOUND",
+     "harbor.v1.Yard/OpenWorkOrder:FAILED_PRECONDITION",
+     "harbor.v1.Yard/OpenWorkOrder:INTERNAL",
+     "harbor.v1.Yard/OpenWorkOrder:INVALID_ARGUMENT",
+     "harbor.v1.Yard/OpenWorkOrder:NOT_FOUND"
+    ],
+    "extra": []
+   }
+  },
+  {
+   "id": "PD4-HARBOR/AUTH (post hoc, tuned-on, never gated)",
+   "prediction": "wrong 0 (P 0.85); unclear 0.00-1.00 (point 0.55)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "denominator": 22,
+    "unclear": 2,
+    "unclear_share": 0.0909,
+    "reason": "",
+    "wrong": [],
+    "round 3 strict": "0 wrong, unclear 22/22",
+    "would_pass": true
+   },
+   "detail": {
+    "unclear rpcs": [
+     [
+      "harbor.v1.Accounts/Login",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Tides/GetTideTable",
+      "unclear"
+     ]
+    ],
+    "row": {
+     "denominator": 22,
+     "wrong": [],
+     "unclear": 2,
+     "unclear_share": 0.0909,
+     "unclear_rpcs": [
+      [
+       "harbor.v1.Accounts/Login",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Tides/GetTideTable",
+       "unclear"
+      ]
+     ],
+     "reason": "",
+     "pass": true
+    }
+   }
+  },
+  {
+   "id": "PD4-HARBOR/TABLES (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.85-1.00 (point 1.00)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth": 7,
+    "extracted": 7,
+    "tables_source": "harness_db",
+    "round 3 strict": "0 of 7",
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "id": "PD4-HARBOR/REC (post hoc, tuned-on, never gated)",
+   "prediction": "coverage 0.95-1.00; agreement 0.60-1.00 (point 0.92); P(login works) about 0.8",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "21/21",
+     "not_registered": "2/2",
+     "unimplemented": "1/1"
+    },
+    "S5 reason": "",
+    "supplementary_calls": 0,
+    "S6": "exercised",
+    "auth_refused on truth-implemented non-public rpcs": [],
+    "order disagreed": [],
+    "all disagreements resolved isolated": true,
+    "rpcs answered by the library": 25,
+    "seconds": 1.45,
+    "login_failed on truth-implemented non-public rpcs": [],
+    "round 3 strict": "coverage 1.00, agreement 0.04",
+    "would_pass": true
+   },
+   "detail": {
+    "S5": {
+     "denominator": 25,
+     "covered": 25,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "21/21",
+      "not_registered": "2/2",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "S6": {
+     "status": "exercised",
+     "pass": true,
+     "effectful": [
+      "harbor.v1.Accounts/CloseAccount",
+      "harbor.v1.Accounts/Logout",
+      "harbor.v1.Accounts/StepDown"
+     ],
+     "not_in_both_passes": [],
+     "isolated": [],
+     "reason": ""
+    },
+    "library output rpcs not in truth": [],
+    "codes": {
+     "harbor.v1.Accounts/Login": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Accounts/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "harbor.v1.Accounts/Logout": {
+      "code": "OK",
+      "answered": true
+     },
+     "harbor.v1.Accounts/StepDown": {
+      "code": "FAILED_PRECONDITION",
+      "answered": true
+     },
+     "harbor.v1.Accounts/CloseAccount": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Berths/ListBerths": {
+      "code": "OK",
+      "answered": true
+     },
+     "harbor.v1.Berths/GetBerth": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Berths/CreateBerth": {
+      "code": "PERMISSION_DENIED",
+      "answered": true
+     },
+     "harbor.v1.Berths/RetireBerth": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "harbor.v1.Bookings/BookBerth": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Bookings/GetBooking": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "harbor.v1.Bookings/ListBookings": {
+      "code": "OK",
+      "answered": true
+     },
+     "harbor.v1.Bookings/CancelBooking": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "harbor.v1.Bookings/CheckIn": {
+      "code": "PERMISSION_DENIED",
+      "answered": true
+     },
+     "harbor.v1.Tides/GetTideTable": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Vessels/RegisterVessel": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Vessels/GetVessel": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "harbor.v1.Vessels/RenameVessel": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Vessels/ListVessels": {
+      "code": "OK",
+      "answered": true
+     },
+     "harbor.v1.Yard/OpenWorkOrder": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Yard/ListWorkOrders": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "harbor.v1.Yard/CompleteWorkOrder": {
+      "code": "PERMISSION_DENIED",
+      "answered": true
+     },
+     "harbor.v1.Fuel/QuoteFuel": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "harbor.v1.Fuel/Dispense": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   }
+  },
+  {
+   "id": "PD4-HARBOR/FLOWS (post hoc, tuned-on, never gated)",
+   "prediction": "recovered 0-60; verified 0-10 (point 3); edge recall 0.00-0.50 (point 0.20); coverage 0-5 (point 2); 0 vbf",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "truth_flows": 8,
+    "truth_flows_passing": 8,
+    "truth_edges_total": 23,
+    "recovered": 0,
+    "recovered_by_status": {
+     "verified": 0,
+     "unverified": 0,
+     "failed": 0,
+     "unbound": 0
+    },
+    "recovered_by_kind_status": {},
+    "verified": 0,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 0,
+     "den": 23,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.0,
+     "pass": false,
+     "reason": "below_bound"
+    },
+    "coverage": {
+     "num": 0,
+     "den": 8,
+     "bound": 2,
+     "gated": true,
+     "value": 0.0,
+     "pass": false,
+     "reason": "below_bound"
+    },
+    "exact": {
+     "num": 0,
+     "den": 8
+    },
+    "failing_codes": {},
+    "unbound_reasons": {},
+    "reasons": [
+     "no_verified_flow",
+     "edge_recall:below_bound",
+     "coverage:below_bound"
+    ],
+    "seconds": 0.0,
+    "round 3 strict": "recovered 0, truth_not_scorable",
+    "would_pass": false
+   },
+   "detail": {
+    "score": {
+     "pass": false,
+     "reasons": [
+      "no_verified_flow",
+      "edge_recall:below_bound",
+      "coverage:below_bound"
+     ],
+     "recovered": 0,
+     "recovered_by_status": {
+      "verified": 0,
+      "unverified": 0,
+      "failed": 0,
+      "unbound": 0
+     },
+     "verified": 0,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 23,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.0,
+      "pass": false,
+      "reason": "below_bound"
+     },
+     "coverage": {
+      "num": 0,
+      "den": 8,
+      "bound": 2,
+      "gated": true,
+      "value": 0.0,
+      "pass": false,
+      "reason": "below_bound"
+     },
+     "exact": {
+      "num": 0,
+      "den": 8
+     },
+     "truth_defects": [],
+     "failing_codes": {},
+     "unbound_reasons": {},
+     "truth_flows": 8,
+     "truth_flows_passing": 8,
+     "truth_edges_total": 23,
+     "recovered_by_kind_status": {}
+    },
+    "vbf ids": [],
+    "truth flow failures": [],
+    "not verified": []
+   }
+  },
+  {
+   "id": "PX4",
+   "prediction": "0.03-2 s; 1-10 s; 5-30 s; 0.2-5 s (p)",
+   "pass_rule": "<= 30; <= 30; <= 180; <= 30 s",
+   "status": "PASS",
+   "observed": {
+    "extract on harborline (s)": 0.08,
+    "reconcile on deskd (s)": 1.23,
+    "flows on deskd (s)": 17.6,
+    "D5.2 on the harness fixture (s)": 0.05
+   },
+   "detail": null
+  },
+  {
+   "id": "PM-S / PM-SG (Arm M)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "Arm M needs a Streak checkout and a Docker MySQL: out of scope; no docker daemon here",
+   "detail": null
+  },
+  {
+   "id": "Arm L",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the build round is its own node; out of scope",
+   "detail": null
+  },
+  {
+   "id": "PG-HO4 (HO4-*)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the gated held-out stage: a new app by a new author, scored once by the orchestrator after Amendment 3; this node did not look for heldout4",
+   "detail": null
+  }
+ ]
+}

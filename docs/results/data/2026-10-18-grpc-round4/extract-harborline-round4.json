@@ -1,0 +1,2312 @@
+{
+ "auth": null,
+ "constructors": [],
+ "dialect": "sqlite",
+ "error_writer": null,
+ "error_writers": [],
+ "excluded": [
+  {
+   "file": "proto/harbor/v1/tides.proto",
+   "kind": "streaming",
+   "line": 12,
+   "method": "RPC",
+   "path": "/harbor.v1.Tides/WatchTides",
+   "reason": "streaming_not_supported",
+   "what": "rpc"
+  }
+ ],
+ "go": "1.24",
+ "grpc": {
+  "enums": [
+   {
+    "file": "proto/harbor/v1/types.proto",
+    "line": 8,
+    "name": "harbor.v1.Role",
+    "values": [
+     {
+      "name": "ROLE_UNSPECIFIED",
+      "number": 0
+     },
+     {
+      "name": "ROLE_SKIPPER",
+      "number": 1
+     },
+     {
+      "name": "ROLE_HARBORMASTER",
+      "number": 2
+     },
+     {
+      "name": "ROLE_YARD",
+      "number": 3
+     }
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/types.proto",
+    "line": 15,
+    "name": "harbor.v1.BookingStatus",
+    "values": [
+     {
+      "name": "BOOKING_STATUS_UNSPECIFIED",
+      "number": 0
+     },
+     {
+      "name": "BOOKING_STATUS_RESERVED",
+      "number": 1
+     },
+     {
+      "name": "BOOKING_STATUS_CHECKED_IN",
+      "number": 2
+     },
+     {
+      "name": "BOOKING_STATUS_CANCELLED",
+      "number": 3
+     }
+    ]
+   }
+  ],
+  "gateway": [],
+  "interceptors": [
+   {
+    "chained": true,
+    "file": "internal/platform/guard/guard.go",
+    "func": "guard.Recover.func1",
+    "kind": "other",
+    "line": 16
+   },
+   {
+    "chained": true,
+    "file": "internal/platform/gate/gate.go",
+    "func": "gate.Keeper.Unary",
+    "kind": "auth_literal",
+    "line": 61,
+    "public": [
+     "/harbor.v1.Accounts/Login"
+    ],
+    "public_prefix": [
+     "/grpc.health.v1.Health/",
+     "/harbor.v1.Tides/"
+    ]
+   },
+   {
+    "chained": true,
+    "file": "internal/platform/fault/fault.go",
+    "func": "fault.Translate",
+    "kind": "auth_unknown",
+    "line": 52,
+    "reason": "internal/platform/fault/fault.go:41 the error `err` is not assigned in the function"
+   }
+  ],
+  "messages": [
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 20,
+      "name": "username",
+      "number": 1,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 21,
+      "name": "password",
+      "number": 2,
+      "type": "string"
+     }
+    ],
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 19,
+    "name": "harbor.v1.LoginRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 25,
+      "name": "token",
+      "number": 1,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 26,
+      "name": "user_id",
+      "number": 2,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 27,
+      "name": "role",
+      "number": 3,
+      "type": "harbor.v1.Role"
+     }
+    ],
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 24,
+    "name": "harbor.v1.LoginResponse"
+   },
+   {
+    "fields": [],
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 30,
+    "name": "harbor.v1.WhoAmIRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 33,
+      "name": "id",
+      "number": 1,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 34,
+      "name": "username",
+      "number": 2,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 35,
+      "name": "display_name",
+      "number": 3,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 36,
+      "name": "role",
+      "number": 4,
+      "type": "harbor.v1.Role"
+     }
+    ],
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 32,
+    "name": "harbor.v1.Profile"
+   },
+   {
+    "fields": [],
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 39,
+    "name": "harbor.v1.LogoutRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 42,
+      "name": "revoked",
+      "number": 1,
+      "type": "bool"
+     }
+    ],
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 41,
+    "name": "harbor.v1.LogoutResponse"
+   },
+   {
+    "fields": [],
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 45,
+    "name": "harbor.v1.StepDownRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 49,
+      "name": "confirm",
+      "number": 1,
+      "type": "string"
+     }
+    ],
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 47,
+    "name": "harbor.v1.CloseAccountRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 53,
+      "name": "closed_id",
+      "number": 1,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 52,
+    "name": "harbor.v1.CloseAccountResponse"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 17,
+      "name": "pier",
+      "number": 1,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 18,
+      "name": "only_active",
+      "number": 2,
+      "type": "bool"
+     }
+    ],
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 16,
+    "name": "harbor.v1.ListBerthsRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "repeated",
+      "line": 22,
+      "name": "berths",
+      "number": 1,
+      "type": "harbor.v1.Berth"
+     }
+    ],
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 21,
+    "name": "harbor.v1.ListBerthsResponse"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 26,
+      "name": "code",
+      "number": 1,
+      "type": "string"
+     }
+    ],
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 25,
+    "name": "harbor.v1.GetBerthRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 30,
+      "name": "code",
+      "number": 1,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 31,
+      "name": "pier",
+      "number": 2,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 32,
+      "name": "length_m",
+      "number": 3,
+      "type": "int32"
+     },
+     {
+      "label": "single",
+      "line": 33,
+      "name": "nightly_cents",
+      "number": 4,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 29,
+    "name": "harbor.v1.CreateBerthRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 37,
+      "name": "code",
+      "number": 1,
+      "type": "string"
+     }
+    ],
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 36,
+    "name": "harbor.v1.RetireBerthRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 19,
+      "name": "berth_code",
+      "number": 1,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 21,
+      "name": "vessel_hull",
+      "number": 2,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 22,
+      "name": "nights",
+      "number": 3,
+      "type": "int32"
+     }
+    ],
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 17,
+    "name": "harbor.v1.BookBerthRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 26,
+      "name": "id",
+      "number": 1,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 25,
+    "name": "harbor.v1.GetBookingRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 31,
+      "name": "include_all",
+      "number": 1,
+      "type": "bool"
+     }
+    ],
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 29,
+    "name": "harbor.v1.ListBookingsRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "repeated",
+      "line": 35,
+      "name": "bookings",
+      "number": 1,
+      "type": "harbor.v1.Booking"
+     }
+    ],
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 34,
+    "name": "harbor.v1.ListBookingsResponse"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 39,
+      "name": "id",
+      "number": 1,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 38,
+    "name": "harbor.v1.CancelBookingRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 43,
+      "name": "booking_id",
+      "number": 1,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 42,
+    "name": "harbor.v1.CheckInRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 14,
+      "name": "grade",
+      "number": 1,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 15,
+      "name": "litres",
+      "number": 2,
+      "type": "int32"
+     }
+    ],
+    "file": "proto/harbor/v1/fuel.proto",
+    "line": 13,
+    "name": "harbor.v1.QuoteFuelRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 19,
+      "name": "booking_id",
+      "number": 1,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 20,
+      "name": "grade",
+      "number": 2,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 21,
+      "name": "litres",
+      "number": 3,
+      "type": "int32"
+     }
+    ],
+    "file": "proto/harbor/v1/fuel.proto",
+    "line": 18,
+    "name": "harbor.v1.DispenseRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 25,
+      "name": "grade",
+      "number": 1,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 26,
+      "name": "litres",
+      "number": 2,
+      "type": "int32"
+     },
+     {
+      "label": "single",
+      "line": 27,
+      "name": "total_cents",
+      "number": 3,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/fuel.proto",
+    "line": 24,
+    "name": "harbor.v1.FuelQuote"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 16,
+      "name": "station",
+      "number": 1,
+      "type": "string"
+     }
+    ],
+    "file": "proto/harbor/v1/tides.proto",
+    "line": 15,
+    "name": "harbor.v1.GetTideTableRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 20,
+      "name": "station",
+      "number": 1,
+      "type": "string"
+     },
+     {
+      "label": "repeated",
+      "line": 21,
+      "name": "readings",
+      "number": 2,
+      "type": "harbor.v1.TideReading"
+     }
+    ],
+    "file": "proto/harbor/v1/tides.proto",
+    "line": 19,
+    "name": "harbor.v1.TideTable"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 25,
+      "name": "station",
+      "number": 1,
+      "type": "string"
+     }
+    ],
+    "file": "proto/harbor/v1/tides.proto",
+    "line": 24,
+    "name": "harbor.v1.WatchTidesRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 23,
+      "name": "id",
+      "number": 1,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 24,
+      "name": "code",
+      "number": 2,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 25,
+      "name": "pier",
+      "number": 3,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 26,
+      "name": "length_m",
+      "number": 4,
+      "type": "int32"
+     },
+     {
+      "label": "single",
+      "line": 27,
+      "name": "nightly_cents",
+      "number": 5,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 28,
+      "name": "active",
+      "number": 6,
+      "type": "bool"
+     }
+    ],
+    "file": "proto/harbor/v1/types.proto",
+    "line": 22,
+    "name": "harbor.v1.Berth"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 32,
+      "name": "id",
+      "number": 1,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 33,
+      "name": "hull",
+      "number": 2,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 34,
+      "name": "name",
+      "number": 3,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 35,
+      "name": "length_m",
+      "number": 4,
+      "type": "int32"
+     },
+     {
+      "label": "single",
+      "line": 36,
+      "name": "owner_id",
+      "number": 5,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/types.proto",
+    "line": 31,
+    "name": "harbor.v1.Vessel"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 40,
+      "name": "id",
+      "number": 1,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 41,
+      "name": "berth_code",
+      "number": 2,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 42,
+      "name": "vessel_id",
+      "number": 3,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 43,
+      "name": "nights",
+      "number": 4,
+      "type": "int32"
+     },
+     {
+      "label": "single",
+      "line": 44,
+      "name": "status",
+      "number": 5,
+      "type": "harbor.v1.BookingStatus"
+     },
+     {
+      "label": "single",
+      "line": 45,
+      "name": "total_cents",
+      "number": 6,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/types.proto",
+    "line": 39,
+    "name": "harbor.v1.Booking"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 49,
+      "name": "id",
+      "number": 1,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 50,
+      "name": "booking_id",
+      "number": 2,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 51,
+      "name": "kind",
+      "number": 3,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 52,
+      "name": "note",
+      "number": 4,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 53,
+      "name": "done",
+      "number": 5,
+      "type": "bool"
+     }
+    ],
+    "file": "proto/harbor/v1/types.proto",
+    "line": 48,
+    "name": "harbor.v1.WorkOrder"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 57,
+      "name": "station",
+      "number": 1,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 58,
+      "name": "at",
+      "number": 2,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 59,
+      "name": "height_cm",
+      "number": 3,
+      "type": "int32"
+     }
+    ],
+    "file": "proto/harbor/v1/types.proto",
+    "line": 56,
+    "name": "harbor.v1.TideReading"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 17,
+      "name": "hull",
+      "number": 1,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 18,
+      "name": "name",
+      "number": 2,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 19,
+      "name": "length_m",
+      "number": 3,
+      "type": "int32"
+     }
+    ],
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 16,
+    "name": "harbor.v1.RegisterVesselRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 23,
+      "name": "id",
+      "number": 1,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 22,
+    "name": "harbor.v1.GetVesselRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 27,
+      "name": "id",
+      "number": 1,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 28,
+      "name": "name",
+      "number": 2,
+      "type": "string"
+     }
+    ],
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 26,
+    "name": "harbor.v1.RenameVesselRequest"
+   },
+   {
+    "fields": [],
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 31,
+    "name": "harbor.v1.ListVesselsRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "repeated",
+      "line": 34,
+      "name": "vessels",
+      "number": 1,
+      "type": "harbor.v1.Vessel"
+     }
+    ],
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 33,
+    "name": "harbor.v1.ListVesselsResponse"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 17,
+      "name": "booking_id",
+      "number": 1,
+      "type": "int64"
+     },
+     {
+      "label": "single",
+      "line": 19,
+      "name": "kind",
+      "number": 2,
+      "type": "string"
+     },
+     {
+      "label": "single",
+      "line": 20,
+      "name": "note",
+      "number": 3,
+      "type": "string"
+     }
+    ],
+    "file": "proto/harbor/v1/yard.proto",
+    "line": 16,
+    "name": "harbor.v1.OpenWorkOrderRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 24,
+      "name": "booking_id",
+      "number": 1,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/yard.proto",
+    "line": 23,
+    "name": "harbor.v1.ListWorkOrdersRequest"
+   },
+   {
+    "fields": [
+     {
+      "label": "repeated",
+      "line": 28,
+      "name": "work_orders",
+      "number": 1,
+      "type": "harbor.v1.WorkOrder"
+     }
+    ],
+    "file": "proto/harbor/v1/yard.proto",
+    "line": 27,
+    "name": "harbor.v1.ListWorkOrdersResponse"
+   },
+   {
+    "fields": [
+     {
+      "label": "single",
+      "line": 32,
+      "name": "id",
+      "number": 1,
+      "type": "int64"
+     }
+    ],
+    "file": "proto/harbor/v1/yard.proto",
+    "line": 31,
+    "name": "harbor.v1.CompleteWorkOrderRequest"
+   }
+  ],
+  "notes": [],
+  "protos": [
+   {
+    "file": "proto/harbor/v1/accounts.proto",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ],
+    "package": "harbor.v1"
+   },
+   {
+    "file": "proto/harbor/v1/berths.proto",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ],
+    "package": "harbor.v1"
+   },
+   {
+    "file": "proto/harbor/v1/bookings.proto",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ],
+    "package": "harbor.v1"
+   },
+   {
+    "file": "proto/harbor/v1/fuel.proto",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [],
+    "package": "harbor.v1"
+   },
+   {
+    "file": "proto/harbor/v1/tides.proto",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ],
+    "package": "harbor.v1"
+   },
+   {
+    "file": "proto/harbor/v1/types.proto",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [],
+    "package": "harbor.v1"
+   },
+   {
+    "file": "proto/harbor/v1/vessels.proto",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ],
+    "package": "harbor.v1"
+   },
+   {
+    "file": "proto/harbor/v1/yard.proto",
+    "go_package": "harborline/gen/harbor/v1;harborv1",
+    "imports": [
+     "harbor/v1/types.proto"
+    ],
+    "package": "harbor.v1"
+   }
+  ],
+  "registrations": [
+   {
+    "external": true,
+    "file": "internal/app/app.go",
+    "impl": "hs",
+    "line": 61,
+    "service": "Health",
+    "streams": 0,
+    "via": "RegisterHealthServer"
+   },
+   {
+    "file": "internal/app/app.go",
+    "impl": "accounts.NewService(db, sessions)",
+    "line": 51,
+    "service": "harbor.v1.Accounts",
+    "streams": 0,
+    "via": "RegisterAccountsServer"
+   },
+   {
+    "file": "internal/berths/offer.go",
+    "impl": "&catalog{db: d.DB}",
+    "line": 15,
+    "service": "harbor.v1.Berths",
+    "streams": 0,
+    "via": "RegisterBerthsServer"
+   },
+   {
+    "file": "internal/bookings/module.go",
+    "impl": "d",
+    "line": 24,
+    "service": "harbor.v1.Bookings",
+    "streams": 0,
+    "via": "RegisterService"
+   },
+   {
+    "file": "internal/app/extras.go",
+    "impl": "tideDesk{Station: x.station}",
+    "line": 21,
+    "service": "harbor.v1.Tides",
+    "streams": 1,
+    "via": "RegisterTidesServer"
+   },
+   {
+    "file": "internal/app/app.go",
+    "impl": "vessels.New(db, vessels.WithMaxLength(40))",
+    "line": 54,
+    "service": "harbor.v1.Vessels",
+    "streams": 0,
+    "via": "RegisterService via internal/app/extras.go:26"
+   },
+   {
+    "file": "internal/yard/yard.go",
+    "impl": "w",
+    "line": 27,
+    "service": "harbor.v1.Yard",
+    "streams": 0,
+    "via": "RegisterYardServer"
+   }
+  ],
+  "services": [
+   {
+    "file": "proto/harbor/v1/accounts.proto",
+    "line": 10,
+    "name": "harbor.v1.Accounts",
+    "rpcs": [
+     {
+      "auth": "unclear",
+      "auth_reason": "several interceptors refuse unauthenticated callers",
+      "calls": [
+       "harborline/gen/harbor/v1:LoginRequest.GetPassword",
+       "harborline/gen/harbor/v1:LoginRequest.GetUsername",
+       "harborline/internal/accounts:roleOf",
+       "harborline/internal/platform/session:Store.Issue"
+      ],
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.Login",
+        "kind": "status_error",
+        "line": 32,
+        "name": "INVALID_ARGUMENT",
+        "number": 3
+       },
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.Login",
+        "kind": "status_error",
+        "line": 45,
+        "name": "INTERNAL",
+        "number": 13
+       },
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.Login",
+        "kind": "status_error",
+        "line": 49,
+        "name": "INTERNAL",
+        "number": 13
+       },
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.Login",
+        "kind": "status_error",
+        "line": 42,
+        "name": "UNAUTHENTICATED",
+        "number": 16
+       }
+      ],
+      "file": "proto/harbor/v1/accounts.proto",
+      "handler": {
+       "file": "internal/accounts/service.go",
+       "func": "accounts.Service.Login",
+       "line": 30,
+       "module": "harborline/internal/accounts",
+       "wrappers": []
+      },
+      "input": "harbor.v1.LoginRequest",
+      "line": 11,
+      "name": "Login",
+      "output": "harbor.v1.LoginResponse",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/platform/gate/gate.go",
+        "line": 61,
+        "reason": "several interceptors refuse unauthenticated callers",
+        "what": "interceptor_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Accounts/WhoAmI (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/internal/accounts:profileOf",
+       "harborline/internal/accounts:roleOf",
+       "harborline/internal/platform/actor:From"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/accounts.proto",
+      "handler": {
+       "file": "internal/accounts/service.go",
+       "func": "accounts.Service.WhoAmI",
+       "line": 55,
+       "module": "harborline/internal/accounts",
+       "wrappers": []
+      },
+      "input": "harbor.v1.WhoAmIRequest",
+      "line": 12,
+      "name": "WhoAmI",
+      "output": "harbor.v1.Profile",
+      "server_streaming": false,
+      "state": "implemented"
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Accounts/Logout (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/session:Store.Revoke"
+      ],
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.Logout",
+        "kind": "status_error",
+        "line": 64,
+        "name": "INTERNAL",
+        "number": 13
+       }
+      ],
+      "file": "proto/harbor/v1/accounts.proto",
+      "handler": {
+       "file": "internal/accounts/service.go",
+       "func": "accounts.Service.Logout",
+       "line": 61,
+       "module": "harborline/internal/accounts",
+       "wrappers": []
+      },
+      "input": "harbor.v1.LogoutRequest",
+      "line": 13,
+      "name": "Logout",
+      "output": "harbor.v1.LogoutResponse",
+      "server_streaming": false,
+      "state": "implemented"
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Accounts/StepDown (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/internal/accounts:profileOf",
+       "harborline/internal/accounts:roleOf",
+       "harborline/internal/platform/actor:From"
+      ],
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.StepDown",
+        "kind": "status_error",
+        "line": 73,
+        "name": "FAILED_PRECONDITION",
+        "number": 9
+       },
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.StepDown",
+        "kind": "status_error",
+        "line": 76,
+        "name": "INTERNAL",
+        "number": 13
+       }
+      ],
+      "file": "proto/harbor/v1/accounts.proto",
+      "handler": {
+       "file": "internal/accounts/service.go",
+       "func": "accounts.Service.StepDown",
+       "line": 70,
+       "module": "harborline/internal/accounts",
+       "wrappers": []
+      },
+      "input": "harbor.v1.StepDownRequest",
+      "line": 15,
+      "name": "StepDown",
+      "output": "harbor.v1.Profile",
+      "server_streaming": false,
+      "state": "implemented"
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Accounts/CloseAccount (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:CloseAccountRequest.GetConfirm",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/session:Store.RevokeAll"
+      ],
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.CloseAccount",
+        "kind": "status_error",
+        "line": 86,
+        "name": "INVALID_ARGUMENT",
+        "number": 3
+       },
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.CloseAccount",
+        "kind": "status_error",
+        "line": 93,
+        "name": "FAILED_PRECONDITION",
+        "number": 9
+       },
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.CloseAccount",
+        "kind": "status_error",
+        "line": 90,
+        "name": "INTERNAL",
+        "number": 13
+       },
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.CloseAccount",
+        "kind": "status_error",
+        "line": 96,
+        "name": "INTERNAL",
+        "number": 13
+       },
+       {
+        "file": "internal/accounts/service.go",
+        "in": "accounts.Service.CloseAccount",
+        "kind": "status_error",
+        "line": 99,
+        "name": "INTERNAL",
+        "number": 13
+       }
+      ],
+      "file": "proto/harbor/v1/accounts.proto",
+      "handler": {
+       "file": "internal/accounts/service.go",
+       "func": "accounts.Service.CloseAccount",
+       "line": 83,
+       "module": "harborline/internal/accounts",
+       "wrappers": []
+      },
+      "input": "harbor.v1.CloseAccountRequest",
+      "line": 16,
+      "name": "CloseAccount",
+      "output": "harbor.v1.CloseAccountResponse",
+      "server_streaming": false,
+      "state": "implemented"
+     }
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/berths.proto",
+    "line": 9,
+    "name": "harbor.v1.Berths",
+    "rpcs": [
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Berths/ListBerths (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:ListBerthsRequest.GetOnlyActive",
+       "harborline/gen/harbor/v1:ListBerthsRequest.GetPier",
+       "harborline/internal/berths:scanBerth",
+       "harborline/internal/berths:storeFailed"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/berths.proto",
+      "handler": {
+       "file": "internal/berths/catalog.go",
+       "func": "berths.catalog.ListBerths",
+       "line": 32,
+       "module": "harborline/internal/berths",
+       "wrappers": []
+      },
+      "input": "harbor.v1.ListBerthsRequest",
+      "line": 10,
+      "name": "ListBerths",
+      "output": "harbor.v1.ListBerthsResponse",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/berths/errors.go",
+        "line": 34,
+        "reason": "the error expression `&problem{code: codes.Internal, msg: \"berth store: \" + err.Error()}` is not traced",
+        "what": "grpc_error_not_traced"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Berths/GetBerth (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:GetBerthRequest.GetCode",
+       "harborline/internal/berths:badInput",
+       "harborline/internal/berths:noSuchBerth",
+       "harborline/internal/berths:scanBerth",
+       "harborline/internal/berths:storeFailed"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/berths.proto",
+      "handler": {
+       "file": "internal/berths/catalog.go",
+       "func": "berths.catalog.GetBerth",
+       "line": 58,
+       "module": "harborline/internal/berths",
+       "wrappers": []
+      },
+      "input": "harbor.v1.GetBerthRequest",
+      "line": 11,
+      "name": "GetBerth",
+      "output": "harbor.v1.Berth",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/berths/errors.go",
+        "line": 22,
+        "reason": "the error expression `&problem{code: codes.InvalidArgument, msg: fmt.Sprintf(format, args...)}` is not traced",
+        "what": "grpc_error_not_traced"
+       },
+       {
+        "file": "internal/berths/errors.go",
+        "line": 26,
+        "reason": "the error expression `&problem{code: codes.NotFound, msg: fmt.Sprintf(\"no berth %q\", code)}` is not traced",
+        "what": "grpc_error_not_traced"
+       },
+       {
+        "file": "internal/berths/errors.go",
+        "line": 34,
+        "reason": "the error expression `&problem{code: codes.Internal, msg: \"berth store: \" + err.Error()}` is not traced",
+        "what": "grpc_error_not_traced"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Berths/CreateBerth (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:CreateBerthRequest.GetCode",
+       "harborline/gen/harbor/v1:CreateBerthRequest.GetLengthM",
+       "harborline/gen/harbor/v1:CreateBerthRequest.GetNightlyCents",
+       "harborline/gen/harbor/v1:CreateBerthRequest.GetPier",
+       "harborline/internal/berths:badInput",
+       "harborline/internal/berths:duplicate",
+       "harborline/internal/berths:storeFailed",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Need",
+       "harborline/internal/platform/actor:Principal.Is"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/berths.proto",
+      "handler": {
+       "file": "internal/berths/catalog.go",
+       "func": "berths.catalog.CreateBerth",
+       "line": 73,
+       "module": "harborline/internal/berths",
+       "wrappers": []
+      },
+      "input": "harbor.v1.CreateBerthRequest",
+      "line": 12,
+      "name": "CreateBerth",
+      "output": "harbor.v1.Berth",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/berths/errors.go",
+        "line": 22,
+        "reason": "the error expression `&problem{code: codes.InvalidArgument, msg: fmt.Sprintf(format, args...)}` is not traced",
+        "what": "grpc_error_not_traced"
+       },
+       {
+        "file": "internal/berths/errors.go",
+        "line": 34,
+        "reason": "the error expression `&problem{code: codes.Internal, msg: \"berth store: \" + err.Error()}` is not traced",
+        "what": "grpc_error_not_traced"
+       },
+       {
+        "file": "internal/berths/errors.go",
+        "line": 30,
+        "reason": "the error expression `&problem{code: codes.AlreadyExists, msg: fmt.Sprintf(\"berth %q exists\", code)}` is not traced",
+        "what": "grpc_error_not_traced"
+       },
+       {
+        "file": "internal/berths/catalog.go",
+        "line": 74,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Berths/RetireBerth (internal/platform/gate/gate.go:61)",
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "proto/harbor/v1/berths.proto",
+        "in": "harbor.v1.Berths/RetireBerth",
+        "kind": "unimplemented_stub",
+        "line": 13,
+        "name": "UNIMPLEMENTED",
+        "number": 12
+       }
+      ],
+      "file": "proto/harbor/v1/berths.proto",
+      "input": "harbor.v1.RetireBerthRequest",
+      "line": 13,
+      "name": "RetireBerth",
+      "output": "harbor.v1.Berth",
+      "server_streaming": false,
+      "state": "unimplemented"
+     }
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/bookings.proto",
+    "line": 9,
+    "name": "harbor.v1.Bookings",
+    "rpcs": [
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Bookings/BookBerth (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:BookBerthRequest.GetBerthCode",
+       "harborline/gen/harbor/v1:BookBerthRequest.GetNights",
+       "harborline/gen/harbor/v1:BookBerthRequest.GetVesselHull",
+       "harborline/internal/platform/actor:From"
+      ],
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 17,
+        "name": "INVALID_ARGUMENT",
+        "number": 3
+       },
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 16,
+        "name": "NOT_FOUND",
+        "number": 5
+       },
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 18,
+        "name": "FAILED_PRECONDITION",
+        "number": 9
+       },
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 19,
+        "name": "FAILED_PRECONDITION",
+        "number": 9
+       }
+      ],
+      "file": "proto/harbor/v1/bookings.proto",
+      "handler": {
+       "file": "internal/bookings/desk.go",
+       "func": "bookings.desk.BookBerth",
+       "line": 24,
+       "module": "harborline/internal/bookings",
+       "wrappers": []
+      },
+      "input": "harbor.v1.BookBerthRequest",
+      "line": 10,
+      "name": "BookBerth",
+      "output": "harbor.v1.Booking",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/bookings/desk.go",
+        "line": 43,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       },
+       {
+        "file": "internal/bookings/desk.go",
+        "line": 57,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       },
+       {
+        "file": "internal/bookings/desk.go",
+        "line": 64,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       },
+       {
+        "file": "internal/bookings/desk.go",
+        "line": 73,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Bookings/GetBooking (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:GetBookingRequest.GetId",
+       "harborline/internal/bookings:desk.visible",
+       "harborline/internal/bookings:repo.byID",
+       "harborline/internal/bookings:scanBooking",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is"
+      ],
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 16,
+        "name": "NOT_FOUND",
+        "number": 5
+       }
+      ],
+      "file": "proto/harbor/v1/bookings.proto",
+      "handler": {
+       "file": "internal/bookings/desk.go",
+       "func": "bookings.desk.GetBooking",
+       "line": 93,
+       "module": "harborline/internal/bookings",
+       "wrappers": []
+      },
+      "input": "harbor.v1.GetBookingRequest",
+      "line": 11,
+      "name": "GetBooking",
+      "output": "harbor.v1.Booking",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/bookings/repo.go",
+        "line": 48,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Bookings/ListBookings (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:ListBookingsRequest.GetIncludeAll",
+       "harborline/internal/bookings:repo.list",
+       "harborline/internal/bookings:scanBooking",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is"
+      ],
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 20,
+        "name": "PERMISSION_DENIED",
+        "number": 7
+       }
+      ],
+      "file": "proto/harbor/v1/bookings.proto",
+      "handler": {
+       "file": "internal/bookings/desk.go",
+       "func": "bookings.desk.ListBookings",
+       "line": 101,
+       "module": "harborline/internal/bookings",
+       "wrappers": []
+      },
+      "input": "harbor.v1.ListBookingsRequest",
+      "line": 12,
+      "name": "ListBookings",
+      "output": "harbor.v1.ListBookingsResponse",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/bookings/repo.go",
+        "line": 60,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       },
+       {
+        "file": "internal/bookings/repo.go",
+        "line": 67,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Bookings/CancelBooking (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:CancelBookingRequest.GetId",
+       "harborline/internal/bookings:desk.visible",
+       "harborline/internal/bookings:repo.byID",
+       "harborline/internal/bookings:repo.setStatus",
+       "harborline/internal/bookings:scanBooking",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is"
+      ],
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 16,
+        "name": "NOT_FOUND",
+        "number": 5
+       },
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 19,
+        "name": "FAILED_PRECONDITION",
+        "number": 9
+       }
+      ],
+      "file": "proto/harbor/v1/bookings.proto",
+      "handler": {
+       "file": "internal/bookings/desk.go",
+       "func": "bookings.desk.CancelBooking",
+       "line": 113,
+       "module": "harborline/internal/bookings",
+       "wrappers": []
+      },
+      "input": "harbor.v1.CancelBookingRequest",
+      "line": 13,
+      "name": "CancelBooking",
+      "output": "harbor.v1.Booking",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/bookings/repo.go",
+        "line": 48,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       },
+       {
+        "file": "internal/bookings/repo.go",
+        "line": 76,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Bookings/CheckIn (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:CheckInRequest.GetBookingId",
+       "harborline/internal/bookings:repo.byID",
+       "harborline/internal/bookings:repo.setStatus",
+       "harborline/internal/bookings:scanBooking",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is"
+      ],
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 16,
+        "name": "NOT_FOUND",
+        "number": 5
+       },
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 20,
+        "name": "PERMISSION_DENIED",
+        "number": 7
+       },
+       {
+        "file": "internal/platform/fault/fault.go",
+        "in": "sentinel",
+        "kind": "status_error",
+        "line": 19,
+        "name": "FAILED_PRECONDITION",
+        "number": 9
+       }
+      ],
+      "file": "proto/harbor/v1/bookings.proto",
+      "handler": {
+       "file": "internal/bookings/desk.go",
+       "func": "bookings.desk.CheckIn",
+       "line": 128,
+       "module": "harborline/internal/bookings",
+       "wrappers": []
+      },
+      "input": "harbor.v1.CheckInRequest",
+      "line": 14,
+      "name": "CheckIn",
+      "output": "harbor.v1.Booking",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/bookings/repo.go",
+        "line": 48,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       },
+       {
+        "file": "internal/bookings/repo.go",
+        "line": 76,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/fuel.proto",
+    "line": 8,
+    "name": "harbor.v1.Fuel",
+    "rpcs": [
+     {
+      "client_streaming": false,
+      "file": "proto/harbor/v1/fuel.proto",
+      "input": "harbor.v1.QuoteFuelRequest",
+      "line": 9,
+      "name": "QuoteFuel",
+      "output": "harbor.v1.FuelQuote",
+      "server_streaming": false,
+      "state": "not_registered"
+     },
+     {
+      "client_streaming": false,
+      "file": "proto/harbor/v1/fuel.proto",
+      "input": "harbor.v1.DispenseRequest",
+      "line": 10,
+      "name": "Dispense",
+      "output": "harbor.v1.FuelQuote",
+      "server_streaming": false,
+      "state": "not_registered"
+     }
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/tides.proto",
+    "line": 10,
+    "name": "harbor.v1.Tides",
+    "rpcs": [
+     {
+      "auth": "unclear",
+      "auth_reason": "several interceptors refuse unauthenticated callers",
+      "calls": [
+       "harborline/gen/harbor/v1:GetTideTableRequest.GetStation",
+       "harborline/internal/tides:Station.readings"
+      ],
+      "client_streaming": false,
+      "codes": [
+       {
+        "file": "internal/tides/station.go",
+        "in": "tides.Station.GetTideTable",
+        "kind": "status_error",
+        "line": 44,
+        "name": "INVALID_ARGUMENT",
+        "number": 3
+       },
+       {
+        "file": "internal/tides/station.go",
+        "in": "tides.Station.GetTideTable",
+        "kind": "status_error",
+        "line": 51,
+        "name": "NOT_FOUND",
+        "number": 5
+       },
+       {
+        "file": "internal/tides/station.go",
+        "in": "tides.Station.GetTideTable",
+        "kind": "status_error",
+        "line": 48,
+        "name": "INTERNAL",
+        "number": 13
+       }
+      ],
+      "file": "proto/harbor/v1/tides.proto",
+      "handler": {
+       "file": "internal/tides/station.go",
+       "func": "tides.Station.GetTideTable",
+       "line": 42,
+       "module": "harborline/internal/tides",
+       "wrappers": []
+      },
+      "input": "harbor.v1.GetTideTableRequest",
+      "line": 11,
+      "name": "GetTideTable",
+      "output": "harbor.v1.TideTable",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/platform/gate/gate.go",
+        "line": 61,
+        "reason": "several interceptors refuse unauthenticated callers",
+        "what": "interceptor_not_literal"
+       }
+      ]
+     },
+     {
+      "client_streaming": false,
+      "file": "proto/harbor/v1/tides.proto",
+      "input": "harbor.v1.WatchTidesRequest",
+      "line": 12,
+      "name": "WatchTides",
+      "output": "harbor.v1.TideReading",
+      "server_streaming": true,
+      "state": "streaming"
+     }
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/vessels.proto",
+    "line": 9,
+    "name": "harbor.v1.Vessels",
+    "rpcs": [
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Vessels/RegisterVessel (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:RegisterVesselRequest.GetHull",
+       "harborline/gen/harbor/v1:RegisterVesselRequest.GetLengthM",
+       "harborline/gen/harbor/v1:RegisterVesselRequest.GetName",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/vessels:fail"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/vessels.proto",
+      "handler": {
+       "file": "internal/vessels/vessels.go",
+       "func": "vessels.register.RegisterVessel",
+       "line": 43,
+       "module": "harborline/internal/vessels",
+       "wrappers": []
+      },
+      "input": "harbor.v1.RegisterVesselRequest",
+      "line": 10,
+      "name": "RegisterVessel",
+      "output": "harbor.v1.Vessel",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/vessels/vessels.go",
+        "line": 41,
+        "reason": "the code of `status.Errorf(c, msg, args...)` is chosen at run time",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Vessels/GetVessel (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:GetVesselRequest.GetId",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is",
+       "harborline/internal/vessels:fail",
+       "harborline/internal/vessels:register.owned"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/vessels.proto",
+      "handler": {
+       "file": "internal/vessels/vessels.go",
+       "func": "vessels.register.GetVessel",
+       "line": 83,
+       "module": "harborline/internal/vessels",
+       "wrappers": []
+      },
+      "input": "harbor.v1.GetVesselRequest",
+      "line": 11,
+      "name": "GetVessel",
+      "output": "harbor.v1.Vessel",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/vessels/vessels.go",
+        "line": 41,
+        "reason": "the code of `status.Errorf(c, msg, args...)` is chosen at run time",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Vessels/RenameVessel (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:RenameVesselRequest.GetId",
+       "harborline/gen/harbor/v1:RenameVesselRequest.GetName",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is",
+       "harborline/internal/vessels:fail",
+       "harborline/internal/vessels:register.owned"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/vessels.proto",
+      "handler": {
+       "file": "internal/vessels/vessels.go",
+       "func": "vessels.register.RenameVessel",
+       "line": 87,
+       "module": "harborline/internal/vessels",
+       "wrappers": []
+      },
+      "input": "harbor.v1.RenameVesselRequest",
+      "line": 12,
+      "name": "RenameVessel",
+      "output": "harbor.v1.Vessel",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/vessels/vessels.go",
+        "line": 41,
+        "reason": "the code of `status.Errorf(c, msg, args...)` is chosen at run time",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Vessels/ListVessels (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/vessels:fail"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/vessels.proto",
+      "handler": {
+       "file": "internal/vessels/vessels.go",
+       "func": "vessels.register.ListVessels",
+       "line": 103,
+       "module": "harborline/internal/vessels",
+       "wrappers": []
+      },
+      "input": "harbor.v1.ListVesselsRequest",
+      "line": 13,
+      "name": "ListVessels",
+      "output": "harbor.v1.ListVesselsResponse",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/vessels/vessels.go",
+        "line": 41,
+        "reason": "the code of `status.Errorf(c, msg, args...)` is chosen at run time",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "file": "proto/harbor/v1/yard.proto",
+    "line": 10,
+    "name": "harbor.v1.Yard",
+    "rpcs": [
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Yard/OpenWorkOrder (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:OpenWorkOrderRequest.GetBookingId",
+       "harborline/gen/harbor/v1:OpenWorkOrderRequest.GetKind",
+       "harborline/gen/harbor/v1:OpenWorkOrderRequest.GetNote",
+       "harborline/internal/berths:problem.Error",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/yard:reason.because",
+       "harborline/internal/yard:workshop.bookingOf"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/yard.proto",
+      "handler": {
+       "file": "internal/yard/yard.go",
+       "func": "yard.workshop.OpenWorkOrder",
+       "line": 45,
+       "module": "harborline/internal/yard",
+       "wrappers": []
+      },
+      "input": "harbor.v1.OpenWorkOrderRequest",
+      "line": 11,
+      "name": "OpenWorkOrder",
+      "output": "harbor.v1.WorkOrder",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/yard/reasons.go",
+        "line": 30,
+        "reason": "the code of `status.Error(codeFor[r], detail)` is chosen at run time",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Yard/ListWorkOrders (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:ListWorkOrdersRequest.GetBookingId",
+       "harborline/internal/berths:problem.Error",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Principal.Is",
+       "harborline/internal/yard:reason.because",
+       "harborline/internal/yard:workshop.bookingOf"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/yard.proto",
+      "handler": {
+       "file": "internal/yard/yard.go",
+       "func": "yard.workshop.ListWorkOrders",
+       "line": 69,
+       "module": "harborline/internal/yard",
+       "wrappers": []
+      },
+      "input": "harbor.v1.ListWorkOrdersRequest",
+      "line": 12,
+      "name": "ListWorkOrders",
+      "output": "harbor.v1.ListWorkOrdersResponse",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/yard/reasons.go",
+        "line": 30,
+        "reason": "the code of `status.Error(codeFor[r], detail)` is chosen at run time",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     },
+     {
+      "auth": "Member",
+      "auth_reason": "gate.Keeper.Unary refuses callers without a valid token and does not list /harbor.v1.Yard/CompleteWorkOrder (internal/platform/gate/gate.go:61)",
+      "calls": [
+       "harborline/gen/harbor/v1:CompleteWorkOrderRequest.GetId",
+       "harborline/internal/platform/actor:From",
+       "harborline/internal/platform/actor:Need",
+       "harborline/internal/platform/actor:Principal.Is",
+       "harborline/internal/yard:reason.because"
+      ],
+      "client_streaming": false,
+      "file": "proto/harbor/v1/yard.proto",
+      "handler": {
+       "file": "internal/yard/yard.go",
+       "func": "yard.workshop.CompleteWorkOrder",
+       "line": 96,
+       "module": "harborline/internal/yard",
+       "wrappers": []
+      },
+      "input": "harbor.v1.CompleteWorkOrderRequest",
+      "line": 13,
+      "name": "CompleteWorkOrder",
+      "output": "harbor.v1.WorkOrder",
+      "server_streaming": false,
+      "state": "implemented",
+      "unread": [
+       {
+        "file": "internal/yard/reasons.go",
+        "line": 30,
+        "reason": "the code of `status.Error(codeFor[r], detail)` is chosen at run time",
+        "what": "grpc_code_not_literal"
+       },
+       {
+        "file": "internal/yard/yard.go",
+        "line": 97,
+        "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+        "what": "grpc_code_not_literal"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "status_writes": []
+ },
+ "main": [
+  "cmd/harbord/main.go"
+ ],
+ "middleware": [],
+ "models": [],
+ "module": "harborline",
+ "notes": [],
+ "routes": [],
+ "schema": "lattice.goextract/1",
+ "sentinels": [
+  {
+   "code": null,
+   "file": "internal/platform/fault/fault.go",
+   "line": 20,
+   "message": "forbidden for this role",
+   "name": "ErrForbidden",
+   "package": "harborline/internal/platform/fault",
+   "status": null
+  },
+  {
+   "code": null,
+   "file": "internal/platform/fault/fault.go",
+   "line": 17,
+   "message": "invalid request",
+   "name": "ErrInvalid",
+   "package": "harborline/internal/platform/fault",
+   "status": null
+  },
+  {
+   "code": null,
+   "file": "internal/platform/fault/fault.go",
+   "line": 16,
+   "message": "not found",
+   "name": "ErrNotFound",
+   "package": "harborline/internal/platform/fault",
+   "status": null
+  },
+  {
+   "code": null,
+   "file": "internal/platform/fault/fault.go",
+   "line": 18,
+   "message": "berth occupied",
+   "name": "ErrOccupied",
+   "package": "harborline/internal/platform/fault",
+   "status": null
+  },
+  {
+   "code": null,
+   "file": "internal/platform/fault/fault.go",
+   "line": 19,
+   "message": "not allowed in the current state",
+   "name": "ErrWrongStep",
+   "package": "harborline/internal/platform/fault",
+   "status": null
+  },
+  {
+   "code": null,
+   "file": "internal/platform/session/session.go",
+   "line": 15,
+   "message": "session: unknown or revoked token",
+   "name": "ErrUnknown",
+   "package": "harborline/internal/platform/session",
+   "status": null
+  }
+ ],
+ "status_writes": [],
+ "tables": [],
+ "unread": [
+  {
+   "file": "internal/berths/catalog.go",
+   "line": 74,
+   "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/berths/errors.go",
+   "line": 22,
+   "reason": "the error expression `&problem{code: codes.InvalidArgument, msg: fmt.Sprintf(format, args...)}` is not traced",
+   "what": "grpc_error_not_traced"
+  },
+  {
+   "file": "internal/berths/errors.go",
+   "line": 26,
+   "reason": "the error expression `&problem{code: codes.NotFound, msg: fmt.Sprintf(\"no berth %q\", code)}` is not traced",
+   "what": "grpc_error_not_traced"
+  },
+  {
+   "file": "internal/berths/errors.go",
+   "line": 30,
+   "reason": "the error expression `&problem{code: codes.AlreadyExists, msg: fmt.Sprintf(\"berth %q exists\", code)}` is not traced",
+   "what": "grpc_error_not_traced"
+  },
+  {
+   "file": "internal/berths/errors.go",
+   "line": 34,
+   "reason": "the error expression `&problem{code: codes.Internal, msg: \"berth store: \" + err.Error()}` is not traced",
+   "what": "grpc_error_not_traced"
+  },
+  {
+   "file": "internal/bookings/desk.go",
+   "line": 43,
+   "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/bookings/desk.go",
+   "line": 57,
+   "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/bookings/desk.go",
+   "line": 64,
+   "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/bookings/desk.go",
+   "line": 73,
+   "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/bookings/repo.go",
+   "line": 48,
+   "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/bookings/repo.go",
+   "line": 60,
+   "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/bookings/repo.go",
+   "line": 67,
+   "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/bookings/repo.go",
+   "line": 76,
+   "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/platform/gate/gate.go",
+   "line": 61,
+   "reason": "several interceptors refuse unauthenticated callers",
+   "what": "interceptor_not_literal"
+  },
+  {
+   "file": "internal/vessels/vessels.go",
+   "line": 41,
+   "reason": "the code of `status.Errorf(c, msg, args...)` is chosen at run time",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/yard/reasons.go",
+   "line": 30,
+   "reason": "the code of `status.Error(codeFor[r], detail)` is chosen at run time",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "internal/yard/yard.go",
+   "line": 97,
+   "reason": "the code of a plain error is chosen by a translation the extractor cannot read to a literal",
+   "what": "grpc_code_not_literal"
+  },
+  {
+   "file": "studio.toml",
+   "line": 0,
+   "reason": "TypeError: AuthDriver.rpc() takes 4 positional arguments but 5 were given",
+   "what": "harness_db_failed"
+  }
+ ]
+}

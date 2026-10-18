@@ -1,0 +1,73 @@
+{
+  "schema": "lattice.grpc.codes4-truth/1",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-4 extractor code ran, by reading the Go: the gRPC codes each handler can answer (OK excluded). unread: the handler can answer an error whose code the source does not state. Nothing may be UNKNOWN: no code here is a plain error.",
+  "cases": {
+    "tbl": {
+      "rpcs": {
+        "Ta/Get": {
+          "codes": [
+            "NOT_FOUND"
+          ],
+          "unread": false
+        },
+        "Ta/Put": {
+          "codes": [
+            "ALREADY_EXISTS"
+          ],
+          "unread": false
+        },
+        "Tb/Get": {
+          "codes": [
+            "FAILED_PRECONDITION"
+          ],
+          "unread": false
+        },
+        "Tb/Put": {
+          "codes": [
+            "INTERNAL"
+          ],
+          "unread": false
+        }
+      },
+      "why": "byError map table, a %w-wrapped sentinel, an errors.Is switch, and a sentinel absent from the table that takes Wire's literal default"
+    },
+    "nodefault": {
+      "rpcs": {
+        "Nd/Get": {
+          "codes": [
+            "ABORTED"
+          ],
+          "unread": false
+        },
+        "Nd/Put": {
+          "codes": [],
+          "unread": true
+        }
+      },
+      "why": "ErrTwo is absent from the table and Wire passes unknown errors through: its code is not in the source"
+    },
+    "keys": {
+      "rpcs": {
+        "Kc/Get": {
+          "codes": [
+            "INVALID_ARGUMENT",
+            "NOT_FOUND"
+          ],
+          "unread": false
+        },
+        "Kc/Put": {
+          "codes": [
+            "ABORTED"
+          ],
+          "unread": false
+        },
+        "Kd/Get": {
+          "codes": [],
+          "unread": false
+        }
+      },
+      "why": "fail(r, msg) looks the code up in codeFor[r] (its two call sites pass constants); Kc/Put indexes codeFor with a constant"
+    }
+  }
+}

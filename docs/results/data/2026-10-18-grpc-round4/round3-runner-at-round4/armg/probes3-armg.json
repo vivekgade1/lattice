@@ -1,0 +1,1690 @@
+{
+ "schema": "lattice.grpc-probes3/1",
+ "arm": "G",
+ "library_sha256": {
+  "dogfood/grpc_flow_scorer.py": "8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3",
+  "dogfood/grpc_probes2.py": "0193add7bd620dbf2af90cddf66a8bccca85ba1ade5b06f048bd711c952755fa",
+  "dogfood/grpc_probes3.py": "244e5e688287774daad66198134697c4b67443a8e71316ad4a2df84a97d3a978",
+  "dogfood/grpc_scorer3.py": "019db509ded84f48ef95e7bfe7788a949305611a35ab3ae15706303298ea50be",
+  "dogfood/grpc_scorer3_cases.json": "be3ccbcbc61817bd76f6bbd8873e8da40f4574b4204169a0040f7690a2ae88db",
+  "lattice/gocheck/src/goextract.go": "652e7007380ef7fa3e16b77ac937fb300ab5023899c2e81408cfa7a2a28c376a",
+  "lattice/gocheck/src/goextract_grpc.go": "3f181be7e7c50204bdadbc0c1a22a0988f4c68fd610817c9782011d540aa4354",
+  "lattice/gocheck/src/goextract_proto.go": "ec4aa3157b407467708bdc341171e94e9a33aedf70ac6a46893d7b41590c9a50",
+  "lattice/gocheck/src/load.go": "72a35ec417e522243f7583f8cb7f605c5f0261a81ce28ee7d057fa5af4cbd17f",
+  "lattice/importer/frontends/go_grpc.py": "7543c9fabc0e7a9369f760e18d6f2220a712ea010df821bcd496ea81927db799",
+  "lattice/importer/workflows.py": "5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098",
+  "lattice/spec/grpc.py": "1bd489dffd545aaedd923756a52aaebb84ab89e434f14a37aa048f707a204c80"
+ },
+ "frozen_before": {
+  "frozen_files_changed": [],
+  "tracked_changed_vs_merge": [
+   "docs/results/2026-10-18-grpc-round3-prereg.md",
+   "docs/results/2026-10-18-grpc-round3-results.md",
+   "docs/results/2026-10-18-grpc-round4-prereg.md",
+   "docs/results/2026-10-18-typed-conditions-round3-prereg.md",
+   "docs/results/2026-10-18-typed-conditions-round3-results.md",
+   "docs/results/data/2026-10-18-grpc-round3/arm0.log",
+   "docs/results/data/2026-10-18-grpc-round3/armg.log",
+   "docs/results/data/2026-10-18-grpc-round3/extract-heldout3.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-heldout3.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-kilnworks.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-n.json",
+   "docs/results/data/2026-10-18-grpc-round3/freeze-build-extra.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/freeze-dev3.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/freeze-frozen.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/freeze3.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/heldout3.freeze.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/mutants.log",
+   "docs/results/data/2026-10-18-grpc-round3/mutants3.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/0/probes2-arm0.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/G/flows-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/G/flows-n.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/G/probes2-armg.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/G/reconcile-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/arm0.log",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/armg.log",
+   "docs/results/data/2026-10-18-grpc-round3/probes3-arm0.json",
+   "docs/results/data/2026-10-18-grpc-round3/probes3-armg.json",
+   "docs/results/data/2026-10-18-grpc-round3/probes3-armh3.json",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-after-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-after.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-before-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-before.txt",
+   "docs/results/data/2026-10-18-grpc-round3/reconcile-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/reconcile-heldout3.json",
+   "docs/results/data/2026-10-18-grpc-round3/reconcile-kilnworks.json",
+   "docs/results/data/2026-10-18-grpc-round3/round2-code-on-round3-fixtures.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/dev.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/dev.log",
+   "docs/results/data/2026-10-18-typed-conditions-round3/freeze3.sha256",
+   "docs/results/data/2026-10-18-typed-conditions-round3/frozen-hashes-at-freeze.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/h3/frozen.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/h3/run1.log",
+   "docs/results/data/2026-10-18-typed-conditions-round3/mutants.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pd1-round1-post-hoc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pd2-h2-post-hoc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-full-ids-after.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-ids-after.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-ids-before.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/rc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/runner3.sha256",
+   "docs/results/data/2026-10-18-typed-conditions-round3/shapes3.manifest.sha256",
+   "dogfood/forms_mutants3.py",
+   "dogfood/forms_probes3.py",
+   "dogfood/forms_reader3.py",
+   "dogfood/grpc_mutants3.py",
+   "dogfood/grpc_probes3.py",
+   "dogfood/grpc_scorer3.py",
+   "dogfood/grpc_scorer3_cases.json",
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/importer/frontends/go_grpc.py",
+   "lattice/importer/transport.py",
+   "lattice/spec/forms.py",
+   "lattice/spec/grpc.py",
+   "tests/grpc/fixtures/authwire/gate_traced/auth.go",
+   "tests/grpc/fixtures/authwire/gate_traced/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/gate_traced/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/gate_traced/go.mod",
+   "tests/grpc/fixtures/authwire/gate_traced/main.go",
+   "tests/grpc/fixtures/authwire/gate_traced/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/gate_traced/svc.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/auth.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/go.mod",
+   "tests/grpc/fixtures/authwire/gate_unknown/main.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/gate_unknown/svc.go",
+   "tests/grpc/fixtures/authwire/handler_check/auth.go",
+   "tests/grpc/fixtures/authwire/handler_check/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/handler_check/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/handler_check/go.mod",
+   "tests/grpc/fixtures/authwire/handler_check/main.go",
+   "tests/grpc/fixtures/authwire/handler_check/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/handler_check/svc.go",
+   "tests/grpc/fixtures/authwire/literal_logger/auth.go",
+   "tests/grpc/fixtures/authwire/literal_logger/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/literal_logger/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/literal_logger/go.mod",
+   "tests/grpc/fixtures/authwire/literal_logger/main.go",
+   "tests/grpc/fixtures/authwire/literal_logger/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/literal_logger/svc.go",
+   "tests/grpc/fixtures/authwire/logger/auth.go",
+   "tests/grpc/fixtures/authwire/logger/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/logger/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/logger/go.mod",
+   "tests/grpc/fixtures/authwire/logger/main.go",
+   "tests/grpc/fixtures/authwire/logger/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/logger/svc.go",
+   "tests/grpc/fixtures/authwire/mixed/auth.go",
+   "tests/grpc/fixtures/authwire/mixed/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/mixed/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/mixed/go.mod",
+   "tests/grpc/fixtures/authwire/mixed/main.go",
+   "tests/grpc/fixtures/authwire/mixed/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/mixed/svc.go",
+   "tests/grpc/fixtures/authwire/none/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/none/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/none/go.mod",
+   "tests/grpc/fixtures/authwire/none/main.go",
+   "tests/grpc/fixtures/authwire/none/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/none/svc.go",
+   "tests/grpc/fixtures/authwire/opts_split/auth.go",
+   "tests/grpc/fixtures/authwire/opts_split/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/opts_split/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/opts_split/go.mod",
+   "tests/grpc/fixtures/authwire/opts_split/main.go",
+   "tests/grpc/fixtures/authwire/opts_split/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/opts_split/svc.go",
+   "tests/grpc/fixtures/authwire/recover/auth.go",
+   "tests/grpc/fixtures/authwire/recover/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/recover/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/recover/go.mod",
+   "tests/grpc/fixtures/authwire/recover/main.go",
+   "tests/grpc/fixtures/authwire/recover/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/recover/svc.go",
+   "tests/grpc/fixtures/authwire/truth.json",
+   "tests/grpc/fixtures/wiring/gen/wiring/v1/messages.pb.go",
+   "tests/grpc/fixtures/wiring/gen/wiring/v1/wiring_grpc.pb.go",
+   "tests/grpc/fixtures/wiring/go.mod",
+   "tests/grpc/fixtures/wiring/internal/serve/desks.go",
+   "tests/grpc/fixtures/wiring/internal/serve/extras.go",
+   "tests/grpc/fixtures/wiring/internal/serve/mounts.go",
+   "tests/grpc/fixtures/wiring/internal/serve/orphans.go",
+   "tests/grpc/fixtures/wiring/internal/serve/plugins.go",
+   "tests/grpc/fixtures/wiring/internal/serve/serve_test.go",
+   "tests/grpc/fixtures/wiring/internal/serve/server.go",
+   "tests/grpc/fixtures/wiring/main.go",
+   "tests/grpc/fixtures/wiring/proto/wiring/v1/wiring.proto",
+   "tests/grpc/fixtures/wiring/truth.json",
+   "tests/grpc/test_auth3.py",
+   "tests/grpc/test_reconcile3.py",
+   "tests/grpc/test_wiring3.py",
+   "tests/spec/fixtures/forms_r3/minishop/REQUIREMENTS.forms.json",
+   "tests/spec/fixtures/forms_r3/minishop/REQUIREMENTS.md",
+   "tests/spec/fixtures/forms_r3/minishop/spec.py",
+   "tests/spec/fixtures/forms_r3/minishop/spec.trace.json",
+   "tests/spec/test_forms_r3.py"
+  ],
+  "unexpected": [
+   "docs/results/2026-10-18-grpc-round3-prereg.md",
+   "docs/results/2026-10-18-grpc-round4-prereg.md",
+   "docs/results/2026-10-18-typed-conditions-round3-prereg.md",
+   "docs/results/2026-10-18-typed-conditions-round3-results.md",
+   "docs/results/data/2026-10-18-grpc-round4/flows-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round4/flows-harborline.json",
+   "docs/results/data/2026-10-18-grpc-round4/flows-kilnworks.json",
+   "docs/results/data/2026-10-18-grpc-round4/flows-n.json",
+   "docs/results/data/2026-10-18-grpc-round4/freeze-dev4.sha256",
+   "docs/results/data/2026-10-18-grpc-round4/probes4-arm0.json",
+   "docs/results/data/2026-10-18-grpc-round4/probes4-armg.json",
+   "docs/results/data/2026-10-18-grpc-round4/pytest-after-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round4/pytest-after.txt",
+   "docs/results/data/2026-10-18-grpc-round4/pytest-before-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round4/pytest-before.txt",
+   "docs/results/data/2026-10-18-grpc-round4/reconcile-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round4/reconcile-harborline.json",
+   "docs/results/data/2026-10-18-grpc-round4/reconcile-kilnworks.json",
+   "docs/results/data/2026-10-18-grpc-round4/round3-code-on-round4-fixtures.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/dev.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/dev.log",
+   "docs/results/data/2026-10-18-typed-conditions-round3/freeze3.sha256",
+   "docs/results/data/2026-10-18-typed-conditions-round3/frozen-hashes-at-freeze.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/h3/frozen.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/h3/run1.log",
+   "docs/results/data/2026-10-18-typed-conditions-round3/mutants.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pd1-round1-post-hoc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pd2-h2-post-hoc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-full-ids-after.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-ids-after.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-ids-before.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/rc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/runner3.sha256",
+   "docs/results/data/2026-10-18-typed-conditions-round3/shapes3.manifest.sha256",
+   "dogfood/forms_mutants3.py",
+   "dogfood/forms_probes3.py",
+   "dogfood/forms_reader3.py",
+   "dogfood/grpc_contract4.py",
+   "dogfood/grpc_mutants4.py",
+   "dogfood/grpc_probes4.py",
+   "dogfood/grpc_scorer4.py",
+   "dogfood/grpc_scorer4_cases.json",
+   "lattice/importer/transport.py",
+   "lattice/spec/forms.py",
+   "tests/grpc/fixtures/authwire4/builder/auth.go",
+   "tests/grpc/fixtures/authwire4/builder/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/builder/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/builder/go.mod",
+   "tests/grpc/fixtures/authwire4/builder/main.go",
+   "tests/grpc/fixtures/authwire4/builder/policy.go",
+   "tests/grpc/fixtures/authwire4/builder/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/builder/svc.go",
+   "tests/grpc/fixtures/authwire4/consts/auth.go",
+   "tests/grpc/fixtures/authwire4/consts/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/consts/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/consts/go.mod",
+   "tests/grpc/fixtures/authwire4/consts/main.go",
+   "tests/grpc/fixtures/authwire4/consts/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/consts/svc.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/auth.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/go.mod",
+   "tests/grpc/fixtures/authwire4/exactprefix/main.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/policy.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/exactprefix/svc.go",
+   "tests/grpc/fixtures/authwire4/mval/auth.go",
+   "tests/grpc/fixtures/authwire4/mval/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/mval/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/mval/go.mod",
+   "tests/grpc/fixtures/authwire4/mval/main.go",
+   "tests/grpc/fixtures/authwire4/mval/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/mval/svc.go",
+   "tests/grpc/fixtures/authwire4/optfield/auth.go",
+   "tests/grpc/fixtures/authwire4/optfield/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/optfield/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/optfield/go.mod",
+   "tests/grpc/fixtures/authwire4/optfield/main.go",
+   "tests/grpc/fixtures/authwire4/optfield/opts.go",
+   "tests/grpc/fixtures/authwire4/optfield/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/optfield/svc.go",
+   "tests/grpc/fixtures/authwire4/prefix/auth.go",
+   "tests/grpc/fixtures/authwire4/prefix/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/prefix/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/prefix/go.mod",
+   "tests/grpc/fixtures/authwire4/prefix/main.go",
+   "tests/grpc/fixtures/authwire4/prefix/policy.go",
+   "tests/grpc/fixtures/authwire4/prefix/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/prefix/svc.go",
+   "tests/grpc/fixtures/authwire4/truth.json",
+   "tests/grpc/fixtures/authwire4/unresolved/auth.go",
+   "tests/grpc/fixtures/authwire4/unresolved/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/unresolved/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/unresolved/go.mod",
+   "tests/grpc/fixtures/authwire4/unresolved/main.go",
+   "tests/grpc/fixtures/authwire4/unresolved/policy.go",
+   "tests/grpc/fixtures/authwire4/unresolved/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/unresolved/svc.go",
+   "tests/grpc/fixtures/codes4/keys/gen/codes4/v1/codes4_grpc.pb.go",
+   "tests/grpc/fixtures/codes4/keys/gen/codes4/v1/messages.pb.go",
+   "tests/grpc/fixtures/codes4/keys/go.mod",
+   "tests/grpc/fixtures/codes4/keys/internal/app/app.go",
+   "tests/grpc/fixtures/codes4/keys/internal/svc/svc.go",
+   "tests/grpc/fixtures/codes4/keys/main.go",
+   "tests/grpc/fixtures/codes4/keys/proto/codes4/v1/codes4.proto",
+   "tests/grpc/fixtures/codes4/nodefault/gen/codes4/v1/codes4_grpc.pb.go",
+   "tests/grpc/fixtures/codes4/nodefault/gen/codes4/v1/messages.pb.go",
+   "tests/grpc/fixtures/codes4/nodefault/go.mod",
+   "tests/grpc/fixtures/codes4/nodefault/internal/app/app.go",
+   "tests/grpc/fixtures/codes4/nodefault/internal/fault/fault.go",
+   "tests/grpc/fixtures/codes4/nodefault/internal/svc/svc.go",
+   "tests/grpc/fixtures/codes4/nodefault/main.go",
+   "tests/grpc/fixtures/codes4/nodefault/proto/codes4/v1/codes4.proto",
+   "tests/grpc/fixtures/codes4/tbl/gen/codes4/v1/codes4_grpc.pb.go",
+   "tests/grpc/fixtures/codes4/tbl/gen/codes4/v1/messages.pb.go",
+   "tests/grpc/fixtures/codes4/tbl/go.mod",
+   "tests/grpc/fixtures/codes4/tbl/internal/app/app.go",
+   "tests/grpc/fixtures/codes4/tbl/internal/fault/fault.go",
+   "tests/grpc/fixtures/codes4/tbl/internal/svc/svc.go",
+   "tests/grpc/fixtures/codes4/tbl/main.go",
+   "tests/grpc/fixtures/codes4/tbl/proto/codes4/v1/codes4.proto",
+   "tests/grpc/fixtures/codes4/truth.json",
+   "tests/grpc/fixtures/login4/proto/login4/v1/login4.proto",
+   "tests/grpc/fixtures/login4/truth.json",
+   "tests/grpc/fixtures/tables4/brokendb/gen/tables4/v1/messages.pb.go",
+   "tests/grpc/fixtures/tables4/brokendb/gen/tables4/v1/tables4_grpc.pb.go",
+   "tests/grpc/fixtures/tables4/brokendb/go.mod",
+   "tests/grpc/fixtures/tables4/brokendb/harness.py",
+   "tests/grpc/fixtures/tables4/brokendb/main.go",
+   "tests/grpc/fixtures/tables4/brokendb/proto/tables4/v1/tables4.proto",
+   "tests/grpc/fixtures/tables4/brokendb/studio.toml",
+   "tests/grpc/fixtures/tables4/gormtables/gen/tables4/v1/messages.pb.go",
+   "tests/grpc/fixtures/tables4/gormtables/gen/tables4/v1/tables4_grpc.pb.go",
+   "tests/grpc/fixtures/tables4/gormtables/go.mod",
+   "tests/grpc/fixtures/tables4/gormtables/main.go",
+   "tests/grpc/fixtures/tables4/gormtables/proto/tables4/v1/tables4.proto",
+   "tests/grpc/fixtures/tables4/harnessdb/gen/tables4/v1/messages.pb.go",
+   "tests/grpc/fixtures/tables4/harnessdb/gen/tables4/v1/tables4_grpc.pb.go",
+   "tests/grpc/fixtures/tables4/harnessdb/go.mod",
+   "tests/grpc/fixtures/tables4/harnessdb/harness.py",
+   "tests/grpc/fixtures/tables4/harnessdb/main.go",
+   "tests/grpc/fixtures/tables4/harnessdb/proto/tables4/v1/tables4.proto",
+   "tests/grpc/fixtures/tables4/harnessdb/studio.toml",
+   "tests/grpc/fixtures/tables4/truth.json",
+   "tests/grpc/fixtures/wiring4/main/gen/wiring4/v1/messages.pb.go",
+   "tests/grpc/fixtures/wiring4/main/gen/wiring4/v1/wiring4_grpc.pb.go",
+   "tests/grpc/fixtures/wiring4/main/go.mod",
+   "tests/grpc/fixtures/wiring4/main/internal/app/app.go",
+   "tests/grpc/fixtures/wiring4/main/internal/genx/genx.go",
+   "tests/grpc/fixtures/wiring4/main/internal/ghost/ghost.go",
+   "tests/grpc/fixtures/wiring4/main/internal/legacy/legacy.go",
+   "tests/grpc/fixtures/wiring4/main/internal/regb/regb.go",
+   "tests/grpc/fixtures/wiring4/main/internal/registry/registry.go",
+   "tests/grpc/fixtures/wiring4/main/internal/regsvc/regsvc.go",
+   "tests/grpc/fixtures/wiring4/main/main.go",
+   "tests/grpc/fixtures/wiring4/main/proto/wiring4/v1/wiring4.proto",
+   "tests/grpc/fixtures/wiring4/truth.json",
+   "tests/grpc/fixtures/wiring4/unres/gen/wiring4/v1/messages.pb.go",
+   "tests/grpc/fixtures/wiring4/unres/gen/wiring4/v1/wiring4_grpc.pb.go",
+   "tests/grpc/fixtures/wiring4/unres/go.mod",
+   "tests/grpc/fixtures/wiring4/unres/internal/app/app.go",
+   "tests/grpc/fixtures/wiring4/unres/main.go",
+   "tests/grpc/fixtures/wiring4/unres/proto/wiring4/v1/wiring4.proto",
+   "tests/grpc/fixtures/wiring4/varlost/gen/wiring4/v1/messages.pb.go",
+   "tests/grpc/fixtures/wiring4/varlost/gen/wiring4/v1/wiring4_grpc.pb.go",
+   "tests/grpc/fixtures/wiring4/varlost/go.mod",
+   "tests/grpc/fixtures/wiring4/varlost/internal/app/app.go",
+   "tests/grpc/fixtures/wiring4/varlost/main.go",
+   "tests/grpc/fixtures/wiring4/varlost/proto/wiring4/v1/wiring4.proto",
+   "tests/grpc/test_auth4.py",
+   "tests/grpc/test_codes4.py",
+   "tests/grpc/test_login4.py",
+   "tests/grpc/test_tables4.py",
+   "tests/grpc/test_wiring4.py",
+   "tests/spec/fixtures/forms_r3/minishop/REQUIREMENTS.forms.json",
+   "tests/spec/fixtures/forms_r3/minishop/REQUIREMENTS.md",
+   "tests/spec/fixtures/forms_r3/minishop/spec.py",
+   "tests/spec/fixtures/forms_r3/minishop/spec.trace.json",
+   "tests/spec/test_forms_r3.py"
+  ],
+  "budgets": {
+   "lattice/gocheck/src/goextract_grpc.go": {
+    "insertions+deletions": 1004,
+    "budget": 300,
+    "ok": false
+   },
+   "lattice/spec/grpc.py": {
+    "insertions+deletions": 72,
+    "budget": 80,
+    "ok": true
+   },
+   "lattice/importer/frontends/go_grpc.py": {
+    "insertions+deletions": 49,
+    "budget": 15,
+    "ok": false
+   }
+  },
+  "staged": [],
+  "deskd_freeze_sha256_ok": true,
+  "deskd_files_changed": [],
+  "kilnworks_freeze_sha256_ok": true,
+  "kilnworks_files_changed": [],
+  "dev_truth_hashes_changed": [],
+  "ok": false
+ },
+ "frozen_after": {
+  "frozen_files_changed": [],
+  "tracked_changed_vs_merge": [
+   "docs/results/2026-10-18-grpc-round3-prereg.md",
+   "docs/results/2026-10-18-grpc-round3-results.md",
+   "docs/results/2026-10-18-grpc-round4-prereg.md",
+   "docs/results/2026-10-18-typed-conditions-round3-prereg.md",
+   "docs/results/2026-10-18-typed-conditions-round3-results.md",
+   "docs/results/data/2026-10-18-grpc-round3/arm0.log",
+   "docs/results/data/2026-10-18-grpc-round3/armg.log",
+   "docs/results/data/2026-10-18-grpc-round3/extract-heldout3.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-heldout3.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-kilnworks.json",
+   "docs/results/data/2026-10-18-grpc-round3/flows-n.json",
+   "docs/results/data/2026-10-18-grpc-round3/freeze-build-extra.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/freeze-dev3.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/freeze-frozen.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/freeze3.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/heldout3.freeze.sha256",
+   "docs/results/data/2026-10-18-grpc-round3/mutants.log",
+   "docs/results/data/2026-10-18-grpc-round3/mutants3.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/0/probes2-arm0.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/G/flows-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/G/flows-n.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/G/probes2-armg.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/G/reconcile-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/arm0.log",
+   "docs/results/data/2026-10-18-grpc-round3/pr2all/armg.log",
+   "docs/results/data/2026-10-18-grpc-round3/probes3-arm0.json",
+   "docs/results/data/2026-10-18-grpc-round3/probes3-armg.json",
+   "docs/results/data/2026-10-18-grpc-round3/probes3-armh3.json",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-after-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-after.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-before-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round3/pytest-before.txt",
+   "docs/results/data/2026-10-18-grpc-round3/reconcile-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round3/reconcile-heldout3.json",
+   "docs/results/data/2026-10-18-grpc-round3/reconcile-kilnworks.json",
+   "docs/results/data/2026-10-18-grpc-round3/round2-code-on-round3-fixtures.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/dev.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/dev.log",
+   "docs/results/data/2026-10-18-typed-conditions-round3/freeze3.sha256",
+   "docs/results/data/2026-10-18-typed-conditions-round3/frozen-hashes-at-freeze.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/h3/frozen.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/h3/run1.log",
+   "docs/results/data/2026-10-18-typed-conditions-round3/mutants.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pd1-round1-post-hoc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pd2-h2-post-hoc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-full-ids-after.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-ids-after.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-ids-before.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/rc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/runner3.sha256",
+   "docs/results/data/2026-10-18-typed-conditions-round3/shapes3.manifest.sha256",
+   "dogfood/forms_mutants3.py",
+   "dogfood/forms_probes3.py",
+   "dogfood/forms_reader3.py",
+   "dogfood/grpc_mutants3.py",
+   "dogfood/grpc_probes3.py",
+   "dogfood/grpc_scorer3.py",
+   "dogfood/grpc_scorer3_cases.json",
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/importer/frontends/go_grpc.py",
+   "lattice/importer/transport.py",
+   "lattice/spec/forms.py",
+   "lattice/spec/grpc.py",
+   "tests/grpc/fixtures/authwire/gate_traced/auth.go",
+   "tests/grpc/fixtures/authwire/gate_traced/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/gate_traced/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/gate_traced/go.mod",
+   "tests/grpc/fixtures/authwire/gate_traced/main.go",
+   "tests/grpc/fixtures/authwire/gate_traced/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/gate_traced/svc.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/auth.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/go.mod",
+   "tests/grpc/fixtures/authwire/gate_unknown/main.go",
+   "tests/grpc/fixtures/authwire/gate_unknown/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/gate_unknown/svc.go",
+   "tests/grpc/fixtures/authwire/handler_check/auth.go",
+   "tests/grpc/fixtures/authwire/handler_check/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/handler_check/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/handler_check/go.mod",
+   "tests/grpc/fixtures/authwire/handler_check/main.go",
+   "tests/grpc/fixtures/authwire/handler_check/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/handler_check/svc.go",
+   "tests/grpc/fixtures/authwire/literal_logger/auth.go",
+   "tests/grpc/fixtures/authwire/literal_logger/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/literal_logger/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/literal_logger/go.mod",
+   "tests/grpc/fixtures/authwire/literal_logger/main.go",
+   "tests/grpc/fixtures/authwire/literal_logger/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/literal_logger/svc.go",
+   "tests/grpc/fixtures/authwire/logger/auth.go",
+   "tests/grpc/fixtures/authwire/logger/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/logger/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/logger/go.mod",
+   "tests/grpc/fixtures/authwire/logger/main.go",
+   "tests/grpc/fixtures/authwire/logger/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/logger/svc.go",
+   "tests/grpc/fixtures/authwire/mixed/auth.go",
+   "tests/grpc/fixtures/authwire/mixed/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/mixed/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/mixed/go.mod",
+   "tests/grpc/fixtures/authwire/mixed/main.go",
+   "tests/grpc/fixtures/authwire/mixed/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/mixed/svc.go",
+   "tests/grpc/fixtures/authwire/none/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/none/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/none/go.mod",
+   "tests/grpc/fixtures/authwire/none/main.go",
+   "tests/grpc/fixtures/authwire/none/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/none/svc.go",
+   "tests/grpc/fixtures/authwire/opts_split/auth.go",
+   "tests/grpc/fixtures/authwire/opts_split/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/opts_split/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/opts_split/go.mod",
+   "tests/grpc/fixtures/authwire/opts_split/main.go",
+   "tests/grpc/fixtures/authwire/opts_split/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/opts_split/svc.go",
+   "tests/grpc/fixtures/authwire/recover/auth.go",
+   "tests/grpc/fixtures/authwire/recover/gen/aw/v1/aw_grpc.pb.go",
+   "tests/grpc/fixtures/authwire/recover/gen/aw/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire/recover/go.mod",
+   "tests/grpc/fixtures/authwire/recover/main.go",
+   "tests/grpc/fixtures/authwire/recover/proto/aw/v1/aw.proto",
+   "tests/grpc/fixtures/authwire/recover/svc.go",
+   "tests/grpc/fixtures/authwire/truth.json",
+   "tests/grpc/fixtures/wiring/gen/wiring/v1/messages.pb.go",
+   "tests/grpc/fixtures/wiring/gen/wiring/v1/wiring_grpc.pb.go",
+   "tests/grpc/fixtures/wiring/go.mod",
+   "tests/grpc/fixtures/wiring/internal/serve/desks.go",
+   "tests/grpc/fixtures/wiring/internal/serve/extras.go",
+   "tests/grpc/fixtures/wiring/internal/serve/mounts.go",
+   "tests/grpc/fixtures/wiring/internal/serve/orphans.go",
+   "tests/grpc/fixtures/wiring/internal/serve/plugins.go",
+   "tests/grpc/fixtures/wiring/internal/serve/serve_test.go",
+   "tests/grpc/fixtures/wiring/internal/serve/server.go",
+   "tests/grpc/fixtures/wiring/main.go",
+   "tests/grpc/fixtures/wiring/proto/wiring/v1/wiring.proto",
+   "tests/grpc/fixtures/wiring/truth.json",
+   "tests/grpc/test_auth3.py",
+   "tests/grpc/test_reconcile3.py",
+   "tests/grpc/test_wiring3.py",
+   "tests/spec/fixtures/forms_r3/minishop/REQUIREMENTS.forms.json",
+   "tests/spec/fixtures/forms_r3/minishop/REQUIREMENTS.md",
+   "tests/spec/fixtures/forms_r3/minishop/spec.py",
+   "tests/spec/fixtures/forms_r3/minishop/spec.trace.json",
+   "tests/spec/test_forms_r3.py"
+  ],
+  "unexpected": [
+   "docs/results/2026-10-18-grpc-round3-prereg.md",
+   "docs/results/2026-10-18-grpc-round4-prereg.md",
+   "docs/results/2026-10-18-typed-conditions-round3-prereg.md",
+   "docs/results/2026-10-18-typed-conditions-round3-results.md",
+   "docs/results/data/2026-10-18-grpc-round4/flows-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round4/flows-harborline.json",
+   "docs/results/data/2026-10-18-grpc-round4/flows-kilnworks.json",
+   "docs/results/data/2026-10-18-grpc-round4/flows-n.json",
+   "docs/results/data/2026-10-18-grpc-round4/freeze-dev4.sha256",
+   "docs/results/data/2026-10-18-grpc-round4/probes4-arm0.json",
+   "docs/results/data/2026-10-18-grpc-round4/probes4-armg.json",
+   "docs/results/data/2026-10-18-grpc-round4/pytest-after-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round4/pytest-after.txt",
+   "docs/results/data/2026-10-18-grpc-round4/pytest-before-ids.txt",
+   "docs/results/data/2026-10-18-grpc-round4/pytest-before.txt",
+   "docs/results/data/2026-10-18-grpc-round4/reconcile-deskd.json",
+   "docs/results/data/2026-10-18-grpc-round4/reconcile-harborline.json",
+   "docs/results/data/2026-10-18-grpc-round4/reconcile-kilnworks.json",
+   "docs/results/data/2026-10-18-grpc-round4/round3-code-on-round4-fixtures.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/dev.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/dev.log",
+   "docs/results/data/2026-10-18-typed-conditions-round3/freeze3.sha256",
+   "docs/results/data/2026-10-18-typed-conditions-round3/frozen-hashes-at-freeze.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/h3/frozen.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/h3/run1.log",
+   "docs/results/data/2026-10-18-typed-conditions-round3/mutants.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pd1-round1-post-hoc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pd2-h2-post-hoc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-full-ids-after.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-ids-after.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/pytest-failing-ids-before.txt",
+   "docs/results/data/2026-10-18-typed-conditions-round3/rc.json",
+   "docs/results/data/2026-10-18-typed-conditions-round3/runner3.sha256",
+   "docs/results/data/2026-10-18-typed-conditions-round3/shapes3.manifest.sha256",
+   "dogfood/forms_mutants3.py",
+   "dogfood/forms_probes3.py",
+   "dogfood/forms_reader3.py",
+   "dogfood/grpc_contract4.py",
+   "dogfood/grpc_mutants4.py",
+   "dogfood/grpc_probes4.py",
+   "dogfood/grpc_scorer4.py",
+   "dogfood/grpc_scorer4_cases.json",
+   "lattice/importer/transport.py",
+   "lattice/spec/forms.py",
+   "tests/grpc/fixtures/authwire4/builder/auth.go",
+   "tests/grpc/fixtures/authwire4/builder/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/builder/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/builder/go.mod",
+   "tests/grpc/fixtures/authwire4/builder/main.go",
+   "tests/grpc/fixtures/authwire4/builder/policy.go",
+   "tests/grpc/fixtures/authwire4/builder/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/builder/svc.go",
+   "tests/grpc/fixtures/authwire4/consts/auth.go",
+   "tests/grpc/fixtures/authwire4/consts/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/consts/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/consts/go.mod",
+   "tests/grpc/fixtures/authwire4/consts/main.go",
+   "tests/grpc/fixtures/authwire4/consts/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/consts/svc.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/auth.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/go.mod",
+   "tests/grpc/fixtures/authwire4/exactprefix/main.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/policy.go",
+   "tests/grpc/fixtures/authwire4/exactprefix/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/exactprefix/svc.go",
+   "tests/grpc/fixtures/authwire4/mval/auth.go",
+   "tests/grpc/fixtures/authwire4/mval/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/mval/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/mval/go.mod",
+   "tests/grpc/fixtures/authwire4/mval/main.go",
+   "tests/grpc/fixtures/authwire4/mval/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/mval/svc.go",
+   "tests/grpc/fixtures/authwire4/optfield/auth.go",
+   "tests/grpc/fixtures/authwire4/optfield/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/optfield/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/optfield/go.mod",
+   "tests/grpc/fixtures/authwire4/optfield/main.go",
+   "tests/grpc/fixtures/authwire4/optfield/opts.go",
+   "tests/grpc/fixtures/authwire4/optfield/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/optfield/svc.go",
+   "tests/grpc/fixtures/authwire4/prefix/auth.go",
+   "tests/grpc/fixtures/authwire4/prefix/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/prefix/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/prefix/go.mod",
+   "tests/grpc/fixtures/authwire4/prefix/main.go",
+   "tests/grpc/fixtures/authwire4/prefix/policy.go",
+   "tests/grpc/fixtures/authwire4/prefix/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/prefix/svc.go",
+   "tests/grpc/fixtures/authwire4/truth.json",
+   "tests/grpc/fixtures/authwire4/unresolved/auth.go",
+   "tests/grpc/fixtures/authwire4/unresolved/gen/aw4/v1/aw4_grpc.pb.go",
+   "tests/grpc/fixtures/authwire4/unresolved/gen/aw4/v1/messages.pb.go",
+   "tests/grpc/fixtures/authwire4/unresolved/go.mod",
+   "tests/grpc/fixtures/authwire4/unresolved/main.go",
+   "tests/grpc/fixtures/authwire4/unresolved/policy.go",
+   "tests/grpc/fixtures/authwire4/unresolved/proto/aw4/v1/aw4.proto",
+   "tests/grpc/fixtures/authwire4/unresolved/svc.go",
+   "tests/grpc/fixtures/codes4/keys/gen/codes4/v1/codes4_grpc.pb.go",
+   "tests/grpc/fixtures/codes4/keys/gen/codes4/v1/messages.pb.go",
+   "tests/grpc/fixtures/codes4/keys/go.mod",
+   "tests/grpc/fixtures/codes4/keys/internal/app/app.go",
+   "tests/grpc/fixtures/codes4/keys/internal/svc/svc.go",
+   "tests/grpc/fixtures/codes4/keys/main.go",
+   "tests/grpc/fixtures/codes4/keys/proto/codes4/v1/codes4.proto",
+   "tests/grpc/fixtures/codes4/nodefault/gen/codes4/v1/codes4_grpc.pb.go",
+   "tests/grpc/fixtures/codes4/nodefault/gen/codes4/v1/messages.pb.go",
+   "tests/grpc/fixtures/codes4/nodefault/go.mod",
+   "tests/grpc/fixtures/codes4/nodefault/internal/app/app.go",
+   "tests/grpc/fixtures/codes4/nodefault/internal/fault/fault.go",
+   "tests/grpc/fixtures/codes4/nodefault/internal/svc/svc.go",
+   "tests/grpc/fixtures/codes4/nodefault/main.go",
+   "tests/grpc/fixtures/codes4/nodefault/proto/codes4/v1/codes4.proto",
+   "tests/grpc/fixtures/codes4/tbl/gen/codes4/v1/codes4_grpc.pb.go",
+   "tests/grpc/fixtures/codes4/tbl/gen/codes4/v1/messages.pb.go",
+   "tests/grpc/fixtures/codes4/tbl/go.mod",
+   "tests/grpc/fixtures/codes4/tbl/internal/app/app.go",
+   "tests/grpc/fixtures/codes4/tbl/internal/fault/fault.go",
+   "tests/grpc/fixtures/codes4/tbl/internal/svc/svc.go",
+   "tests/grpc/fixtures/codes4/tbl/main.go",
+   "tests/grpc/fixtures/codes4/tbl/proto/codes4/v1/codes4.proto",
+   "tests/grpc/fixtures/codes4/truth.json",
+   "tests/grpc/fixtures/login4/proto/login4/v1/login4.proto",
+   "tests/grpc/fixtures/login4/truth.json",
+   "tests/grpc/fixtures/tables4/brokendb/gen/tables4/v1/messages.pb.go",
+   "tests/grpc/fixtures/tables4/brokendb/gen/tables4/v1/tables4_grpc.pb.go",
+   "tests/grpc/fixtures/tables4/brokendb/go.mod",
+   "tests/grpc/fixtures/tables4/brokendb/harness.py",
+   "tests/grpc/fixtures/tables4/brokendb/main.go",
+   "tests/grpc/fixtures/tables4/brokendb/proto/tables4/v1/tables4.proto",
+   "tests/grpc/fixtures/tables4/brokendb/studio.toml",
+   "tests/grpc/fixtures/tables4/gormtables/gen/tables4/v1/messages.pb.go",
+   "tests/grpc/fixtures/tables4/gormtables/gen/tables4/v1/tables4_grpc.pb.go",
+   "tests/grpc/fixtures/tables4/gormtables/go.mod",
+   "tests/grpc/fixtures/tables4/gormtables/main.go",
+   "tests/grpc/fixtures/tables4/gormtables/proto/tables4/v1/tables4.proto",
+   "tests/grpc/fixtures/tables4/harnessdb/gen/tables4/v1/messages.pb.go",
+   "tests/grpc/fixtures/tables4/harnessdb/gen/tables4/v1/tables4_grpc.pb.go",
+   "tests/grpc/fixtures/tables4/harnessdb/go.mod",
+   "tests/grpc/fixtures/tables4/harnessdb/harness.py",
+   "tests/grpc/fixtures/tables4/harnessdb/main.go",
+   "tests/grpc/fixtures/tables4/harnessdb/proto/tables4/v1/tables4.proto",
+   "tests/grpc/fixtures/tables4/harnessdb/studio.toml",
+   "tests/grpc/fixtures/tables4/truth.json",
+   "tests/grpc/fixtures/wiring4/main/gen/wiring4/v1/messages.pb.go",
+   "tests/grpc/fixtures/wiring4/main/gen/wiring4/v1/wiring4_grpc.pb.go",
+   "tests/grpc/fixtures/wiring4/main/go.mod",
+   "tests/grpc/fixtures/wiring4/main/internal/app/app.go",
+   "tests/grpc/fixtures/wiring4/main/internal/genx/genx.go",
+   "tests/grpc/fixtures/wiring4/main/internal/ghost/ghost.go",
+   "tests/grpc/fixtures/wiring4/main/internal/legacy/legacy.go",
+   "tests/grpc/fixtures/wiring4/main/internal/regb/regb.go",
+   "tests/grpc/fixtures/wiring4/main/internal/registry/registry.go",
+   "tests/grpc/fixtures/wiring4/main/internal/regsvc/regsvc.go",
+   "tests/grpc/fixtures/wiring4/main/main.go",
+   "tests/grpc/fixtures/wiring4/main/proto/wiring4/v1/wiring4.proto",
+   "tests/grpc/fixtures/wiring4/truth.json",
+   "tests/grpc/fixtures/wiring4/unres/gen/wiring4/v1/messages.pb.go",
+   "tests/grpc/fixtures/wiring4/unres/gen/wiring4/v1/wiring4_grpc.pb.go",
+   "tests/grpc/fixtures/wiring4/unres/go.mod",
+   "tests/grpc/fixtures/wiring4/unres/internal/app/app.go",
+   "tests/grpc/fixtures/wiring4/unres/main.go",
+   "tests/grpc/fixtures/wiring4/unres/proto/wiring4/v1/wiring4.proto",
+   "tests/grpc/fixtures/wiring4/varlost/gen/wiring4/v1/messages.pb.go",
+   "tests/grpc/fixtures/wiring4/varlost/gen/wiring4/v1/wiring4_grpc.pb.go",
+   "tests/grpc/fixtures/wiring4/varlost/go.mod",
+   "tests/grpc/fixtures/wiring4/varlost/internal/app/app.go",
+   "tests/grpc/fixtures/wiring4/varlost/main.go",
+   "tests/grpc/fixtures/wiring4/varlost/proto/wiring4/v1/wiring4.proto",
+   "tests/grpc/test_auth4.py",
+   "tests/grpc/test_codes4.py",
+   "tests/grpc/test_login4.py",
+   "tests/grpc/test_tables4.py",
+   "tests/grpc/test_wiring4.py",
+   "tests/spec/fixtures/forms_r3/minishop/REQUIREMENTS.forms.json",
+   "tests/spec/fixtures/forms_r3/minishop/REQUIREMENTS.md",
+   "tests/spec/fixtures/forms_r3/minishop/spec.py",
+   "tests/spec/fixtures/forms_r3/minishop/spec.trace.json",
+   "tests/spec/test_forms_r3.py"
+  ],
+  "budgets": {
+   "lattice/gocheck/src/goextract_grpc.go": {
+    "insertions+deletions": 1004,
+    "budget": 300,
+    "ok": false
+   },
+   "lattice/spec/grpc.py": {
+    "insertions+deletions": 72,
+    "budget": 80,
+    "ok": true
+   },
+   "lattice/importer/frontends/go_grpc.py": {
+    "insertions+deletions": 49,
+    "budget": 15,
+    "ok": false
+   }
+  },
+  "staged": [],
+  "deskd_freeze_sha256_ok": true,
+  "deskd_files_changed": [],
+  "kilnworks_freeze_sha256_ok": true,
+  "kilnworks_files_changed": [],
+  "dev_truth_hashes_changed": [],
+  "ok": false
+ },
+ "probes": [
+  {
+   "id": "PR3-N",
+   "prediction": "byte-equal to round 2",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "implemented answered": "10/10",
+    "bytes equal round 1": true,
+    "extra keys": []
+   },
+   "detail": {
+    "notes.v1.Accounts/Register": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Accounts/Login": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Accounts/Me": {
+     "code": "OK",
+     "answered": true
+    },
+    "notes.v1.Notes/CreateNote": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Notes/GetNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ListNotes": {
+     "code": "OK",
+     "answered": true
+    },
+    "notes.v1.Notes/UpdateNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/PublishNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ArchiveNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/DeleteNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ShareNote": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    },
+    "(absent)": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    }
+   }
+  },
+  {
+   "id": "PR3-DESK (dev)",
+   "prediction": "19/19 non-streaming truth rpcs + absent covered; Reports/Backlog UNIMPLEMENTED from the library; 0 auth_refused",
+   "pass_rule": "S5 coverage 1.00, agreement 1.00",
+   "status": "PASS",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "17/17",
+     "not_registered": "1/1",
+     "unimplemented": "1/1"
+    },
+    "denominator": 20,
+    "Reports/Backlog from the library": {
+     "code": "UNIMPLEMENTED",
+     "answered": false,
+     "route": false
+    },
+    "auth_refused": [],
+    "order disagreed": [],
+    "seconds": 1.26
+   },
+   "detail": {
+    "S5": {
+     "denominator": 20,
+     "covered": 20,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "17/17",
+      "not_registered": "1/1",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "output": {
+     "desk.v1.Identity/SignUp": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Identity/SignIn": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Identity/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Identity/SignOut": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Queues/ListQueues": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Queues/GetQueue": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/OpenTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/GetTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ListTickets": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Tickets/UpdateTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/HoldTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ResolveTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ReopenTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/CloseTicket": {
+      "code": "PERMISSION_DENIED",
+      "answered": true
+     },
+     "desk.v1.Tickets/DeleteTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/AddRemark": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ListRemarks": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/MergeTickets": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "desk.v1.Reports/Backlog": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   }
+  },
+  {
+   "id": "PR3-SESS",
+   "prediction": "as round 2: Stub UNIMPLEMENTED, 0 login_failed, 4 disagreements isolated",
+   "pass_rule": "exact; bytes equal to the merge commit's `reconcile`",
+   "status": "PASS",
+   "observed": {
+    "codes equal the truth (alone)": true,
+    "login_failed": 0,
+    "disagreed": [
+     "sessions.v1.Sessions/DeleteMe",
+     "sessions.v1.Sessions/Secret",
+     "sessions.v1.Sessions/SignOut",
+     "sessions.v1.Sessions/Stub"
+    ],
+    "bytes equal the merge commit": true
+   },
+   "detail": null
+  },
+  {
+   "id": "PF3-N",
+   "prediction": "N 17/17 verified, identical counts to round 2",
+   "pass_rule": "identical counts to round 2",
+   "status": "PASS",
+   "observed": {
+    "recovered": 17,
+    "recovered_by_status": {
+     "verified": 17,
+     "unverified": 0,
+     "failed": 0,
+     "unbound": 0
+    },
+    "verified": 17,
+    "verified_but_failing": 0,
+    "failing_codes": {},
+    "unbound_reasons": {},
+    "in 15-20 (p)": true,
+    "seconds": 8.4,
+    "differences from round 2": {}
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 17,
+     "recovered_by_status": {
+      "verified": 17,
+      "unverified": 0,
+      "failed": 0,
+      "unbound": 0
+     },
+     "verified": 17,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 0,
+      "bound": null,
+      "gated": false,
+      "value": null,
+      "pass": true
+     },
+     "coverage": {
+      "num": 0,
+      "den": 0,
+      "bound": null,
+      "gated": false,
+      "value": null,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 0
+     },
+     "truth_defects": [],
+     "failing_codes": {},
+     "unbound_reasons": {}
+    },
+    "vbf ids": []
+   }
+  },
+  {
+   "id": "PF3-DESK (dev)",
+   "prediction": "deskd 41 recovered / 20 verified, edge recall 21/34, coverage 4/7, as round 2",
+   "pass_rule": "identical counts to round 2",
+   "status": "PASS",
+   "observed": {
+    "recovered": 41,
+    "recovered_by_status": {
+     "verified": 20,
+     "unverified": 0,
+     "failed": 21,
+     "unbound": 0
+    },
+    "verified": 20,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 21,
+     "den": 34,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.6176,
+     "pass": true
+    },
+    "coverage": {
+     "num": 4,
+     "den": 7,
+     "bound": 2,
+     "gated": true,
+     "value": 0.5714,
+     "pass": true
+    },
+    "exact": {
+     "num": 0,
+     "den": 7
+    },
+    "failing_codes": {
+     "FAILED_PRECONDITION": 1,
+     "INVALID_ARGUMENT": 19,
+     "PERMISSION_DENIED": 1
+    },
+    "unbound_reasons": {},
+    "truth_flows_passing": 7,
+    "seconds": 7.9,
+    "differences from round 2": {}
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 41,
+     "recovered_by_status": {
+      "verified": 20,
+      "unverified": 0,
+      "failed": 21,
+      "unbound": 0
+     },
+     "verified": 20,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 21,
+      "den": 34,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.6176,
+      "pass": true
+     },
+     "coverage": {
+      "num": 4,
+      "den": 7,
+      "bound": 2,
+      "gated": true,
+      "value": 0.5714,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 7
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "FAILED_PRECONDITION": 1,
+      "INVALID_ARGUMENT": 19,
+      "PERMISSION_DENIED": 1
+     },
+     "unbound_reasons": {},
+     "truth_flows_passing": 7,
+     "recovered_by_kind_status": {
+      "after_delete": {
+       "failed": 3,
+       "verified": 3
+      },
+      "lifecycle": {
+       "verified": 2
+      },
+      "owner_chain": {
+       "verified": 1
+      },
+      "owner_guard": {
+       "failed": 7,
+       "verified": 8
+      },
+      "pair": {
+       "failed": 11,
+       "verified": 6
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth flow failures": []
+   }
+  },
+  {
+   "id": "PF3-LEAK",
+   "prediction": "0",
+   "pass_rule": "0",
+   "status": "PASS",
+   "observed": {
+    "live processes+bridges after reconcile and flows": 0,
+    "after a forced startup failure (reconcile raises, flows fail)": 0,
+    "reconcile raised": "ProcessStartError",
+    "flows of the broken app": [
+     "failed"
+    ],
+    "stray app or bridge processes in /proc": 0
+   },
+   "detail": []
+  },
+  {
+   "id": "PR2-ALL",
+   "prediction": "every round-2 PASS row still PASS except PR2-DESK's output bytes (declared)",
+   "pass_rule": "all other PASS rows PASS",
+   "status": "FAIL",
+   "observed": {
+    "source": "round 2's runner run un-nested into /tmp/claude-0/-home-user-lattice/307195c7-09d5-5df9-b82b-62010344228d/scratchpad/grpc4/pr2all",
+    "0": {
+     "rows": 9,
+     "round-2 PASS rows still PASS": "4/6",
+     "regressed (declared: PR2-DESK)": [],
+     "regressed (other)": [
+      "P2-BC",
+      "REG"
+     ],
+     "status now": {
+      "P2-BC": "FAIL",
+      "P2-DET": "PASS",
+      "P2-NW": "PASS",
+      "P2-UNIT": "PASS",
+      "P2-SCORE": "PASS",
+      "REG": "FAIL",
+      "PM-S / PM-SG (Arm M)": "NOT RUN",
+      "Arm L": "NOT RUN",
+      "PG-HO2 (HO2-*)": "NOT RUN"
+     }
+    },
+    "G": {
+     "rows": 13,
+     "round-2 PASS rows still PASS": "9/10",
+     "regressed (declared: PR2-DESK)": [
+      "PR2-DESK (dev)"
+     ],
+     "regressed (other)": [],
+     "status now": {
+      "PR2-N": "PASS",
+      "PR2-DESK (dev)": "FAIL",
+      "PR2-ORDER": "PASS",
+      "PR2-SESS": "PASS",
+      "PF2-N": "PASS",
+      "PF2-DESK (dev, tuned-on)": "PASS",
+      "PF2-REPLAY": "PASS",
+      "PF2-LEAK": "PASS",
+      "PR1": "PASS",
+      "PX2": "PASS",
+      "PM-S / PM-SG (Arm M)": "NOT RUN",
+      "Arm L": "NOT RUN",
+      "PG-HO2 (HO2-*)": "NOT RUN"
+     }
+    }
+   },
+   "detail": null
+  },
+  {
+   "id": "PD3-KILN/RPC (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.70-1.00 / precision 0.75-1.00 (point 0.90 / 0.95)",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth rpcs": 20,
+    "extracted rpcs": 20,
+    "matched": 20,
+    "truth states": {
+     "implemented": 16,
+     "not_registered": 2,
+     "streaming": 1,
+     "unimplemented": 1
+    },
+    "streaming reported not supported": [
+     "kiln.v1.Pieces/TailKiln"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 17,
+    "round 2 strict": "recall 0.30 / precision 0.30 (6 of 20 rpcs; 14 `not_registered`)",
+    "would_pass": true
+   },
+   "detail": {
+    "missed (truth, state)": [],
+    "extra (extract, state)": []
+   }
+  },
+  {
+   "id": "PD3-KILN/CODES (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.45-0.90 / precision 0.85-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 0.8,
+    "precision": 0.941,
+    "truth codes": 40,
+    "extracted codes": 34,
+    "matched": 32,
+    "round 2 strict": "recall 0.125 / precision 1.00",
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [
+     [
+      "kiln.v1.Passport/SignIn",
+      "UNAUTHENTICATED"
+     ],
+     [
+      "kiln.v1.Passport/StepDown",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Pieces/AddPiece",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "PERMISSION_DENIED"
+     ],
+     [
+      "kiln.v1.Pieces/FirePiece",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Pieces/RemovePiece",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Projects/ArchiveProject",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "kiln.v1.Projects/OpenProject",
+      "RESOURCE_EXHAUSTED"
+     ]
+    ],
+    "extra": [
+     [
+      "kiln.v1.Pieces/ApplyGlaze",
+      "UNKNOWN"
+     ],
+     [
+      "kiln.v1.Pieces/RemovePiece",
+      "UNKNOWN"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "PD3-KILN/AUTH (post hoc, tuned-on, never gated)",
+   "prediction": "wrong 0 (p 0.8); unclear 0.00-0.60",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "denominator": 17,
+    "unclear": 0,
+    "unclear_share": 0.0,
+    "reason": "",
+    "wrong": [],
+    "round 2 strict": "2 wrong of 3 (ListStudios, LookupGlaze labelled Public, truth Member)",
+    "would_pass": true
+   },
+   "detail": {
+    "unclear rpcs": [],
+    "row": {
+     "denominator": 17,
+     "wrong": [],
+     "unclear": 0,
+     "unclear_share": 0.0,
+     "unclear_rpcs": [],
+     "reason": "",
+     "pass": true
+    }
+   }
+  },
+  {
+   "id": "PD3-KILN/TABLES (post hoc, tuned-on, never gated)",
+   "prediction": "recall 0.85-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth": 7,
+    "extracted": 7,
+    "round 2 strict": "pass",
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "id": "PD3-KILN/REC (post hoc, tuned-on, never gated)",
+   "prediction": "coverage 0.95-1.00; agreement 0.85-1.00; 0-3 disagreements",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "16/16",
+     "not_registered": "2/2",
+     "unimplemented": "1/1"
+    },
+    "S5 reason": "",
+    "supplementary_calls": 0,
+    "S6": "not_exercised",
+    "auth_refused on truth-implemented non-public rpcs": [],
+    "order disagreed": [
+     "kiln.v1.Passport/StepDown"
+    ],
+    "all disagreements resolved isolated": true,
+    "rpcs answered by the library": 20,
+    "seconds": 2.6,
+    "round 2 strict": "4 of 20 rpcs answered by reconcile_with (the other 16 by the runner)",
+    "would_pass": true
+   },
+   "detail": {
+    "S5": {
+     "denominator": 20,
+     "covered": 20,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "16/16",
+      "not_registered": "2/2",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "S6": {
+     "status": "not_exercised",
+     "pass": true,
+     "effectful": [],
+     "reason": ""
+    },
+    "library output rpcs not in truth": [],
+    "codes": {
+     "kiln.v1.Catalog/ListStudios": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Catalog/ListGlazes": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Catalog/LookupGlaze": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Passport/SignIn": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Passport/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Passport/SignOff": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Passport/StepDown": {
+      "code": "OK",
+      "answered": true,
+      "isolated": true
+     },
+     "kiln.v1.Projects/OpenProject": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Projects/GetProject": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Projects/ListProjects": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Projects/ArchiveProject": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Projects/TransferProject": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "kiln.v1.Pieces/AddPiece": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Pieces/GetPiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Pieces/FirePiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Pieces/ApplyGlaze": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Pieces/RemovePiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Billing/QuoteFiring": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "kiln.v1.Billing/PayQuote": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "order": {
+      "disagreed": [
+       "kiln.v1.Passport/StepDown"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "PD3-KILN/FLOWS (post hoc, tuned-on, never gated)",
+   "prediction": "recovered 5-60; verified 0-12 (point 4); edge recall 0.00-0.55 (point 0.25); coverage 0-5 (point 2); 0 vbf",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "truth_flows": 9,
+    "truth_flows_passing": 9,
+    "truth_edges_total": 33,
+    "recovered": 17,
+    "recovered_by_status": {
+     "verified": 7,
+     "unverified": 0,
+     "failed": 10,
+     "unbound": 0
+    },
+    "recovered_by_kind_status": {
+     "after_delete": {
+      "failed": 1
+     },
+     "owner_chain": {
+      "verified": 1,
+      "failed": 1
+     },
+     "owner_guard": {
+      "failed": 4,
+      "verified": 3
+     },
+     "pair": {
+      "verified": 3,
+      "failed": 4
+     }
+    },
+    "verified": 7,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 11,
+     "den": 33,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.3333,
+     "pass": true
+    },
+    "coverage": {
+     "num": 6,
+     "den": 9,
+     "bound": 2,
+     "gated": true,
+     "value": 0.6667,
+     "pass": true
+    },
+    "exact": {
+     "num": 0,
+     "den": 9
+    },
+    "failing_codes": {
+     "NOT_FOUND": 10
+    },
+    "unbound_reasons": {},
+    "reasons": [],
+    "seconds": 3.2,
+    "round 2 strict": "recovered 0, verified 0, edge recall 0/33, coverage 0/9",
+    "would_pass": true
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 17,
+     "recovered_by_status": {
+      "verified": 7,
+      "unverified": 0,
+      "failed": 10,
+      "unbound": 0
+     },
+     "verified": 7,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 11,
+      "den": 33,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.3333,
+      "pass": true
+     },
+     "coverage": {
+      "num": 6,
+      "den": 9,
+      "bound": 2,
+      "gated": true,
+      "value": 0.6667,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 9
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "NOT_FOUND": 10
+     },
+     "unbound_reasons": {},
+     "truth_flows": 9,
+     "truth_flows_passing": 9,
+     "truth_edges_total": 33,
+     "recovered_by_kind_status": {
+      "after_delete": {
+       "failed": 1
+      },
+      "owner_chain": {
+       "verified": 1,
+       "failed": 1
+      },
+      "owner_guard": {
+       "failed": 4,
+       "verified": 3
+      },
+      "pair": {
+       "verified": 3,
+       "failed": 4
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth flow failures": [],
+    "not verified": [
+     {
+      "id": "rf-ece55f162b",
+      "kind": "after_delete",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-e69bed0631",
+      "kind": "owner_chain",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-076642ad81",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-1cbb239392",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-70db70f48e",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-9f142dd77a",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-365377a179",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-49ed9cfdc4",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-baf1bcb697",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-f7e45551e2",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     }
+    ]
+   }
+  },
+  {
+   "id": "PX3",
+   "prediction": "0.5-4 s; 2-10 s; 8-30 s (p)",
+   "pass_rule": "<= 30 s; <= 30 s; <= 180 s",
+   "status": "PASS",
+   "observed": {
+    "extract on kilnworks (s)": 0.09,
+    "reconcile on deskd (s)": 1.26,
+    "flows on deskd (s)": 7.9
+   },
+   "detail": null
+  },
+  {
+   "id": "PM-S / PM-SG (Arm M)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here",
+   "detail": null
+  },
+  {
+   "id": "Arm L",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the build round is its own node; out of scope",
+   "detail": null
+  },
+  {
+   "id": "PG-HO3 (HO3-*)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the gated held-out stage: a new app by a new agent, scored once by the orchestrator after the freeze; this node never opened heldout3/",
+   "detail": null
+  }
+ ]
+}

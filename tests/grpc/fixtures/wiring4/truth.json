@@ -1,0 +1,62 @@
+{
+  "schema": "lattice.grpc.wiring4-truth/1",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-4 extractor code ran, by reading the Go (the fixture is read, not run). Each case is a module under this directory.",
+  "cases": {
+    "main": {
+      "wiring": {
+        "Gen": "generic helper expose[T] -> RegisterService; descriptor var genx.Descriptor; impl genx.New(opts...) (options constructor returning the interface, concrete *service); Put is the embedded stub",
+        "Twin": "the same helper at a second call site; descriptor &w4.Twin_ServiceDesc; impl newTwin() returns the interface (concrete twinDesk)",
+        "Reg": "init() offers registry.InstallFunc(install) (a func-type adapter); InstallAll ranges the map of Installer values",
+        "RegB": "init() offers adapter{} (a struct implementing Installer)",
+        "Ghost": "ghost implements Installer but nothing ever builds one: its Install never runs",
+        "Absent": "declared, never registered anywhere"
+      },
+      "dead": "internal/legacy.Mount (a RegisterService call with an unresolvable descriptor) is referenced from nowhere and imported by nobody: dead, so it must not block not_registered",
+      "rpcs": {
+        "wiring4.v1.Gen/Get": "implemented",
+        "wiring4.v1.Gen/Put": "unimplemented",
+        "wiring4.v1.Twin/Get": "implemented",
+        "wiring4.v1.Twin/Put": "implemented",
+        "wiring4.v1.Reg/Get": "implemented",
+        "wiring4.v1.Reg/Put": "implemented",
+        "wiring4.v1.RegB/Get": "implemented",
+        "wiring4.v1.RegB/Put": "implemented",
+        "wiring4.v1.Ghost/Get": "not_registered",
+        "wiring4.v1.Ghost/Put": "not_registered",
+        "wiring4.v1.Absent/Get": "not_registered",
+        "wiring4.v1.Absent/Put": "not_registered"
+      }
+    },
+    "unres": {
+      "wiring": {
+        "Plain": "direct RegisterPlainServer",
+        "Mystery": "RegisterService(descs[name], impl) with name read from the environment: the descriptor cannot be resolved",
+        "Orphan": "declared, never registered -- but an unresolved registration exists in the module, so nothing may be said with confidence"
+      },
+      "rpcs": {
+        "wiring4.v1.Plain/Get": "implemented",
+        "wiring4.v1.Plain/Put": "implemented",
+        "wiring4.v1.Mystery/Get": "unread",
+        "wiring4.v1.Mystery/Put": "unread",
+        "wiring4.v1.Orphan/Get": "unread",
+        "wiring4.v1.Orphan/Put": "unread"
+      }
+    },
+    "varlost": {
+      "wiring": {
+        "Live": "direct RegisterLiveServer",
+        "Held": "registered inside a function literal held in the package variable holder, which only the unreferenced function unreachedMount reads (round-3 deviation 8.7)",
+        "Lone": "declared, never registered -- beside an unresolved registration"
+      },
+      "rpcs": {
+        "wiring4.v1.Live/Get": "implemented",
+        "wiring4.v1.Live/Put": "implemented",
+        "wiring4.v1.Held/Get": "unread",
+        "wiring4.v1.Held/Put": "unread",
+        "wiring4.v1.Lone/Get": "unread",
+        "wiring4.v1.Lone/Put": "unread"
+      }
+    }
+  }
+}

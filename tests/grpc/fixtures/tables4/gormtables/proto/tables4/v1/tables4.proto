@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package tables4.v1;
+
+option go_package = "example.com/t4gorm/gen/tables4/v1;tables4v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Notes {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}

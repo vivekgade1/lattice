@@ -1,0 +1,36 @@
+{
+  "schema": "lattice.grpc.login4-truth/1",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-4 library code ran: the message the login rpc is sent with credentials ('ada', 'pw') when the harness names no field; and what an explicit field does.",
+  "service": "login4.v1.Auth",
+  "discovered": {
+    "LoginUsername": {
+      "username": "ada",
+      "password": "pw"
+    },
+    "LoginName": {
+      "name": "ada",
+      "password": "pw"
+    },
+    "LoginEmail": {
+      "email": "ada",
+      "passcode": "pw"
+    },
+    "LoginTenant": {
+      "user": "ada",
+      "password": "pw"
+    }
+  },
+  "ambiguous": [
+    "LoginAmbiguous",
+    "LoginTwoPass"
+  ],
+  "explicit": {
+    "method": "LoginTenant",
+    "username_field": "tenant",
+    "sent": {
+      "tenant": "ada",
+      "password": "pw"
+    }
+  }
+}

@@ -16,6 +16,7 @@ import (
 	"go/ast"
 	"go/token"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -113,6 +114,7 @@ type xInterceptor struct {
 	Line    int      `json:"line"`
 	Kind    string   `json:"kind"` // auth_literal | auth_not_literal | other
 	Public  []string `json:"public,omitempty"`
+	Prefix  []string `json:"public_prefix,omitempty"`
 	Reason  string   `json:"reason,omitempty"`
 	Chained bool     `json:"chained"`
 }
@@ -416,7 +418,21 @@ func (g *gx) evalSentinel(vi varInfo, depth int, run *grpcRun) *errSrc {
 		out.addUnread(xUnread{File: vi.file.Rel, Line: g.line(vi.value.Pos()), What: "grpc_error_not_traced", Reason: "a package-level error has no function to read it in"})
 		return out
 	}
-	return g.evalErr(host, g.m.EnvOf(host), vi.value, vi.value.Pos(), depth+1, run)
+	res := g.evalErr(host, g.m.EnvOf(host), vi.value, vi.value.Pos(), depth+1, run)
+	if t := curWalk.sentTable(); len(t.code) > 0 && len(res.codes) == 1 && res.codes[0].Kind == "plain_error" && len(res.unread) == 0 {
+		file, line := vi.file.Rel, g.line(vi.value.Pos())
+		n, ok := t.code[vi.value]
+		if !ok && len(t.def) == 1 && !t.nodef { // the translation's one literal default
+			for d := range t.def {
+				n, ok = d, true
+			}
+		}
+		if ok {
+			return &errSrc{codes: []xCode{{Name: codeNameList[n], Number: n, Kind: "status_error", File: file, Line: line, In: "sentinel"}}}
+		}
+		return &errSrc{unread: []xUnread{{File: file, Line: line, What: "grpc_code_not_literal", Reason: "the code is chosen by a translation the extractor cannot read to a literal"}}}
+	}
+	return res
 }
 
 // evalCallErr answers the errors a call expression yields as an error.
@@ -439,6 +455,10 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 		case path == grpcStatus && (name == "Error" || name == "Errorf") && len(c.Args) >= 1:
 			if n, ok := g.codeOf(f, e, c.Args[0], 0); ok {
 				out.addCode(site(n, "status_error"))
+			} else if ns := g.codesFrom(b, e, c.Args[0]); ns != nil {
+				for _, n := range ns {
+					out.addCode(site(n, "status_error"))
+				}
 			} else {
 				out.addUnread(xUnread{File: file, Line: line, What: "grpc_code_not_literal",
 					Reason: "the code of `" + g.src(c) + "` is chosen at run time"})
@@ -451,8 +471,17 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 			if len(c.Args) > 0 {
 				if s, ok := g.m.constStringDepth(f, e, c.Args[0], 3); ok && strings.Contains(s, "%w") {
 					for _, a := range c.Args[1:] {
-						if id, ok := unparen(a).(*ast.Ident); ok && strings.Contains(strings.ToLower(id.Name), "err") {
-							out.merge(g.evalErr(b, e, id, c.Pos(), depth, run))
+						nm := ""
+						switch v := unparen(a).(type) {
+						case *ast.Ident:
+							nm = v.Name
+						case *ast.SelectorExpr: // a package's sentinel
+							if _, pkg := impPath(f, e, v.X); pkg {
+								nm = v.Sel.Name
+							}
+						}
+						if strings.Contains(strings.ToLower(nm), "err") {
+							out.merge(g.evalErr(b, e, a, c.Pos(), depth, run))
 							return out
 						}
 					}
@@ -532,6 +561,205 @@ func (g *gx) lastAssign(b *Func, name string, at token.Pos) (ast.Expr, bool, boo
 	return best, tuple, best != nil
 }
 
+// sentTab (D3.1) is the module's translation of plain domain errors to codes: the code each sentinel
+// takes (a literal table, or an errors.Is test whose branch answers a status error) and the default.
+type sentTab struct {
+	code  map[ast.Expr]int
+	def   map[int]bool
+	nodef bool
+}
+
+// pkgVar answers the package variable x names.
+func (g *gx) pkgVar(f *File, e *Env, x ast.Expr) varInfo {
+	switch v := unparen(x).(type) {
+	case *ast.Ident:
+		if _, local := e.lookup(v.Name); !local {
+			return f.Pkg.Vars[v.Name]
+		}
+	case *ast.SelectorExpr:
+		if p, ok := impPath(f, e, v.X); ok && g.m.ByImport[p] != nil {
+			return g.m.ByImport[p].Vars[v.Sel.Name]
+		}
+	}
+	return varInfo{}
+}
+
+// translators lists the unary interceptors and the module functions they call (three deep): the code
+// every handler error passes through.
+func (w *grpcWalk) translators() (out []*Func) {
+	g, seen := w.g, map[*Func]bool{}
+	var add func(fn *Func, d int)
+	add = func(fn *Func, d int) {
+		if fn == nil || seen[fn] || d > 3 {
+			return
+		}
+		seen[fn] = true
+		out = append(out, fn)
+		e := g.m.EnvOf(fn)
+		ast.Inspect(fn.Body, func(n ast.Node) bool {
+			if c, ok := n.(*ast.CallExpr); ok {
+				add(g.calleeOf(e, c), d+1)
+			}
+			return true
+		})
+	}
+	for _, fn := range w.funcs() {
+		e := g.m.EnvOf(fn)
+		ast.Inspect(fn.Body, func(n ast.Node) bool {
+			if c, ok := n.(*ast.CallExpr); ok && w.isWired(fn) {
+				if p, nm, ok := pkgCall(fn.File, e, c); ok && p == grpcPath && (nm == "UnaryInterceptor" || nm == "ChainUnaryInterceptor") {
+					for _, v := range g.expandIC(w, e, c.Args, 0) {
+						add(g.resolveInterceptor(v.e, v.x), 0)
+					}
+				}
+			}
+			return true
+		})
+	}
+	return
+}
+
+func (w *grpcWalk) sentTable() *sentTab {
+	if w.tab != nil {
+		return w.tab
+	}
+	g, t := w.g, &sentTab{code: map[ast.Expr]int{}, def: map[int]bool{}}
+	w.tab = t
+	for _, fn := range w.translators() {
+		e, host := g.m.EnvOf(fn), false
+		rows := func(v *ast.CompositeLit, f *File, e *Env) { // table rows: `sentinel: code` or `{sentinel, code}`
+			for _, el := range v.Elts {
+				var k, c ast.Expr
+				switch r := el.(type) {
+				case *ast.KeyValueExpr:
+					k, c = r.Key, r.Value
+				case *ast.CompositeLit:
+					if len(r.Elts) == 2 {
+						k, c = r.Elts[0], r.Elts[1]
+					}
+				}
+				if sv := g.pkgVar(f, e, k).value; sv != nil && c != nil {
+					if n, ok := g.codeOf(f, e, c, 0); ok {
+						t.code[sv] = n
+					}
+				}
+			}
+		}
+		call := func(n ast.Node, pkg, names string) *ast.CallExpr { // a call of pkg.<one of names>
+			if c, ok := n.(*ast.CallExpr); ok {
+				if p, nm, ok := pkgCall(fn.File, e, c); ok && p == pkg && strings.Contains(names, nm) && len(c.Args) > 0 {
+					return c
+				}
+			}
+			return nil
+		}
+		guard := func(cond ast.Node, body []ast.Stmt) { // errors.Is(err, S) guarding a status error
+			var sv ast.Expr
+			ast.Inspect(cond, func(n ast.Node) bool {
+				if c := call(n, "errors", "Is"); c != nil && len(c.Args) == 2 {
+					sv = g.pkgVar(fn.File, e, c.Args[1]).value
+				}
+				return true
+			})
+			for _, st := range body {
+				ast.Inspect(st, func(n ast.Node) bool {
+					if c := call(n, grpcStatus, "Error Errorf"); c != nil && sv != nil {
+						if k, ok := g.codeOf(fn.File, e, c.Args[0], 0); ok {
+							t.code[sv] = k
+						}
+					}
+					return true
+				})
+			}
+		}
+		ast.Inspect(fn.Body, func(n ast.Node) bool {
+			host = host || call(n, "errors", "Is") != nil
+			switch v := n.(type) {
+			case *ast.IfStmt:
+				guard(v.Cond, v.Body.List)
+			case *ast.CaseClause:
+				for _, x := range v.List {
+					guard(x, v.Body)
+				}
+			case *ast.CompositeLit:
+				rows(v, fn.File, e)
+			case *ast.Ident, *ast.SelectorExpr: // a package table the translator reads
+				if vi := g.pkgVar(fn.File, e, n.(ast.Expr)); vi.value != nil {
+					if l, ok := unparen(vi.value).(*ast.CompositeLit); ok {
+						rows(l, vi.file, nil)
+					}
+				}
+			}
+			return true
+		})
+		if !host || fn.Lit != nil || len(fn.Body.List) == 0 {
+			continue
+		}
+		ok := false // a translator's default: its last statement answers a status error with a literal code
+		if r, isR := fn.Body.List[len(fn.Body.List)-1].(*ast.ReturnStmt); isR && len(r.Results) > 0 {
+			if c := call(r.Results[len(r.Results)-1], grpcStatus, "Error Errorf"); c != nil {
+				if k, lit := g.codeOf(fn.File, e, c.Args[0], 0); lit {
+					t.def[k], ok = true, true
+				}
+			}
+		}
+		t.nodef = t.nodef || !ok
+	}
+	return t
+}
+
+// codesFrom (D3.1, D3.2) answers the codes of a code expression that is not a literal: `m[k]` over a
+// package map literal with a constant key (or a parameter the calls pass constants for), or a value
+// ranged out of a package table.
+func (g *gx) codesFrom(b *Func, e *Env, x ast.Expr) (out []int) {
+	lit := func(y ast.Expr) *ast.CompositeLit {
+		l, _ := unparen(g.pkgVar(b.File, e, y).value).(*ast.CompositeLit)
+		return l
+	}
+	kid := func(k ast.Expr) string { s := g.src(k); return s[strings.LastIndex(s, ".")+1:] }
+	if ix, ok := unparen(x).(*ast.IndexExpr); ok && lit(ix.X) != nil {
+		keys := []ee{{e, ix.Index}}
+		if id, ok := unparen(ix.Index).(*ast.Ident); ok && paramAt(b, id) >= 0 {
+			keys = curWalk.argsFor(b, id.Name, true)
+		}
+		for _, k := range keys {
+			found := false
+			for _, el := range lit(ix.X).Elts {
+				if kv, ok := el.(*ast.KeyValueExpr); ok && kid(kv.Key) == kid(k.x) {
+					c, ok := g.codeOf(b.File, nil, kv.Value, 0)
+					if !ok {
+						return nil
+					}
+					found = true
+					if !slices.Contains(out, c) {
+						out = append(out, c)
+					}
+				}
+			}
+			if !found {
+				return nil
+			}
+		}
+	} else {
+		root, _, _ := strings.Cut(g.src(x), ".")
+		ast.Inspect(b.Body, func(n ast.Node) bool {
+			if r, ok := n.(*ast.RangeStmt); ok && (g.src(r.Key) == root || g.src(r.Value) == root) && lit(r.X) != nil {
+				ast.Inspect(lit(r.X), func(m ast.Node) bool {
+					if s, ok := m.(*ast.SelectorExpr); ok {
+						if c, ok := g.codeOf(b.File, nil, s, 0); ok && !slices.Contains(out, c) {
+							out = append(out, c)
+						}
+					}
+					return true
+				})
+			}
+			return true
+		})
+	}
+	slices.Sort(out)
+	return
+}
+
 // ---- registrations ---------------------------------------------------------------------
 
 type grpcDesc struct {
@@ -551,6 +779,16 @@ type grpcReg struct {
 	via   string
 	short string // the service's short name when the descriptor is outside the module
 	lost  bool   // referenced, but not reached from main (R6)
+	svc   bool   // read from RegisterService: no descriptor means unresolved (D1.3)
+}
+
+func paramAt(fn *Func, x ast.Expr) int {
+	for i, p := range fn.Params() {
+		if id, ok := unparen(x).(*ast.Ident); ok && p.name == id.Name {
+			return i
+		}
+	}
+	return -1
 }
 
 var registerRE = regexp.MustCompile(`^Register(\w+)Server$`)
@@ -672,15 +910,25 @@ type grpcWalk struct {
 	queue []*Func
 	vars  map[string]*Func
 	refs  map[string]int // identifier -> uses outside declarations
+	vrefs map[string]int // the same without field names and literal keys (for variables)
+	sites map[*Func][]site
+	inst  map[string]bool // D1.4: types built in walked code
+	dyn   map[string]bool // D1.4: methods called on a value of unknown type
+	okM   map[string]bool // D1.4: methods some built type answers
+	tab   *sentTab
 }
+
+var curWalk *grpcWalk
 
 func isGenFile(f *File) bool {
 	return strings.HasSuffix(f.Rel, ".pb.go") || strings.HasSuffix(f.Rel, ".pb.gw.go")
 }
 
 func (g *gx) newGrpcWalk() *grpcWalk {
-	w := &grpcWalk{g: g, wired: map[*Func]bool{}, vars: map[string]*Func{}, refs: map[string]int{}}
-	decl := map[*ast.Ident]bool{}
+	w := &grpcWalk{g: g, wired: map[*Func]bool{}, vars: map[string]*Func{}, refs: map[string]int{}, vrefs: map[string]int{},
+		inst: map[string]bool{}, dyn: map[string]bool{}, okM: map[string]bool{}}
+	curWalk = w
+	decl, field := map[*ast.Ident]bool{}, map[*ast.Ident]bool{}
 	for _, p := range g.m.Pkgs {
 		for _, f := range p.Files {
 			if isGenFile(f) {
@@ -694,9 +942,22 @@ func (g *gx) newGrpcWalk() *grpcWalk {
 					for _, id := range v.Names {
 						decl[id] = true
 					}
+				case *ast.Field:
+					for _, id := range v.Names {
+						field[id] = true
+					}
+				case *ast.SelectorExpr:
+					field[v.Sel] = true
+				case *ast.KeyValueExpr:
+					if id, ok := v.Key.(*ast.Ident); ok {
+						field[id] = true
+					}
 				case *ast.Ident:
 					if !decl[v] {
 						w.refs[v.Name]++
+						if !field[v] {
+							w.vrefs[v.Name]++
+						}
 					}
 				}
 				return true
@@ -709,11 +970,58 @@ func (g *gx) newGrpcWalk() *grpcWalk {
 				w.add(fn)
 			}
 		}
-		for ; len(w.queue) > 0; w.queue = w.queue[1:] {
-			w.scan(w.queue[0])
+		w.addInits()
+		for changed := true; changed; changed = w.reachImpls() {
+			for ; len(w.queue) > 0; w.queue = w.queue[1:] {
+				w.scan(w.queue[0])
+			}
+		}
+		for _, p := range g.m.Pkgs { // unwalked package variables, listed unwired (round-3 deviation 8.7)
+			for n := range p.Vars {
+				w.varFunc(p, n)
+			}
 		}
 	}
 	return w
+}
+
+// addInits wires the init functions of every package a main imports, blank imports included.
+func (w *grpcWalk) addInits() {
+	seen := map[*Pkg]bool{}
+	var visit func(p *Pkg)
+	visit = func(p *Pkg) {
+		seen[p] = true
+		for _, f := range p.Files {
+			for _, im := range f.AST.Imports {
+				if q := w.g.m.ByImport[strings.Trim(im.Path.Value, "`\"")]; q != nil && !seen[q] {
+					visit(q)
+				}
+			}
+		}
+		for _, fn := range w.g.m.Funcs {
+			if fn.Short == "init" && !fn.isMethod && fn.Pkg() == p {
+				w.add(fn)
+			}
+		}
+	}
+	for _, p := range w.g.m.Pkgs {
+		if p.Name == "main" && p.Funcs["main"] != nil && !seen[p] {
+			visit(p)
+		}
+	}
+}
+
+// reachImpls (D1.4): a method called on an interface value runs on every built type that has it.
+func (w *grpcWalk) reachImpls() (changed bool) {
+	for n := range w.dyn {
+		for _, fn := range w.g.m.methods[n] {
+			if w.inst[fn.Recv] {
+				w.okM[n], changed = true, changed || !w.wired[fn]
+				w.add(fn)
+			}
+		}
+	}
+	return
 }
 
 func (w *grpcWalk) add(fn *Func) {
@@ -725,19 +1033,21 @@ func (w *grpcWalk) add(fn *Func) {
 
 func (w *grpcWalk) isWired(fn *Func) bool { return !w.g.hasMain || w.wired[topFunc(fn)] }
 
-// useVar wires package variable name: its synthetic parent's body is the initializer.
-func (w *grpcWalk) useVar(pkg *Pkg, name string) {
+// varFunc is package variable name's synthetic parent: its body is the initializer.
+func (w *grpcWalk) varFunc(pkg *Pkg, name string) *Func {
 	vi, ok := pkg.Vars[name]
 	if !ok || vi.value == nil || isGenFile(vi.file) {
-		return
+		return nil
 	}
 	key := pkg.Rel + "." + name
 	if w.vars[key] == nil {
 		body := &ast.BlockStmt{List: []ast.Stmt{&ast.ExprStmt{X: vi.value}}}
 		w.vars[key] = &Func{Name: "var." + name, Short: "var." + name, Type: &ast.FuncType{}, Body: body, File: vi.file, Pos: vi.value.Pos()}
 	}
-	w.add(w.vars[key])
+	return w.vars[key]
 }
+
+func (w *grpcWalk) useVar(pkg *Pkg, name string) { w.add(w.varFunc(pkg, name)) }
 
 // scan applies the HTTP walker's rules to fn's body and reads the package variables it names.
 func (w *grpcWalk) scan(fn *Func) {
@@ -754,7 +1064,11 @@ func (w *grpcWalk) scan(fn *Func) {
 			w.add(m.LitFunc(v, fn))
 			return false
 		case *ast.CallExpr:
-			w.add(m.Callee(e, v))
+			callee := w.g.calleeOf(e, v)
+			w.add(callee)
+			w.built(fn, e, v.Fun, callee == nil)
+		case *ast.CompositeLit:
+			w.built(fn, e, v.Type, false)
 		case *ast.KeyValueExpr:
 			if id, ok := v.Key.(*ast.Ident); ok {
 				skip[id] = true
@@ -775,6 +1089,23 @@ func (w *grpcWalk) scan(fn *Func) {
 	})
 }
 
+// built records a type the walked code builds (a literal or a conversion) and a method it calls on a
+// value of unknown type (D1.4).
+func (w *grpcWalk) built(fn *Func, e *Env, x ast.Expr, call bool) {
+	switch t := unparen(x).(type) {
+	case *ast.Ident:
+		if _, local := e.lookup(t.Name); !local && fn.File.Pkg.Types[t.Name] != nil {
+			w.inst[t.Name] = true
+		}
+	case *ast.SelectorExpr:
+		if path, ok := impPath(fn.File, e, t.X); ok && w.g.m.ByImport[path] != nil {
+			w.inst[t.Sel.Name] = w.g.m.ByImport[path].Types[t.Sel.Name] != nil
+		} else if call && !ok {
+			w.dyn[t.Sel.Name] = true
+		}
+	}
+}
+
 // funcs lists every function and literal of the module, then the synthetic parents of the
 // package variables that were walked (sorted) with the literals in their initializers.
 func (w *grpcWalk) funcs() []*Func {
@@ -787,6 +1118,113 @@ func (w *grpcWalk) funcs() []*Func {
 		out = append(out, w.g.bodies(w.vars[k])...)
 	}
 	return out
+}
+
+// ee is an expression with the environment it is read in; site a call with its caller.
+type ee struct {
+	e *Env
+	x ast.Expr
+}
+
+type site struct {
+	fn    *Func
+	e     *Env
+	c     *ast.CallExpr
+	wired bool
+}
+
+// calleeOf is Callee that sees through an explicit instantiation `f[T](...)`.
+func (g *gx) calleeOf(e *Env, c *ast.CallExpr) *Func {
+	switch f := unparen(c.Fun).(type) {
+	case *ast.IndexExpr:
+		c = &ast.CallExpr{Fun: f.X, Args: c.Args}
+	case *ast.IndexListExpr:
+		c = &ast.CallExpr{Fun: f.X, Args: c.Args}
+	}
+	return g.m.Callee(e, c)
+}
+
+// callSites lists the calls of fn: the wired ones, or all (the handlers are not wired from main).
+func (w *grpcWalk) callSites(fn *Func, all bool) (out []site) {
+	if w.sites == nil {
+		w.sites = map[*Func][]site{}
+		for _, f := range w.funcs() {
+			e := w.g.m.EnvOf(f)
+			ast.Inspect(f.Body, func(n ast.Node) bool {
+				if c, ok := n.(*ast.CallExpr); ok {
+					if k := w.g.calleeOf(e, c); k != nil {
+						w.sites[k] = append(w.sites[k], site{f, e, c, w.isWired(f)})
+					}
+				}
+				_, lit := n.(*ast.FuncLit)
+				return !lit
+			})
+		}
+	}
+	for _, s := range w.sites[fn] {
+		if all || s.wired {
+			out = append(out, s)
+		}
+	}
+	return
+}
+
+// argsFor answers what the calls pass for parameter name of fn (or of the function fn is a literal in).
+func (w *grpcWalk) argsFor(fn *Func, name string, all bool) (out []ee) {
+	for o := fn; o != nil; o = o.Parent {
+		for i, p := range o.Params() {
+			if p.name != name {
+				continue
+			}
+			_, variadic := p.typ.(*ast.Ellipsis)
+			out = []ee{} // a parameter nobody passes is no value
+			for _, s := range w.callSites(o, all) {
+				for j := i; j < len(s.c.Args) && (variadic || j == i); j++ {
+					out = append(out, ee{s.e, s.c.Args[j]})
+				}
+			}
+			return
+		}
+	}
+	return
+}
+
+// fieldFlows answers the values assigned, appended or put in a literal for field of ti in wired code.
+func (w *grpcWalk) fieldFlows(ti *TypeInfo, field string) (out []ee) {
+	for _, fn := range w.funcs() {
+		e := w.g.m.EnvOf(fn)
+		isTi := func(x ast.Expr) bool { return w.g.m.Infer(e, x).deref().rowTypeAny() == ti }
+		add := func(xs ...ast.Expr) {
+			for _, x := range xs {
+				if id, ok := unparen(x).(*ast.Ident); ok && w.argsFor(fn, id.Name, false) != nil {
+					out = append(out, w.argsFor(fn, id.Name, false)...)
+				} else {
+					out = append(out, ee{e, x})
+				}
+			}
+		}
+		ast.Inspect(fn.Body, func(n ast.Node) bool {
+			switch v := n.(type) {
+			case *ast.AssignStmt:
+				if s, ok := v.Lhs[0].(*ast.SelectorExpr); ok && len(v.Rhs) == 1 && s.Sel.Name == field && isTi(s.X) {
+					if c, ok := v.Rhs[0].(*ast.CallExpr); ok && len(c.Args) > 1 && w.g.src(c.Fun) == "append" {
+						add(c.Args[1:]...)
+					} else {
+						add(v.Rhs[0])
+					}
+				}
+			case *ast.CompositeLit:
+				for _, el := range v.Elts {
+					if kv, ok := el.(*ast.KeyValueExpr); ok && w.g.src(kv.Key) == field && isTi(v) {
+						add(kv.Value)
+					}
+				}
+			}
+			_, lit := n.(*ast.FuncLit)
+			return !lit
+		})
+	}
+	return
 }
 
 // findGrpcRegistrations lists the server registrations of the wired functions; unknown are
@@ -806,9 +1244,7 @@ func (g *gx) findGrpcRegistrations(w *grpcWalk) (regs []*grpcReg, dropped []xExc
 			switch fun := unparen(call.Fun).(type) {
 			case *ast.SelectorExpr:
 				if fun.Sel.Name == "RegisterService" {
-					if d := g.descOf(f, e, call.Args[0]); d != nil {
-						r = &grpcReg{desc: d, via: "RegisterService"}
-					}
+					r = &grpcReg{desc: g.descOf(f, e, call.Args[0]), via: "RegisterService", svc: true}
 					break
 				}
 				if m := registerRE.FindStringSubmatch(fun.Sel.Name); m != nil {
@@ -840,20 +1276,47 @@ func (g *gx) findGrpcRegistrations(w *grpcWalk) (regs []*grpcReg, dropped []xExc
 				return
 			}
 			r.impl, r.fn, r.e, r.call = call.Args[1], fn, e, call
-			if !w.isWired(fn) {
+			rs := []*grpcReg{r}
+			if dp, ip := paramAt(fn, call.Args[0]), paramAt(fn, call.Args[1]); fn.Lit == nil && (ip >= 0 || dp >= 0 && r.desc == nil) {
+				rs = nil // D1.1: a descriptor or impl that is a parameter is read at each wired call of the helper
+				for _, s := range w.callSites(fn, false) {
+					c := *r
+					c.fn, c.e, c.call, c.via = s.fn, s.e, s.c, fmt.Sprintf("%s via %s:%d", r.via, f.Rel, g.line(call.Pos()))
+					if ip >= 0 && ip < len(s.c.Args) {
+						c.impl = s.c.Args[ip]
+					}
+					if dp >= 0 && r.desc == nil && dp < len(s.c.Args) {
+						c.desc = g.descOf(s.fn.File, s.e, s.c.Args[dp])
+					}
+					rs = append(rs, &c)
+				}
+				if rs == nil {
+					rs = []*grpcReg{r}
+				}
+			}
+			for _, r := range rs {
+				if w.isWired(r.fn) {
+					regs = append(regs, r)
+					continue
+				}
+				t, nm := topFunc(r.fn), strings.TrimPrefix(topFunc(r.fn).Short, "var.")
+				r.lost = w.refs[nm] > 0 && (t.Recv == "" || !w.okM[t.Short] || w.inst[t.Recv])
+				if nm != t.Short {
+					r.lost = w.vrefs[nm] > 0
+				}
+				if r.desc == nil && r.svc && !r.lost {
+					continue
+				}
 				name := r.via
 				if r.desc != nil {
 					name = r.desc.name
 				}
 				dropped = append(dropped, xExcluded{Kind: "unwired", What: "rpc_registration", Method: "RPC",
-					Path: name, File: f.Rel, Line: g.line(call.Pos()), Reason: "not reachable from main"})
-				if w.refs[strings.TrimPrefix(topFunc(fn).Short, "var.")] > 0 {
-					r.lost = true
+					Path: name, File: r.fn.File.Rel, Line: g.line(r.call.Pos()), Reason: "not reachable from main"})
+				if r.lost {
 					unknown = append(unknown, r)
 				}
-				return
 			}
-			regs = append(regs, r)
 		})
 	}
 	// literals appear in AllFuncs as well: drop a registration seen from both
@@ -930,10 +1393,11 @@ func (g *gx) interceptorFuncs(w *grpcWalk) []xInterceptor {
 				if oname != "UnaryInterceptor" && oname != "ChainUnaryInterceptor" {
 					continue
 				}
-				for _, a := range oc.Args {
-					ic := g.resolveInterceptor(e, a)
+				for _, v := range g.expandIC(w, e, oc.Args, 0) {
+					a := v.x
+					ic := g.resolveInterceptor(v.e, a)
 					if ic == nil {
-						out = append(out, xInterceptor{Func: g.src(a), File: f.Rel, Line: g.line(a.Pos()),
+						out = append(out, xInterceptor{Func: g.src(a), File: v.e.fn.File.Rel, Line: g.line(a.Pos()),
 							Kind: "auth_not_literal", Reason: "the interceptor `" + g.src(a) + "` is not a function the extractor can resolve",
 							Chained: oname == "ChainUnaryInterceptor"})
 						continue
@@ -950,6 +1414,24 @@ func (g *gx) interceptorFuncs(w *grpcWalk) []xInterceptor {
 		})
 	}
 	return out
+}
+
+// expandIC (D2.2): an argument reading a field of a module struct stands for the values that reach it.
+func (g *gx) expandIC(w *grpcWalk, e *Env, args []ast.Expr, depth int) (out []ee) {
+	for _, a := range args {
+		n := len(out)
+		if s, ok := unparen(a).(*ast.SelectorExpr); ok && depth < 4 {
+			if ti := g.m.Infer(e, s.X).deref().rowTypeAny(); ti != nil && g.m.FieldOf(ti, s.Sel.Name, 0) != nil {
+				for _, v := range w.fieldFlows(ti, s.Sel.Name) {
+					out = append(out, g.expandIC(w, v.e, []ast.Expr{v.x}, depth+1)...)
+				}
+			}
+		}
+		if len(out) == n {
+			out = append(out, ee{e, a})
+		}
+	}
+	return
 }
 
 // resolveInterceptor answers the function an interceptor expression is: a function, a
@@ -1001,7 +1483,7 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 	}
 	literal := true
 	why := ""
-	public := map[string]bool{}
+	public, prefix := map[string]bool{}, map[string]bool{}
 	e := g.m.EnvOf(fn)
 	passes := func(body ast.Node) bool {
 		ok := false
@@ -1041,10 +1523,14 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 					return true
 				}
 				set, ok := g.methodSet(b.File, be, s, infoName)
+				var pre []string
 				if !passes(s.Body) {
 					// a condition on the method that does not pass the call through
 					// (logging, metrics): not an allowlist
 					return true
+				}
+				if !ok {
+					set, pre, ok = g.builderSet(be, s.Cond, infoName)
 				}
 				if !ok {
 					literal, why = false, "the method test `"+g.src(s.Cond)+"` is not a literal set"
@@ -1052,6 +1538,9 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 				}
 				for _, m := range set {
 					public[m] = true
+				}
+				for _, m := range pre {
+					prefix[m] = true
 				}
 			case *ast.SwitchStmt:
 				if s.Tag == nil || !mentionsMethod(s.Tag) {
@@ -1067,7 +1556,7 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 						continue
 					}
 					for _, c := range clause.List {
-						if str, ok := g.m.constStringDepth(b.File, be, c, 3); ok {
+						if str, ok := g.strOf(b.File, be, c); ok {
 							public[str] = true
 						} else {
 							literal, why = false, "the case `"+g.src(c)+"` of the method switch is not a constant"
@@ -1083,6 +1572,10 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 		x.Public = append(x.Public, m)
 	}
 	sort.Strings(x.Public)
+	for m := range prefix {
+		x.Prefix = append(x.Prefix, m)
+	}
+	sort.Strings(x.Prefix)
 	if literal {
 		x.Kind = "auth_literal"
 	} else {
@@ -1116,6 +1609,159 @@ func (g *gx) untracedReturn(fn *Func, es *errSrc, run *grpcRun) string {
 		})
 	}
 	return why
+}
+
+const healthPath = "google.golang.org/grpc/health/grpc_health_v1"
+
+var healthStr = map[string]string{"Health_Check_FullMethodName": "/grpc.health.v1.Health/Check",
+	"Health_Watch_FullMethodName": "/grpc.health.v1.Health/Watch", "Health_ServiceDesc": "grpc.health.v1.Health"}
+
+// strOf (D2.3) is constStringDepth that also reads `<pkg>.<Svc>_ServiceDesc.ServiceName` and the
+// standard health constants.
+func (g *gx) strOf(f *File, e *Env, x ast.Expr) (string, bool) {
+	if s, ok := g.m.constStringDepth(f, e, x, 3); ok {
+		return s, true
+	}
+	v, ok := unparen(x).(*ast.SelectorExpr)
+	if !ok {
+		return "", false
+	}
+	if in, isSel := v.X.(*ast.SelectorExpr); isSel && v.Sel.Name == "ServiceName" {
+		if d := g.descOf(f, e, in); d != nil {
+			return d.name, true
+		}
+		v = in
+	}
+	if p, ok := impPath(f, e, v.X); ok && p == healthPath {
+		s, ok := healthStr[v.Sel.Name]
+		return s, ok
+	}
+	return "", false
+}
+
+// builderSet (D2.4) reads `<x>.<field>.<test>(info.FullMethod)`: the names and prefixes the builder
+// chains reaching the field add.
+func (g *gx) builderSet(e *Env, cond ast.Expr, info string) (ex, pre []string, ok bool) {
+	c, _ := unparen(cond).(*ast.CallExpr)
+	if c == nil || len(c.Args) != 1 || g.src(c.Args[0]) != info+".FullMethod" {
+		return
+	}
+	m, _ := unparen(c.Fun).(*ast.SelectorExpr)
+	if m == nil {
+		return
+	}
+	fs, _ := unparen(m.X).(*ast.SelectorExpr)
+	if fs == nil || g.m.Infer(e, fs.X).deref().rowTypeAny() == nil {
+		return
+	}
+	flows := curWalk.fieldFlows(g.m.Infer(e, fs.X).deref().rowTypeAny(), fs.Sel.Name)
+	for _, v := range flows {
+		if !g.chain(v.e, v.x, &ex, &pre, 0) {
+			return nil, nil, false
+		}
+	}
+	return ex, pre, len(flows) > 0
+}
+
+// chain reads a builder chain `build(a).Add(b)`: each link adds its string arguments to a field of
+// the value (an append, a map set); a field some range tests with strings.HasPrefix holds prefixes.
+func (g *gx) chain(e *Env, x ast.Expr, ex, pre *[]string, depth int) bool {
+	c, _ := unparen(x).(*ast.CallExpr)
+	var fn *Func
+	if c != nil && depth < 8 {
+		fn = g.calleeOf(e, c)
+	}
+	if fn == nil {
+		return false
+	}
+	args, good := map[string][]ast.Expr{}, true
+	for i, p := range fn.Params() {
+		if _, v := p.typ.(*ast.Ellipsis); v && i < len(c.Args) {
+			args[p.name] = c.Args[i:]
+		} else if !v && i < len(c.Args) {
+			args[p.name] = c.Args[i : i+1]
+		}
+	}
+	var val func(v ast.Expr) []string
+	val = func(v ast.Expr) (out []string) {
+		switch t := unparen(v).(type) {
+		case *ast.Ident:
+			if as, ok := args[t.Name]; ok {
+				for _, a := range as {
+					s, ok := g.strOf(e.fn.File, e, a)
+					good = good && ok
+					out = append(out, s)
+				}
+				return
+			}
+		case *ast.BinaryExpr:
+			good = good && t.Op == token.ADD
+			for _, a := range val(t.X) {
+				for _, b := range val(t.Y) {
+					out = append(out, a+b)
+				}
+			}
+			return
+		}
+		s, ok := g.strOf(fn.File, nil, v)
+		good = good && ok
+		return []string{s}
+	}
+	ast.Inspect(fn.Body, func(n ast.Node) bool {
+		var field string
+		var vals []ast.Expr
+		switch s := n.(type) {
+		case *ast.RangeStmt:
+			if v, ok := s.Value.(*ast.Ident); ok {
+				args[v.Name] = args[g.src(s.X)]
+			}
+		case *ast.AssignStmt:
+			if len(s.Lhs) != 1 || len(s.Rhs) != 1 {
+				break
+			}
+			switch l := s.Lhs[0].(type) {
+			case *ast.SelectorExpr: // X.F = append(X.F, v...)
+				if r, ok := s.Rhs[0].(*ast.CallExpr); ok && len(r.Args) > 1 && g.src(r.Fun) == "append" {
+					field, vals = l.Sel.Name, r.Args[1:]
+				}
+			case *ast.IndexExpr: // X.F[v] = ...
+				if f, ok := l.X.(*ast.SelectorExpr); ok {
+					field, vals = f.Sel.Name, []ast.Expr{l.Index}
+				}
+			}
+		}
+		for _, v := range vals {
+			if g.prefixField(field) {
+				*pre = append(*pre, val(v)...)
+			} else {
+				*ex = append(*ex, val(v)...)
+			}
+		}
+		return true
+	})
+	if fn.isMethod { // the earlier links
+		sel, ok := unparen(c.Fun).(*ast.SelectorExpr)
+		return good && ok && g.chain(e, sel.X, ex, pre, depth+1)
+	}
+	return good
+}
+
+// prefixField: some range over a field of that name tests its elements with strings.HasPrefix.
+func (g *gx) prefixField(field string) (found bool) {
+	for _, fn := range g.m.AllFuncs() {
+		ast.Inspect(fn.Body, func(n ast.Node) bool {
+			if r, ok := n.(*ast.RangeStmt); ok && strings.HasSuffix(g.src(r.X), "."+field) {
+				ast.Inspect(r.Body, func(m ast.Node) bool {
+					if c, ok := m.(*ast.CallExpr); ok {
+						found = found || strings.HasSuffix(g.src(c.Fun), "strings.HasPrefix")
+					}
+					return true
+				})
+			}
+			return true
+		})
+	}
+	return
 }
 
 // methodSet reads the methods an `if` test names: `set[info.FullMethod]`, `_, ok :=
@@ -1168,7 +1814,7 @@ func (g *gx) methodSet(f *File, e *Env, s *ast.IfStmt, infoName string) ([]strin
 				l, r = r, l
 			}
 			if isMethod(l) {
-				if str, ok := g.m.constStringDepth(f, e, r, 3); ok {
+				if str, ok := g.strOf(f, e, r); ok {
 					return []string{str}, true
 				}
 			}
@@ -1225,7 +1871,7 @@ func (g *gx) mapKeys(f *File, e *Env, x ast.Expr) ([]string, bool) {
 		if !ok {
 			return nil, false
 		}
-		k, ok := g.m.constStringDepth(lf, nil, kv.Key, 3)
+		k, ok := g.strOf(lf, nil, kv.Key)
 		if !ok {
 			return nil, false
 		}
@@ -1345,8 +1991,9 @@ func (g *gx) findGrpc() {
 	g.seedCallerFuncs(ics)
 
 	// registrations by service name
-	byService, unk := map[string]*grpcReg{}, map[string]*grpcReg{}
-	var order []string
+	byService := map[string]*grpcReg{}
+	var order, unres []string // unres: file:line of each registration not resolved to a service (D1.3)
+	var first *grpcReg
 	for _, r := range append(regs[:len(regs):len(regs)], unknown...) {
 		name := ""
 		if r.desc != nil {
@@ -1363,9 +2010,10 @@ func (g *gx) findGrpc() {
 				name = hit[0]
 			}
 		}
-		if r.lost {
-			if name != "" && unk[name] == nil {
-				unk[name] = r
+		if r.lost || r.svc && r.desc == nil {
+			unres = append(unres, fmt.Sprintf("%s:%d", r.fn.File.Rel, g.line(r.call.Pos())))
+			if first == nil {
+				first = r
 			}
 			continue
 		}
@@ -1418,10 +2066,9 @@ func (g *gx) findGrpc() {
 				g.res.Excluded = append(g.res.Excluded, xExcluded{Kind: "streaming", What: "rpc", Method: "RPC",
 					Path: "/" + key, File: r.File, Line: r.Line, Reason: "streaming_not_supported"})
 				continue
-			case reg == nil && unk[svc.Name] != nil:
-				u := unk[svc.Name]
-				x := xUnread{File: u.fn.File.Rel, Line: g.line(u.call.Pos()), What: "registration_reachability_unknown",
-					Reason: "`" + g.src(u.call) + "` is referenced but no read path reaches it from main"}
+			case reg == nil && first != nil:
+				x := xUnread{File: first.fn.File.Rel, Line: g.line(first.call.Pos()), What: "registration_reachability_unknown",
+					Reason: "`" + g.src(first.call) + "` is not resolved to a service (" + strings.Join(unres, ", ") + ")"}
 				r.State, r.Unread = "unread", append(r.Unread, x)
 				g.addUnread(x.File, x.Line, x.What, x.Reason)
 				continue
@@ -1495,8 +2142,33 @@ func (g *gx) findGrpc() {
 	g.res.Grpc = gr
 }
 
+// translated (D3.3): where the module translates errors, a handler's plain error takes the translation's
+// literal default, else it is unread -- never an UNKNOWN placeholder.
+func (g *gx) translated(es *errSrc) *errSrc {
+	t := curWalk.sentTable()
+	if len(t.code) == 0 {
+		return es
+	}
+	out := &errSrc{unread: es.unread}
+	for _, c := range es.codes {
+		switch {
+		case c.Kind != "plain_error":
+			out.addCode(c)
+		case len(t.def) == 1 && !t.nodef:
+			for d := range t.def {
+				c.Name, c.Number, c.Kind = codeNameList[d], d, "status_error"
+				out.addCode(c)
+			}
+		default:
+			out.addUnread(xUnread{File: c.File, Line: c.Line, What: "grpc_code_not_literal", Reason: "the code of a plain error is chosen by a translation the extractor cannot read to a literal"})
+		}
+	}
+	return out
+}
+
 // fillRPC fills the closure-derived facts of one implemented rpc.
 func (g *gx) fillRPC(r *xRPC, h *Func, ci *closureInfo, es *errSrc, run *grpcRun) {
+	es = g.translated(es)
 	sort.SliceStable(es.codes, func(i, j int) bool {
 		a, b := es.codes[i], es.codes[j]
 		if a.Number != b.Number {
@@ -1580,6 +2252,9 @@ func (g *gx) rpcAuth(gr *xGrpc, ics []xInterceptor, run *grpcRun) {
 			pub := false
 			for _, m := range append(lits, xInterceptor{})[0].Public {
 				pub = pub || m == full
+			}
+			for _, m := range append(lits, xInterceptor{})[0].Prefix {
+				pub = pub || strings.HasPrefix(full, m)
 			}
 			switch {
 			case len(lits) == 1 && (len(auth) == 1 || !pub):

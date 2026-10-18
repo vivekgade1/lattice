@@ -76,6 +76,41 @@ _TYPES = {
 }
 
 
+_SQL_TYPES = {"INTEGER": "Int", "INT": "Int", "TEXT": "Str", "VARCHAR": "Str", "REAL": "Float",
+              "FLOAT": "Float", "BOOLEAN": "Bool"}  # fmt: skip
+
+
+def _harness_tables(root: Path, have_go: bool) -> tuple[list[dict[str, Any]], str]:
+    """D5.2: the tables the ``studio.toml`` ``db`` harness builds (in a fresh temporary directory
+    outside the target, removed after): ``(tables, "")``, or ``([], why)`` when it fails."""
+    import tempfile
+
+    from lattice.importer.outside import db_facts
+
+    if have_go or not (spec := _studio_app(root).get("db")):
+        return [], ""
+    try:
+        with tempfile.TemporaryDirectory(prefix="lattice-grpc-db-") as tmp:
+            _harness_attr(root, spec)(Path(tmp) / "schema.db")
+            facts = db_facts(Path(tmp) / "schema.db")
+    except Exception as err:  # noqa: BLE001 -- the reason, not an exception out of the model
+        return [], f"{type(err).__name__}: {err}"
+    out = []
+    for t in facts.tables:
+        fk = {f.columns[0]: f"{f.table}.{f.ref_columns[0]}" for f in t.foreign_keys}
+        cols = [{"name": c.name, "field": c.name, "go_type": c.type,
+                 "type": _SQL_TYPES.get(c.type.upper()), "nullable": c.nullable,
+                 "required": not (c.nullable or c.default or c.pk),
+                 "default": c.default, "primary_key": bool(c.pk), "unique": (c.name,) in t.unique,
+                 "index": any(c.name in i.columns for i in t.indexes), "max_length": None,
+                 "foreign_key": fk.get(c.name)} for c in t.columns]  # fmt: skip
+        out.append({"struct": t.name, "table": t.name, "name_unread": False, "package": ".",
+                    "file": "studio.toml", "line": 0, "source": "harness_db", "migrated_at": [],
+                    "columns": cols, "unique_together": [list(u) for u in t.unique if len(u) > 1],
+                    "checks": []})  # fmt: skip
+    return out, ""
+
+
 def wire_path(service: str, method: str) -> str:
     """``/notes.v1.Notes/GetNote``: the path a gRPC call travels on."""
     return f"/{service}/{method}"
@@ -246,6 +281,20 @@ class GoGrpcFrontEnd(GoGinFrontEnd):
         if text is None or GRPC_MODULE not in _requires(text):
             return False
         return has_server_registration(module_dir)
+
+    def extract_json(
+        self, root: Path | str, package: str = ".", workflow: bool = False
+    ) -> dict[str, Any]:
+        """The Gin extraction; with no table in the Go tree, the ``db`` harness's tables (D5.2)."""
+        data = super().extract_json(root, package, workflow)
+        tables, why = _harness_tables(self._module_dir(root, package), bool(data["tables"]))
+        if tables:
+            data["tables"], data["tables_source"] = tables, "harness_db"
+        if why:
+            data["unread"].append(
+                {"file": "studio.toml", "line": 0, "what": "harness_db_failed", "reason": why}
+            )
+        return data
 
     def extract(self, root: Path, package: str = ".") -> RepoModel:
         data = self.extract_json(root, package)

@@ -1,0 +1,501 @@
+{
+ "authwire4/builder": {
+  "interceptors": [
+   [
+    "auth_literal",
+    [
+     "/aw4.v1.Desk/Get",
+     "/aw4.v1.Desk/List"
+    ],
+    null
+   ]
+  ],
+  "rpcs": {
+   "aw4.v1.Desk/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "aw4.v1.Desk/List": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "aw4.v1.Desk/Put": {
+    "auth": "Member",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   }
+  }
+ },
+ "authwire4/consts": {
+  "interceptors": [
+   [
+    "auth_literal",
+    [
+     "/aw4.v1.Desk/Get",
+     "/grpc.health.v1.Health/Check",
+     "/grpc.health.v1.Health/Watch"
+    ],
+    null
+   ]
+  ],
+  "rpcs": {
+   "aw4.v1.Desk/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "aw4.v1.Desk/Put": {
+    "auth": "Member",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   }
+  }
+ },
+ "authwire4/exactprefix": {
+  "interceptors": [
+   [
+    "auth_literal",
+    [
+     "/aw4.v1.Desk/"
+    ],
+    null
+   ]
+  ],
+  "rpcs": {
+   "aw4.v1.Desk/Get": {
+    "auth": "Member",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "aw4.v1.Desk/Put": {
+    "auth": "Member",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   }
+  }
+ },
+ "authwire4/mval": {
+  "interceptors": [
+   [
+    "auth_literal",
+    [
+     "/aw4.v1.Desk/Get"
+    ],
+    null
+   ]
+  ],
+  "rpcs": {
+   "aw4.v1.Desk/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "aw4.v1.Desk/Put": {
+    "auth": "Member",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   }
+  }
+ },
+ "authwire4/optfield": {
+  "interceptors": [
+   [
+    "other",
+    null,
+    null
+   ],
+   [
+    "auth_literal",
+    [
+     "/aw4.v1.Desk/Get"
+    ],
+    null
+   ]
+  ],
+  "rpcs": {
+   "aw4.v1.Desk/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "aw4.v1.Desk/Put": {
+    "auth": "Member",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   }
+  }
+ },
+ "authwire4/prefix": {
+  "interceptors": [
+   [
+    "auth_literal",
+    [
+     "/aw4.v1.Shut/Get"
+    ],
+    [
+     "/aw4.v1.Open/"
+    ]
+   ]
+  ],
+  "rpcs": {
+   "aw4.v1.Open/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "aw4.v1.Open/Put": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "aw4.v1.Shut/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "aw4.v1.Shut/Put": {
+    "auth": "Member",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   }
+  }
+ },
+ "authwire4/unresolved": {
+  "interceptors": [
+   [
+    "auth_not_literal",
+    null,
+    null
+   ]
+  ],
+  "rpcs": {
+   "aw4.v1.Desk/Get": {
+    "auth": "unclear",
+    "codes": [],
+    "state": "implemented",
+    "unread": [
+     "interceptor_not_literal"
+    ]
+   },
+   "aw4.v1.Desk/Put": {
+    "auth": "unclear",
+    "codes": [],
+    "state": "implemented",
+    "unread": [
+     "interceptor_not_literal"
+    ]
+   }
+  }
+ },
+ "codes4/keys": {
+  "interceptors": [],
+  "rpcs": {
+   "codes4.v1.Kc/Get": {
+    "auth": "Public",
+    "codes": [
+     "INVALID_ARGUMENT",
+     "NOT_FOUND"
+    ],
+    "state": "implemented",
+    "unread": []
+   },
+   "codes4.v1.Kc/Put": {
+    "auth": "Public",
+    "codes": [
+     "ABORTED"
+    ],
+    "state": "implemented",
+    "unread": []
+   },
+   "codes4.v1.Kd/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   }
+  }
+ },
+ "codes4/nodefault": {
+  "interceptors": [
+   [
+    "auth_unknown",
+    null,
+    null
+   ]
+  ],
+  "rpcs": {
+   "codes4.v1.Nd/Get": {
+    "auth": "unclear",
+    "codes": [
+     "ABORTED"
+    ],
+    "state": "implemented",
+    "unread": [
+     "interceptor_not_literal"
+    ]
+   },
+   "codes4.v1.Nd/Put": {
+    "auth": "unclear",
+    "codes": [],
+    "state": "implemented",
+    "unread": [
+     "grpc_code_not_literal",
+     "interceptor_not_literal"
+    ]
+   }
+  }
+ },
+ "codes4/tbl": {
+  "interceptors": [
+   [
+    "other",
+    null,
+    null
+   ]
+  ],
+  "rpcs": {
+   "codes4.v1.Ta/Get": {
+    "auth": "Public",
+    "codes": [
+     "NOT_FOUND"
+    ],
+    "state": "implemented",
+    "unread": []
+   },
+   "codes4.v1.Ta/Put": {
+    "auth": "Public",
+    "codes": [
+     "ALREADY_EXISTS"
+    ],
+    "state": "implemented",
+    "unread": []
+   },
+   "codes4.v1.Tb/Get": {
+    "auth": "Public",
+    "codes": [
+     "FAILED_PRECONDITION"
+    ],
+    "state": "implemented",
+    "unread": []
+   },
+   "codes4.v1.Tb/Put": {
+    "auth": "Public",
+    "codes": [
+     "INTERNAL"
+    ],
+    "state": "implemented",
+    "unread": []
+   }
+  }
+ },
+ "tables4/brokendb": {
+  "tables": [],
+  "tables_source": null
+ },
+ "tables4/gormtables": {
+  "tables": [
+   "notes"
+  ],
+  "tables_source": null
+ },
+ "tables4/harnessdb": {
+  "tables": [
+   "accounts",
+   "orders",
+   "sessions"
+  ],
+  "tables_source": "harness_db"
+ },
+ "wiring4/main": {
+  "interceptors": [],
+  "rpcs": {
+   "wiring4.v1.Absent/Get": {
+    "auth": null,
+    "codes": [],
+    "state": "not_registered",
+    "unread": []
+   },
+   "wiring4.v1.Absent/Put": {
+    "auth": null,
+    "codes": [],
+    "state": "not_registered",
+    "unread": []
+   },
+   "wiring4.v1.Gen/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "wiring4.v1.Gen/Put": {
+    "auth": "Public",
+    "codes": [],
+    "state": "unimplemented",
+    "unread": []
+   },
+   "wiring4.v1.Ghost/Get": {
+    "auth": null,
+    "codes": [],
+    "state": "not_registered",
+    "unread": []
+   },
+   "wiring4.v1.Ghost/Put": {
+    "auth": null,
+    "codes": [],
+    "state": "not_registered",
+    "unread": []
+   },
+   "wiring4.v1.Reg/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "wiring4.v1.Reg/Put": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "wiring4.v1.RegB/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "wiring4.v1.RegB/Put": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "wiring4.v1.Twin/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "wiring4.v1.Twin/Put": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   }
+  }
+ },
+ "wiring4/unres": {
+  "interceptors": [],
+  "rpcs": {
+   "wiring4.v1.Mystery/Get": {
+    "auth": null,
+    "codes": [],
+    "state": "unread",
+    "unread": [
+     "registration_reachability_unknown"
+    ]
+   },
+   "wiring4.v1.Mystery/Put": {
+    "auth": null,
+    "codes": [],
+    "state": "unread",
+    "unread": [
+     "registration_reachability_unknown"
+    ]
+   },
+   "wiring4.v1.Orphan/Get": {
+    "auth": null,
+    "codes": [],
+    "state": "unread",
+    "unread": [
+     "registration_reachability_unknown"
+    ]
+   },
+   "wiring4.v1.Orphan/Put": {
+    "auth": null,
+    "codes": [],
+    "state": "unread",
+    "unread": [
+     "registration_reachability_unknown"
+    ]
+   },
+   "wiring4.v1.Plain/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "wiring4.v1.Plain/Put": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   }
+  }
+ },
+ "wiring4/varlost": {
+  "interceptors": [],
+  "rpcs": {
+   "wiring4.v1.Held/Get": {
+    "auth": null,
+    "codes": [],
+    "state": "unread",
+    "unread": [
+     "registration_reachability_unknown"
+    ]
+   },
+   "wiring4.v1.Held/Put": {
+    "auth": null,
+    "codes": [],
+    "state": "unread",
+    "unread": [
+     "registration_reachability_unknown"
+    ]
+   },
+   "wiring4.v1.Live/Get": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "wiring4.v1.Live/Put": {
+    "auth": "Public",
+    "codes": [],
+    "state": "implemented",
+    "unread": []
+   },
+   "wiring4.v1.Lone/Get": {
+    "auth": null,
+    "codes": [],
+    "state": "unread",
+    "unread": [
+     "registration_reachability_unknown"
+    ]
+   },
+   "wiring4.v1.Lone/Put": {
+    "auth": null,
+    "codes": [],
+    "state": "unread",
+    "unread": [
+     "registration_reachability_unknown"
+    ]
+   }
+  }
+ }
+}

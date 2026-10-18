@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package login4.v1;
+
+message Token {
+  string token = 1;
+}
+
+message LoginUsernameReq {
+  string username = 1;
+  string password = 2;
+  bool remember = 3;
+}
+
+message LoginNameReq {
+  string name = 1;
+  string password = 2;
+}
+
+message LoginEmailReq {
+  string email = 1;
+  string passcode = 2;
+}
+
+message LoginTenantReq {
+  string tenant = 1;
+  string user = 2;
+  string password = 3;
+  int32 attempt = 4;
+}
+
+message LoginAmbiguousReq {
+  string a = 1;
+  string b = 2;
+}
+
+message LoginTwoPassReq {
+  string user = 1;
+  string password = 2;
+  string password_confirm = 3;
+}
+
+service Auth {
+  rpc LoginUsername(LoginUsernameReq) returns (Token);
+  rpc LoginName(LoginNameReq) returns (Token);
+  rpc LoginEmail(LoginEmailReq) returns (Token);
+  rpc LoginTenant(LoginTenantReq) returns (Token);
+  rpc LoginAmbiguous(LoginAmbiguousReq) returns (Token);
+  rpc LoginTwoPass(LoginTwoPassReq) returns (Token);
+}

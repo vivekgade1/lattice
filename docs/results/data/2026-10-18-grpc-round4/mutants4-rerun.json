@@ -1,0 +1,199 @@
+{
+ "schema": "lattice.grpc-mutants4/1",
+ "control": {
+  "probe4 p4-codes": {
+   "returncode": 0,
+   "summary": "PASS P4-CODES {\"rpcs\": 9, \"disagreements\": 0, \"UNKNOWN not in the truth\": [], \"truth hashed before library code\": true}",
+   "seconds": 1.1,
+   "failed": []
+  },
+  "pytest tests/grpc/test_codes4.py": {
+   "returncode": 0,
+   "summary": "19 passed in 1.21s",
+   "seconds": 1.8,
+   "failed": []
+  },
+  "probe4 p4-tables": {
+   "returncode": 0,
+   "summary": "PASS P4-TABLES {\"cases\": 3, \"disagreements\": 0, \"temp dirs left\": [], \"writes under the roots\": 0}",
+   "seconds": 0.4,
+   "failed": []
+  },
+  "pytest tests/grpc/test_tables4.py": {
+   "returncode": 0,
+   "summary": "10 passed in 1.17s",
+   "seconds": 1.8,
+   "failed": []
+  },
+  "probe p2-bc-ast": {
+   "returncode": 1,
+   "summary": "FAIL P2-BC-AST {\"grpc.py defs compared\": 43, \"workflows.py HTTP defs compared\": 53, \"differences\": 2}",
+   "seconds": 0.2,
+   "failed": []
+  },
+  "pytest tests/importer/test_workflows.py": {
+   "returncode": 0,
+   "summary": "69 passed in 4.77s",
+   "seconds": 5.2,
+   "failed": []
+  },
+  "probe4 p4-bc-ast": {
+   "returncode": 0,
+   "summary": "PASS P4-BC-AST {\"AuthDriver.rpc differs only in defaults\": true, \"new in grpc.py\": [\"_login_fields\"], \"new in go_grpc.py\": [\"_SQL_TYPES\", \"_harness_tables\"], \"differences\": 0}",
+   "seconds": 0.2,
+   "failed": []
+  },
+  "probe4 p4-wire": {
+   "returncode": 0,
+   "summary": "PASS P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 24, \"wrong (extract, truth)\": {}, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+   "seconds": 0.4,
+   "failed": []
+  },
+  "pytest tests/grpc/test_wiring4.py": {
+   "returncode": 0,
+   "summary": "20 passed in 0.96s",
+   "seconds": 1.3,
+   "failed": []
+  }
+ },
+ "killed": 3,
+ "of": 4,
+ "mutants": [
+  {
+   "id": "GK4-4",
+   "mutant": "D3.3 off: the UNKNOWN placeholder kept for a plain error beside a translator",
+   "killer": "P4-CODES",
+   "checks": [
+    {
+     "check": "p4-codes",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 4.2,
+     "failed": [],
+     "summary": "PASS P4-CODES {\"rpcs\": 9, \"disagreements\": 0, \"UNKNOWN not in the truth\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_codes4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 1.1,
+     "failed": [
+      "tests/grpc/test_codes4.py::test_d3_3_a_plain_error_beside_a_translator_without_a_default_is_unread"
+     ],
+     "summary": "1 failed, 18 passed in 0.76s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "re-expressed after the first run: the first text (evalSentinel's unread branch) is an equivalent mutant, because translated() turns any plain error beside a translator into unread; the mutant now removes that step. Killed by the named unit tests, not by P4-CODES (its fixtures hold no plain error beside a translator)",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_codes4.py"
+   ]
+  },
+  {
+   "id": "GT4-2",
+   "mutant": "D5.2 builds the database under the target root",
+   "killer": "P4-TABLES, P4-NW",
+   "checks": [
+    {
+     "check": "p4-tables",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.6,
+     "failed": [],
+     "summary": "FAIL P4-TABLES {\"cases\": 3, \"disagreements\": 2, \"temp dirs left\": [], \"writes under the roots\": 0}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_tables4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 1.5,
+     "failed": [
+      "tests/grpc/test_tables4.py::test_ddl_only_in_the_harness_is_read_from_its_database",
+      "tests/grpc/test_tables4.py::test_the_columns_carry_keys_types_and_foreign_keys",
+      "tests/grpc/test_tables4.py::test_the_harness_is_looked_for_in_the_module_directory_not_the_extract_root",
+      "tests/grpc/test_tables4.py::test_the_model_carries_the_harness_tables",
+      "tests/grpc/test_tables4.py::test_the_temporary_database_is_removed_and_nothing_is_written_under_the_root"
+     ],
+     "summary": "5 failed, 5 passed in 1.20s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-tables",
+    "pytest:tests/grpc/test_tables4.py"
+   ]
+  },
+  {
+   "id": "GR17",
+   "mutant": "the HTTP workflow path touched (the rpc helper's summary shape in the HTTP summary)",
+   "killer": "P2-BC",
+   "checks": [
+    {
+     "check": "p2-bc-ast",
+     "kind": "probe",
+     "returncode": 1,
+     "seconds": 0.2,
+     "failed": [],
+     "summary": "FAIL P2-BC-AST {\"grpc.py defs compared\": 43, \"workflows.py HTTP defs compared\": 53, \"differences\": 3}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/importer/test_workflows.py",
+     "kind": "pytest",
+     "returncode": 0,
+     "seconds": 4.7,
+     "failed": [],
+     "summary": "69 passed in 4.39s",
+     "differs_from_control": false
+    },
+    {
+     "check": "p4-bc-ast",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.2,
+     "failed": [],
+     "summary": "FAIL P4-BC-AST {\"AuthDriver.rpc differs only in defaults\": true, \"new in grpc.py\": [\"_login_fields\"], \"new in go_grpc.py\": [\"_SQL_TYPES\", \"_harness_tables\"], \"differences\": 1}",
+     "differs_from_control": true
+    }
+   ],
+   "note": "re-expressed after the first run: round 2's p2-bc-ast is red at round-4 code (control, 3 differences: rpc_login, _login_fields, reconcile_with) and cannot see the mutant; P4-BC-AST (workflows.py byte-identical to BASE) is added",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-bc-ast"
+   ]
+  },
+  {
+   "id": "GW4-9",
+   "mutant": "D1.4 func-type adapter: a conversion T(f) does not count as building T",
+   "killer": "P4-WIRE",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 1.0,
+     "failed": [],
+     "summary": "PASS P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 24, \"wrong (extract, truth)\": {}, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 0,
+     "seconds": 1.7,
+     "failed": [],
+     "summary": "20 passed in 1.19s",
+     "differs_from_control": false
+    }
+   ],
+   "note": "",
+   "result": "SURVIVED",
+   "killed_by": []
+  }
+ ]
+}
