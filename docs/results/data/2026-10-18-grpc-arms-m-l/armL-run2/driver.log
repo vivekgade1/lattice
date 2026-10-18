@@ -1,0 +1,6 @@
+available: True 
+started {'id': 'b1'}
+[   10s] running rounds=1
+[   25s] running rounds=1
+[   30s] passed rounds=1
+final status: passed
