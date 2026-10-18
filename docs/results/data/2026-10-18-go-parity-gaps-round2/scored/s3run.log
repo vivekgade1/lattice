@@ -1,0 +1,21 @@
+PI1-3: pass=True
+PI2-3: pass=True
+PI3-3: pass=False
+PI4-3: pass=False
+PI5-3: pass=True
+PI6-3: pass=True
+PR3-3: pass=False
+PA3-3: pass=False
+PI7-3: pass=True
+PA1-3: pass=True
+P0-PARSE:S3: pass=True
+P0-OMIT:S3: pass=True
+P0-BIND:S3: pass=True
+P0-CHOICES:S3: pass=True
+P0-PRIV:S3: pass=True
+PG805:S3: pass=True
+PX:S3: pass=True
+passed 13: ['PI1-3', 'PI2-3', 'PI5-3', 'PI6-3', 'PI7-3', 'PA1-3', 'P0-PARSE:S3', 'P0-OMIT:S3', 'P0-BIND:S3', 'P0-CHOICES:S3', 'P0-PRIV:S3', 'PG805:S3', 'PX:S3']
+failed 4: ['PI3-3', 'PI4-3', 'PR3-3', 'PA3-3']
+not run 0: []
+fixtures changed: []; docker/claude shim calls: []

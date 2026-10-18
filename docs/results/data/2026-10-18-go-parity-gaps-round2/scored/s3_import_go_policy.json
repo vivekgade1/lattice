@@ -1,0 +1,46 @@
+{
+  "schema": "lattice.gopolicy/1",
+  "policy": {
+    "tables": {
+      "User": {
+        "sql": "users"
+      },
+      "Queue": {
+        "sql": "queues"
+      },
+      "Ticket": {
+        "sql": "tickets"
+      },
+      "Handoff": {
+        "sql": "handoffs"
+      }
+    },
+    "users_table": "User",
+    "owners": {
+      "Ticket": "reporter_id"
+    },
+    "owner_via": {},
+    "private": {
+      "User": [
+        "password_hash"
+      ]
+    },
+    "machines": {},
+    "admin_routes": [],
+    "open_routes": [],
+    "admin_role": "Admin",
+    "helper_depth": 3,
+    "rules": []
+  },
+  "baseline": [],
+  "dropped_machines": [
+    {
+      "table": "Ticket",
+      "column": "status",
+      "values": [
+        "open",
+        "closed"
+      ]
+    }
+  ]
+}

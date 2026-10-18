@@ -1,5 +1,7 @@
 # Go-behind-Python gaps, round 2 (Spike J, node J2): results
 
+**UPDATE: the S3 stage was run afterwards; see section 11. Final: 47 gated rows = 43 PASS, 4 FAIL, 0 NOT RUN (gate not met); 35 mutants = 32 killed, 3 survived (JM6, JM31, JM34; gate not met). Sections 1, 4 and 10 below describe the state before that run.**
+
 **NOT RUN, stated first: Arm M (Streak a0679e9 on MySQL 8.4, M1-M4) was not run (no Streak checkout, no Docker, none faked). Arm S3 (`tests/spec/gotickets`, the blind arm) was not run: its 10 gated rows and mutants JM31-JM34 are NOT RUN, pending the isolated author (Amendment 1, Q2). The 47-row gate and the 35/35 mutant gate are therefore NOT met.** Every S1 and S2 number below is development data (`dev`) and is gated as the pre-registration says.
 
 2026-10-18. Node J2, worktree `/home/user/wt/j2` (branch `go-parity-gaps-j2`, base `193f7f6` plus `next-phases`). Pre-registration: `2026-10-18-go-parity-gaps-round2-prereg.md` with Amendment 1. Data: `docs/results/data/2026-10-18-go-parity-gaps-round2/`. No model, no API key, no Docker, no sub-agent. Nothing was committed or staged. The orchestrator records Amendment 3 and runs the scored run; the run below is the build node's own pass over the frozen files.
@@ -185,3 +187,82 @@ F2 (default rule is FastAPI-shaped), F1, C15 (GO802 keying), F10 (` #k` ids) sta
 ## 9. Files
 
 `lattice/importer/go_rules.py`, `rules.py`, `lattice/gocheck/derive.py`, `lattice/gocheck/src/goextract_closure.go`, `goextract_assemble.go`, `routes.go`, `lattice/spec/__main__.py`; tests `tests/gocheck/test_go_derive2.py`, `tests/importer/test_go_rules2.py`, `tests/spec/test_go_layers2.py` and the two edited J1 tests; fixtures `tests/gocheck/fixtures/goparity2/`, `goparity2mixed/`; runners `dogfood/go_parity_probes2.py`, `dogfood/go_parity_mutants2.py`; data under `docs/results/data/2026-10-18-go-parity-gaps-round2/` (`fixtures.sha256`, `freeze.sha256`, `amendment2_notes.txt`, `frozen_193f7f6.sha256`, `pbx_default_extract_193f7f6.sha256`, `lint.txt`, `pytest/`, `run/`, `mutants/`). Not created, by order: `tests/spec/gotickets/**`, `tests/spec/gotickets_harness.py`.
+
+## 10. S3 stage: STOPPED, not run (runner has no S3 code)
+
+The freeze verified: `freeze.sha256` 21 of 21 OK from the worktree root (0 mismatches); `s3.freeze.sha256` 8 of 8 file entries OK (`tests/spec/gotickets/{api/api.go,go.mod,go.sum,main.go,models/models.go,studio.toml,truth.json}` and `tests/spec/gotickets_harness.py`); its `FILES.txt` entry is not a path in the worktree (it is a listing, not a delivered file), so `sha256sum -c` reports it unreadable.
+
+The S3 stage was not run. Reading the frozen runner before running it showed that its S3 arm is a stub: `s3_rows()` returns `not_run(...)` for the ten `*-3` rows unconditionally (`go_parity_probes2.py`, "arm S3"), the Arm 0 `s3_part` is hard-coded "NOT RUN (gotickets not delivered)", and `PX`'s `s3_import` likewise; `go_parity_mutants2.py` sets JM31-JM34 to `not_run=GOTICKETS_ABSENT` without reading any gotickets file. Running `--arm S3` or the mutant runner would only reproduce the section 4 NOT RUN rows. Producing real S3 numbers needs the runner's bytes to change, which the rules forbid, so nothing was run, no data was written, and the tally is unchanged: 47 gated rows = 37 PASS, 0 FAIL, 10 NOT RUN; 35 mutants = 30 killed, 1 survived (JM6), 4 NOT RUN (JM31-JM34). Decision needed: a new, separately frozen S3 runner (an amendment) or an unfrozen-runner waiver.
+
+## 11. S3 stage: RUN (this section supersedes section 10 and the S3 NOT RUN lines of sections 1 and 4)
+
+Run by the orchestrator's verification node, 2026-10-18, in `/home/user/wt/j2`, with the `/home/user/lattice/.venv` python and `--base` a `git archive 193f7f6` extract. No model, no API key, no Docker, no sub-agent, nothing committed or staged; no runner, library, fixture or pre-registration byte was changed. Arm M is still NOT RUN. Data: `docs/results/data/2026-10-18-go-parity-gaps-round2/scored/` (`probes-s3.json`, the S3 import, `s3run.log`) and `mutants-s3/` (`mutants-s3.json`, `attempt1_crash_before_metric.log`).
+
+**Verification before the run.** `freeze.sha256` 21 of 21 OK; `s3runner.sha256` 3 of 3 OK (the three entries are `go_parity_s3.py`, `go_parity_s3_mutants.py`, `tests/spec/test_go_parity_s3.py`, matching the hashes of Amendment 6); `s3.freeze.sha256` 8 of 8 file entries OK (`FILES.txt` is the author's listing, not in the tree). All three re-checked after the run: same result. The runners also re-check the freeze themselves at start (0 mismatches). Fixtures changed during the run: none; docker/claude shim calls: none.
+
+**Scored runs.** One scored run of `go_parity_s3.py` (`--runs 10` is the 10 repeated imports of PI7-3, not 10 scored runs). The mutant runner crashed once before any metric was written (attempt 1, below) and was re-run once (attempt 2, the only one that wrote a metric). So: 1 scored probe run, 1 scored mutant run, 1 permitted mutant re-run used.
+
+### 11.1 Deviation (disclosed)
+
+The first mutant attempt died in the control with `ModuleNotFoundError: No module named 'gotickets_harness'`, before any metric (no output file was written). The cause: the author's `tests/spec/gotickets/studio.toml` names the harness with a bare module (`gotickets_harness:make_app`), whereas `goginapp/studio.toml` uses `tests.spec.gogin_harness:...`. The rules-first CLI import works because `rules.py` puts `tests/spec` on `sys.path`. The S3 runner's in-process `machinery()` puts only the repository root on `sys.path` (and the library's `_harness_attr` only the module directory), so a bare name does not resolve. Fixing that needs a runner, library or fixture byte, all frozen. The permitted re-run therefore set the environment variable `PYTHONPATH=/home/user/wt/j2/tests/spec`, changing no byte of anything. That is an environment change, not a runner change, but it is a deviation from "re-run unchanged"; it is applied to the mutant runner only. The probe runner's one scored run had no such variable, and **the same error hit two of its rows (PI4-3, PR3-3), which cannot be re-run**; they are scored FAIL by Amendment 6 tally rule (a). The second mutant attempt's control ran layer R on the seed with 63 items, 35 verified, identical to the import's report, which suggests, but does not score, that PI4-3 and PR3-3 would have run under the same environment.
+
+### 11.2 S3 rows (predicted vs observed)
+
+| id | predicted | observed | result |
+|---|---|---|---|
+| PI1-3 | `gin`; 11 routes; 11 contracts; Public = health, login, `GET /queues`; 8 `Customer`; 4 tables | exactly that | PASS |
+| PI2-3 | `Ticket: reporter_id`, 7 evidence (1 assign, 6 compare); `Handoff` unclear naming both columns; 10 inferences (2 owner_uses, 5 path_parse, 1 bind_status, 1 status_facts, 1 json_dash) | exactly that (7 evidence = assign + 6 compare; both Handoff columns; 10 inferences by those counts; owners `Ticket: reporter_id`, others null) | PASS |
+| PI3-3 | 50-80 items; verified share 0.60-0.85; refuted 0-3; gate share >= 0.60 | 63 items (in range); 35 verified, 0 refuted, 27 unexercised (all with reasons), 1 unclear; **share 0.5556** | **FAIL** (share below the 0.60 gate; items and refuted in range; 0 refuted without correction; 0 unexercised without reason) |
+| PI4-3 | every seed-verified item still verified on `variant2`, >= 0.95 | probe raised `ModuleNotFoundError: gotickets_harness` (section 11.1); no value | **FAIL** (crash on the real fixture, tally rule (a)) |
+| PI5-3 | 2-8 proposals; machine `tickets.status` with `open -> closed` and `closed -> open` | 7 proposals (invariant, machine), all pending; machine `Ticket.status` with both edges | PASS |
+| PI6-3 | `review list` exit 0, ids equal the not-verified ids | exit 0; 28 listed, 28 expected, 0 either way | PASS |
+| PR3-3 | R with the imported spec gives the same verdict map | probe raised the same `ModuleNotFoundError`; no value | **FAIL** (crash, tally rule (a)) |
+| PA1-3 | tables 4; users `User`; owners `{Ticket: reporter_id}`; private `{User: [password_hash]}`; admin []; machines {}; baseline 0 | exactly that; baseline equals a separate run | PASS |
+| PA3-3 | JM31: `GO801` on `POST /tickets/:tid/close` `Ticket`; JM32: `GO802` on `GET /me` `User.password_hash`; original 0 outside baseline | original 0 outside baseline (0 total); JM32 found exactly as predicted; **JM31: no new finding at all** | **FAIL** (JM31's expected finding missing, tally rule (b)) |
+| PI7-3 | 10 of 10 identical | 10 of 10 identical (walls 13.1-15.5 s) | PASS |
+
+Sub-claims (informational parts of seven Arm 0 and cross rows; each predicted in section 5.1/5.5):
+
+| sub-claim | predicted | observed | result |
+|---|---|---|---|
+| P0-PARSE:S3 | `qid`, `tid` x4 (5 params) | exactly those 5 in the extract and in the model; 5 `path_parse` inferences | PASS |
+| P0-OMIT:S3 | `page_size` ge 0 / le 100 | ge 0, le 100, nothing unread | PASS |
+| P0-BIND:S3 | 422 | 422 (one `bind_status` inference, 4 evidence lines) | PASS |
+| P0-CHOICES:S3 | `Ticket.status` (`open`, `closed`) | exactly that, no other column | PASS |
+| P0-PRIV:S3 | `User: [password_hash]` | exactly that | PASS |
+| PG805:S3 | gated text byte-identical; S3 pairing count reported | identical; 8 compare uses, 5 with a raise within 3 lines | PASS |
+| PX:S3 | S3 import 8-40 s prebuilt; gate <= 180 s | 14.26 s prebuilt (PI7-3 mean 14.24 s); 23.85 s with the Go build; fixture build 3.04 s | PASS |
+
+### 11.3 Mutants JM31-JM34 (predicted vs observed; control passed: layer A 0 new, 0 outside baseline, R 63 items 35 verified)
+
+| id | predicted killer | observed | result |
+|---|---|---|---|
+| JM31 (close drops `AND reporter_id = ?`) | PA3-3: `GO801` on `POST /tickets/:tid/close` `Ticket`; R2 close refuted (reported) | **no GO801, no new layer A finding.** Layer R flipped `R2 POST /tickets/{tid}/close` and `T1 Ticket` verified -> refuted | **SURVIVED** by the registered detector (tally rule (b)); a reported, non-gated detector (layer R) did catch it |
+| JM32 (`password_hash` loses `json:"-"`) | PA3-3: `GO802` on `GET /me` `User.password_hash` | exactly that finding; `T2 User.password_hash` stayed verified (reported) | KILLED |
+| JM33 (get answers 403 for another caller's ticket) | layer R: the 404 item of `GET /tickets/{tid}` refuted | `R3 GET /tickets/{tid} 404 Not found` verified -> refuted | KILLED |
+| JM34 (reopen accepts an open ticket) | layer R: `R3 POST /tickets/{tid}/reopen 409 not closed` refuted | that item is `unexercised` in the control and in the mutant; no item flipped | **SURVIVED** |
+
+### 11.4 FINAL tally
+
+**Gated rows: 47 = 43 PASS, 4 FAIL, 0 NOT RUN.** The 37 earlier PASS stand (their S3 sub-claims, now run, all pass: 7 of 7). The 10 S3 rows are 6 PASS (PI1-3, PI2-3, PI5-3, PI6-3, PI7-3, PA1-3) and 4 FAIL. **The 47-row gate is NOT met.** Failures and reasons:
+
+1. PI3-3: verified share 0.5556 (35 of 63) against the gate of 0.60.
+2. PI4-3: crash, `ModuleNotFoundError: gotickets_harness` in the runner's in-process `machinery()`; no value.
+3. PR3-3: the same crash.
+4. PA3-3: JM31 produced no GO801 (JM32 did).
+
+**Mutants: 35 = 32 killed, 3 survived.** Round 2's earlier 30 killed (JM6 survived, as pre-registered in advance) plus JM32 and JM33. Survivors: JM6 (the C5b design limit, stated in advance), JM31 (registered detector PA3-3 missed it), JM34 (no detector can see its 409). **The 35 of 35 mutant gate is NOT met.** JM8 remains killed by its unit test (its PI2-3 detector, PI2-3, passes on the control and was not applied to a mutant here).
+
+### 11.5 Post hoc (labelled): what each S3 miss looks like
+
+These classifications are read after the scored numbers, from the data and the code. They are hypotheses; nothing here was re-scored, and nothing was changed to move a number.
+
+- **PI3-3 (share 0.5556, predicted 0.60-0.85): prediction error plus a probable library defect.** Of the 28 non-verified items: 4 are T5 by construction (no route can repeat `id`, or creates the row), 1 is T4, 17 are R3 refusals with "no example triggers it" (400 bad id x5, 422 invalid body/query x3, 409 x3, 500 x4, `POST /login` 401, `GET /me` 401), 2 are "no probe reached it" (`T1 Queue`, handoff 404 `No such user`), 3 are "no probe confirmed or contradicted it" (login 422 and the two R2 creates), 1 unclear (`T1 Handoff`, as predicted). The prediction carried S2's band (0.62-0.82) to a fixture with five more mutating routes, each adding by-construction R3 items, and did not count them: that is a prediction error. Separately, two of the three "no probe confirmed" items are `R2 POST /queues/{qid}/tickets` and `R2 POST /tickets/{tid}/handoffs`, whose create answered 422. The front end's extract carries the body fields (`title`, max 80; `to_user_id`) as body params, but the emitted create contracts carry only the path param, so the probe's create body lacks the required field and cannot succeed. That looks like a library (importer contract/probe-body) defect for create routes whose body binds a required field; I did not isolate the exact line. Even if both R2 items had verified (37 of 63, 0.587), the share would still be under 0.60, so the prediction error alone is enough to explain the miss.
+- **PI4-3 and PR3-3 (crash): fixture/config defect plus a runner/library omission; not a library defect in the import path.** The fixture's `studio.toml` uses a bare module name that the CLI import resolves but the in-process machinery does not (section 11.1); S2's dotted form does resolve. The S3 runner never saw the real fixture and its stand-in (`goginapp`) uses the dotted form, which hid it. The substance of these two predictions (variant2 retention >= 0.95; same verdict map) is untested, so no statement about the library can be drawn from them.
+- **PA3-3 / JM31 (no GO801): library defect (a false negative), exposed by a truth feature.** I reproduced it on scratch copies (not in the tree): with the JM31 mutation, replacing the body of `RequireUser` by a trivial `c.Set("uid", ...)` makes `GO801|POST /tickets/:tid/close|Ticket` appear; replacing only `strconv.ParseUint` does not. So the checker silently skips ownership checks for routes behind a guard middleware whose body it cannot fully follow (consistent with the `mwComplete` bail-out in `owner.go`; the HMAC verification, `hmac.Equal` and `sign`, is the remaining candidate, not isolated further). T-S3 specifies the HMAC token, so this is not a fixture defect; the prediction assumed E6 covers it, so it is also a prediction error about E6's reach (E6 handles Gin library middleware, not stdlib calls inside a project guard). It is a conservative-by-design bail-out, but it makes layer A blind to JM31 here, and layer R still caught the same mutant.
+- **JM34 (survived): prediction error, with a library limitation behind it.** The prediction said the `409 not closed` item would be refuted. That item is unexercised by construction in the control (no example triggers the refusal; no probe puts a ticket in the other state), the same class as the other 409 items, so no detector in the registered set can see this mutant. The pre-registration treated the S2 reachability fix (C3) as covering machine-guard 409s; it did not extend to S3's `409 not open`/`not closed`/`already open`.
+- **Nothing in the S3 misses looks like a truth-table defect.** T-S3 and the fixture agreed on every row that ran (PI1-3, PI2-3, PA1-3, all seven sub-claims). The author's two notes (page_size 0 answers 200; the stored hash is accepted as a password) were not exercised by a gated row.
+
+### 11.6 Follow-ups (not done, by rule)
+
+An amendment-recorded re-score of PI4-3 and PR3-3 once the harness resolution is fixed (either `studio.toml` or the machinery's `sys.path`), a look at why create contracts drop required body fields, and a look at the middleware-reach bail-out in `owner.go`. None of these was touched here.

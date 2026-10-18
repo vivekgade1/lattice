@@ -1,0 +1,181 @@
+{
+  "runner": "go_parity_s3_mutants",
+  "fixture": "gotickets",
+  "stand_in": false,
+  "freeze": {
+    "amendment3": {
+      "freeze_file": "/home/user/wt/j2/docs/results/data/2026-10-18-go-parity-gaps-round2/freeze.sha256",
+      "entries": 21,
+      "runner_listed": true,
+      "mismatches": 0
+    },
+    "s3runner": {
+      "file": "/home/user/wt/j2/docs/results/data/2026-10-18-go-parity-gaps-round2/s3runner.sha256",
+      "entries": 3,
+      "mismatches": 0,
+      "running_script_listed": true
+    }
+  },
+  "edits_file_sha256": null,
+  "rows": [
+    {
+      "id": "control",
+      "build_error": null,
+      "layer_a_new_findings": [],
+      "original_outside_baseline": [],
+      "r_items": 63,
+      "r_verified": 35,
+      "r_items_of_mutants": {
+        "JM31": {
+          "R2 POST /tickets/{tid}/close": [
+            "verified",
+            "verified"
+          ]
+        },
+        "JM32": {
+          "T2 User.password_hash": [
+            "verified",
+            "verified"
+          ]
+        },
+        "JM33": {
+          "R3 GET /tickets/{tid} 404 Not found": [
+            "verified",
+            "verified"
+          ]
+        },
+        "JM34": {
+          "R3 POST /tickets/{tid}/reopen 409 not closed": [
+            "unexercised",
+            "unexercised"
+          ]
+        }
+      },
+      "passes": true,
+      "wall_s": 7.2
+    },
+    {
+      "id": "JM31",
+      "mutant": "gotickets copy: close drops AND reporter_id = ?",
+      "layer_a": {
+        "expected": [
+          "GO801",
+          "GO801|POST /tickets/:tid/close|Ticket"
+        ],
+        "found": false,
+        "original_outside_baseline": [],
+        "new_findings": [],
+        "killed": false
+      },
+      "layer_r": {
+        "item": "R2 POST /tickets/{tid}/close",
+        "items [control, mutant]": {
+          "R2 POST /tickets/{tid}/close": [
+            "verified",
+            "refuted"
+          ]
+        },
+        "refuted_after_verified": [
+          "R2 POST /tickets/{tid}/close"
+        ],
+        "killed": true
+      },
+      "r_flipped": {
+        "T1 Ticket": [
+          "verified",
+          "refuted"
+        ],
+        "R2 POST /tickets/{tid}/close": [
+          "verified",
+          "refuted"
+        ]
+      },
+      "killed": false,
+      "killed_by": "PA3-3 (layer A)"
+    },
+    {
+      "id": "JM32",
+      "mutant": "gotickets copy: password_hash loses json:\"-\"",
+      "layer_a": {
+        "expected": [
+          "GO802",
+          "GO802|GET /me|User.password_hash"
+        ],
+        "found": true,
+        "original_outside_baseline": [],
+        "new_findings": [
+          "GO802 GO802|GET /me|User.password_hash"
+        ],
+        "killed": true
+      },
+      "layer_r": {
+        "item": "T2 User.password_hash",
+        "items [control, mutant]": {
+          "T2 User.password_hash": [
+            "verified",
+            "verified"
+          ]
+        },
+        "refuted_after_verified": [],
+        "killed": false
+      },
+      "r_flipped": {},
+      "killed": true,
+      "killed_by": "PA3-3 (layer A)"
+    },
+    {
+      "id": "JM33",
+      "mutant": "gotickets copy: get answers 403 for another caller's ticket",
+      "layer_a": {
+        "new_findings": [],
+        "role": "reported only"
+      },
+      "layer_r": {
+        "item": "the 404 item of GET /tickets/{tid}",
+        "items [control, mutant]": {
+          "R3 GET /tickets/{tid} 404 Not found": [
+            "verified",
+            "refuted"
+          ]
+        },
+        "refuted_after_verified": [
+          "R3 GET /tickets/{tid} 404 Not found"
+        ],
+        "killed": true
+      },
+      "r_flipped": {
+        "R3 GET /tickets/{tid} 404 Not found": [
+          "verified",
+          "refuted"
+        ]
+      },
+      "killed": true,
+      "killed_by": "layer R on S3: the 404 item of GET /tickets/{tid}"
+    },
+    {
+      "id": "JM34",
+      "mutant": "gotickets copy: reopen accepts an open ticket (no 409)",
+      "layer_a": {
+        "new_findings": [],
+        "role": "reported only"
+      },
+      "layer_r": {
+        "item": "the 409 item of POST /tickets/{tid}/reopen",
+        "items [control, mutant]": {
+          "R3 POST /tickets/{tid}/reopen 409 not closed": [
+            "unexercised",
+            "unexercised"
+          ]
+        },
+        "refuted_after_verified": [],
+        "killed": false
+      },
+      "r_flipped": {},
+      "killed": false,
+      "killed_by": "layer R on S3: the 409 item of POST /tickets/{tid}/reopen"
+    }
+  ],
+  "killed": 2,
+  "not_run": [],
+  "total": 4
+}

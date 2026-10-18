@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "/home/user/wt/j2/dogfood/go_parity_s3_mutants.py", line 227, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/home/user/wt/j2/dogfood/go_parity_s3_mutants.py", line 161, in main
+    control_map = r_map(ctx, cand, cbin)
+  File "/home/user/wt/j2/dogfood/go_parity_s3_mutants.py", line 91, in r_map
+    return P1.verdict_map(S.r_on_spec(ctx, cand.SPEC, "seed"))
+                          ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/wt/j2/dogfood/go_parity_s3.py", line 265, in r_on_spec
+    m = machinery(ctx)
+  File "/home/user/wt/j2/dogfood/go_parity_s3.py", line 236, in machinery
+    factory, name = go_rules.harness_factory(root, package)  # type: ignore[misc]
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/user/wt/j2/lattice/importer/go_rules.py", line 76, in harness_factory
+    factory = _harness_attr(module_dir, spec)
+  File "/home/user/wt/j2/lattice/importer/frontends/go_gin.py", line 248, in _harness_attr
+    return getattr(importlib.import_module(module), attr)
+                   ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/usr/lib/python3.13/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1404, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1369, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1333, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'gotickets_harness'
