@@ -368,3 +368,7 @@ the disclosed case above).
 ## Amendment 1 (orchestrator rulings, 2026-10-17; defaults, overturnable)
 
 Q1: the owner's "y1,2 3" approved a round 2 for H and I and the E merge; it is the go-ahead only. Q2: accepted: cause 6 cells are scored as the separate class K6, reported, and kept out of the PG1t gate; the carve-out is stated in the results. Q3: accepted: `impact_report.py` is unfrozen for one additive branch of at most 30 lines taken only when a forms file exists. Q4: where the spec has a hand-written step for the endpoint, `accepted` is derived from it; otherwise a missing `accepted` defaults to 200 with a note in the output. Q5: accepted (F021; 0 set errors). Q6: adopt the `git ls-files` method and e9515e85 as the gocheck hash reference; round 1's b7a4dacf is recorded as unreproducible. Q7: the build merges next-phases (Spike E, 1955f0b) into `spike-h-typed-conditions` first; round-1 O1 still holds. Q8: the H2 author is a Claude Code subagent (no API key, no per-call USD cap); its prompt may include the D1' clarifications. Q9: this file is merged into the build branch. Q10: PD1 runs, reported-only and labelled post hoc.
+
+## Amendment 2 (records the verifier found missing, 2026-10-18)
+
+sha256 of the H2 `MANIFEST.sha256` file: 6a6f40c69ae3eaed62655cf51653c34098e36a405dbf28242feef107b9003a8f (it lists 11 files; round-2 results say "9 set files", a miscount). The runner `dogfood/forms_probes2.py` was c52d27f5... at f49fa97, before H2 was opened; it changed after (see round 3).
