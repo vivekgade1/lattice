@@ -1,0 +1,30 @@
+# The toy shelf service (Spike I, Arm L): a grpc-go server over pure-Go SQLite.
+[project]
+name = "toybuild"
+
+[app]
+app = "harness:make_app"
+db = "harness:build_db"
+runtime = "harness:RUNTIME"
+
+[grpc]
+protos = ["proto/toy/v1/shelf.proto"]
+proto_paths = ["proto"]
+generate = "./generate.sh"          # the stub generator: the only thing that writes gen/
+
+[check]
+layers = "CD"
+
+[rebuild]
+repo = "."
+gates = ["./check.sh"]
+findings_json = "metrics/last-check.json"
+max_rounds = 3
+model = "sonnet"
+
+[mcp]
+protected = ["proto/toy/v1/shelf.proto", "generate.sh", "buf.yaml", "buf.gen.yaml", "harness.py", "CONTEXT.md"]
+
+[llm]
+model = "sonnet"
+context = "CONTEXT.md"
