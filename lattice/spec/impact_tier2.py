@@ -426,6 +426,7 @@ def compute(
     cand_lines: SpecLines,
     conflicts_fn: Callable[[Spec], list[Any]] | None = None,
     flow_passed: Callable[[str], bool] | None = None,
+    forms_items: Callable[[], Sequence[dict[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     """The Tier 2 section (see the module docstring): ``determined``, ``flows``,
     ``decidability``, plus the corpus size and what it was built from."""
@@ -607,6 +608,8 @@ def compute(
                     "line": line,
                 }
             )
+    if forms_items is not None:  # Spike H: contradictions decided from approved forms
+        determined.extend(forms_items())
     return {
         "determined": determined,
         "flows": flow_items,

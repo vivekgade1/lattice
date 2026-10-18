@@ -1,0 +1,81 @@
+[
+  {
+    "probe": "PG1",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "probe": "PG1t",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "probe": "PG1o",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "probe": "PG1k",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "probe": "PG2",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "probe": "PG5",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "probe": "PG5c",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "probe": "PT2f",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "probe": "PT2x",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "probe": "PT2w",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "probe": "PNX",
+    "reason": "unrecognised layout: TypeError: list indices must be integers or slices, not str",
+    "status": "NOT RUN",
+    "what": "needs the set"
+  },
+  {
+    "gate": "<= 180 s",
+    "probe": "PX",
+    "seconds": 121.6,
+    "status": "PASS",
+    "what": "wall time of the set arm"
+  },
+  {
+    "probe": "wall",
+    "seconds": 121.6,
+    "status": "REPORTED",
+    "what": "total"
+  }
+]

@@ -1,0 +1,1333 @@
+[
+  {
+    "cases": {
+      "PC0": {
+        "pass": true,
+        "state": "current"
+      },
+      "PC1": {
+        "at_bound_status": 201,
+        "notes": [],
+        "pass": true
+      },
+      "PC2": {
+        "pass": true,
+        "paths": [
+          "/orders/1",
+          "/orders/1/cancel"
+        ]
+      },
+      "PC3": {
+        "pass": true,
+        "row": {
+          "id": 20,
+          "status": "pending",
+          "total": 0.0,
+          "user_id": 1
+        }
+      },
+      "PC4": {
+        "at_limit_rows": 5,
+        "below_rows": 4,
+        "pass": true
+      },
+      "PC5": {
+        "expect_db": {
+          "OrderItem": {
+            "count": 0,
+            "where": {
+              "product_id": 1,
+              "quantity": 0
+            }
+          }
+        },
+        "pass": true
+      },
+      "PC6": {
+        "pass": true
+      },
+      "PC7": {
+        "codes": {
+          "float_for_int": [
+            "F004"
+          ],
+          "value_column": [
+            "F017"
+          ],
+          "value_list": [
+            "F001"
+          ],
+          "value_param": [
+            "F017"
+          ],
+          "value_sum": [
+            "F017"
+          ],
+          "values_item": [
+            "F017"
+          ]
+        },
+        "pass": true
+      }
+    },
+    "passed": "8/8",
+    "probe": "PC",
+    "status": "PASS",
+    "what": "one dev case per cause 0-7 (fixtures/forms_r2 + inline)"
+  },
+  {
+    "differing_scenarios": [
+      "form:F7:at_limit",
+      "form:F7:below"
+    ],
+    "invariants_and_links_identical": true,
+    "notes_new": [],
+    "notes_old": [],
+    "probe": "PR1",
+    "rc": [
+      0,
+      0
+    ],
+    "status": "PASS",
+    "what": "round-1 dev forms: generate under round-2 code vs the merge base"
+  },
+  {
+    "commands": [
+      {
+        "cmd": "lattice --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec check --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec lint --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec impact --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec usage",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 2
+      },
+      {
+        "cmd": "lint --json base",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 1
+      },
+      {
+        "cmd": "check --json CD base",
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0
+      },
+      {
+        "cmd": "lint --json attack",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 1
+      },
+      {
+        "cmd": "check --json CD attack",
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json base",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json bad_invariant",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json conflict",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json new_request",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json removed_rule",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json reword",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json status_changed",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "appmap --json (mock project)",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "rationale coverage --json (mock project)",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      }
+    ],
+    "differing_commands": [],
+    "frozen_check": {
+      "files_changed": [],
+      "ok": true,
+      "sets": {
+        "lattice/check": {
+          "got": "ca52b5a0076a04328c97c1cdafdd50af1a557ac671795697f9ec448146ba57bf",
+          "match": true,
+          "want": "ca52b5a0076a04328c97c1cdafdd50af1a557ac671795697f9ec448146ba57bf"
+        },
+        "lattice/gocheck": {
+          "got": "e9515e859e4aebff1020d8fffa721e8859396b9545d4d7b2b768d4980a367c3f",
+          "match": true,
+          "want": "e9515e859e4aebff1020d8fffa721e8859396b9545d4d7b2b768d4980a367c3f"
+        },
+        "tests/spec/fixtures/forms": {
+          "got": "ee956fc0472296d5eeb58b743c79bcd8014249032a9699d63ec4a6cd6e5cd0be",
+          "match": true,
+          "want": "ee956fc0472296d5eeb58b743c79bcd8014249032a9699d63ec4a6cd6e5cd0be"
+        },
+        "tests/spec/fixtures/impact": {
+          "got": "291eab2058ca5c86079b73287d1feff42e97afcd9a53f2358322df7b75473d1b",
+          "match": true,
+          "want": "291eab2058ca5c86079b73287d1feff42e97afcd9a53f2358322df7b75473d1b"
+        }
+      }
+    },
+    "identical": "18/18",
+    "probe": "PB",
+    "status": "PASS",
+    "what": "byte-compat against git archive c5e2595 (no forms file anywhere); frozen hashes and sets"
+  },
+  {
+    "commands": [
+      {
+        "cmd": "lattice --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec check --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec lint --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec impact --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec usage",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 2
+      },
+      {
+        "cmd": "lint --json base",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 1
+      },
+      {
+        "cmd": "check --json CD base",
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0
+      },
+      {
+        "cmd": "lint --json attack",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 1
+      },
+      {
+        "cmd": "check --json CD attack",
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json base",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json bad_invariant",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json conflict",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json new_request",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json removed_rule",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json reword",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json status_changed",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "appmap --json (mock project)",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "rationale coverage --json (mock project)",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      }
+    ],
+    "differing_commands": [],
+    "frozen_check": {
+      "files_changed": [],
+      "ok": true,
+      "sets": {
+        "lattice/check": {
+          "got": "ca52b5a0076a04328c97c1cdafdd50af1a557ac671795697f9ec448146ba57bf",
+          "match": true,
+          "want": "ca52b5a0076a04328c97c1cdafdd50af1a557ac671795697f9ec448146ba57bf"
+        },
+        "lattice/gocheck": {
+          "got": "e9515e859e4aebff1020d8fffa721e8859396b9545d4d7b2b768d4980a367c3f",
+          "match": true,
+          "want": "e9515e859e4aebff1020d8fffa721e8859396b9545d4d7b2b768d4980a367c3f"
+        },
+        "tests/spec/fixtures/forms": {
+          "got": "ee956fc0472296d5eeb58b743c79bcd8014249032a9699d63ec4a6cd6e5cd0be",
+          "match": true,
+          "want": "ee956fc0472296d5eeb58b743c79bcd8014249032a9699d63ec4a6cd6e5cd0be"
+        },
+        "tests/spec/fixtures/impact": {
+          "got": "291eab2058ca5c86079b73287d1feff42e97afcd9a53f2358322df7b75473d1b",
+          "match": true,
+          "want": "291eab2058ca5c86079b73287d1feff42e97afcd9a53f2358322df7b75473d1b"
+        }
+      }
+    },
+    "identical": "18/18",
+    "probe": "PB-d7ba7de",
+    "status": "PASS",
+    "what": "byte-compat against git archive d7ba7de (no forms file anywhere); frozen hashes and sets"
+  },
+  {
+    "changed": {
+      "app": [],
+      "project": []
+    },
+    "fixture": "forms/minishop",
+    "generated": 22,
+    "new": {
+      "app": [],
+      "project": []
+    },
+    "nonzero_exits": 0,
+    "probe": "PW[r1]",
+    "shim_calls": 0,
+    "status": "PASS",
+    "what": "snapshot around show/check/generate/contradictions/coverage x10 and a check run with forms"
+  },
+  {
+    "changed": {
+      "app": [],
+      "project": []
+    },
+    "fixture": "forms_r2/minishop",
+    "generated": 23,
+    "new": {
+      "app": [],
+      "project": []
+    },
+    "nonzero_exits": 0,
+    "probe": "PW[r2]",
+    "shim_calls": 0,
+    "status": "PASS",
+    "what": "snapshot around show/check/generate/contradictions/coverage x10 and a check run with forms"
+  },
+  {
+    "approve_claudecode": true,
+    "approve_no_tty": true,
+    "draft_changed_files": [],
+    "draft_drafted": 1,
+    "draft_new_files": [
+      "REQUIREMENTS.forms.proposed.json"
+    ],
+    "draft_status": "proposed",
+    "edited_generates_nothing": true,
+    "edited_state": "edited",
+    "fixture": "forms/minishop",
+    "moved_state": [
+      "moved",
+      "R1"
+    ],
+    "no_door_for_proposals": true,
+    "nothing_written": true,
+    "probe": "PA[r1]",
+    "proposal_generates_nothing": true,
+    "reworded_state": "stale",
+    "status": "PASS",
+    "what": "approval, states and draft"
+  },
+  {
+    "after_edit": {
+      "F1": "edited"
+    },
+    "probe": "PA[r2]",
+    "states": {
+      "F1": "current",
+      "F2": "current",
+      "F3": "current",
+      "F4": "current",
+      "F5": "current",
+      "F6": "current",
+      "F7": "current"
+    },
+    "status": "PASS",
+    "what": "round-2 fixture: untagged forms are current; a hand edit reads edited"
+  },
+  {
+    "cd_distinct": {
+      "ok": 1,
+      "total_drift": 1
+    },
+    "fixture": "forms/minishop",
+    "generate_distinct": 1,
+    "path_or_time_leaks": [],
+    "probe": "PG3[r1]",
+    "status": "PASS",
+    "what": "forms generate x10 and CD reports x10, random PYTHONHASHSEED, two scratch roots"
+  },
+  {
+    "cd_distinct": {
+      "ok": 1,
+      "total_drift": 1
+    },
+    "fixture": "forms_r2/minishop",
+    "generate_distinct": 1,
+    "path_or_time_leaks": [],
+    "probe": "PG3[r2]",
+    "status": "PASS",
+    "what": "forms generate x10 and CD reports x10, random PYTHONHASHSEED, two scratch roots"
+  },
+  {
+    "fixture": "forms/minishop",
+    "invariants": 6,
+    "probe": "PG4[r1]",
+    "problems": [],
+    "scenarios": 16,
+    "status": "PASS",
+    "what": "every generated invariant compiles (sqlite, mysql); scenarios validate; no L011/L012"
+  },
+  {
+    "fixture": "forms/minishop",
+    "gate": "<= 1 s",
+    "median_s": 0.00066,
+    "predicted": "0.05-0.3 s",
+    "probe": "PX-generate[r1]",
+    "status": "PASS",
+    "what": "generate on the dev forms (median of 50)"
+  },
+  {
+    "fixture": "forms_r2/minishop",
+    "invariants": 5,
+    "probe": "PG4[r2]",
+    "problems": [],
+    "scenarios": 18,
+    "status": "PASS",
+    "what": "every generated invariant compiles (sqlite, mysql); scenarios validate; no L011/L012"
+  },
+  {
+    "fixture": "forms_r2/minishop",
+    "gate": "<= 1 s",
+    "median_s": 0.00076,
+    "predicted": "0.05-0.3 s",
+    "probe": "PX-generate[r2]",
+    "status": "PASS",
+    "what": "generate on the dev forms (median of 50)"
+  },
+  {
+    "false_negative": 0,
+    "false_positive": 0,
+    "fixture": "forms/minishop",
+    "pairs": 14,
+    "probe": "DEV-PT2f[pairs]",
+    "status": "REPORTED",
+    "true_positive": 7,
+    "what": "ungated: the builder's own planted pairs, classes a-d"
+  },
+  {
+    "fixture": "forms/minishop",
+    "items": 1,
+    "note": "impact_report.py is frozen, so the CLI path does not pass forms_items",
+    "probe": "DEV-PT2w[pairs]",
+    "status": "PASS",
+    "what": "ungated: tier2.determined gains exactly the form items (compute() level)"
+  },
+  {
+    "cells": [
+      {
+        "G": [
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "ok"
+      },
+      {
+        "G": [
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "partial_write"
+      },
+      {
+        "G": [
+          [
+            "D",
+            "scenario: form:F6:other_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F6:other_get_orders"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "wrong_answer"
+      },
+      {
+        "G": [
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ]
+        ],
+        "H_new_vs_ok": [
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ]
+        ],
+        "app": "total_drift"
+      },
+      {
+        "G": [
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [
+          [
+            "D",
+            "scenario: ann adds a line to a new order"
+          ]
+        ],
+        "H_new_vs_ok": [
+          [
+            "D",
+            "scenario: ann adds a line to a new order"
+          ]
+        ],
+        "app": "wrong_quantity"
+      },
+      {
+        "G": [
+          [
+            "D",
+            "scenario: form:F6:other_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F6:other_get_orders"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:authz"
+      },
+      {
+        "G": [
+          [
+            "D",
+            "scenario: form:F6:anon_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F6:anon_post_orders_cancel"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F6:anon_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F6:anon_post_orders_cancel"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:auth"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "OrderItem.quantity ge 1 (form F3)"
+          ],
+          [
+            "C",
+            "OrderItem.quantity le 100 (form F4)"
+          ],
+          [
+            "D",
+            "scenario: form:F3:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F4:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "C",
+            "OrderItem.quantity ge 1 (form F3)"
+          ],
+          [
+            "C",
+            "OrderItem.quantity le 100 (form F4)"
+          ],
+          [
+            "D",
+            "scenario: form:F3:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F4:beyond"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:bounds"
+      },
+      {
+        "G": [
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:mass"
+      },
+      {
+        "G": [
+          [
+            "D",
+            "scenario: form:F1:refused_cancelled"
+          ],
+          [
+            "D",
+            "scenario: form:F1:refused_paid"
+          ],
+          [
+            "D",
+            "scenario: form:F1:refused_shipped"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F1:refused_cancelled"
+          ],
+          [
+            "D",
+            "scenario: form:F1:refused_paid"
+          ],
+          [
+            "D",
+            "scenario: form:F1:refused_shipped"
+          ]
+        ],
+        "H": [
+          [
+            "D",
+            "scenario: ann cancels her pending order"
+          ]
+        ],
+        "H_new_vs_ok": [
+          [
+            "D",
+            "scenario: ann cancels her pending order"
+          ]
+        ],
+        "app": "sec:state"
+      },
+      {
+        "G": [
+          [
+            "D",
+            "scenario: form:F3:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F4:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F7:below"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F3:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F4:beyond"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:leak"
+      }
+    ],
+    "g_findings_on_ok": [
+      [
+        "D",
+        "scenario: form:F7:at_limit"
+      ],
+      [
+        "D",
+        "scenario: form:F7:below"
+      ]
+    ],
+    "g_kills": [
+      "wrong_answer",
+      "sec:authz",
+      "sec:auth",
+      "sec:bounds",
+      "sec:state",
+      "sec:leak"
+    ],
+    "h_findings_on_ok": [],
+    "h_kills": [
+      "total_drift",
+      "wrong_quantity",
+      "sec:state"
+    ],
+    "probe": "DEV-GH[r1]",
+    "status": "REPORTED",
+    "timing": {
+      "apps": 11,
+      "wall_s": 8.94
+    },
+    "what": "ungated: dev forms' generated checks (G) and hand-written ones (H), r1 fixture, 11 apps"
+  },
+  {
+    "cells": [
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "ok"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "partial_write"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F3:other_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F3:other_get_orders"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "wrong_answer"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ]
+        ],
+        "H_new_vs_ok": [
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ]
+        ],
+        "app": "total_drift"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [
+          [
+            "D",
+            "scenario: ann adds a line to a new order"
+          ]
+        ],
+        "H_new_vs_ok": [
+          [
+            "D",
+            "scenario: ann adds a line to a new order"
+          ]
+        ],
+        "app": "wrong_quantity"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F3:other_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F3:other_get_orders"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:authz"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F3:anon_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F3:anon_post_orders_cancel"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F3:anon_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F3:anon_post_orders_cancel"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:auth"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "OrderItem.quantity ge 1 (form F1)"
+          ],
+          [
+            "C",
+            "OrderItem.quantity ge 1 (form F1)"
+          ],
+          [
+            "C",
+            "OrderItem.quantity le 100 (form F2)"
+          ],
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F1:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F2:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F6:beyond"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "C",
+            "OrderItem.quantity ge 1 (form F1)"
+          ],
+          [
+            "C",
+            "OrderItem.quantity ge 1 (form F1)"
+          ],
+          [
+            "C",
+            "OrderItem.quantity le 100 (form F2)"
+          ],
+          [
+            "D",
+            "scenario: form:F1:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F2:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F6:beyond"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:bounds"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:mass"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F4:refused_cancelled"
+          ],
+          [
+            "D",
+            "scenario: form:F4:refused_paid"
+          ],
+          [
+            "D",
+            "scenario: form:F4:refused_shipped"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F4:refused_cancelled"
+          ],
+          [
+            "D",
+            "scenario: form:F4:refused_paid"
+          ],
+          [
+            "D",
+            "scenario: form:F4:refused_shipped"
+          ]
+        ],
+        "H": [
+          [
+            "D",
+            "scenario: ann cancels her pending order"
+          ]
+        ],
+        "H_new_vs_ok": [
+          [
+            "D",
+            "scenario: ann cancels her pending order"
+          ]
+        ],
+        "app": "sec:state"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F5)"
+          ],
+          [
+            "D",
+            "scenario: form:F1:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F2:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F5:at_limit"
+          ],
+          [
+            "D",
+            "scenario: form:F6:beyond"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F1:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F2:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F6:beyond"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:leak"
+      }
+    ],
+    "g_findings_on_ok": [
+      [
+        "C",
+        "at most 5 OrderItem rows per order_id (form F5)"
+      ],
+      [
+        "D",
+        "scenario: form:F5:at_limit"
+      ]
+    ],
+    "g_kills": [
+      "wrong_answer",
+      "sec:authz",
+      "sec:auth",
+      "sec:bounds",
+      "sec:state",
+      "sec:leak"
+    ],
+    "h_findings_on_ok": [],
+    "h_kills": [
+      "total_drift",
+      "wrong_quantity",
+      "sec:state"
+    ],
+    "probe": "DEV-GH[r2]",
+    "status": "REPORTED",
+    "timing": {
+      "apps": 11,
+      "wall_s": 9.92
+    },
+    "what": "ungated: dev forms' generated checks (G) and hand-written ones (H), r2 fixture, 11 apps"
+  },
+  {
+    "determined_total": 2,
+    "exit_code": 0,
+    "expected_items": 2,
+    "got_items": 2,
+    "probe": "PT2w[dev]",
+    "status": "PASS",
+    "tiers": [
+      2
+    ],
+    "what": "impact CLI: tier2.determined gains exactly the new form items (tier 2)"
+  },
+  {
+    "probe": "wall",
+    "seconds": 165.6,
+    "status": "REPORTED",
+    "what": "total"
+  }
+]
