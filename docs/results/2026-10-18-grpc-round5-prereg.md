@@ -781,3 +781,23 @@ steps, A.6) covering every rule you can express and listing the others in `NOT_E
 program `cmd/replay` that runs every truth flow and exits 0 only if all pass, `FILES.txt`, `freeze.sha256` at the app root. Implement it the
 way you would naturally implement such a service. When everything is complete, write `IDIOMS.md` (one line per service's wiring, error
 reporting, authentication, and where the schema lives). Work only inside this directory.
+
+## Amendment 1 (orchestrator rulings on section 17, 2026-10-18, before any code)
+1. Build on `np-grpc-round5` in new build worktrees (named by node); this file stays on that branch and merges with the build.
+2. The orchestrator merges `np-i-arms` (docs and data only, 828f022) into `next-phases` now; `np-grpc-round5` then merges
+   `next-phases`, and the build node copies `toybuild/` by `git show` into `tests/grpc/fixtures/toybuild5/`.
+3. H1b accepted (the 3-site `grpc.py` change).
+4. Author self-check accepted: each author may run `contract5` from a frozen wheel in its own scratch `.venv` (pass/fail lines
+   only; reading `site-packages/lattice` forbidden and audited).
+5. E3d (interceptor codes) stays in scope.
+6. L1b: `lattice/mcp/guard.py` is included (<= 30 lines).
+7. Budgets and the re-split accepted as registered (<= 650 / 300 / 40 / 20 / 6 / 90 / 30); a miss is a gated FAIL.
+8. Round 4's HO thresholds are unchanged and apply to SG-*; the unclear cap stays 0.50.
+9. The USD 5.00 cap for L5-RUN is approved (sonnet, `--max-turns 40`, the `claude` CLI only; a usage limit is NOT RUN).
+10. PM-SG runs on MySQL; SG-REC and SG-FLOWS are NOT SUPPORTED as registered and are reported as such.
+11. The SG author gets Streak's REQUIREMENTS.md, spec.py and CONTEXT.md only, not its Go source.
+12. `//go:embed` DDL is not read by the extractor this round (out of scope; reported).
+13. The D1.4 adapter clause is removed in this round as a behaviour-neutral deletion, counted in the budget.
+14. P5-REH on toolshed as delivered is acceptable; its rows are reported as PD5-TOOL, post hoc.
+15. The independent re-run of HO5 and SG is run by a separate opus verifier from the committed ledger and freezes; re-running
+    the pure scorer on saved raw output is free, runner runs are not.
