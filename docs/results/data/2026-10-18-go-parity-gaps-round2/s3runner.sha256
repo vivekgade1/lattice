@@ -1,0 +1,3 @@
+cd32e3e6853f00ca9d7eff2ebc7256eaee7a1f8f01b2b6b011b50f50b0dfe32d  dogfood/go_parity_s3.py
+6bae418297d98dfbbd5a2e74065ae03a38ea202baf9e67ce72c60b5a4d029f8d  dogfood/go_parity_s3_mutants.py
+1f804b10ffbcc9aac54c970935677792940fd81ea64cd3884c6674d4abbd387a  tests/spec/test_go_parity_s3.py
