@@ -457,3 +457,7 @@ makes no commits; the orchestrator stages explicit paths only (never `git add -A
 
 - Q1: approved, the pinned Go bridge. Q2: round 1 = items 1-4 plus report/map listing; Arm L (build round) is a separate node I2, not started. Q3: approved, detected only on a server registration. Q4: a new `Rpc` step class. Q5: accepted, recorded as a documented deviation. Q6: accepted. Q7: a pure-Go-SQLite held-out is the gated held-out; Arm M waits for a host with Streak and Docker and is NOT RUN here.
 - Q8: if an `isinstance` site in a frozen file cannot skip an `Rpc` safely, the build may add a one-line `Rpc` guard, recorded as a finding and listed in the results; it does not stop.
+
+## Amendment 2 (held-out delivered, 2026-10-17)
+
+The separate agent wrote the held-out app "deskd" (helpdesk, grpc-go over pure-Go SQLite; 4 services of which 3 are registered, 21 rpcs: 17 implemented unary, 1 unimplemented, 2 streaming, 1 not registered; 26 messages; 5 tables; 7 flows) to a scratch directory outside the repository. freeze.sha256 sha256 = 8670bf84cdcc9175797507f05e55e62f11716659dc9a0e7a6368aa14dab729f6 (31 files). The two streaming rpcs are outside round 1 and must be reported as "not supported", never guessed. The Arm H scorer in dogfood/grpc_probes.py must be written and its sha256 recorded BEFORE the held-out is opened, and the score is taken once.

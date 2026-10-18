@@ -1,0 +1,615 @@
+[
+  {
+    "commands": [
+      {
+        "cmd": "lattice --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec check --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec lint --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec impact --help",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "spec usage",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 2
+      },
+      {
+        "cmd": "lint --json base",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 1
+      },
+      {
+        "cmd": "check --json CD base",
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0
+      },
+      {
+        "cmd": "lint --json attack",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 1
+      },
+      {
+        "cmd": "check --json CD attack",
+        "identical": true,
+        "raw_bytes_identical": false,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json base",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json bad_invariant",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json conflict",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json new_request",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json removed_rule",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json reword",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "impact --tiers 23 --json status_changed",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "appmap --json (mock project)",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      },
+      {
+        "cmd": "rationale coverage --json (mock project)",
+        "identical": true,
+        "raw_bytes_identical": true,
+        "rc": 0
+      }
+    ],
+    "frozen_files_changed": [],
+    "frozen_sets": {
+      "lattice/check": {
+        "got": "ca52b5a0076a04328c97c1cdafdd50af1a557ac671795697f9ec448146ba57bf",
+        "match": true,
+        "want": "ca52b5a0076a04328c97c1cdafdd50af1a557ac671795697f9ec448146ba57bf"
+      },
+      "lattice/gocheck": {
+        "got": "e9515e859e4aebff1020d8fffa721e8859396b9545d4d7b2b768d4980a367c3f",
+        "match": false,
+        "want": "b7a4dacfe0dd049a19fe58fb838b9c83e25cf0931433770d16e52df1dc761ba1"
+      },
+      "tests/spec/fixtures/impact": {
+        "got": "291eab2058ca5c86079b73287d1feff42e97afcd9a53f2358322df7b75473d1b",
+        "match": true,
+        "want": "291eab2058ca5c86079b73287d1feff42e97afcd9a53f2358322df7b75473d1b"
+      }
+    },
+    "git_diff_empty": {
+      "lattice/check": true,
+      "lattice/gocheck": true,
+      "lattice/mcp": true,
+      "lattice/studio": true,
+      "tests/spec/fixtures/impact": true
+    },
+    "identical": "18/18",
+    "probe": "PB",
+    "status": "PASS",
+    "what": "byte-compat against git archive 6a318e5 (no forms file anywhere)"
+  },
+  {
+    "changed": {
+      "app": [],
+      "project": []
+    },
+    "generated": 22,
+    "new": {
+      "app": [],
+      "project": []
+    },
+    "nonzero_exits": 0,
+    "probe": "PW",
+    "shim_calls": 0,
+    "status": "PASS",
+    "what": "snapshot around show/check/generate/contradictions/coverage x10 and a check run with forms"
+  },
+  {
+    "approve_claudecode": true,
+    "approve_no_tty": true,
+    "draft_changed_files": [],
+    "draft_drafted": 1,
+    "draft_new_files": [
+      "REQUIREMENTS.forms.proposed.json"
+    ],
+    "draft_status": "proposed",
+    "edited_generates_nothing": true,
+    "edited_state": "edited",
+    "moved_state": [
+      "moved",
+      "R1"
+    ],
+    "no_door_for_proposals": true,
+    "nothing_written": true,
+    "probe": "PA",
+    "proposal_generates_nothing": true,
+    "reworded_state": "stale",
+    "status": "PASS",
+    "what": "approval, states and draft"
+  },
+  {
+    "cd_distinct": {
+      "ok": 1,
+      "total_drift": 1
+    },
+    "generate_distinct": 1,
+    "path_or_time_leaks": [],
+    "probe": "PG3",
+    "status": "PASS",
+    "what": "forms generate x10 and CD reports x10, random PYTHONHASHSEED, two scratch roots"
+  },
+  {
+    "invariants": 6,
+    "probe": "PG4",
+    "problems": [],
+    "scenarios": 16,
+    "status": "PASS",
+    "what": "every generated invariant compiles (sqlite, mysql); scenarios validate; no L011/L012"
+  },
+  {
+    "gate": "<= 1 s",
+    "median_s": 0.00043,
+    "predicted": "0.05-0.3 s",
+    "probe": "PX-generate",
+    "status": "PASS",
+    "what": "generate on the dev forms (median of 50)"
+  },
+  {
+    "false_negative": 0,
+    "false_positive": 0,
+    "pairs": 14,
+    "probe": "DEV-PT2f",
+    "status": "REPORTED",
+    "true_positive": 7,
+    "what": "ungated: the builder's own planted pairs, classes a-d"
+  },
+  {
+    "items": 1,
+    "note": "impact_report.py is frozen, so the CLI path does not pass forms_items",
+    "probe": "DEV-PT2w",
+    "status": "PASS",
+    "what": "ungated: tier2.determined gains exactly the form items (compute() level)"
+  },
+  {
+    "cells": [
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "ok"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "partial_write"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F6:other_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F6:other_get_orders"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "wrong_answer"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ]
+        ],
+        "H_new_vs_ok": [
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ],
+          [
+            "C",
+            "An order's total is the sum of its lines"
+          ]
+        ],
+        "app": "total_drift"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [
+          [
+            "D",
+            "scenario: ann adds a line to a new order"
+          ]
+        ],
+        "H_new_vs_ok": [
+          [
+            "D",
+            "scenario: ann adds a line to a new order"
+          ]
+        ],
+        "app": "wrong_quantity"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F6:other_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F6:other_get_orders"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:authz"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F6:anon_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F6:anon_post_orders_cancel"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F6:anon_get_orders"
+          ],
+          [
+            "D",
+            "scenario: form:F6:anon_post_orders_cancel"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:auth"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "OrderItem.quantity ge 1 (form F3)"
+          ],
+          [
+            "C",
+            "OrderItem.quantity le 100 (form F4)"
+          ],
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F3:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F4:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "C",
+            "OrderItem.quantity ge 1 (form F3)"
+          ],
+          [
+            "C",
+            "OrderItem.quantity le 100 (form F4)"
+          ],
+          [
+            "D",
+            "scenario: form:F3:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F4:beyond"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:bounds"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:mass"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F1:refused_cancelled"
+          ],
+          [
+            "D",
+            "scenario: form:F1:refused_paid"
+          ],
+          [
+            "D",
+            "scenario: form:F1:refused_shipped"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F1:refused_cancelled"
+          ],
+          [
+            "D",
+            "scenario: form:F1:refused_paid"
+          ],
+          [
+            "D",
+            "scenario: form:F1:refused_shipped"
+          ]
+        ],
+        "H": [
+          [
+            "D",
+            "scenario: ann cancels her pending order"
+          ]
+        ],
+        "H_new_vs_ok": [
+          [
+            "D",
+            "scenario: ann cancels her pending order"
+          ]
+        ],
+        "app": "sec:state"
+      },
+      {
+        "G": [
+          [
+            "C",
+            "at most 5 OrderItem rows per order_id (form F7)"
+          ],
+          [
+            "D",
+            "scenario: form:F3:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F4:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F7:at_limit"
+          ]
+        ],
+        "G_new_vs_ok": [
+          [
+            "D",
+            "scenario: form:F3:beyond"
+          ],
+          [
+            "D",
+            "scenario: form:F4:beyond"
+          ]
+        ],
+        "H": [],
+        "H_new_vs_ok": [],
+        "app": "sec:leak"
+      }
+    ],
+    "g_findings_on_ok": [
+      [
+        "C",
+        "at most 5 OrderItem rows per order_id (form F7)"
+      ],
+      [
+        "D",
+        "scenario: form:F7:at_limit"
+      ]
+    ],
+    "g_kills": [
+      "wrong_answer",
+      "sec:authz",
+      "sec:auth",
+      "sec:bounds",
+      "sec:state",
+      "sec:leak"
+    ],
+    "g_superset_of_h": false,
+    "h_findings_on_ok": [],
+    "h_kills": [
+      "total_drift",
+      "wrong_quantity",
+      "sec:state"
+    ],
+    "probe": "DEV-GH",
+    "status": "REPORTED",
+    "timing": {
+      "apps": 11,
+      "wall_s": 9.73
+    },
+    "what": "ungated: the dev forms' generated checks (G) and the hand-written ones (H) on 11 apps"
+  },
+  {
+    "probe": "wall",
+    "seconds": 80.6,
+    "status": "REPORTED",
+    "what": "total"
+  }
+]

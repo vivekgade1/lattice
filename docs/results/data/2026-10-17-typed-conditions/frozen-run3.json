@@ -1,0 +1,5654 @@
+[
+  {
+    "apps": 25,
+    "bad_gne_h_and_h_eq_t": [
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "ok",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "ok",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "partial_write",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "partial_write",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_answer",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_answer",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "total_drift",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "total_drift",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_quantity",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_quantity",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:authz",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:authz",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:auth",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:auth",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:bounds",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:bounds",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:mass",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:mass",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:state",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:state",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R20"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:leak",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:leak",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_min0",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_min0",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_max101",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_max101",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R7"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_product_id_min0",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_product_id_min0",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_no_stock_check",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_no_stock_check",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_no_owner",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_no_owner",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_admin_bypass",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_admin_bypass",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_other_403",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_other_403",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_400",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_400",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_from_paid",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_from_paid",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_refused_writes",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_refused_writes",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_typo_state",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_typo_state",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_add_any_state",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_add_any_state",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_hides_cancelled",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_hides_cancelled",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_limit_six_lines",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_limit_six_lines",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R20"
+      }
+    ],
+    "cells": 400,
+    "form_states": {
+      "F1": "current",
+      "F10": "current",
+      "F11": "current",
+      "F12": "current",
+      "F13": "current",
+      "F14": "current",
+      "F15": "current",
+      "F16": "current",
+      "F2": "current",
+      "F3": "current",
+      "F4": "current",
+      "F5": "current",
+      "F6": "current",
+      "F7": "current",
+      "F8": "current",
+      "F9": "current"
+    },
+    "formed_rules": 16,
+    "forms_that_could_not_generate": {
+      "F8": "AssertionError: ",
+      "F9": "AssertionError: "
+    },
+    "forms_usable": 16,
+    "g_eq_h": 151,
+    "g_ne_h": [
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "ok",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "ok",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "partial_write",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "partial_write",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_answer",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_answer",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "total_drift",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "total_drift",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_quantity",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_quantity",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:authz",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:authz",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:auth",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:auth",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:bounds",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:bounds",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:mass",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:mass",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:state",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:state",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R20"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:leak",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:leak",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_min0",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_min0",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_max101",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_max101",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R7"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_product_id_min0",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_product_id_min0",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_no_stock_check",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_no_stock_check",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_no_owner",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_no_owner",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_admin_bypass",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_admin_bypass",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_other_403",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_other_403",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_400",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_400",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_from_paid",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_from_paid",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_refused_writes",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_refused_writes",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_typo_state",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_typo_state",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_add_any_state",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_add_any_state",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_hides_cancelled",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_hides_cancelled",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_limit_six_lines",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_limit_six_lines",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R20"
+      }
+    ],
+    "generate_whole_set_error": "AssertionError: ",
+    "probe": "PG1",
+    "run_wall_s": 47.67,
+    "status": "FAIL",
+    "unattributed_generated_findings": [],
+    "what": "G vs H per cell"
+  },
+  {
+    "bad": [
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "ok",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "ok",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "partial_write",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "partial_write",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "partial_write",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_answer",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_answer",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_answer",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "total_drift",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "total_drift",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "total_drift",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_quantity",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "wrong_quantity",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "wrong_quantity",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:authz",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:authz",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:authz",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:auth",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:auth",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:auth",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:bounds",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:bounds",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:bounds",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:mass",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:mass",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:mass",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:state",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:state",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:state",
+        "rule": "R20"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:leak",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "sec:leak",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "sec:leak",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_min0",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_min0",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_min0",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_max101",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_qty_max101",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_qty_max101",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R7"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_product_id_min0",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_product_id_min0",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_product_id_min0",
+        "rule": "R20"
+      },
+      {
+        "G": false,
+        "H": false,
+        "T": true,
+        "app": "h_no_stock_check",
+        "rule": "R4"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_no_stock_check",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_no_stock_check",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_no_stock_check",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_no_owner",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_no_owner",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_no_owner",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_admin_bypass",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_admin_bypass",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_admin_bypass",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_other_403",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_other_403",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_other_403",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_400",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_400",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_400",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_from_paid",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_from_paid",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_from_paid",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_refused_writes",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_refused_writes",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_refused_writes",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_typo_state",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_cancel_typo_state",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_cancel_typo_state",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_add_any_state",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_add_any_state",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_add_any_state",
+        "rule": "R20"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_hides_cancelled",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_read_hides_cancelled",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_read_hides_cancelled",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_limit_six_lines",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "h_limit_six_lines",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "h_limit_six_lines",
+        "rule": "R20"
+      }
+    ],
+    "g_eq_t": 150,
+    "probe": "PG1t",
+    "scored": 400,
+    "status": "FAIL",
+    "what": "G vs truth per cell"
+  },
+  {
+    "bad": [
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R6"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R7"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R8"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "ok",
+        "rule": "R12"
+      },
+      {
+        "G": false,
+        "H": true,
+        "T": true,
+        "app": "ok",
+        "rule": "R13"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R15"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R16"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R17"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R18"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R19"
+      },
+      {
+        "G": true,
+        "H": false,
+        "T": false,
+        "app": "ok",
+        "rule": "R20"
+      }
+    ],
+    "g_fail_on_ok": [
+      "R14",
+      "R15",
+      "R16",
+      "R17",
+      "R18",
+      "R19",
+      "R20",
+      "R6",
+      "R7",
+      "R8"
+    ],
+    "probe": "PG1o",
+    "status": "FAIL",
+    "t_violated_on_ok": [
+      "R12",
+      "R13",
+      "R14"
+    ],
+    "what": "on ok, G fails exactly the rules T marks violated"
+  },
+  {
+    "apps_non_ok": 24,
+    "g_kills": [
+      "h_add_any_state",
+      "h_cancel_400",
+      "h_cancel_from_paid",
+      "h_cancel_no_owner",
+      "h_cancel_refused_writes",
+      "h_cancel_typo_state",
+      "h_limit_six_lines",
+      "h_no_stock_check",
+      "h_product_id_min0",
+      "h_qty_max101",
+      "h_qty_min0",
+      "h_read_admin_bypass",
+      "h_read_hides_cancelled",
+      "h_read_other_403",
+      "partial_write",
+      "sec:auth",
+      "sec:authz",
+      "sec:bounds",
+      "sec:leak",
+      "sec:mass",
+      "sec:state",
+      "total_drift",
+      "wrong_answer",
+      "wrong_quantity"
+    ],
+    "g_only": [],
+    "h_kills": [
+      "h_add_any_state",
+      "h_cancel_400",
+      "h_cancel_from_paid",
+      "h_cancel_no_owner",
+      "h_cancel_refused_writes",
+      "h_cancel_typo_state",
+      "h_limit_six_lines",
+      "h_no_stock_check",
+      "h_product_id_min0",
+      "h_qty_max101",
+      "h_qty_min0",
+      "h_read_admin_bypass",
+      "h_read_hides_cancelled",
+      "h_read_other_403",
+      "partial_write",
+      "sec:auth",
+      "sec:authz",
+      "sec:bounds",
+      "sec:leak",
+      "sec:mass",
+      "sec:state",
+      "total_drift",
+      "wrong_answer",
+      "wrong_quantity"
+    ],
+    "h_only": [],
+    "probe": "PG1k",
+    "status": "PASS",
+    "what": "G kills a superset of H's kills"
+  },
+  {
+    "cells_both_fail": 54,
+    "diff": [
+      {
+        "Glayers": [
+          "C",
+          "D"
+        ],
+        "Hlayers": [
+          "D"
+        ],
+        "app": "h_cancel_typo_state",
+        "rule": "R18"
+      }
+    ],
+    "overlapping_layers": 54,
+    "probe": "PG2",
+    "same_layer_sets": 53,
+    "status": "REPORTED",
+    "what": "layer of the failing check where both fail"
+  },
+  {
+    "accepted_invalid": [],
+    "codes_not_exact": [
+      {
+        "also_acceptable_hit": true,
+        "got": [
+          "F001",
+          "F002"
+        ],
+        "id": "I26",
+        "want": "F017"
+      }
+    ],
+    "invalid": 29,
+    "probe": "PG5",
+    "refused_with_expected_code": 28,
+    "status": "FAIL",
+    "valid_forms": 16,
+    "valid_refused": [
+      "1:1: error F002: /forms/F2/form/refused/db: a db expectation needs a table (a column field or stores)",
+      "1:1: error F002: /forms/F3/form/refused/db: a db expectation needs a table (a column field or stores)",
+      "1:1: error F002: /forms/F4/form/refused/db: a db expectation needs a table (a column field or stores)",
+      "1:1: error F002: /forms/F8/form/given: needs a counted-row template: given[table][0]",
+      "1:1: error F002: /forms/F9/form/given: needs a counted-row template: given[table][0]"
+    ],
+    "what": "invalid.json refused with the expected code; valid forms accepted"
+  },
+  {
+    "class_e": {
+      "compatible": 2,
+      "contradict": 3,
+      "false_pos": 0,
+      "found": 1
+    },
+    "errors": [
+      {
+        "error": "AssertionError: ",
+        "expect": "contradict",
+        "id": "P13"
+      },
+      {
+        "error": "AssertionError: ",
+        "expect": "compatible",
+        "id": "P14"
+      },
+      {
+        "error": "AssertionError: ",
+        "expect": "compatible",
+        "id": "P15"
+      },
+      {
+        "error": "AssertionError: ",
+        "expect": "compatible",
+        "id": "P16"
+      },
+      {
+        "error": "AssertionError: ",
+        "expect": "contradict",
+        "id": "P30"
+      }
+    ],
+    "false_neg": [
+      "P13",
+      "P29",
+      "P30"
+    ],
+    "false_pos": [],
+    "pairs": 32,
+    "per_class": {
+      "a": {
+        "compatible": 6,
+        "contradict": 6,
+        "false_pos": 0,
+        "found": 6
+      },
+      "b": {
+        "compatible": 3,
+        "contradict": 1,
+        "false_pos": 0,
+        "found": 0
+      },
+      "c": {
+        "compatible": 2,
+        "contradict": 4,
+        "false_pos": 0,
+        "found": 4
+      },
+      "d": {
+        "compatible": 2,
+        "contradict": 3,
+        "false_pos": 0,
+        "found": 3
+      },
+      "e": {
+        "compatible": 2,
+        "contradict": 3,
+        "false_pos": 0,
+        "found": 1
+      }
+    },
+    "precision": 1.0,
+    "probe": "PT2f",
+    "recall_abcd": "13/14",
+    "status": "FAIL",
+    "true_neg": 15,
+    "true_pos": 14,
+    "what": "forms contradictions on pairs.json"
+  },
+  {
+    "items": 19,
+    "items_without_witness": [],
+    "note": "no independent re-derivation of the incompatible expectations is done by this runner",
+    "probe": "PT2x",
+    "status": "PASS",
+    "what": "every emitted item carries a witness (the library emits only self-checked items)"
+  },
+  {
+    "accepted": [],
+    "probe": "PNX",
+    "refused_with_other_code": [
+      {
+        "got": [
+          "F004"
+        ],
+        "id": "N2",
+        "want": [
+          "F001",
+          "F017"
+        ]
+      },
+      {
+        "got": [
+          "F004"
+        ],
+        "id": "N3",
+        "want": [
+          "F001",
+          "F017"
+        ]
+      },
+      {
+        "got": [
+          "F002",
+          "F004"
+        ],
+        "id": "N9",
+        "want": [
+          "F001",
+          "F017"
+        ]
+      }
+    ],
+    "rules": 18,
+    "status": "PASS",
+    "what": "not_expressible attempts refused",
+    "with_attempt": 8,
+    "without_attempt": [
+      "N5",
+      "N6",
+      "N7",
+      "N10",
+      "N13",
+      "N14",
+      "N15",
+      "N16",
+      "N17",
+      "N18"
+    ]
+  },
+  {
+    "determined_total": 0,
+    "exit_code": 0,
+    "form_items_in_tier2_determined": 0,
+    "note": "impact_report.py is frozen (hash-checked) and never passes forms_items",
+    "probe": "PT2w",
+    "status": "FAIL",
+    "stderr_tail": "impact: 0.0s\n",
+    "tier2_present": true,
+    "what": "impact report (CLI) gains the form contradiction items"
+  },
+  {
+    "probe": "wall",
+    "seconds": 48.9,
+    "status": "REPORTED",
+    "what": "total"
+  }
+]

@@ -1,0 +1,204 @@
+[
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_a_proposal_generates_nothing_hx7",
+      "tests/spec/test_forms.py::test_an_edited_approved_form_generates_nothing_hx8",
+      "tests/spec/test_forms.py::test_bound_values_int_float_in_len",
+      "tests/spec/test_forms.py::test_check_with_forms_without_a_forms_file_is_the_plain_check",
+      "tests/spec/test_forms.py::test_class_a_int_tightening_gt3_lt4_hx3",
+      "tests/spec/test_forms.py::test_class_a_witness_self_check_suppresses_a_false_pair_hx12",
+      "tests/spec/test_forms.py::test_class_b_different_where_is_a_different_count_hx4",
+      "tests/spec/test_forms.py::test_generate_is_identical_under_different_hash_seeds_hx10",
+      "tests/spec/test_forms.py::test_generate_writes_no_cache_file_hx16",
+      "tests/spec/test_forms.py::test_hx11_a_now_or_sum_node_is_refused",
+      "tests/spec/test_forms.py::test_hx13_the_below_case_has_one_row_fewer_than_the_limit",
+      "tests/spec/test_forms.py::test_hx14_the_count_invariant_is_at_most_not_below",
+      "tests/spec/test_forms.py::test_hx15_a_one_of_value_outside_the_column_is_refused",
+      "tests/spec/test_forms.py::test_hx1_a_refused_step_expects_the_database_unchanged",
+      "tests/spec/test_forms.py::test_hx2_ge_is_generated_at_the_bound_not_past_it",
+      "tests/spec/test_forms.py::test_hx5_the_ownership_generator_has_the_anon_case_and_catches_the_auth_hole",
+      "tests/spec/test_forms.py::test_hx6_the_transition_generator_refuses_every_other_state"
+    ],
+    "id": "control",
+    "pass": true,
+    "seconds": 6.3,
+    "tail": ".................                                                        [100%]\n17 passed in 5.27s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_hx1_a_refused_step_expects_the_database_unchanged"
+    ],
+    "id": "HX1",
+    "killed": true,
+    "mutant": "a refused step's db: unchanged dropped",
+    "preregistered_catcher": "PG1 on a partial_write-like mutant; unit",
+    "seconds": 1.0,
+    "tail": "\ntests/spec/test_forms.py:755: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_hx1_a_refused_step_expects_the_database_unchanged\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.31s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_hx2_ge_is_generated_at_the_bound_not_past_it",
+      "tests/spec/test_forms.py::test_bound_values_int_float_in_len"
+    ],
+    "id": "HX2",
+    "killed": true,
+    "mutant": "ge generated as gt (boundary off by one)",
+    "preregistered_catcher": "PG1 (at_bound fails on ok); unit",
+    "seconds": 1.2,
+    "tail": "\ntests/spec/test_forms.py:760: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_hx2_ge_is_generated_at_the_bound_not_past_it\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.35s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_class_a_int_tightening_gt3_lt4_hx3"
+    ],
+    "id": "HX3",
+    "killed": true,
+    "mutant": "INT tightening ignored (gt 3, lt 4 on INT satisfiable)",
+    "preregistered_catcher": "PT2f recall (class a)",
+    "seconds": 1.2,
+    "tail": "\ntests/spec/test_forms.py:594: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_class_a_int_tightening_gt3_lt4_hx3 - As...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.37s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_class_b_different_where_is_a_different_count_hx4"
+    ],
+    "id": "HX4",
+    "killed": true,
+    "mutant": "two limits with different where treated as the same count",
+    "preregistered_catcher": "PT2f precision",
+    "seconds": 1.0,
+    "tail": "\ntests/spec/test_forms.py:645: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_class_b_different_where_is_a_different_count_hx4\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.26s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_hx5_the_ownership_generator_has_the_anon_case_and_catches_the_auth_hole"
+    ],
+    "id": "HX5",
+    "killed": true,
+    "mutant": "the ownership generator omits the anon case",
+    "preregistered_catcher": "PG1k on sec:auth (the test runs the generated check on the sec auth app)",
+    "seconds": 1.2,
+    "tail": "\ntests/spec/test_forms.py:769: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_hx5_the_ownership_generator_has_the_anon_case_and_catches_the_auth_hole\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.38s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_hx6_the_transition_generator_refuses_every_other_state"
+    ],
+    "id": "HX6",
+    "killed": true,
+    "mutant": "the transition generator omits the refused_<s> cases",
+    "preregistered_catcher": "PG1k on sec:state-like mutants; unit",
+    "seconds": 1.1,
+    "tail": "\ntests/spec/test_forms.py:776: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_hx6_the_transition_generator_refuses_every_other_state\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.29s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_a_proposal_generates_nothing_hx7"
+    ],
+    "id": "HX7",
+    "killed": true,
+    "mutant": "a proposal generates checks",
+    "preregistered_catcher": "PA",
+    "seconds": 1.1,
+    "tail": "\ntests/spec/test_forms.py:447: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_a_proposal_generates_nothing_hx7 - Asse...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.32s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_an_edited_approved_form_generates_nothing_hx8"
+    ],
+    "id": "HX8",
+    "killed": true,
+    "mutant": "an edited approved form still generates",
+    "preregistered_catcher": "PA",
+    "seconds": 0.9,
+    "tail": "\ntests/spec/test_forms.py:460: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_an_edited_approved_form_generates_nothing_hx8\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.26s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_check_with_forms_without_a_forms_file_is_the_plain_check"
+    ],
+    "id": "HX9",
+    "killed": true,
+    "mutant": "the check output gains \"forms\": null when no file exists",
+    "preregistered_catcher": "PB",
+    "seconds": 1.9,
+    "tail": "\ntests/spec/test_forms.py:389: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_check_with_forms_without_a_forms_file_is_the_plain_check\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 1.08s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_generate_is_identical_under_different_hash_seeds_hx10"
+    ],
+    "id": "HX10",
+    "killed": true,
+    "mutant": "generated names from set iteration order",
+    "preregistered_catcher": "PG3",
+    "seconds": 3.8,
+    "tail": "\ntests/spec/test_forms.py:558: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_generate_is_identical_under_different_hash_seeds_hx10\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 3.09s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_hx11_a_now_or_sum_node_is_refused"
+    ],
+    "id": "HX11",
+    "killed": true,
+    "mutant": "a now() / sum node accepted",
+    "preregistered_catcher": "PNX, PG5",
+    "seconds": 0.9,
+    "tail": "\ntests/spec/test_forms.py:782: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_hx11_a_now_or_sum_node_is_refused - Ass...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.22s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_class_a_witness_self_check_suppresses_a_false_pair_hx12"
+    ],
+    "id": "HX12",
+    "killed": true,
+    "mutant": "contradiction items emitted without the witness self-check",
+    "preregistered_catcher": "PT2x (a planted false pair)",
+    "seconds": 0.9,
+    "tail": "\ntests/spec/test_forms.py:622: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_class_a_witness_self_check_suppresses_a_false_pair_hx12\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.23s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_hx13_the_below_case_has_one_row_fewer_than_the_limit"
+    ],
+    "id": "HX13",
+    "killed": true,
+    "mutant": "row_limit below case given max rows instead of max - 1",
+    "preregistered_catcher": "PG1o",
+    "seconds": 0.9,
+    "tail": "\ntests/spec/test_forms.py:788: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_hx13_the_below_case_has_one_row_fewer_than_the_limit\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.23s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_hx14_the_count_invariant_is_at_most_not_below"
+    ],
+    "id": "HX14",
+    "killed": true,
+    "mutant": "the generated count invariant uses < for <=",
+    "preregistered_catcher": "PG1o",
+    "seconds": 1.1,
+    "tail": "\ntests/spec/test_forms.py:793: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_hx14_the_count_invariant_is_at_most_not_below\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.31s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_hx15_a_one_of_value_outside_the_column_is_refused"
+    ],
+    "id": "HX15",
+    "killed": true,
+    "mutant": "one_of membership not type-checked (F005 skipped)",
+    "preregistered_catcher": "PG5",
+    "seconds": 1.0,
+    "tail": "\ntests/spec/test_forms.py:798: AssertionError\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_hx15_a_one_of_value_outside_the_column_is_refused\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.28s"
+  },
+  {
+    "catchers": [
+      "tests/spec/test_forms.py::test_generate_writes_no_cache_file_hx16"
+    ],
+    "id": "HX16",
+    "killed": true,
+    "mutant": "generate writes a cache file next to the forms",
+    "preregistered_catcher": "PW",
+    "seconds": 1.1,
+    "tail": "  ]\n}\n=========================== short test summary info ============================\nFAILED tests/spec/test_forms.py::test_generate_writes_no_cache_file_hx16 - As...\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 0.34s"
+  }
+]
