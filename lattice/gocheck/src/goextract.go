@@ -68,6 +68,7 @@ type xResult struct {
 	Excluded     []xExcluded  `json:"excluded"`
 	Unread       []xUnread    `json:"unread"`
 	Notes        []string     `json:"notes"`
+	Grpc         *xGrpc       `json:"grpc,omitempty"` // Spike I: the gRPC contract and servers (omitted without any)
 }
 
 // gx is one extraction.
@@ -199,6 +200,7 @@ func extractModule(root string) (*xResult, error) {
 	g.findSentinels()
 	g.findTables()
 	g.findRoutes()
+	g.findGrpc()
 	g.finish()
 	return g.res, nil
 }

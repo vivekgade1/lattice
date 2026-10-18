@@ -89,6 +89,8 @@ from lattice.spec import (
     ContractParam,
     Invariant,
     Machine,
+    Rpc,
+    Scenario,
     Spec,
     Unchecked,
     validate,
@@ -746,12 +748,65 @@ def route_contracts(
     """A contract per route, in the model's order (an endpoint given twice: the first)."""
     out: dict[str, Contract] = {}
     for route in model.routes:
+        if route.transport == "grpc":
+            continue  # an rpc has a scenario (rpc_scenarios), not a contract: S029
         c = route_contract(model, route, api, public)
         out.setdefault(c.endpoint, c)
     return list(out.values())
 
 
 # ---- the candidate spec --------------------------------------------------------------------
+
+
+def _rpc_value(p: Any) -> Any:
+    """A value a request field accepts, from its type and bounds (None: leave it out)."""
+    if p.choices:
+        return p.choices[0]
+    if p.type == "Str":
+        lo = int(p.min_length or 0)
+        text = f"x-{p.name}".ljust(max(lo, 1), "x")
+        return text[: int(p.max_length)] if p.max_length is not None else text
+    if p.type == "Int":
+        if p.ge is not None:
+            return int(p.ge)
+        return int(p.gt) + 1 if p.gt is not None else 0
+    if p.type == "Float":
+        return float(p.ge) if p.ge is not None else 0.0
+    if p.type == "Bool":
+        return True
+    return None
+
+
+def rpc_scenarios(
+    model: RepoModel, users: Mapping[str, tuple[str, str]] | None = None
+) -> tuple[Scenario, ...]:
+    """One candidate scenario per implemented rpc of ``model``: a single ``Rpc`` step as the
+    first user (none for a public rpc), a request built from the input message's bounds,
+    expecting OK. Nothing here is verified: an rpc served by the Unimplemented stub and a
+    streaming rpc get none."""
+    handles = list(users or ())
+    out = []
+    for r in model.routes:
+        if r.transport != "grpc" or r.rpc is None or r.rpc.state != "implemented":
+            continue
+        message = {}
+        for p in r.params:
+            v = _rpc_value(p)
+            if v is not None:
+                message[p.name] = v
+        user = None if r.auth == "Public" or not handles else handles[0]
+        out.append(
+            Scenario(
+                f"rpc {r.rpc.service}/{r.rpc.method}",
+                steps=(Rpc(r.rpc.service, r.rpc.method, user, message),),
+            )
+        )
+    return tuple(out)
+
+
+def rpc_protos(model: RepoModel) -> tuple[str, ...]:
+    """The (module-relative) ``.proto`` files that declare the model's rpcs."""
+    return tuple(sorted({r.rpc.proto for r in model.routes if r.rpc is not None and r.rpc.proto}))
 
 
 def _accepted(spec: Spec, proposals: Iterable[ProposalLike]) -> Spec:
@@ -800,6 +855,9 @@ def build_spec(
         users=dict(users or {}),
         contracts=tuple(route_contracts(model, api, public)),
     )
+    scenarios = rpc_scenarios(model, users)
+    if scenarios:  # a gRPC app (Spike I): its rpcs as scenarios over the proto contract
+        spec = replace(spec, scenarios=scenarios, protos=rpc_protos(model))
     return _accepted(spec, proposals)
 
 
@@ -1086,6 +1144,7 @@ def spec_source(
         "    ContractParam,",
         "    Invariant,",
         "    Machine,",
+        *(["    Rpc,", "    Scenario,"] if spec.scenarios else []),
         "    Spec,",
         "    Unchecked,",
         ")",
@@ -1134,6 +1193,18 @@ def spec_source(
                 out.append(f"    # {mark}")
             out.append(f"    {_call(x, positional, '    ')},")
         out += [")", ""]
+    if spec.scenarios:
+        out.append("SCENARIOS: tuple[Scenario, ...] = (")
+        for sc in spec.scenarios:
+            out.append(f"    Scenario({sc.name!r}, steps=(")
+            for st in sc.steps:
+                out.append(
+                    f"        {_call(st, ('service', 'method', 'user', 'message'), '        ')},"
+                )
+            out.append("    )),")
+        out += [")", ""]
+    if spec.protos:
+        out += [f"PROTOS: tuple[str, ...] = {_lit(tuple(spec.protos))}", ""]
     out.append("STATUS: dict[str, str] = {")
     out += [f"    {k!r}: {v!r}," for k, v in status.items()]
     out += ["}", ""]
@@ -1146,6 +1217,8 @@ def spec_source(
         "    unchecked=UNCHECKED,",
         "    users=USERS,",
         "    contracts=CONTRACTS,",
+        *(["    scenarios=SCENARIOS,"] if spec.scenarios else []),
+        *(["    protos=PROTOS,"] if spec.protos else []),
         ")",
     ]
     return "\n".join(out) + "\n"
@@ -1199,13 +1272,14 @@ def write_spec(
     package: str = "",
     profile: Path | str | None = None,
     meta: Mapping[str, Any] | None = None,
+    root: Path | str | None = None,
 ) -> Path:
     """Write ``spec`` as the module ``out`` and ``spec_meta.json`` beside it. ``profile``:
     the profile source to copy beside it as ``profile.py`` (default: one must be there
     already). The spec must validate. ``spec_meta.json``: ``schema``, ``package``,
     ``spec`` (the module's sha256), ``items`` (``meta["items"]``, else id ->
     ``{"status": ...}`` from ``status``) and every other key of ``meta``."""
-    problems = validate(spec)
+    problems = validate(spec, root) if root is not None else validate(spec)
     if problems:
         raise ValueError("the spec is not valid:\n  " + "\n  ".join(p.render() for p in problems))
     out = Path(out)

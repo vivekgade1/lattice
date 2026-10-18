@@ -93,6 +93,15 @@ firing conditions and their known limits:
   changes nothing". ``check`` adds the other half at run time: a failing ``expect_db``
   whose row nothing before it can have created says so ("spec problem: ...").
 
+* **L013 conflicting rpc expectations** (`rpc_conflicts`) -- the L011 of `Rpc` steps: two
+  rpc steps, in two scenarios with the same ``given``, that call the same service and
+  method as the same caller with the same message and expect different codes (an access
+  answer, UNAUTHENTICATED / PERMISSION_DENIED against OK, conflicts whatever the messages).
+  Each step must run on the setup alone: only rpc steps expecting a refusal (not OK) come
+  before it, since an rpc expecting OK may write. L006, L004, L005 and L007 read HTTP steps
+  only; an `Rpc` counts as a failing expectation for L003 when it expects a code other than
+  OK, a message or a database state.
+
 CLI (``main``): ``lint --spec MOD:SPEC|FILE.py [--trace PATH] [--db MOD:fn]
 [--login MOD:fn] [--json]``; prints the findings grouped by code with their fixes (or
 JSON: ``{"findings": [...], "notes": [...]}``); exit 0 with no findings, 1 with
@@ -112,7 +121,7 @@ from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from typing import Any
 
-from lattice.spec.model import Await, Scenario, Spec, Step, resolve_table, tables_of
+from lattice.spec.model import Await, Rpc, Scenario, Spec, Step, resolve_table, tables_of
 from lattice.spec.preconditions import contradictions
 from lattice.spec.rules import LINK_KINDS, Trace, trace_path
 
@@ -130,6 +139,7 @@ CODES: Mapping[str, str] = {
     "L010": "question without a default or rules",
     "L011": "conflicting expectations",
     "L012": "unsatisfiable expectation",
+    "L013": "conflicting rpc expectations",
 }
 
 _SIGNAL = re.compile(r"\b(never|at most|only|unique\w*|duplicat\w*|exactly|must|every|all)\b", re.I)
@@ -199,11 +209,11 @@ class VacuityConfig:
 # ---- the spec, walked --------------------------------------------------------------------
 
 
-def _steps(scenario: Scenario) -> list[tuple[int, Step | Await]]:
+def _steps(scenario: Scenario) -> list[tuple[int, Step | Await | Rpc]]:
     return list(enumerate(scenario.steps, 1))
 
 
-def _is_write(step: Step | Await) -> bool:
+def _is_write(step: Step | Await | Rpc) -> bool:
     return isinstance(step, Step) and step.method.upper() in WRITE_METHODS
 
 
@@ -211,10 +221,12 @@ def _ok(status: int) -> bool:
     return 200 <= status < 300
 
 
-def _failing(step: Step | Await) -> bool:
+def _failing(step: Step | Await | Rpc) -> bool:
     """Whether a do-nothing app could fail this step's expectation."""
     if isinstance(step, Await):
         return True
+    if isinstance(step, Rpc):
+        return step.expect_code != "OK" or bool(step.expect_db) or step.expect_message is not None
     return not _ok(step.expect_status) or bool(step.expect_db) or step.expect_body is not None
 
 
@@ -230,6 +242,7 @@ def _sets_up_forbidden(scenario: Scenario) -> bool:
         if isinstance(step, Await):
             return True
         if _is_write(step):
+            assert isinstance(step, Step)
             if 400 <= step.expect_status < 500:
                 return True
             writes += 1
@@ -796,8 +809,8 @@ def _setup_steps(spec: Spec) -> list[tuple[Scenario, int, Step, str]]:
     for scenario in spec.scenarios:
         seen: set[tuple[Any, ...]] = set()
         for i, step in _steps(scenario):
-            if isinstance(step, Await):
-                break
+            if isinstance(step, Await | Rpc):
+                break  # an rpc may write: HTTP steps after it do not run on the setup alone
             key = (step.user, step.method.upper(), template_of(step.path, contracts))
             if key not in seen:
                 seen.add(key)
@@ -858,6 +871,93 @@ def _l011(spec: Spec, trace: Trace) -> list[LintFinding]:
     return out
 
 
+# ---- L013 ----------------------------------------------------------------------------------
+
+ACCESS_CODES = frozenset({"UNAUTHENTICATED", "PERMISSION_DENIED"})
+
+
+@dataclass(frozen=True)
+class RpcConflict:
+    """Two rpc steps (``scenario``, 1-based ``step``) expecting different codes for the
+    same call after the same setup (L013)."""
+
+    scenario_a: str
+    step_a: int
+    code_a: str
+    scenario_b: str
+    step_b: int
+    code_b: str
+    endpoint: str  # RPC Service/Method
+    user: str | None
+
+    @property
+    def targets(self) -> tuple[str, str]:
+        return f"scenario:{self.scenario_a}", f"scenario:{self.scenario_b}"
+
+
+def _setup_rpcs(spec: Spec) -> list[tuple[Scenario, int, Rpc]]:
+    """Every rpc step that runs on its scenario's setup alone (only rpc steps expecting a
+    refusal before it) and is the first on its call: (scenario, step number, step)."""
+    out = []
+    for scenario in spec.scenarios:
+        seen: set[tuple[Any, ...]] = set()
+        for i, step in _steps(scenario):
+            if not isinstance(step, Rpc):
+                break
+            key = (step.user, step.service, step.method, _canonical_json(step.message))
+            if key not in seen:
+                seen.add(key)
+                out.append((scenario, i, step))
+            if step.expect_code == "OK":
+                break  # an rpc that succeeds may have written: every later step differs
+    return out
+
+
+def rpc_conflicts(spec: Spec) -> list[RpcConflict]:
+    """The L013 pairs of `spec` (see the module docstring), in scenario order."""
+    groups: dict[tuple[Any, ...], list[tuple[Scenario, int, Rpc]]] = {}
+    for scenario, i, step in _setup_rpcs(spec):
+        key = (_canonical_json(scenario.given), step.user, step.service, step.method)
+        groups.setdefault(key, []).append((scenario, i, step))
+    out: list[RpcConflict] = []
+    for _, steps in groups.items():
+        for n, (sa, ia, a) in enumerate(steps):
+            for sb, ib, b in steps[n + 1 :]:
+                if sa.name == sb.name or a.expect_code == b.expect_code:
+                    continue
+                codes = {a.expect_code, b.expect_code}
+                access = bool(codes & ACCESS_CODES) and "OK" in codes
+                same = _canonical_json(a.message) == _canonical_json(b.message)
+                if not (same or access):
+                    continue
+                out.append(RpcConflict(sa.name, ia, a.expect_code, sb.name, ib, b.expect_code,
+                                       a.endpoint, a.user))  # fmt: skip
+    return out
+
+
+def _l013(spec: Spec, trace: Trace) -> list[LintFinding]:
+    by_element = _rules_by_element(trace)
+    out = []
+    for c in rpc_conflicts(spec):
+        ta, tb = c.targets
+        rules_a = by_element.get(ta, [])
+        rules_b = by_element.get(tb, [])
+        who = c.user or "no token"
+        says_a = f" ({', '.join(rules_a)})" if rules_a else ""
+        says_b = f" ({', '.join(rules_b)})" if rules_b else ""
+        out.append(LintFinding(
+            "L013", (rules_a or rules_b or [None])[0], ta,
+            f"{ta} step {c.step_a} expects {c.code_a} but {tb} step {c.step_b} expects "
+            f"{c.code_b} for the same call ({c.endpoint} as {who}) after the same setup: "
+            "both cannot hold",
+            f"Which holds? {c.endpoint} as {who} answers {c.code_a}{says_a}, or "
+            f"{c.code_b}{says_b}? Keep the scenario that states the answer the owner "
+            f"confirms and delete or rewrite the other ({ta} or {tb}), and fix the rule "
+            "that says otherwise.",
+        ))  # fmt: skip
+    return out
+
+
 # ---- L012 ----------------------------------------------------------------------------------
 
 
@@ -912,6 +1012,8 @@ def _l009(spec: Spec, trace: Trace, vacuity: VacuityConfig, notes: list[str]
 
     if not spec.scenarios:
         return []
+    if any(isinstance(st, Rpc) for sc in spec.scenarios for st in sc.steps):
+        notes.append("L009 skipped for the scenarios with Rpc steps: a stub app speaks no gRPC")
     cap = vacuity.await_cap_s
     capped = replace(spec, scenarios=tuple(
         replace(sc, steps=tuple(
@@ -936,6 +1038,8 @@ def _l009(spec: Spec, trace: Trace, vacuity: VacuityConfig, notes: list[str]
             return []
         failed = {f.rule.removeprefix("scenario: ") for f in report.findings if f.layer == "D"}
         for sc in spec.scenarios:
+            if any(isinstance(st, Rpc) for st in sc.steps):
+                continue  # a stub app does not speak gRPC: no verdict
             if sc.name not in failed:
                 passed.setdefault(sc.name, []).append(label)
     by_element = _rules_by_element(trace)
@@ -991,6 +1095,7 @@ def lint(
     found += _l010(trace)
     found += _l011(spec, trace)
     found += _l012(spec, trace)
+    found += _l013(spec, trace)
     return sorted(found, key=lambda f: f.code)
 
 
@@ -1098,11 +1203,13 @@ __all__ = [
     "LintConfig",
     "LintError",
     "LintFinding",
+    "RpcConflict",
     "VacuityConfig",
     "conflicts",
     "lint",
     "main",
     "render",
+    "rpc_conflicts",
     "stub_app",
     "template_of",
 ]

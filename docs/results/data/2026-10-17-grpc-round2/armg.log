@@ -1,0 +1,16 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+PASS     PR2-N                        {"implemented answered": "10/10", "bytes equal round 1": true, "extra keys": []}
+PASS     PR2-DESK (dev)               {"implemented answered": "17/17", "unimplemented (model routes)": "1/1", "absent": "1/1", "auth_refused": [], "order": {}, "Reports/Backlog in the library output": false, "Reports/Backlog by one supplementary _call_fresh
+PASS     PR2-ORDER                    {"N": {"disagreed": []}, "sessions": {"disagreed": ["sessions.v1.Sessions/DeleteMe", "sessions.v1.Sessions/Secret", "sessions.v1.Sessions/SignOut", "sessions.v1.Sessions/Stub"], "all isolated": true, "final codes equal t
+PASS     PR2-SESS                     {"round 1 (control, cea85fc library)": {"Login": {"code": "INVALID_ARGUMENT", "answered": true}, "SignOut": {"code": "OK", "answered": true}, "DeleteMe": {"code": "UNAUTHENTICATED", "answered": true}, "Secret": {"code": 
+PASS     PF2-N                        {"recovered": 17, "recovered_by_status": {"verified": 17, "unverified": 0, "failed": 0, "unbound": 0}, "verified": 17, "verified_but_failing": 0, "failing_codes": {}, "unbound_reasons": {}, "in 15-20 (p)": true, "seconds
+PASS     PF2-DESK (dev, tuned-on)     {"recovered": 41, "recovered_by_status": {"verified": 20, "unverified": 0, "failed": 21, "unbound": 0}, "verified": 20, "verified_but_failing": 0, "edge_recall": {"num": 21, "den": 34, "bound": 0.3, "gated": true, "value
+PASS     PF2-REPLAY                   {"N": {"verified": 17, "replays": 3, "failing per replay": [0, 0, 0]}, "deskd": {"verified": 20, "replays": 3, "failing per replay": [0, 0, 0]}}
+PASS     PF2-LEAK                     {"live processes+bridges after reconcile and flows": 0, "after a forced startup failure (reconcile raises, flows fail)": 0, "reconcile raised": "ProcessStartError", "flows of the broken app": ["failed"], "stray app or br
+PASS     PR1                          {"0": {"rows": 11, "round-1 PASS rows still PASS": "11/11", "regressed": [], "status now": {"P0-PARSE": "PASS", "P0-UNREAD": "PASS", "P0-VAL": "PASS", "P0-EXT": "PASS", "P0-MODEL": "PASS", "P0-SPEC": "PASS", "P0-EMIT": "
+PASS     PX2                          {"reconcile on deskd (s)": 2.23, "flows on deskd (s)": 10.6}
+NOT RUN  PM-S / PM-SG (Arm M)         "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here"
+NOT RUN  Arm L                        "the build round is its own node; out of scope"
+NOT RUN  PG-HO2 (HO2-*)               "the gated held-out stage: a new app by a new agent, scored once by the orchestrator after the freeze; it does not exist in this node's view and heldout2/ was not opened"
+frozen files ok before: True after: True
+10 passed, 0 failed, 3 not run

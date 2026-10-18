@@ -1,0 +1,1161 @@
+{
+ "schema": "lattice.grpc-probes3-h3/1",
+ "arm": "H3",
+ "heldout_freeze_before": {
+  "freeze3_sha256": "e58444d8eca4019870822fd82aa43746f0810e76550fa098c3ba234d7d09a73c",
+  "heldout_freeze_path": "harborline/freeze.sha256",
+  "heldout_freeze_sha256": "1c51ee0e5a1c4118205445b0f6d5ef882f5180af519f4ed5df285a9133d718b8",
+  "amendment_2_found": true,
+  "freeze3_recorded": true,
+  "heldout_freeze_recorded": true,
+  "freeze3_equals_committed_copy": true,
+  "heldout_freeze_equals_committed_copy": true,
+  "library_problems": [],
+  "heldout_problems": [],
+  "heldout_files": 54,
+  "staged": [],
+  "ok": true
+ },
+ "heldout_freeze_after_ok": true,
+ "library_sha256": {
+  "dogfood/grpc_flow_scorer.py": "8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3",
+  "dogfood/grpc_probes2.py": "0193add7bd620dbf2af90cddf66a8bccca85ba1ade5b06f048bd711c952755fa",
+  "dogfood/grpc_probes3.py": "244e5e688287774daad66198134697c4b67443a8e71316ad4a2df84a97d3a978",
+  "dogfood/grpc_scorer3.py": "019db509ded84f48ef95e7bfe7788a949305611a35ab3ae15706303298ea50be",
+  "dogfood/grpc_scorer3_cases.json": "be3ccbcbc61817bd76f6bbd8873e8da40f4574b4204169a0040f7690a2ae88db",
+  "lattice/gocheck/src/goextract.go": "652e7007380ef7fa3e16b77ac937fb300ab5023899c2e81408cfa7a2a28c376a",
+  "lattice/gocheck/src/goextract_grpc.go": "b2eda6fd8264445a172685ccb40c2bc1559c0effd43e5342743f83eef1a9315e",
+  "lattice/gocheck/src/goextract_proto.go": "ec4aa3157b407467708bdc341171e94e9a33aedf70ac6a46893d7b41590c9a50",
+  "lattice/gocheck/src/load.go": "72a35ec417e522243f7583f8cb7f605c5f0261a81ce28ee7d057fa5af4cbd17f",
+  "lattice/importer/frontends/go_grpc.py": "d22aefc60c5210ac515d1d8d0dc865d6dc803b38c45fd44f6ccd0f1d8c2f4ca4",
+  "lattice/importer/workflows.py": "5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098",
+  "lattice/spec/grpc.py": "edd41b1f3c28817975b66f9fad65219d45f9e7a33579ede6c52acbdfcef527d3"
+ },
+ "truth_reader": {
+  "app": "harborline",
+  "schema": "lattice.heldout.truth/3",
+  "step_index_base": 0,
+  "keys": [
+   "app",
+   "conventions",
+   "description",
+   "flows",
+   "natural_keys",
+   "owner_checks",
+   "ownership_chains",
+   "role_gated_fields",
+   "rpcs",
+   "schema",
+   "services",
+   "tables",
+   "users"
+  ],
+  "rpcs": 25,
+  "rpcs_with_effects": [
+   "harbor.v1.Accounts/CloseAccount",
+   "harbor.v1.Accounts/Logout",
+   "harbor.v1.Accounts/StepDown"
+  ],
+  "tables": 7,
+  "flows": 8
+ },
+ "probes": [
+  {
+   "id": "HO3-RPC",
+   "prediction": "recall 0.70-1.00 / precision 0.75-1.00 (point 0.90 / 0.95)",
+   "pass_rule": "recall >= 0.90 and precision >= 0.95 (rpc name AND state must match; `unread` counts wrong)",
+   "status": "FAIL",
+   "observed": {
+    "recall": 0.68,
+    "precision": 0.68,
+    "truth rpcs": 25,
+    "extracted rpcs": 25,
+    "matched": 17,
+    "truth states": {
+     "implemented": 21,
+     "not_registered": 2,
+     "streaming": 1,
+     "unimplemented": 1
+    },
+    "streaming reported not supported": [
+     "harbor.v1.Tides/WatchTides"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 14
+   },
+   "detail": {
+    "missed (truth, state)": [
+     [
+      "harbor.v1.Berths/CreateBerth",
+      "implemented"
+     ],
+     [
+      "harbor.v1.Berths/GetBerth",
+      "implemented"
+     ],
+     [
+      "harbor.v1.Berths/ListBerths",
+      "implemented"
+     ],
+     [
+      "harbor.v1.Berths/RetireBerth",
+      "unimplemented"
+     ],
+     [
+      "harbor.v1.Vessels/GetVessel",
+      "implemented"
+     ],
+     [
+      "harbor.v1.Vessels/ListVessels",
+      "implemented"
+     ],
+     [
+      "harbor.v1.Vessels/RegisterVessel",
+      "implemented"
+     ],
+     [
+      "harbor.v1.Vessels/RenameVessel",
+      "implemented"
+     ]
+    ],
+    "extra (extract, state)": [
+     [
+      "harbor.v1.Berths/CreateBerth",
+      "unread"
+     ],
+     [
+      "harbor.v1.Berths/GetBerth",
+      "unread"
+     ],
+     [
+      "harbor.v1.Berths/ListBerths",
+      "unread"
+     ],
+     [
+      "harbor.v1.Berths/RetireBerth",
+      "unread"
+     ],
+     [
+      "harbor.v1.Vessels/GetVessel",
+      "not_registered"
+     ],
+     [
+      "harbor.v1.Vessels/ListVessels",
+      "not_registered"
+     ],
+     [
+      "harbor.v1.Vessels/RegisterVessel",
+      "not_registered"
+     ],
+     [
+      "harbor.v1.Vessels/RenameVessel",
+      "not_registered"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "HO3-CODES",
+   "prediction": "recall 0.45-0.90 / precision 0.85-1.00",
+   "pass_rule": "micro recall >= 0.70 and micro precision >= 0.90 (implemented rpcs, OK excluded)",
+   "status": "FAIL",
+   "observed": {
+    "recall": 0.222,
+    "precision": 0.667,
+    "truth codes": 54,
+    "extracted codes": 18,
+    "matched": 12
+   },
+   "detail": {
+    "missed": [
+     [
+      "harbor.v1.Berths/CreateBerth",
+      "ALREADY_EXISTS"
+     ],
+     [
+      "harbor.v1.Berths/CreateBerth",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Berths/CreateBerth",
+      "INVALID_ARGUMENT"
+     ],
+     [
+      "harbor.v1.Berths/CreateBerth",
+      "PERMISSION_DENIED"
+     ],
+     [
+      "harbor.v1.Berths/GetBerth",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Berths/GetBerth",
+      "INVALID_ARGUMENT"
+     ],
+     [
+      "harbor.v1.Berths/GetBerth",
+      "NOT_FOUND"
+     ],
+     [
+      "harbor.v1.Berths/ListBerths",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Bookings/BookBerth",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "harbor.v1.Bookings/BookBerth",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Bookings/BookBerth",
+      "INVALID_ARGUMENT"
+     ],
+     [
+      "harbor.v1.Bookings/BookBerth",
+      "NOT_FOUND"
+     ],
+     [
+      "harbor.v1.Bookings/CancelBooking",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "harbor.v1.Bookings/CancelBooking",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Bookings/CancelBooking",
+      "NOT_FOUND"
+     ],
+     [
+      "harbor.v1.Bookings/CheckIn",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "harbor.v1.Bookings/CheckIn",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Bookings/CheckIn",
+      "NOT_FOUND"
+     ],
+     [
+      "harbor.v1.Bookings/CheckIn",
+      "PERMISSION_DENIED"
+     ],
+     [
+      "harbor.v1.Bookings/GetBooking",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Bookings/GetBooking",
+      "NOT_FOUND"
+     ],
+     [
+      "harbor.v1.Bookings/ListBookings",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Bookings/ListBookings",
+      "PERMISSION_DENIED"
+     ],
+     [
+      "harbor.v1.Vessels/GetVessel",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Vessels/GetVessel",
+      "NOT_FOUND"
+     ],
+     [
+      "harbor.v1.Vessels/ListVessels",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Vessels/RegisterVessel",
+      "ALREADY_EXISTS"
+     ],
+     [
+      "harbor.v1.Vessels/RegisterVessel",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Vessels/RegisterVessel",
+      "INVALID_ARGUMENT"
+     ],
+     [
+      "harbor.v1.Vessels/RenameVessel",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Vessels/RenameVessel",
+      "INVALID_ARGUMENT"
+     ],
+     [
+      "harbor.v1.Vessels/RenameVessel",
+      "NOT_FOUND"
+     ],
+     [
+      "harbor.v1.Yard/CompleteWorkOrder",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "harbor.v1.Yard/CompleteWorkOrder",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Yard/CompleteWorkOrder",
+      "NOT_FOUND"
+     ],
+     [
+      "harbor.v1.Yard/CompleteWorkOrder",
+      "PERMISSION_DENIED"
+     ],
+     [
+      "harbor.v1.Yard/ListWorkOrders",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Yard/ListWorkOrders",
+      "NOT_FOUND"
+     ],
+     [
+      "harbor.v1.Yard/OpenWorkOrder",
+      "FAILED_PRECONDITION"
+     ],
+     [
+      "harbor.v1.Yard/OpenWorkOrder",
+      "INTERNAL"
+     ],
+     [
+      "harbor.v1.Yard/OpenWorkOrder",
+      "INVALID_ARGUMENT"
+     ],
+     [
+      "harbor.v1.Yard/OpenWorkOrder",
+      "NOT_FOUND"
+     ]
+    ],
+    "extra": [
+     [
+      "harbor.v1.Bookings/BookBerth",
+      "UNKNOWN"
+     ],
+     [
+      "harbor.v1.Bookings/CancelBooking",
+      "UNKNOWN"
+     ],
+     [
+      "harbor.v1.Bookings/CheckIn",
+      "UNKNOWN"
+     ],
+     [
+      "harbor.v1.Bookings/GetBooking",
+      "UNKNOWN"
+     ],
+     [
+      "harbor.v1.Bookings/ListBookings",
+      "UNKNOWN"
+     ],
+     [
+      "harbor.v1.Yard/CompleteWorkOrder",
+      "UNKNOWN"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "HO3-AUTH",
+   "prediction": "wrong 0 (p 0.8); unclear 0.00-0.60",
+   "pass_rule": "S7: 0 wrong (hard) and unclear <= 0.50 of the truth's implemented + unimplemented rpcs",
+   "status": "FAIL",
+   "observed": {
+    "denominator": 22,
+    "unclear": 22,
+    "unclear_share": 1.0,
+    "reason": "unclear_above_cap",
+    "wrong": []
+   },
+   "detail": {
+    "unclear rpcs": [
+     [
+      "harbor.v1.Accounts/CloseAccount",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Accounts/Login",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Accounts/Logout",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Accounts/StepDown",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Accounts/WhoAmI",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Berths/CreateBerth",
+      "(none)"
+     ],
+     [
+      "harbor.v1.Berths/GetBerth",
+      "(none)"
+     ],
+     [
+      "harbor.v1.Berths/ListBerths",
+      "(none)"
+     ],
+     [
+      "harbor.v1.Berths/RetireBerth",
+      "(none)"
+     ],
+     [
+      "harbor.v1.Bookings/BookBerth",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Bookings/CancelBooking",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Bookings/CheckIn",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Bookings/GetBooking",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Bookings/ListBookings",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Tides/GetTideTable",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Vessels/GetVessel",
+      "(none)"
+     ],
+     [
+      "harbor.v1.Vessels/ListVessels",
+      "(none)"
+     ],
+     [
+      "harbor.v1.Vessels/RegisterVessel",
+      "(none)"
+     ],
+     [
+      "harbor.v1.Vessels/RenameVessel",
+      "(none)"
+     ],
+     [
+      "harbor.v1.Yard/CompleteWorkOrder",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Yard/ListWorkOrders",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Yard/OpenWorkOrder",
+      "unclear"
+     ]
+    ],
+    "row": {
+     "denominator": 22,
+     "wrong": [],
+     "unclear": 22,
+     "unclear_share": 1.0,
+     "unclear_rpcs": [
+      [
+       "harbor.v1.Accounts/CloseAccount",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Accounts/Login",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Accounts/Logout",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Accounts/StepDown",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Accounts/WhoAmI",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Berths/CreateBerth",
+       "(none)"
+      ],
+      [
+       "harbor.v1.Berths/GetBerth",
+       "(none)"
+      ],
+      [
+       "harbor.v1.Berths/ListBerths",
+       "(none)"
+      ],
+      [
+       "harbor.v1.Berths/RetireBerth",
+       "(none)"
+      ],
+      [
+       "harbor.v1.Bookings/BookBerth",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Bookings/CancelBooking",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Bookings/CheckIn",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Bookings/GetBooking",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Bookings/ListBookings",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Tides/GetTideTable",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Vessels/GetVessel",
+       "(none)"
+      ],
+      [
+       "harbor.v1.Vessels/ListVessels",
+       "(none)"
+      ],
+      [
+       "harbor.v1.Vessels/RegisterVessel",
+       "(none)"
+      ],
+      [
+       "harbor.v1.Vessels/RenameVessel",
+       "(none)"
+      ],
+      [
+       "harbor.v1.Yard/CompleteWorkOrder",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Yard/ListWorkOrders",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Yard/OpenWorkOrder",
+       "unclear"
+      ]
+     ],
+     "reason": "unclear_above_cap",
+     "pass": false
+    }
+   }
+  },
+  {
+   "id": "HO3-TABLES",
+   "prediction": "recall 0.85-1.00",
+   "pass_rule": "recall >= 0.90",
+   "status": "FAIL",
+   "observed": {
+    "recall": 0.0,
+    "precision": 1.0,
+    "truth": 7,
+    "extracted": 0
+   },
+   "detail": {
+    "missed": [
+     "berths",
+     "bookings",
+     "sessions",
+     "tide_readings",
+     "users",
+     "vessels",
+     "work_orders"
+    ],
+    "extra": []
+   }
+  },
+  {
+   "id": "HO3-REC",
+   "prediction": "coverage 0.95-1.00; agreement 0.85-1.00; 0-3 disagreements",
+   "pass_rule": "S5 (coverage >= 0.95, agreement 1.00, supplementary calls 0) + S6 not FAIL + 0 auth_refused on truth-implemented non-public rpcs + every disagreement resolved isolated",
+   "status": "FAIL",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 0.04,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "0/21",
+     "not_registered": "0/2",
+     "unimplemented": "0/1"
+    },
+    "S5 reason": "agreement",
+    "supplementary_calls": 0,
+    "S6": "order_vacuous",
+    "auth_refused on truth-implemented non-public rpcs": [],
+    "order disagreed": [
+     "harbor.v1.Accounts/CloseAccount",
+     "harbor.v1.Accounts/Login",
+     "harbor.v1.Accounts/Logout",
+     "harbor.v1.Accounts/StepDown",
+     "harbor.v1.Accounts/WhoAmI",
+     "harbor.v1.Berths/CreateBerth",
+     "harbor.v1.Berths/GetBerth",
+     "harbor.v1.Berths/ListBerths",
+     "harbor.v1.Berths/RetireBerth",
+     "harbor.v1.Bookings/BookBerth",
+     "harbor.v1.Bookings/CancelBooking",
+     "harbor.v1.Bookings/CheckIn",
+     "harbor.v1.Bookings/GetBooking",
+     "harbor.v1.Bookings/ListBookings",
+     "harbor.v1.Fuel/Dispense",
+     "harbor.v1.Fuel/QuoteFuel",
+     "harbor.v1.Tides/GetTideTable",
+     "harbor.v1.Vessels/GetVessel",
+     "harbor.v1.Vessels/ListVessels",
+     "harbor.v1.Vessels/RegisterVessel",
+     "harbor.v1.Vessels/RenameVessel",
+     "harbor.v1.Yard/CompleteWorkOrder",
+     "harbor.v1.Yard/ListWorkOrders",
+     "harbor.v1.Yard/OpenWorkOrder"
+    ],
+    "all disagreements resolved isolated": false,
+    "rpcs answered by the library": 25,
+    "seconds": 3.94
+   },
+   "detail": {
+    "S5": {
+     "denominator": 25,
+     "covered": 25,
+     "coverage": 1.0,
+     "agreement": 0.04,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "0/21",
+      "not_registered": "0/2",
+      "unimplemented": "0/1"
+     },
+     "wrong": [
+      [
+       "harbor.v1.Accounts/CloseAccount",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Accounts/Login",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Accounts/Logout",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Accounts/StepDown",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Accounts/WhoAmI",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Berths/CreateBerth",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Berths/GetBerth",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Berths/ListBerths",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Berths/RetireBerth",
+       null,
+       "unimplemented"
+      ],
+      [
+       "harbor.v1.Bookings/BookBerth",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Bookings/CancelBooking",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Bookings/CheckIn",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Bookings/GetBooking",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Bookings/ListBookings",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Fuel/Dispense",
+       null,
+       "not_registered"
+      ],
+      [
+       "harbor.v1.Fuel/QuoteFuel",
+       null,
+       "not_registered"
+      ],
+      [
+       "harbor.v1.Tides/GetTideTable",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Vessels/GetVessel",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Vessels/ListVessels",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Vessels/RegisterVessel",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Vessels/RenameVessel",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Yard/CompleteWorkOrder",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Yard/ListWorkOrders",
+       null,
+       "implemented"
+      ],
+      [
+       "harbor.v1.Yard/OpenWorkOrder",
+       null,
+       "implemented"
+      ]
+     ],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "agreement",
+     "pass": false
+    },
+    "S6": {
+     "status": "order_vacuous",
+     "pass": false,
+     "effectful": [
+      "harbor.v1.Accounts/CloseAccount",
+      "harbor.v1.Accounts/Logout",
+      "harbor.v1.Accounts/StepDown"
+     ],
+     "not_in_both_passes": [
+      "harbor.v1.Accounts/CloseAccount",
+      "harbor.v1.Accounts/Logout",
+      "harbor.v1.Accounts/StepDown"
+     ],
+     "isolated": [],
+     "reason": "order_vacuous"
+    },
+    "library output rpcs not in truth": [],
+    "codes": {
+     "harbor.v1.Accounts/Login": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Accounts/WhoAmI": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Accounts/Logout": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Accounts/StepDown": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Accounts/CloseAccount": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Bookings/BookBerth": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Bookings/GetBooking": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Bookings/ListBookings": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Bookings/CancelBooking": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Bookings/CheckIn": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Tides/GetTideTable": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Yard/OpenWorkOrder": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Yard/ListWorkOrders": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Yard/CompleteWorkOrder": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true
+     },
+     "harbor.v1.Berths/ListBerths": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true,
+      "route": false
+     },
+     "harbor.v1.Berths/GetBerth": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true,
+      "route": false
+     },
+     "harbor.v1.Berths/CreateBerth": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true,
+      "route": false
+     },
+     "harbor.v1.Berths/RetireBerth": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true,
+      "route": false
+     },
+     "harbor.v1.Fuel/QuoteFuel": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true,
+      "route": false
+     },
+     "harbor.v1.Fuel/Dispense": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true,
+      "route": false
+     },
+     "harbor.v1.Vessels/RegisterVessel": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true,
+      "route": false
+     },
+     "harbor.v1.Vessels/GetVessel": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true,
+      "route": false
+     },
+     "harbor.v1.Vessels/RenameVessel": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true,
+      "route": false
+     },
+     "harbor.v1.Vessels/ListVessels": {
+      "code": null,
+      "answered": null,
+      "reason": "login_failed",
+      "isolated": true,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "order": {
+      "disagreed": [
+       "harbor.v1.Accounts/CloseAccount",
+       "harbor.v1.Accounts/Login",
+       "harbor.v1.Accounts/Logout",
+       "harbor.v1.Accounts/StepDown",
+       "harbor.v1.Accounts/WhoAmI",
+       "harbor.v1.Berths/CreateBerth",
+       "harbor.v1.Berths/GetBerth",
+       "harbor.v1.Berths/ListBerths",
+       "harbor.v1.Berths/RetireBerth",
+       "harbor.v1.Bookings/BookBerth",
+       "harbor.v1.Bookings/CancelBooking",
+       "harbor.v1.Bookings/CheckIn",
+       "harbor.v1.Bookings/GetBooking",
+       "harbor.v1.Bookings/ListBookings",
+       "harbor.v1.Fuel/Dispense",
+       "harbor.v1.Fuel/QuoteFuel",
+       "harbor.v1.Tides/GetTideTable",
+       "harbor.v1.Vessels/GetVessel",
+       "harbor.v1.Vessels/ListVessels",
+       "harbor.v1.Vessels/RegisterVessel",
+       "harbor.v1.Vessels/RenameVessel",
+       "harbor.v1.Yard/CompleteWorkOrder",
+       "harbor.v1.Yard/ListWorkOrders",
+       "harbor.v1.Yard/OpenWorkOrder"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "HO3-FLOWS",
+   "prediction": "recovered 5-60; verified 0-12 (point 4); edge recall 0.00-0.55 (point 0.25); coverage 0-5 (point 2); 0 vbf",
+   "pass_rule": "S2: verified >= 1, 0 verified-but-failing, edge recall >= 0.30, coverage >= 2 truth flows",
+   "status": "FAIL",
+   "observed": {
+    "truth_flows": 8,
+    "truth_flows_passing": 0,
+    "truth_edges_total": 23,
+    "recovered": 0,
+    "recovered_by_status": {
+     "verified": 0,
+     "unverified": 0,
+     "failed": 0,
+     "unbound": 0
+    },
+    "recovered_by_kind_status": {},
+    "verified": 0,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 0,
+     "den": 0,
+     "bound": 0.3,
+     "gated": true,
+     "value": null,
+     "pass": false,
+     "reason": "vacuous"
+    },
+    "coverage": {
+     "num": 0,
+     "den": 0,
+     "bound": 2,
+     "gated": true,
+     "value": null,
+     "pass": false,
+     "reason": "vacuous"
+    },
+    "exact": {
+     "num": 0,
+     "den": 0
+    },
+    "failing_codes": {},
+    "unbound_reasons": {},
+    "reasons": [
+     "no_verified_flow",
+     "truth_not_scorable",
+     "edge_recall:vacuous",
+     "coverage:vacuous"
+    ],
+    "seconds": 0.0
+   },
+   "detail": {
+    "score": {
+     "pass": false,
+     "reasons": [
+      "no_verified_flow",
+      "truth_not_scorable",
+      "edge_recall:vacuous",
+      "coverage:vacuous"
+     ],
+     "recovered": 0,
+     "recovered_by_status": {
+      "verified": 0,
+      "unverified": 0,
+      "failed": 0,
+      "unbound": 0
+     },
+     "verified": 0,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 0,
+      "bound": 0.3,
+      "gated": true,
+      "value": null,
+      "pass": false,
+      "reason": "vacuous"
+     },
+     "coverage": {
+      "num": 0,
+      "den": 0,
+      "bound": 2,
+      "gated": true,
+      "value": null,
+      "pass": false,
+      "reason": "vacuous"
+     },
+     "exact": {
+      "num": 0,
+      "den": 0
+     },
+     "truth_defects": [
+      "book_then_cancel_twice",
+      "stranger_cannot_reach_booking",
+      "work_order_on_own_booking",
+      "new_vessel_books_and_renames",
+      "harbormaster_checks_in",
+      "new_berth_then_occupied",
+      "yard_lists_work_orders",
+      "harbormaster_steps_down"
+     ],
+     "failing_codes": {},
+     "unbound_reasons": {},
+     "truth_flows": 8,
+     "truth_flows_passing": 0,
+     "truth_edges_total": 23,
+     "recovered_by_kind_status": {}
+    },
+    "vbf ids": [],
+    "truth flow failures": [
+     "book_then_cancel_twice",
+     "stranger_cannot_reach_booking",
+     "work_order_on_own_booking",
+     "new_vessel_books_and_renames",
+     "harbormaster_checks_in",
+     "new_berth_then_occupied",
+     "yard_lists_work_orders",
+     "harbormaster_steps_down"
+    ],
+    "not verified": []
+   }
+  },
+  {
+   "id": "HO3-DET",
+   "prediction": "10/10 identical",
+   "pass_rule": "10/10 identical, no absolute path, time or port",
+   "status": "PASS",
+   "observed": {
+    "identical runs": 10,
+    "of": 10,
+    "leaks": [],
+    "artifacts": [
+     "describe",
+     "extract",
+     "flows",
+     "model",
+     "plans",
+     "reconcile"
+    ],
+    "ok": true
+   },
+   "detail": []
+  },
+  {
+   "id": "HO3-NW",
+   "prediction": "0, 0, 0",
+   "pass_rule": "0 changed, 0 new, 0 claude calls",
+   "status": "PASS",
+   "observed": {
+    "changed": 0,
+    "new": 0,
+    "claude calls": 0
+   },
+   "detail": []
+  },
+  {
+   "id": "PM-S / PM-SG (Arm M)",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here",
+   "detail": null
+  },
+  {
+   "id": "Arm L",
+   "prediction": "",
+   "pass_rule": "",
+   "status": "NOT RUN",
+   "observed": "the build round is its own node; out of scope",
+   "detail": null
+  }
+ ]
+}

@@ -450,6 +450,8 @@ def _build_index(am: AppMap) -> dict[str, tuple[str, Any]]:
     routes = {r["key"]: r for r in am.report.get("routes", [])}
     for ep in doc["endpoints"]:
         idx[f"impl:route:{ep['key']}"] = ("route", {"endpoint": ep, "route": routes.get(ep["key"])})
+        if ep["key"].startswith("RPC /"):  # an rpc is also listed under its own key (Spike I)
+            idx[f"impl:rpc:{ep['key'][5:]}"] = idx[f"impl:route:{ep['key']}"]
     return idx
 
 

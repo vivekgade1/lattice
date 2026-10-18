@@ -37,7 +37,7 @@ from pathlib import Path
 from typing import Any
 
 from lattice.spec.db import open_db
-from lattice.spec.model import Await, Contract, Scenario, Spec, Step, resolve_table
+from lattice.spec.model import Await, Contract, Rpc, Scenario, Spec, Step, resolve_table
 from lattice.spec.validate import validate
 
 __all__ = ["FidelityReport", "StepResult", "predict", "run_fidelity", "status_classes"]
@@ -266,8 +266,8 @@ def run_fidelity(
             with rt.serve(app_factory, db) as (_, transport):
                 headers: dict[str, dict[str, str]] = {}
                 for i, step in enumerate(scenario.steps, 1):
-                    if isinstance(step, Await):  # a wait on a service: layer D's
-                        continue
+                    if isinstance(step, Await | Rpc):  # a wait on a service: layer D's; an rpc
+                        continue  # is not an HTTP answer to compare (Spike I)
                     report.steps.append(_step(spec, scenario, i, step, transport, headers,
                                               headers_for, raw_headers, callers, subset,
                                               framework))  # fmt: skip

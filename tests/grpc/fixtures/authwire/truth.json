@@ -1,0 +1,88 @@
+{
+  "schema": "lattice.grpc.authwire-truth/1",
+  "app": "authwire",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-3 extractor code ran. Per case: the auth of aw.v1.Desk/Ping and /Read by reading the Go (Public only where a literal allowlist names the method or nothing refuses the caller; Member where a literal gate refuses or the handler does; unclear where an interceptor that may refuse cannot be read), and the kinds the interceptors (in NewServer order) classify as",
+  "cases": {
+    "logger": {
+      "kinds": [
+        "other"
+      ],
+      "auth": {
+        "Ping": "Public",
+        "Read": "Public"
+      }
+    },
+    "recover": {
+      "kinds": [
+        "other"
+      ],
+      "auth": {
+        "Ping": "Public",
+        "Read": "Public"
+      }
+    },
+    "gate_unknown": {
+      "kinds": [
+        "auth_unknown"
+      ],
+      "auth": {
+        "Ping": "unclear",
+        "Read": "unclear"
+      }
+    },
+    "literal_logger": {
+      "kinds": [
+        "other",
+        "auth_literal"
+      ],
+      "auth": {
+        "Ping": "Public",
+        "Read": "Member"
+      }
+    },
+    "none": {
+      "kinds": [],
+      "auth": {
+        "Ping": "Public",
+        "Read": "Public"
+      }
+    },
+    "gate_traced": {
+      "kinds": [
+        "other",
+        "auth_literal"
+      ],
+      "auth": {
+        "Ping": "Public",
+        "Read": "Member"
+      }
+    },
+    "opts_split": {
+      "kinds": [
+        "auth_literal"
+      ],
+      "auth": {
+        "Ping": "Public",
+        "Read": "Member"
+      }
+    },
+    "handler_check": {
+      "kinds": [],
+      "auth": {
+        "Ping": "Public",
+        "Read": "Member"
+      }
+    },
+    "mixed": {
+      "kinds": [
+        "auth_literal",
+        "auth_unknown"
+      ],
+      "auth": {
+        "Ping": "unclear",
+        "Read": "Member"
+      }
+    }
+  }
+}

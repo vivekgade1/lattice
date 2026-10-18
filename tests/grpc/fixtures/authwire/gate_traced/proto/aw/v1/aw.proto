@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package aw.v1;
+
+option go_package = "example.com/authwire/gen/aw/v1;awv1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+// Desk has one rpc anyone may call and one that needs a caller.
+service Desk {
+  rpc Ping(Req) returns (Rep);
+  rpc Read(Req) returns (Rep);
+}

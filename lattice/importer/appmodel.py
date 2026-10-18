@@ -118,6 +118,8 @@ class RaiseSite:
     detail: str | None
     line: int
     kind: str = "HTTPException"
+    # a gRPC site (kind ``grpc_status``): the code's name (``NOT_FOUND``), ``status`` None
+    code: str | None = field(default=None, metadata=OMIT_DEFAULT)
 
 
 @dataclass(frozen=True)
@@ -173,6 +175,9 @@ class RouteParam:
     # a path parameter looking its row up by a column that is not the key (DRF's
     # ``lookup_field = "slug"``): that column's name
     lookup: str | None = field(default=None, metadata=OMIT_DEFAULT)
+    # exclusive bounds read from a protobuf validation rule (``gt`` / ``lt``)
+    gt: int | float | None = field(default=None, metadata=OMIT_DEFAULT)
+    lt: int | float | None = field(default=None, metadata=OMIT_DEFAULT)
     # the text format the parameter takes (FieldSpec.format: Django's ``<slug:...>``
     # path converter, a lookup column's field)
     format: str | None = field(default=None, metadata=OMIT_DEFAULT)
@@ -245,6 +250,29 @@ class Route:
     # in its handler or the package code it calls. Table evidence: such a table is
     # never "outside the API"
     rel_tables: tuple[str, ...] = field(default=(), metadata=OMIT_DEFAULT)
+    # gRPC (Spike I): an rpc is a route with ``method`` "RPC" and ``path``
+    # "/<pkg.Service>/<Method>" (the wire path); ``transport`` "grpc", ``rpc`` its facts and
+    # ``http_bindings`` the grpc-gateway bindings ((method, path) pairs) of the same rpc --
+    # one endpoint, never a second route. HTTP routes keep the defaults, so their JSON is
+    # unchanged.
+    transport: str = field(default="http", metadata=OMIT_DEFAULT)
+    rpc: RpcInfo | None = field(default=None, metadata=OMIT_DEFAULT)
+    http_bindings: tuple[tuple[str, str], ...] = field(default=(), metadata=OMIT_DEFAULT)
+
+
+@dataclass(frozen=True)
+class RpcInfo:
+    """What a gRPC route (``Route.transport == "grpc"``) is beyond a route: the service's
+    full name, the method, the request and response message names, and the state of the
+    rpc in the server -- ``implemented``, or ``unimplemented`` (in the contract, served by
+    the generated Unimplemented stub: the gRPC analogue of ``spec_only``)."""
+
+    service: str
+    method: str
+    input: str
+    output: str
+    state: str = "implemented"
+    proto: str = ""  # the .proto file declaring the rpc (module-relative)
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,37 @@
+{
+ "label": "post hoc: round 1's recorded deskd HO-FLOWS numbers re-scored under S1/S2 (nothing re-run)",
+ "files": {
+  "probes-armh-run2.json": {
+   "round1_status": "PASS",
+   "rescored": {
+    "label": "post hoc: round-1 numbers re-scored under S1/S2, not re-run",
+    "round1_rule": "PASS (0 verified-but-failing, vacuously)",
+    "recovered_by_status": {
+     "failed": 38
+    },
+    "verified": 0,
+    "pass": false,
+    "reasons": [
+     "no_verified_flow",
+     "coverage:below_bound"
+    ]
+   }
+  },
+  "probes-armh.json": {
+   "round1_status": "PASS",
+   "rescored": {
+    "label": "post hoc: round-1 numbers re-scored under S1/S2, not re-run",
+    "round1_rule": "PASS (0 verified-but-failing, vacuously)",
+    "recovered_by_status": {
+     "failed": 38
+    },
+    "verified": 0,
+    "pass": false,
+    "reasons": [
+     "no_verified_flow",
+     "coverage:below_bound"
+    ]
+   }
+  }
+ }
+}

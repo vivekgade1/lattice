@@ -35,7 +35,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from lattice.spec.model import Await, Spec, Step, tables_of
+from lattice.spec.model import Await, Rpc, Spec, Step, tables_of
 from lattice.spec.review import _build, _normalize_path
 from lattice.spec.rules import Trace
 
@@ -104,7 +104,10 @@ def template_path(path: str) -> str:
 
 
 def route_key(method: str, path: str) -> str:
-    """``METHOD /template`` of a route or request path."""
+    """``METHOD /template`` of a route or request path (a gRPC call, method ``RPC``, is
+    ``RPC /<pkg.Service>/<Method>``: the wire path)."""
+    if method.upper() == "RPC" and not path.startswith("/"):
+        path = "/" + path
     return f"{method.upper()} {template_path(path)}"
 
 
@@ -519,6 +522,9 @@ class CodeView:
     tables: dict[str, dict[str, Any]]
     machines: list[dict[str, Any]]
     writes: frozenset[tuple[str, str]]
+    # rpcs in the contract the server does not serve (the Unimplemented stub): read like
+    # spec_only endpoints (Spike I)
+    unserved: list[dict[str, Any]] = field(default_factory=list)
 
     def loc(self, file: Any, line: Any) -> str:
         return f"code:{self.inv.evidence_path(str(file))}:{int(line or 0)}"
@@ -581,6 +587,45 @@ def code_view(inv: Inventory) -> CodeView:
             by_key.setdefault(k, []).append(entry)
             if entry["condition"]:
                 conditional.add(k)
+    unserved: list[dict[str, Any]] = []
+    for svc in (ex.get("grpc") or {}).get("services") or []:
+        for rpc in svc.get("rpcs") or []:
+            if rpc.get("state") not in ("implemented", "unimplemented"):
+                continue
+            path = f"/{svc['name']}/{rpc['name']}"
+            h = rpc.get("handler") or {}
+            entry = {
+                "id": f"RPC {path}",
+                "method": "RPC",
+                "path": path,
+                "gin_path": path,
+                "file": h.get("file") or rpc.get("file"),
+                "line": h.get("line") or rpc.get("line"),
+                "handler": h.get("func"),
+                "handler_file": h.get("file"),
+                "handler_line": h.get("line"),
+                "auth": "Customer" if rpc.get("auth") == "Member" else rpc.get("auth"),
+                "status_codes": [],
+                "refusals": [],
+                "condition": None,
+                "via_any": False,
+                "tables": sorted(str(t) for t in rpc.get("tables") or []),
+                "keys": [f"RPC {path}"],
+                "rpc": {
+                    "service": svc["name"],
+                    "method": rpc["name"],
+                    "state": rpc["state"],
+                    "codes": sorted({c["name"] for c in rpc.get("codes") or []}),
+                    "http_bindings": [
+                        f"{b['method']} {b['path']}" for b in rpc.get("http_bindings") or []
+                    ],
+                },
+            }
+            if rpc["state"] == "unimplemented":
+                unserved.append(entry)  # in the contract, not served: read as spec_only
+                continue
+            routes.append(entry)
+            by_key.setdefault(entry["keys"][0], []).append(entry)
     for entry in routes:
         entry["collision"] = any(len(by_key[k]) > 1 for k in entry["keys"]) and not entry["via_any"]
     routes.sort(key=lambda e: (e["path"], e["method"], str(e["file"]), int(e["line"] or 0)))
@@ -589,7 +634,7 @@ def code_view(inv: Inventory) -> CodeView:
     writes = frozenset(
         (str(w.get("table")), str(w.get("column"))) for w in ex.get("status_writes") or []
     )
-    return CodeView(inv, routes, by_key, frozenset(conditional), tables, machines, writes)
+    return CodeView(inv, routes, by_key, frozenset(conditional), tables, machines, writes, unserved)
 
 
 def route_evidence(cv: CodeView, r: Mapping[str, Any]) -> list[str]:
@@ -626,7 +671,13 @@ class SpecView:
                     m, _, p = col.partition(" ")
                     cells[f"cell:{row}|{col}"] = route_key(m, p)
         scenarios = {
-            sc.name: [route_key(s.method, s.path) for s in sc.steps if isinstance(s, Step)]
+            sc.name: [
+                route_key(s.method, s.path)
+                if isinstance(s, Step)
+                else route_key("RPC", f"{s.service}/{s.method}")
+                for s in sc.steps
+                if isinstance(s, Step | Rpc)
+            ]
             for sc in spec.scenarios
         }
         tabs, sql = tables_of(spec.profile)
@@ -1046,6 +1097,11 @@ def build_report(
                 ),
                 "evidence": route_evidence(cv, r),
             }
+            | (
+                {"rpc": r["rpc"], "rpc_key": f"impl:rpc:{r['rpc']['service']}/{r['rpc']['method']}"}
+                if r.get("rpc")
+                else {}
+            )  # fmt: skip
         )
     for item in inventory.extract.get("excluded") or []:
         excluded.append(
@@ -1077,6 +1133,18 @@ def build_report(
             else:
                 st = "implemented"
         endpoints.append({"key": k, "status": st, "in_spec": in_spec, "in_code": bool(regs)})
+    have = {ep["key"] for ep in endpoints}
+    for u in cv.unserved:  # an rpc in the contract and not served reads like a spec_only endpoint
+        if u["id"] not in have:
+            endpoints.append({"key": u["id"], "status": "spec_only",
+                              "in_spec": u["id"] in spec_keys, "in_code": False,
+                              "rpc": u["rpc"]["state"]})  # fmt: skip
+    if cv.unserved:
+        state = {u["id"]: u["rpc"]["state"] for u in cv.unserved}
+        for ep in endpoints:
+            if ep["key"] in state:
+                ep["rpc"] = state[ep["key"]]
+        endpoints.sort(key=lambda ep: ep["key"])
 
     # ---- flows
     skeletons = sv.skeletons(cv.conditional)

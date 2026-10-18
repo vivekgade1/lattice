@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package t.v1;
+
+message Weak {
+  string id = 1;
+}

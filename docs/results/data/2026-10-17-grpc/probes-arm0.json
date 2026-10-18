@@ -1,0 +1,168 @@
+{
+ "schema": "lattice.grpc-probes/1",
+ "arm": "0",
+ "probes": [
+  {
+   "id": "P0-PARSE",
+   "prediction": "supported constructs 100% equal; 0 disagreements",
+   "pass_rule": "100% equal",
+   "status": "PASS",
+   "observed": {
+    "disagreements": 0,
+    "compared": {
+     "services": 4,
+     "rpcs": 25,
+     "messages": 32,
+     "fields": 95,
+     "enums": 3
+    }
+   },
+   "detail": []
+  },
+  {
+   "id": "P0-UNREAD",
+   "prediction": "10/10 (p)",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": "10/10",
+   "detail": []
+  },
+  {
+   "id": "P0-VAL",
+   "prediction": "exact",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "T fields": 18,
+    "N fields": 4,
+    "mismatches": 0
+   },
+   "detail": []
+  },
+  {
+   "id": "P0-EXT",
+   "prediction": "exact on N",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "rpcs": 11,
+    "mismatches": 0,
+    "truth_sha256": "debbd0b4e61297ca94ab1cbd0d7835efc99d67c4b75d6012243ddeb07b22f490"
+   },
+   "detail": []
+  },
+  {
+   "id": "P0-MODEL",
+   "prediction": "9 endpoints, not 11 (pre-registration; its own shape gives 11, not 13)",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "routes": 11,
+    "rpc routes": 11,
+    "bindings on rpcs": 2,
+    "all RPC /pkg.Svc/Method": true,
+    "would be, with bindings as routes": 13
+   },
+   "detail": null
+  },
+  {
+   "id": "P0-SPEC",
+   "prediction": "100%",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 16,
+    "seconds": 2.9
+   },
+   "detail": []
+  },
+  {
+   "id": "P0-EMIT",
+   "prediction": "as stated",
+   "pass_rule": "all pass",
+   "status": "PASS",
+   "observed": {
+    "passed": 2,
+    "deselected": 8,
+    "seconds": 2.7
+   },
+   "detail": []
+  },
+  {
+   "id": "P0-SITES",
+   "prediction": "49/49 (pre-registration count; 51 found)",
+   "pass_rule": "all sites",
+   "status": "PASS",
+   "observed": {
+    "sites at 6a318e5": 51,
+    "registered": 51,
+    "tests passed": 52,
+    "unregistered": [],
+    "stale": []
+   },
+   "detail": []
+  },
+  {
+   "id": "P0-DET",
+   "prediction": "identical; none; 10/10",
+   "pass_rule": "10/10",
+   "status": "PASS",
+   "observed": {
+    "identical runs": 10,
+    "of": 10,
+    "roots": 2,
+    "artifacts": [
+     "notes:describe",
+     "notes:extract",
+     "notes:model",
+     "notes:spec",
+     "protos:describe",
+     "protos:extract"
+    ],
+    "leaks": []
+   },
+   "detail": []
+  },
+  {
+   "id": "P0-NW",
+   "prediction": "0 changed, 0 new, 0 calls",
+   "pass_rule": "all 0",
+   "status": "PASS",
+   "observed": {
+    "roots": [
+     "notes (N)",
+     "protos (T)",
+     "held-out: NOT RUN"
+    ],
+    "changed": 0,
+    "new": 0,
+    "claude calls": 0,
+    "import x10 / describe x10": true
+   },
+   "detail": null
+  },
+  {
+   "id": "P0-BC",
+   "prediction": "all identical to git archive 6a318e5",
+   "pass_rule": "all",
+   "status": "PASS",
+   "observed": {
+    "compared": 73,
+    "by kind": {
+     "appmap": 2,
+     "check": 6,
+     "cli": 4,
+     "extract": 15,
+     "impact": 6,
+     "mcp": 2,
+     "model": 14,
+     "report": 4,
+     "select": 14,
+     "spec": 6
+    },
+    "differences": 0
+   },
+   "detail": []
+  }
+ ]
+}

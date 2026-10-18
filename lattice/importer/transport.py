@@ -342,6 +342,28 @@ class AuthDriver:
         return cls(scheme=scheme, login=login)
 
     @classmethod
+    def rpc(
+        cls,
+        service: str,
+        method: str,
+        credentials: Mapping[str, tuple[str, str]],
+        *,
+        username_field: str = "name",
+        password_field: str = "password",
+        token_field: str = "token",
+        scheme: str = "bearer",
+    ) -> AuthDriver:
+        """Logged in by a unary rpc (``service``/``method``, e.g. ``notes.v1.Accounts``/
+        ``Login``): the credentials sent as the message, the token read from the response's
+        ``token_field``; the token is then presented as the metadata ``authorization:
+        Bearer <token>`` (and, through a gRPC gateway, as the HTTP header)."""
+        from lattice.spec.grpc import rpc_login
+
+        login = rpc_login(service, method, credentials, username_field=username_field,
+                          password_field=password_field, token_field=token_field)  # fmt: skip
+        return cls(scheme=scheme, login=login)
+
+    @classmethod
     def session(
         cls,
         path: str,

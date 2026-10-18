@@ -35,7 +35,7 @@ from typing import Any
 
 from lattice.spec.check import _same, subset
 from lattice.spec.incremental import RuleDiff, spec_elements
-from lattice.spec.model import Await, Scenario, Spec, Step, resolve_table, tables_of
+from lattice.spec.model import Await, Rpc, Scenario, Spec, Step, resolve_table, tables_of
 from lattice.spec.rules import Trace
 
 REASONS = (
@@ -284,7 +284,7 @@ class Corpus:
             prefix: list[str] = []
             has_await = False
             for k, step in enumerate(sc.steps, 1):
-                if isinstance(step, Await):
+                if isinstance(step, Await | Rpc):  # Spike I: an rpc, like an Await, ends the prefix
                     has_await = True
                     continue
                 req = canon_request(step.method, step.path, step.user, step.json, step.params)
@@ -363,7 +363,7 @@ def analyze_scenario(
     detail: dict[str, Any] = {}
     first_nonmatch: tuple[str, int] | None = None
     for k, step in enumerate(sc.steps, 1):
-        if isinstance(step, Await):
+        if isinstance(step, Await | Rpc):  # Spike I: an rpc, like an Await, ends the prefix
             has_await = True
             continue
         req = canon_request(step.method, step.path, step.user, step.json, step.params)
@@ -508,7 +508,7 @@ def compute(
             prefix: list[str] = []
             has_await = False
             for k, step in enumerate(sc.steps, 1):
-                if isinstance(step, Await):
+                if isinstance(step, Await | Rpc):  # Spike I: an rpc, like an Await, ends the prefix
                     has_await = True
                     continue
                 req = canon_request(step.method, step.path, step.user, step.json, step.params)

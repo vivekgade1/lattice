@@ -21,7 +21,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from lattice.spec.model import Await, Scenario, Step
+from lattice.spec.model import Await, Rpc, Scenario, Step
 
 READ_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
 
@@ -36,18 +36,21 @@ def asserts_none(cond: Mapping[str, Any]) -> bool:
     return cond.get("count") == 0 and not cond.get("equals")
 
 
-def removes_rows(step: Step | Await) -> bool:
+def removes_rows(step: Step | Await | Rpc) -> bool:
     """Whether, by its own expectation, a step may delete or change a row: an ``Await``
-    (a service works meanwhile) or a write the spec expects to succeed."""
+    (a service works meanwhile), a write the spec expects to succeed, or an ``Rpc`` that
+    expects OK (the spec cannot tell a reading rpc from a writing one)."""
     if isinstance(step, Await):
         return True
+    if isinstance(step, Rpc):
+        return step.expect_code == "OK"
     return step.method.upper() not in READ_METHODS and step.expect_status < 400
 
 
-def creates_rows(step: Step | Await) -> bool:
+def creates_rows(step: Step | Await | Rpc) -> bool:
     """Whether a step may put a row there: as :func:`removes_rows`, or a step run as a
     user (the checker signs her in, which writes the session rows)."""
-    return removes_rows(step) or (isinstance(step, Step) and step.user is not None)
+    return removes_rows(step) or (isinstance(step, Step | Rpc) and step.user is not None)
 
 
 @dataclass(frozen=True)

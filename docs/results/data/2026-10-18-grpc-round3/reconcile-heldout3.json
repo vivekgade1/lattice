@@ -1,0 +1,188 @@
+{
+ "harbor.v1.Accounts/Login": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Accounts/WhoAmI": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Accounts/Logout": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Accounts/StepDown": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Accounts/CloseAccount": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Bookings/BookBerth": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Bookings/GetBooking": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Bookings/ListBookings": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Bookings/CancelBooking": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Bookings/CheckIn": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Tides/GetTideTable": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Yard/OpenWorkOrder": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Yard/ListWorkOrders": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Yard/CompleteWorkOrder": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true
+ },
+ "harbor.v1.Berths/ListBerths": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true,
+  "route": false
+ },
+ "harbor.v1.Berths/GetBerth": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true,
+  "route": false
+ },
+ "harbor.v1.Berths/CreateBerth": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true,
+  "route": false
+ },
+ "harbor.v1.Berths/RetireBerth": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true,
+  "route": false
+ },
+ "harbor.v1.Fuel/QuoteFuel": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true,
+  "route": false
+ },
+ "harbor.v1.Fuel/Dispense": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true,
+  "route": false
+ },
+ "harbor.v1.Vessels/RegisterVessel": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true,
+  "route": false
+ },
+ "harbor.v1.Vessels/GetVessel": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true,
+  "route": false
+ },
+ "harbor.v1.Vessels/RenameVessel": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true,
+  "route": false
+ },
+ "harbor.v1.Vessels/ListVessels": {
+  "code": null,
+  "answered": null,
+  "reason": "login_failed",
+  "isolated": true,
+  "route": false
+ },
+ "(absent)": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ },
+ "order": {
+  "disagreed": [
+   "harbor.v1.Accounts/CloseAccount",
+   "harbor.v1.Accounts/Login",
+   "harbor.v1.Accounts/Logout",
+   "harbor.v1.Accounts/StepDown",
+   "harbor.v1.Accounts/WhoAmI",
+   "harbor.v1.Berths/CreateBerth",
+   "harbor.v1.Berths/GetBerth",
+   "harbor.v1.Berths/ListBerths",
+   "harbor.v1.Berths/RetireBerth",
+   "harbor.v1.Bookings/BookBerth",
+   "harbor.v1.Bookings/CancelBooking",
+   "harbor.v1.Bookings/CheckIn",
+   "harbor.v1.Bookings/GetBooking",
+   "harbor.v1.Bookings/ListBookings",
+   "harbor.v1.Fuel/Dispense",
+   "harbor.v1.Fuel/QuoteFuel",
+   "harbor.v1.Tides/GetTideTable",
+   "harbor.v1.Vessels/GetVessel",
+   "harbor.v1.Vessels/ListVessels",
+   "harbor.v1.Vessels/RegisterVessel",
+   "harbor.v1.Vessels/RenameVessel",
+   "harbor.v1.Yard/CompleteWorkOrder",
+   "harbor.v1.Yard/ListWorkOrders",
+   "harbor.v1.Yard/OpenWorkOrder"
+  ]
+ }
+}

@@ -1,0 +1,326 @@
+{
+ "app": "deskd",
+ "flows": {
+  "delete_then_gone": [
+   {
+    "expect_code": "OK",
+    "field": "ticket_id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "step": 2
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "step": 3
+   },
+   {
+    "expect_code": "NOT_FOUND",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/GetTicket",
+    "step": 4
+   },
+   {
+    "expect_code": "NOT_FOUND",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ListRemarks",
+    "step": 5
+   },
+   {
+    "expect_code": "NOT_FOUND",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "step": 7
+   }
+  ],
+  "owner_isolation": [
+   {
+    "expect_code": "NOT_FOUND",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/GetTicket",
+    "step": 2
+   },
+   {
+    "expect_code": "NOT_FOUND",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/HoldTicket",
+    "step": 3
+   },
+   {
+    "expect_code": "NOT_FOUND",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/UpdateTicket",
+    "step": 4
+   },
+   {
+    "expect_code": "NOT_FOUND",
+    "field": "ticket_id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "step": 5
+   },
+   {
+    "expect_code": "NOT_FOUND",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "step": 6
+   },
+   {
+    "expect_code": "OK",
+    "field": "ticket_id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "step": 8
+   },
+   {
+    "expect_code": "PERMISSION_DENIED",
+    "field": "ticket_id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "step": 9
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ListRemarks",
+    "step": 10
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/GetTicket",
+    "step": 12
+   }
+  ],
+  "public_and_anonymous": [],
+  "reopen_limit": [
+   {
+    "expect_code": "FAILED_PRECONDITION",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "step": 2
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "step": 3
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "step": 4
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "step": 5
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "step": 6
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "step": 7
+   },
+   {
+    "expect_code": "RESOURCE_EXHAUSTED",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "step": 8
+   },
+   {
+    "expect_code": "FAILED_PRECONDITION",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/DeleteTicket",
+    "step": 9
+   }
+  ],
+  "sign_up_and_in": [],
+  "ticket_lifecycle": [
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/HoldTicket",
+    "step": 2
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "step": 3
+   },
+   {
+    "expect_code": "PERMISSION_DENIED",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/CloseTicket",
+    "step": 4
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/CloseTicket",
+    "step": 5
+   },
+   {
+    "expect_code": "FAILED_PRECONDITION",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/ReopenTicket",
+    "step": 6
+   },
+   {
+    "expect_code": "FAILED_PRECONDITION",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/UpdateTicket",
+    "step": 7
+   },
+   {
+    "expect_code": "FAILED_PRECONDITION",
+    "field": "ticket_id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/AddRemark",
+    "step": 8
+   },
+   {
+    "expect_code": "FAILED_PRECONDITION",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/HoldTicket",
+    "step": 9
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 1,
+    "rpc": "desk.v1.Tickets/GetTicket",
+    "step": 10
+   }
+  ],
+  "unserved_and_bounds": [
+   {
+    "expect_code": "INVALID_ARGUMENT",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 7,
+    "rpc": "desk.v1.Tickets/UpdateTicket",
+    "step": 8
+   },
+   {
+    "expect_code": "OK",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 7,
+    "rpc": "desk.v1.Tickets/UpdateTicket",
+    "step": 9
+   },
+   {
+    "expect_code": "INVALID_ARGUMENT",
+    "field": "id",
+    "from_field": "id",
+    "from_rpc": "desk.v1.Tickets/OpenTicket",
+    "from_step": 7,
+    "rpc": "desk.v1.Tickets/ResolveTicket",
+    "step": 12
+   }
+  ]
+ },
+ "rule": "annotated by the build node from the truth messages: a request field named id or ticket_id whose value (1) is the id the flow's first OpenTicket step answered, on a step after it, is linked to that step's response field id. Steps are 1-based. No link is made for a natural key (queue_slug) because no earlier step of any truth flow answers it.",
+ "schema": "lattice.rpc-links/1",
+ "truth_sha256_of_freeze": "8670bf84cdcc9175797507f05e55e62f11716659dc9a0e7a6368aa14dab729f6"
+}

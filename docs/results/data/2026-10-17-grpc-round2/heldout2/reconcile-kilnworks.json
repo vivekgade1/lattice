@@ -1,0 +1,18 @@
+{
+ "kiln.v1.Catalog/ListStudios": {
+  "code": "UNAUTHENTICATED",
+  "answered": true
+ },
+ "kiln.v1.Catalog/ListGlazes": {
+  "code": "OK",
+  "answered": true
+ },
+ "kiln.v1.Catalog/LookupGlaze": {
+  "code": "UNAUTHENTICATED",
+  "answered": true
+ },
+ "(absent)": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ }
+}

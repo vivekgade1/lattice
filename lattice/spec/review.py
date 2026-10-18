@@ -47,7 +47,7 @@ from pathlib import Path
 from typing import Any
 
 from lattice.spec.authoring import requirements_markdown
-from lattice.spec.model import Await, Machine, Spec, Step, Unchecked
+from lattice.spec.model import RPC_CODES, Await, Machine, Rpc, Spec, Step, Unchecked
 from lattice.spec.rules import Rule, Trace
 
 __all__ = ["review_change_markdown", "review_markdown", "review_html", "main"]
@@ -199,9 +199,17 @@ def _db_fact(table: str, cond: Mapping[str, Any]) -> str:
     return f"{table}{where_text} equals {cond.get('equals')}"
 
 
-def _step_line(step: Step | Await) -> str:
+def _step_line(step: Step | Await | Rpc) -> str:
     """One step of a scenario, in plain English (as `requirements_markdown` renders
     one, but as a numbered-list line)."""
+    if isinstance(step, Rpc):
+        bits = []
+        if step.expect_message is not None:
+            bits.append(f"message {_short_value(step.expect_message)}")
+        if step.expect_db:
+            bits.append("; ".join(_db_fact(t, c) for t, c in step.expect_db.items()))
+        tail = f" -- {'; '.join(bits)}" if bits else ""
+        return f"{step.endpoint} as {step.user or 'no token'} -> {step.expect_code}{tail}"
     if isinstance(step, Await):
         facts = "; ".join(_db_fact(t, c) for t, c in step.expect_db.items())
         note = f" ({step.note})" if step.note else ""
@@ -233,8 +241,16 @@ def _build_access(spec: Spec) -> tuple[AccessGroup, ...]:
     (path parameters normalised to ``{}``), grouped by their first path segment."""
     cells: dict[tuple[str, str], set[int]] = {}
     templates: list[str] = []
+    rpc_cells: dict[tuple[str, str], set[str]] = {}
+    rpc_templates: list[str] = []
     for scenario in spec.scenarios:
         for step in scenario.steps:
+            if isinstance(step, Rpc):
+                if step.endpoint not in rpc_templates:
+                    rpc_templates.append(step.endpoint)
+                caller = step.user if step.user is not None else "no token"
+                rpc_cells.setdefault((caller, step.endpoint), set()).add(step.expect_code)
+                continue
             if not isinstance(step, Step):
                 continue
             caller = step.user if step.user is not None else "no token"
@@ -256,6 +272,19 @@ def _build_access(spec: Spec) -> tuple[AccessGroup, ...]:
             for col in columns
         }
         result.append(AccessGroup(prefix, tuple(columns), rows, cell_text))
+    # rpcs: one group per service (its full name), cells are the codes joined by "/"
+    by_service: dict[str, list[str]] = {}
+    for t in rpc_templates:
+        by_service.setdefault(t.split(" ", 1)[1].split("/", 1)[0], []).append(t)
+    for service, columns in by_service.items():
+        rpc_text = {
+            (row, col): "/".join(sorted(rpc_cells[row, col], key=RPC_CODES.index))
+            if (row, col) in rpc_cells
+            else "·"
+            for row in rows
+            for col in columns
+        }
+        result.append(AccessGroup(service, tuple(columns), rows, rpc_text))
     return tuple(result)
 
 

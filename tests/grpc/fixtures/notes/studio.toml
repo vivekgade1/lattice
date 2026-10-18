@@ -1,0 +1,9 @@
+# The notes app: a grpc-go service over GORM and pure-Go SQLite (Lattice's gRPC spike).
+[app]
+app = "harness:make_app"
+db = "harness:build_db"
+runtime = "harness:RUNTIME"
+
+[grpc]
+protos = ["proto/notes/v1/accounts.proto", "proto/notes/v1/notes.proto"]
+proto_paths = ["proto"]

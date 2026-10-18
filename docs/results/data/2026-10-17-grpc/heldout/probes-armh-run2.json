@@ -1,0 +1,176 @@
+{
+ "schema": "lattice.grpc-probes/1",
+ "arm": "H",
+ "scorer_sha256": "69e4959645db69310f66ffca5d6416706cebe62b52af08484ffc296f408be4aa",
+ "freeze": {
+  "heldout_freeze_file_sha256": "8670bf84cdcc9175797507f05e55e62f11716659dc9a0e7a6368aa14dab729f6",
+  "heldout_problems": [],
+  "heldout_files": 31,
+  "library_problems": [],
+  "library_files": 12,
+  "ok": true
+ },
+ "probes": [
+  {
+   "id": "HO-RPC",
+   "prediction": "recall 0.90-1.00 / precision 0.95-1.00 (p)",
+   "pass_rule": "recall >= 0.90 and precision >= 0.95 (rpc name AND state must match)",
+   "status": "PASS",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth rpcs": 21,
+    "extracted rpcs": 21,
+    "matched": 21,
+    "streaming reported not supported": [
+     "desk.v1.Tickets/ImportTickets",
+     "desk.v1.Tickets/WatchQueue"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 18
+   },
+   "detail": {
+    "missed (truth, state)": [],
+    "extra (extract, state)": []
+   }
+  },
+  {
+   "id": "HO-CODES",
+   "prediction": "recall 0.70-0.90 / precision 0.90-1.00 (p)",
+   "pass_rule": "micro recall >= 0.70 and micro precision >= 0.90",
+   "status": "PASS",
+   "observed": {
+    "recall": 1.0,
+    "precision": 0.986,
+    "truth codes": 68,
+    "extracted codes": 69,
+    "matched": 68
+   },
+   "detail": {
+    "missed": [],
+    "extra": [
+     [
+      "desk.v1.Tickets/DeleteTicket",
+      "UNKNOWN"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "HO-AUTH",
+   "prediction": "0 wrong; unclear share 0-0.3 (p)",
+   "pass_rule": "0 rpcs labelled Public/Member that contradict truth (hard); unclear reported",
+   "status": "PASS",
+   "observed": {
+    "wrong": 0,
+    "unclear": 0,
+    "checked": 17,
+    "unclear share": 0.0
+   },
+   "detail": {
+    "wrong (rpc, extract, truth)": [],
+    "unclear (rpc, extract, truth)": []
+   }
+  },
+  {
+   "id": "HO-TABLES",
+   "prediction": "recall 1.0 (p)",
+   "pass_rule": "recall >= 0.9",
+   "status": "PASS",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth": 5,
+    "extracted": 5
+   },
+   "detail": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "id": "HO-REC",
+   "prediction": "100% (p)",
+   "pass_rule": "100%: implemented answered, unimplemented / unregistered / absent give UNIMPLEMENTED",
+   "status": "FAIL",
+   "observed": {
+    "implemented": "17/17",
+    "unimplemented": "0/1",
+    "not_registered": "1/1",
+    "absent": "1/1"
+   },
+   "detail": {
+    "wrong": [
+     [
+      "desk.v1.Tickets/MergeTickets",
+      "UNAUTHENTICATED",
+      "unimplemented"
+     ]
+    ],
+    "truth rpcs not called (not in the extract)": [],
+    "codes": {
+     "desk.v1.Identity/SignIn": "INVALID_ARGUMENT",
+     "desk.v1.Identity/SignOut": "OK",
+     "desk.v1.Identity/SignUp": "INVALID_ARGUMENT",
+     "desk.v1.Identity/WhoAmI": "UNAUTHENTICATED",
+     "desk.v1.Queues/GetQueue": "INVALID_ARGUMENT",
+     "desk.v1.Queues/ListQueues": "OK",
+     "desk.v1.Reports/Backlog": "UNIMPLEMENTED",
+     "desk.v1.Tickets/AddRemark": "UNAUTHENTICATED",
+     "desk.v1.Tickets/CloseTicket": "UNAUTHENTICATED",
+     "desk.v1.Tickets/DeleteTicket": "UNAUTHENTICATED",
+     "desk.v1.Tickets/GetTicket": "UNAUTHENTICATED",
+     "desk.v1.Tickets/HoldTicket": "UNAUTHENTICATED",
+     "desk.v1.Tickets/ListRemarks": "UNAUTHENTICATED",
+     "desk.v1.Tickets/ListTickets": "UNAUTHENTICATED",
+     "desk.v1.Tickets/MergeTickets": "UNAUTHENTICATED",
+     "desk.v1.Tickets/OpenTicket": "UNAUTHENTICATED",
+     "desk.v1.Tickets/ReopenTicket": "UNAUTHENTICATED",
+     "desk.v1.Tickets/ResolveTicket": "UNAUTHENTICATED",
+     "desk.v1.Tickets/UpdateTicket": "UNAUTHENTICATED",
+     "(absent)": "UNIMPLEMENTED"
+    }
+   }
+  },
+  {
+   "id": "HO-FLOWS",
+   "prediction": "all truth flows pass; 0 verified-but-failing (p)",
+   "pass_rule": "0 verified-but-failing recovered flows; every truth flow replayed as Rpc scenarios passes; recall reported",
+   "status": "PASS",
+   "observed": {
+    "truth flows": 7,
+    "truth flows passing": 7,
+    "recovered flows": 38,
+    "recovered by status": {
+     "failed": 38
+    },
+    "verified": 0,
+    "verified-but-failing": 0,
+    "truth flows recovered exactly (rpc sequence equal)": "0/7",
+    "truth flows covered (subsequence of a verified flow)": "0/7"
+   },
+   "detail": {
+    "truth flow failures": {},
+    "verified-but-failing ids": [],
+    "recovered kinds": [
+     "after_delete",
+     "owner_guard",
+     "pair"
+    ]
+   }
+  },
+  {
+   "id": "HO-DET",
+   "prediction": "10/10 identical (p)",
+   "pass_rule": "10/10 identical, no absolute path, time or port",
+   "status": "PASS",
+   "observed": {
+    "identical runs": 10,
+    "of": 10,
+    "roots": 2,
+    "leaks": []
+   },
+   "detail": []
+  }
+ ]
+}

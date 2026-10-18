@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package t.v2;
+
+message Legacy {
+  optional string a = 1;
+  required int32 b = 2;
+  optional group Result = 3 {
+    optional string url = 1;
+  }
+  extensions 100 to 199;
+}

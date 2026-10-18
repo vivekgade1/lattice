@@ -1,0 +1,28 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+control probe pr2-sess: rc=0 PASS PR2-SESS {"round 1 (control, cea85fc library)": {"Login": {"code": "INVALID_ARGUMENT" (4.4s)
+control pytest tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py: rc=0 59 passed in 17.12s (17.6s)
+control probe pr2-order: rc=0 PASS PR2-ORDER {"N": {"disagreed": []}, "sessions": {"disagreed": ["sessions.v1.Sessions/D (1.0s)
+control probe pf2-desk: rc=0 PASS PF2-DESK (dev, tuned-on) {"recovered": 41, "recovered_by_status": {"verified": 20, "u (23.4s)
+control probe pf2-n: rc=0 PASS PF2-N {"recovered": 17, "recovered_by_status": {"verified": 17, "unverified": 0, "fai (6.8s)
+control probe pf2-replay: rc=0 PASS PF2-REPLAY {"N": {"verified": 17, "replays": 3, "failing per replay": [0, 0, 0]}, "de (11.1s)
+control probe p2-score: rc=0 PASS P2-SCORE {"cases": 37, "agree": 37} (0.1s)
+control probe p2-bc-ast: rc=0 PASS P2-BC-AST {"grpc.py defs compared": 43, "workflows.py HTTP defs compared": 53, "diffe (0.1s)
+control pytest tests/importer/test_workflows.py: rc=0 69 passed in 12.89s (13.4s)
+KILLED    GR1   reconcile reuses one token (round 1's behaviour)             ['probe:pr2-sess', 'pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR2   a fresh token per service, not per call                      ['probe:pr2-sess', 'pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR3   the reverse pass is skipped (RC2 off)                        ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR4   a disagreement is reported without the isolated rerun (RC3 o ['probe:pr2-order', 'pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR5   a failed login is recorded as UNAUTHENTICATED answered:true  ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR6   the contract's order instead of the sorted order in the forw ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR7   F2 off: natural keys filled by example_value (round 1)       ['probe:pf2-desk', 'pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR8   F3 off: bool -> true (round 1)                               ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR9   F1 binds an id to a field of another table                   ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR10  the lookup picks the first element, unsorted                 ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR11  owner_guard / owner_chain verify on UNAUTHENTICATED          ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR12  verified is set from the live run without the layer-D replay ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR13  a fault code on a refuse step is counted as a refusal        ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR14  scorer: verified == 0 passes (round 1's rule)                ['probe:p2-score']
+KILLED    GR15  scorer: an empty denominator scores 1.0                      ['probe:p2-score']
+KILLED    GR16  scorer: edge matching ignores the consumer's code            ['probe:p2-score']
+KILLED    GR17  the HTTP workflow path touched (the rpc helper's summary sha ['probe:p2-bc-ast']
+17/17 killed (control checks: probe pr2-sess=0, pytest tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py=0, probe pr2-order=0, probe pf2-desk=0, probe pf2-n=0, probe pf2-replay=0, probe p2-score=0, probe p2-bc-ast=0, pytest tests/importer/test_workflows.py=0)

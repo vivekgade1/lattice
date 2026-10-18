@@ -1,0 +1,7 @@
+edition = "2023";
+
+package t.v3;
+
+message Fresh {
+  string a = 1;
+}

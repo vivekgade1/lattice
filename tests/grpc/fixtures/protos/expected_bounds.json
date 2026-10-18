@@ -1,0 +1,63 @@
+{
+ "schema": "lattice.grpc.expected_bounds/1",
+ "note": "Hand-written from the T fixtures before the reader ran (P0-VAL).",
+ "bounds": {
+  "t.v1.Rules.name": {
+   "min_length": 2,
+   "max_length": 20
+  },
+  "t.v1.Rules.age": {
+   "ge": 0,
+   "lt": 150
+  },
+  "t.v1.Rules.big": {
+   "gt": 0,
+   "le": 1000000
+  },
+  "t.v1.Rules.kind": {
+   "choices": [
+    "a",
+    "b",
+    "c"
+   ]
+  },
+  "t.v1.Rules.items": {
+   "min_items": 1,
+   "max_items": 5
+  },
+  "t.v1.Rules.shade": {
+   "defined_only": true
+  },
+  "t.v1.Rules.sc": {
+   "required": true
+  },
+  "t.v1.Rules.pv": {
+   "min_length": 3
+  },
+  "t.v1.Rules.pw": {
+   "ge": 1,
+   "le": 9
+  },
+  "t.v1.Rules.req": {
+   "required": true
+  },
+  "t.v1.Rules.ratio": {
+   "const": 1.5
+  },
+  "t.v1.Rules.small": {
+   "le": 255
+  },
+  "t.v1.Rules.blob": {
+   "max_length": 64
+  },
+  "t.v1.Rules.flag": {
+   "const": true
+  },
+  "t.v1.Rules.tag": null,
+  "t.v1.Odd.a": null,
+  "t.v1.Odd.b": null,
+  "t.v1.Odd.ok": {
+   "min_length": 1
+  }
+ }
+}

@@ -1,0 +1,13 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+freeze: {"ok": true, "heldout_files": 27, "library_files_checked": 17}
+FAIL     HO2-RPC                  {"recall": 0.3, "precision": 0.3, "truth rpcs": 20, "extracted rpcs": 20, "matched": 6, "truth states": {"implemented": 16, "not_registered": 2, "streaming": 1, "unimplemented": 1}, "streaming reported not supported": ["kiln.v1.Pieces/TailKiln"], "streaming no
+FAIL     HO2-CODES                {"recall": 0.125, "precision": 1.0, "truth codes": 40, "extracted codes": 5, "matched": 5}
+FAIL     HO2-AUTH                 {"wrong": 2, "unclear": 0, "checked": 3, "unclear share": 0.0}
+PASS     HO2-TABLES               {"recall": 1.0, "precision": 1.0, "truth": 7, "extracted": 7}
+PASS     HO2-REC                  {"implemented": "16/16", "unimplemented": "1/1", "not_registered": "2/2", "absent": "1/1", "auth_refused": [], "order disagreed": [], "all disagreements resolved isolated": true, "rpcs answered by the library": 4, "supplementary calls (not library output)": ["
+FAIL     HO2-FLOWS                {"truth_flows": 9, "truth_flows_passing": 9, "truth_edges_total": 33, "recovered": 0, "recovered_by_status": {"verified": 0, "unverified": 0, "failed": 0, "unbound": 0}, "recovered_by_kind_status": {}, "verified": 0, "verified_but_failing": 0, "edge_recall": {
+PASS     HO2-DET                  {"identical runs": 10, "of": 10, "roots": 2, "artifacts": ["describe", "extract", "flows", "model", "plans", "reconcile"], "differing artifacts": [], "leaks": []}
+PASS     P2-NW (heldout2 root)    {"changed": 0, "new": 0}
+NOT RUN  PM-S / PM-SG (Arm M)     "Arm M needs a Streak checkout and a Docker MySQL: out of scope (prereg 1); no docker daemon here"
+NOT RUN  Arm L                    "the build round is its own node; out of scope"
+4 passed, 4 failed, 2 not run
