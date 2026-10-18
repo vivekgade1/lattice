@@ -1,0 +1,84 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 2.3214799249981297,
+    "build_goginapp_s": 1.6173120999992534
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "PB-X",
+      "probe": "default gocheck extract byte-identical on the 7 module dirs and goapp",
+      "ran": true,
+      "predicted": "8 of 8 identical to 193f7f6",
+      "observed": {
+        "identical_to_base": 1,
+        "of": 8
+      },
+      "pass": false,
+      "evidence": {
+        "rows": [
+          {
+            "dir": "tests/gocheck/fixtures/goextract",
+            "base": "f74727094a25cc1d",
+            "now": "cce9c7fe8045e3d6",
+            "same_as_base": false
+          },
+          {
+            "dir": "tests/gocheck/fixtures/app",
+            "base": "6c38c5d5f04ff8ab",
+            "now": "193ef2c7aede7d7c",
+            "same_as_base": false
+          },
+          {
+            "dir": "tests/gocheck/fixtures/partial",
+            "base": "4b67b2e431c23403",
+            "now": "f9236b46ddc645a1",
+            "same_as_base": false
+          },
+          {
+            "dir": "tests/gocheck/fixtures/goextract_workflow",
+            "base": "ee3b906bd4e4e799",
+            "now": "f98f04dd5159fb41",
+            "same_as_base": false
+          },
+          {
+            "dir": "tests/spec/fixtures/implementation/app",
+            "base": "e10d5447c6cce57d",
+            "now": "f1352567ae2b0817",
+            "same_as_base": false
+          },
+          {
+            "dir": "lattice/studio/mock/appmap/app",
+            "base": "e10d5447c6cce57d",
+            "now": "f1352567ae2b0817",
+            "same_as_base": false
+          },
+          {
+            "dir": "tests/spec/goapp",
+            "base": "3c7670fc6e211212",
+            "now": "3c7670fc6e211212",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/gocheck/fixtures/runs",
+            "base": "ce107e4cf1f00533",
+            "now": "51bde2172c64f9aa",
+            "same_as_base": false
+          }
+        ],
+        "reading": "goapp is the 7th of round 1's 7 dirs; the 8th, tests/gocheck/fixtures/runs, is the builder's addition (the prereg's '7 dirs and goapp' counts goapp twice)"
+      }
+    }
+  ]
+}

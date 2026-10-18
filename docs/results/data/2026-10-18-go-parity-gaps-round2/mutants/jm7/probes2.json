@@ -1,0 +1,48 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 2.241792210999847,
+    "build_goginapp_s": 0.9696196900003997
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "PA4",
+      "probe": "static: derive_go_policy on tests/gocheck/fixtures/goextract",
+      "ran": true,
+      "predicted": {
+        "owners": {
+          "Item": "owner_id",
+          "Audit": "actor"
+        },
+        "private": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "observed": {
+        "owners": {
+          "Item": "owner_id"
+        },
+        "private": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "pass": false,
+      "evidence": {}
+    }
+  ]
+}

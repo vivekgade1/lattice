@@ -1,0 +1,3342 @@
+{
+  "schema": "lattice-import-report/2",
+  "repo": "/tmp/claude-0/-home-user-lattice/307195c7-09d5-5df9-b82b-62010344228d/scratchpad/j2/m/tree-jm15/tests/spec",
+  "package": "goginapp",
+  "app_factory": "tests.spec.gogin_harness:make_app",
+  "llm": false,
+  "method": null,
+  "model": null,
+  "coverage": {
+    "routes": 0,
+    "R0": 0,
+    "R1": 0,
+    "R2": 0,
+    "R3": 0,
+    "R4": 0,
+    "needs-llm": 0,
+    "verified": 0,
+    "lattice_pct": 0.0,
+    "carve_out_pct": 0.0,
+    "island_pct": 0.0,
+    "needs_llm_pct": 0.0,
+    "verified_pct": 0.0,
+    "complete": true,
+    "lines": {},
+    "ast_nodes": {},
+    "tiers": {
+      "T0": 0,
+      "T1": 0,
+      "T2": 0,
+      "T3": 0,
+      "island": 0,
+      "needs-llm": 0
+    },
+    "carve_kinds": {
+      "procedure": 0,
+      "native": 0
+    },
+    "rules": {
+      "items": {
+        "verified": 25,
+        "refuted": 0,
+        "unexercised": 16,
+        "unclear": 0
+      },
+      "tables": {
+        "verified": 2,
+        "total": 3
+      },
+      "routes": {
+        "verified": 6,
+        "total": 7
+      }
+    }
+  },
+  "budget": null,
+  "cost": {
+    "usd": 0.0,
+    "notes_usd": 0.0,
+    "per_llm_verified_route_usd": null,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "llm_rounds": 0,
+    "wall_s": 0.0
+  },
+  "routes": [],
+  "behaviour_changes": [],
+  "islands": [],
+  "carve_out_natives": [],
+  "unclear": [
+    {
+      "topic": "private",
+      "subject": "User",
+      "reason": "no response model returns User; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "private",
+      "subject": "Config",
+      "reason": "no response model returns Config; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "private",
+      "subject": "Run",
+      "reason": "no response model returns Run; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "auth",
+      "subject": "User",
+      "reason": "the app's own auth (gin, bearer) is not lifted: the profile's NativeToken names caller_key, which refuses to run (lattice.importer.app_auth)",
+      "candidates": []
+    }
+  ],
+  "notes_disagreements": [],
+  "rules": {
+    "summary": {
+      "items": {
+        "verified": 25,
+        "refuted": 0,
+        "unexercised": 16,
+        "unclear": 0
+      },
+      "tables": {
+        "verified": 2,
+        "total": 3
+      },
+      "routes": {
+        "verified": 6,
+        "total": 7
+      }
+    },
+    "items": {
+      "T1 User": {
+        "id": "T1 User",
+        "kind": "T1",
+        "subject": "User",
+        "sentence": "User is the users table: every role logs in; 'me' is the caller",
+        "predicted": {
+          "ownership": "users"
+        },
+        "verdict": "verified",
+        "reason": "every role logs in (Customer)",
+        "probes": [
+          "(login) every role"
+        ],
+        "decisive": [
+          "(login) every role"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "T2 User.password": {
+        "id": "T2 User.password",
+        "kind": "T2",
+        "subject": "User",
+        "sentence": "User.password is private: no answer shows it",
+        "predicted": {
+          "private": "password"
+        },
+        "verdict": "verified",
+        "reason": "5 answers show User rows without password",
+        "probes": [
+          "POST /login | no caller | anonymous",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer",
+          "GET /configs | admin | as Customer",
+          "GET /configs | alice | as Customer"
+        ],
+        "decisive": [
+          "POST /login | no caller | anonymous",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer",
+          "GET /configs | admin | as Customer",
+          "GET /configs | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "T2 User.token": {
+        "id": "T2 User.token",
+        "kind": "T2",
+        "subject": "User",
+        "sentence": "User.token is private: no answer shows it",
+        "predicted": {
+          "private": "token"
+        },
+        "verdict": "verified",
+        "reason": "5 answers show User rows without token",
+        "probes": [
+          "POST /login | no caller | anonymous",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer",
+          "GET /configs | admin | as Customer",
+          "GET /configs | alice | as Customer"
+        ],
+        "decisive": [
+          "POST /login | no caller | anonymous",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer",
+          "GET /configs | admin | as Customer",
+          "GET /configs | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "T1 Config": {
+        "id": "T1 Config",
+        "kind": "T1",
+        "subject": "Config",
+        "sentence": "Config rows are shared: any user may read them",
+        "predicted": {
+          "ownership": "shared"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T1 Run": {
+        "id": "T1 Run",
+        "kind": "T1",
+        "subject": "Run",
+        "sentence": "a Run row belongs to the user in user_id; others cannot reach it",
+        "predicted": {
+          "ownership": "owner",
+          "column": "user_id"
+        },
+        "verdict": "verified",
+        "reason": "only the caller's Run rows (2)",
+        "probes": [
+          "GET /runs | admin | own Run rows only",
+          "GET /runs | alice | own Run rows only",
+          "GET /runs/{rid} | admin | another user's Run 2",
+          "GET /runs/{rid} | alice | another user's Run 1",
+          "POST /runs/{rid}/cancel | admin | another user's Run 2",
+          "POST /runs/{rid}/cancel | alice | another user's Run 1"
+        ],
+        "decisive": [
+          "GET /runs | admin | own Run rows only",
+          "GET /runs | alice | own Run rows only",
+          "GET /runs/{rid} | admin | another user's Run 2",
+          "GET /runs/{rid} | alice | another user's Run 1",
+          "POST /runs/{rid}/cancel | admin | another user's Run 2",
+          "POST /runs/{rid}/cancel | alice | another user's Run 1"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "T4 Run.status": {
+        "id": "T4 Run.status",
+        "kind": "T4",
+        "subject": "Run",
+        "sentence": "Run.status is one of queued, cancelled",
+        "predicted": {
+          "values": [
+            "queued",
+            "cancelled"
+          ],
+          "stored": [
+            "queued",
+            "cancelled"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route writes Run.status through a parameter (every stored value is listed)",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 User (id)": {
+        "id": "T5 User (id)",
+        "kind": "T5",
+        "subject": "User",
+        "sentence": "no two User rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route creates User rows",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 Config (id)": {
+        "id": "T5 Config (id)",
+        "kind": "T5",
+        "subject": "Config",
+        "sentence": "no two Config rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route creates Config rows",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 Run (id)": {
+        "id": "T5 Run (id)",
+        "kind": "T5",
+        "subject": "Run",
+        "sentence": "no two Run rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route creates Run rows",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /health": {
+        "id": "R1 GET /health",
+        "kind": "R1",
+        "subject": "GET /health",
+        "sentence": "GET /health admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call",
+          "GET /health | admin | as Customer",
+          "GET /health | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call",
+          "GET /health | admin | as Customer",
+          "GET /health | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /health 5xx": {
+        "id": "R3 GET /health 5xx",
+        "kind": "R3",
+        "subject": "GET /health",
+        "sentence": "GET /health answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (4 past the auth check)",
+        "probes": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call",
+          "GET /health | admin | as Customer",
+          "GET /health | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call",
+          "GET /health | admin | as Customer",
+          "GET /health | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /login": {
+        "id": "R1 POST /login",
+        "kind": "R1",
+        "subject": "POST /login",
+        "sentence": "POST /login admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "verified",
+        "reason": "2 callers as predicted",
+        "probes": [
+          "POST /login | no caller | anonymous",
+          "POST /login | malformed token | call",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer"
+        ],
+        "decisive": [
+          "POST /login | no caller | anonymous",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /login 422 bad body": {
+        "id": "R3 POST /login 422 bad body",
+        "kind": "R3",
+        "subject": "POST /login",
+        "sentence": "POST /login answers 422 'bad body' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "bad body",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "POST /login | no caller | example"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /login 401 Incorrect username or password": {
+        "id": "R3 POST /login 401 Incorrect username or password",
+        "kind": "R3",
+        "subject": "POST /login",
+        "sentence": "POST /login answers 401 'Incorrect username or password' (other)",
+        "predicted": {
+          "status": 401,
+          "detail": "Incorrect username or password",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /login 5xx": {
+        "id": "R3 POST /login 5xx",
+        "kind": "R3",
+        "subject": "POST /login",
+        "sentence": "POST /login answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 5 probes (3 past the auth check)",
+        "probes": [
+          "POST /login | no caller | anonymous",
+          "POST /login | malformed token | call",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer",
+          "POST /login | no caller | example"
+        ],
+        "decisive": [
+          "POST /login | no caller | anonymous",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /configs": {
+        "id": "R1 GET /configs",
+        "kind": "R1",
+        "subject": "GET /configs",
+        "sentence": "GET /configs admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "GET /configs | no caller | anonymous",
+          "GET /configs | malformed token | call",
+          "GET /configs | admin | as Customer",
+          "GET /configs | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /configs | no caller | anonymous",
+          "GET /configs | malformed token | call",
+          "GET /configs | admin | as Customer",
+          "GET /configs | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /configs 5xx": {
+        "id": "R3 GET /configs 5xx",
+        "kind": "R3",
+        "subject": "GET /configs",
+        "sentence": "GET /configs answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (2 past the auth check)",
+        "probes": [
+          "GET /configs | no caller | anonymous",
+          "GET /configs | malformed token | call",
+          "GET /configs | admin | as Customer",
+          "GET /configs | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /configs | admin | as Customer",
+          "GET /configs | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /configs/{cid}/runs": {
+        "id": "R1 POST /configs/{cid}/runs",
+        "kind": "R1",
+        "subject": "POST /configs/{cid}/runs",
+        "sentence": "POST /configs/{cid}/runs admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "POST /configs/{cid}/runs | no caller | anonymous",
+          "POST /configs/{cid}/runs | malformed token | call",
+          "POST /configs/{cid}/runs | admin | as Customer",
+          "POST /configs/{cid}/runs | alice | as Customer"
+        ],
+        "decisive": [
+          "POST /configs/{cid}/runs | no caller | anonymous",
+          "POST /configs/{cid}/runs | malformed token | call",
+          "POST /configs/{cid}/runs | admin | as Customer",
+          "POST /configs/{cid}/runs | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R2 POST /configs/{cid}/runs": {
+        "id": "R2 POST /configs/{cid}/runs",
+        "kind": "R2",
+        "subject": "POST /configs/{cid}/runs",
+        "sentence": "POST /configs/{cid}/runs acts on the caller's own Run rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Run"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /configs/{cid}/runs 422 bad id": {
+        "id": "R3 POST /configs/{cid}/runs 422 bad id",
+        "kind": "R3",
+        "subject": "POST /configs/{cid}/runs",
+        "sentence": "POST /configs/{cid}/runs answers 422 'bad id' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "bad id",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /configs/{cid}/runs 404 Not found": {
+        "id": "R3 POST /configs/{cid}/runs 404 Not found",
+        "kind": "R3",
+        "subject": "POST /configs/{cid}/runs",
+        "sentence": "POST /configs/{cid}/runs answers 404 'Not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "Not found",
+          "when": "not_found"
+        },
+        "verdict": "verified",
+        "reason": "answered 404 'Not found'; stated 404 'Not found'",
+        "probes": [
+          "POST /configs/{cid}/runs | admin | missing id"
+        ],
+        "decisive": [
+          "POST /configs/{cid}/runs | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /configs/{cid}/runs 409 already live": {
+        "id": "R3 POST /configs/{cid}/runs 409 already live",
+        "kind": "R3",
+        "subject": "POST /configs/{cid}/runs",
+        "sentence": "POST /configs/{cid}/runs answers 409 'already live' (other)",
+        "predicted": {
+          "status": 409,
+          "detail": "already live",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /configs/{cid}/runs 500": {
+        "id": "R3 POST /configs/{cid}/runs 500",
+        "kind": "R3",
+        "subject": "POST /configs/{cid}/runs",
+        "sentence": "POST /configs/{cid}/runs answers 500 (other)",
+        "predicted": {
+          "status": 500,
+          "detail": null,
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /configs/{cid}/runs 5xx": {
+        "id": "R3 POST /configs/{cid}/runs 5xx",
+        "kind": "R3",
+        "subject": "POST /configs/{cid}/runs",
+        "sentence": "POST /configs/{cid}/runs answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 5 probes (3 past the auth check)",
+        "probes": [
+          "POST /configs/{cid}/runs | no caller | anonymous",
+          "POST /configs/{cid}/runs | malformed token | call",
+          "POST /configs/{cid}/runs | admin | as Customer",
+          "POST /configs/{cid}/runs | alice | as Customer",
+          "POST /configs/{cid}/runs | admin | missing id"
+        ],
+        "decisive": [
+          "POST /configs/{cid}/runs | admin | as Customer",
+          "POST /configs/{cid}/runs | alice | as Customer",
+          "POST /configs/{cid}/runs | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /runs": {
+        "id": "R1 GET /runs",
+        "kind": "R1",
+        "subject": "GET /runs",
+        "sentence": "GET /runs admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "GET /runs | no caller | anonymous",
+          "GET /runs | malformed token | call",
+          "GET /runs | admin | as Customer",
+          "GET /runs | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /runs | no caller | anonymous",
+          "GET /runs | malformed token | call",
+          "GET /runs | admin | as Customer",
+          "GET /runs | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R2 GET /runs": {
+        "id": "R2 GET /runs",
+        "kind": "R2",
+        "subject": "GET /runs",
+        "sentence": "GET /runs acts on the caller's own Run rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Run"
+        },
+        "verdict": "verified",
+        "reason": "only the caller's Run rows (2)",
+        "probes": [
+          "GET /runs | admin | own Run rows only",
+          "GET /runs | alice | own Run rows only"
+        ],
+        "decisive": [
+          "GET /runs | admin | own Run rows only",
+          "GET /runs | alice | own Run rows only"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /runs 422 bad limit": {
+        "id": "R3 GET /runs 422 bad limit",
+        "kind": "R3",
+        "subject": "GET /runs",
+        "sentence": "GET /runs answers 422 'bad limit' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "bad limit",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /runs 422": {
+        "id": "R3 GET /runs 422",
+        "kind": "R3",
+        "subject": "GET /runs",
+        "sentence": "GET /runs answers 422 (invalid)",
+        "predicted": {
+          "status": 422,
+          "detail": null,
+          "when": "invalid"
+        },
+        "verdict": "verified",
+        "reason": "answered 422 'bad limit'; stated 422 None",
+        "probes": [
+          "GET /runs | admin | invalid body"
+        ],
+        "decisive": [
+          "GET /runs | admin | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /runs 5xx": {
+        "id": "R3 GET /runs 5xx",
+        "kind": "R3",
+        "subject": "GET /runs",
+        "sentence": "GET /runs answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 10 probes (8 past the auth check)",
+        "probes": [
+          "GET /runs | no caller | anonymous",
+          "GET /runs | malformed token | call",
+          "GET /runs | admin | as Customer",
+          "GET /runs | alice | as Customer",
+          "GET /runs | alice | witness: own Run rows only",
+          "GET /runs | admin | own Run rows only",
+          "GET /runs | admin | witness: own Run rows only",
+          "GET /runs | alice | own Run rows only",
+          "GET /runs | admin | every optional query parameter",
+          "GET /runs | admin | invalid body"
+        ],
+        "decisive": [
+          "GET /runs | admin | as Customer",
+          "GET /runs | alice | as Customer",
+          "GET /runs | alice | witness: own Run rows only",
+          "GET /runs | admin | own Run rows only",
+          "GET /runs | admin | witness: own Run rows only",
+          "GET /runs | alice | own Run rows only",
+          "GET /runs | admin | every optional query parameter",
+          "GET /runs | admin | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /runs/{rid}": {
+        "id": "R1 GET /runs/{rid}",
+        "kind": "R1",
+        "subject": "GET /runs/{rid}",
+        "sentence": "GET /runs/{rid} admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "GET /runs/{rid} | no caller | anonymous",
+          "GET /runs/{rid} | malformed token | call",
+          "GET /runs/{rid} | admin | as Customer target 1",
+          "GET /runs/{rid} | admin | as Customer target 5",
+          "GET /runs/{rid} | admin | as Customer on a missing row",
+          "GET /runs/{rid} | alice | as Customer target 2",
+          "GET /runs/{rid} | alice | as Customer on a missing row"
+        ],
+        "decisive": [
+          "GET /runs/{rid} | no caller | anonymous",
+          "GET /runs/{rid} | malformed token | call",
+          "GET /runs/{rid} | admin | as Customer target 1",
+          "GET /runs/{rid} | admin | as Customer target 5",
+          "GET /runs/{rid} | alice | as Customer target 2"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R2 GET /runs/{rid}": {
+        "id": "R2 GET /runs/{rid}",
+        "kind": "R2",
+        "subject": "GET /runs/{rid}",
+        "sentence": "GET /runs/{rid} acts on the caller's own Run rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Run"
+        },
+        "verdict": "verified",
+        "reason": "another user's row answered 404, nothing written",
+        "probes": [
+          "GET /runs/{rid} | admin | another user's Run 2",
+          "GET /runs/{rid} | alice | another user's Run 1"
+        ],
+        "decisive": [
+          "GET /runs/{rid} | admin | another user's Run 2",
+          "GET /runs/{rid} | alice | another user's Run 1"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /runs/{rid} 422 bad id": {
+        "id": "R3 GET /runs/{rid} 422 bad id",
+        "kind": "R3",
+        "subject": "GET /runs/{rid}",
+        "sentence": "GET /runs/{rid} answers 422 'bad id' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "bad id",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /runs/{rid} 404 Not found": {
+        "id": "R3 GET /runs/{rid} 404 Not found",
+        "kind": "R3",
+        "subject": "GET /runs/{rid}",
+        "sentence": "GET /runs/{rid} answers 404 'Not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "Not found",
+          "when": "not_found"
+        },
+        "verdict": "verified",
+        "reason": "answered 404 'Not found'; stated 404 'Not found'",
+        "probes": [
+          "GET /runs/{rid} | admin | missing id"
+        ],
+        "decisive": [
+          "GET /runs/{rid} | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /runs/{rid} 5xx": {
+        "id": "R3 GET /runs/{rid} 5xx",
+        "kind": "R3",
+        "subject": "GET /runs/{rid}",
+        "sentence": "GET /runs/{rid} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 12 probes (10 past the auth check)",
+        "probes": [
+          "GET /runs/{rid} | no caller | anonymous",
+          "GET /runs/{rid} | malformed token | call",
+          "GET /runs/{rid} | admin | as Customer target 1",
+          "GET /runs/{rid} | admin | as Customer target 5",
+          "GET /runs/{rid} | admin | as Customer on a missing row",
+          "GET /runs/{rid} | alice | as Customer target 2",
+          "GET /runs/{rid} | alice | as Customer on a missing row",
+          "GET /runs/{rid} | alice | witness: another user's Run 2",
+          "GET /runs/{rid} | admin | another user's Run 2",
+          "GET /runs/{rid} | admin | witness: another user's Run 1",
+          "GET /runs/{rid} | alice | another user's Run 1",
+          "GET /runs/{rid} | admin | missing id"
+        ],
+        "decisive": [
+          "GET /runs/{rid} | admin | as Customer target 1",
+          "GET /runs/{rid} | admin | as Customer target 5",
+          "GET /runs/{rid} | admin | as Customer on a missing row",
+          "GET /runs/{rid} | alice | as Customer target 2",
+          "GET /runs/{rid} | alice | as Customer on a missing row",
+          "GET /runs/{rid} | alice | witness: another user's Run 2",
+          "GET /runs/{rid} | admin | another user's Run 2",
+          "GET /runs/{rid} | admin | witness: another user's Run 1",
+          "GET /runs/{rid} | alice | another user's Run 1",
+          "GET /runs/{rid} | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /runs/{rid}/cancel": {
+        "id": "R1 POST /runs/{rid}/cancel",
+        "kind": "R1",
+        "subject": "POST /runs/{rid}/cancel",
+        "sentence": "POST /runs/{rid}/cancel admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "POST /runs/{rid}/cancel | no caller | anonymous",
+          "POST /runs/{rid}/cancel | malformed token | call",
+          "POST /runs/{rid}/cancel | admin | as Customer target 1",
+          "POST /runs/{rid}/cancel | admin | as Customer target 5",
+          "POST /runs/{rid}/cancel | admin | as Customer on a missing row",
+          "POST /runs/{rid}/cancel | alice | as Customer target 2",
+          "POST /runs/{rid}/cancel | alice | as Customer on a missing row"
+        ],
+        "decisive": [
+          "POST /runs/{rid}/cancel | no caller | anonymous",
+          "POST /runs/{rid}/cancel | malformed token | call",
+          "POST /runs/{rid}/cancel | admin | as Customer target 1",
+          "POST /runs/{rid}/cancel | admin | as Customer target 5",
+          "POST /runs/{rid}/cancel | alice | as Customer target 2"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R2 POST /runs/{rid}/cancel": {
+        "id": "R2 POST /runs/{rid}/cancel",
+        "kind": "R2",
+        "subject": "POST /runs/{rid}/cancel",
+        "sentence": "POST /runs/{rid}/cancel acts on the caller's own Run rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Run"
+        },
+        "verdict": "verified",
+        "reason": "another user's row answered 404, nothing written",
+        "probes": [
+          "POST /runs/{rid}/cancel | admin | another user's Run 2",
+          "POST /runs/{rid}/cancel | alice | another user's Run 1"
+        ],
+        "decisive": [
+          "POST /runs/{rid}/cancel | admin | another user's Run 2",
+          "POST /runs/{rid}/cancel | alice | another user's Run 1"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /runs/{rid}/cancel 422 bad id": {
+        "id": "R3 POST /runs/{rid}/cancel 422 bad id",
+        "kind": "R3",
+        "subject": "POST /runs/{rid}/cancel",
+        "sentence": "POST /runs/{rid}/cancel answers 422 'bad id' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "bad id",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /runs/{rid}/cancel 404 Not found": {
+        "id": "R3 POST /runs/{rid}/cancel 404 Not found",
+        "kind": "R3",
+        "subject": "POST /runs/{rid}/cancel",
+        "sentence": "POST /runs/{rid}/cancel answers 404 'Not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "Not found",
+          "when": "not_found"
+        },
+        "verdict": "verified",
+        "reason": "answered 404 'Not found'; stated 404 'Not found'",
+        "probes": [
+          "POST /runs/{rid}/cancel | admin | missing id"
+        ],
+        "decisive": [
+          "POST /runs/{rid}/cancel | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /runs/{rid}/cancel 409 already final": {
+        "id": "R3 POST /runs/{rid}/cancel 409 already final",
+        "kind": "R3",
+        "subject": "POST /runs/{rid}/cancel",
+        "sentence": "POST /runs/{rid}/cancel answers 409 'already final' (other)",
+        "predicted": {
+          "status": 409,
+          "detail": "already final",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /runs/{rid}/cancel 500": {
+        "id": "R3 POST /runs/{rid}/cancel 500",
+        "kind": "R3",
+        "subject": "POST /runs/{rid}/cancel",
+        "sentence": "POST /runs/{rid}/cancel answers 500 (other)",
+        "predicted": {
+          "status": 500,
+          "detail": null,
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /runs/{rid}/cancel 5xx": {
+        "id": "R3 POST /runs/{rid}/cancel 5xx",
+        "kind": "R3",
+        "subject": "POST /runs/{rid}/cancel",
+        "sentence": "POST /runs/{rid}/cancel answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 12 probes (10 past the auth check)",
+        "probes": [
+          "POST /runs/{rid}/cancel | no caller | anonymous",
+          "POST /runs/{rid}/cancel | malformed token | call",
+          "POST /runs/{rid}/cancel | admin | as Customer target 1",
+          "POST /runs/{rid}/cancel | admin | as Customer target 5",
+          "POST /runs/{rid}/cancel | admin | as Customer on a missing row",
+          "POST /runs/{rid}/cancel | alice | as Customer target 2",
+          "POST /runs/{rid}/cancel | alice | as Customer on a missing row",
+          "POST /runs/{rid}/cancel | alice | witness: another user's Run 2",
+          "POST /runs/{rid}/cancel | admin | another user's Run 2",
+          "POST /runs/{rid}/cancel | admin | witness: another user's Run 1",
+          "POST /runs/{rid}/cancel | alice | another user's Run 1",
+          "POST /runs/{rid}/cancel | admin | missing id"
+        ],
+        "decisive": [
+          "POST /runs/{rid}/cancel | admin | as Customer target 1",
+          "POST /runs/{rid}/cancel | admin | as Customer target 5",
+          "POST /runs/{rid}/cancel | admin | as Customer on a missing row",
+          "POST /runs/{rid}/cancel | alice | as Customer target 2",
+          "POST /runs/{rid}/cancel | alice | as Customer on a missing row",
+          "POST /runs/{rid}/cancel | alice | witness: another user's Run 2",
+          "POST /runs/{rid}/cancel | admin | another user's Run 2",
+          "POST /runs/{rid}/cancel | admin | witness: another user's Run 1",
+          "POST /runs/{rid}/cancel | alice | another user's Run 1",
+          "POST /runs/{rid}/cancel | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      }
+    },
+    "tables": {
+      "User": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "T1 User": "verified",
+          "T2 User.password": "verified",
+          "T2 User.token": "verified",
+          "T5 User (id)": "unexercised"
+        }
+      },
+      "Config": {
+        "verdict": "unverified",
+        "reason": "unreached",
+        "items": {
+          "T1 Config": "unexercised",
+          "T5 Config (id)": "unexercised"
+        }
+      },
+      "Run": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "T1 Run": "verified",
+          "T4 Run.status": "unexercised",
+          "T5 Run (id)": "unexercised"
+        }
+      }
+    },
+    "routes": {
+      "GET /health": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 GET /health": "verified",
+          "R3 GET /health 5xx": "verified"
+        }
+      },
+      "POST /login": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 POST /login": "verified",
+          "R3 POST /login 422 bad body": "unexercised",
+          "R3 POST /login 401 Incorrect username or password": "unexercised",
+          "R3 POST /login 5xx": "verified"
+        }
+      },
+      "GET /configs": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 GET /configs": "verified",
+          "R3 GET /configs 5xx": "verified"
+        }
+      },
+      "POST /configs/{cid}/runs": {
+        "verdict": "unverified",
+        "reason": "R2 unexercised",
+        "items": {
+          "R1 POST /configs/{cid}/runs": "verified",
+          "R2 POST /configs/{cid}/runs": "unexercised",
+          "R3 POST /configs/{cid}/runs 422 bad id": "unexercised",
+          "R3 POST /configs/{cid}/runs 404 Not found": "verified",
+          "R3 POST /configs/{cid}/runs 409 already live": "unexercised",
+          "R3 POST /configs/{cid}/runs 500": "unexercised",
+          "R3 POST /configs/{cid}/runs 5xx": "verified"
+        }
+      },
+      "GET /runs": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 GET /runs": "verified",
+          "R2 GET /runs": "verified",
+          "R3 GET /runs 422 bad limit": "unexercised",
+          "R3 GET /runs 422": "verified",
+          "R3 GET /runs 5xx": "verified"
+        }
+      },
+      "GET /runs/{rid}": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 GET /runs/{rid}": "verified",
+          "R2 GET /runs/{rid}": "verified",
+          "R3 GET /runs/{rid} 422 bad id": "unexercised",
+          "R3 GET /runs/{rid} 404 Not found": "verified",
+          "R3 GET /runs/{rid} 5xx": "verified"
+        }
+      },
+      "POST /runs/{rid}/cancel": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 POST /runs/{rid}/cancel": "verified",
+          "R2 POST /runs/{rid}/cancel": "verified",
+          "R3 POST /runs/{rid}/cancel 422 bad id": "unexercised",
+          "R3 POST /runs/{rid}/cancel 404 Not found": "verified",
+          "R3 POST /runs/{rid}/cancel 409 already final": "unexercised",
+          "R3 POST /runs/{rid}/cancel 500": "unexercised",
+          "R3 POST /runs/{rid}/cancel 5xx": "verified"
+        }
+      }
+    },
+    "probes": {
+      "GET /health | no caller | anonymous": {
+        "route": "GET /health",
+        "items": [
+          "R1 GET /health"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/health",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "ok": true
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /health": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /health 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /health | malformed token | call": {
+        "route": "GET /health",
+        "items": [
+          "R1 GET /health"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/health",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "ok": true
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /health": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /health 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /health | admin | as Customer": {
+        "route": "GET /health",
+        "items": [
+          "R1 GET /health"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/health",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "ok": true
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /health": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /health 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /health | alice | as Customer": {
+        "route": "GET /health",
+        "items": [
+          "R1 GET /health"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/health",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "ok": true
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /health": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /health 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /login | no caller | anonymous": {
+        "route": "POST /login",
+        "items": [
+          "R1 POST /login"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "username": "admin@example.com",
+            "password": "admin-pass-0031"
+          },
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "access_token": "Token 01",
+          "token_type": "bearer",
+          "user": {
+            "id": 1,
+            "name": "admin@example.com"
+          }
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 POST /login": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password"
+          },
+          "T2 User.token": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without token"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /login | malformed token | call": {
+        "route": "POST /login",
+        "items": [
+          "R1 POST /login"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": {
+            "username": "valid username",
+            "password": "valid password"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Incorrect username or password"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 POST /login": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (401): a refusal of the credentials sent (invented, or bad on purpose)"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /login | admin | as Customer": {
+        "route": "POST /login",
+        "items": [
+          "R1 POST /login"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "username": "admin@example.com",
+            "password": "admin-pass-0031"
+          },
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "access_token": "Token 01",
+          "token_type": "bearer",
+          "user": {
+            "id": 1,
+            "name": "admin@example.com"
+          }
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 POST /login": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password"
+          },
+          "T2 User.token": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without token"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /login | alice | as Customer": {
+        "route": "POST /login",
+        "items": [
+          "R1 POST /login"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": {
+            "username": "alice@example.com",
+            "password": "alice-pass-0031"
+          },
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "access_token": "Token 02",
+          "token_type": "bearer",
+          "user": {
+            "id": 2,
+            "name": "alice@example.com"
+          }
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 POST /login": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password"
+          },
+          "T2 User.token": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without token"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /configs | no caller | anonymous": {
+        "route": "GET /configs",
+        "items": [
+          "R1 GET /configs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/configs",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /configs": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /configs 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /configs | malformed token | call": {
+        "route": "GET /configs",
+        "items": [
+          "R1 GET /configs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/configs",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /configs": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /configs 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /configs | admin | as Customer": {
+        "route": "GET /configs",
+        "items": [
+          "R1 GET /configs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/configs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "name": "Name 01"
+          },
+          {
+            "id": 2,
+            "name": "Name 02"
+          },
+          {
+            "id": 3,
+            "name": "Name 03"
+          },
+          {
+            "id": 4,
+            "name": "Name 04"
+          },
+          {
+            "id": 5,
+            "name": "Name 05"
+          },
+          {
+            "id": 6,
+            "name": "Name 06"
+          },
+          {
+            "id": 7,
+            "name": "Name 07"
+          },
+          {
+            "id": 8,
+            "name": "Name 08"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /configs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password"
+          },
+          "T2 User.token": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without token"
+          },
+          "R3 GET /configs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /configs | alice | as Customer": {
+        "route": "GET /configs",
+        "items": [
+          "R1 GET /configs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/configs",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "name": "Name 01"
+          },
+          {
+            "id": 2,
+            "name": "Name 02"
+          },
+          {
+            "id": 3,
+            "name": "Name 03"
+          },
+          {
+            "id": 4,
+            "name": "Name 04"
+          },
+          {
+            "id": 5,
+            "name": "Name 05"
+          },
+          {
+            "id": 6,
+            "name": "Name 06"
+          },
+          {
+            "id": 7,
+            "name": "Name 07"
+          },
+          {
+            "id": 8,
+            "name": "Name 08"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /configs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password"
+          },
+          "T2 User.token": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without token"
+          },
+          "R3 GET /configs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /configs/{cid}/runs | no caller | anonymous": {
+        "route": "POST /configs/{cid}/runs",
+        "items": [
+          "R1 POST /configs/{cid}/runs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/configs/1/runs",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /configs/{cid}/runs": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /configs/{cid}/runs 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /configs/{cid}/runs | malformed token | call": {
+        "route": "POST /configs/{cid}/runs",
+        "items": [
+          "R1 POST /configs/{cid}/runs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/configs/1/runs",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /configs/{cid}/runs": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /configs/{cid}/runs 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /configs/{cid}/runs | admin | as Customer": {
+        "route": "POST /configs/{cid}/runs",
+        "items": [
+          "R1 POST /configs/{cid}/runs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/configs/1/runs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 201,
+        "body": {
+          "id": 9,
+          "config_id": 1,
+          "user_id": 1,
+          "status": "queued"
+        },
+        "db_diff": {
+          "runs": {
+            "added": [
+              {
+                "id": 9,
+                "config_id": 1,
+                "user_id": 1,
+                "status": "queued"
+              }
+            ],
+            "removed": [],
+            "changed": []
+          }
+        },
+        "bearing": {
+          "R1 POST /configs/{cid}/runs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (201)"
+          },
+          "R3 POST /configs/{cid}/runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /configs/{cid}/runs | alice | as Customer": {
+        "route": "POST /configs/{cid}/runs",
+        "items": [
+          "R1 POST /configs/{cid}/runs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/configs/1/runs",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 201,
+        "body": {
+          "id": 9,
+          "config_id": 1,
+          "user_id": 2,
+          "status": "queued"
+        },
+        "db_diff": {
+          "runs": {
+            "added": [
+              {
+                "id": 9,
+                "config_id": 1,
+                "user_id": 2,
+                "status": "queued"
+              }
+            ],
+            "removed": [],
+            "changed": []
+          }
+        },
+        "bearing": {
+          "R1 POST /configs/{cid}/runs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (201)"
+          },
+          "R3 POST /configs/{cid}/runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs | no caller | anonymous": {
+        "route": "GET /runs",
+        "items": [
+          "R1 GET /runs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /runs 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /runs | malformed token | call": {
+        "route": "GET /runs",
+        "items": [
+          "R1 GET /runs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /runs 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /runs | admin | as Customer": {
+        "route": "GET /runs",
+        "items": [
+          "R1 GET /runs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "config_id": 50,
+            "user_id": 1,
+            "status": "queued"
+          },
+          {
+            "id": 5,
+            "config_id": 54,
+            "user_id": 1,
+            "status": "queued"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs | alice | as Customer": {
+        "route": "GET /runs",
+        "items": [
+          "R1 GET /runs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 2,
+            "config_id": 51,
+            "user_id": 2,
+            "status": "cancelled"
+          },
+          {
+            "id": 6,
+            "config_id": 55,
+            "user_id": 2,
+            "status": "cancelled"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs | alice | witness: own Run rows only": {
+        "route": "GET /runs",
+        "items": [
+          "T1 Run",
+          "R2 GET /runs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 2,
+            "config_id": 51,
+            "user_id": 2,
+            "status": "cancelled"
+          },
+          {
+            "id": 6,
+            "config_id": 55,
+            "user_id": 2,
+            "status": "cancelled"
+          }
+        ],
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 GET /runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs | admin | own Run rows only": {
+        "route": "GET /runs",
+        "items": [
+          "T1 Run",
+          "R2 GET /runs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "config_id": 50,
+            "user_id": 1,
+            "status": "queued"
+          },
+          {
+            "id": 5,
+            "config_id": 54,
+            "user_id": 1,
+            "status": "queued"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "T1 Run": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "only the caller's Run rows (2)"
+          },
+          "R2 GET /runs": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "only the caller's Run rows (2)"
+          },
+          "R3 GET /runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs | admin | witness: own Run rows only": {
+        "route": "GET /runs",
+        "items": [
+          "T1 Run",
+          "R2 GET /runs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "config_id": 50,
+            "user_id": 1,
+            "status": "queued"
+          },
+          {
+            "id": 5,
+            "config_id": 54,
+            "user_id": 1,
+            "status": "queued"
+          }
+        ],
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 GET /runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs | alice | own Run rows only": {
+        "route": "GET /runs",
+        "items": [
+          "T1 Run",
+          "R2 GET /runs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 2,
+            "config_id": 51,
+            "user_id": 2,
+            "status": "cancelled"
+          },
+          {
+            "id": 6,
+            "config_id": 55,
+            "user_id": 2,
+            "status": "cancelled"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "T1 Run": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "only the caller's Run rows (2)"
+          },
+          "R2 GET /runs": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "only the caller's Run rows (2)"
+          },
+          "R3 GET /runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs/{rid} | no caller | anonymous": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "R1 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/1",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs/{rid}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /runs/{rid} | malformed token | call": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "R1 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/1",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs/{rid}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /runs/{rid} | admin | as Customer target 1": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "R1 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/1",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 1,
+          "config_id": 50,
+          "user_id": 1,
+          "status": "queued"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs/{rid}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs/{rid} | admin | as Customer target 5": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "R1 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/5",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 5,
+          "config_id": 54,
+          "user_id": 1,
+          "status": "queued"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs/{rid}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs/{rid} | admin | as Customer on a missing row": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "R1 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/999999",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs/{rid}": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs/{rid} | alice | as Customer target 2": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "R1 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/2",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 2,
+          "config_id": 51,
+          "user_id": 2,
+          "status": "cancelled"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs/{rid}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs/{rid} | alice | as Customer on a missing row": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "R1 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/999999",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /runs/{rid}": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs/{rid} | alice | witness: another user's Run 2": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "T1 Run",
+          "R2 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/2",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 2,
+          "config_id": 51,
+          "user_id": 2,
+          "status": "cancelled"
+        },
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs/{rid} | admin | another user's Run 2": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "T1 Run",
+          "R2 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/2",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Run": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R2 GET /runs/{rid}": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs/{rid} | admin | witness: another user's Run 1": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "T1 Run",
+          "R2 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/1",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 1,
+          "config_id": 50,
+          "user_id": 1,
+          "status": "queued"
+        },
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs/{rid} | alice | another user's Run 1": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "T1 Run",
+          "R2 GET /runs/{rid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/1",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Run": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R2 GET /runs/{rid}": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | no caller | anonymous": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "R1 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/1/cancel",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /runs/{rid}/cancel": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | malformed token | call": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "R1 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/1/cancel",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /runs/{rid}/cancel": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | admin | as Customer target 1": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "R1 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/1/cancel",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 1,
+          "config_id": 50,
+          "user_id": 1,
+          "status": "cancelled"
+        },
+        "db_diff": {
+          "runs": {
+            "added": [],
+            "removed": [],
+            "changed": [
+              {
+                "key": {
+                  "id": 1
+                },
+                "columns": {
+                  "status": [
+                    "queued",
+                    "cancelled"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "bearing": {
+          "R1 POST /runs/{rid}/cancel": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | admin | as Customer target 5": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "R1 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/5/cancel",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 5,
+          "config_id": 54,
+          "user_id": 1,
+          "status": "cancelled"
+        },
+        "db_diff": {
+          "runs": {
+            "added": [],
+            "removed": [],
+            "changed": [
+              {
+                "key": {
+                  "id": 5
+                },
+                "columns": {
+                  "status": [
+                    "queued",
+                    "cancelled"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "bearing": {
+          "R1 POST /runs/{rid}/cancel": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | admin | as Customer on a missing row": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "R1 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/999999/cancel",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /runs/{rid}/cancel": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | alice | as Customer target 2": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "R1 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/2/cancel",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 409,
+        "body": {
+          "detail": "already final"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /runs/{rid}/cancel": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (409)"
+          },
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | alice | as Customer on a missing row": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "R1 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/999999/cancel",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /runs/{rid}/cancel": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | alice | witness: another user's Run 2": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "T1 Run",
+          "R2 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/2/cancel",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 409,
+        "body": {
+          "detail": "already final"
+        },
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | admin | another user's Run 2": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "T1 Run",
+          "R2 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/2/cancel",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Run": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R2 POST /runs/{rid}/cancel": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | admin | witness: another user's Run 1": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "T1 Run",
+          "R2 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/1/cancel",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 1,
+          "config_id": 50,
+          "user_id": 1,
+          "status": "cancelled"
+        },
+        "db_diff": {
+          "runs": {
+            "added": [],
+            "removed": [],
+            "changed": [
+              {
+                "key": {
+                  "id": 1
+                },
+                "columns": {
+                  "status": [
+                    "queued",
+                    "cancelled"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "role": "witness",
+        "bearing": {
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | alice | another user's Run 1": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "T1 Run",
+          "R2 POST /runs/{rid}/cancel"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/1/cancel",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Run": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R2 POST /runs/{rid}/cancel": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs | admin | every optional query parameter": {
+        "route": "GET /runs",
+        "items": [
+          "R3 GET /runs 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs",
+          "user": "admin",
+          "token": null,
+          "params": {
+            "limit": 1
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "config_id": 50,
+            "user_id": 1,
+            "status": "queued"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /login | no caller | example": {
+        "route": "POST /login",
+        "items": [
+          "R3 POST /login 422 bad body"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "username": "nobody@example.com",
+            "password": "wrong-password"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Incorrect username or password"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /login 422 bad body": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /configs/{cid}/runs | admin | missing id": {
+        "route": "POST /configs/{cid}/runs",
+        "items": [
+          "R3 POST /configs/{cid}/runs 404 Not found"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/configs/999999/runs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /configs/{cid}/runs 404 Not found": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 404 'Not found'; stated 404 'Not found'"
+          },
+          "R3 POST /configs/{cid}/runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs | admin | invalid body": {
+        "route": "GET /runs",
+        "items": [
+          "R3 GET /runs 422"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs",
+          "user": "admin",
+          "token": null,
+          "params": {
+            "limit": -1
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "bad limit"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /runs 422": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 422 'bad limit'; stated 422 None"
+          },
+          "R3 GET /runs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /runs/{rid} | admin | missing id": {
+        "route": "GET /runs/{rid}",
+        "items": [
+          "R3 GET /runs/{rid} 404 Not found"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/runs/999999",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /runs/{rid} 404 Not found": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 404 'Not found'; stated 404 'Not found'"
+          },
+          "R3 GET /runs/{rid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /runs/{rid}/cancel | admin | missing id": {
+        "route": "POST /runs/{rid}/cancel",
+        "items": [
+          "R3 POST /runs/{rid}/cancel 404 Not found"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/runs/999999/cancel",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /runs/{rid}/cancel 404 Not found": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 404 'Not found'; stated 404 'Not found'"
+          },
+          "R3 POST /runs/{rid}/cancel 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      }
+    },
+    "notes": [],
+    "framework": "gin",
+    "excluded_routes": [],
+    "baseline": [],
+    "corrections": [],
+    "mining": {
+      "proposed": 4,
+      "refuted": 1,
+      "uncompiled": 0,
+      "snapshots": 5,
+      "runs": 52,
+      "app_rows": 4
+    },
+    "mining_templates": [
+      "sign",
+      "not_null",
+      "one_per_fk",
+      "sum",
+      "machine"
+    ],
+    "unreachable": [
+      [
+        "R3 GET /runs 422 bad limit",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /runs/{rid} 422 bad id",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /configs/{cid}/runs 409 already live",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /configs/{cid}/runs 422 bad id",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /configs/{cid}/runs 500",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /login 401 Incorrect username or password",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /runs/{rid}/cancel 409 already final",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /runs/{rid}/cancel 422 bad id",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /runs/{rid}/cancel 500",
+        "unreachable-by-probe: no example triggers it"
+      ]
+    ],
+    "timing": {
+      "extract": 0.116,
+      "probe": 4.175,
+      "correct": 0.0,
+      "mine": 0.046,
+      "variant2": 4.255,
+      "go_policy": 0.031,
+      "total": 8.626
+    },
+    "variant2": {
+      "variant": "variant2",
+      "summary": {
+        "items": {
+          "verified": 25,
+          "refuted": 0,
+          "unexercised": 16,
+          "unclear": 0
+        },
+        "tables": {
+          "verified": 2,
+          "total": 3
+        },
+        "routes": {
+          "verified": 6,
+          "total": 7
+        }
+      },
+      "findings": [],
+      "clean": true
+    },
+    "outside_api": {},
+    "seed": {
+      "variants": {
+        "seed": {
+          "seed": 31,
+          "rows_per_table": 8,
+          "key_shift": 0
+        },
+        "variant2": {
+          "seed": 97,
+          "rows_per_table": 11,
+          "key_shift": 100
+        }
+      }
+    },
+    "inferences": [
+      {
+        "table": "Run",
+        "column": "user_id",
+        "evidence": [
+          "code:api/api.go:125",
+          "code:api/api.go:151",
+          "code:api/api.go:165",
+          "code:api/api.go:182"
+        ],
+        "rule": "owner_uses"
+      },
+      {
+        "rule": "path_parse",
+        "route": "POST /configs/{cid}/runs",
+        "param": "cid",
+        "evidence": [
+          "code:api/api.go:107"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "GET /runs/{rid}",
+        "param": "rid",
+        "evidence": [
+          "code:api/api.go:159"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "POST /runs/{rid}/cancel",
+        "param": "rid",
+        "evidence": [
+          "code:api/api.go:176"
+        ]
+      },
+      {
+        "rule": "bind_status",
+        "status": 422,
+        "evidence": [
+          "code:api/api.go:59",
+          "code:api/api.go:143"
+        ]
+      },
+      {
+        "rule": "status_facts",
+        "table": "Run",
+        "column": "status",
+        "choices": [
+          "queued",
+          "cancelled"
+        ],
+        "evidence": [
+          "code:api/api.go:125",
+          "code:api/api.go:190"
+        ]
+      },
+      {
+        "rule": "json_dash",
+        "table": "User",
+        "columns": [
+          "password",
+          "token"
+        ]
+      }
+    ]
+  }
+}

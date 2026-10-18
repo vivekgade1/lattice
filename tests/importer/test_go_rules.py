@@ -264,7 +264,7 @@ def test_the_import_of_goginapp_reads_routes_tables_and_the_owner(goginapp_impor
     assert result.framework == "gin"
     assert result.app_factory == "tests.spec.gogin_harness:make_app"
     assert len(result.spec.contracts) == 7
-    assert [i["column"] for i in result.inferences] == ["user_id"]
+    assert [i["column"] for i in result.inferences if i["rule"] == "owner_uses"] == ["user_id"]
     report = json.loads((out / "report.json").read_text())
     assert report["rules"]["inferences"] == result.inferences
     policy = json.loads((out / "go_policy.json").read_text())

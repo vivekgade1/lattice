@@ -1,0 +1,100 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 0.7192193130031228,
+    "build_goginapp_s": 2.1514810869994108
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "PG805",
+      "probe": "GO805 gated: gated_note() and GO_GATED",
+      "ran": true,
+      "predicted": "byte-identical to base",
+      "observed": {
+        "identical": false,
+        "pairing_count_informational": {
+          "goginapp": {
+            "compare_uses": 3,
+            "with_a_raise_within_3_lines": 2
+          },
+          "goextract": {
+            "compare_uses": 3,
+            "with_a_raise_within_3_lines": 1
+          }
+        }
+      },
+      "pass": false,
+      "evidence": {
+        "s3_pairing_count": "NOT RUN (gotickets not delivered)"
+      }
+    },
+    {
+      "id": "PB-G",
+      "probe": "Go outputs byte-identical to 193f7f6",
+      "ran": true,
+      "predicted": "all identical",
+      "observed": {
+        "workflows --static": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "inventory": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "literal inventory: files added by the new fixtures only": {
+          "added": [
+            "goparity2/go.mod",
+            "goparity2/main.go",
+            "goparity2mixed/go.mod",
+            "goparity2mixed/main.go"
+          ],
+          "removed": [],
+          "same": true
+        },
+        "layer A findings and notes (implementation/app + its spec)": {
+          "same": false
+        },
+        "layer A (empty policy) on every existing gocheck fixture": {
+          "same": true,
+          "per_fixture": {
+            "app": true,
+            "bounds": true,
+            "boundsets": true,
+            "clean": true,
+            "clean2": true,
+            "goextract": true,
+            "goextract_workflow": true,
+            "machine": true,
+            "owner": true,
+            "partial": true,
+            "private": true,
+            "runs": true,
+            "txflag": true
+          }
+        }
+      },
+      "pass": false,
+      "evidence": {
+        "reading": "inventory on a pristine copy of the 193f7f6 fixtures (see the docstring); test_process_runtime.py's reports are PB-T's"
+      }
+    }
+  ]
+}

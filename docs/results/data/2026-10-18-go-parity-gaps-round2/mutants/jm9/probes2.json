@@ -1,0 +1,46 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 1.7974787269995431,
+    "build_goginapp_s": 2.4032847480011696
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "PA2",
+      "probe": "go_spec_policy with a spec that declares Run with no owner + the machine",
+      "ran": true,
+      "predicted": {
+        "run_owned": false,
+        "machine": [
+          "Run"
+        ],
+        "baseline": []
+      },
+      "observed": {
+        "run_owned": false,
+        "machine": [
+          "Run"
+        ],
+        "baseline": [
+          "GO802|POST /login|User.token"
+        ],
+        "derived_baseline": [
+          "GO802|POST /login|User.token"
+        ]
+      },
+      "pass": false,
+      "evidence": {}
+    }
+  ]
+}

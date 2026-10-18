@@ -1,0 +1,597 @@
+{
+  "rows": [
+    {
+      "id": "control",
+      "detectors": {
+        "probe:P0-PARSE": true,
+        "probe:P0-OMIT": true,
+        "probe:P0-BIND": true,
+        "probe:P0-LIBMW": true,
+        "probe:P0-CHOICES": true,
+        "probe:P0-PRIV": true,
+        "probe:PA4": true,
+        "probe:PG805": true,
+        "probe:PB1-CLI": true,
+        "probe:PI1": true,
+        "probe:PI3": true,
+        "probe:PI5": true,
+        "probe:PR-T2": true,
+        "probe:PA3": true,
+        "probe:PA2": true,
+        "probe:PW": true,
+        "probe:PB-X": true,
+        "probe:PB-G": true,
+        "probe:PB-P": true,
+        "probe:PB-P2": true,
+        "test:test_a_private_column_is_the_json_dash_never_a_name": true,
+        "test:test_the_default_extract_has_no_json_key": true,
+        "test:test_the_spec_policy_has_an_empty_baseline_and_the_spec_wins_for_declared_tables": true,
+        "test:test_e1_and_e3_keys_are_absent_from_the_default_extract": true,
+        "test:test_e6_library_middleware_keeps_a_route_readable_and_other_imports_do_not": true,
+        "test:test_assign_only_owner": true,
+        "test:test_inferences_reach_the_report_only_when_there_are_some": true,
+        "test:test_the_python_path_never_asks_for_the_harness_factory": true,
+        "test:test_two_candidates_unclear": true
+      },
+      "tests_failing_on_control": [],
+      "probes_not_passing_on_control": [],
+      "passes": true,
+      "wall_s": 251.6
+    },
+    {
+      "id": "JM1",
+      "mutant": "getRun skips caller() (goapp copy)",
+      "detector": "PR2",
+      "refuted_on_route": [
+        "R1 GET /runs/{rid}"
+      ],
+      "killed": true
+    },
+    {
+      "id": "JM2",
+      "mutant": "getRun answers 403 for a missing run (goapp copy)",
+      "detector": "PR2",
+      "refuted_on_route": [
+        "R3 GET /runs/{rid} 404 Not found"
+      ],
+      "killed": true
+    },
+    {
+      "id": "JM3",
+      "mutant": "GOAPP_BUG=nocheck (existing variant)",
+      "detector": "PB2",
+      "endpoints": [
+        "POST /configs/{cid}/runs"
+      ],
+      "killed": true
+    },
+    {
+      "id": "JM4",
+      "mutant": "GOAPP_BUG=nocancel (existing variant)",
+      "detector": "PB2",
+      "endpoints": [
+        "POST /runs/{rid}/cancel"
+      ],
+      "killed": true
+    },
+    {
+      "id": "JM5",
+      "mutant": "goginapp copy: cancel drops AND user_id = ? (detectors: PA3 GO801 under E6; R2 cancel refuted)",
+      "detector": "PA3 + R",
+      "pa3_new_findings": [
+        "GO801 GO801|POST /runs/:rid/cancel|Run"
+      ],
+      "pa3_killed": true,
+      "r_flipped_items": {
+        "T1 Run": [
+          "verified",
+          "refuted"
+        ],
+        "R2 POST /runs/{rid}/cancel": [
+          "verified",
+          "refuted"
+        ]
+      },
+      "r_killed": true,
+      "r_item": "R2 POST /runs/{rid}/cancel",
+      "killed": true
+    },
+    {
+      "id": "JM6",
+      "mutant": "goginapp copy: token loses json:\"-\" (detector: PR-T2; its PA3 side is predicted not to flip, C5b)",
+      "detector": "PR-T2",
+      "pa3_new_findings": [],
+      "pa3_killed": false,
+      "r_flipped_items": {},
+      "r_killed": false,
+      "r_item": "T2 User.token",
+      "killed": false
+    },
+    {
+      "id": "JM7",
+      "mutant": "D2 requires both compare and assign (Audit loses its owner)",
+      "killed_by": "PA4; unit assign_only_owner",
+      "detectors": {
+        "probe:PA4": false,
+        "test:test_assign_only_owner": false
+      },
+      "flipped": {
+        "probe:PA4": [
+          true,
+          false
+        ],
+        "test:test_assign_only_owner": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM8",
+      "mutant": "D2 picks the first of two candidate columns instead of unclear",
+      "killed_by": "unit two_candidates_unclear",
+      "detectors": {
+        "test:test_two_candidates_unclear": false
+      },
+      "flipped": {
+        "test:test_two_candidates_unclear": [
+          true,
+          false
+        ]
+      },
+      "killed": true,
+      "s3_detector_not_run": [
+        "PI2-3"
+      ]
+    },
+    {
+      "id": "JM9",
+      "mutant": "go_spec_policy keeps the derived baseline",
+      "killed_by": "PA2 (baseline must be empty); unit",
+      "detectors": {
+        "probe:PA2": false,
+        "test:test_the_spec_policy_has_an_empty_baseline_and_the_spec_wins_for_declared_tables": false
+      },
+      "flipped": {
+        "probe:PA2": [
+          true,
+          false
+        ],
+        "test:test_the_spec_policy_has_an_empty_baseline_and_the_spec_wins_for_declared_tables": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM10",
+      "mutant": "the derived owner wins over the spec's declared table",
+      "killed_by": "PA2",
+      "detectors": {
+        "probe:PA2": false
+      },
+      "flipped": {
+        "probe:PA2": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM11",
+      "mutant": "harness_factory used for Python front ends too",
+      "killed_by": "PB-P; unit (FastAPI fixture without studio.toml)",
+      "detectors": {
+        "probe:PB-P2": false,
+        "test:test_the_python_path_never_asks_for_the_harness_factory": false
+      },
+      "flipped": {
+        "probe:PB-P2": [
+          true,
+          false
+        ],
+        "test:test_the_python_path_never_asks_for_the_harness_factory": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM12",
+      "mutant": "private columns from name heuristics instead of json",
+      "killed_by": "unit; PA4",
+      "detectors": {
+        "probe:PA4": false,
+        "test:test_a_private_column_is_the_json_dash_never_a_name": false
+      },
+      "flipped": {
+        "probe:PA4": [
+          true,
+          false
+        ],
+        "test:test_a_private_column_is_the_json_dash_never_a_name": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM13",
+      "mutant": "the json key leaks into the default extract",
+      "killed_by": "PB-X",
+      "detectors": {
+        "probe:PB-X": false,
+        "test:test_the_default_extract_has_no_json_key": false
+      },
+      "flipped": {
+        "probe:PB-X": [
+          true,
+          false
+        ],
+        "test:test_the_default_extract_has_no_json_key": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM14",
+      "mutant": "GO805 ungated by line-proximity pairing",
+      "killed_by": "PG805; PB-G",
+      "detectors": {
+        "probe:PG805": false,
+        "probe:PB-G": false
+      },
+      "flipped": {
+        "probe:PG805": [
+          true,
+          false
+        ],
+        "probe:PB-G": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM15",
+      "mutant": "the import writes candidate_spec.py into the target dir",
+      "killed_by": "PW",
+      "detectors": {
+        "probe:PI1": true,
+        "probe:PW": false
+      },
+      "flipped": {
+        "probe:PW": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM16",
+      "mutant": "inferences written as [] for every import",
+      "killed_by": "PB-P",
+      "detectors": {
+        "probe:PB-P": false,
+        "test:test_inferences_reach_the_report_only_when_there_are_some": false
+      },
+      "flipped": {
+        "probe:PB-P": [
+          true,
+          false
+        ],
+        "test:test_inferences_reach_the_report_only_when_there_are_some": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM17",
+      "mutant": "E6 off: Gin library middleware marks the route unreadable (round-1 behaviour)",
+      "killed_by": "P0-LIBMW; PA3 (JM5)",
+      "detectors": {
+        "probe:P0-LIBMW": false,
+        "probe:PA3": false,
+        "test:test_e6_library_middleware_keeps_a_route_readable_and_other_imports_do_not": false
+      },
+      "flipped": {
+        "probe:P0-LIBMW": [
+          true,
+          false
+        ],
+        "probe:PA3": [
+          true,
+          false
+        ],
+        "test:test_e6_library_middleware_keeps_a_route_readable_and_other_imports_do_not": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM18",
+      "mutant": "E6 too broad: any unresolved outside-package middleware is treated as readable",
+      "killed_by": "P0-LIBMW (the ext.Guard() route gains GO801)",
+      "detectors": {
+        "probe:P0-LIBMW": false
+      },
+      "flipped": {
+        "probe:P0-LIBMW": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM19",
+      "mutant": "E1 off: no path retyping",
+      "killed_by": "P0-PARSE; PI3 (404 items)",
+      "detectors": {
+        "probe:P0-PARSE": false,
+        "probe:PI3": false
+      },
+      "flipped": {
+        "probe:P0-PARSE": [
+          true,
+          false
+        ],
+        "probe:PI3": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM20",
+      "mutant": "E1 ignores condition 2: a parse with a `_` error retypes too",
+      "killed_by": "P0-PARSE (/b/:id)",
+      "detectors": {
+        "probe:P0-PARSE": false
+      },
+      "flipped": {
+        "probe:P0-PARSE": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM21",
+      "mutant": "E1's parse key (and E3's bind key) leak into the default extract",
+      "killed_by": "PB-X (5 of 8 dirs differ)",
+      "detectors": {
+        "probe:PB-X": false,
+        "test:test_e1_and_e3_keys_are_absent_from_the_default_extract": false
+      },
+      "flipped": {
+        "probe:PB-X": [
+          true,
+          false
+        ],
+        "test:test_e1_and_e3_keys_are_absent_from_the_default_extract": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM22",
+      "mutant": "E2 off: omitempty ignored",
+      "killed_by": "P0-OMIT; PI3 (the invalid item)",
+      "detectors": {
+        "probe:P0-OMIT": false,
+        "probe:PI3": false
+      },
+      "flipped": {
+        "probe:P0-OMIT": [
+          true,
+          false
+        ],
+        "probe:PI3": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM23",
+      "mutant": "E2: omitempty,min=3 mapped to ge 0",
+      "killed_by": "P0-OMIT (case 2)",
+      "detectors": {
+        "probe:P0-OMIT": false
+      },
+      "flipped": {
+        "probe:P0-OMIT": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM24",
+      "mutant": "E3 off: validation_status stays 400",
+      "killed_by": "P0-BIND; PI3",
+      "detectors": {
+        "probe:P0-BIND": false,
+        "probe:PI3": false
+      },
+      "flipped": {
+        "probe:P0-BIND": [
+          true,
+          false
+        ],
+        "probe:PI3": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM25",
+      "mutant": "E3 on a mixed module: the first status wins",
+      "killed_by": "P0-BIND (goparity2mixed)",
+      "detectors": {
+        "probe:P0-BIND": false
+      },
+      "flipped": {
+        "probe:P0-BIND": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM26",
+      "mutant": "E4 off: no choices (the Status 01.. seed)",
+      "killed_by": "P0-CHOICES; PI5",
+      "detectors": {
+        "probe:P0-CHOICES": false,
+        "probe:PI5": false
+      },
+      "flipped": {
+        "probe:P0-CHOICES": [
+          true,
+          false
+        ],
+        "probe:PI5": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM27",
+      "mutant": "E4 uses only the `from` states (S2: queued only)",
+      "killed_by": "P0-CHOICES",
+      "detectors": {
+        "probe:P0-CHOICES": false
+      },
+      "flipped": {
+        "probe:P0-CHOICES": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM28",
+      "mutant": "E5 off: no private columns in the profile",
+      "killed_by": "P0-PRIV; PR-T2",
+      "detectors": {
+        "probe:P0-PRIV": false,
+        "probe:PR-T2": false
+      },
+      "flipped": {
+        "probe:P0-PRIV": [
+          true,
+          false
+        ],
+        "probe:PR-T2": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM29",
+      "mutant": "E5 also takes columns with a json name (every string column)",
+      "killed_by": "P0-PRIV",
+      "detectors": {
+        "probe:P0-PRIV": false
+      },
+      "flipped": {
+        "probe:P0-PRIV": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM30",
+      "mutant": "E7: --rules parsed but not passed",
+      "killed_by": "PB1-CLI",
+      "detectors": {
+        "probe:PB1-CLI": false
+      },
+      "flipped": {
+        "probe:PB1-CLI": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "JM31",
+      "mutant": "gotickets copy: close drops AND reporter_id = ?",
+      "killed": null,
+      "not_run": "NOT RUN: tests/spec/gotickets has not been delivered (written by a separate isolated author after the freeze)"
+    },
+    {
+      "id": "JM32",
+      "mutant": "gotickets copy: password_hash loses json:\"-\"",
+      "killed": null,
+      "not_run": "NOT RUN: tests/spec/gotickets has not been delivered (written by a separate isolated author after the freeze)"
+    },
+    {
+      "id": "JM33",
+      "mutant": "gotickets copy: get answers 403 for another caller's ticket",
+      "killed": null,
+      "not_run": "NOT RUN: tests/spec/gotickets has not been delivered (written by a separate isolated author after the freeze)"
+    },
+    {
+      "id": "JM34",
+      "mutant": "gotickets copy: reopen accepts an open ticket (no 409)",
+      "killed": null,
+      "not_run": "NOT RUN: tests/spec/gotickets has not been delivered (written by a separate isolated author after the freeze)"
+    },
+    {
+      "id": "JM35",
+      "mutant": "an E1-E5 inference entry written for a Python import",
+      "killed_by": "PB-P (inferences absent)",
+      "detectors": {
+        "probe:PB-P": false
+      },
+      "flipped": {
+        "probe:PB-P": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    }
+  ],
+  "killed": 30,
+  "not_run": [
+    "JM31",
+    "JM32",
+    "JM33",
+    "JM34"
+  ],
+  "total": 35
+}

@@ -1,0 +1,47 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 0.5781218079973769,
+    "build_goginapp_s": 0.811770300999342
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "PB1-CLI",
+      "probe": "layer B on S1 through the CLI, with and without --rules",
+      "ran": true,
+      "predicted": {
+        "with --rules": "identical to PB1 (0 findings)",
+        "without": "6 F2 findings"
+      },
+      "observed": {
+        "with_rules_rc": 1,
+        "with_rules_findings": [
+          "B|GET /runs/{rid}|GET /runs/{rid} | ann | malformed",
+          "B|GET /runs/{rid}|GET /runs/{rid} | ben | malformed",
+          "B|POST /configs/{cid}/runs|POST /configs/{cid}/runs | ann | malformed",
+          "B|POST /configs/{cid}/runs|POST /configs/{cid}/runs | ben | malformed",
+          "B|POST /runs/{rid}/cancel|POST /runs/{rid}/cancel | ann | malformed",
+          "B|POST /runs/{rid}/cancel|POST /runs/{rid}/cancel | ben | malformed"
+        ],
+        "python_api": [],
+        "without_rules_rc": 1,
+        "without_rules_findings": 6
+      },
+      "pass": false,
+      "evidence": {
+        "reading": "pass rule: the --rules run equals PB1 exactly; the run without the flag is reported only"
+      }
+    }
+  ]
+}

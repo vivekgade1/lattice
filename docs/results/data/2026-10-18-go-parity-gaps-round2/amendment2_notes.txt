@@ -1,0 +1,24 @@
+Amendment 2 equivalent (build node J2; hashes and one path choice only).
+
+1. fixtures.sha256: sha256 of tests/gocheck/fixtures/goparity2/** and goparity2mixed/** (go.mod, main.go,
+   truth.json), written BEFORE any library code (the first library edit came after this file).
+   No tests/spec/gotickets exists: S3 is written by a separate isolated author after the freeze.
+2. frozen_193f7f6.sha256: every row of the pre-registration's section 8 table, recomputed from
+   `git archive 193f7f6`, plus goapp/goginapp go.mod, go.sum, studio.toml. These two files are pure
+   functions of 193f7f6; they were written after library work started, which changes nothing in them.
+   One value differs from the pre-registration: the group row "lattice/gocheck/src/*.go except ..."
+   (prereg 97c86f08...2939, "18 files"). At 193f7f6 the five named exclusions leave 19 files and hash
+   8e891040282dd6ebb749fbfcb89874c6c100fb9d75fbf68fc721272b6e2d641f. The prereg value equals the same
+   concatenation with goextract_routes.go also left out (found by leave-one-out). The runner keeps the
+   19-file group (a superset, so goextract_routes.go is frozen too) and prints the prereg value beside it.
+3. pbx_default_extract_193f7f6.sha256: sha256 of `gocheck extract` {"root": dir} (default extract) at
+   193f7f6 on the 7 round-1 PB-X dirs (goapp is the 7th) plus tests/gocheck/fixtures/runs as an 8th
+   (the prereg's "8 of 8" counts goapp twice).
+4. E5 path chosen: profile_gen computes `private` only from response models (`responses()`), and a
+   RepoModel DataModel named after a table would also change RESPONSES (the profile's response
+   shapes). `lift_repo` (frozen) runs generate_profile internally, so the private columns (and E3's
+   validation_status) are written into the generated profile source AFTER lift_repo, by
+   `go_rules.patch_profile` (called from rules.py's Go branch, 2 lines), before the Seeder and
+   candidate_spec.py are built.
+5. Extra opt-in key: params[].parse_at ("file:line" of the strconv call), next to params[].parse
+   (the prereg's evidence line needs the parse site; the param's own file/line is the route's).

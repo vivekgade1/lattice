@@ -1,0 +1,113 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 0.5222195030000876,
+    "build_goginapp_s": 0.84503905100064,
+    "s2_import_lazy_build_s": 10.257535051998275
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-OMIT",
+      "probe": "E2 on goparity2 and S2 limit",
+      "ran": true,
+      "predicted": {
+        "goparity2": "ge 0/le 10; ge null/le 10 + 1 unread; ge 1/le 10",
+        "S2": "ge 0/le 50",
+        "S3": "ge 0/le 100"
+      },
+      "observed": {
+        "goparity2": {
+          "GET /n1": [
+            1,
+            10,
+            0
+          ],
+          "GET /n2": [
+            3,
+            10,
+            0
+          ],
+          "GET /n3": [
+            1,
+            10,
+            0
+          ]
+        },
+        "S2": [
+          1,
+          50
+        ]
+      },
+      "pass": false,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    },
+    {
+      "id": "PI3",
+      "probe": "rule items of the S2 import on the original (seed)",
+      "ran": true,
+      "predicted": {
+        "items": "38-44",
+        "verified_share": "0.62-0.82",
+        "refuted": "0-1",
+        "corrections": 0,
+        "gate": "share >= 0.60; every refuted item has a correction or a baseline entry with its reason; every unexercised item has a reason"
+      },
+      "observed": {
+        "items": 41,
+        "verdicts": {
+          "verified": 24,
+          "unexercised": 16,
+          "refuted": 1
+        },
+        "verified_share": 0.5854,
+        "refuted": 1,
+        "refuted_without_correction": [
+          "R3 GET /runs 422"
+        ],
+        "unexercised_without_reason": [],
+        "refuted_items": {
+          "R3 GET /runs 422": "answered 200 None; stated 422 None"
+        }
+      },
+      "pass": false,
+      "evidence": {
+        "in_predicted_range": {
+          "items": true,
+          "share": false,
+          "refuted": true,
+          "corrections": true
+        },
+        "unexercised": {
+          "T1 Config": "no probe reached it",
+          "T4 Run.status": "no route writes Run.status through a parameter (every stored value is listed)",
+          "T5 User (id)": "no route creates User rows",
+          "T5 Config (id)": "no route creates Config rows",
+          "T5 Run (id)": "no route creates Run rows",
+          "R3 POST /login 422 bad body": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /login 401 Incorrect username or password": "unreachable-by-probe: no example triggers it",
+          "R2 POST /configs/{cid}/runs": "no probe reached it",
+          "R3 POST /configs/{cid}/runs 422 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /configs/{cid}/runs 409 already live": "unreachable-by-probe: no example triggers it",
+          "R3 POST /configs/{cid}/runs 500": "unreachable-by-probe: no example triggers it",
+          "R3 GET /runs 422 bad limit": "unreachable-by-probe: no example triggers it",
+          "R3 GET /runs/{rid} 422 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /runs/{rid}/cancel 422 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /runs/{rid}/cancel 409 already final": "unreachable-by-probe: no example triggers it",
+          "R3 POST /runs/{rid}/cancel 500": "unreachable-by-probe: no example triggers it"
+        }
+      }
+    }
+  ]
+}

@@ -6,7 +6,8 @@
         [--x-k 12] [--x-repeats 3] [--x-budget 60] [--runtime mod:RUNTIME | process | go] \\
         [--services mod:SERVICES] [--database sqlite|postgres|mysql|clickhouse|ENGINE] \\
         [--database-url URL] [--engine-file FILE ...] [--modules DIR] \\
-        [--only SELECTOR ...] [--only-file PATH] [--trace PATH] [--await-cap SECONDS]
+        [--only SELECTOR ...] [--only-file PATH] [--trace PATH] [--await-cap SECONDS] \\
+        [--rules mod:ATTR]
 
 ``--spec`` names a Spec (or a function returning one), ``--app`` an app factory
 ``(db_path) -> ASGI app``, ``--db`` a database factory (``(path)`` or ``(variant,
@@ -106,6 +107,7 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument("--mint-token", help="module:fn, (user key) -> bearer token")
     c.add_argument("--natives", help="module:NATIVES, the spec's natives {name: function}")
     c.add_argument("--baseline", help="module:BASELINE, the app's accepted findings")
+    c.add_argument("--rules", help="module:ATTR, a sequence of verify rules (default: FastAPI's)")
     c.add_argument(
         "--runtime",
         help="module:RUNTIME, the app's AppRuntime (or a function returning one); "
@@ -405,6 +407,7 @@ def _check_main(args: argparse.Namespace) -> int:
         if not isinstance(spec, Spec):
             raise CheckError(f"{args.spec} is not a Spec")
         only, trace = _only(args)
+        extra = {"rules": tuple(load(args.rules))} if args.rules else {}
         report = check(
             spec,
             load(args.app),
@@ -428,6 +431,7 @@ def _check_main(args: argparse.Namespace) -> int:
             only=only,
             trace=trace,
             await_cap=args.await_cap,
+            **extra,
         )
     except Exception as err:  # noqa: BLE001 -- any failure to run the check is exit 2
         print(f"error: {type(err).__name__}: {err}", file=sys.stderr)

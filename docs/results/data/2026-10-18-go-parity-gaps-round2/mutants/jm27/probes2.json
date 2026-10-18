@@ -1,0 +1,47 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 3.096463563000725,
+    "build_goginapp_s": 2.310846213997138
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-CHOICES",
+      "probe": "E4 on S2: choices from status_facts",
+      "ran": true,
+      "predicted": {
+        "S2": {
+          "Run.status": [
+            "queued",
+            "cancelled"
+          ]
+        },
+        "S3": {
+          "Ticket.status": [
+            "open",
+            "closed"
+          ]
+        }
+      },
+      "observed": {
+        "Run.status": [
+          "queued"
+        ]
+      },
+      "pass": false,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    }
+  ]
+}

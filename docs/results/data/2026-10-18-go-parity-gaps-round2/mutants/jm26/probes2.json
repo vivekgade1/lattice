@@ -1,0 +1,67 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 0.534850195999752,
+    "build_goginapp_s": 0.9301877149991924,
+    "s2_import_lazy_build_s": 9.952323701996647
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-CHOICES",
+      "probe": "E4 on S2: choices from status_facts",
+      "ran": true,
+      "predicted": {
+        "S2": {
+          "Run.status": [
+            "queued",
+            "cancelled"
+          ]
+        },
+        "S3": {
+          "Ticket.status": [
+            "open",
+            "closed"
+          ]
+        }
+      },
+      "observed": {},
+      "pass": false,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    },
+    {
+      "id": "PI5",
+      "probe": "proposals.json (mining)",
+      "ran": true,
+      "predicted": "2-6 proposals including the machine runs.status queued -> cancelled",
+      "observed": {
+        "count": 3,
+        "kinds": [
+          "invariant"
+        ],
+        "machine_runs_status": false,
+        "all_pending": true,
+        "sentences": [
+          "Run's config_id is positive.",
+          "No two User rows share name.",
+          "No two User rows share token."
+        ]
+      },
+      "pass": false,
+      "evidence": {
+        "in_predicted_range": true
+      }
+    }
+  ]
+}

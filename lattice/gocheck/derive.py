@@ -1,6 +1,5 @@
 """Layer A's policy for a Go app, derived from the app (Spike J, node J1; D3): the Go
-counterpart of :func:`lattice.pycheck.derive_policy` / ``spec_policy``, without the
-Python-only parts.
+counterpart of :func:`lattice.pycheck.derive_policy`, without the Python-only parts.
 
 :func:`derive_go_policy` reads the module with ``gocheck extract`` (the opt-in *policy*
 extract adds each column's ``json`` name) and builds a :class:`~lattice.gocheck.GoPolicy`:
@@ -17,7 +16,7 @@ extract adds each column's ``json`` name) and builds a :class:`~lattice.gocheck.
 * ``baseline``: the keys of ``run_gocheck(module, policy)`` -- what the original already does
   is accepted, as pycheck's derived baseline does.
 
-:func:`go_spec_policy` is the counterpart of ``spec_policy``: the derived policy with an
+:func:`go_spec_policy` (pycheck has no counterpart): the derived policy with an
 **empty** baseline, laid under the spec -- for each table the spec declares, the spec's
 owner, ``owner_via``, private columns and machine win (a declared table with no owner is not
 owned); the spec's admin and open routes are added. ``lattice check`` on Go keeps

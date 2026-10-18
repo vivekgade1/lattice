@@ -951,6 +951,8 @@ def import_rules(
     runtime = _runtime(fe, root, package, model)
     result = lift_repo(root, package, factory, only=(), dialect=dialect, frontend=fe,
                        runtime=runtime)  # fmt: skip
+    if fe.name == "gin":  # E3, E5: the profile states the bind status and the private columns
+        go_rules.patch_profile(result, fe.private, fe.validation_status)
     timing["extract"] = clock() - t0
     ctx = result.context
     api = result.lattice_profile.api
@@ -1060,7 +1062,8 @@ def _go_policy(root: Path, package: str, inferences: Sequence[Mapping[str, Any]]
 
     module_dir = Path(root) / package
     extract = policy_extract(module_dir)
-    owners = {i["table"]: i["column"] for i in inferences if i.get("column")}
+    owners = {i["table"]: i["column"] for i in inferences if i.get("rule") == "owner_uses"
+              and i.get("column")}  # fmt: skip
     policy = derive_go_policy(module_dir, extract, owners)
     dropped: dict[tuple[str, str], list[Any]] = {}
     for w in extract.get("status_writes", ()):

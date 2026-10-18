@@ -1,0 +1,35 @@
+{
+  "probes": {
+    "P0-PARSE": true,
+    "P0-OMIT": true,
+    "P0-BIND": true,
+    "P0-LIBMW": true,
+    "P0-CHOICES": true,
+    "P0-PRIV": true,
+    "PA4": true,
+    "PG805": true,
+    "PB1-CLI": true,
+    "PI1": true,
+    "PI3": true,
+    "PI5": true,
+    "PR-T2": true,
+    "PA3": true,
+    "PA2": true,
+    "PW": true,
+    "PB-X": true,
+    "PB-G": true,
+    "PB-P": true,
+    "PB-P2": true
+  },
+  "tests": {
+    "tests/gocheck/test_go_derive.py::test_a_private_column_is_the_json_dash_never_a_name": true,
+    "tests/gocheck/test_go_derive.py::test_the_default_extract_has_no_json_key": true,
+    "tests/gocheck/test_go_derive.py::test_the_spec_policy_has_an_empty_baseline_and_the_spec_wins_for_declared_tables": true,
+    "tests/gocheck/test_go_derive2.py::test_e1_and_e3_keys_are_absent_from_the_default_extract": true,
+    "tests/gocheck/test_go_derive2.py::test_e6_library_middleware_keeps_a_route_readable_and_other_imports_do_not": true,
+    "tests/importer/test_go_rules.py::test_assign_only_owner": true,
+    "tests/importer/test_go_rules.py::test_inferences_reach_the_report_only_when_there_are_some": true,
+    "tests/importer/test_go_rules.py::test_the_python_path_never_asks_for_the_harness_factory": true,
+    "tests/importer/test_go_rules.py::test_two_candidates_unclear": true
+  }
+}

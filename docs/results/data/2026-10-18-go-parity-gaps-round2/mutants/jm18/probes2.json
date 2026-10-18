@@ -1,0 +1,34 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 1.1779216560025816,
+    "build_goginapp_s": 1.701265492996754
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-LIBMW",
+      "probe": "layer A on goparity2: gin.Recovery()/Logger vs ext.Guard()",
+      "ran": true,
+      "predicted": [
+        "GO801|GET /notes|Note"
+      ],
+      "observed": [
+        "GO801|GET /guarded/notes|Note",
+        "GO801|GET /notes|Note"
+      ],
+      "pass": false,
+      "evidence": {}
+    }
+  ]
+}

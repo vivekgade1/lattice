@@ -168,7 +168,8 @@ def test_the_default_extract_has_no_json_key():
         assert all("json" not in c for t in data["tables"] for c in t["columns"])
 
 
-def test_the_policy_extract_only_adds_the_json_key():
+def test_the_policy_extract_only_adds_the_opt_in_keys():
+    """The json key (D3) and, in round 2, params[].parse and raises[].bind (E1, E3)."""
     for module in (GINAPP, GOEXTRACT):
         default = json.loads(_default_extract(module))
         policy = policy_extract(module)
@@ -176,6 +177,11 @@ def test_the_policy_extract_only_adds_the_json_key():
         for t in policy["tables"]:
             for c in t["columns"]:
                 del c["json"]
+        for r in policy["routes"]:
+            for x in (*r["params"], *r["raises"]):
+                x.pop("parse", None)
+                x.pop("parse_at", None)
+                x.pop("bind", None)
         assert policy == default
 
 
