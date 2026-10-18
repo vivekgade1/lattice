@@ -1,0 +1,56 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 2.1305040909974196,
+    "build_goginapp_s": 2.6958405549994495
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-OMIT",
+      "probe": "E2 on goparity2 and S2 limit",
+      "ran": true,
+      "predicted": {
+        "goparity2": "ge 0/le 10; ge null/le 10 + 1 unread; ge 1/le 10",
+        "S2": "ge 0/le 50",
+        "S3": "ge 0/le 100"
+      },
+      "observed": {
+        "goparity2": {
+          "GET /n1": [
+            0,
+            10,
+            0
+          ],
+          "GET /n2": [
+            0,
+            10,
+            1
+          ],
+          "GET /n3": [
+            1,
+            10,
+            0
+          ]
+        },
+        "S2": [
+          0,
+          50
+        ]
+      },
+      "pass": false,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    }
+  ]
+}

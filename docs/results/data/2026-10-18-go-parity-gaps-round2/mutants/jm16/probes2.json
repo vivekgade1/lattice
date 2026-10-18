@@ -1,0 +1,41 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 0.9396846210001968,
+    "build_goginapp_s": 1.3579766439979721
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "PB-P",
+      "probe": "Python outputs byte-identical to base",
+      "ran": true,
+      "predicted": "all identical",
+      "observed": {
+        "control: the base twice, after the normaliser, is identical": true,
+        "control differing files": [],
+        "rules import (multivendor) identical to base after the normaliser": false,
+        "differing files": [
+          "report.json"
+        ],
+        "report.json has no inferences key": false,
+        "no go_policy.json for a Python import": true,
+        "pycheck derive_policy(multivendor) identical": true
+      },
+      "pass": false,
+      "evidence": {
+        "reading": "the pre-registration's `spec_policy on the pycheck fixtures` names a function that does not exist at this commit; derive_policy is its nearest (layer A's Python policy)"
+      }
+    }
+  ]
+}

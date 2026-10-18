@@ -1,0 +1,2536 @@
+........................................................................ [  2%]
+........................................................................ [  4%]
+.................................................EEEEEEE................ [  7%]
+........................................................................ [  9%]
+........................................................................ [ 11%]
+.F..F.................................................EEEEEEEEEEEEEEEEEE [ 14%]
+EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE................... [ 16%]
+F.............FFFF........................EEEEEEEE...................... [ 18%]
+........................................................................ [ 21%]
+........................................................................ [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+............................................................ss.......... [ 30%]
+........................................................................ [ 32%]
+...................................ssssssssssss.sssss................... [ 35%]
+...........s............................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+..................................s..................................... [ 51%]
+........................................................................ [ 54%]
+.............sssssssssss.ss............................................. [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 75%]
+........................................................................ [ 77%]
+.......................................s................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 89%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+.....................................................s.................. [ 96%]
+........................................................................ [ 98%]
+................................                                         [100%]
+==================================== ERRORS ====================================
+________________ ERROR collecting tests/importer/test_adapt.py _________________
+tests/importer/test_adapt.py:15: in <module>
+    from bench.template_app.app.core import security
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+_____________ ERROR collecting tests/importer/test_importer_cli.py _____________
+tests/importer/test_importer_cli.py:19: in <module>
+    from tests.importer.test_lift_template import ROUTES, _lift
+<frozen importlib._bootstrap>:1369: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1340: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+../../lattice/.venv/lib/python3.13/site-packages/_pytest/assertion/rewrite.py:188: in exec_module
+    exec(co, module.__dict__)
+tests/importer/test_lift_template.py:28: in <module>
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+___________ ERROR collecting tests/importer/test_importer_context.py ___________
+tests/importer/test_importer_context.py:14: in <module>
+    from tests.importer.test_llm_lift import REPO_ROOT, FakeLLM, _buggy, answer
+<frozen importlib._bootstrap>:1369: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1340: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+../../lattice/.venv/lib/python3.13/site-packages/_pytest/assertion/rewrite.py:188: in exec_module
+    exec(co, module.__dict__)
+tests/importer/test_llm_lift.py:27: in <module>
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+____________ ERROR collecting tests/importer/test_lift_template.py _____________
+tests/importer/test_lift_template.py:28: in <module>
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+_______________ ERROR collecting tests/importer/test_llm_lift.py _______________
+tests/importer/test_llm_lift.py:27: in <module>
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+__________ ERROR collecting tests/importer/test_llm_lift_coverage.py ___________
+tests/importer/test_llm_lift_coverage.py:22: in <module>
+    from tests.importer.test_llm_lift import (
+<frozen importlib._bootstrap>:1369: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1340: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+../../lattice/.venv/lib/python3.13/site-packages/_pytest/assertion/rewrite.py:188: in exec_module
+    exec(co, module.__dict__)
+tests/importer/test_llm_lift.py:27: in <module>
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+_____________ ERROR collecting tests/importer/test_llm_lift_t2.py ______________
+tests/importer/test_llm_lift_t2.py:26: in <module>
+    from tests.importer.test_llm_lift import (  # noqa: F401 -- fixtures
+<frozen importlib._bootstrap>:1369: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1340: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+../../lattice/.venv/lib/python3.13/site-packages/_pytest/assertion/rewrite.py:188: in exec_module
+    exec(co, module.__dict__)
+tests/importer/test_llm_lift.py:27: in <module>
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+_______________ ERROR collecting tests/importer/test_outside.py ________________
+tests/importer/test_outside.py:14: in <module>
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+__________ ERROR collecting tests/importer/test_sql_lift_template.py ___________
+tests/importer/test_sql_lift_template.py:16: in <module>
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+________________ ERROR collecting tests/importer/test_trace.py _________________
+tests/importer/test_trace.py:18: in <module>
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+_____________ ERROR collecting tests/pycheck/test_pycheck_bench.py _____________
+tests/pycheck/test_pycheck_bench.py:30: in <module>
+    from bench.edit_slice.reference import reference_files
+bench/edit_slice/reference/__init__.py:24: in <module>
+    from bench.edit_slice.variant import Variant, load_variant
+bench/edit_slice/variant.py:51: in <module>
+    from bench.template_app import sqlite_engine
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+___________ ERROR collecting tests/pycheck/test_pycheck_machines.py ____________
+tests/pycheck/test_pycheck_machines.py:20: in <module>
+    from bench.edit_slice.reference import REFERENCE_ROOT, reference_files
+bench/edit_slice/reference/__init__.py:24: in <module>
+    from bench.edit_slice.variant import Variant, load_variant
+bench/edit_slice/variant.py:51: in <module>
+    from bench.template_app import sqlite_engine
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+____________ ERROR collecting tests/pycheck/test_pycheck_qprompt.py ____________
+tests/pycheck/test_pycheck_qprompt.py:14: in <module>
+    from bench.edit_slice import prompts, qcheck, run
+bench/edit_slice/run.py:155: in <module>
+    from bench.edit_slice import prompts, smoke
+bench/edit_slice/smoke.py:32: in <module>
+    from bench.template_app.seed import TEMPLATE_USERS
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+_______________ ERROR collecting tests/spec/test_phase0_exit.py ________________
+tests/spec/test_phase0_exit.py:18: in <module>
+    from bench.specs import exit as phase0
+bench/specs/exit.py:36: in <module>
+    from bench.edit_slice.reference import reference_files
+bench/edit_slice/reference/__init__.py:24: in <module>
+    from bench.edit_slice.variant import Variant, load_variant
+bench/edit_slice/variant.py:51: in <module>
+    from bench.template_app import sqlite_engine
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+__________________ ERROR collecting tests/spec/test_probes.py __________________
+tests/spec/test_probes.py:24: in <module>
+    from bench.edit_slice.repos import multivendor as mv
+bench/edit_slice/repos/__init__.py:45: in <module>
+    from bench.edit_slice.oracle import TicketOracle
+bench/edit_slice/oracle.py:62: in <module>
+    from bench.edit_slice.reference import make_reference_app, reference_variant
+bench/edit_slice/reference/__init__.py:24: in <module>
+    from bench.edit_slice.variant import Variant, load_variant
+bench/edit_slice/variant.py:51: in <module>
+    from bench.template_app import sqlite_engine
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+bench/template_app/app/models.py:60: in User
+    items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                ^^^^
+E   NameError: name 'Item' is not defined
+_______________ ERROR at setup of test_the_same_files[template] ________________
+
+request = <SubRequest 'captured' for <Function test_the_same_files[template]>>
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7f1dbf96e650>, _basetemp=PosixPath('/tmp/pytest-of-root/pytest-442'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module", params=sorted(APPS))
+    def captured(request, tmp_path_factory) -> tuple[str, dict[str, str]]:
+        app = request.param
+        raw = tmp_path_factory.mktemp(f"golden-{app}")
+>       _run_worker(app, raw)
+
+tests/importer/test_frontend_goldens.py:224: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = 'template'
+out = PosixPath('/tmp/pytest-of-root/pytest-442/golden-template0')
+
+    def _run_worker(app: str, out: Path) -> float:
+        started = time.perf_counter()
+        done = subprocess.run(
+            [sys.executable, "-m", "tests.importer.test_frontend_goldens", app, str(out)],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=600, check=False,
+        )  # fmt: skip
+>       assert done.returncode == 0, done.stderr[-3000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 203, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 277, in <module>
+E             _worker(sys.argv[1], Path(sys.argv[2]))
+E             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 114, in _worker
+E             code = cli.main([str(REPO_ROOT), "--package", package, "--app-factory", factory,
+E                              "--out", str(out / "lattice_import"), "--no-llm", "--no-corpus"])  # fmt: skip
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 168, in main
+E             factory = resolve_factory(args.app_factory)
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 74, in resolve_factory
+E             obj: Any = importlib.import_module(module)
+E                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+E           File "/usr/lib/python3.13/importlib/__init__.py", line 88, in import_module
+E             return _bootstrap._gcd_import(name[level:], package, level)
+E                    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "<frozen importlib._bootstrap>", line 1404, in _gcd_import
+E           File "<frozen importlib._bootstrap>", line 1369, in _find_and_load
+E           File "<frozen importlib._bootstrap>", line 1340, in _find_and_load_unlocked
+E           File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+E           File "<frozen importlib._bootstrap_external>", line 1027, in exec_module
+E           File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E           File "/home/user/wt/j2/bench/template_app/__init__.py", line 17, in <module>
+E             from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+E             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 53, in <module>
+E             class User(UserBase, table=True):
+E             ...<6 lines>...
+E                 items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 60, in User
+E             items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E                         ^^^^
+E         NameError: name 'Item' is not defined. Did you mean: 'items'?
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/user/lattice/.venv/bin/python', '-m', 'tests.importer.test_frontend_goldens', 'template'...ner", cascade_delete=True)\n                ^^^^\nNameError: name \'Item\' is not defined. Did you mean: \'items\'?\n').returncode
+
+tests/importer/test_frontend_goldens.py:130: AssertionError
+_ ERROR at setup of test_the_output_is_byte_identical_to_the_golden[template-model.json] _
+
+request = <SubRequest 'captured' for <Function test_the_same_files[template]>>
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7f1dbf96e650>, _basetemp=PosixPath('/tmp/pytest-of-root/pytest-442'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module", params=sorted(APPS))
+    def captured(request, tmp_path_factory) -> tuple[str, dict[str, str]]:
+        app = request.param
+        raw = tmp_path_factory.mktemp(f"golden-{app}")
+>       _run_worker(app, raw)
+
+tests/importer/test_frontend_goldens.py:224: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = 'template'
+out = PosixPath('/tmp/pytest-of-root/pytest-442/golden-template0')
+
+    def _run_worker(app: str, out: Path) -> float:
+        started = time.perf_counter()
+        done = subprocess.run(
+            [sys.executable, "-m", "tests.importer.test_frontend_goldens", app, str(out)],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=600, check=False,
+        )  # fmt: skip
+>       assert done.returncode == 0, done.stderr[-3000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 203, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 277, in <module>
+E             _worker(sys.argv[1], Path(sys.argv[2]))
+E             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 114, in _worker
+E             code = cli.main([str(REPO_ROOT), "--package", package, "--app-factory", factory,
+E                              "--out", str(out / "lattice_import"), "--no-llm", "--no-corpus"])  # fmt: skip
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 168, in main
+E             factory = resolve_factory(args.app_factory)
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 74, in resolve_factory
+E             obj: Any = importlib.import_module(module)
+E                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+E           File "/usr/lib/python3.13/importlib/__init__.py", line 88, in import_module
+E             return _bootstrap._gcd_import(name[level:], package, level)
+E                    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "<frozen importlib._bootstrap>", line 1404, in _gcd_import
+E           File "<frozen importlib._bootstrap>", line 1369, in _find_and_load
+E           File "<frozen importlib._bootstrap>", line 1340, in _find_and_load_unlocked
+E           File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+E           File "<frozen importlib._bootstrap_external>", line 1027, in exec_module
+E           File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E           File "/home/user/wt/j2/bench/template_app/__init__.py", line 17, in <module>
+E             from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+E             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 53, in <module>
+E             class User(UserBase, table=True):
+E             ...<6 lines>...
+E                 items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 60, in User
+E             items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E                         ^^^^
+E         NameError: name 'Item' is not defined. Did you mean: 'items'?
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/user/lattice/.venv/bin/python', '-m', 'tests.importer.test_frontend_goldens', 'template'...ner", cascade_delete=True)\n                ^^^^\nNameError: name \'Item\' is not defined. Did you mean: \'items\'?\n').returncode
+
+tests/importer/test_frontend_goldens.py:130: AssertionError
+_ ERROR at setup of test_the_output_is_byte_identical_to_the_golden[template-profile.py] _
+
+request = <SubRequest 'captured' for <Function test_the_same_files[template]>>
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7f1dbf96e650>, _basetemp=PosixPath('/tmp/pytest-of-root/pytest-442'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module", params=sorted(APPS))
+    def captured(request, tmp_path_factory) -> tuple[str, dict[str, str]]:
+        app = request.param
+        raw = tmp_path_factory.mktemp(f"golden-{app}")
+>       _run_worker(app, raw)
+
+tests/importer/test_frontend_goldens.py:224: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = 'template'
+out = PosixPath('/tmp/pytest-of-root/pytest-442/golden-template0')
+
+    def _run_worker(app: str, out: Path) -> float:
+        started = time.perf_counter()
+        done = subprocess.run(
+            [sys.executable, "-m", "tests.importer.test_frontend_goldens", app, str(out)],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=600, check=False,
+        )  # fmt: skip
+>       assert done.returncode == 0, done.stderr[-3000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 203, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 277, in <module>
+E             _worker(sys.argv[1], Path(sys.argv[2]))
+E             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 114, in _worker
+E             code = cli.main([str(REPO_ROOT), "--package", package, "--app-factory", factory,
+E                              "--out", str(out / "lattice_import"), "--no-llm", "--no-corpus"])  # fmt: skip
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 168, in main
+E             factory = resolve_factory(args.app_factory)
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 74, in resolve_factory
+E             obj: Any = importlib.import_module(module)
+E                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+E           File "/usr/lib/python3.13/importlib/__init__.py", line 88, in import_module
+E             return _bootstrap._gcd_import(name[level:], package, level)
+E                    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "<frozen importlib._bootstrap>", line 1404, in _gcd_import
+E           File "<frozen importlib._bootstrap>", line 1369, in _find_and_load
+E           File "<frozen importlib._bootstrap>", line 1340, in _find_and_load_unlocked
+E           File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+E           File "<frozen importlib._bootstrap_external>", line 1027, in exec_module
+E           File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E           File "/home/user/wt/j2/bench/template_app/__init__.py", line 17, in <module>
+E             from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+E             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 53, in <module>
+E             class User(UserBase, table=True):
+E             ...<6 lines>...
+E                 items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 60, in User
+E             items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E                         ^^^^
+E         NameError: name 'Item' is not defined. Did you mean: 'items'?
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/user/lattice/.venv/bin/python', '-m', 'tests.importer.test_frontend_goldens', 'template'...ner", cascade_delete=True)\n                ^^^^\nNameError: name \'Item\' is not defined. Did you mean: \'items\'?\n').returncode
+
+tests/importer/test_frontend_goldens.py:130: AssertionError
+_ ERROR at setup of test_the_output_is_byte_identical_to_the_golden[template-cases.json] _
+
+request = <SubRequest 'captured' for <Function test_the_same_files[template]>>
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7f1dbf96e650>, _basetemp=PosixPath('/tmp/pytest-of-root/pytest-442'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module", params=sorted(APPS))
+    def captured(request, tmp_path_factory) -> tuple[str, dict[str, str]]:
+        app = request.param
+        raw = tmp_path_factory.mktemp(f"golden-{app}")
+>       _run_worker(app, raw)
+
+tests/importer/test_frontend_goldens.py:224: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = 'template'
+out = PosixPath('/tmp/pytest-of-root/pytest-442/golden-template0')
+
+    def _run_worker(app: str, out: Path) -> float:
+        started = time.perf_counter()
+        done = subprocess.run(
+            [sys.executable, "-m", "tests.importer.test_frontend_goldens", app, str(out)],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=600, check=False,
+        )  # fmt: skip
+>       assert done.returncode == 0, done.stderr[-3000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 203, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 277, in <module>
+E             _worker(sys.argv[1], Path(sys.argv[2]))
+E             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 114, in _worker
+E             code = cli.main([str(REPO_ROOT), "--package", package, "--app-factory", factory,
+E                              "--out", str(out / "lattice_import"), "--no-llm", "--no-corpus"])  # fmt: skip
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 168, in main
+E             factory = resolve_factory(args.app_factory)
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 74, in resolve_factory
+E             obj: Any = importlib.import_module(module)
+E                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+E           File "/usr/lib/python3.13/importlib/__init__.py", line 88, in import_module
+E             return _bootstrap._gcd_import(name[level:], package, level)
+E                    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "<frozen importlib._bootstrap>", line 1404, in _gcd_import
+E           File "<frozen importlib._bootstrap>", line 1369, in _find_and_load
+E           File "<frozen importlib._bootstrap>", line 1340, in _find_and_load_unlocked
+E           File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+E           File "<frozen importlib._bootstrap_external>", line 1027, in exec_module
+E           File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E           File "/home/user/wt/j2/bench/template_app/__init__.py", line 17, in <module>
+E             from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+E             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 53, in <module>
+E             class User(UserBase, table=True):
+E             ...<6 lines>...
+E                 items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 60, in User
+E             items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E                         ^^^^
+E         NameError: name 'Item' is not defined. Did you mean: 'items'?
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/user/lattice/.venv/bin/python', '-m', 'tests.importer.test_frontend_goldens', 'template'...ner", cascade_delete=True)\n                ^^^^\nNameError: name \'Item\' is not defined. Did you mean: \'items\'?\n').returncode
+
+tests/importer/test_frontend_goldens.py:130: AssertionError
+_ ERROR at setup of test_the_output_is_byte_identical_to_the_golden[template-report.json] _
+
+request = <SubRequest 'captured' for <Function test_the_same_files[template]>>
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7f1dbf96e650>, _basetemp=PosixPath('/tmp/pytest-of-root/pytest-442'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module", params=sorted(APPS))
+    def captured(request, tmp_path_factory) -> tuple[str, dict[str, str]]:
+        app = request.param
+        raw = tmp_path_factory.mktemp(f"golden-{app}")
+>       _run_worker(app, raw)
+
+tests/importer/test_frontend_goldens.py:224: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = 'template'
+out = PosixPath('/tmp/pytest-of-root/pytest-442/golden-template0')
+
+    def _run_worker(app: str, out: Path) -> float:
+        started = time.perf_counter()
+        done = subprocess.run(
+            [sys.executable, "-m", "tests.importer.test_frontend_goldens", app, str(out)],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=600, check=False,
+        )  # fmt: skip
+>       assert done.returncode == 0, done.stderr[-3000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 203, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 277, in <module>
+E             _worker(sys.argv[1], Path(sys.argv[2]))
+E             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 114, in _worker
+E             code = cli.main([str(REPO_ROOT), "--package", package, "--app-factory", factory,
+E                              "--out", str(out / "lattice_import"), "--no-llm", "--no-corpus"])  # fmt: skip
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 168, in main
+E             factory = resolve_factory(args.app_factory)
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 74, in resolve_factory
+E             obj: Any = importlib.import_module(module)
+E                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+E           File "/usr/lib/python3.13/importlib/__init__.py", line 88, in import_module
+E             return _bootstrap._gcd_import(name[level:], package, level)
+E                    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "<frozen importlib._bootstrap>", line 1404, in _gcd_import
+E           File "<frozen importlib._bootstrap>", line 1369, in _find_and_load
+E           File "<frozen importlib._bootstrap>", line 1340, in _find_and_load_unlocked
+E           File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+E           File "<frozen importlib._bootstrap_external>", line 1027, in exec_module
+E           File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E           File "/home/user/wt/j2/bench/template_app/__init__.py", line 17, in <module>
+E             from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+E             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 53, in <module>
+E             class User(UserBase, table=True):
+E             ...<6 lines>...
+E                 items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 60, in User
+E             items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E                         ^^^^
+E         NameError: name 'Item' is not defined. Did you mean: 'items'?
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/user/lattice/.venv/bin/python', '-m', 'tests.importer.test_frontend_goldens', 'template'...ner", cascade_delete=True)\n                ^^^^\nNameError: name \'Item\' is not defined. Did you mean: \'items\'?\n').returncode
+
+tests/importer/test_frontend_goldens.py:130: AssertionError
+_ ERROR at setup of test_the_output_is_byte_identical_to_the_golden[template-natives.py] _
+
+request = <SubRequest 'captured' for <Function test_the_same_files[template]>>
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7f1dbf96e650>, _basetemp=PosixPath('/tmp/pytest-of-root/pytest-442'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module", params=sorted(APPS))
+    def captured(request, tmp_path_factory) -> tuple[str, dict[str, str]]:
+        app = request.param
+        raw = tmp_path_factory.mktemp(f"golden-{app}")
+>       _run_worker(app, raw)
+
+tests/importer/test_frontend_goldens.py:224: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = 'template'
+out = PosixPath('/tmp/pytest-of-root/pytest-442/golden-template0')
+
+    def _run_worker(app: str, out: Path) -> float:
+        started = time.perf_counter()
+        done = subprocess.run(
+            [sys.executable, "-m", "tests.importer.test_frontend_goldens", app, str(out)],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=600, check=False,
+        )  # fmt: skip
+>       assert done.returncode == 0, done.stderr[-3000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 203, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 277, in <module>
+E             _worker(sys.argv[1], Path(sys.argv[2]))
+E             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 114, in _worker
+E             code = cli.main([str(REPO_ROOT), "--package", package, "--app-factory", factory,
+E                              "--out", str(out / "lattice_import"), "--no-llm", "--no-corpus"])  # fmt: skip
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 168, in main
+E             factory = resolve_factory(args.app_factory)
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 74, in resolve_factory
+E             obj: Any = importlib.import_module(module)
+E                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+E           File "/usr/lib/python3.13/importlib/__init__.py", line 88, in import_module
+E             return _bootstrap._gcd_import(name[level:], package, level)
+E                    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "<frozen importlib._bootstrap>", line 1404, in _gcd_import
+E           File "<frozen importlib._bootstrap>", line 1369, in _find_and_load
+E           File "<frozen importlib._bootstrap>", line 1340, in _find_and_load_unlocked
+E           File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+E           File "<frozen importlib._bootstrap_external>", line 1027, in exec_module
+E           File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E           File "/home/user/wt/j2/bench/template_app/__init__.py", line 17, in <module>
+E             from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+E             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 53, in <module>
+E             class User(UserBase, table=True):
+E             ...<6 lines>...
+E                 items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 60, in User
+E             items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E                         ^^^^
+E         NameError: name 'Item' is not defined. Did you mean: 'items'?
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/user/lattice/.venv/bin/python', '-m', 'tests.importer.test_frontend_goldens', 'template'...ner", cascade_delete=True)\n                ^^^^\nNameError: name \'Item\' is not defined. Did you mean: \'items\'?\n').returncode
+
+tests/importer/test_frontend_goldens.py:130: AssertionError
+_ ERROR at setup of test_the_output_is_byte_identical_to_the_golden[template-routes] _
+
+request = <SubRequest 'captured' for <Function test_the_same_files[template]>>
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7f1dbf96e650>, _basetemp=PosixPath('/tmp/pytest-of-root/pytest-442'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="module", params=sorted(APPS))
+    def captured(request, tmp_path_factory) -> tuple[str, dict[str, str]]:
+        app = request.param
+        raw = tmp_path_factory.mktemp(f"golden-{app}")
+>       _run_worker(app, raw)
+
+tests/importer/test_frontend_goldens.py:224: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+app = 'template'
+out = PosixPath('/tmp/pytest-of-root/pytest-442/golden-template0')
+
+    def _run_worker(app: str, out: Path) -> float:
+        started = time.perf_counter()
+        done = subprocess.run(
+            [sys.executable, "-m", "tests.importer.test_frontend_goldens", app, str(out)],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=600, check=False,
+        )  # fmt: skip
+>       assert done.returncode == 0, done.stderr[-3000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 203, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 277, in <module>
+E             _worker(sys.argv[1], Path(sys.argv[2]))
+E             ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/tests/importer/test_frontend_goldens.py", line 114, in _worker
+E             code = cli.main([str(REPO_ROOT), "--package", package, "--app-factory", factory,
+E                              "--out", str(out / "lattice_import"), "--no-llm", "--no-corpus"])  # fmt: skip
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 168, in main
+E             factory = resolve_factory(args.app_factory)
+E           File "/home/user/wt/j2/lattice/importer/cli.py", line 74, in resolve_factory
+E             obj: Any = importlib.import_module(module)
+E                        ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+E           File "/usr/lib/python3.13/importlib/__init__.py", line 88, in import_module
+E             return _bootstrap._gcd_import(name[level:], package, level)
+E                    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "<frozen importlib._bootstrap>", line 1404, in _gcd_import
+E           File "<frozen importlib._bootstrap>", line 1369, in _find_and_load
+E           File "<frozen importlib._bootstrap>", line 1340, in _find_and_load_unlocked
+E           File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+E           File "<frozen importlib._bootstrap_external>", line 1027, in exec_module
+E           File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+E           File "/home/user/wt/j2/bench/template_app/__init__.py", line 17, in <module>
+E             from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+E             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 53, in <module>
+E             class User(UserBase, table=True):
+E             ...<6 lines>...
+E                 items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E           File "/home/user/wt/j2/bench/template_app/app/models.py", line 60, in User
+E             items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+E                         ^^^^
+E         NameError: name 'Item' is not defined. Did you mean: 'items'?
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/user/lattice/.venv/bin/python', '-m', 'tests.importer.test_frontend_goldens', 'template'...ner", cascade_delete=True)\n                ^^^^\nNameError: name \'Item\' is not defined. Did you mean: \'items\'?\n').returncode
+
+tests/importer/test_frontend_goldens.py:130: AssertionError
+_______ ERROR at setup of test_get_or_404_lifts_the_lookup_and_its_guard _______
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+____ ERROR at setup of test_get_or_404_accepts_is_none_and_status_constants ____
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_______ ERROR at setup of test_get_or_404_refuses_other_shapes[change0] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_______ ERROR at setup of test_get_or_404_refuses_other_shapes[change1] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_______ ERROR at setup of test_get_or_404_refuses_other_shapes[change2] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_______ ERROR at setup of test_get_or_404_refuses_other_shapes[change3] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_______ ERROR at setup of test_get_or_404_refuses_other_shapes[change4] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+___ ERROR at setup of test_get_or_404_needs_the_guard_right_after_the_lookup ___
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_owner_check_lifts_to_require_owner_is _________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+___________ ERROR at setup of test_owner_check_accepts_either_order ____________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_accepts_equivalent_spellings[not (current_user.is_superuser or item.owner_id == current_user.id)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_accepts_equivalent_spellings[not (current_user.id == item.owner_id or current_user.is_superuser)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_accepts_equivalent_spellings[not current_user.is_superuser and not (item.owner_id == current_user.id)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_accepts_equivalent_spellings[not (current_user.id == item.owner_id) and not current_user.is_superuser] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_refuses_other_conditions[not (current_user.is_superuser and item.owner_id == current_user.id)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_refuses_other_conditions[not (current_user.is_active or item.owner_id == current_user.id)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_refuses_other_conditions[not (current_user.is_superuser or item.owner_id != current_user.id)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_refuses_other_conditions[not current_user.is_superuser and not (item.owner_id != current_user.id)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_refuses_other_conditions[item.owner_id != current_user.id] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_refuses_other_conditions[not current_user.is_superuser and (item.title != current_user.id)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_refuses_other_conditions[not current_user.is_superuser or (item.owner_id != current_user.id)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_refuses_other_conditions[not current_user.is_active and (item.owner_id != current_user.id)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_refuses_other_conditions[not current_user.is_superuser and (item.owner_id == current_user.id)] _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_owner_check_without_admins_lifts_the_plain_owner_guard _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+________________ ERROR at setup of test_owner_check_needs_a_403 ________________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+___ ERROR at setup of test_partial_update_lifts_to_update_with_unset_params ____
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+________ ERROR at setup of test_partial_update_accepts_the_inline_dump _________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_____ ERROR at setup of test_partial_update_refuses_other_shapes[change0] ______
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_____ ERROR at setup of test_partial_update_refuses_other_shapes[change1] ______
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_____ ERROR at setup of test_partial_update_refuses_other_shapes[change2] ______
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_______ ERROR at setup of test_partial_update_refuses_a_body_read_again ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+____ ERROR at setup of test_create_lifts_to_insert_with_owner_and_defaults _____
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_create_refuses_other_shapes[change0] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_create_refuses_other_shapes[change1] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_create_refuses_other_shapes[change2] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_create_refuses_other_shapes[change3] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_unique_check_through_a_lookup_helper __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+______________ ERROR at setup of test_unique_check_inline_lookup _______________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+______ ERROR at setup of test_unique_check_refuses_other_shapes[change0] _______
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+______ ERROR at setup of test_unique_check_refuses_other_shapes[change1] _______
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+______ ERROR at setup of test_unique_check_refuses_other_shapes[change2] _______
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+______ ERROR at setup of test_unique_check_refuses_other_shapes[change3] _______
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+______ ERROR at setup of test_unique_check_refuses_other_shapes[change4] _______
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_______ ERROR at setup of test_delete_lifts_to_delete_and_a_message_row ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_delete_refuses_other_shapes[change0] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_delete_refuses_other_shapes[change1] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_delete_refuses_other_shapes[change2] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+____________ ERROR at setup of test_page_list_lifts_the_owned_list _____________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_page_list_accepts_inlined_queries_and_a_direct_envelope _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+________ ERROR at setup of test_page_list_refuses_other_shapes[change0] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+________ ERROR at setup of test_page_list_refuses_other_shapes[change1] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+________ ERROR at setup of test_page_list_refuses_other_shapes[change2] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+________ ERROR at setup of test_page_list_refuses_other_shapes[change3] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+________ ERROR at setup of test_page_list_refuses_other_shapes[change4] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+________ ERROR at setup of test_page_list_refuses_other_shapes[change5] ________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_page_list_refuses_a_default_page_size_over_the_bound __
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_admin_list_lifts_the_unfiltered_list_with_a_projection _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+___________ ERROR at setup of test_admin_list_is_not_the_owned_list ____________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+____________ ERROR at setup of test_me_returns_the_caller_projected ____________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+__________ ERROR at setup of test_me_refuses_anything_but_the_caller ___________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_____________ ERROR at setup of test_returns_hands_back_a_held_row _____________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_login_lifts_through_the_authenticate_helper_and_natives _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+__________ ERROR at setup of test_login_refuses_other_shapes[change0] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+__________ ERROR at setup of test_login_refuses_other_shapes[change1] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+__________ ERROR at setup of test_login_refuses_other_shapes[change2] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+__________ ERROR at setup of test_login_refuses_other_shapes[change3] __________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_ ERROR at setup of test_an_unclaimed_statement_rejects_the_route_with_its_line _
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_an_unread_parameter_rejects_the_route _________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_____________ ERROR at setup of test_unclear_auth_is_never_lifted ______________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+____ ERROR at setup of test_a_modifier_without_its_write_rejects_the_route _____
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_a_composed_route_renders_one_endpoint _________
+
+    @pytest.fixture(scope="module")
+    def ctx() -> tuple[RepoModel, _Index, object]:
+        model = extract(REPO_ROOT, PACKAGE)
+>       api = load_profile(generate_profile(model), "lifters_test_profile").profile().api
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_lifters.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<lifters_test_profile>:14: ImportError
+_________ ERROR at setup of test_template_schemas_equal_the_reference __________
+
+generated = ProfileResult(source='"""Lattice profile for bench.template_app.app.\n\nGenerated by lattice.importer.profile_gen; the...foreign key, which create_item, delete_item, read_item, read_items, update_item filter, check or set from the caller'})
+
+    @pytest.fixture(scope="module")
+    def module(generated: ProfileResult) -> ModuleType:
+>       return load(generated, "generated_template_profile")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_profile_gen.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_profile_gen.py:176: in load
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<generated_template_profile>:14: ImportError
+_________ ERROR at setup of test_template_settings_equal_the_reference _________
+
+generated = ProfileResult(source='"""Lattice profile for bench.template_app.app.\n\nGenerated by lattice.importer.profile_gen; the...foreign key, which create_item, delete_item, read_item, read_items, update_item filter, check or set from the caller'})
+
+    @pytest.fixture(scope="module")
+    def module(generated: ProfileResult) -> ModuleType:
+>       return load(generated, "generated_template_profile")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_profile_gen.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_profile_gen.py:176: in load
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<generated_template_profile>:14: ImportError
+_ ERROR at setup of test_template_natives_equal_the_reference_up_to_listed_differences _
+
+generated = ProfileResult(source='"""Lattice profile for bench.template_app.app.\n\nGenerated by lattice.importer.profile_gen; the...foreign key, which create_item, delete_item, read_item, read_items, update_item filter, check or set from the caller'})
+
+    @pytest.fixture(scope="module")
+    def module(generated: ProfileResult) -> ModuleType:
+>       return load(generated, "generated_template_profile")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_profile_gen.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_profile_gen.py:176: in load
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<generated_template_profile>:14: ImportError
+__ ERROR at setup of test_template_native_wrappers_behave_like_the_reference ___
+
+generated = ProfileResult(source='"""Lattice profile for bench.template_app.app.\n\nGenerated by lattice.importer.profile_gen; the...foreign key, which create_item, delete_item, read_item, read_items, update_item filter, check or set from the caller'})
+
+    @pytest.fixture(scope="module")
+    def module(generated: ProfileResult) -> ModuleType:
+>       return load(generated, "generated_template_profile")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_profile_gen.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_profile_gen.py:176: in load
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<generated_template_profile>:14: ImportError
+_ ERROR at setup of test_template_programs_check_identically[login.lattice.py] _
+
+generated = ProfileResult(source='"""Lattice profile for bench.template_app.app.\n\nGenerated by lattice.importer.profile_gen; the...foreign key, which create_item, delete_item, read_item, read_items, update_item filter, check or set from the caller'})
+
+    @pytest.fixture(scope="module")
+    def module(generated: ProfileResult) -> ModuleType:
+>       return load(generated, "generated_template_profile")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_profile_gen.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_profile_gen.py:176: in load
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<generated_template_profile>:14: ImportError
+_ ERROR at setup of test_template_programs_check_identically[items.lattice.py] _
+
+generated = ProfileResult(source='"""Lattice profile for bench.template_app.app.\n\nGenerated by lattice.importer.profile_gen; the...foreign key, which create_item, delete_item, read_item, read_items, update_item filter, check or set from the caller'})
+
+    @pytest.fixture(scope="module")
+    def module(generated: ProfileResult) -> ModuleType:
+>       return load(generated, "generated_template_profile")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_profile_gen.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_profile_gen.py:176: in load
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<generated_template_profile>:14: ImportError
+_ ERROR at setup of test_template_programs_check_identically[users.lattice.py] _
+
+generated = ProfileResult(source='"""Lattice profile for bench.template_app.app.\n\nGenerated by lattice.importer.profile_gen; the...foreign key, which create_item, delete_item, read_item, read_items, update_item filter, check or set from the caller'})
+
+    @pytest.fixture(scope="module")
+    def module(generated: ProfileResult) -> ModuleType:
+>       return load(generated, "generated_template_profile")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_profile_gen.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_profile_gen.py:176: in load
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<generated_template_profile>:14: ImportError
+____________ ERROR at setup of test_template_joined_program_checks _____________
+
+generated = ProfileResult(source='"""Lattice profile for bench.template_app.app.\n\nGenerated by lattice.importer.profile_gen; the...foreign key, which create_item, delete_item, read_item, read_items, update_item filter, check or set from the caller'})
+
+    @pytest.fixture(scope="module")
+    def module(generated: ProfileResult) -> ModuleType:
+>       return load(generated, "generated_template_profile")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_profile_gen.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_profile_gen.py:176: in load
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<generated_template_profile>:14: ImportError
+=================================== FAILURES ===================================
+_ test_the_emitted_app_answers_like_the_original_on_every_route[in_dependency] _
+
+app = ('in_dependency', <test_import_token_answers.App object at 0x7f1db919b8c0>)
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-442/test_the_emitted_app_answers_l0')
+
+    def test_the_emitted_app_answers_like_the_original_on_every_route(app, tmp_path: Path) -> None:
+        """The import written by the CLI, emitted into the original app with an endpoint an
+        edit added: every token naming no caller is answered as the original answers it."""
+        variant, a = app
+        _, invalid, unknown = VARIANTS[variant]
+        out = tmp_path / "import"
+        assert import_main([
+            str(a.root), "--package", a.package, "--app-factory", f"{a.package}:make_app",
+            "--out", str(out), "--no-llm", "--no-corpus", "--hypothesis-bodies", "2",
+        ]) == 0  # fmt: skip
+        profile_src = (out / "profile.py").read_text()
+        programs = {p.name: p.read_text() for p in sorted((out / "routes").iterdir())}
+        assert programs, "nothing was lifted"
+        profile = load_profile_source(profile_src).profile()
+        lifted = program_routes(programs, profile)
+        assert "GET /users/me" in lifted
+        programs["added.lattice.py"] = ADDED
+        emitted = emit_into_app(programs, profile_src, tmp_path / "emitted",
+                                app_factory=f"{a.package}:make_app", lifted=lifted)  # fmt: skip
+        assert "GET /whoami" in emitted.routes_emitted
+    
+        original = TestClient(a.factory(tmp_path / "original.db"))
+>       lattice = TestClient(make_emitted_app(tmp_path / "emitted", tmp_path / "lattice.db"))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_import_token_answers.py:326: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/emit/thin.py:540: in make_emitted_app
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    class User(UserBase, table=True):
+        id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+        hashed_password: str
+        created_at: datetime | None = Field(
+            default_factory=get_datetime_utc,
+            sa_type=DateTime(timezone=True),  # type: ignore
+        )
+>       items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                    ^^^^
+E       NameError: name 'Item' is not defined
+
+bench/template_app/app/models.py:60: NameError
+----------------------------- Captured stdout call -----------------------------
+/tmp/pytest-of-root/pytest-442/test_the_emitted_app_answers_l0/import: 3 routes, 1 verified (R0 1, R1 0, R2 0, R3 0), 0 islands, 2 need the LLM; cost $0.0000
+___ test_the_emitted_app_answers_like_the_original_on_every_route[in_helper] ___
+
+app = ('in_helper', <test_import_token_answers.App object at 0x7f1db5e52990>)
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-442/test_the_emitted_app_answers_l1')
+
+    def test_the_emitted_app_answers_like_the_original_on_every_route(app, tmp_path: Path) -> None:
+        """The import written by the CLI, emitted into the original app with an endpoint an
+        edit added: every token naming no caller is answered as the original answers it."""
+        variant, a = app
+        _, invalid, unknown = VARIANTS[variant]
+        out = tmp_path / "import"
+        assert import_main([
+            str(a.root), "--package", a.package, "--app-factory", f"{a.package}:make_app",
+            "--out", str(out), "--no-llm", "--no-corpus", "--hypothesis-bodies", "2",
+        ]) == 0  # fmt: skip
+        profile_src = (out / "profile.py").read_text()
+        programs = {p.name: p.read_text() for p in sorted((out / "routes").iterdir())}
+        assert programs, "nothing was lifted"
+        profile = load_profile_source(profile_src).profile()
+        lifted = program_routes(programs, profile)
+        assert "GET /users/me" in lifted
+        programs["added.lattice.py"] = ADDED
+        emitted = emit_into_app(programs, profile_src, tmp_path / "emitted",
+                                app_factory=f"{a.package}:make_app", lifted=lifted)  # fmt: skip
+        assert "GET /whoami" in emitted.routes_emitted
+    
+        original = TestClient(a.factory(tmp_path / "original.db"))
+>       lattice = TestClient(make_emitted_app(tmp_path / "emitted", tmp_path / "lattice.db"))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/importer/test_import_token_answers.py:326: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/emit/thin.py:540: in make_emitted_app
+    from bench.template_app import make_app
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    class User(UserBase, table=True):
+        id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+        hashed_password: str
+        created_at: datetime | None = Field(
+            default_factory=get_datetime_utc,
+            sa_type=DateTime(timezone=True),  # type: ignore
+        )
+>       items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                    ^^^^
+E       NameError: name 'Item' is not defined
+
+bench/template_app/app/models.py:60: NameError
+----------------------------- Captured stdout call -----------------------------
+/tmp/pytest-of-root/pytest-442/test_the_emitted_app_answers_l1/import: 3 routes, 1 verified (R0 1, R1 0, R2 0, R3 0), 0 islands, 2 need the LLM; cost $0.0000
+____________________ test_multivendor_recall_and_precision _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-442/test_multivendor_recall_and_pr0')
+
+    @pytest.mark.slow
+    def test_multivendor_recall_and_precision(tmp_path: Path) -> None:
+>       from bench.edit_slice.repos import multivendor as mv
+
+tests/importer/test_mine.py:579: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+bench/edit_slice/repos/__init__.py:45: in <module>
+    from bench.edit_slice.oracle import TicketOracle
+bench/edit_slice/oracle.py:62: in <module>
+    from bench.edit_slice.reference import make_reference_app, reference_variant
+bench/edit_slice/reference/__init__.py:24: in <module>
+    from bench.edit_slice.variant import Variant, load_variant
+bench/edit_slice/variant.py:51: in <module>
+    from bench.template_app import sqlite_engine
+bench/template_app/__init__.py:17: in <module>
+    from bench.template_app.app import models  # noqa: F401  (registers the SQLModel tables)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bench/template_app/app/models.py:53: in <module>
+    class User(UserBase, table=True):
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    class User(UserBase, table=True):
+        id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+        hashed_password: str
+        created_at: datetime | None = Field(
+            default_factory=get_datetime_utc,
+            sa_type=DateTime(timezone=True),  # type: ignore
+        )
+>       items: list[Item] = Relationship(back_populates="owner", cascade_delete=True)
+                    ^^^^
+E       NameError: name 'Item' is not defined
+
+bench/template_app/app/models.py:60: NameError
+_________________ test_page_bounds_name_the_out_of_bound_cases _________________
+
+    def test_page_bounds_name_the_out_of_bound_cases():
+>       _, api = _api()
+                 ^^^^^^
+
+tests/importer/test_policy.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_policy.py:20: in _api
+    return model, load_profile(generate_profile(model), "policy_test_profile").profile().api
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<policy_test_profile>:14: ImportError
+___________________ test_not_null_names_explicit_nulls_only ____________________
+
+    def test_not_null_names_explicit_nulls_only():
+>       _, api = _api()
+                 ^^^^^^
+
+tests/importer/test_policy.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_policy.py:20: in _api
+    return model, load_profile(generate_profile(model), "policy_test_profile").profile().api
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<policy_test_profile>:14: ImportError
+_________ test_the_templates_token_policies_come_from_get_current_user _________
+
+    def test_the_templates_token_policies_come_from_get_current_user():
+>       model, api = _api()
+                     ^^^^^^
+
+tests/importer/test_policy.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_policy.py:20: in _api
+    return model, load_profile(generate_profile(model), "policy_test_profile").profile().api
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<policy_test_profile>:14: ImportError
+________________ test_a_policy_matching_lattice_is_not_declared ________________
+
+    def test_a_policy_matching_lattice_is_not_declared():
+>       model, api = _api()
+                     ^^^^^^
+
+tests/importer/test_policy.py:74: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/importer/test_policy.py:20: in _api
+    return model, load_profile(generate_profile(model), "policy_test_profile").profile().api
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/importer/lift.py:196: in load_profile
+    exec(compile(result.source, f"<{name}>", "exec"), module.__dict__)  # noqa: S102 -- our own generated source
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+>   ???
+E   ImportError: cannot import name 'template_app' from 'bench' (/home/user/wt/j2/bench/__init__.py)
+
+<policy_test_profile>:14: ImportError
+=============================== warnings summary ===============================
+bench/import_repos/multivendor/app/core/config.py:5
+  /home/user/wt/j2/bench/import_repos/multivendor/app/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+  /home/user/lattice/.venv/lib/python3.13/site-packages/marshmallow/schema.py:129: RemovedInMarshmallow4Warning: The `ordered` `class Meta` option is deprecated. Field order is already preserved by default. Set `Schema.dict_class` to OrderedDict to maintain the previous behavior.
+    klass.opts = klass.OPTIONS_CLASS(meta, ordered=ordered)
+
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+  /home/user/lattice/.venv/lib/python3.13/site-packages/marshmallow_sqlalchemy/load_instance_mixin.py:44: RemovedInMarshmallow4Warning: The `ordered` `class Meta` option is deprecated. Field order is already preserved by default. Set `Schema.dict_class` to OrderedDict to maintain the previous behavior.
+    super().__init__(meta, *args, **kwargs)
+
+tests/importer/flask/test_flask_runtime.py: 14 warnings
+  /home/user/lattice/.venv/lib/python3.13/site-packages/sqlalchemy/sql/schema.py:3627: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+
+tests/importer/flask/test_flask_runtime.py::test_runtime_logs_in_every_role[flasky]
+tests/importer/flask/test_flask_runtime.py::test_runtime_logs_in_every_role[flasky]
+tests/importer/flask/test_flask_runtime.py::test_runtime_logs_in_every_role[flasky]
+  /home/user/wt/j2/bench/import_repos/flasky/app/models.py:269: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    return User.query.get(data['id'])
+
+tests/importer/test_emit_spec.py: 9 warnings
+tests/importer/test_review_cli.py: 18 warnings
+tests/spec/test_multivendor_spec.py: 30 warnings
+  /home/user/wt/j2/bench/import_repos/multivendor/app/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/importer/test_emit_spec.py: 12 warnings
+tests/importer/test_review_cli.py: 24 warnings
+tests/spec/test_multivendor_spec.py: 3 warnings
+  /home/user/lattice/.venv/lib/python3.13/site-packages/pydantic/_internal/_fields.py:727: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return fac()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/spec/test_authoring.py:30: the job-scheduler repo is not at /Users/vivekgade/Documents/job-scheduler (set LATTICE_JOB_SCHEDULER)
+SKIPPED [1] tests/spec/test_ask.py:612: live LLM smoke test: set LATTICE_LIVE_LLM=1
+SKIPPED [1] tests/spec/test_ask.py:634: live LLM smoke test: set LATTICE_LIVE_LLM=1
+SKIPPED [3] tests/spec/test_db.py:247: Docker is not available
+SKIPPED [3] tests/spec/test_db.py:270: Docker is not available
+SKIPPED [3] tests/spec/test_db.py:306: Docker is not available
+SKIPPED [3] tests/spec/test_db.py:324: Docker is not available
+SKIPPED [1] tests/spec/test_db.py:347: Docker is not available
+SKIPPED [1] tests/spec/test_db.py:387: Docker is not available
+SKIPPED [3] tests/spec/test_db.py:401: Docker is not available
+SKIPPED [1] tests/spec/test_draft.py:413: live LLM smoke test: set LATTICE_LIVE_LLM=1
+SKIPPED [1] tests/spec/test_incremental.py:664: live LLM run: set LATTICE_LIVE_LLM=1
+SKIPPED [2] tests/spec/test_multidb.py:180: Docker is not available
+SKIPPED [2] tests/spec/test_multidb.py:195: Docker is not available
+SKIPPED [2] tests/spec/test_multidb.py:203: Docker is not available
+SKIPPED [2] tests/spec/test_multidb.py:214: Docker is not available
+SKIPPED [1] tests/spec/test_multidb.py:229: Docker is not available
+SKIPPED [1] tests/spec/test_multidb.py:235: Docker is not available
+SKIPPED [1] tests/spec/test_multidb.py:250: Docker is not available
+SKIPPED [1] tests/spec/test_multidb.py:307: Docker is not available
+SKIPPED [1] tests/spec/test_multidb.py:316: Docker is not available
+SKIPPED [1] tests/studio/test_build_plan.py:452: the Streak project is not on this host
+SKIPPED [1] tests/studio/test_server.py:689: live LLM run: set LATTICE_LIVE_LLM=1
+FAILED tests/importer/test_import_token_answers.py::test_the_emitted_app_answers_like_the_original_on_every_route[in_dependency]
+FAILED tests/importer/test_import_token_answers.py::test_the_emitted_app_answers_like_the_original_on_every_route[in_helper]
+FAILED tests/importer/test_mine.py::test_multivendor_recall_and_precision - N...
+FAILED tests/importer/test_policy.py::test_page_bounds_name_the_out_of_bound_cases
+FAILED tests/importer/test_policy.py::test_not_null_names_explicit_nulls_only
+FAILED tests/importer/test_policy.py::test_the_templates_token_policies_come_from_get_current_user
+FAILED tests/importer/test_policy.py::test_a_policy_matching_lattice_is_not_declared
+7 failed, 2927 passed, 37 skipped, 124 warnings, 101 errors in 1046.21s (0:17:26)

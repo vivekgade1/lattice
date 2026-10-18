@@ -1,0 +1,5121 @@
+{
+  "schema": "lattice-import-report/2",
+  "repo": "/home/user/wt/j2/tests/spec",
+  "package": "gotickets",
+  "app_factory": "gotickets_harness:make_app",
+  "llm": false,
+  "method": null,
+  "model": null,
+  "coverage": {
+    "routes": 0,
+    "R0": 0,
+    "R1": 0,
+    "R2": 0,
+    "R3": 0,
+    "R4": 0,
+    "needs-llm": 0,
+    "verified": 0,
+    "lattice_pct": 0.0,
+    "carve_out_pct": 0.0,
+    "island_pct": 0.0,
+    "needs_llm_pct": 0.0,
+    "verified_pct": 0.0,
+    "complete": true,
+    "lines": {},
+    "ast_nodes": {},
+    "tiers": {
+      "T0": 0,
+      "T1": 0,
+      "T2": 0,
+      "T3": 0,
+      "island": 0,
+      "needs-llm": 0
+    },
+    "carve_kinds": {
+      "procedure": 0,
+      "native": 0
+    },
+    "rules": {
+      "items": {
+        "verified": 35,
+        "refuted": 0,
+        "unexercised": 27,
+        "unclear": 1
+      },
+      "tables": {
+        "verified": 2,
+        "total": 4
+      },
+      "routes": {
+        "verified": 9,
+        "total": 11
+      }
+    }
+  },
+  "budget": null,
+  "cost": {
+    "usd": 0.0,
+    "notes_usd": 0.0,
+    "per_llm_verified_route_usd": null,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "llm_rounds": 0,
+    "wall_s": 0.0
+  },
+  "routes": [],
+  "behaviour_changes": [],
+  "islands": [],
+  "carve_out_natives": [],
+  "unclear": [
+    {
+      "topic": "private",
+      "subject": "User",
+      "reason": "no response model returns User; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "private",
+      "subject": "Queue",
+      "reason": "no response model returns Queue; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "private",
+      "subject": "Ticket",
+      "reason": "no response model returns Ticket; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "private",
+      "subject": "Handoff",
+      "reason": "no response model returns Handoff; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "owner",
+      "subject": "Handoff",
+      "reason": "Handoff has 2 foreign keys to the users table; the owner is not inferred",
+      "candidates": [
+        "from_user_id",
+        "to_user_id"
+      ]
+    },
+    {
+      "topic": "auth",
+      "subject": "User",
+      "reason": "the app's own auth (gin, bearer) is not lifted: the profile's NativeToken names caller_key, which refuses to run (lattice.importer.app_auth)",
+      "candidates": []
+    }
+  ],
+  "notes_disagreements": [],
+  "rules": {
+    "summary": {
+      "items": {
+        "verified": 35,
+        "refuted": 0,
+        "unexercised": 27,
+        "unclear": 1
+      },
+      "tables": {
+        "verified": 2,
+        "total": 4
+      },
+      "routes": {
+        "verified": 9,
+        "total": 11
+      }
+    },
+    "items": {
+      "T1 User": {
+        "id": "T1 User",
+        "kind": "T1",
+        "subject": "User",
+        "sentence": "User is the users table: every role logs in; 'me' is the caller",
+        "predicted": {
+          "ownership": "users"
+        },
+        "verdict": "verified",
+        "reason": "every role logs in (Customer)",
+        "probes": [
+          "(login) every role"
+        ],
+        "decisive": [
+          "(login) every role"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "T2 User.password_hash": {
+        "id": "T2 User.password_hash",
+        "kind": "T2",
+        "subject": "User",
+        "sentence": "User.password_hash is private: no answer shows it",
+        "predicted": {
+          "private": "password_hash"
+        },
+        "verdict": "verified",
+        "reason": "6 answers show User rows without password_hash",
+        "probes": [
+          "GET /queues | no caller | anonymous",
+          "GET /queues | malformed token | call",
+          "GET /queues | admin | as Customer",
+          "GET /queues | alice | as Customer",
+          "GET /me | admin | as Customer",
+          "GET /me | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /queues | no caller | anonymous",
+          "GET /queues | malformed token | call",
+          "GET /queues | admin | as Customer",
+          "GET /queues | alice | as Customer",
+          "GET /me | admin | as Customer",
+          "GET /me | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "T1 Queue": {
+        "id": "T1 Queue",
+        "kind": "T1",
+        "subject": "Queue",
+        "sentence": "Queue rows are shared: any user may read them",
+        "predicted": {
+          "ownership": "shared"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T1 Ticket": {
+        "id": "T1 Ticket",
+        "kind": "T1",
+        "subject": "Ticket",
+        "sentence": "a Ticket row belongs to the user in reporter_id; others cannot reach it",
+        "predicted": {
+          "ownership": "owner",
+          "column": "reporter_id"
+        },
+        "verdict": "verified",
+        "reason": "only the caller's Ticket rows (2)",
+        "probes": [
+          "POST /queues/{qid}/tickets | admin | create stamps the caller as owner of Ticket",
+          "POST /queues/{qid}/tickets | admin | create stamps the caller as owner of Ticket (body names no owner)",
+          "GET /tickets | admin | own Ticket rows only",
+          "GET /tickets | alice | own Ticket rows only",
+          "GET /tickets/{tid} | admin | another user's Ticket 2",
+          "GET /tickets/{tid} | alice | another user's Ticket 1",
+          "POST /tickets/{tid}/close | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/close | alice | another user's Ticket 1",
+          "POST /tickets/{tid}/reopen | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/reopen | alice | another user's Ticket 1",
+          "POST /tickets/{tid}/handoffs | admin | create stamps the caller as owner of Ticket",
+          "POST /tickets/{tid}/handoffs | admin | create stamps the caller as owner of Ticket (body names no owner)"
+        ],
+        "decisive": [
+          "GET /tickets | admin | own Ticket rows only",
+          "GET /tickets | alice | own Ticket rows only",
+          "GET /tickets/{tid} | admin | another user's Ticket 2",
+          "GET /tickets/{tid} | alice | another user's Ticket 1",
+          "POST /tickets/{tid}/close | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/close | alice | another user's Ticket 1",
+          "POST /tickets/{tid}/reopen | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/reopen | alice | another user's Ticket 1"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "T1 Handoff": {
+        "id": "T1 Handoff",
+        "kind": "T1",
+        "subject": "Handoff",
+        "sentence": "Handoff rows are shared: any user may read them",
+        "predicted": {
+          "ownership": "shared"
+        },
+        "verdict": "unclear",
+        "reason": "the owner is unclear: Handoff has 2 foreign keys to the users table; the owner is not inferred",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T4 Ticket.status": {
+        "id": "T4 Ticket.status",
+        "kind": "T4",
+        "subject": "Ticket",
+        "sentence": "Ticket.status is one of open, closed",
+        "predicted": {
+          "values": [
+            "open",
+            "closed"
+          ],
+          "stored": [
+            "open",
+            "closed"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route writes Ticket.status through a parameter (every stored value is listed)",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 User (id)": {
+        "id": "T5 User (id)",
+        "kind": "T5",
+        "subject": "User",
+        "sentence": "no two User rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route creates User rows",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 Queue (id)": {
+        "id": "T5 Queue (id)",
+        "kind": "T5",
+        "subject": "Queue",
+        "sentence": "no two Queue rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route creates Queue rows",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 Ticket (id)": {
+        "id": "T5 Ticket (id)",
+        "kind": "T5",
+        "subject": "Ticket",
+        "sentence": "no two Ticket rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route can repeat the key: no create route of Ticket takes (id) or stamps it from the caller",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 Handoff (id)": {
+        "id": "T5 Handoff (id)",
+        "kind": "T5",
+        "subject": "Handoff",
+        "sentence": "no two Handoff rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route creates Handoff rows",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /health": {
+        "id": "R1 GET /health",
+        "kind": "R1",
+        "subject": "GET /health",
+        "sentence": "GET /health admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call",
+          "GET /health | admin | as Customer",
+          "GET /health | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call",
+          "GET /health | admin | as Customer",
+          "GET /health | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /health 5xx": {
+        "id": "R3 GET /health 5xx",
+        "kind": "R3",
+        "subject": "GET /health",
+        "sentence": "GET /health answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (4 past the auth check)",
+        "probes": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call",
+          "GET /health | admin | as Customer",
+          "GET /health | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call",
+          "GET /health | admin | as Customer",
+          "GET /health | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /login": {
+        "id": "R1 POST /login",
+        "kind": "R1",
+        "subject": "POST /login",
+        "sentence": "POST /login admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "verified",
+        "reason": "2 callers as predicted",
+        "probes": [
+          "POST /login | no caller | anonymous",
+          "POST /login | malformed token | call",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer"
+        ],
+        "decisive": [
+          "POST /login | no caller | anonymous",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /login 422 invalid body": {
+        "id": "R3 POST /login 422 invalid body",
+        "kind": "R3",
+        "subject": "POST /login",
+        "sentence": "POST /login answers 422 'invalid body' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "invalid body",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "POST /login | no caller | example"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /login 401 Incorrect username or password": {
+        "id": "R3 POST /login 401 Incorrect username or password",
+        "kind": "R3",
+        "subject": "POST /login",
+        "sentence": "POST /login answers 401 'Incorrect username or password' (other)",
+        "predicted": {
+          "status": 401,
+          "detail": "Incorrect username or password",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /login 5xx": {
+        "id": "R3 POST /login 5xx",
+        "kind": "R3",
+        "subject": "POST /login",
+        "sentence": "POST /login answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 5 probes (3 past the auth check)",
+        "probes": [
+          "POST /login | no caller | anonymous",
+          "POST /login | malformed token | call",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer",
+          "POST /login | no caller | example"
+        ],
+        "decisive": [
+          "POST /login | no caller | anonymous",
+          "POST /login | admin | as Customer",
+          "POST /login | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /queues": {
+        "id": "R1 GET /queues",
+        "kind": "R1",
+        "subject": "GET /queues",
+        "sentence": "GET /queues admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "GET /queues | no caller | anonymous",
+          "GET /queues | malformed token | call",
+          "GET /queues | admin | as Customer",
+          "GET /queues | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /queues | no caller | anonymous",
+          "GET /queues | malformed token | call",
+          "GET /queues | admin | as Customer",
+          "GET /queues | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /queues 5xx": {
+        "id": "R3 GET /queues 5xx",
+        "kind": "R3",
+        "subject": "GET /queues",
+        "sentence": "GET /queues answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (4 past the auth check)",
+        "probes": [
+          "GET /queues | no caller | anonymous",
+          "GET /queues | malformed token | call",
+          "GET /queues | admin | as Customer",
+          "GET /queues | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /queues | no caller | anonymous",
+          "GET /queues | malformed token | call",
+          "GET /queues | admin | as Customer",
+          "GET /queues | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /me": {
+        "id": "R1 GET /me",
+        "kind": "R1",
+        "subject": "GET /me",
+        "sentence": "GET /me admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "GET /me | no caller | anonymous",
+          "GET /me | malformed token | call",
+          "GET /me | admin | as Customer",
+          "GET /me | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /me | no caller | anonymous",
+          "GET /me | malformed token | call",
+          "GET /me | admin | as Customer",
+          "GET /me | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /me 401 Not authenticated": {
+        "id": "R3 GET /me 401 Not authenticated",
+        "kind": "R3",
+        "subject": "GET /me",
+        "sentence": "GET /me answers 401 'Not authenticated' (other)",
+        "predicted": {
+          "status": 401,
+          "detail": "Not authenticated",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /me 5xx": {
+        "id": "R3 GET /me 5xx",
+        "kind": "R3",
+        "subject": "GET /me",
+        "sentence": "GET /me answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (2 past the auth check)",
+        "probes": [
+          "GET /me | no caller | anonymous",
+          "GET /me | malformed token | call",
+          "GET /me | admin | as Customer",
+          "GET /me | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /me | admin | as Customer",
+          "GET /me | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /queues/{qid}/tickets": {
+        "id": "R1 POST /queues/{qid}/tickets",
+        "kind": "R1",
+        "subject": "POST /queues/{qid}/tickets",
+        "sentence": "POST /queues/{qid}/tickets admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "POST /queues/{qid}/tickets | no caller | anonymous",
+          "POST /queues/{qid}/tickets | malformed token | call",
+          "POST /queues/{qid}/tickets | admin | as Customer",
+          "POST /queues/{qid}/tickets | alice | as Customer"
+        ],
+        "decisive": [
+          "POST /queues/{qid}/tickets | no caller | anonymous",
+          "POST /queues/{qid}/tickets | malformed token | call",
+          "POST /queues/{qid}/tickets | admin | as Customer",
+          "POST /queues/{qid}/tickets | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R2 POST /queues/{qid}/tickets": {
+        "id": "R2 POST /queues/{qid}/tickets",
+        "kind": "R2",
+        "subject": "POST /queues/{qid}/tickets",
+        "sentence": "POST /queues/{qid}/tickets acts on the caller's own Ticket rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Ticket"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the create answered 422",
+        "probes": [
+          "POST /queues/{qid}/tickets | admin | create stamps the caller as owner of Ticket",
+          "POST /queues/{qid}/tickets | admin | create stamps the caller as owner of Ticket (body names no owner)"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /queues/{qid}/tickets 400 bad id": {
+        "id": "R3 POST /queues/{qid}/tickets 400 bad id",
+        "kind": "R3",
+        "subject": "POST /queues/{qid}/tickets",
+        "sentence": "POST /queues/{qid}/tickets answers 400 'bad id' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "bad id",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /queues/{qid}/tickets 404 Not found": {
+        "id": "R3 POST /queues/{qid}/tickets 404 Not found",
+        "kind": "R3",
+        "subject": "POST /queues/{qid}/tickets",
+        "sentence": "POST /queues/{qid}/tickets answers 404 'Not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "Not found",
+          "when": "not_found"
+        },
+        "verdict": "verified",
+        "reason": "answered 404 'Not found'; stated 404 'Not found'",
+        "probes": [
+          "POST /queues/{qid}/tickets | admin | missing id"
+        ],
+        "decisive": [
+          "POST /queues/{qid}/tickets | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /queues/{qid}/tickets 422 invalid body": {
+        "id": "R3 POST /queues/{qid}/tickets 422 invalid body",
+        "kind": "R3",
+        "subject": "POST /queues/{qid}/tickets",
+        "sentence": "POST /queues/{qid}/tickets answers 422 'invalid body' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "invalid body",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /queues/{qid}/tickets 409 already open": {
+        "id": "R3 POST /queues/{qid}/tickets 409 already open",
+        "kind": "R3",
+        "subject": "POST /queues/{qid}/tickets",
+        "sentence": "POST /queues/{qid}/tickets answers 409 'already open' (other)",
+        "predicted": {
+          "status": 409,
+          "detail": "already open",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /queues/{qid}/tickets 500": {
+        "id": "R3 POST /queues/{qid}/tickets 500",
+        "kind": "R3",
+        "subject": "POST /queues/{qid}/tickets",
+        "sentence": "POST /queues/{qid}/tickets answers 500 (other)",
+        "predicted": {
+          "status": 500,
+          "detail": null,
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /queues/{qid}/tickets 5xx": {
+        "id": "R3 POST /queues/{qid}/tickets 5xx",
+        "kind": "R3",
+        "subject": "POST /queues/{qid}/tickets",
+        "sentence": "POST /queues/{qid}/tickets answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 7 probes (5 past the auth check)",
+        "probes": [
+          "POST /queues/{qid}/tickets | no caller | anonymous",
+          "POST /queues/{qid}/tickets | malformed token | call",
+          "POST /queues/{qid}/tickets | admin | as Customer",
+          "POST /queues/{qid}/tickets | alice | as Customer",
+          "POST /queues/{qid}/tickets | admin | create stamps the caller as owner of Ticket",
+          "POST /queues/{qid}/tickets | admin | create stamps the caller as owner of Ticket (body names no owner)",
+          "POST /queues/{qid}/tickets | admin | missing id"
+        ],
+        "decisive": [
+          "POST /queues/{qid}/tickets | admin | as Customer",
+          "POST /queues/{qid}/tickets | alice | as Customer",
+          "POST /queues/{qid}/tickets | admin | create stamps the caller as owner of Ticket",
+          "POST /queues/{qid}/tickets | admin | create stamps the caller as owner of Ticket (body names no owner)",
+          "POST /queues/{qid}/tickets | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /tickets": {
+        "id": "R1 GET /tickets",
+        "kind": "R1",
+        "subject": "GET /tickets",
+        "sentence": "GET /tickets admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "GET /tickets | no caller | anonymous",
+          "GET /tickets | malformed token | call",
+          "GET /tickets | admin | as Customer",
+          "GET /tickets | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /tickets | no caller | anonymous",
+          "GET /tickets | malformed token | call",
+          "GET /tickets | admin | as Customer",
+          "GET /tickets | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R2 GET /tickets": {
+        "id": "R2 GET /tickets",
+        "kind": "R2",
+        "subject": "GET /tickets",
+        "sentence": "GET /tickets acts on the caller's own Ticket rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Ticket"
+        },
+        "verdict": "verified",
+        "reason": "only the caller's Ticket rows (2)",
+        "probes": [
+          "GET /tickets | admin | own Ticket rows only",
+          "GET /tickets | alice | own Ticket rows only"
+        ],
+        "decisive": [
+          "GET /tickets | admin | own Ticket rows only",
+          "GET /tickets | alice | own Ticket rows only"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /tickets 422 invalid query": {
+        "id": "R3 GET /tickets 422 invalid query",
+        "kind": "R3",
+        "subject": "GET /tickets",
+        "sentence": "GET /tickets answers 422 'invalid query' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "invalid query",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /tickets 422": {
+        "id": "R3 GET /tickets 422",
+        "kind": "R3",
+        "subject": "GET /tickets",
+        "sentence": "GET /tickets answers 422 (invalid)",
+        "predicted": {
+          "status": 422,
+          "detail": null,
+          "when": "invalid"
+        },
+        "verdict": "verified",
+        "reason": "answered 422 'invalid query'; stated 422 None",
+        "probes": [
+          "GET /tickets | admin | invalid body"
+        ],
+        "decisive": [
+          "GET /tickets | admin | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /tickets 5xx": {
+        "id": "R3 GET /tickets 5xx",
+        "kind": "R3",
+        "subject": "GET /tickets",
+        "sentence": "GET /tickets answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 10 probes (8 past the auth check)",
+        "probes": [
+          "GET /tickets | no caller | anonymous",
+          "GET /tickets | malformed token | call",
+          "GET /tickets | admin | as Customer",
+          "GET /tickets | alice | as Customer",
+          "GET /tickets | alice | witness: own Ticket rows only",
+          "GET /tickets | admin | own Ticket rows only",
+          "GET /tickets | admin | witness: own Ticket rows only",
+          "GET /tickets | alice | own Ticket rows only",
+          "GET /tickets | admin | every optional query parameter",
+          "GET /tickets | admin | invalid body"
+        ],
+        "decisive": [
+          "GET /tickets | admin | as Customer",
+          "GET /tickets | alice | as Customer",
+          "GET /tickets | alice | witness: own Ticket rows only",
+          "GET /tickets | admin | own Ticket rows only",
+          "GET /tickets | admin | witness: own Ticket rows only",
+          "GET /tickets | alice | own Ticket rows only",
+          "GET /tickets | admin | every optional query parameter",
+          "GET /tickets | admin | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /tickets/{tid}": {
+        "id": "R1 GET /tickets/{tid}",
+        "kind": "R1",
+        "subject": "GET /tickets/{tid}",
+        "sentence": "GET /tickets/{tid} admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "GET /tickets/{tid} | no caller | anonymous",
+          "GET /tickets/{tid} | malformed token | call",
+          "GET /tickets/{tid} | admin | as Customer target 1",
+          "GET /tickets/{tid} | admin | as Customer target 5",
+          "GET /tickets/{tid} | admin | as Customer on a missing row",
+          "GET /tickets/{tid} | alice | as Customer target 2",
+          "GET /tickets/{tid} | alice | as Customer on a missing row"
+        ],
+        "decisive": [
+          "GET /tickets/{tid} | no caller | anonymous",
+          "GET /tickets/{tid} | malformed token | call",
+          "GET /tickets/{tid} | admin | as Customer target 1",
+          "GET /tickets/{tid} | admin | as Customer target 5",
+          "GET /tickets/{tid} | alice | as Customer target 2"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R2 GET /tickets/{tid}": {
+        "id": "R2 GET /tickets/{tid}",
+        "kind": "R2",
+        "subject": "GET /tickets/{tid}",
+        "sentence": "GET /tickets/{tid} acts on the caller's own Ticket rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Ticket"
+        },
+        "verdict": "verified",
+        "reason": "another user's row answered 404, nothing written",
+        "probes": [
+          "GET /tickets/{tid} | admin | another user's Ticket 2",
+          "GET /tickets/{tid} | alice | another user's Ticket 1"
+        ],
+        "decisive": [
+          "GET /tickets/{tid} | admin | another user's Ticket 2",
+          "GET /tickets/{tid} | alice | another user's Ticket 1"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /tickets/{tid} 400 bad id": {
+        "id": "R3 GET /tickets/{tid} 400 bad id",
+        "kind": "R3",
+        "subject": "GET /tickets/{tid}",
+        "sentence": "GET /tickets/{tid} answers 400 'bad id' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "bad id",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /tickets/{tid} 404 Not found": {
+        "id": "R3 GET /tickets/{tid} 404 Not found",
+        "kind": "R3",
+        "subject": "GET /tickets/{tid}",
+        "sentence": "GET /tickets/{tid} answers 404 'Not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "Not found",
+          "when": "not_found"
+        },
+        "verdict": "verified",
+        "reason": "answered 404 'Not found'; stated 404 'Not found'",
+        "probes": [
+          "GET /tickets/{tid} | admin | missing id"
+        ],
+        "decisive": [
+          "GET /tickets/{tid} | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /tickets/{tid} 5xx": {
+        "id": "R3 GET /tickets/{tid} 5xx",
+        "kind": "R3",
+        "subject": "GET /tickets/{tid}",
+        "sentence": "GET /tickets/{tid} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 12 probes (10 past the auth check)",
+        "probes": [
+          "GET /tickets/{tid} | no caller | anonymous",
+          "GET /tickets/{tid} | malformed token | call",
+          "GET /tickets/{tid} | admin | as Customer target 1",
+          "GET /tickets/{tid} | admin | as Customer target 5",
+          "GET /tickets/{tid} | admin | as Customer on a missing row",
+          "GET /tickets/{tid} | alice | as Customer target 2",
+          "GET /tickets/{tid} | alice | as Customer on a missing row",
+          "GET /tickets/{tid} | alice | witness: another user's Ticket 2",
+          "GET /tickets/{tid} | admin | another user's Ticket 2",
+          "GET /tickets/{tid} | admin | witness: another user's Ticket 1",
+          "GET /tickets/{tid} | alice | another user's Ticket 1",
+          "GET /tickets/{tid} | admin | missing id"
+        ],
+        "decisive": [
+          "GET /tickets/{tid} | admin | as Customer target 1",
+          "GET /tickets/{tid} | admin | as Customer target 5",
+          "GET /tickets/{tid} | admin | as Customer on a missing row",
+          "GET /tickets/{tid} | alice | as Customer target 2",
+          "GET /tickets/{tid} | alice | as Customer on a missing row",
+          "GET /tickets/{tid} | alice | witness: another user's Ticket 2",
+          "GET /tickets/{tid} | admin | another user's Ticket 2",
+          "GET /tickets/{tid} | admin | witness: another user's Ticket 1",
+          "GET /tickets/{tid} | alice | another user's Ticket 1",
+          "GET /tickets/{tid} | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /tickets/{tid}/close": {
+        "id": "R1 POST /tickets/{tid}/close",
+        "kind": "R1",
+        "subject": "POST /tickets/{tid}/close",
+        "sentence": "POST /tickets/{tid}/close admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "POST /tickets/{tid}/close | no caller | anonymous",
+          "POST /tickets/{tid}/close | malformed token | call",
+          "POST /tickets/{tid}/close | admin | as Customer target 1",
+          "POST /tickets/{tid}/close | admin | as Customer target 5",
+          "POST /tickets/{tid}/close | admin | as Customer on a missing row",
+          "POST /tickets/{tid}/close | alice | as Customer target 2",
+          "POST /tickets/{tid}/close | alice | as Customer on a missing row"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/close | no caller | anonymous",
+          "POST /tickets/{tid}/close | malformed token | call",
+          "POST /tickets/{tid}/close | admin | as Customer target 1",
+          "POST /tickets/{tid}/close | admin | as Customer target 5",
+          "POST /tickets/{tid}/close | alice | as Customer target 2"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R2 POST /tickets/{tid}/close": {
+        "id": "R2 POST /tickets/{tid}/close",
+        "kind": "R2",
+        "subject": "POST /tickets/{tid}/close",
+        "sentence": "POST /tickets/{tid}/close acts on the caller's own Ticket rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Ticket"
+        },
+        "verdict": "verified",
+        "reason": "another user's row answered 404, nothing written",
+        "probes": [
+          "POST /tickets/{tid}/close | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/close | alice | another user's Ticket 1"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/close | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/close | alice | another user's Ticket 1"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/close 400 bad id": {
+        "id": "R3 POST /tickets/{tid}/close 400 bad id",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/close",
+        "sentence": "POST /tickets/{tid}/close answers 400 'bad id' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "bad id",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/close 404 Not found": {
+        "id": "R3 POST /tickets/{tid}/close 404 Not found",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/close",
+        "sentence": "POST /tickets/{tid}/close answers 404 'Not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "Not found",
+          "when": "not_found"
+        },
+        "verdict": "verified",
+        "reason": "answered 404 'Not found'; stated 404 'Not found'",
+        "probes": [
+          "POST /tickets/{tid}/close | admin | missing id"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/close | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/close 409 not open": {
+        "id": "R3 POST /tickets/{tid}/close 409 not open",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/close",
+        "sentence": "POST /tickets/{tid}/close answers 409 'not open' (other)",
+        "predicted": {
+          "status": 409,
+          "detail": "not open",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/close 500": {
+        "id": "R3 POST /tickets/{tid}/close 500",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/close",
+        "sentence": "POST /tickets/{tid}/close answers 500 (other)",
+        "predicted": {
+          "status": 500,
+          "detail": null,
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/close 5xx": {
+        "id": "R3 POST /tickets/{tid}/close 5xx",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/close",
+        "sentence": "POST /tickets/{tid}/close answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 12 probes (10 past the auth check)",
+        "probes": [
+          "POST /tickets/{tid}/close | no caller | anonymous",
+          "POST /tickets/{tid}/close | malformed token | call",
+          "POST /tickets/{tid}/close | admin | as Customer target 1",
+          "POST /tickets/{tid}/close | admin | as Customer target 5",
+          "POST /tickets/{tid}/close | admin | as Customer on a missing row",
+          "POST /tickets/{tid}/close | alice | as Customer target 2",
+          "POST /tickets/{tid}/close | alice | as Customer on a missing row",
+          "POST /tickets/{tid}/close | alice | witness: another user's Ticket 2",
+          "POST /tickets/{tid}/close | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/close | admin | witness: another user's Ticket 1",
+          "POST /tickets/{tid}/close | alice | another user's Ticket 1",
+          "POST /tickets/{tid}/close | admin | missing id"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/close | admin | as Customer target 1",
+          "POST /tickets/{tid}/close | admin | as Customer target 5",
+          "POST /tickets/{tid}/close | admin | as Customer on a missing row",
+          "POST /tickets/{tid}/close | alice | as Customer target 2",
+          "POST /tickets/{tid}/close | alice | as Customer on a missing row",
+          "POST /tickets/{tid}/close | alice | witness: another user's Ticket 2",
+          "POST /tickets/{tid}/close | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/close | admin | witness: another user's Ticket 1",
+          "POST /tickets/{tid}/close | alice | another user's Ticket 1",
+          "POST /tickets/{tid}/close | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /tickets/{tid}/reopen": {
+        "id": "R1 POST /tickets/{tid}/reopen",
+        "kind": "R1",
+        "subject": "POST /tickets/{tid}/reopen",
+        "sentence": "POST /tickets/{tid}/reopen admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "POST /tickets/{tid}/reopen | no caller | anonymous",
+          "POST /tickets/{tid}/reopen | malformed token | call",
+          "POST /tickets/{tid}/reopen | admin | as Customer target 1",
+          "POST /tickets/{tid}/reopen | admin | as Customer target 5",
+          "POST /tickets/{tid}/reopen | admin | as Customer on a missing row",
+          "POST /tickets/{tid}/reopen | alice | as Customer target 2",
+          "POST /tickets/{tid}/reopen | alice | as Customer on a missing row"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/reopen | no caller | anonymous",
+          "POST /tickets/{tid}/reopen | malformed token | call",
+          "POST /tickets/{tid}/reopen | admin | as Customer target 1",
+          "POST /tickets/{tid}/reopen | admin | as Customer target 5",
+          "POST /tickets/{tid}/reopen | alice | as Customer target 2"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R2 POST /tickets/{tid}/reopen": {
+        "id": "R2 POST /tickets/{tid}/reopen",
+        "kind": "R2",
+        "subject": "POST /tickets/{tid}/reopen",
+        "sentence": "POST /tickets/{tid}/reopen acts on the caller's own Ticket rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Ticket"
+        },
+        "verdict": "verified",
+        "reason": "another user's row answered 404, nothing written",
+        "probes": [
+          "POST /tickets/{tid}/reopen | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/reopen | alice | another user's Ticket 1"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/reopen | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/reopen | alice | another user's Ticket 1"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/reopen 400 bad id": {
+        "id": "R3 POST /tickets/{tid}/reopen 400 bad id",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/reopen",
+        "sentence": "POST /tickets/{tid}/reopen answers 400 'bad id' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "bad id",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/reopen 404 Not found": {
+        "id": "R3 POST /tickets/{tid}/reopen 404 Not found",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/reopen",
+        "sentence": "POST /tickets/{tid}/reopen answers 404 'Not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "Not found",
+          "when": "not_found"
+        },
+        "verdict": "verified",
+        "reason": "answered 404 'Not found'; stated 404 'Not found'",
+        "probes": [
+          "POST /tickets/{tid}/reopen | admin | missing id"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/reopen | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/reopen 409 not closed": {
+        "id": "R3 POST /tickets/{tid}/reopen 409 not closed",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/reopen",
+        "sentence": "POST /tickets/{tid}/reopen answers 409 'not closed' (other)",
+        "predicted": {
+          "status": 409,
+          "detail": "not closed",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/reopen 500": {
+        "id": "R3 POST /tickets/{tid}/reopen 500",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/reopen",
+        "sentence": "POST /tickets/{tid}/reopen answers 500 (other)",
+        "predicted": {
+          "status": 500,
+          "detail": null,
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/reopen 5xx": {
+        "id": "R3 POST /tickets/{tid}/reopen 5xx",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/reopen",
+        "sentence": "POST /tickets/{tid}/reopen answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 12 probes (10 past the auth check)",
+        "probes": [
+          "POST /tickets/{tid}/reopen | no caller | anonymous",
+          "POST /tickets/{tid}/reopen | malformed token | call",
+          "POST /tickets/{tid}/reopen | admin | as Customer target 1",
+          "POST /tickets/{tid}/reopen | admin | as Customer target 5",
+          "POST /tickets/{tid}/reopen | admin | as Customer on a missing row",
+          "POST /tickets/{tid}/reopen | alice | as Customer target 2",
+          "POST /tickets/{tid}/reopen | alice | as Customer on a missing row",
+          "POST /tickets/{tid}/reopen | alice | witness: another user's Ticket 2",
+          "POST /tickets/{tid}/reopen | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/reopen | admin | witness: another user's Ticket 1",
+          "POST /tickets/{tid}/reopen | alice | another user's Ticket 1",
+          "POST /tickets/{tid}/reopen | admin | missing id"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/reopen | admin | as Customer target 1",
+          "POST /tickets/{tid}/reopen | admin | as Customer target 5",
+          "POST /tickets/{tid}/reopen | admin | as Customer on a missing row",
+          "POST /tickets/{tid}/reopen | alice | as Customer target 2",
+          "POST /tickets/{tid}/reopen | alice | as Customer on a missing row",
+          "POST /tickets/{tid}/reopen | alice | witness: another user's Ticket 2",
+          "POST /tickets/{tid}/reopen | admin | another user's Ticket 2",
+          "POST /tickets/{tid}/reopen | admin | witness: another user's Ticket 1",
+          "POST /tickets/{tid}/reopen | alice | another user's Ticket 1",
+          "POST /tickets/{tid}/reopen | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /tickets/{tid}/handoffs": {
+        "id": "R1 POST /tickets/{tid}/handoffs",
+        "kind": "R1",
+        "subject": "POST /tickets/{tid}/handoffs",
+        "sentence": "POST /tickets/{tid}/handoffs admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "POST /tickets/{tid}/handoffs | no caller | anonymous",
+          "POST /tickets/{tid}/handoffs | malformed token | call",
+          "POST /tickets/{tid}/handoffs | admin | as Customer target 1",
+          "POST /tickets/{tid}/handoffs | admin | as Customer target 5",
+          "POST /tickets/{tid}/handoffs | admin | as Customer on a missing row",
+          "POST /tickets/{tid}/handoffs | alice | as Customer target 2",
+          "POST /tickets/{tid}/handoffs | alice | as Customer on a missing row"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/handoffs | no caller | anonymous",
+          "POST /tickets/{tid}/handoffs | malformed token | call",
+          "POST /tickets/{tid}/handoffs | admin | as Customer target 1",
+          "POST /tickets/{tid}/handoffs | admin | as Customer target 5",
+          "POST /tickets/{tid}/handoffs | alice | as Customer target 2"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R2 POST /tickets/{tid}/handoffs": {
+        "id": "R2 POST /tickets/{tid}/handoffs",
+        "kind": "R2",
+        "subject": "POST /tickets/{tid}/handoffs",
+        "sentence": "POST /tickets/{tid}/handoffs acts on the caller's own Ticket rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Ticket"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the create answered 422",
+        "probes": [
+          "POST /tickets/{tid}/handoffs | admin | create stamps the caller as owner of Ticket",
+          "POST /tickets/{tid}/handoffs | admin | create stamps the caller as owner of Ticket (body names no owner)"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/handoffs 400 bad id": {
+        "id": "R3 POST /tickets/{tid}/handoffs 400 bad id",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/handoffs",
+        "sentence": "POST /tickets/{tid}/handoffs answers 400 'bad id' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "bad id",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/handoffs 404 Not found": {
+        "id": "R3 POST /tickets/{tid}/handoffs 404 Not found",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/handoffs",
+        "sentence": "POST /tickets/{tid}/handoffs answers 404 'Not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "Not found",
+          "when": "not_found"
+        },
+        "verdict": "verified",
+        "reason": "answered 404 'Not found'; stated 404 'Not found'",
+        "probes": [
+          "POST /tickets/{tid}/handoffs | admin | missing id"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/handoffs | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/handoffs 422 invalid body": {
+        "id": "R3 POST /tickets/{tid}/handoffs 422 invalid body",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/handoffs",
+        "sentence": "POST /tickets/{tid}/handoffs answers 422 'invalid body' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "invalid body",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/handoffs 404 No such user": {
+        "id": "R3 POST /tickets/{tid}/handoffs 404 No such user",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/handoffs",
+        "sentence": "POST /tickets/{tid}/handoffs answers 404 'No such user' (not_owned)",
+        "predicted": {
+          "status": 404,
+          "detail": "No such user",
+          "when": "not_owned"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/handoffs 500": {
+        "id": "R3 POST /tickets/{tid}/handoffs 500",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/handoffs",
+        "sentence": "POST /tickets/{tid}/handoffs answers 500 (other)",
+        "predicted": {
+          "status": 500,
+          "detail": null,
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /tickets/{tid}/handoffs 5xx": {
+        "id": "R3 POST /tickets/{tid}/handoffs 5xx",
+        "kind": "R3",
+        "subject": "POST /tickets/{tid}/handoffs",
+        "sentence": "POST /tickets/{tid}/handoffs answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 10 probes (8 past the auth check)",
+        "probes": [
+          "POST /tickets/{tid}/handoffs | no caller | anonymous",
+          "POST /tickets/{tid}/handoffs | malformed token | call",
+          "POST /tickets/{tid}/handoffs | admin | as Customer target 1",
+          "POST /tickets/{tid}/handoffs | admin | as Customer target 5",
+          "POST /tickets/{tid}/handoffs | admin | as Customer on a missing row",
+          "POST /tickets/{tid}/handoffs | alice | as Customer target 2",
+          "POST /tickets/{tid}/handoffs | alice | as Customer on a missing row",
+          "POST /tickets/{tid}/handoffs | admin | create stamps the caller as owner of Ticket",
+          "POST /tickets/{tid}/handoffs | admin | create stamps the caller as owner of Ticket (body names no owner)",
+          "POST /tickets/{tid}/handoffs | admin | missing id"
+        ],
+        "decisive": [
+          "POST /tickets/{tid}/handoffs | admin | as Customer target 1",
+          "POST /tickets/{tid}/handoffs | admin | as Customer target 5",
+          "POST /tickets/{tid}/handoffs | admin | as Customer on a missing row",
+          "POST /tickets/{tid}/handoffs | alice | as Customer target 2",
+          "POST /tickets/{tid}/handoffs | alice | as Customer on a missing row",
+          "POST /tickets/{tid}/handoffs | admin | create stamps the caller as owner of Ticket",
+          "POST /tickets/{tid}/handoffs | admin | create stamps the caller as owner of Ticket (body names no owner)",
+          "POST /tickets/{tid}/handoffs | admin | missing id"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /handoffs": {
+        "id": "R1 GET /handoffs",
+        "kind": "R1",
+        "subject": "GET /handoffs",
+        "sentence": "GET /handoffs admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "verified",
+        "reason": "3 callers as predicted",
+        "probes": [
+          "GET /handoffs | no caller | anonymous",
+          "GET /handoffs | malformed token | call",
+          "GET /handoffs | admin | as Customer",
+          "GET /handoffs | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /handoffs | no caller | anonymous",
+          "GET /handoffs | malformed token | call",
+          "GET /handoffs | admin | as Customer",
+          "GET /handoffs | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /handoffs 5xx": {
+        "id": "R3 GET /handoffs 5xx",
+        "kind": "R3",
+        "subject": "GET /handoffs",
+        "sentence": "GET /handoffs answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (2 past the auth check)",
+        "probes": [
+          "GET /handoffs | no caller | anonymous",
+          "GET /handoffs | malformed token | call",
+          "GET /handoffs | admin | as Customer",
+          "GET /handoffs | alice | as Customer"
+        ],
+        "decisive": [
+          "GET /handoffs | admin | as Customer",
+          "GET /handoffs | alice | as Customer"
+        ],
+        "observed": null,
+        "notes": []
+      }
+    },
+    "tables": {
+      "User": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "T1 User": "verified",
+          "T2 User.password_hash": "verified",
+          "T5 User (id)": "unexercised"
+        }
+      },
+      "Queue": {
+        "verdict": "unverified",
+        "reason": "unreached",
+        "items": {
+          "T1 Queue": "unexercised",
+          "T5 Queue (id)": "unexercised"
+        }
+      },
+      "Ticket": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "T1 Ticket": "verified",
+          "T4 Ticket.status": "unexercised",
+          "T5 Ticket (id)": "unexercised"
+        }
+      },
+      "Handoff": {
+        "verdict": "unverified",
+        "reason": "items T1 Handoff",
+        "items": {
+          "T1 Handoff": "unclear",
+          "T5 Handoff (id)": "unexercised"
+        }
+      }
+    },
+    "routes": {
+      "GET /health": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 GET /health": "verified",
+          "R3 GET /health 5xx": "verified"
+        }
+      },
+      "POST /login": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 POST /login": "verified",
+          "R3 POST /login 422 invalid body": "unexercised",
+          "R3 POST /login 401 Incorrect username or password": "unexercised",
+          "R3 POST /login 5xx": "verified"
+        }
+      },
+      "GET /queues": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 GET /queues": "verified",
+          "R3 GET /queues 5xx": "verified"
+        }
+      },
+      "GET /me": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 GET /me": "verified",
+          "R3 GET /me 401 Not authenticated": "unexercised",
+          "R3 GET /me 5xx": "verified"
+        }
+      },
+      "POST /queues/{qid}/tickets": {
+        "verdict": "unverified",
+        "reason": "R2 unexercised",
+        "items": {
+          "R1 POST /queues/{qid}/tickets": "verified",
+          "R2 POST /queues/{qid}/tickets": "unexercised",
+          "R3 POST /queues/{qid}/tickets 400 bad id": "unexercised",
+          "R3 POST /queues/{qid}/tickets 404 Not found": "verified",
+          "R3 POST /queues/{qid}/tickets 422 invalid body": "unexercised",
+          "R3 POST /queues/{qid}/tickets 409 already open": "unexercised",
+          "R3 POST /queues/{qid}/tickets 500": "unexercised",
+          "R3 POST /queues/{qid}/tickets 5xx": "verified"
+        }
+      },
+      "GET /tickets": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 GET /tickets": "verified",
+          "R2 GET /tickets": "verified",
+          "R3 GET /tickets 422 invalid query": "unexercised",
+          "R3 GET /tickets 422": "verified",
+          "R3 GET /tickets 5xx": "verified"
+        }
+      },
+      "GET /tickets/{tid}": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 GET /tickets/{tid}": "verified",
+          "R2 GET /tickets/{tid}": "verified",
+          "R3 GET /tickets/{tid} 400 bad id": "unexercised",
+          "R3 GET /tickets/{tid} 404 Not found": "verified",
+          "R3 GET /tickets/{tid} 5xx": "verified"
+        }
+      },
+      "POST /tickets/{tid}/close": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 POST /tickets/{tid}/close": "verified",
+          "R2 POST /tickets/{tid}/close": "verified",
+          "R3 POST /tickets/{tid}/close 400 bad id": "unexercised",
+          "R3 POST /tickets/{tid}/close 404 Not found": "verified",
+          "R3 POST /tickets/{tid}/close 409 not open": "unexercised",
+          "R3 POST /tickets/{tid}/close 500": "unexercised",
+          "R3 POST /tickets/{tid}/close 5xx": "verified"
+        }
+      },
+      "POST /tickets/{tid}/reopen": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 POST /tickets/{tid}/reopen": "verified",
+          "R2 POST /tickets/{tid}/reopen": "verified",
+          "R3 POST /tickets/{tid}/reopen 400 bad id": "unexercised",
+          "R3 POST /tickets/{tid}/reopen 404 Not found": "verified",
+          "R3 POST /tickets/{tid}/reopen 409 not closed": "unexercised",
+          "R3 POST /tickets/{tid}/reopen 500": "unexercised",
+          "R3 POST /tickets/{tid}/reopen 5xx": "verified"
+        }
+      },
+      "POST /tickets/{tid}/handoffs": {
+        "verdict": "unverified",
+        "reason": "R2 unexercised",
+        "items": {
+          "R1 POST /tickets/{tid}/handoffs": "verified",
+          "R2 POST /tickets/{tid}/handoffs": "unexercised",
+          "R3 POST /tickets/{tid}/handoffs 400 bad id": "unexercised",
+          "R3 POST /tickets/{tid}/handoffs 404 Not found": "verified",
+          "R3 POST /tickets/{tid}/handoffs 422 invalid body": "unexercised",
+          "R3 POST /tickets/{tid}/handoffs 404 No such user": "unexercised",
+          "R3 POST /tickets/{tid}/handoffs 500": "unexercised",
+          "R3 POST /tickets/{tid}/handoffs 5xx": "verified"
+        }
+      },
+      "GET /handoffs": {
+        "verdict": "verified",
+        "reason": "",
+        "items": {
+          "R1 GET /handoffs": "verified",
+          "R3 GET /handoffs 5xx": "verified"
+        }
+      }
+    },
+    "probes": {
+      "GET /health | no caller | anonymous": {
+        "route": "GET /health",
+        "items": [
+          "R1 GET /health"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/health",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "ok": true
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /health": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /health 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /health | malformed token | call": {
+        "route": "GET /health",
+        "items": [
+          "R1 GET /health"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/health",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "ok": true
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /health": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /health 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /health | admin | as Customer": {
+        "route": "GET /health",
+        "items": [
+          "R1 GET /health"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/health",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "ok": true
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /health": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /health 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /health | alice | as Customer": {
+        "route": "GET /health",
+        "items": [
+          "R1 GET /health"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/health",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "ok": true
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /health": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /health 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /login | no caller | anonymous": {
+        "route": "POST /login",
+        "items": [
+          "R1 POST /login"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "username": "admin@example.com",
+            "password": "admin-pass-0031"
+          },
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "access_token": "1.f82ff6800a626ac1f9331e4fc650153a8f20c895cb9f283420a922ceaa6a405c",
+          "token_type": "bearer"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 POST /login": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /login | malformed token | call": {
+        "route": "POST /login",
+        "items": [
+          "R1 POST /login"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": {
+            "username": "valid username",
+            "password": "valid password"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Incorrect username or password"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 POST /login": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (401): a refusal of the credentials sent (invented, or bad on purpose)"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /login | admin | as Customer": {
+        "route": "POST /login",
+        "items": [
+          "R1 POST /login"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": {
+            "username": "admin@example.com",
+            "password": "admin-pass-0031"
+          },
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "access_token": "1.f82ff6800a626ac1f9331e4fc650153a8f20c895cb9f283420a922ceaa6a405c",
+          "token_type": "bearer"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 POST /login": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /login | alice | as Customer": {
+        "route": "POST /login",
+        "items": [
+          "R1 POST /login"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": {
+            "username": "alice@example.com",
+            "password": "alice-pass-0031"
+          },
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "access_token": "2.f696fe8246bacbe5b73099529a7cd1acfdfa0c6a9a7e86d9a63269d0f326424f",
+          "token_type": "bearer"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 POST /login": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /queues | no caller | anonymous": {
+        "route": "GET /queues",
+        "items": [
+          "R1 GET /queues"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/queues",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "name": "Name 01"
+          },
+          {
+            "id": 2,
+            "name": "Name 02"
+          },
+          {
+            "id": 3,
+            "name": "Name 04"
+          },
+          {
+            "id": 4,
+            "name": "Name 04"
+          },
+          {
+            "id": 5,
+            "name": "Name 05"
+          },
+          {
+            "id": 6,
+            "name": "Name 08"
+          },
+          {
+            "id": 7,
+            "name": "Name 07"
+          },
+          {
+            "id": 8,
+            "name": "Name 08"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /queues": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password_hash": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password_hash"
+          },
+          "R3 GET /queues 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /queues | malformed token | call": {
+        "route": "GET /queues",
+        "items": [
+          "R1 GET /queues"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/queues",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "name": "Name 01"
+          },
+          {
+            "id": 2,
+            "name": "Name 02"
+          },
+          {
+            "id": 3,
+            "name": "Name 04"
+          },
+          {
+            "id": 4,
+            "name": "Name 04"
+          },
+          {
+            "id": 5,
+            "name": "Name 05"
+          },
+          {
+            "id": 6,
+            "name": "Name 08"
+          },
+          {
+            "id": 7,
+            "name": "Name 07"
+          },
+          {
+            "id": 8,
+            "name": "Name 08"
+          }
+        ],
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /queues": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password_hash": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password_hash"
+          },
+          "R3 GET /queues 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /queues | admin | as Customer": {
+        "route": "GET /queues",
+        "items": [
+          "R1 GET /queues"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/queues",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "name": "Name 01"
+          },
+          {
+            "id": 2,
+            "name": "Name 02"
+          },
+          {
+            "id": 3,
+            "name": "Name 04"
+          },
+          {
+            "id": 4,
+            "name": "Name 04"
+          },
+          {
+            "id": 5,
+            "name": "Name 05"
+          },
+          {
+            "id": 6,
+            "name": "Name 08"
+          },
+          {
+            "id": 7,
+            "name": "Name 07"
+          },
+          {
+            "id": 8,
+            "name": "Name 08"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /queues": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password_hash": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password_hash"
+          },
+          "R3 GET /queues 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /queues | alice | as Customer": {
+        "route": "GET /queues",
+        "items": [
+          "R1 GET /queues"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/queues",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "name": "Name 01"
+          },
+          {
+            "id": 2,
+            "name": "Name 02"
+          },
+          {
+            "id": 3,
+            "name": "Name 04"
+          },
+          {
+            "id": 4,
+            "name": "Name 04"
+          },
+          {
+            "id": 5,
+            "name": "Name 05"
+          },
+          {
+            "id": 6,
+            "name": "Name 08"
+          },
+          {
+            "id": 7,
+            "name": "Name 07"
+          },
+          {
+            "id": 8,
+            "name": "Name 08"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /queues": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password_hash": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password_hash"
+          },
+          "R3 GET /queues 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /me | no caller | anonymous": {
+        "route": "GET /me",
+        "items": [
+          "R1 GET /me"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/me",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /me": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /me 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /me | malformed token | call": {
+        "route": "GET /me",
+        "items": [
+          "R1 GET /me"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/me",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /me": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /me 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /me | admin | as Customer": {
+        "route": "GET /me",
+        "items": [
+          "R1 GET /me"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/me",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 1,
+          "name": "admin@example.com"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /me": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password_hash": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password_hash"
+          },
+          "R3 GET /me 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /me | alice | as Customer": {
+        "route": "GET /me",
+        "items": [
+          "R1 GET /me"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/me",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 2,
+          "name": "alice@example.com"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /me": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "T2 User.password_hash": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "a User row without password_hash"
+          },
+          "R3 GET /me 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /queues/{qid}/tickets | no caller | anonymous": {
+        "route": "POST /queues/{qid}/tickets",
+        "items": [
+          "R1 POST /queues/{qid}/tickets"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/queues/1/tickets",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /queues/{qid}/tickets": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /queues/{qid}/tickets 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /queues/{qid}/tickets | malformed token | call": {
+        "route": "POST /queues/{qid}/tickets",
+        "items": [
+          "R1 POST /queues/{qid}/tickets"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/queues/1/tickets",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /queues/{qid}/tickets": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /queues/{qid}/tickets 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /queues/{qid}/tickets | admin | as Customer": {
+        "route": "POST /queues/{qid}/tickets",
+        "items": [
+          "R1 POST /queues/{qid}/tickets"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/queues/1/tickets",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "invalid body"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /queues/{qid}/tickets": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 POST /queues/{qid}/tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /queues/{qid}/tickets | alice | as Customer": {
+        "route": "POST /queues/{qid}/tickets",
+        "items": [
+          "R1 POST /queues/{qid}/tickets"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/queues/1/tickets",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "invalid body"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /queues/{qid}/tickets": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 POST /queues/{qid}/tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /queues/{qid}/tickets | admin | create stamps the caller as owner of Ticket": {
+        "route": "POST /queues/{qid}/tickets",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /queues/{qid}/tickets"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/queues/1/tickets",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "invalid body"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the create answered 422"
+          },
+          "R2 POST /queues/{qid}/tickets": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the create answered 422"
+          },
+          "R3 POST /queues/{qid}/tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /queues/{qid}/tickets | admin | create stamps the caller as owner of Ticket (body names no owner)": {
+        "route": "POST /queues/{qid}/tickets",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /queues/{qid}/tickets"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/queues/1/tickets",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "invalid body"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the create answered 422"
+          },
+          "R2 POST /queues/{qid}/tickets": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the create answered 422"
+          },
+          "R3 POST /queues/{qid}/tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets | no caller | anonymous": {
+        "route": "GET /tickets",
+        "items": [
+          "R1 GET /tickets"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /tickets 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /tickets | malformed token | call": {
+        "route": "GET /tickets",
+        "items": [
+          "R1 GET /tickets"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /tickets 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /tickets | admin | as Customer": {
+        "route": "GET /tickets",
+        "items": [
+          "R1 GET /tickets"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "queue_id": 50,
+            "reporter_id": 1,
+            "title": "Title 01",
+            "status": "open"
+          },
+          {
+            "id": 5,
+            "queue_id": 54,
+            "reporter_id": 1,
+            "title": "Title 05",
+            "status": "open"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets | alice | as Customer": {
+        "route": "GET /tickets",
+        "items": [
+          "R1 GET /tickets"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 2,
+            "queue_id": 51,
+            "reporter_id": 2,
+            "title": "Title 02",
+            "status": "closed"
+          },
+          {
+            "id": 6,
+            "queue_id": 55,
+            "reporter_id": 2,
+            "title": "Title 08",
+            "status": "closed"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets | alice | witness: own Ticket rows only": {
+        "route": "GET /tickets",
+        "items": [
+          "T1 Ticket",
+          "R2 GET /tickets"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 2,
+            "queue_id": 51,
+            "reporter_id": 2,
+            "title": "Title 02",
+            "status": "closed"
+          },
+          {
+            "id": 6,
+            "queue_id": 55,
+            "reporter_id": 2,
+            "title": "Title 08",
+            "status": "closed"
+          }
+        ],
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 GET /tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets | admin | own Ticket rows only": {
+        "route": "GET /tickets",
+        "items": [
+          "T1 Ticket",
+          "R2 GET /tickets"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "queue_id": 50,
+            "reporter_id": 1,
+            "title": "Title 01",
+            "status": "open"
+          },
+          {
+            "id": 5,
+            "queue_id": 54,
+            "reporter_id": 1,
+            "title": "Title 05",
+            "status": "open"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "only the caller's Ticket rows (2)"
+          },
+          "R2 GET /tickets": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "only the caller's Ticket rows (2)"
+          },
+          "R3 GET /tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets | admin | witness: own Ticket rows only": {
+        "route": "GET /tickets",
+        "items": [
+          "T1 Ticket",
+          "R2 GET /tickets"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "queue_id": 50,
+            "reporter_id": 1,
+            "title": "Title 01",
+            "status": "open"
+          },
+          {
+            "id": 5,
+            "queue_id": 54,
+            "reporter_id": 1,
+            "title": "Title 05",
+            "status": "open"
+          }
+        ],
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 GET /tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets | alice | own Ticket rows only": {
+        "route": "GET /tickets",
+        "items": [
+          "T1 Ticket",
+          "R2 GET /tickets"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 2,
+            "queue_id": 51,
+            "reporter_id": 2,
+            "title": "Title 02",
+            "status": "closed"
+          },
+          {
+            "id": 6,
+            "queue_id": 55,
+            "reporter_id": 2,
+            "title": "Title 08",
+            "status": "closed"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "only the caller's Ticket rows (2)"
+          },
+          "R2 GET /tickets": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "only the caller's Ticket rows (2)"
+          },
+          "R3 GET /tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets/{tid} | no caller | anonymous": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "R1 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/1",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets/{tid}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /tickets/{tid} | malformed token | call": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "R1 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/1",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets/{tid}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /tickets/{tid} | admin | as Customer target 1": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "R1 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/1",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 1,
+          "queue_id": 50,
+          "reporter_id": 1,
+          "title": "Title 01",
+          "status": "open"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets/{tid}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets/{tid} | admin | as Customer target 5": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "R1 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/5",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 5,
+          "queue_id": 54,
+          "reporter_id": 1,
+          "title": "Title 05",
+          "status": "open"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets/{tid}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets/{tid} | admin | as Customer on a missing row": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "R1 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/999999",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets/{tid}": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets/{tid} | alice | as Customer target 2": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "R1 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/2",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 2,
+          "queue_id": 51,
+          "reporter_id": 2,
+          "title": "Title 02",
+          "status": "closed"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets/{tid}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets/{tid} | alice | as Customer on a missing row": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "R1 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/999999",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /tickets/{tid}": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets/{tid} | alice | witness: another user's Ticket 2": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "T1 Ticket",
+          "R2 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/2",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 2,
+          "queue_id": 51,
+          "reporter_id": 2,
+          "title": "Title 02",
+          "status": "closed"
+        },
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets/{tid} | admin | another user's Ticket 2": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "T1 Ticket",
+          "R2 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/2",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R2 GET /tickets/{tid}": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets/{tid} | admin | witness: another user's Ticket 1": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "T1 Ticket",
+          "R2 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/1",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 1,
+          "queue_id": 50,
+          "reporter_id": 1,
+          "title": "Title 01",
+          "status": "open"
+        },
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets/{tid} | alice | another user's Ticket 1": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "T1 Ticket",
+          "R2 GET /tickets/{tid}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/1",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R2 GET /tickets/{tid}": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | no caller | anonymous": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "R1 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/close",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/close": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | malformed token | call": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "R1 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/close",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/close": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | admin | as Customer target 1": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "R1 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 1,
+          "queue_id": 50,
+          "reporter_id": 1,
+          "title": "Title 01",
+          "status": "closed"
+        },
+        "db_diff": {
+          "tickets": {
+            "added": [],
+            "removed": [],
+            "changed": [
+              {
+                "key": {
+                  "id": 1
+                },
+                "columns": {
+                  "status": [
+                    "open",
+                    "closed"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "bearing": {
+          "R1 POST /tickets/{tid}/close": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | admin | as Customer target 5": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "R1 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/5/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 5,
+          "queue_id": 54,
+          "reporter_id": 1,
+          "title": "Title 05",
+          "status": "closed"
+        },
+        "db_diff": {
+          "tickets": {
+            "added": [],
+            "removed": [],
+            "changed": [
+              {
+                "key": {
+                  "id": 5
+                },
+                "columns": {
+                  "status": [
+                    "open",
+                    "closed"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "bearing": {
+          "R1 POST /tickets/{tid}/close": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | admin | as Customer on a missing row": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "R1 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/999999/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/close": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | alice | as Customer target 2": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "R1 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/2/close",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 409,
+        "body": {
+          "detail": "not open"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/close": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (409)"
+          },
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | alice | as Customer on a missing row": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "R1 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/999999/close",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/close": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | alice | witness: another user's Ticket 2": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/2/close",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 409,
+        "body": {
+          "detail": "not open"
+        },
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | admin | another user's Ticket 2": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/2/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R2 POST /tickets/{tid}/close": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | admin | witness: another user's Ticket 1": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 1,
+          "queue_id": 50,
+          "reporter_id": 1,
+          "title": "Title 01",
+          "status": "closed"
+        },
+        "db_diff": {
+          "tickets": {
+            "added": [],
+            "removed": [],
+            "changed": [
+              {
+                "key": {
+                  "id": 1
+                },
+                "columns": {
+                  "status": [
+                    "open",
+                    "closed"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "role": "witness",
+        "bearing": {
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | alice | another user's Ticket 1": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /tickets/{tid}/close"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/close",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R2 POST /tickets/{tid}/close": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | no caller | anonymous": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "R1 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/reopen",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/reopen": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | malformed token | call": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "R1 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/reopen",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/reopen": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | admin | as Customer target 1": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "R1 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/reopen",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 409,
+        "body": {
+          "detail": "not closed"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/reopen": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (409)"
+          },
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | admin | as Customer target 5": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "R1 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/5/reopen",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 409,
+        "body": {
+          "detail": "not closed"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/reopen": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (409)"
+          },
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | admin | as Customer on a missing row": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "R1 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/999999/reopen",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/reopen": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | alice | as Customer target 2": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "R1 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/2/reopen",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 2,
+          "queue_id": 51,
+          "reporter_id": 2,
+          "title": "Title 02",
+          "status": "open"
+        },
+        "db_diff": {
+          "tickets": {
+            "added": [],
+            "removed": [],
+            "changed": [
+              {
+                "key": {
+                  "id": 2
+                },
+                "columns": {
+                  "status": [
+                    "closed",
+                    "open"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "bearing": {
+          "R1 POST /tickets/{tid}/reopen": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | alice | as Customer on a missing row": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "R1 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/999999/reopen",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/reopen": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | alice | witness: another user's Ticket 2": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/2/reopen",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "id": 2,
+          "queue_id": 51,
+          "reporter_id": 2,
+          "title": "Title 02",
+          "status": "open"
+        },
+        "db_diff": {
+          "tickets": {
+            "added": [],
+            "removed": [],
+            "changed": [
+              {
+                "key": {
+                  "id": 2
+                },
+                "columns": {
+                  "status": [
+                    "closed",
+                    "open"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "role": "witness",
+        "bearing": {
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | admin | another user's Ticket 2": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/2/reopen",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R2 POST /tickets/{tid}/reopen": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | admin | witness: another user's Ticket 1": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/reopen",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 409,
+        "body": {
+          "detail": "not closed"
+        },
+        "db_diff": {},
+        "role": "witness",
+        "bearing": {
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | alice | another user's Ticket 1": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /tickets/{tid}/reopen"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/reopen",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R2 POST /tickets/{tid}/reopen": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "another user's row answered 404, nothing written"
+          },
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/handoffs | no caller | anonymous": {
+        "route": "POST /tickets/{tid}/handoffs",
+        "items": [
+          "R1 POST /tickets/{tid}/handoffs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/handoffs",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/handoffs": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /tickets/{tid}/handoffs 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /tickets/{tid}/handoffs | malformed token | call": {
+        "route": "POST /tickets/{tid}/handoffs",
+        "items": [
+          "R1 POST /tickets/{tid}/handoffs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/handoffs",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/handoffs": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /tickets/{tid}/handoffs 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /tickets/{tid}/handoffs | admin | as Customer target 1": {
+        "route": "POST /tickets/{tid}/handoffs",
+        "items": [
+          "R1 POST /tickets/{tid}/handoffs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/handoffs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "invalid body"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/handoffs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 POST /tickets/{tid}/handoffs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/handoffs | admin | as Customer target 5": {
+        "route": "POST /tickets/{tid}/handoffs",
+        "items": [
+          "R1 POST /tickets/{tid}/handoffs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/5/handoffs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "invalid body"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/handoffs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 POST /tickets/{tid}/handoffs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/handoffs | admin | as Customer on a missing row": {
+        "route": "POST /tickets/{tid}/handoffs",
+        "items": [
+          "R1 POST /tickets/{tid}/handoffs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/999999/handoffs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/handoffs": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 POST /tickets/{tid}/handoffs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/handoffs | alice | as Customer target 2": {
+        "route": "POST /tickets/{tid}/handoffs",
+        "items": [
+          "R1 POST /tickets/{tid}/handoffs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/2/handoffs",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "invalid body"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/handoffs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 POST /tickets/{tid}/handoffs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/handoffs | alice | as Customer on a missing row": {
+        "route": "POST /tickets/{tid}/handoffs",
+        "items": [
+          "R1 POST /tickets/{tid}/handoffs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/999999/handoffs",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /tickets/{tid}/handoffs": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (404): a 404 to a request addressing a row: the router's (a path value it does not match), or a row hidden from the caller"
+          },
+          "R3 POST /tickets/{tid}/handoffs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/handoffs | admin | create stamps the caller as owner of Ticket": {
+        "route": "POST /tickets/{tid}/handoffs",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /tickets/{tid}/handoffs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/handoffs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "invalid body"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the create answered 422"
+          },
+          "R2 POST /tickets/{tid}/handoffs": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the create answered 422"
+          },
+          "R3 POST /tickets/{tid}/handoffs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/handoffs | admin | create stamps the caller as owner of Ticket (body names no owner)": {
+        "route": "POST /tickets/{tid}/handoffs",
+        "items": [
+          "T1 Ticket",
+          "R2 POST /tickets/{tid}/handoffs"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/1/handoffs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "invalid body"
+        },
+        "db_diff": {},
+        "bearing": {
+          "T1 Ticket": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the create answered 422"
+          },
+          "R2 POST /tickets/{tid}/handoffs": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the create answered 422"
+          },
+          "R3 POST /tickets/{tid}/handoffs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /handoffs | no caller | anonymous": {
+        "route": "GET /handoffs",
+        "items": [
+          "R1 GET /handoffs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/handoffs",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /handoffs": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /handoffs 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /handoffs | malformed token | call": {
+        "route": "GET /handoffs",
+        "items": [
+          "R1 GET /handoffs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/handoffs",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Not authenticated"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /handoffs": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /handoffs 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /handoffs | admin | as Customer": {
+        "route": "GET /handoffs",
+        "items": [
+          "R1 GET /handoffs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/handoffs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "ticket_id": 50,
+            "from_user_id": 1,
+            "to_user_id": 1
+          },
+          {
+            "id": 5,
+            "ticket_id": 54,
+            "from_user_id": 1,
+            "to_user_id": 1
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /handoffs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /handoffs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /handoffs | alice | as Customer": {
+        "route": "GET /handoffs",
+        "items": [
+          "R1 GET /handoffs"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/handoffs",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 2,
+            "ticket_id": 51,
+            "from_user_id": 2,
+            "to_user_id": 2
+          },
+          {
+            "id": 6,
+            "ticket_id": 55,
+            "from_user_id": 2,
+            "to_user_id": 2
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /handoffs": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /handoffs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets | admin | every optional query parameter": {
+        "route": "GET /tickets",
+        "items": [
+          "R3 GET /tickets 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets",
+          "user": "admin",
+          "token": null,
+          "params": {
+            "page_size": 1,
+            "status": "open"
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "queue_id": 50,
+            "reporter_id": 1,
+            "title": "Title 01",
+            "status": "open"
+          }
+        ],
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /login | no caller | example": {
+        "route": "POST /login",
+        "items": [
+          "R3 POST /login 422 invalid body"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "username": "nobody@example.com",
+            "password": "wrong-password"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "Incorrect username or password"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /login 422 invalid body": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /queues/{qid}/tickets | admin | missing id": {
+        "route": "POST /queues/{qid}/tickets",
+        "items": [
+          "R3 POST /queues/{qid}/tickets 404 Not found"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/queues/999999/tickets",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /queues/{qid}/tickets 404 Not found": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 404 'Not found'; stated 404 'Not found'"
+          },
+          "R3 POST /queues/{qid}/tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets | admin | invalid body": {
+        "route": "GET /tickets",
+        "items": [
+          "R3 GET /tickets 422"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets",
+          "user": "admin",
+          "token": null,
+          "params": {
+            "page_size": -1
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": "invalid query"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /tickets 422": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 422 'invalid query'; stated 422 None"
+          },
+          "R3 GET /tickets 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /tickets/{tid} | admin | missing id": {
+        "route": "GET /tickets/{tid}",
+        "items": [
+          "R3 GET /tickets/{tid} 404 Not found"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/tickets/999999",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /tickets/{tid} 404 Not found": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 404 'Not found'; stated 404 'Not found'"
+          },
+          "R3 GET /tickets/{tid} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/close | admin | missing id": {
+        "route": "POST /tickets/{tid}/close",
+        "items": [
+          "R3 POST /tickets/{tid}/close 404 Not found"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/999999/close",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /tickets/{tid}/close 404 Not found": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 404 'Not found'; stated 404 'Not found'"
+          },
+          "R3 POST /tickets/{tid}/close 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/reopen | admin | missing id": {
+        "route": "POST /tickets/{tid}/reopen",
+        "items": [
+          "R3 POST /tickets/{tid}/reopen 404 Not found"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/999999/reopen",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /tickets/{tid}/reopen 404 Not found": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 404 'Not found'; stated 404 'Not found'"
+          },
+          "R3 POST /tickets/{tid}/reopen 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /tickets/{tid}/handoffs | admin | missing id": {
+        "route": "POST /tickets/{tid}/handoffs",
+        "items": [
+          "R3 POST /tickets/{tid}/handoffs 404 Not found"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/tickets/999999/handoffs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "detail": "Not found"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /tickets/{tid}/handoffs 404 Not found": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 404 'Not found'; stated 404 'Not found'"
+          },
+          "R3 POST /tickets/{tid}/handoffs 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      }
+    },
+    "notes": [],
+    "framework": "gin",
+    "excluded_routes": [],
+    "baseline": [],
+    "corrections": [],
+    "mining": {
+      "proposed": 7,
+      "refuted": 1,
+      "uncompiled": 0,
+      "snapshots": 4,
+      "runs": 84,
+      "app_rows": 3
+    },
+    "mining_templates": [
+      "sign",
+      "not_null",
+      "one_per_fk",
+      "sum",
+      "machine"
+    ],
+    "unreachable": [
+      [
+        "R3 GET /me 401 Not authenticated",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /tickets 422 invalid query",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /tickets/{tid} 400 bad id",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /login 401 Incorrect username or password",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /queues/{qid}/tickets 400 bad id",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /queues/{qid}/tickets 409 already open",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /queues/{qid}/tickets 422 invalid body",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /queues/{qid}/tickets 500",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /tickets/{tid}/close 400 bad id",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /tickets/{tid}/close 409 not open",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /tickets/{tid}/close 500",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /tickets/{tid}/handoffs 400 bad id",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /tickets/{tid}/handoffs 422 invalid body",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /tickets/{tid}/handoffs 500",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /tickets/{tid}/reopen 400 bad id",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /tickets/{tid}/reopen 409 not closed",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /tickets/{tid}/reopen 500",
+        "unreachable-by-probe: no example triggers it"
+      ]
+    ],
+    "timing": {
+      "extract": 0.151,
+      "probe": 6.645,
+      "correct": 0.001,
+      "mine": 0.13,
+      "variant2": 6.558,
+      "go_policy": 0.035,
+      "total": 13.522
+    },
+    "variant2": {
+      "variant": "variant2",
+      "summary": {
+        "items": {
+          "verified": 35,
+          "refuted": 0,
+          "unexercised": 27,
+          "unclear": 1
+        },
+        "tables": {
+          "verified": 2,
+          "total": 4
+        },
+        "routes": {
+          "verified": 9,
+          "total": 11
+        }
+      },
+      "findings": [],
+      "clean": true
+    },
+    "outside_api": {},
+    "seed": {
+      "variants": {
+        "seed": {
+          "seed": 31,
+          "rows_per_table": 8,
+          "key_shift": 0
+        },
+        "variant2": {
+          "seed": 97,
+          "rows_per_table": 11,
+          "key_shift": 100
+        }
+      }
+    },
+    "inferences": [
+      {
+        "table": "Ticket",
+        "column": "reporter_id",
+        "evidence": [
+          "code:api/api.go:160",
+          "code:api/api.go:165",
+          "code:api/api.go:191",
+          "code:api/api.go:210",
+          "code:api/api.go:227",
+          "code:api/api.go:252",
+          "code:api/api.go:282"
+        ],
+        "rule": "owner_uses"
+      },
+      {
+        "table": "Handoff",
+        "column": null,
+        "columns": [
+          "from_user_id",
+          "to_user_id"
+        ],
+        "evidence": [
+          "code:api/api.go:296",
+          "code:api/api.go:310",
+          "code:api/api.go:310"
+        ],
+        "rule": "owner_uses",
+        "unclear": true
+      },
+      {
+        "rule": "path_parse",
+        "route": "POST /queues/{qid}/tickets",
+        "param": "qid",
+        "evidence": [
+          "code:api/api.go:142"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "GET /tickets/{tid}",
+        "param": "tid",
+        "evidence": [
+          "code:api/api.go:204"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "POST /tickets/{tid}/close",
+        "param": "tid",
+        "evidence": [
+          "code:api/api.go:221"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "POST /tickets/{tid}/reopen",
+        "param": "tid",
+        "evidence": [
+          "code:api/api.go:246"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "POST /tickets/{tid}/handoffs",
+        "param": "tid",
+        "evidence": [
+          "code:api/api.go:276"
+        ]
+      },
+      {
+        "rule": "bind_status",
+        "status": 422,
+        "evidence": [
+          "code:api/api.go:75",
+          "code:api/api.go:154",
+          "code:api/api.go:184",
+          "code:api/api.go:288"
+        ]
+      },
+      {
+        "rule": "status_facts",
+        "table": "Ticket",
+        "column": "status",
+        "choices": [
+          "open",
+          "closed"
+        ],
+        "evidence": [
+          "code:api/api.go:165",
+          "code:api/api.go:235",
+          "code:api/api.go:260"
+        ]
+      },
+      {
+        "rule": "json_dash",
+        "table": "User",
+        "columns": [
+          "password_hash"
+        ]
+      }
+    ]
+  }
+}

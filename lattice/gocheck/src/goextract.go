@@ -109,6 +109,8 @@ type gx struct {
 
 	callerKeys  map[string]string // context keys the authenticating middleware sets: struct | scalar
 	callerFuncs map[*Func]string  // module functions reading one of them
+
+	policy bool // the opt-in policy extract: tables[].columns[].json
 }
 
 type litSite struct {
@@ -142,6 +144,7 @@ func runExtract(stdin io.Reader, stdout, stderr io.Writer) int {
 	var in struct {
 		Root     string `json:"root"`
 		Workflow bool   `json:"workflow"`
+		Policy   bool   `json:"policy"` // opt-in: tables[].columns[].json (goextract_tables.go)
 	}
 	if err := json.Unmarshal(raw, &in); err != nil || in.Root == "" {
 		fmt.Fprintln(stderr, `gocheck extract: the input must be JSON {"root": <directory>}`)
@@ -160,6 +163,8 @@ func runExtract(stdin io.Reader, stdout, stderr io.Writer) int {
 		}()
 		if in.Workflow { // the opt-in workflow facts (goextract_workflow.go)
 			res, err = extractWorkflow(in.Root)
+		} else if in.Policy { // the opt-in policy facts: the default output plus the json names
+			res, err = extractModulePolicy(in.Root)
 		} else {
 			res, err = extractModule(in.Root)
 		}
@@ -178,12 +183,18 @@ func runExtract(stdin io.Reader, stdout, stderr io.Writer) int {
 }
 
 // extractModule reads the module under root.
-func extractModule(root string) (*xResult, error) {
+func extractModule(root string) (*xResult, error) { return extractModuleOpt(root, false) }
+
+// extractModulePolicy is extractModule with the opt-in policy facts (the columns' json names).
+func extractModulePolicy(root string) (*xResult, error) { return extractModuleOpt(root, true) }
+
+func extractModuleOpt(root string, policy bool) (*xResult, error) {
 	m, dropped, err := loadForExtract(root)
 	if err != nil {
 		return nil, err
 	}
 	g := newGx(m)
+	g.policy = policy
 	for _, d := range dropped {
 		g.res.Excluded = append(g.res.Excluded, xExcluded{
 			Kind: "file", What: "file", File: d, Line: 1,

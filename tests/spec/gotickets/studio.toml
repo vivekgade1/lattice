@@ -1,0 +1,6 @@
+# gotickets: a small ticket service on Gin + GORM + glebarez/sqlite.
+# The harness is tests/spec/gotickets_harness.py.
+[app]
+app = "gotickets_harness:make_app"
+db = "gotickets_harness:build_db"
+runtime = "gotickets_harness:RUNTIME"

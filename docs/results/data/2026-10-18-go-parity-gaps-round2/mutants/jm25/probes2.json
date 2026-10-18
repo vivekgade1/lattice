@@ -1,0 +1,76 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 2.8761656259994197,
+    "build_goginapp_s": 2.573579531002906
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-BIND",
+      "probe": "E3 on goparity2, goparity2mixed, S2",
+      "ran": true,
+      "predicted": {
+        "goparity2": 422,
+        "goparity2mixed": "unchanged + unclear entry",
+        "S2": 422,
+        "S3": 422
+      },
+      "observed": {
+        "goparity2": {
+          "validation_status": 422,
+          "bind_status": [
+            {
+              "rule": "bind_status",
+              "status": 422,
+              "evidence": [
+                "code:main.go:93",
+                "code:main.go:103",
+                "code:main.go:113"
+              ]
+            }
+          ]
+        },
+        "goparity2mixed": {
+          "validation_status": 400,
+          "bind_status": [
+            {
+              "rule": "bind_status",
+              "status": 400,
+              "evidence": [
+                "code:main.go:42",
+                "code:main.go:56"
+              ]
+            }
+          ]
+        },
+        "S2": {
+          "validation_status": 422,
+          "bind_status": [
+            {
+              "rule": "bind_status",
+              "status": 422,
+              "evidence": [
+                "code:api/api.go:59",
+                "code:api/api.go:143"
+              ]
+            }
+          ]
+        }
+      },
+      "pass": false,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    }
+  ]
+}

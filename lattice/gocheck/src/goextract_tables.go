@@ -5,7 +5,9 @@
 package main
 
 import (
+	"encoding/json"
 	"go/ast"
+	"reflect"
 	"regexp"
 	"sort"
 	"strconv"
@@ -26,6 +28,9 @@ type xColumn struct {
 	MaxLength  *int    `json:"max_length"`
 	ForeignKey *string `json:"foreign_key"`
 	Line       int     `json:"line"`
+	// JSON is the opt-in policy fact: the encoding/json name of the field ("-" when it is
+	// left out, null when the tag names none). Empty (omitted) in the default output.
+	JSON json.RawMessage `json:"json,omitempty"`
 }
 
 type xTable struct {
@@ -503,6 +508,9 @@ func (g *gx) buildTable(t *xTable) {
 			col.Nullable = cs.synth == "DeletedAt"
 		}
 		col.Required = !col.Nullable && col.Default == nil
+		if g.policy {
+			col.JSON = jsonFact(cs.synth == "", cs.f.tag)
+		}
 		t.Columns = append(t.Columns, col)
 		t.fieldCols[cs.f.name] = cs.col
 		if col.Type != nil {
@@ -536,6 +544,25 @@ func (g *gx) buildTable(t *xTable) {
 }
 
 func strp(s string) *string { return &s }
+
+// jsonFact answers the policy fact of a column's json tag as raw JSON: "-" when
+// encoding/json leaves the field out, the key it writes it under when the tag names one,
+// null otherwise (no tag, an empty name, or a column of gorm.Model).
+func jsonFact(tagged bool, tag string) json.RawMessage {
+	if !tagged {
+		return json.RawMessage("null")
+	}
+	j, ok := reflect.StructTag(tag).Lookup("json")
+	if !ok {
+		return json.RawMessage("null")
+	}
+	name, _, _ := strings.Cut(j, ",")
+	if name == "" {
+		return json.RawMessage("null")
+	}
+	b, _ := json.Marshal(name)
+	return b
+}
 
 func (g *gx) tableFor2(ti *TypeInfo) *xTable {
 	if ti == nil {

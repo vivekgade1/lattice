@@ -1,0 +1,31 @@
+{
+  "PH1": {
+    "GO801 on JM5 with r.Use(gin.Recovery())": []
+  },
+  "PH2": {
+    "original without Recovery, findings outside the baseline": [],
+    "JM5 without Recovery, new findings": [
+      "GO801 GO801|POST /runs/:rid/cancel|Run"
+    ]
+  },
+  "PH3": {
+    "spec private columns for User": [],
+    "derived private columns for User": [
+      "password",
+      "token"
+    ],
+    "JM6 new findings under the imported spec's policy": [],
+    "JM6 new findings under the derived policy": []
+  },
+  "PH4": {
+    "original": [
+      "GO802 GO802|POST /login|User.token :: POST /login (Login.func1) answers User.token, a private column: the re"
+    ],
+    "JM6": [
+      "GO802 GO802|POST /login|User.token :: POST /login (Login.func1) answers User.token, a private column: the re"
+    ],
+    "JM6 + the answer is the struct itself": [
+      "GO802 GO802|POST /login|User.token :: POST /login (Login.func1) answers User.token, a private column: the re"
+    ]
+  }
+}

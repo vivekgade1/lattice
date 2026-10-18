@@ -1,0 +1,45 @@
+{
+ "frozen_at": "2026-10-18T13:50:30+0000",
+ "base": "be26a94c6def6307660500bf7148d1ce9d0b64d4",
+ "note": "library, fixtures, harnesses, tests and both runners hashed before the first execution of the probe runner",
+ "files": {
+  "lattice/importer/go_rules.py": "71839e6b6850eea315820ea741fe4c4cef54ab501d395102dcfdefa29598a05a",
+  "lattice/gocheck/derive.py": "e19fde637ae85ccdce787299ffe502bd8c875743a595eac381a1d8fe856e8096",
+  "lattice/importer/rules.py": "0f62f835b2edb1cdc6121a7320cfb8c688a934a62835d1f43b9985f2fc87dacd",
+  "lattice/gocheck/src/goextract.go": "598bd04a5224294d56bb5c82f9cf18a4e9043d9961ad025e8c260843789840e5",
+  "lattice/gocheck/src/goextract_tables.go": "9317c70bf200eb5bb719ffc11ef4d550e6f25ab464996c59321ff0b989381984",
+  "dogfood/go_parity_probes.py": "cb4cdaac20fb51226cc85ce925b8c1095a5e243c2ce3dec16dd3a886d50669db",
+  "dogfood/go_parity_mutants.py": "7f3e45b4cc1a702bc23b77f7577c70d96415837070f8b14017be0f8d2dd31ba1",
+  "tests/spec/gogin_harness.py": "1fb26ead614b7dcdfe522ab1d7952070e8006d88c42d39e5535e8d3f6b231caf",
+  "tests/spec/go_harness_rb.py": "d69467ca7d66bc97ac760a0ca702e014ca3d7ef1608453a851527cbe10320c77",
+  "tests/spec/goginapp/main.go": "42de032be4a9b5ed041a2835f4f4759bf1053b57ec83977ab454af1deb92e6d6",
+  "tests/spec/goginapp/api/api.go": "f32579d2f72c8e258c5b01ce85ff042e0aaa4061817f74710878f80545c504fb",
+  "tests/spec/goginapp/models/models.go": "e74ce71c0c23dc91405d2642c9f1e3d198d94afae2a3a778b2623caea6e31624",
+  "tests/spec/goginapp/go.mod": "f08c33c7379ec35cac02805b281ee5fd54be1a5ad74f0b384e043c03a92d3efe",
+  "tests/spec/goginapp/go.sum": "9737af4830d4e2538ddf534a5b1f835ca5b8ec46b5796e81c2255fd1682daf16",
+  "tests/spec/goginapp/studio.toml": "9620f5b6a6f4b7cb09934b536a828f3b4b6fc77058941da744416d5c06591283",
+  "tests/importer/test_go_rules.py": "1201157bfea8942b6e4bf4315d467f310a65cdb38cca8c68b93f1459673ed218",
+  "tests/gocheck/test_go_derive.py": "63205e95e6e2e5376ade942c71933d1df982f7986e742bf00dfed1d25c62ce80",
+  "tests/spec/test_go_layers_rb.py": "4dbcb71c5c80a4443da138815326ab6dc1db81604cb049c75389ba4a797587b1"
+ },
+ "after_shakedown": {
+  "at": "2026-10-18T13:58:30+0000",
+  "changed_files": [
+   "dogfood/go_parity_probes.py"
+  ],
+  "reason": "the first execution of the probe runner (a full shakedown, unscored) showed two plumbing bugs in PB-P only (a normaliser that did not cover timestamps, bcrypt salts, JWTs and the target path; a reference to pycheck spec_policy, a function that does not exist at this commit). No library, fixture, harness or test file changed.",
+  "files": {
+   "dogfood/go_parity_probes.py": "a9fe24c9c8a6ed60f069940aab7fac8582967dd34e8b4f89ca5f10eb680adc76"
+  }
+ },
+ "mutants_runner_fix": {
+  "file": "dogfood/go_parity_mutants.py",
+  "sha256": "f9f73a3cb760a6e38429d134e645fc69de9a92d48c29f9cd35123fafdcd2a9ac",
+  "reason": "before any mutant was judged: the first start of the mutants runner (control phase only, killed) showed the JM5/JM6 base verdict map would be taken with the mutant binary; fixed to take it with the original binary. Edit made before any mutant result existed."
+ },
+ "posthoc_runner": {
+  "file": "dogfood/go_parity_posthoc.py",
+  "sha256": "9c6fdadd0790b5463c42ac5401e1d74e9db155f3baa9c08e50c5af19da381dc2",
+  "note": "written and edited after the scored run (PH4 added after PH1-PH3 were seen); not a gated row"
+ }
+}

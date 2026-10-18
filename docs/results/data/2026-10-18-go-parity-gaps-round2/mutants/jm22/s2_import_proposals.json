@@ -1,0 +1,245 @@
+[
+  {
+    "id": "inv-4a7e3a8e42",
+    "kind": "invariant",
+    "sentence": "Run's config_id is positive.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "run_config_id_positive",
+      "sentence": "Run's config_id is positive.",
+      "expr": "Run.config_id > 0"
+    },
+    "expr": "Run.config_id > 0",
+    "evidence": {
+      "rows": [
+        {
+          "id": 9,
+          "config_id": 1,
+          "user_id": 1,
+          "status": "queued"
+        },
+        {
+          "id": 9,
+          "config_id": 1,
+          "user_id": 2,
+          "status": "queued"
+        },
+        {
+          "id": 1,
+          "config_id": 50,
+          "user_id": 1,
+          "status": "cancelled"
+        },
+        {
+          "id": 5,
+          "config_id": 54,
+          "user_id": 1,
+          "status": "cancelled"
+        }
+      ],
+      "runs": [
+        "R-0014",
+        "R-0015",
+        "R-0037",
+        "R-0038"
+      ],
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/configs/1/runs",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/configs/1/runs",
+          "user": "alice",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 201
+        },
+        {
+          "method": "POST",
+          "path": "/runs/1/cancel",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/runs/5/cancel",
+          "user": "admin",
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null,
+          "status": 200
+        }
+      ],
+      "app_rows": 4
+    },
+    "support": 4,
+    "source": "observed: Run.config_id > 0 on the rows the app wrote",
+    "status": "pending"
+  },
+  {
+    "id": "inv-add26e703e",
+    "kind": "invariant",
+    "sentence": "No two User rows share name.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_user_per_name",
+      "sentence": "No two User rows share name.",
+      "expr": "count(User, by=\"name\") <= 1"
+    },
+    "expr": "count(User, by=\"name\") <= 1",
+    "evidence": {
+      "rows": [],
+      "runs": [],
+      "requests": [],
+      "app_rows": 0
+    },
+    "support": 0,
+    "source": "static: User.name unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "inv-993835ace9",
+    "kind": "invariant",
+    "sentence": "No two User rows share token.",
+    "spec_object": {
+      "type": "Invariant",
+      "name": "one_user_per_token",
+      "sentence": "No two User rows share token.",
+      "expr": "count(User, by=\"token\") <= 1"
+    },
+    "expr": "count(User, by=\"token\") <= 1",
+    "evidence": {
+      "rows": [],
+      "runs": [],
+      "requests": [],
+      "app_rows": 0
+    },
+    "support": 0,
+    "source": "static: User.token unique=True",
+    "status": "pending"
+  },
+  {
+    "id": "mac-6d4cc87db5",
+    "kind": "machine",
+    "sentence": "Run.status moves only queued -> cancelled, starting in queued.",
+    "spec_object": {
+      "type": "Machine",
+      "table": "Run",
+      "column": "status",
+      "edges": [
+        [
+          "queued",
+          "cancelled"
+        ]
+      ],
+      "initial": [
+        "queued"
+      ]
+    },
+    "expr": null,
+    "evidence": {
+      "transitions": [
+        {
+          "run": "R-0037",
+          "key": 1,
+          "request": {
+            "method": "POST",
+            "path": "/runs/1/cancel",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": null,
+            "form": null,
+            "status": 200
+          },
+          "from": "queued",
+          "to": "cancelled"
+        },
+        {
+          "run": "R-0038",
+          "key": 5,
+          "request": {
+            "method": "POST",
+            "path": "/runs/5/cancel",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": null,
+            "form": null,
+            "status": 200
+          },
+          "from": "queued",
+          "to": "cancelled"
+        },
+        {
+          "run": "R-0044",
+          "key": 1,
+          "request": {
+            "method": "POST",
+            "path": "/runs/1/cancel",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": null,
+            "form": null,
+            "status": 200
+          },
+          "from": "queued",
+          "to": "cancelled"
+        }
+      ],
+      "created": [
+        {
+          "run": "R-0014",
+          "key": 9,
+          "request": {
+            "method": "POST",
+            "path": "/configs/1/runs",
+            "user": "admin",
+            "token": null,
+            "params": null,
+            "json": null,
+            "form": null,
+            "status": 201
+          },
+          "state": "queued"
+        },
+        {
+          "run": "R-0015",
+          "key": 9,
+          "request": {
+            "method": "POST",
+            "path": "/configs/1/runs",
+            "user": "alice",
+            "token": null,
+            "params": null,
+            "json": null,
+            "form": null,
+            "status": 201
+          },
+          "state": "queued"
+        }
+      ],
+      "transitions_seen": 3,
+      "rows_created": 2
+    },
+    "support": 3,
+    "source": "observed: Run.status transitions between snapshots",
+    "status": "pending"
+  }
+]

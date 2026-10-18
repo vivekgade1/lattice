@@ -1,0 +1,23 @@
+{
+  "schema": "lattice.gotruth/1",
+  "fixture": "tests/gocheck/fixtures/goparity2",
+  "spike": "J node J2 (round 2); fixed before any round-2 library code",
+  "kind": "parse-only module; never built or run",
+  "e1_path_parse": {
+    "GET /a/{id}": {"id": "Int"},
+    "GET /b/{id}": {"id": "Str"},
+    "GET /c/{id}": {"id": "Str"},
+    "note": "only /a carries params[].parse == 'Int' in the policy extract; /b ignores the error with `_`, /c never parses"
+  },
+  "e2_omitempty": {
+    "GET /n1": {"ge": 0, "le": 10, "unread": 0},
+    "GET /n2": {"ge": null, "le": 10, "unread": 1},
+    "GET /n3": {"ge": 1, "le": 10, "unread": 0}
+  },
+  "e3_bind_status": {"statuses": [422], "validation_status": 422, "unclear": false},
+  "e6_library_middleware": {
+    "policy": {"tables": {"Note": "notes"}, "owners": {"Note": "owner_id"}},
+    "GET /notes": "GO801 on Note (Use(gin.Recovery(), gin.LoggerWithWriter(...)) is owner-neutral)",
+    "GET /guarded/notes": "no finding (ext.Guard() is an import nothing resolves: silence)"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 0.5107204539999657,
+    "build_goginapp_s": 0.772172248998686,
+    "s2_import_lazy_build_s": 10.00783875200068
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-PRIV",
+      "probe": "E5 on S2 and the goextract fixture (json:\"-\")",
+      "ran": true,
+      "predicted": {
+        "S2": {
+          "User": [
+            "password",
+            "token"
+          ]
+        },
+        "goextract": {
+          "User": [
+            "password_hash"
+          ]
+        },
+        "S3": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "observed": {
+        "S2": {},
+        "goextract": {}
+      },
+      "pass": false,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    },
+    {
+      "id": "PR-T2",
+      "probe": "T2 items of the S2 import (E5)",
+      "ran": true,
+      "predicted": "T2 User.password and T2 User.token present and verified",
+      "observed": {},
+      "pass": false,
+      "evidence": {}
+    }
+  ]
+}

@@ -455,6 +455,11 @@ func (g *gx) assemble(rec *routeRec, aliased map[*Func]int) {
 			out.Params = append(out.Params, xParam{Name: name, Annotation: "string", Type: strp("Str"), Source: "path",
 				Required: true, Choices: []string{}, File: out.File, Line: out.Line})
 		}
+		for i := range out.Params {
+			if at, ok := ci.parsed[out.Params[i].Name]; ok && out.Params[i].Source == "path" {
+				out.Params[i].Parse, out.Params[i].ParseAt = "Int", fmt.Sprintf("%s:%d", at.file, at.line) // opt-in
+			}
+		}
 		for _, k := range ci.porder {
 			out.Params = append(out.Params, *ci.params[k])
 		}

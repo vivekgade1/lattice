@@ -1,0 +1,56 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 2.2841321759988205,
+    "build_goginapp_s": 2.9047405370001798,
+    "s2_import_lazy_build_s": 9.77963788299894
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-LIBMW",
+      "probe": "layer A on goparity2: gin.Recovery()/Logger vs ext.Guard()",
+      "ran": true,
+      "predicted": [
+        "GO801|GET /notes|Note"
+      ],
+      "observed": [],
+      "pass": false,
+      "evidence": {}
+    },
+    {
+      "id": "PA3",
+      "probe": "edits on a scratch copy of S2 under go_spec_policy of its candidate spec",
+      "ran": true,
+      "predicted": {
+        "JM5": "GO801 on POST /runs/:rid/cancel Run (E6)",
+        "JM6": "0 new findings (C5b, stated in advance)",
+        "original_outside_baseline": 0
+      },
+      "observed": {
+        "original_total": 1,
+        "original_outside_baseline": 0,
+        "original_outside": [],
+        "new_findings": {
+          "JM5": [],
+          "JM6": []
+        }
+      },
+      "pass": false,
+      "evidence": {
+        "jm6_new_findings": 0,
+        "reading": "a mutant's finding is new when its (code, message) is not among the original's; JM6 is reported, not gated (C5b)"
+      }
+    }
+  ]
+}

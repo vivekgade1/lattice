@@ -144,6 +144,9 @@ func (c *checker) findRoutes() {
 			}
 			r.MwExprs = mws
 			for _, mw := range mws {
+				if ginNeutral(mw.e, mw.x) {
+					continue // owner-neutral library middleware: neither a guard nor unreadable
+				}
 				f := m.FuncRef(mw.e, mw.x)
 				if f == nil {
 					r.Unreadable = true
@@ -194,6 +197,27 @@ func (c *checker) findRoutes() {
 		seen[fn] = true
 		c.roots = append(c.roots, &Root{Fn: fn})
 	}
+}
+
+// Gin's own logging and recovery middleware: none of them authenticates, scopes or refuses by
+// owner, so a route behind one stays readable. Every other outside middleware is not.
+var ginNeutralFuncs = map[string]bool{
+	"Recovery": true, "RecoveryWithWriter": true, "CustomRecovery": true, "CustomRecoveryWithWriter": true,
+	"Logger": true, "LoggerWithWriter": true, "LoggerWithFormatter": true, "LoggerWithConfig": true,
+}
+
+// ginNeutral reports whether x calls one of them (gin.Recovery(), gin.Logger(), ...).
+func ginNeutral(e *Env, x ast.Expr) bool {
+	call, ok := unparen(x).(*ast.CallExpr)
+	if !ok {
+		return false
+	}
+	sel, ok := unparen(call.Fun).(*ast.SelectorExpr)
+	if !ok || !ginNeutralFuncs[sel.Sel.Name] {
+		return false
+	}
+	id, ok := sel.X.(*ast.Ident)
+	return ok && e.fn.File.Imports[id.Name] == ginPath
 }
 
 func joinPath(prefix, path string) string {

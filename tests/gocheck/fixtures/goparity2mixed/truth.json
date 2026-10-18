@@ -1,0 +1,12 @@
+{
+  "schema": "lattice.gotruth/1",
+  "fixture": "tests/gocheck/fixtures/goparity2mixed",
+  "spike": "J node J2 (round 2); fixed before any round-2 library code",
+  "kind": "parse-only module; never built or run",
+  "e3_bind_status": {
+    "statuses": [400, 422],
+    "validation_status": 400,
+    "unclear": true,
+    "note": "the bind refusals disagree: nothing changes (Gin's 400 stays) and one bind_status entry {unclear: true, statuses: [400, 422]} is recorded"
+  }
+}

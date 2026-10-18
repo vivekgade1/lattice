@@ -1,0 +1,46 @@
+{
+  "schema": "lattice.gopolicy/1",
+  "policy": {
+    "tables": {
+      "User": {
+        "sql": "users"
+      },
+      "Config": {
+        "sql": "configs"
+      },
+      "Run": {
+        "sql": "runs"
+      }
+    },
+    "users_table": "User",
+    "owners": {
+      "Run": "user_id"
+    },
+    "owner_via": {},
+    "private": {
+      "User": [
+        "password",
+        "token"
+      ]
+    },
+    "machines": {},
+    "admin_routes": [],
+    "open_routes": [],
+    "admin_role": "Admin",
+    "helper_depth": 3,
+    "rules": []
+  },
+  "baseline": [
+    "GO802|POST /login|User.token"
+  ],
+  "dropped_machines": [
+    {
+      "table": "Run",
+      "column": "status",
+      "values": [
+        "queued",
+        "cancelled"
+      ]
+    }
+  ]
+}

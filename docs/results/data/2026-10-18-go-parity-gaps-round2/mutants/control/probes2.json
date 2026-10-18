@@ -1,0 +1,664 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 4.069119126001169,
+    "build_goginapp_s": 5.16811356800099,
+    "s2_import_lazy_build_s": 11.722756284001662
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-PARSE",
+      "probe": "E1 on goparity2, and S2 (extract facts and the model)",
+      "ran": true,
+      "predicted": {
+        "goparity2": "a: Int; b, c: no key",
+        "S2": "cid, rid x2",
+        "S3": "qid, tid x4"
+      },
+      "observed": {
+        "goparity2": {
+          "GET /a/{id}": [
+            "Int"
+          ],
+          "GET /b/{id}": [
+            null
+          ],
+          "GET /c/{id}": [
+            null
+          ]
+        },
+        "S2_model_Int": [
+          [
+            "GET /runs/{rid}",
+            "rid"
+          ],
+          [
+            "POST /configs/{cid}/runs",
+            "cid"
+          ],
+          [
+            "POST /runs/{rid}/cancel",
+            "rid"
+          ]
+        ],
+        "S2_inferences": 3
+      },
+      "pass": true,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    },
+    {
+      "id": "P0-OMIT",
+      "probe": "E2 on goparity2 and S2 limit",
+      "ran": true,
+      "predicted": {
+        "goparity2": "ge 0/le 10; ge null/le 10 + 1 unread; ge 1/le 10",
+        "S2": "ge 0/le 50",
+        "S3": "ge 0/le 100"
+      },
+      "observed": {
+        "goparity2": {
+          "GET /n1": [
+            0,
+            10,
+            0
+          ],
+          "GET /n2": [
+            null,
+            10,
+            1
+          ],
+          "GET /n3": [
+            1,
+            10,
+            0
+          ]
+        },
+        "S2": [
+          0,
+          50
+        ]
+      },
+      "pass": true,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    },
+    {
+      "id": "P0-BIND",
+      "probe": "E3 on goparity2, goparity2mixed, S2",
+      "ran": true,
+      "predicted": {
+        "goparity2": 422,
+        "goparity2mixed": "unchanged + unclear entry",
+        "S2": 422,
+        "S3": 422
+      },
+      "observed": {
+        "goparity2": {
+          "validation_status": 422,
+          "bind_status": [
+            {
+              "rule": "bind_status",
+              "status": 422,
+              "evidence": [
+                "code:main.go:93",
+                "code:main.go:103",
+                "code:main.go:113"
+              ]
+            }
+          ]
+        },
+        "goparity2mixed": {
+          "validation_status": null,
+          "bind_status": [
+            {
+              "rule": "bind_status",
+              "unclear": true,
+              "statuses": [
+                400,
+                422
+              ]
+            }
+          ]
+        },
+        "S2": {
+          "validation_status": 422,
+          "bind_status": [
+            {
+              "rule": "bind_status",
+              "status": 422,
+              "evidence": [
+                "code:api/api.go:59",
+                "code:api/api.go:143"
+              ]
+            }
+          ]
+        }
+      },
+      "pass": true,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    },
+    {
+      "id": "P0-LIBMW",
+      "probe": "layer A on goparity2: gin.Recovery()/Logger vs ext.Guard()",
+      "ran": true,
+      "predicted": [
+        "GO801|GET /notes|Note"
+      ],
+      "observed": [
+        "GO801|GET /notes|Note"
+      ],
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "P0-CHOICES",
+      "probe": "E4 on S2: choices from status_facts",
+      "ran": true,
+      "predicted": {
+        "S2": {
+          "Run.status": [
+            "queued",
+            "cancelled"
+          ]
+        },
+        "S3": {
+          "Ticket.status": [
+            "open",
+            "closed"
+          ]
+        }
+      },
+      "observed": {
+        "Run.status": [
+          "queued",
+          "cancelled"
+        ]
+      },
+      "pass": true,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    },
+    {
+      "id": "P0-PRIV",
+      "probe": "E5 on S2 and the goextract fixture (json:\"-\")",
+      "ran": true,
+      "predicted": {
+        "S2": {
+          "User": [
+            "password",
+            "token"
+          ]
+        },
+        "goextract": {
+          "User": [
+            "password_hash"
+          ]
+        },
+        "S3": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "observed": {
+        "S2": {
+          "User": [
+            "password",
+            "token"
+          ]
+        },
+        "goextract": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "pass": true,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    },
+    {
+      "id": "PA4",
+      "probe": "static: derive_go_policy on tests/gocheck/fixtures/goextract",
+      "ran": true,
+      "predicted": {
+        "owners": {
+          "Item": "owner_id",
+          "Audit": "actor"
+        },
+        "private": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "observed": {
+        "owners": {
+          "Item": "owner_id",
+          "Audit": "actor"
+        },
+        "private": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PG805",
+      "probe": "GO805 gated: gated_note() and GO_GATED",
+      "ran": true,
+      "predicted": "byte-identical to base",
+      "observed": {
+        "identical": true,
+        "pairing_count_informational": {
+          "goginapp": {
+            "compare_uses": 3,
+            "with_a_raise_within_3_lines": 2
+          },
+          "goextract": {
+            "compare_uses": 3,
+            "with_a_raise_within_3_lines": 1
+          }
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "s3_pairing_count": "NOT RUN (gotickets not delivered)"
+      }
+    },
+    {
+      "id": "PB1-CLI",
+      "probe": "layer B on S1 through the CLI, with and without --rules",
+      "ran": true,
+      "predicted": {
+        "with --rules": "identical to PB1 (0 findings)",
+        "without": "6 F2 findings"
+      },
+      "observed": {
+        "with_rules_rc": 0,
+        "with_rules_findings": [],
+        "python_api": [],
+        "without_rules_rc": 1,
+        "without_rules_findings": 6
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "pass rule: the --rules run equals PB1 exactly; the run without the flag is reported only"
+      }
+    },
+    {
+      "id": "PI1",
+      "probe": "rules-first import of S2: framework, routes, contracts, tables",
+      "ran": true,
+      "predicted": {
+        "framework": "gin",
+        "routes": 7,
+        "contracts": 7,
+        "tables": 3,
+        "public": [
+          "GET /health",
+          "POST /login"
+        ],
+        "others": "Customer"
+      },
+      "observed": {
+        "framework": "gin",
+        "routes": 7,
+        "contracts": 7,
+        "tables": [
+          "configs",
+          "runs",
+          "users"
+        ],
+        "auth": {
+          "GET /health": "Public",
+          "POST /login": "Public",
+          "GET /configs": "Customer",
+          "POST /configs/{cid}/runs": "Customer",
+          "GET /runs": "Customer",
+          "GET /runs/{rid}": "Customer",
+          "POST /runs/{rid}/cancel": "Customer"
+        }
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PI3",
+      "probe": "rule items of the S2 import on the original (seed)",
+      "ran": true,
+      "predicted": {
+        "items": "38-44",
+        "verified_share": "0.62-0.82",
+        "refuted": "0-1",
+        "corrections": 0,
+        "gate": "share >= 0.60; every refuted item has a correction or a baseline entry with its reason; every unexercised item has a reason"
+      },
+      "observed": {
+        "items": 41,
+        "verdicts": {
+          "verified": 25,
+          "unexercised": 16
+        },
+        "verified_share": 0.6098,
+        "refuted": 0,
+        "refuted_without_correction": [],
+        "unexercised_without_reason": [],
+        "refuted_items": {}
+      },
+      "pass": true,
+      "evidence": {
+        "in_predicted_range": {
+          "items": true,
+          "share": false,
+          "refuted": true,
+          "corrections": true
+        },
+        "unexercised": {
+          "T1 Config": "no probe reached it",
+          "T4 Run.status": "no route writes Run.status through a parameter (every stored value is listed)",
+          "T5 User (id)": "no route creates User rows",
+          "T5 Config (id)": "no route creates Config rows",
+          "T5 Run (id)": "no route creates Run rows",
+          "R3 POST /login 422 bad body": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /login 401 Incorrect username or password": "unreachable-by-probe: no example triggers it",
+          "R2 POST /configs/{cid}/runs": "no probe reached it",
+          "R3 POST /configs/{cid}/runs 422 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /configs/{cid}/runs 409 already live": "unreachable-by-probe: no example triggers it",
+          "R3 POST /configs/{cid}/runs 500": "unreachable-by-probe: no example triggers it",
+          "R3 GET /runs 422 bad limit": "unreachable-by-probe: no example triggers it",
+          "R3 GET /runs/{rid} 422 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /runs/{rid}/cancel 422 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /runs/{rid}/cancel 409 already final": "unreachable-by-probe: no example triggers it",
+          "R3 POST /runs/{rid}/cancel 500": "unreachable-by-probe: no example triggers it"
+        }
+      }
+    },
+    {
+      "id": "PI5",
+      "probe": "proposals.json (mining)",
+      "ran": true,
+      "predicted": "2-6 proposals including the machine runs.status queued -> cancelled",
+      "observed": {
+        "count": 4,
+        "kinds": [
+          "invariant",
+          "machine"
+        ],
+        "machine_runs_status": true,
+        "all_pending": true,
+        "sentences": [
+          "Run's config_id is positive.",
+          "No two User rows share name.",
+          "No two User rows share token.",
+          "Run.status moves only queued -> cancelled, starting in queued."
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "in_predicted_range": true
+      }
+    },
+    {
+      "id": "PR-T2",
+      "probe": "T2 items of the S2 import (E5)",
+      "ran": true,
+      "predicted": "T2 User.password and T2 User.token present and verified",
+      "observed": {
+        "T2 User.password": "verified",
+        "T2 User.token": "verified"
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PA3",
+      "probe": "edits on a scratch copy of S2 under go_spec_policy of its candidate spec",
+      "ran": true,
+      "predicted": {
+        "JM5": "GO801 on POST /runs/:rid/cancel Run (E6)",
+        "JM6": "0 new findings (C5b, stated in advance)",
+        "original_outside_baseline": 0
+      },
+      "observed": {
+        "original_total": 1,
+        "original_outside_baseline": 0,
+        "original_outside": [],
+        "new_findings": {
+          "JM5": [
+            {
+              "code": "GO801",
+              "key": "GO801|POST /runs/:rid/cancel|Run"
+            }
+          ],
+          "JM6": []
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "jm6_new_findings": 0,
+        "reading": "a mutant's finding is new when its (code, message) is not among the original's; JM6 is reported, not gated (C5b)"
+      }
+    },
+    {
+      "id": "PA2",
+      "probe": "go_spec_policy with a spec that declares Run with no owner + the machine",
+      "ran": true,
+      "predicted": {
+        "run_owned": false,
+        "machine": [
+          "Run"
+        ],
+        "baseline": []
+      },
+      "observed": {
+        "run_owned": false,
+        "machine": [
+          "Run"
+        ],
+        "baseline": [],
+        "derived_baseline": [
+          "GO802|POST /login|User.token"
+        ]
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PW",
+      "probe": "snapshot of the fixtures around every run; docker/claude shims",
+      "ran": true,
+      "predicted": {
+        "changed": 0,
+        "shim_calls": 0
+      },
+      "observed": {
+        "changed": [],
+        "shim_calls": []
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PB-X",
+      "probe": "default gocheck extract byte-identical on the 7 module dirs and goapp",
+      "ran": true,
+      "predicted": "8 of 8 identical to 193f7f6",
+      "observed": {
+        "identical_to_base": 8,
+        "of": 8
+      },
+      "pass": true,
+      "evidence": {
+        "rows": [
+          {
+            "dir": "tests/gocheck/fixtures/goextract",
+            "base": "f74727094a25cc1d",
+            "now": "f74727094a25cc1d",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/gocheck/fixtures/app",
+            "base": "6c38c5d5f04ff8ab",
+            "now": "6c38c5d5f04ff8ab",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/gocheck/fixtures/partial",
+            "base": "4b67b2e431c23403",
+            "now": "4b67b2e431c23403",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/gocheck/fixtures/goextract_workflow",
+            "base": "ee3b906bd4e4e799",
+            "now": "ee3b906bd4e4e799",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/spec/fixtures/implementation/app",
+            "base": "e10d5447c6cce57d",
+            "now": "e10d5447c6cce57d",
+            "same_as_base": true
+          },
+          {
+            "dir": "lattice/studio/mock/appmap/app",
+            "base": "e10d5447c6cce57d",
+            "now": "e10d5447c6cce57d",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/spec/goapp",
+            "base": "3c7670fc6e211212",
+            "now": "3c7670fc6e211212",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/gocheck/fixtures/runs",
+            "base": "ce107e4cf1f00533",
+            "now": "ce107e4cf1f00533",
+            "same_as_base": true
+          }
+        ],
+        "reading": "goapp is the 7th of round 1's 7 dirs; the 8th, tests/gocheck/fixtures/runs, is the builder's addition (the prereg's '7 dirs and goapp' counts goapp twice)"
+      }
+    },
+    {
+      "id": "PB-G",
+      "probe": "Go outputs byte-identical to 193f7f6",
+      "ran": true,
+      "predicted": "all identical",
+      "observed": {
+        "workflows --static": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "inventory": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "literal inventory: files added by the new fixtures only": {
+          "added": [
+            "goparity2/go.mod",
+            "goparity2/main.go",
+            "goparity2mixed/go.mod",
+            "goparity2mixed/main.go"
+          ],
+          "removed": [],
+          "same": true
+        },
+        "layer A findings and notes (implementation/app + its spec)": {
+          "same": true
+        },
+        "layer A (empty policy) on every existing gocheck fixture": {
+          "same": true,
+          "per_fixture": {
+            "app": true,
+            "bounds": true,
+            "boundsets": true,
+            "clean": true,
+            "clean2": true,
+            "goextract": true,
+            "goextract_workflow": true,
+            "machine": true,
+            "owner": true,
+            "partial": true,
+            "private": true,
+            "runs": true,
+            "txflag": true
+          }
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "inventory on a pristine copy of the 193f7f6 fixtures (see the docstring); test_process_runtime.py's reports are PB-T's"
+      }
+    },
+    {
+      "id": "PB-P",
+      "probe": "Python outputs byte-identical to base",
+      "ran": true,
+      "predicted": "all identical",
+      "observed": {
+        "control: the base twice, after the normaliser, is identical": true,
+        "control differing files": [],
+        "rules import (multivendor) identical to base after the normaliser": true,
+        "differing files": [],
+        "report.json has no inferences key": true,
+        "no go_policy.json for a Python import": true,
+        "pycheck derive_policy(multivendor) identical": true
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the pre-registration's `spec_policy on the pycheck fixtures` names a function that does not exist at this commit; derive_policy is its nearest (layer A's Python policy)"
+      }
+    },
+    {
+      "id": "PB-P2",
+      "probe": "a Python import with a decoy studio.toml [app] app",
+      "ran": true,
+      "predicted": "report.json app_factory is the Python make_app, as without the decoy",
+      "observed": {
+        "plain": {
+          "rc": 0,
+          "app_factory": "bench.import_repos.multivendor:make_app",
+          "stderr": ""
+        },
+        "decoy": {
+          "rc": 0,
+          "app_factory": "bench.import_repos.multivendor:make_app",
+          "stderr": ""
+        },
+        "base_with_decoy": {
+          "rc": 0,
+          "app_factory": "bench.import_repos.multivendor:make_app",
+          "stderr": ""
+        }
+      },
+      "pass": true,
+      "evidence": {}
+    }
+  ]
+}

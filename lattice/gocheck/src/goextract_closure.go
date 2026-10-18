@@ -23,6 +23,7 @@ type xRaise struct {
 	Kind     string  `json:"kind"`
 	In       string  `json:"in"`
 	Sentinel string  `json:"sentinel,omitempty"`
+	Bind     bool    `json:"bind,omitempty"` // opt-in: the refusal of a failed c.ShouldBind*
 }
 
 type xParam struct {
@@ -39,6 +40,8 @@ type xParam struct {
 	Choices    []string `json:"choices"`
 	File       string   `json:"file"`
 	Line       int      `json:"line"`
+	Parse      string   `json:"parse,omitempty"` // opt-in: "Int" when the handler parses the path value
+	ParseAt    string   `json:"parse_at,omitempty"`
 }
 
 type xOwner struct {
@@ -105,6 +108,7 @@ type closureInfo struct {
 	jsonTok  string
 	encoding string
 	admin    bool
+	parsed   map[string]entryPos // path parameters parsed to an integer and refused 4xx, where (opt-in)
 }
 
 type bcryptUse struct {
@@ -203,7 +207,87 @@ func (g *gx) analyze(root *Func) *closureInfo {
 		}
 	}
 	walk(root, binds{}, map[string]bool{}, map[string]bool{}, nil, 0)
+	if g.policy {
+		g.policyFacts(ci)
+	}
 	return ci
+}
+
+// policyFacts (opt-in): `n, err := strconv.Atoi(c.Param("p"))` whose error branch refuses with a
+// constant 4xx, and the refusals of a failed c.ShouldBind*. Any other shape adds no key.
+func (g *gx) policyFacts(ci *closureInfo) {
+	ci.parsed = map[string]entryPos{}
+	for _, b := range ci.visits[0].bodies {
+		e := g.m.EnvOf(b)
+		ast.Inspect(b.Body, func(n ast.Node) bool {
+			switch s := n.(type) {
+			case *ast.FuncLit:
+				return false
+			case *ast.IfStmt:
+				if a, ok := s.Init.(*ast.AssignStmt); ok {
+					g.branchFact(ci, e, b, a, s)
+				}
+			case *ast.BlockStmt:
+				for i := 0; i+1 < len(s.List); i++ {
+					a, ok := s.List[i].(*ast.AssignStmt)
+					if ifs, ok2 := s.List[i+1].(*ast.IfStmt); ok && ok2 && ifs.Init == nil {
+						g.branchFact(ci, e, b, a, ifs)
+					}
+				}
+			}
+			return true
+		})
+	}
+}
+
+func (g *gx) branchFact(ci *closureInfo, e *Env, b *Func, as *ast.AssignStmt, ifs *ast.IfStmt) {
+	last, _ := as.Lhs[len(as.Lhs)-1].(*ast.Ident)
+	if len(as.Rhs) != 1 || last == nil || last.Name == "_" || g.src(ifs.Cond) != last.Name+" != nil" {
+		return
+	}
+	call, _ := unparen(as.Rhs[0]).(*ast.CallExpr)
+	if call == nil {
+		return
+	}
+	sel, ok := unparen(call.Fun).(*ast.SelectorExpr)
+	if !ok {
+		return
+	}
+	var in []int
+	all4xx := true
+	for i, r := range ci.raises {
+		if r.File == b.File.Rel && r.Line >= g.line(ifs.Body.Pos()) && r.Line <= g.line(ifs.Body.End()) {
+			in = append(in, i)
+			all4xx = all4xx && r.Status != nil && *r.Status >= 400 && *r.Status < 500
+		}
+	}
+	if bindMethods[sel.Sel.Name] && g.m.isCtx(e, sel.X) {
+		for _, i := range in {
+			ci.raises[i].Bind = true
+		}
+	} else if path, _ := g.m.importOf(e, sel.X); path == "strconv" && parseFns[sel.Sel.Name] && len(in) > 0 && all4xx && len(as.Lhs) == 2 {
+		if name := g.paramName(e, call.Args[0]); name != "" {
+			ci.parsed[name] = entryPos{b.File.Rel, g.line(call.Pos())}
+		}
+	}
+}
+
+var parseFns = map[string]bool{"Atoi": true, "ParseInt": true, "ParseUint": true}
+
+// paramName answers p when x is c.Param("p"), or a local assigned once from it.
+func (g *gx) paramName(e *Env, x ast.Expr) string {
+	if id, ok := unparen(x).(*ast.Ident); ok {
+		if de := defEnv(e, id.Name); de != nil && len(de.values[id.Name]) == 1 {
+			e, x = de, de.values[id.Name][0]
+		}
+	}
+	if call, ok := unparen(x).(*ast.CallExpr); ok && len(call.Args) == 1 {
+		if sel, ok := unparen(call.Fun).(*ast.SelectorExpr); ok && sel.Sel.Name == "Param" && g.m.isCtx(e, sel.X) {
+			name, _ := g.m.constString(e, call.Args[0])
+			return name
+		}
+	}
+	return ""
 }
 
 func (g *gx) isAccessorMethod(fn *Func) bool {
@@ -1195,9 +1279,12 @@ func (g *gx) bindStruct(ci *closureInfo, ti *TypeInfo, source string) {
 				File: f.file.Rel, Line: g.fieldLine(f.owner, f.name)}
 			numeric := ty != nil && (*ty == "Int" || *ty == "Float")
 			rules := st.Get("binding") + "," + st.Get("validate")
+			omit := false
 			for _, r := range strings.Split(rules, ",") {
 				r = strings.TrimSpace(r)
 				switch {
+				case r == "omitempty":
+					omit = true
 				case r == "required":
 					p.Required = true
 				case strings.HasPrefix(r, "oneof="):
@@ -1232,6 +1319,21 @@ func (g *gx) bindStruct(ci *closureInfo, ti *TypeInfo, source string) {
 						n2 := n
 						p.MaxLength = &n2
 					}
+				}
+			}
+			low := &p.MinLength // omitempty: the zero value passes, so L == 1 is exact (0), L > 1 is no interval
+			if numeric {
+				low = &p.Ge
+			}
+			if omit && *low != nil && **low > 0 {
+				if **low > 1 {
+					ci.addUnread(f.file.Rel, g.fieldLine(f.owner, f.name), "field", fmt.Sprintf("omitempty: the valid set {zero} ∪ [%d, ...] is not an interval", **low))
+				}
+				if **low == 1 && numeric {
+					zero := 0
+					*low = &zero
+				} else {
+					*low = nil
 				}
 			}
 			md.Fields = append(md.Fields, p)

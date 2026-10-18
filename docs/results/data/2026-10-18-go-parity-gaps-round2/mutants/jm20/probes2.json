@@ -1,0 +1,61 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 4.944750128997839,
+    "build_goginapp_s": 3.810985995998635
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-PARSE",
+      "probe": "E1 on goparity2, and S2 (extract facts and the model)",
+      "ran": true,
+      "predicted": {
+        "goparity2": "a: Int; b, c: no key",
+        "S2": "cid, rid x2",
+        "S3": "qid, tid x4"
+      },
+      "observed": {
+        "goparity2": {
+          "GET /a/{id}": [
+            "Int"
+          ],
+          "GET /b/{id}": [
+            "Int"
+          ],
+          "GET /c/{id}": [
+            null
+          ]
+        },
+        "S2_model_Int": [
+          [
+            "GET /runs/{rid}",
+            "rid"
+          ],
+          [
+            "POST /configs/{cid}/runs",
+            "cid"
+          ],
+          [
+            "POST /runs/{rid}/cancel",
+            "rid"
+          ]
+        ],
+        "S2_inferences": 3
+      },
+      "pass": false,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    }
+  ]
+}

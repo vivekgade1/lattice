@@ -1,0 +1,75 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 2.1018657269996766,
+    "build_goginapp_s": 2.5461909459991148,
+    "s2_import_lazy_build_s": 8.99989923099929
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "PI1",
+      "probe": "rules-first import of S2: framework, routes, contracts, tables",
+      "ran": true,
+      "predicted": {
+        "framework": "gin",
+        "routes": 7,
+        "contracts": 7,
+        "tables": 3,
+        "public": [
+          "GET /health",
+          "POST /login"
+        ],
+        "others": "Customer"
+      },
+      "observed": {
+        "framework": "gin",
+        "routes": 7,
+        "contracts": 7,
+        "tables": [
+          "configs",
+          "runs",
+          "users"
+        ],
+        "auth": {
+          "GET /health": "Public",
+          "POST /login": "Public",
+          "GET /configs": "Customer",
+          "POST /configs/{cid}/runs": "Customer",
+          "GET /runs": "Customer",
+          "GET /runs/{rid}": "Customer",
+          "POST /runs/{rid}/cancel": "Customer"
+        }
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PW",
+      "probe": "snapshot of the fixtures around every run; docker/claude shims",
+      "ran": true,
+      "predicted": {
+        "changed": 0,
+        "shim_calls": 0
+      },
+      "observed": {
+        "changed": [
+          "tests/spec/goginapp/candidate_spec.py"
+        ],
+        "shim_calls": []
+      },
+      "pass": false,
+      "evidence": {}
+    }
+  ]
+}

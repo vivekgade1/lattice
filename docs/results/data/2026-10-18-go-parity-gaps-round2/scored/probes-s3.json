@@ -1,0 +1,553 @@
+{
+  "runner": "go_parity_s3",
+  "fixture": "gotickets",
+  "harness": "tests.spec.gotickets_harness",
+  "stand_in": false,
+  "base_ref": "193f7f6",
+  "freeze": {
+    "amendment3": {
+      "freeze_file": "/home/user/wt/j2/docs/results/data/2026-10-18-go-parity-gaps-round2/freeze.sha256",
+      "entries": 21,
+      "runner_listed": true,
+      "mismatches": 0
+    },
+    "s3runner": {
+      "file": "/home/user/wt/j2/docs/results/data/2026-10-18-go-parity-gaps-round2/s3runner.sha256",
+      "entries": 3,
+      "mismatches": 0,
+      "running_script_listed": true
+    }
+  },
+  "binary_env": "LATTICE_GOTICKETS_BIN",
+  "timings": {
+    "build_fixture_s": 3.0378435569982685,
+    "s3_import_lazy_build_s": 23.854013999000017,
+    "s3_import_prebuilt_s": 14.256157419000374,
+    "pi7_import_walls": 14.236
+  },
+  "fx_error": null,
+  "fixtures_changed": [],
+  "shim_calls": [],
+  "results": [
+    {
+      "id": "PI1-3",
+      "probe": "rules-first import of S3: framework, routes, contracts, tables",
+      "ran": true,
+      "predicted": {
+        "framework": "gin",
+        "routes": 11,
+        "contracts": 11,
+        "tables": 4,
+        "public": [
+          "GET /health",
+          "POST /login",
+          "GET /queues"
+        ],
+        "others": "Customer (8)"
+      },
+      "observed": {
+        "framework": "gin",
+        "routes": 11,
+        "contracts": 11,
+        "tables": [
+          "handoffs",
+          "queues",
+          "tickets",
+          "users"
+        ],
+        "auth": {
+          "GET /health": "Public",
+          "POST /login": "Public",
+          "GET /queues": "Public",
+          "GET /me": "Customer",
+          "POST /queues/{qid}/tickets": "Customer",
+          "GET /tickets": "Customer",
+          "GET /tickets/{tid}": "Customer",
+          "POST /tickets/{tid}/close": "Customer",
+          "POST /tickets/{tid}/reopen": "Customer",
+          "POST /tickets/{tid}/handoffs": "Customer",
+          "GET /handoffs": "Customer"
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "exact against T-S3 section 4 (the authenticated role is `Customer`)"
+      }
+    },
+    {
+      "id": "PI2-3",
+      "probe": "owners and inferences[] of the S3 import",
+      "ran": true,
+      "predicted": {
+        "owner": "Ticket: reporter_id, 7 evidence lines (1 assign, 6 compare)",
+        "Handoff": "unclear, naming from_user_id and to_user_id",
+        "Queue": "shared",
+        "User": "not owned",
+        "inferences": {
+          "owner_uses": "2 (1 unclear)",
+          "path_parse": 5,
+          "bind_status": "1 (422)",
+          "status_facts": 1,
+          "json_dash": 1,
+          "total": 10
+        }
+      },
+      "observed": {
+        "inferences": 10,
+        "by_rule": {
+          "owner_uses": 2,
+          "path_parse": 5,
+          "bind_status": 1,
+          "status_facts": 1,
+          "json_dash": 1
+        },
+        "ticket_evidence": 7,
+        "how": [
+          "assign",
+          "compare",
+          "compare",
+          "compare",
+          "compare",
+          "compare",
+          "compare"
+        ],
+        "handoff_unclear_both_columns": true,
+        "owners": {
+          "User": null,
+          "Queue": null,
+          "Ticket": "reporter_id",
+          "Handoff": null
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the profile owner of Handoff is reported (observed.owners), not gated: section 5.4 states it only as `unclear` in the inference entry"
+      }
+    },
+    {
+      "id": "PI3-3",
+      "probe": "rule items of the S3 import on the original (seed)",
+      "ran": true,
+      "predicted": {
+        "items": "50-80",
+        "verified_share": "0.60-0.85",
+        "refuted": "0-3",
+        "gate": "share >= 0.60; every refuted item has a correction or a baseline entry with its reason; every unexercised item has a reason"
+      },
+      "observed": {
+        "items": 63,
+        "verdicts": {
+          "verified": 35,
+          "unexercised": 27,
+          "unclear": 1
+        },
+        "verified_share": 0.5556,
+        "refuted": 0,
+        "refuted_without_correction": [],
+        "unexercised_without_reason": [],
+        "refuted_items": {}
+      },
+      "pass": false,
+      "evidence": {
+        "in_predicted_range": {
+          "items": true,
+          "share": false,
+          "refuted": true
+        },
+        "unexercised": {
+          "T1 Queue": "no probe reached it",
+          "T4 Ticket.status": "no route writes Ticket.status through a parameter (every stored value is listed)",
+          "T5 User (id)": "no route creates User rows",
+          "T5 Queue (id)": "no route creates Queue rows",
+          "T5 Ticket (id)": "no route can repeat the key: no create route of Ticket takes (id) or stamps it from the caller",
+          "T5 Handoff (id)": "no route creates Handoff rows",
+          "R3 POST /login 422 invalid body": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /login 401 Incorrect username or password": "unreachable-by-probe: no example triggers it",
+          "R3 GET /me 401 Not authenticated": "unreachable-by-probe: no example triggers it",
+          "R2 POST /queues/{qid}/tickets": "no probe confirmed or contradicted it: the create answered 422",
+          "R3 POST /queues/{qid}/tickets 400 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /queues/{qid}/tickets 422 invalid body": "unreachable-by-probe: no example triggers it",
+          "R3 POST /queues/{qid}/tickets 409 already open": "unreachable-by-probe: no example triggers it",
+          "R3 POST /queues/{qid}/tickets 500": "unreachable-by-probe: no example triggers it",
+          "R3 GET /tickets 422 invalid query": "unreachable-by-probe: no example triggers it",
+          "R3 GET /tickets/{tid} 400 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/close 400 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/close 409 not open": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/close 500": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/reopen 400 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/reopen 409 not closed": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/reopen 500": "unreachable-by-probe: no example triggers it",
+          "R2 POST /tickets/{tid}/handoffs": "no probe confirmed or contradicted it: the create answered 422",
+          "R3 POST /tickets/{tid}/handoffs 400 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/handoffs 422 invalid body": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/handoffs 404 No such user": "no probe reached it",
+          "R3 POST /tickets/{tid}/handoffs 500": "unreachable-by-probe: no example triggers it"
+        },
+        "corrections": 0
+      }
+    },
+    {
+      "id": "PI4-3",
+      "probe": "(the probe raised)",
+      "ran": true,
+      "predicted": null,
+      "observed": "ModuleNotFoundError: No module named 'gotickets_harness'",
+      "pass": false,
+      "evidence": {
+        "traceback": "(fn())\n                   ~~^^\n  File \"/home/user/wt/j2/dogfood/go_parity_s3.py\", line 1020, in <lambda>\n    add(pid, lambda fn=fn: fn(ctx, imp))\n                           ~~^^^^^^^^^^\n  File \"/home/user/wt/j2/dogfood/go_parity_s3.py\", line 774, in probe_pi4\n    seed = P1.verdict_map(r_on_spec(ctx, cand.SPEC, \"seed\"))\n                          ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/user/wt/j2/dogfood/go_parity_s3.py\", line 265, in r_on_spec\n    m = machinery(ctx)\n  File \"/home/user/wt/j2/dogfood/go_parity_s3.py\", line 236, in machinery\n    factory, name = go_rules.harness_factory(root, package)  # type: ignore[misc]\n                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/home/user/wt/j2/lattice/importer/go_rules.py\", line 76, in harness_factory\n    factory = _harness_attr(module_dir, spec)\n  File \"/home/user/wt/j2/lattice/importer/frontends/go_gin.py\", line 248, in _harness_attr\n    return getattr(importlib.import_module(module), attr)\n                   ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1404, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1369, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1333, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'gotickets_harness'\n"
+      }
+    },
+    {
+      "id": "PI5-3",
+      "probe": "proposals.json (mining) of the S3 import",
+      "ran": true,
+      "predicted": "2-8 proposals including the machine tickets.status open -> closed and closed -> open",
+      "observed": {
+        "count": 7,
+        "kinds": [
+          "invariant",
+          "machine"
+        ],
+        "machine_tickets_status": {
+          "machines": 1,
+          "open_to_closed": true,
+          "closed_to_open": true,
+          "edges": [
+            [
+              "closed",
+              "open"
+            ],
+            [
+              "open",
+              "closed"
+            ]
+          ]
+        },
+        "all_pending": true,
+        "in_predicted_range": true,
+        "sentences": [
+          "No two User rows share name.",
+          "Ticket's queue_id is positive.",
+          "Ticket's queue_id is always set.",
+          "Ticket's reporter_id is always set.",
+          "Ticket's status is always set.",
+          "Ticket's title is always set.",
+          "Ticket.status moves only closed -> open; open -> closed."
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "pass: `open -> closed` is among the edges of a Machine proposal on Ticket.status and every proposal is pending; `closed -> open` and the 2-8 range are reported"
+      }
+    },
+    {
+      "id": "PI6-3",
+      "probe": "owner review of the S3 import: python -m lattice.importer review <dir> list",
+      "ran": true,
+      "predicted": "exit 0; ids equal the report's not-verified ids after the correction map",
+      "observed": {
+        "exit": 0,
+        "listed": 28,
+        "expected": 28,
+        "listed_not_expected": [],
+        "expected_not_listed": [],
+        "corrections": 0,
+        "stderr": ""
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "each corrections[] item is mapped to its `corrected` id; a collision with an existing id gets review's ` #k` suffix (k from 2)"
+      }
+    },
+    {
+      "id": "PR3-3",
+      "probe": "(the probe raised)",
+      "ran": true,
+      "predicted": null,
+      "observed": "ModuleNotFoundError: No module named 'gotickets_harness'",
+      "pass": false,
+      "evidence": {
+        "traceback": "(fn())\n                   ~~^^\n  File \"/home/user/wt/j2/dogfood/go_parity_s3.py\", line 1020, in <lambda>\n    add(pid, lambda fn=fn: fn(ctx, imp))\n                           ~~^^^^^^^^^^\n  File \"/home/user/wt/j2/dogfood/go_parity_s3.py\", line 823, in probe_pr3\n    mine = P1.verdict_map(r_on_spec(ctx, cand.SPEC, \"seed\"))\n                          ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/user/wt/j2/dogfood/go_parity_s3.py\", line 265, in r_on_spec\n    m = machinery(ctx)\n  File \"/home/user/wt/j2/dogfood/go_parity_s3.py\", line 236, in machinery\n    factory, name = go_rules.harness_factory(root, package)  # type: ignore[misc]\n                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/home/user/wt/j2/lattice/importer/go_rules.py\", line 76, in harness_factory\n    factory = _harness_attr(module_dir, spec)\n  File \"/home/user/wt/j2/lattice/importer/frontends/go_gin.py\", line 248, in _harness_attr\n    return getattr(importlib.import_module(module), attr)\n                   ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1404, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1369, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1333, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'gotickets_harness'\n"
+      }
+    },
+    {
+      "id": "PA3-3",
+      "probe": "JM31 and JM32 on scratch copies of S3 under go_spec_policy of its candidate spec",
+      "ran": true,
+      "predicted": {
+        "JM31": "GO801 on POST /tickets/:tid/close Ticket",
+        "JM32": "GO802 on GET /me User.password_hash",
+        "original_outside_baseline": 0
+      },
+      "observed": {
+        "original_total": 0,
+        "original_outside_baseline": 0,
+        "original_outside": [],
+        "new_findings": {
+          "JM31": [],
+          "JM32": [
+            {
+              "code": "GO802",
+              "key": "GO802|GET /me|User.password_hash",
+              "message": "GET /me (Me.func1) answers User.password_hash, a private column: the response serializes `u`, a `User` whose field `PasswordHash` has no `json:\"-\"` tag at line "
+            }
+          ]
+        },
+        "expected_found": {
+          "JM31": false,
+          "JM32": true
+        }
+      },
+      "pass": false,
+      "evidence": {
+        "reading": "a mutant's finding is new when its (code, message) is not among the original's; the expected (code, key) must be among them; further new findings are reported, not gated (the PA3 precedent)"
+      }
+    },
+    {
+      "id": "PI7-3",
+      "probe": "the S3 import 10x into separate scratch dirs",
+      "ran": true,
+      "predicted": "byte-identical after the timing normaliser",
+      "observed": {
+        "identical": 10,
+        "of": 10,
+        "differing_files": [],
+        "walls_s": [
+          13.1,
+          15.54,
+          13.88,
+          13.95,
+          14.69,
+          13.08,
+          14.71,
+          13.64,
+          14.69,
+          15.08
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the J1 normaliser: report.json cost.wall_s and rules.timing replaced; report.md left out"
+      }
+    },
+    {
+      "id": "PA1-3",
+      "probe": "derive_go_policy on S3",
+      "ran": true,
+      "predicted": {
+        "tables": 4,
+        "users_table": "User",
+        "owners": {
+          "Ticket": "reporter_id"
+        },
+        "private": {
+          "User": [
+            "password_hash"
+          ]
+        },
+        "admin_routes": [],
+        "machines": {},
+        "baseline": []
+      },
+      "observed": {
+        "tables": 4,
+        "users_table": "User",
+        "owners": {
+          "Ticket": "reporter_id"
+        },
+        "private": {
+          "User": [
+            "password_hash"
+          ]
+        },
+        "admin_routes": [],
+        "machines": {},
+        "baseline": []
+      },
+      "pass": true,
+      "evidence": {
+        "baseline_equals_separate_run": true
+      }
+    },
+    {
+      "id": "P0-PARSE:S3",
+      "probe": "E1 on S3 (extract facts and the model)",
+      "ran": true,
+      "predicted": {
+        "S3": "qid, tid x4 (5 params)"
+      },
+      "observed": {
+        "extract_Int": [
+          [
+            "GET /tickets/{tid}",
+            "tid"
+          ],
+          [
+            "POST /queues/{qid}/tickets",
+            "qid"
+          ],
+          [
+            "POST /tickets/{tid}/close",
+            "tid"
+          ],
+          [
+            "POST /tickets/{tid}/handoffs",
+            "tid"
+          ],
+          [
+            "POST /tickets/{tid}/reopen",
+            "tid"
+          ]
+        ],
+        "model_Int": [
+          [
+            "GET /tickets/{tid}",
+            "tid"
+          ],
+          [
+            "POST /queues/{qid}/tickets",
+            "qid"
+          ],
+          [
+            "POST /tickets/{tid}/close",
+            "tid"
+          ],
+          [
+            "POST /tickets/{tid}/handoffs",
+            "tid"
+          ],
+          [
+            "POST /tickets/{tid}/reopen",
+            "tid"
+          ]
+        ],
+        "inferences": 5
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "P0-OMIT:S3",
+      "probe": "E2 on S3 page_size",
+      "ran": true,
+      "predicted": {
+        "S3": "ge 0/le 100"
+      },
+      "observed": {
+        "page_size": [
+          0,
+          100
+        ],
+        "unread": []
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "P0-BIND:S3",
+      "probe": "E3 on S3",
+      "ran": true,
+      "predicted": {
+        "S3": 422
+      },
+      "observed": {
+        "validation_status": 422,
+        "bind_status": [
+          {
+            "rule": "bind_status",
+            "status": 422,
+            "evidence": [
+              "code:api/api.go:75",
+              "code:api/api.go:154",
+              "code:api/api.go:184",
+              "code:api/api.go:288"
+            ]
+          }
+        ]
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "P0-CHOICES:S3",
+      "probe": "E4 on S3: choices from status_facts",
+      "ran": true,
+      "predicted": {
+        "S3": {
+          "Ticket.status": [
+            "open",
+            "closed"
+          ]
+        }
+      },
+      "observed": {
+        "Ticket.status": [
+          "open",
+          "closed"
+        ]
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "P0-PRIV:S3",
+      "probe": "E5 on S3 (json:\"-\")",
+      "ran": true,
+      "predicted": {
+        "S3": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "observed": {
+        "User": [
+          "password_hash"
+        ]
+      },
+      "pass": true,
+      "evidence": {}
+    },
+    {
+      "id": "PG805:S3",
+      "probe": "GO805 gated text byte-identical; pairing count on S3 (informational)",
+      "ran": true,
+      "predicted": {
+        "gated": "byte-identical",
+        "S3": "reported"
+      },
+      "observed": {
+        "identical": true,
+        "pairing_count_informational": {
+          "S3": {
+            "compare_uses": 8,
+            "with_a_raise_within_3_lines": 5
+          }
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the S3 sub-claim is that the count is reported; the identity check repeats the frozen row's"
+      }
+    },
+    {
+      "id": "PX:S3",
+      "probe": "wall time of the S3 import",
+      "ran": true,
+      "predicted": {
+        "s3_import": "8-40 s (binary prebuilt; the cold build is measured separately)",
+        "gate": "<= 180 s"
+      },
+      "observed": {
+        "s3_import_prebuilt_s": 14.26,
+        "s3_import_pi7_mean_s": 14.24,
+        "s3_import_with_go_build_s": 23.85,
+        "build_fixture_s": 3.04
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the gate is the prebuilt import of the first run (r0); the cold-build import and the PI7-3 mean are reported"
+      }
+    }
+  ]
+}

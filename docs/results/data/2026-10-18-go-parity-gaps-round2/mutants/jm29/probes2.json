@@ -1,0 +1,68 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 2.6489958880010818,
+    "build_goginapp_s": 3.037128436000785
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "P0-PRIV",
+      "probe": "E5 on S2 and the goextract fixture (json:\"-\")",
+      "ran": true,
+      "predicted": {
+        "S2": {
+          "User": [
+            "password",
+            "token"
+          ]
+        },
+        "goextract": {
+          "User": [
+            "password_hash"
+          ]
+        },
+        "S3": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "observed": {
+        "S2": {
+          "User": [
+            "name",
+            "password",
+            "token"
+          ],
+          "Config": [
+            "name"
+          ],
+          "Run": [
+            "config_id",
+            "status",
+            "user_id"
+          ]
+        },
+        "goextract": {
+          "User": [
+            "password_hash"
+          ]
+        }
+      },
+      "pass": false,
+      "evidence": {},
+      "s3_part": "NOT RUN (gotickets not delivered)"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "arms": [
+    "0",
+    "S1",
+    "S2",
+    "X"
+  ],
+  "base_ref": "193f7f6",
+  "freeze": {
+    "checked": false
+  },
+  "timings": {
+    "build_goapp_s": 1.121213649999845,
+    "build_goginapp_s": 0.7611529540008632
+  },
+  "s1_error": null,
+  "s2_error": null,
+  "results": [
+    {
+      "id": "PB-P2",
+      "probe": "a Python import with a decoy studio.toml [app] app",
+      "ran": true,
+      "predicted": "report.json app_factory is the Python make_app, as without the decoy",
+      "observed": {
+        "plain": {
+          "rc": 0,
+          "app_factory": "bench.import_repos.multivendor:make_app",
+          "stderr": ""
+        },
+        "decoy": {
+          "rc": 1,
+          "app_factory": null,
+          "stderr": "decoy\n"
+        },
+        "base_with_decoy": {
+          "rc": 0,
+          "app_factory": "bench.import_repos.multivendor:make_app",
+          "stderr": ""
+        }
+      },
+      "pass": false,
+      "evidence": {}
+    }
+  ]
+}
