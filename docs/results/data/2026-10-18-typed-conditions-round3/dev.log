@@ -1,0 +1,32 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+<lambda>: 0.0 s
+<lambda>: 0.4 s
+pr1: 4.0 s
+pr2: 183.2 s
+<lambda>: 41.9 s
+<lambda>: 46.7 s
+<lambda>: 0.5 s
+<lambda>: 104.6 s
+<lambda>: 0.2 s
+PRC: FAIL
+PC3: PASS
+PR1[r1]: FAIL
+PR1[r2]: FAIL
+PR2: FAIL
+PB: PASS
+PB-d7ba7de: PASS
+PW[r1]: PASS
+PW[r2]: PASS
+PW[r3]: PASS
+PA[r1]: PASS
+PG3[r1]: PASS
+PG3[r2]: PASS
+PG3[r3]: PASS
+PG4[r1]: PASS
+PX-generate[r1]: PASS
+PG4[r2]: PASS
+PX-generate[r2]: PASS
+PG4[r3]: PASS
+PX-generate[r3]: PASS
+PH: PASS
+wall: REPORTED
