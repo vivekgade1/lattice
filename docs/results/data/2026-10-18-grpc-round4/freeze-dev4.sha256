@@ -1,0 +1,5 @@
+2562a0bef7b5d627383ae7e74a3b0e435087d7bdee70942670b27377a292aa68  tests/grpc/fixtures/wiring4/truth.json
+04ae77250787a7f6c8dda45ee43689950ebde42d1c4ec752f3896649610be575  tests/grpc/fixtures/authwire4/truth.json
+5d4b0fa686235dda2a87831a80493a357301ad35829273a15709906cd3e303d8  tests/grpc/fixtures/codes4/truth.json
+bd06dc85c150c46a91c8b27f2584b3e0872cf1086b6af90dc49e1dcfa39cf956  tests/grpc/fixtures/tables4/truth.json
+72f0096862e9a051e90c879b36a28c73ba0d8b8c2f33c67653607b2e2e70f5de  tests/grpc/fixtures/login4/truth.json

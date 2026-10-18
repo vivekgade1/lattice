@@ -1,0 +1,81 @@
+{
+  "schema": "lattice.grpc.authwire4-truth/1",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-4 extractor code ran. Per case: the auth of each rpc by reading the Go (Public only where a literal allowlist names (or, with strings.HasPrefix evidence, prefix-matches) the method; Member where a literal gate refuses; unclear where a gate that may refuse cannot be read), and the kinds the interceptors classify as, in the order they are given to grpc.NewServer.",
+  "cases": {
+    "mval": {
+      "kinds": [
+        "auth_literal"
+      ],
+      "auth": {
+        "Get": "Public",
+        "Put": "Member"
+      },
+      "why": "the interceptor is the method value k.Unary"
+    },
+    "optfield": {
+      "kinds": [
+        "other",
+        "auth_literal"
+      ],
+      "auth": {
+        "Get": "Public",
+        "Put": "Member"
+      },
+      "why": "interceptors reach grpc.ChainUnaryInterceptor through withUnary's closure appending to config.unary"
+    },
+    "consts": {
+      "kinds": [
+        "auth_literal"
+      ],
+      "auth": {
+        "Get": "Public",
+        "Put": "Member"
+      },
+      "why": "the allowlist is the generated Desk_Get_FullMethodName plus the two standard health method constants"
+    },
+    "builder": {
+      "kinds": [
+        "auth_literal"
+      ],
+      "auth": {
+        "Get": "Public",
+        "List": "Public",
+        "Put": "Member"
+      },
+      "why": "newPolicy(const).Also(literal): exact entries in a map the gate looks up"
+    },
+    "prefix": {
+      "kinds": [
+        "auth_literal"
+      ],
+      "auth": {
+        "Open/Get": "Public",
+        "Open/Put": "Public",
+        "Shut/Get": "Public",
+        "Shut/Put": "Member"
+      },
+      "why": "AndService stores \"/\"+name+\"/\" and allows() matches it with strings.HasPrefix"
+    },
+    "exactprefix": {
+      "kinds": [
+        "auth_literal"
+      ],
+      "auth": {
+        "Get": "Member",
+        "Put": "Member"
+      },
+      "why": "AllowPrefix stores \"/aw4.v1.Desk/\" but allows() compares with ==: no method equals it"
+    },
+    "unresolved": {
+      "kinds": [
+        "auth_not_literal"
+      ],
+      "auth": {
+        "Get": "unclear",
+        "Put": "unclear"
+      },
+      "why": "newPolicy(const, os.Getenv(...)): one entry is read from the environment"
+    }
+  }
+}

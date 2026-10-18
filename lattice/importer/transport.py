@@ -348,8 +348,8 @@ class AuthDriver:
         method: str,
         credentials: Mapping[str, tuple[str, str]],
         *,
-        username_field: str = "name",
-        password_field: str = "password",
+        username_field: str | None = None,
+        password_field: str | None = None,
         token_field: str = "token",
         scheme: str = "bearer",
     ) -> AuthDriver:

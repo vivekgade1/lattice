@@ -1,0 +1,2911 @@
+{
+ "schema": "lattice.grpc.scorer-cases/4",
+ "note": "cases 1-30 are round 3's S5-S7 cases, unchanged; the rest are S8, S9 and S10",
+ "cases": [
+  {
+   "name": "S5 all agree",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.A/X": "implemented",
+     "a.v1.A/Y": "unimplemented",
+     "a.v1.B/Z": "not_registered",
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "a.v1.A/X": {
+      "code": "OK",
+      "answered": true
+     },
+     "a.v1.A/Y": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "a.v1.B/Z": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "coverage": 1.0,
+    "agreement": 1.0,
+    "denominator": 4
+   }
+  },
+  {
+   "name": "S5 implemented rpc answered UNIMPLEMENTED",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.A/X": "implemented",
+     "a.v1.A/Y": "unimplemented",
+     "a.v1.B/Z": "not_registered",
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "a.v1.A/X": {
+      "code": "UNIMPLEMENTED"
+     },
+     "a.v1.A/Y": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "a.v1.B/Z": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "agreement",
+    "by_class": {
+     "absent": "1/1",
+     "implemented": "0/1",
+     "not_registered": "1/1",
+     "unimplemented": "1/1"
+    }
+   }
+  },
+  {
+   "name": "S5 unimplemented rpc answered OK",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.A/X": "implemented",
+     "a.v1.A/Y": "unimplemented",
+     "a.v1.B/Z": "not_registered",
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "a.v1.A/X": {
+      "code": "OK",
+      "answered": true
+     },
+     "a.v1.A/Y": {
+      "code": "OK"
+     },
+     "a.v1.B/Z": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "agreement"
+   }
+  },
+  {
+   "name": "S5 not_registered rpc answered NOT_FOUND",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.A/X": "implemented",
+     "a.v1.A/Y": "unimplemented",
+     "a.v1.B/Z": "not_registered",
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "a.v1.A/X": {
+      "code": "OK",
+      "answered": true
+     },
+     "a.v1.A/Y": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "a.v1.B/Z": {
+      "code": "NOT_FOUND"
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "agreement"
+   }
+  },
+  {
+   "name": "S5 (absent) answered OK",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.A/X": "implemented",
+     "a.v1.A/Y": "unimplemented",
+     "a.v1.B/Z": "not_registered",
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "a.v1.A/X": {
+      "code": "OK",
+      "answered": true
+     },
+     "a.v1.A/Y": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "a.v1.B/Z": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "(absent)": {
+      "code": "OK"
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "agreement"
+   }
+  },
+  {
+   "name": "S5 login_failed (no code) on an implemented rpc is wrong",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.A/X": "implemented",
+     "a.v1.A/Y": "unimplemented",
+     "a.v1.B/Z": "not_registered",
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "a.v1.A/X": {
+      "code": null,
+      "reason": "login_failed"
+     },
+     "a.v1.A/Y": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "a.v1.B/Z": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "agreement"
+   }
+  },
+  {
+   "name": "S5 implemented rpc answered by an error code other than UNIMPLEMENTED agrees",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.A/X": "implemented",
+     "a.v1.A/Y": "unimplemented",
+     "a.v1.B/Z": "not_registered",
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "a.v1.A/X": {
+      "code": "INVALID_ARGUMENT"
+     },
+     "a.v1.A/Y": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "a.v1.B/Z": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   },
+   "expect": {
+    "pass": true
+   }
+  },
+  {
+   "name": "S5 coverage below bound (one of four missing)",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.A/X": "implemented",
+     "a.v1.A/Y": "unimplemented",
+     "a.v1.B/Z": "not_registered",
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "a.v1.A/X": {
+      "code": "OK",
+      "answered": true
+     },
+     "a.v1.A/Y": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "coverage_below_bound",
+    "coverage": 0.75,
+    "missing": [
+     "a.v1.B/Z"
+    ]
+   }
+  },
+  {
+   "name": "S5 a supplementary call fails the row",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.A/X": "implemented",
+     "a.v1.A/Y": "unimplemented",
+     "a.v1.B/Z": "not_registered",
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "a.v1.A/X": {
+      "code": "OK",
+      "answered": true
+     },
+     "a.v1.A/Y": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "a.v1.B/Z": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    },
+    "supplementary_calls": 1
+   },
+   "expect": {
+    "pass": false,
+    "reason": "supplementary_calls"
+   }
+  },
+  {
+   "name": "S5 empty denominator is vacuous",
+   "fn": "rec",
+   "input": {
+    "truth": {},
+    "rec": {
+     "(absent)": {
+      "code": "UNIMPLEMENTED"
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "vacuous"
+   }
+  },
+  {
+   "name": "S5 only a streaming rpc in the truth is vacuous",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "(absent)": {
+      "code": "UNIMPLEMENTED"
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "vacuous"
+   }
+  },
+  {
+   "name": "S5 a streaming rpc in the output is not required and not scored",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "a.v1.A/X": "implemented",
+     "a.v1.A/Y": "unimplemented",
+     "a.v1.B/Z": "not_registered",
+     "a.v1.B/S": "streaming"
+    },
+    "rec": {
+     "a.v1.A/X": {
+      "code": "OK",
+      "answered": true
+     },
+     "a.v1.A/Y": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "a.v1.B/Z": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "a.v1.B/S": {
+      "code": null,
+      "answered": null,
+      "reason": "streaming",
+      "route": false
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "denominator": 4
+   }
+  },
+  {
+   "name": "S5 coverage exactly at the bound (19 of 20) passes",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "p.v1.S/M0": "implemented",
+     "p.v1.S/M1": "implemented",
+     "p.v1.S/M2": "implemented",
+     "p.v1.S/M3": "implemented",
+     "p.v1.S/M4": "implemented",
+     "p.v1.S/M5": "implemented",
+     "p.v1.S/M6": "implemented",
+     "p.v1.S/M7": "implemented",
+     "p.v1.S/M8": "implemented",
+     "p.v1.S/M9": "implemented",
+     "p.v1.S/M10": "implemented",
+     "p.v1.S/M11": "implemented",
+     "p.v1.S/M12": "implemented",
+     "p.v1.S/M13": "implemented",
+     "p.v1.S/M14": "implemented",
+     "p.v1.S/M15": "implemented",
+     "p.v1.S/M16": "implemented",
+     "p.v1.S/M17": "implemented",
+     "p.v1.S/M18": "implemented"
+    },
+    "rec": {
+     "p.v1.S/M1": {
+      "code": "OK"
+     },
+     "p.v1.S/M2": {
+      "code": "OK"
+     },
+     "p.v1.S/M3": {
+      "code": "OK"
+     },
+     "p.v1.S/M4": {
+      "code": "OK"
+     },
+     "p.v1.S/M5": {
+      "code": "OK"
+     },
+     "p.v1.S/M6": {
+      "code": "OK"
+     },
+     "p.v1.S/M7": {
+      "code": "OK"
+     },
+     "p.v1.S/M8": {
+      "code": "OK"
+     },
+     "p.v1.S/M9": {
+      "code": "OK"
+     },
+     "p.v1.S/M10": {
+      "code": "OK"
+     },
+     "p.v1.S/M11": {
+      "code": "OK"
+     },
+     "p.v1.S/M12": {
+      "code": "OK"
+     },
+     "p.v1.S/M13": {
+      "code": "OK"
+     },
+     "p.v1.S/M14": {
+      "code": "OK"
+     },
+     "p.v1.S/M15": {
+      "code": "OK"
+     },
+     "p.v1.S/M16": {
+      "code": "OK"
+     },
+     "p.v1.S/M17": {
+      "code": "OK"
+     },
+     "p.v1.S/M18": {
+      "code": "OK"
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED"
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "coverage": 0.95
+   }
+  },
+  {
+   "name": "S5 coverage just under the bound (18 of 20) fails",
+   "fn": "rec",
+   "input": {
+    "truth": {
+     "p.v1.S/M0": "implemented",
+     "p.v1.S/M1": "implemented",
+     "p.v1.S/M2": "implemented",
+     "p.v1.S/M3": "implemented",
+     "p.v1.S/M4": "implemented",
+     "p.v1.S/M5": "implemented",
+     "p.v1.S/M6": "implemented",
+     "p.v1.S/M7": "implemented",
+     "p.v1.S/M8": "implemented",
+     "p.v1.S/M9": "implemented",
+     "p.v1.S/M10": "implemented",
+     "p.v1.S/M11": "implemented",
+     "p.v1.S/M12": "implemented",
+     "p.v1.S/M13": "implemented",
+     "p.v1.S/M14": "implemented",
+     "p.v1.S/M15": "implemented",
+     "p.v1.S/M16": "implemented",
+     "p.v1.S/M17": "implemented",
+     "p.v1.S/M18": "implemented"
+    },
+    "rec": {
+     "p.v1.S/M2": {
+      "code": "OK"
+     },
+     "p.v1.S/M3": {
+      "code": "OK"
+     },
+     "p.v1.S/M4": {
+      "code": "OK"
+     },
+     "p.v1.S/M5": {
+      "code": "OK"
+     },
+     "p.v1.S/M6": {
+      "code": "OK"
+     },
+     "p.v1.S/M7": {
+      "code": "OK"
+     },
+     "p.v1.S/M8": {
+      "code": "OK"
+     },
+     "p.v1.S/M9": {
+      "code": "OK"
+     },
+     "p.v1.S/M10": {
+      "code": "OK"
+     },
+     "p.v1.S/M11": {
+      "code": "OK"
+     },
+     "p.v1.S/M12": {
+      "code": "OK"
+     },
+     "p.v1.S/M13": {
+      "code": "OK"
+     },
+     "p.v1.S/M14": {
+      "code": "OK"
+     },
+     "p.v1.S/M15": {
+      "code": "OK"
+     },
+     "p.v1.S/M16": {
+      "code": "OK"
+     },
+     "p.v1.S/M17": {
+      "code": "OK"
+     },
+     "p.v1.S/M18": {
+      "code": "OK"
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED"
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "coverage_below_bound",
+    "coverage": 0.9
+   }
+  },
+  {
+   "name": "S6 an effectful rpc answered in the output is exercised",
+   "fn": "order",
+   "input": {
+    "effects": {
+     "a.v1.A/SignOut": "revokes_session",
+     "a.v1.A/Secret": "none"
+    },
+    "rec": {
+     "a.v1.A/SignOut": {
+      "code": "OK"
+     },
+     "a.v1.A/Secret": {
+      "code": "OK"
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "status": "exercised"
+   }
+  },
+  {
+   "name": "S6 an effectful rpc missing from the output is order_vacuous",
+   "fn": "order",
+   "input": {
+    "effects": {
+     "a.v1.A/SignOut": "revokes_session",
+     "a.v1.A/Secret": "none"
+    },
+    "rec": {
+     "a.v1.A/Secret": {
+      "code": "OK"
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "status": "order_vacuous",
+    "not_in_both_passes": [
+     "a.v1.A/SignOut"
+    ]
+   }
+  },
+  {
+   "name": "S6 an effectful rpc that could not log in is order_vacuous",
+   "fn": "order",
+   "input": {
+    "effects": {
+     "a.v1.A/SignOut": "revokes_session",
+     "a.v1.A/Secret": "none"
+    },
+    "rec": {
+     "a.v1.A/SignOut": {
+      "code": null,
+      "reason": "login_failed",
+      "isolated": true
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "order_vacuous"
+   }
+  },
+  {
+   "name": "S6 an effectful rpc that was resolved isolated is reported, not failed",
+   "fn": "order",
+   "input": {
+    "effects": {
+     "a.v1.A/SignOut": "revokes_session",
+     "a.v1.A/Secret": "none"
+    },
+    "rec": {
+     "a.v1.A/SignOut": {
+      "code": "OK",
+      "isolated": true
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "isolated": [
+     "a.v1.A/SignOut"
+    ]
+   }
+  },
+  {
+   "name": "S6 no effectful rpc in the truth is not_exercised (a disclosed pass)",
+   "fn": "order",
+   "input": {
+    "effects": {
+     "a.v1.A/Secret": "none"
+    },
+    "rec": {}
+   },
+   "expect": {
+    "pass": true,
+    "status": "not_exercised"
+   }
+  },
+  {
+   "name": "S7 all labels right",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "a.v1.A/P": {
+      "state": "implemented",
+      "auth": "Public"
+     },
+     "a.v1.A/Q": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/R": {
+      "state": "unimplemented",
+      "auth": "Member"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": "Member"
+     }
+    },
+    "got": {
+     "a.v1.A/P": "Public",
+     "a.v1.A/Q": "Member",
+     "a.v1.A/R": "Member"
+    }
+   },
+   "expect": {
+    "pass": true,
+    "denominator": 3,
+    "unclear": 0
+   }
+  },
+  {
+   "name": "S7 Public where the truth is Member is wrong",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "a.v1.A/P": {
+      "state": "implemented",
+      "auth": "Public"
+     },
+     "a.v1.A/Q": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/R": {
+      "state": "unimplemented",
+      "auth": "Member"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": "Member"
+     }
+    },
+    "got": {
+     "a.v1.A/P": "Public",
+     "a.v1.A/Q": "Public",
+     "a.v1.A/R": "Member"
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "wrong",
+    "wrong": [
+     [
+      "a.v1.A/Q",
+      "Public",
+      "Member"
+     ]
+    ]
+   }
+  },
+  {
+   "name": "S7 Member where the truth is Public is wrong",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "a.v1.A/P": {
+      "state": "implemented",
+      "auth": "Public"
+     },
+     "a.v1.A/Q": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/R": {
+      "state": "unimplemented",
+      "auth": "Member"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": "Member"
+     }
+    },
+    "got": {
+     "a.v1.A/P": "Member",
+     "a.v1.A/Q": "Member",
+     "a.v1.A/R": "Member"
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "wrong"
+   }
+  },
+  {
+   "name": "S7 a rpc the extractor did not find counts as unclear (1 of 3 passes)",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "a.v1.A/P": {
+      "state": "implemented",
+      "auth": "Public"
+     },
+     "a.v1.A/Q": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/R": {
+      "state": "unimplemented",
+      "auth": "Member"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": "Member"
+     }
+    },
+    "got": {
+     "a.v1.A/P": "Public",
+     "a.v1.A/Q": "Member"
+    }
+   },
+   "expect": {
+    "pass": true,
+    "unclear": 1
+   }
+  },
+  {
+   "name": "S7 two unclear of three exceeds the cap",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "a.v1.A/P": {
+      "state": "implemented",
+      "auth": "Public"
+     },
+     "a.v1.A/Q": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/R": {
+      "state": "unimplemented",
+      "auth": "Member"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": "Member"
+     }
+    },
+    "got": {
+     "a.v1.A/P": "Public",
+     "a.v1.A/Q": "unclear"
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "unclear_above_cap",
+    "unclear": 2
+   }
+  },
+  {
+   "name": "S7 unclear at exactly 0.50 passes",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "p.v1.S/M0": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M1": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M2": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M3": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M4": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M5": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M6": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M7": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M8": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M9": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M10": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M11": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M12": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M13": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M14": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M15": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M16": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M17": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M18": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M19": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M20": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M21": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M22": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M23": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M24": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M25": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M26": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M27": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M28": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M29": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M30": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M31": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M32": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M33": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M34": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M35": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M36": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M37": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M38": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M39": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M40": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M41": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M42": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M43": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M44": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M45": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M46": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M47": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M48": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M49": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M50": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M51": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M52": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M53": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M54": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M55": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M56": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M57": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M58": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M59": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M60": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M61": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M62": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M63": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M64": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M65": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M66": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M67": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M68": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M69": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M70": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M71": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M72": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M73": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M74": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M75": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M76": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M77": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M78": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M79": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M80": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M81": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M82": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M83": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M84": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M85": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M86": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M87": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M88": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M89": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M90": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M91": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M92": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M93": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M94": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M95": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M96": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M97": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M98": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M99": {
+      "state": "implemented",
+      "auth": "Member"
+     }
+    },
+    "got": {
+     "p.v1.S/M0": "Member",
+     "p.v1.S/M1": "Member",
+     "p.v1.S/M2": "Member",
+     "p.v1.S/M3": "Member",
+     "p.v1.S/M4": "Member",
+     "p.v1.S/M5": "Member",
+     "p.v1.S/M6": "Member",
+     "p.v1.S/M7": "Member",
+     "p.v1.S/M8": "Member",
+     "p.v1.S/M9": "Member",
+     "p.v1.S/M10": "Member",
+     "p.v1.S/M11": "Member",
+     "p.v1.S/M12": "Member",
+     "p.v1.S/M13": "Member",
+     "p.v1.S/M14": "Member",
+     "p.v1.S/M15": "Member",
+     "p.v1.S/M16": "Member",
+     "p.v1.S/M17": "Member",
+     "p.v1.S/M18": "Member",
+     "p.v1.S/M19": "Member",
+     "p.v1.S/M20": "Member",
+     "p.v1.S/M21": "Member",
+     "p.v1.S/M22": "Member",
+     "p.v1.S/M23": "Member",
+     "p.v1.S/M24": "Member",
+     "p.v1.S/M25": "Member",
+     "p.v1.S/M26": "Member",
+     "p.v1.S/M27": "Member",
+     "p.v1.S/M28": "Member",
+     "p.v1.S/M29": "Member",
+     "p.v1.S/M30": "Member",
+     "p.v1.S/M31": "Member",
+     "p.v1.S/M32": "Member",
+     "p.v1.S/M33": "Member",
+     "p.v1.S/M34": "Member",
+     "p.v1.S/M35": "Member",
+     "p.v1.S/M36": "Member",
+     "p.v1.S/M37": "Member",
+     "p.v1.S/M38": "Member",
+     "p.v1.S/M39": "Member",
+     "p.v1.S/M40": "Member",
+     "p.v1.S/M41": "Member",
+     "p.v1.S/M42": "Member",
+     "p.v1.S/M43": "Member",
+     "p.v1.S/M44": "Member",
+     "p.v1.S/M45": "Member",
+     "p.v1.S/M46": "Member",
+     "p.v1.S/M47": "Member",
+     "p.v1.S/M48": "Member",
+     "p.v1.S/M49": "Member",
+     "p.v1.S/M50": "unclear",
+     "p.v1.S/M51": "unclear",
+     "p.v1.S/M52": "unclear",
+     "p.v1.S/M53": "unclear",
+     "p.v1.S/M54": "unclear",
+     "p.v1.S/M55": "unclear",
+     "p.v1.S/M56": "unclear",
+     "p.v1.S/M57": "unclear",
+     "p.v1.S/M58": "unclear",
+     "p.v1.S/M59": "unclear",
+     "p.v1.S/M60": "unclear",
+     "p.v1.S/M61": "unclear",
+     "p.v1.S/M62": "unclear",
+     "p.v1.S/M63": "unclear",
+     "p.v1.S/M64": "unclear",
+     "p.v1.S/M65": "unclear",
+     "p.v1.S/M66": "unclear",
+     "p.v1.S/M67": "unclear",
+     "p.v1.S/M68": "unclear",
+     "p.v1.S/M69": "unclear",
+     "p.v1.S/M70": "unclear",
+     "p.v1.S/M71": "unclear",
+     "p.v1.S/M72": "unclear",
+     "p.v1.S/M73": "unclear",
+     "p.v1.S/M74": "unclear",
+     "p.v1.S/M75": "unclear",
+     "p.v1.S/M76": "unclear",
+     "p.v1.S/M77": "unclear",
+     "p.v1.S/M78": "unclear",
+     "p.v1.S/M79": "unclear",
+     "p.v1.S/M80": "unclear",
+     "p.v1.S/M81": "unclear",
+     "p.v1.S/M82": "unclear",
+     "p.v1.S/M83": "unclear",
+     "p.v1.S/M84": "unclear",
+     "p.v1.S/M85": "unclear",
+     "p.v1.S/M86": "unclear",
+     "p.v1.S/M87": "unclear",
+     "p.v1.S/M88": "unclear",
+     "p.v1.S/M89": "unclear",
+     "p.v1.S/M90": "unclear",
+     "p.v1.S/M91": "unclear",
+     "p.v1.S/M92": "unclear",
+     "p.v1.S/M93": "unclear",
+     "p.v1.S/M94": "unclear",
+     "p.v1.S/M95": "unclear",
+     "p.v1.S/M96": "unclear",
+     "p.v1.S/M97": "unclear",
+     "p.v1.S/M98": "unclear",
+     "p.v1.S/M99": "unclear"
+    }
+   },
+   "expect": {
+    "pass": true,
+    "unclear_share": 0.5
+   }
+  },
+  {
+   "name": "S7 unclear at 0.51 fails",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "p.v1.S/M0": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M1": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M2": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M3": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M4": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M5": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M6": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M7": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M8": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M9": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M10": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M11": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M12": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M13": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M14": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M15": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M16": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M17": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M18": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M19": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M20": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M21": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M22": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M23": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M24": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M25": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M26": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M27": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M28": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M29": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M30": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M31": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M32": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M33": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M34": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M35": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M36": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M37": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M38": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M39": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M40": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M41": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M42": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M43": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M44": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M45": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M46": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M47": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M48": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M49": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M50": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M51": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M52": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M53": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M54": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M55": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M56": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M57": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M58": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M59": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M60": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M61": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M62": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M63": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M64": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M65": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M66": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M67": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M68": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M69": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M70": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M71": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M72": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M73": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M74": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M75": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M76": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M77": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M78": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M79": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M80": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M81": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M82": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M83": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M84": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M85": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M86": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M87": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M88": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M89": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M90": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M91": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M92": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M93": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M94": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M95": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M96": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M97": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M98": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "p.v1.S/M99": {
+      "state": "implemented",
+      "auth": "Member"
+     }
+    },
+    "got": {
+     "p.v1.S/M0": "Member",
+     "p.v1.S/M1": "Member",
+     "p.v1.S/M2": "Member",
+     "p.v1.S/M3": "Member",
+     "p.v1.S/M4": "Member",
+     "p.v1.S/M5": "Member",
+     "p.v1.S/M6": "Member",
+     "p.v1.S/M7": "Member",
+     "p.v1.S/M8": "Member",
+     "p.v1.S/M9": "Member",
+     "p.v1.S/M10": "Member",
+     "p.v1.S/M11": "Member",
+     "p.v1.S/M12": "Member",
+     "p.v1.S/M13": "Member",
+     "p.v1.S/M14": "Member",
+     "p.v1.S/M15": "Member",
+     "p.v1.S/M16": "Member",
+     "p.v1.S/M17": "Member",
+     "p.v1.S/M18": "Member",
+     "p.v1.S/M19": "Member",
+     "p.v1.S/M20": "Member",
+     "p.v1.S/M21": "Member",
+     "p.v1.S/M22": "Member",
+     "p.v1.S/M23": "Member",
+     "p.v1.S/M24": "Member",
+     "p.v1.S/M25": "Member",
+     "p.v1.S/M26": "Member",
+     "p.v1.S/M27": "Member",
+     "p.v1.S/M28": "Member",
+     "p.v1.S/M29": "Member",
+     "p.v1.S/M30": "Member",
+     "p.v1.S/M31": "Member",
+     "p.v1.S/M32": "Member",
+     "p.v1.S/M33": "Member",
+     "p.v1.S/M34": "Member",
+     "p.v1.S/M35": "Member",
+     "p.v1.S/M36": "Member",
+     "p.v1.S/M37": "Member",
+     "p.v1.S/M38": "Member",
+     "p.v1.S/M39": "Member",
+     "p.v1.S/M40": "Member",
+     "p.v1.S/M41": "Member",
+     "p.v1.S/M42": "Member",
+     "p.v1.S/M43": "Member",
+     "p.v1.S/M44": "Member",
+     "p.v1.S/M45": "Member",
+     "p.v1.S/M46": "Member",
+     "p.v1.S/M47": "Member",
+     "p.v1.S/M48": "Member",
+     "p.v1.S/M49": "unclear",
+     "p.v1.S/M50": "unclear",
+     "p.v1.S/M51": "unclear",
+     "p.v1.S/M52": "unclear",
+     "p.v1.S/M53": "unclear",
+     "p.v1.S/M54": "unclear",
+     "p.v1.S/M55": "unclear",
+     "p.v1.S/M56": "unclear",
+     "p.v1.S/M57": "unclear",
+     "p.v1.S/M58": "unclear",
+     "p.v1.S/M59": "unclear",
+     "p.v1.S/M60": "unclear",
+     "p.v1.S/M61": "unclear",
+     "p.v1.S/M62": "unclear",
+     "p.v1.S/M63": "unclear",
+     "p.v1.S/M64": "unclear",
+     "p.v1.S/M65": "unclear",
+     "p.v1.S/M66": "unclear",
+     "p.v1.S/M67": "unclear",
+     "p.v1.S/M68": "unclear",
+     "p.v1.S/M69": "unclear",
+     "p.v1.S/M70": "unclear",
+     "p.v1.S/M71": "unclear",
+     "p.v1.S/M72": "unclear",
+     "p.v1.S/M73": "unclear",
+     "p.v1.S/M74": "unclear",
+     "p.v1.S/M75": "unclear",
+     "p.v1.S/M76": "unclear",
+     "p.v1.S/M77": "unclear",
+     "p.v1.S/M78": "unclear",
+     "p.v1.S/M79": "unclear",
+     "p.v1.S/M80": "unclear",
+     "p.v1.S/M81": "unclear",
+     "p.v1.S/M82": "unclear",
+     "p.v1.S/M83": "unclear",
+     "p.v1.S/M84": "unclear",
+     "p.v1.S/M85": "unclear",
+     "p.v1.S/M86": "unclear",
+     "p.v1.S/M87": "unclear",
+     "p.v1.S/M88": "unclear",
+     "p.v1.S/M89": "unclear",
+     "p.v1.S/M90": "unclear",
+     "p.v1.S/M91": "unclear",
+     "p.v1.S/M92": "unclear",
+     "p.v1.S/M93": "unclear",
+     "p.v1.S/M94": "unclear",
+     "p.v1.S/M95": "unclear",
+     "p.v1.S/M96": "unclear",
+     "p.v1.S/M97": "unclear",
+     "p.v1.S/M98": "unclear",
+     "p.v1.S/M99": "unclear"
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "unclear_above_cap",
+    "unclear_share": 0.51
+   }
+  },
+  {
+   "name": "S7 everything unclear is not a pass",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "a.v1.A/P": {
+      "state": "implemented",
+      "auth": "Public"
+     },
+     "a.v1.A/Q": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/R": {
+      "state": "unimplemented",
+      "auth": "Member"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": "Member"
+     }
+    },
+    "got": {}
+   },
+   "expect": {
+    "pass": false,
+    "reason": "unclear_above_cap",
+    "unclear_share": 1.0
+   }
+  },
+  {
+   "name": "S7 empty denominator (nothing implemented or unimplemented) fails",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": "Member"
+     }
+    },
+    "got": {}
+   },
+   "expect": {
+    "pass": false,
+    "reason": "vacuous"
+   }
+  },
+  {
+   "name": "S7 a Public label in any case-spelling the truth uses is Public",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "a.v1.A/P": {
+      "state": "implemented",
+      "auth": "anonymous"
+     }
+    },
+    "got": {
+     "a.v1.A/P": "Public"
+    }
+   },
+   "expect": {
+    "pass": true
+   }
+  },
+  {
+   "name": "S7 a wrong label beats the unclear cap",
+   "fn": "auth",
+   "input": {
+    "truth": {
+     "a.v1.A/P": {
+      "state": "implemented",
+      "auth": "Public"
+     },
+     "a.v1.A/Q": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/R": {
+      "state": "unimplemented",
+      "auth": "Member"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": "Member"
+     }
+    },
+    "got": {
+     "a.v1.A/P": "Member",
+     "a.v1.A/Q": "unclear",
+     "a.v1.A/R": "unclear"
+    }
+   },
+   "expect": {
+    "pass": false,
+    "reason": "wrong"
+   }
+  },
+  {
+   "name": "S8 every state and auth agrees",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "count": 0
+   }
+  },
+  {
+   "name": "S8 not_registered where the truth is implemented",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "not_registered",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "count": 1,
+    "reason": "confident_wrong"
+   }
+  },
+  {
+   "name": "S8 unimplemented where the truth is implemented",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "unimplemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "count": 1
+   }
+  },
+  {
+   "name": "S8 implemented where the truth is not_registered",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "implemented",
+      "auth": "Member"
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "count": 1
+   }
+  },
+  {
+   "name": "S8 implemented where the truth is unimplemented",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "count": 1
+   }
+  },
+  {
+   "name": "S8 Public where the truth is Member",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Public"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "count": 1
+   }
+  },
+  {
+   "name": "S8 Member where the truth is Public",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Member"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "count": 1
+   }
+  },
+  {
+   "name": "S8 unread is never counted",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "unread",
+      "auth": null
+     },
+     "a.v1.A/Y": {
+      "state": "unread",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "unread",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "count": 0
+   }
+  },
+  {
+   "name": "S8 unclear is never counted",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "unclear"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "unclear"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "count": 0
+   }
+  },
+  {
+   "name": "S8 an rpc the extractor does not list is not counted",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "count": 0
+   }
+  },
+  {
+   "name": "S8 two confident errors count two",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "not_registered",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Member"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "count": 2
+   }
+  },
+  {
+   "name": "S8 truth labels like none and open read as Public",
+   "fn": "safe",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "Public"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "auth": "Member"
+     },
+     "a.v1.A/Y": {
+      "state": "unimplemented",
+      "auth": "open"
+     },
+     "a.v1.B/Z": {
+      "state": "not_registered",
+      "auth": ""
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "count": 0
+   }
+  },
+  {
+   "name": "S9 every code found",
+   "fn": "codes",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": [
+       "NOT_FOUND",
+       "OK"
+      ]
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "codes": [
+       "ABORTED"
+      ]
+     },
+     "a.v1.B/Z": {
+      "state": "unimplemented",
+      "codes": [
+       "UNIMPLEMENTED"
+      ]
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": [
+       "NOT_FOUND"
+      ]
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "codes": [
+       "ABORTED"
+      ]
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth": 2
+   }
+  },
+  {
+   "name": "S9 an UNKNOWN the truth does not list is an extra and is named",
+   "fn": "codes",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": [
+       "NOT_FOUND",
+       "OK"
+      ]
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "codes": [
+       "ABORTED"
+      ]
+     },
+     "a.v1.B/Z": {
+      "state": "unimplemented",
+      "codes": [
+       "UNIMPLEMENTED"
+      ]
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": [
+       "NOT_FOUND",
+       "UNKNOWN"
+      ]
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "codes": [
+       "ABORTED"
+      ]
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "precision": 0.6667,
+    "unknown_extras": [
+     "a.v1.A/X:UNKNOWN"
+    ],
+    "reason": "precision_below_bound"
+   }
+  },
+  {
+   "name": "S9 an unread code is neither a match nor an extra",
+   "fn": "codes",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": [
+       "NOT_FOUND",
+       "OK"
+      ]
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "codes": [
+       "ABORTED"
+      ]
+     },
+     "a.v1.B/Z": {
+      "state": "unimplemented",
+      "codes": [
+       "UNIMPLEMENTED"
+      ]
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": [
+       "NOT_FOUND"
+      ]
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "codes": [],
+      "unread": true
+     }
+    }
+   },
+   "expect": {
+    "pass": false,
+    "recall": 0.5,
+    "precision": 1.0,
+    "unread_rpcs": [
+     "a.v1.A/Y"
+    ],
+    "unknown_extras": [],
+    "reason": "recall_below_bound"
+   }
+  },
+  {
+   "name": "S9 a truth UNKNOWN that is found is no extra",
+   "fn": "codes",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": [
+       "NOT_FOUND",
+       "UNKNOWN"
+      ]
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "codes": [
+       "ABORTED"
+      ]
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": [
+       "NOT_FOUND",
+       "UNKNOWN"
+      ]
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "codes": [
+       "ABORTED"
+      ]
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "unknown_extras": []
+   }
+  },
+  {
+   "name": "S9 only implemented rpcs count (a stub's UNIMPLEMENTED is not a code)",
+   "fn": "codes",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": [
+       "NOT_FOUND",
+       "OK"
+      ]
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "codes": [
+       "ABORTED"
+      ]
+     },
+     "a.v1.B/Z": {
+      "state": "unimplemented",
+      "codes": [
+       "UNIMPLEMENTED"
+      ]
+     }
+    },
+    "got": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": [
+       "NOT_FOUND"
+      ]
+     },
+     "a.v1.A/Y": {
+      "state": "implemented",
+      "codes": [
+       "ABORTED"
+      ]
+     },
+     "a.v1.B/Z": {
+      "state": "unimplemented",
+      "codes": [
+       "UNIMPLEMENTED"
+      ]
+     }
+    }
+   },
+   "expect": {
+    "pass": true,
+    "truth": 2,
+    "extracted": 2
+   }
+  },
+  {
+   "name": "S9 no truth codes is vacuous",
+   "fn": "codes",
+   "input": {
+    "truth": {
+     "a.v1.A/X": {
+      "state": "implemented",
+      "codes": []
+     }
+    },
+    "got": {}
+   },
+   "expect": {
+    "pass": false,
+    "reason": "vacuous"
+   }
+  },
+  {
+   "name": "S10 first run, all hashes equal: blind",
+   "fn": "prov",
+   "input": {
+    "recorded": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "run": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "run_index": 1
+    }
+   },
+   "expect": {
+    "label": "blind",
+    "pass": true,
+    "reasons": []
+   }
+  },
+  {
+   "name": "S10 runner hash differs: post_hoc",
+   "fn": "prov",
+   "input": {
+    "recorded": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "run": {
+     "runner": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "run_index": 1
+    }
+   },
+   "expect": {
+    "label": "post_hoc",
+    "reasons": [
+     "runner_hash_mismatch"
+    ]
+   }
+  },
+  {
+   "name": "S10 scorer hash differs: post_hoc",
+   "fn": "prov",
+   "input": {
+    "recorded": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "run": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "run_index": 1
+    }
+   },
+   "expect": {
+    "label": "post_hoc",
+    "reasons": [
+     "scorer_hash_mismatch"
+    ]
+   }
+  },
+  {
+   "name": "S10 held-out hash differs: post_hoc",
+   "fn": "prov",
+   "input": {
+    "recorded": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "run": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "run_index": 1
+    }
+   },
+   "expect": {
+    "label": "post_hoc",
+    "reasons": [
+     "heldout_hash_mismatch"
+    ]
+   }
+  },
+  {
+   "name": "S10 second run after a crash before any metric, same runner bytes: blind",
+   "fn": "prov",
+   "input": {
+    "recorded": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "run": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "run_index": 2,
+     "prior": {
+      "crashed_before_metric": true,
+      "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     }
+    }
+   },
+   "expect": {
+    "label": "blind",
+    "reasons": []
+   }
+  },
+  {
+   "name": "S10 second run with changed runner bytes: post_hoc",
+   "fn": "prov",
+   "input": {
+    "recorded": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "run": {
+     "runner": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "run_index": 2,
+     "prior": {
+      "crashed_before_metric": true,
+      "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     }
+    }
+   },
+   "expect": {
+    "label": "post_hoc",
+    "reasons": [
+     "runner_hash_mismatch",
+     "rerun_with_changed_runner_bytes"
+    ]
+   }
+  },
+  {
+   "name": "S10 second run after a metric was written: post_hoc",
+   "fn": "prov",
+   "input": {
+    "recorded": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "run": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "run_index": 2,
+     "prior": {
+      "crashed_before_metric": false,
+      "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     }
+    }
+   },
+   "expect": {
+    "label": "post_hoc",
+    "reasons": [
+     "rerun_without_a_crash_before_any_metric"
+    ]
+   }
+  },
+  {
+   "name": "S10 a third run: post_hoc",
+   "fn": "prov",
+   "input": {
+    "recorded": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "run": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "run_index": 3,
+     "prior": {
+      "crashed_before_metric": true,
+      "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     }
+    }
+   },
+   "expect": {
+    "label": "post_hoc",
+    "reasons": [
+     "run_index_3"
+    ]
+   }
+  },
+  {
+   "name": "S10 a hash the amendments do not record: post_hoc",
+   "fn": "prov",
+   "input": {
+    "recorded": {
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "run": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "run_index": 1
+    }
+   },
+   "expect": {
+    "label": "post_hoc",
+    "reasons": [
+     "runner_hash_not_recorded"
+    ]
+   }
+  },
+  {
+   "name": "S10 the recorded hashes are read from the amendment text",
+   "fn": "recorded",
+   "input": {
+    "text": "Amendment 2\n- dogfood/grpc_probes4.py sha256 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n- grpc_scorer4.py: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n- freeze4.sha256 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\nAmendment 3\n- heldout4/freeze.sha256 = cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+   },
+   "expect": {
+    "recorded": {
+     "runner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "scorer": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "freeze4": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "heldout": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+   }
+  }
+ ]
+}

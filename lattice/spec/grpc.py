@@ -363,25 +363,57 @@ def bearer(token: str | None, metadata: Mapping[str, str] | None = None) -> dict
     return out
 
 
+def _login_fields(rpc: Any, service: str, method: str, user: Any, passw: Any) -> tuple[str, str]:
+    """D6.2: the login message's one string field containing ``pass`` and its one other (else the
+    one named username, user, name, login, email, handle, first in that order); explicit wins."""
+    rpc.describe()
+    base = Path(rpc.root) if rpc.root is not None else Path.cwd()
+    paths = [str(base.resolve()), *(str((base / p).resolve()) for p in rpc.proto_paths)]
+    grpc = rpc.bridge.describe([str((base / p).resolve()) for p in rpc.protos], paths)["grpc"]
+    inp = {
+        r["name"]: r["input"] for s in grpc["services"] if s["name"] == service for r in s["rpcs"]
+    }
+    fields = next((m["fields"] for m in grpc["messages"] if m["name"] == inp.get(method)), [])
+    names = [f["name"] for f in fields if f["type"] == "string" and f["label"] == "single"]
+    passes = [n for n in names if "pass" in n.lower()]
+    passw = passw or (passes[0] if len(passes) == 1 else None)
+    rest = [n for n in names if n != passw]
+    if user is None and passw is not None:
+        known = [
+            n
+            for k in ("username", "user", "name", "login", "email", "handle")
+            for n in rest
+            if n == k
+        ]
+        user = rest[0] if len(rest) == 1 else (known[0] if known else None)
+    if user is None or passw is None:
+        raise RuntimeError(f"login_fields_ambiguous: {service}/{method} has string fields {names}")
+    return user, passw
+
+
 def rpc_login(
     service: str,
     method: str,
     credentials: Mapping[str, tuple[str, str]],
     *,
-    username_field: str = "name",
-    password_field: str = "password",
+    username_field: str | None = None,
+    password_field: str | None = None,
     token_field: str = "token",
 ) -> Any:
     """A ``Login`` (``(client, handle) -> token``) calling the rpc ``service``/``method``
     with the handle's credentials; ``client`` is the transport's client (it carries the rpc
-    transport: :class:`~lattice.spec.process.ProcessTransport`)."""
+    transport: :class:`~lattice.spec.process.ProcessTransport`). A field left ``None`` is read
+    from the login request message."""
 
     def login(client: Any, handle: str) -> str:
         username, password = credentials[handle]
         reach = getattr(client, "_lattice_rpc", None)
         if reach is None:
             raise RuntimeError("the app's transport has no gRPC client")
-        answer = reach().call(service, method, {username_field: username, password_field: password})
+        rpc, uf, pf = reach(), username_field, password_field
+        if uf is None or pf is None:
+            uf, pf = _login_fields(rpc, service, method, uf, pf)
+        answer = rpc.call(service, method, {uf: username, pf: password})
         if not answer.ok:
             raise RuntimeError(f"login as {handle!r} failed: {answer.code} {answer.message}")
         value = answer.body

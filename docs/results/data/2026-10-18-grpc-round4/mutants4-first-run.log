@@ -1,0 +1,90 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+control probe4 p4-wire: rc=0 PASS P4-WIRE {"rpcs": 24, "states equal the truth": 24, "wrong (extract, truth)": {}, "S8  (0.4s)
+control pytest tests/grpc/test_wiring4.py: rc=0 20 passed in 0.94s (1.3s)
+control probe4 p4-authi: rc=0 PASS P4-AUTHI {"cases": 7, "cases exact": 7, "Public behind an unread mechanism": [], "tru (0.4s)
+control pytest tests/grpc/test_auth4.py: rc=0 27 passed in 0.83s (1.2s)
+control probe4 p4-codes: rc=0 PASS P4-CODES {"rpcs": 9, "disagreements": 0, "UNKNOWN not in the truth": [], "truth hashe (0.3s)
+control pytest tests/grpc/test_codes4.py: rc=0 19 passed in 0.96s (1.4s)
+control probe4 p4-bc-ext: rc=0 PASS P4-BC-EXT {"compared": 12, "differ": ["harborline:extract", "harborline:model", "kiln (3.1s)
+control probe4 p4-tables: rc=0 PASS P4-TABLES {"cases": 3, "disagreements": 0, "temp dirs left": [], "writes under the ro (0.4s)
+control pytest tests/grpc/test_tables4.py: rc=0 10 passed in 1.27s (1.8s)
+control probe4 p4-login: rc=0 PASS P4-LOGIN {"methods": {"LoginUsername": {"username": "ada", "password": "pw"}, "LoginN (3.1s)
+control pytest tests/grpc/test_login4.py: rc=0 15 passed in 1.13s (1.5s)
+control probe4 p4-score: rc=0 PASS P4-SCORE {"cases": 58, "agree": 58, "in 30-45 (p)": false} (0.1s)
+control probe4 p4-proc: rc=0 PASS P4-PROC {"1 runner byte changed: refused before any metric": true, "2 own entry remov (0.9s)
+control pytest tests/grpc/test_wiring3.py: rc=1 4 failed, 28 passed in 0.87s (1.1s)
+control pytest tests/grpc/test_auth3.py: rc=0 29 passed in 0.64s (0.9s)
+control probe4 pr4-desk: rc=0 PASS PR3-DESK (dev) {"S5 coverage": 1.0, "S5 agreement": 1.0, "S5 by class": {"absent": "1 (2.6s)
+control pytest tests/grpc/test_reconcile3.py: rc=0 12 passed in 0.85s (1.1s)
+control probe pr2-sess: rc=0 PASS PR2-SESS {"round 1 (control, cea85fc library)": {"Login": {"code": "INVALID_ARGUMENT" (3.1s)
+control pytest tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py: rc=0 59 passed in 29.75s (30.5s)
+control probe pr2-order: rc=0 PASS PR2-ORDER {"N": {"disagreed": []}, "sessions": {"disagreed": ["sessions.v1.Sessions/D (2.9s)
+control probe pf2-desk: rc=0 PASS PF2-DESK (dev, tuned-on) {"recovered": 41, "recovered_by_status": {"verified": 20, "u (27.7s)
+control probe pf2-n: rc=0 PASS PF2-N {"recovered": 17, "recovered_by_status": {"verified": 17, "unverified": 0, "fai (9.5s)
+control probe pf2-replay: rc=0 PASS PF2-REPLAY {"N": {"verified": 17, "replays": 3, "failing per replay": [0, 0, 0]}, "de (19.3s)
+control probe p2-score: rc=0 PASS P2-SCORE {"cases": 37, "agree": 37} (0.2s)
+control probe p2-bc-ast: rc=1 FAIL P2-BC-AST {"grpc.py defs compared": 43, "workflows.py HTTP defs compared": 53, "diffe (0.1s)
+control pytest tests/importer/test_workflows.py: rc=0 69 passed in 4.32s (4.9s)
+KILLED    GW4-1  D1.1 off: a register call with a parameter descriptor/impl i ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW4-2  D1.1 resolves only the first call site of a helper           ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW4-3  D1.2 off: an options-applying constructor returning an inter ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW4-4  D1.3 off: an unresolved registration does not block not_regi ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW4-5  D1.3 too broad: an unreferenced function's unresolved call a ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW4-6  round-3 deviation 8.7 left: a package var read only by unrea ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW4-7  D1.4 off: interface method calls unresolved                  ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW4-8  D1.4 too broad: implementers never instantiated also reached ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring4.py']
+SURVIVED  GW4-9  D1.4 func-type adapter: a conversion T(f) does not count as  []
+KILLED    GU4-1  D2.1 off: method-value interceptors unresolved               ['probe4:p4-authi', 'pytest:tests/grpc/test_auth4.py']
+KILLED    GU4-2  D2.2 off: option-field flow not followed                     ['probe4:p4-authi', 'pytest:tests/grpc/test_auth4.py']
+KILLED    GU4-3  D2.3 off: the standard health constants are not literal      ['probe4:p4-authi', 'pytest:tests/grpc/test_auth4.py']
+KILLED    GU4-4  D2.4: a prefix assumed without HasPrefix evidence            ['probe4:p4-authi', 'pytest:tests/grpc/test_auth4.py']
+KILLED    GU4-5  D2.4: prefix entries matched exactly even with HasPrefix     ['probe4:p4-authi', 'pytest:tests/grpc/test_auth4.py']
+KILLED    GU4-6  D2.4: an unresolvable builder argument dropped (allowlist tr ['probe4:p4-authi', 'pytest:tests/grpc/test_auth4.py']
+KILLED    GK4-1  D3.1 off: interceptor sentinel tables not read               ['probe4:p4-codes', 'pytest:tests/grpc/test_codes4.py']
+KILLED    GK4-2  D3.1: %w wrapping not followed                               ['probe4:p4-codes', 'pytest:tests/grpc/test_codes4.py']
+KILLED    GK4-3  D3.2 off: constant-key map lookups not read                  ['probe4:p4-codes', 'pytest:tests/grpc/test_codes4.py']
+SURVIVED  GK4-4  D3.3 off: the UNKNOWN placeholder restored for untraced erro []
+KILLED    GT4-1  D5: harness-db tables override non-empty Go tables           ['probe4:p4-bc-ext', 'pytest:tests/grpc/test_tables4.py']
+SURVIVED  GT4-2  D5.2 builds the database under the target root               []
+KILLED    GL4-1  D6 off: the default username_field='name' / password_field=' ['probe4:p4-login', 'pytest:tests/grpc/test_login4.py']
+KILLED    GL4-2  D6.2: an ambiguous message picks the first string fields     ['probe4:p4-login', 'pytest:tests/grpc/test_login4.py']
+KILLED    GL4-3  D6.1: discovery overrides an explicit field                  ['probe4:p4-login', 'pytest:tests/grpc/test_login4.py']
+KILLED    GS4-1  scorer S10: a runner hash mismatch still labelled blind      ['probe4:p4-score']
+KILLED    GS4-2  scorer S8: not_registered vs implemented is not counted      ['probe4:p4-score']
+KILLED    GS4-3  runner: its own entry excluded from its freeze check (round  ['probe4:p4-proc']
+KILLED    GW1    R1 off: package-level initializers are not walked            ['pytest:tests/grpc/test_wiring3.py', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW2    R2 off: a function named as a value in a walked initializer  ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring3.py', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW3    R2 takes only the first element of a ranged literal          ['pytest:tests/grpc/test_wiring3.py']
+KILLED    GW4    R3 off: a registration on a grpc.ServiceRegistrar parameter  ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring3.py', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW5    R4: methods promoted from an embedded struct are missing fro ['pytest:tests/grpc/test_wiring3.py']
+KILLED    GW6    R4: a constructor returning an interface is not followed     ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring3.py', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW7    R5 off: a descriptor held in a variable is not followed      ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring3.py', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW8    R6 off: a referenced registration the walk cannot reach is r ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring3.py', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW9    R6 too broad: an unreferenced Register function counts as re ['probe4:p4-wire', 'pytest:tests/grpc/test_wiring3.py', 'pytest:tests/grpc/test_wiring4.py']
+KILLED    GW10   a _test.go reference counts as wiring                        ['pytest:tests/grpc/test_wiring3.py']
+KILLED    GW11   the gRPC walk is merged into g.wired (HTTP and gateway reach ['pytest:tests/grpc/test_wiring3.py']
+KILLED    GU1    D2 off: an interceptor that was not read decides nothing (ro ['pytest:tests/grpc/test_auth3.py']
+KILLED    GU2    every other interceptor is auth_unknown (the benign check is ['probe4:p4-authi', 'pytest:tests/grpc/test_auth3.py', 'pytest:tests/grpc/test_auth4.py']
+KILLED    GU3    an untraced `return nil, err` counts as benign               ['pytest:tests/grpc/test_auth3.py']
+KILLED    GC1    reconcile_with iterates model.routes only (round 2)          ['probe4:pr4-desk', 'pytest:tests/grpc/test_reconcile3.py']
+KILLED    GC2    non-route rpcs are called without a fresh login (RC1 off for ['pytest:tests/grpc/test_reconcile3.py']
+KILLED    GS1    scorer S5: supplementary calls are ignored                   ['probe4:p4-score']
+KILLED    GS2    scorer S7: an all-unclear AUTH passes                        ['probe4:p4-score']
+KILLED    GR1    reconcile reuses one token (round 1's behaviour)             ['probe:pr2-sess', 'pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR2    a fresh token per service, not per call                      ['probe:pr2-sess', 'pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR3    the reverse pass is skipped (RC2 off)                        ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR4    a disagreement is reported without the isolated rerun (RC3 o ['probe:pr2-order', 'pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR5    a failed login is recorded as UNAUTHENTICATED answered:true  ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR6    the contract's order instead of the sorted order in the forw ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR7    F2 off: natural keys filled by example_value (round 1)       ['probe:pf2-desk', 'pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR8    F3 off: bool -> true (round 1)                               ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR9    F1 binds an id to a field of another table                   ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR10   the lookup picks the first element, unsorted                 ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR11   owner_guard / owner_chain verify on UNAUTHENTICATED          ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR12   verified is set from the live run without the layer-D replay ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR13   a fault code on a refuse step is counted as a refusal        ['pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py']
+KILLED    GR14   scorer: verified == 0 passes (round 1's rule)                ['probe:p2-score']
+KILLED    GR15   scorer: an empty denominator scores 1.0                      ['probe:p2-score']
+KILLED    GR16   scorer: edge matching ignores the consumer's code            ['probe:p2-score']
+SURVIVED  GR17   the HTTP workflow path touched (the rpc helper's summary sha []
+58/62 killed (control checks: probe4 p4-wire=0, pytest tests/grpc/test_wiring4.py=0, probe4 p4-authi=0, pytest tests/grpc/test_auth4.py=0, probe4 p4-codes=0, pytest tests/grpc/test_codes4.py=0, probe4 p4-bc-ext=0, probe4 p4-tables=0, pytest tests/grpc/test_tables4.py=0, probe4 p4-login=0, pytest tests/grpc/test_login4.py=0, probe4 p4-score=0, probe4 p4-proc=0, pytest tests/grpc/test_wiring3.py=1, pytest tests/grpc/test_auth3.py=0, probe4 pr4-desk=0, pytest tests/grpc/test_reconcile3.py=0, probe pr2-sess=0, pytest tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py=0, probe pr2-order=0, probe pf2-desk=0, probe pf2-n=0, probe pf2-replay=0, probe p2-score=0, probe p2-bc-ast=1, pytest tests/importer/test_workflows.py=0)

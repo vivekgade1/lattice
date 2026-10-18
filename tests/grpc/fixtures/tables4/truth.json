@@ -1,0 +1,34 @@
+{
+  "schema": "lattice.grpc.tables4-truth/1",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-4 extractor code ran. gormtables: the Go source holds the model and AutoMigrate (the round-3 path); harnessdb: the Go tree has no schema, harness.py builds it; brokendb: the harness cannot build its database.",
+  "cases": {
+    "gormtables": {
+      "tables": [
+        "notes"
+      ],
+      "tables_source": null
+    },
+    "harnessdb": {
+      "tables": [
+        "accounts",
+        "orders",
+        "sessions"
+      ],
+      "tables_source": "harness_db",
+      "columns": {
+        "orders": [
+          "id",
+          "account_id",
+          "total",
+          "paid"
+        ]
+      }
+    },
+    "brokendb": {
+      "tables": [],
+      "tables_source": null,
+      "unread": "harness_db_failed"
+    }
+  }
+}

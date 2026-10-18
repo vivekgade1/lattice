@@ -1,0 +1,104 @@
+{
+ "harbor.v1.Accounts/Login": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "harbor.v1.Accounts/WhoAmI": {
+  "code": "OK",
+  "answered": true
+ },
+ "harbor.v1.Accounts/Logout": {
+  "code": "OK",
+  "answered": true
+ },
+ "harbor.v1.Accounts/StepDown": {
+  "code": "FAILED_PRECONDITION",
+  "answered": true
+ },
+ "harbor.v1.Accounts/CloseAccount": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "harbor.v1.Berths/ListBerths": {
+  "code": "OK",
+  "answered": true
+ },
+ "harbor.v1.Berths/GetBerth": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "harbor.v1.Berths/CreateBerth": {
+  "code": "PERMISSION_DENIED",
+  "answered": true
+ },
+ "harbor.v1.Berths/RetireBerth": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ },
+ "harbor.v1.Bookings/BookBerth": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "harbor.v1.Bookings/GetBooking": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "harbor.v1.Bookings/ListBookings": {
+  "code": "OK",
+  "answered": true
+ },
+ "harbor.v1.Bookings/CancelBooking": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "harbor.v1.Bookings/CheckIn": {
+  "code": "PERMISSION_DENIED",
+  "answered": true
+ },
+ "harbor.v1.Tides/GetTideTable": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "harbor.v1.Vessels/RegisterVessel": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "harbor.v1.Vessels/GetVessel": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "harbor.v1.Vessels/RenameVessel": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "harbor.v1.Vessels/ListVessels": {
+  "code": "OK",
+  "answered": true
+ },
+ "harbor.v1.Yard/OpenWorkOrder": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "harbor.v1.Yard/ListWorkOrders": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "harbor.v1.Yard/CompleteWorkOrder": {
+  "code": "PERMISSION_DENIED",
+  "answered": true
+ },
+ "harbor.v1.Fuel/QuoteFuel": {
+  "code": "UNIMPLEMENTED",
+  "answered": false,
+  "route": false
+ },
+ "harbor.v1.Fuel/Dispense": {
+  "code": "UNIMPLEMENTED",
+  "answered": false,
+  "route": false
+ },
+ "(absent)": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ }
+}

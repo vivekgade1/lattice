@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package wiring4.v1;
+
+option go_package = "example.com/w4varlost/gen/wiring4/v1;wiring4v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Live {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}
+
+service Held {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}
+
+service Lone {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}
