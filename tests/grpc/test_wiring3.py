@@ -41,6 +41,9 @@ def test_the_truth_was_hashed_before_the_extractor_changed() -> None:
     assert hashlib.sha256((WIRING / "truth.json").read_bytes()).hexdigest() == TRUTH_SHA
 
 
+ROUND4_UNREAD = ("Dead", "Gone", "Never")
+
+
 @pytest.mark.parametrize(
     "service",
     [
@@ -61,6 +64,10 @@ def test_every_state_equals_the_truth(wiring: dict[str, Any], truth: Any, servic
     got = rpcs(wiring)
     want = {k: v["state"] for k, v in truth["rpcs"].items() if f".{service}/" in k}
     assert want, service
+    if service in ROUND4_UNREAD:
+        # round 4 (D1.3): while a registration call in the module is unresolved (Opaque),
+        # a never-registered service reads `unread`, never a confident `not_registered`
+        want = {k: "unread" for k in want}
     assert {k: got[k]["state"] for k in want} == want
 
 
@@ -102,11 +109,14 @@ def test_r5_a_descriptor_held_in_a_package_variable_is_followed(wiring: dict[str
     assert reg["wiring.v1.Delta"]["file"].endswith("internal/serve/extras.go")
 
 
-def test_r6_dead_and_test_only_registrations_are_not_registered(wiring: dict[str, Any]) -> None:
+def test_r6_dead_and_test_only_registrations_are_unread_beside_an_unresolved_one(
+    wiring: dict[str, Any],
+) -> None:
+    # round 4 changed this on purpose (D1.3, accepted by the owner): the fixture also holds
+    # the unresolvable `Opaque` registration, so no service can be stated `not_registered`
     got = rpcs(wiring)
-    for k in ("Dead", "Gone", "Never"):
-        assert {got[f"wiring.v1.{k}/{m}"]["state"] for m in ("Get", "Put")} == {"not_registered"}
-        assert "unread" not in got[f"wiring.v1.{k}/Get"]
+    for k in ROUND4_UNREAD:
+        assert {got[f"wiring.v1.{k}/{m}"]["state"] for m in ("Get", "Put")} == {"unread"}
 
 
 def test_r6_a_referenced_but_unreached_registration_is_unread_not_not_registered(
