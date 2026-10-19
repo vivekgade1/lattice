@@ -833,3 +833,7 @@ are still run because their result is the information.
 
 **HO5 app freeze (orchestrator, before the scored run; audited: 25 tool calls, 0 reads outside the author directory, one temporary command directory inside it removed from the delivered tree):**
 - ho5/freeze.sha256 sha256 e2ce1d33defe120b5200bdc33e47175cb8ab5d2d94bebc1389ca15f8667e2a28
+
+## Amendment 3-SG (orchestrator, before the Streak-as-gRPC scored run)
+The PM-SG app (`streak.v1`, grpc-go over MySQL 8.4, 79 files, 162 scenarios in its own spec) was written by a separate isolated agent from Streak's REQUIREMENTS.md, spec.py and CONTEXT.md only; its freeze verifies, it has no symlinks and `contract5` prints every line ok (all 11 flows). Audit of its 95 tool calls: 0 reads of the repository; disclosed deviations: one `docker ps` listing at the start, one scratch file in /tmp removed at once, a MySQL container `g5-sg-author-mysql` (label `lattice.owner=g5-sg-author`) removed; its spec runs the nudger through a test-only rpc (`TestClockService.RunNudger`). The earlier HO5 stage result is in the HO5 results.
+- sg/freeze.sha256 sha256 9e172af682b39808e5123c2ce70699e860abe20e5b900c6b5a15e3392df3fd02
