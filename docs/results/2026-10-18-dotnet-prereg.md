@@ -895,3 +895,16 @@ values). Q15: confirmed (one throwaway `mysql:8.4` container per run, label `lat
 Q17: D1 and H1 are archived as tarballs under `docs/results/data/` with only their truth under `tests/` (no `bin/`/`obj/` in the
 repository). Q18: yes: B1 alone, then B2, B3, B4 and R each in their own worktree from `np-dotnet`, merged by the orchestrator before
 the freeze.
+
+## Amendment 2, part 1 (B0's fixture and the harness doc; orchestrator, 2026-10-19, before D1 and any library code)
+**Frozen:** the Arm 0 fixture `tests/dncheck/fixtures/dnparity1/**` (25 files; `freeze-arm0.sha256` sha256 `a865ce4d27c8a13cce782788bb4a4b528cf783e7022f688118069e1fb9921309`; truth.json sha256
+`4a81fd6baf5b3b5b92af039f5a85283ca6192b650b0e791bf94c4b1a426a4b38`) was written before any library code; it parses with 0 Roslyn errors, compiles with 0 errors and 0 warnings on SDK 10.0.401, and ASP.NET's own endpoint table
+contains all 39 truth routes (public/member agree with the runtime metadata); 246 truth file:line entries verified. The recon scripts are `dogfood/dotnet_recon/` (RC1-RC6).
+`HARNESS_API_DOTNET.md` (sha256 `d5cf9fb4edffcac3858196c18edc025446f94f099b71a1a41f1eb2e95bfcb0f6`) was verified on scratch ASP.NET apps through Lattice's real runtime (SQLite and MySQL, both providers).
+**Re-registered decisions:** (1) **RC1 refuted its prediction:** 2 project calls (`_notifier.NotifyAsync(note)`, `new TagView(t.Id, t.Label)`) stay unbound when an argument has an EF-derived error type; each has exactly one project candidate in
+`CandidateSymbols`. Decision N-bind: a call whose overload resolution fails is treated as BOUND to its single project candidate when exactly one project candidate exists (else unread), so the DI call closure (N10) and DTO constructors work. (2) **The restore command:** the prereg's
+`dotnet build -c Release --locked-mode` is invalid on SDK 10.0.401 (`MSB1001`); the rule everywhere (lines 297, 380, 396 included) is `dotnet build -c Release -p:RestoreLockedMode=true` (or `dotnet restore --locked-mode`). (3) `process_runtime(framework="dotnet")` works today (framework is a free
+string; layer A is skipped with a note until the .NET checker exists); `--runtime dotnet` is added by the Q10 edit. (4) Provider pairings: Pomelo 9.0.0 needs `Microsoft.EntityFrameworkCore.Sqlite` 9.0.x; Oracle `MySql.EntityFrameworkCore` 10.0.9 needs Sqlite 10.0.x (9.0.21 and 10.0.13 avoid
+the NU1903 warning); one MySQL connection string works for both (`SslMode=Disabled;AllowPublicKeyRetrieval=True`). (5) MySQL 8.4.11 has `lower_case_table_names=0` and a strict `sql_mode`, which the harness relaxes on Lattice's throwaway server (documented). (6) **D1 route check:** Streak's fixed seed has no habits, so routes
+with a path parameter may answer 404 (never 405) in the contract check; every other truth route must answer neither 404 nor 405. (7) **D1 source of the spec:** Streak's `REQUIREMENTS.md`, `spec.py` and `CONTEXT.md` at `a0679e9` (the ref used for every other Streak corpus), not main. (8) B3 adds the sibling fixture `dnparity1bad` (DN800).
+Part 2 (D1, its truth and W0's patches, the recon outputs on D1) follows before B1 starts.
