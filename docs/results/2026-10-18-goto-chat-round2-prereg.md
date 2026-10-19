@@ -535,3 +535,14 @@ browser is connected; else NOT RUN. Q9: the next free API version at build time.
 stays byte-unchanged and the new thresholds live only in the wrapper. Q12: the thresholds are approved (G3 >= 52/64, compliance
 >= 11/12, floors H >= 8/10, N >= 4/6, M_workflows >= 6/8, routed precision >= 95%). Step 0 is done: the round-1 frozen files are
 copied into `docs/results/data/2026-10-18-goto-chat-round2/frozen-r1/` and their hashes verified against round 1's `freeze.sha256`.
+
+## Amendment 2 (the question-set author's ambiguities, orchestrator rulings, 2026-10-18, before the build)
+The new question set (64 questions including 2 X_absent), six new candidates (`changes/`), the wrapper scorer, its self-test (97 checks) and
+FORMATS2.md are written by a separate author; their hashes are recorded in `docs/results/data/2026-10-18-goto-chat-round2/freeze.sha256`
+(manifest `25e0addc...588b`) BEFORE the build. Rulings: (1) 64 questions with X_absent counted, as in section 6's table. (3) The round-1 router
+patterns in the frozen scorer define "routed" for the question phrasing. (4) the `routed` field on agent answers is accepted for sub-gate (vi);
+if nothing is routed, (vi) is reported as vacuous. (5) G2 counts literal claims over all 16 gated questions and model calls over the 10 routed I
+and H questions, as built. (7) A machine state NAME such as `failed` (not a claim about a workflow) is NOT exempt from the literal gate; it is
+exempt only in the report-only lenient count; the question set's wording therefore tests whether the model/checker can say it as a quoted
+state name, and a miss is reported, not excused. (8)-(11) accepted as disclosed. The unused first draft `chat2-questions/candidates/` (a guard
+hook blocked its deletion) is excluded from the manifest and ignored.
