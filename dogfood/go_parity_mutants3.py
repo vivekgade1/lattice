@@ -14,9 +14,11 @@ subprocess: rows only, no scored output) and by named unit tests. The self-hash 
 (``--freeze``, every entry, this script included) runs first and cannot be skipped; the copies are never
 checked against the freeze, because the library under mutation is exactly what differs.
 
-LM16 and LM17 mutate K8 (builder B2's ``notowned.py``); they run only when that tree is merged in and
-``dogfood/g3_standin/k8_mutants.json`` (``{"LM16": {"edits": [[file, old, new]], "probes": [...], "tests":
-[...]}}``) supplies their edits; otherwise they are NOT RUN with that named prerequisite.
+LM16 and LM17 mutate K8 (builder B2's ``goextract_raise.go`` and ``notowned.py``); their edits and killers are
+read at import from ``dogfood/g3_standin/k8_mutants.json`` (``{"LM16": {"edits": [[file, old, new]], "probes":
+[...], "tests": [...]}}``), which is a freeze entry. Their registered probe killer, P2-805A on the goparity3
+decoy, does not exist (goparity3 has no owned table, so K8 derives nothing there, and P2-805A fails on the control
+so it cannot flip), so the registered killers are the named unit tests of ``tests/gocheck/test_go805.py``.
 """  # noqa: E501
 
 # ruff: noqa: E501
@@ -167,8 +169,9 @@ LM: dict[str, dict[str, Any]] = {
         "probes": [],
         "tests": [f"{T_DERIVE}::test_undeclared_owned_table_is_kept"],
     },
-    "LM16": {"what": "K8 pairs a raise to its comparison by line proximity (needs B2's tree)", "killed_by": "P2-805A (goparity3 decoy)", "edits": None, "probes": [], "tests": []},
-    "LM17": {"what": "K8 derives a status from a disagreeing module (needs B2's tree)", "killed_by": "unit disagreeing_raises_are_unclear", "edits": None, "probes": [], "tests": []},
+    # LM16/LM17: the edits and killers come from K8_EDITS (filled below)
+    "LM16": {"what": "K8 pairs a raise to its comparison by line proximity", "killed_by": "unit a_refusal_near_a_comparison_is_not_linked (the registered P2-805A goparity3 decoy does not exist)", "edits": None, "probes": [], "tests": []},
+    "LM17": {"what": "K8 derives a status from a disagreeing module", "killed_by": "unit disagreeing_raises_are_unclear", "edits": None, "probes": [], "tests": []},
     "LM18": {
         "what": "K7 off in the runner (the import root is not put on sys.path: the bare-module crash returns)",
         "killed_by": "PS-PI4-3 and PS-PR3-3 on S3's bare harness module (the prereg's T0-CTL is Tier 0's)",
@@ -177,6 +180,13 @@ LM: dict[str, dict[str, Any]] = {
         "tests": [],
     },
 }  # fmt: skip
+
+for _mid, _k8 in json.loads(K8_EDITS.read_text()).items():
+    LM[_mid].update(
+        edits=[tuple(e) for e in _k8["edits"]],
+        probes=_k8.get("probes", []),
+        tests=_k8.get("tests", []),
+    )
 
 # round 2's mutants re-applied: the same edits, the G3 detectors
 REAPPLIED: dict[str, dict[str, Any]] = {}
@@ -385,14 +395,6 @@ def main(argv: list[str] | None = None) -> int:
     base_entry = {"run_id": run_id, "runner": "go_parity_mutants3", "runner_sha256": G.sha(this), "freeze_sha256": G.sha(Path(args.freeze)), "arm": "G3:mutants",
                   "kind": "mutants", "out": str(out), "lattice_file": lattice_file}  # fmt: skip
     S3R.append_ledger({"ts": G.now(), "status": "started", **base_entry}, G.LEDGER)
-    k8 = json.loads(K8_EDITS.read_text()) if K8_EDITS.is_file() else {}
-    for mid, spec in k8.items():
-        if mid in LM:
-            LM[mid].update(
-                edits=[tuple(e) for e in spec["edits"]],
-                probes=spec.get("probes", []),
-                tests=spec.get("tests", []),
-            )
     ids = [i for i in args.ids if i in DEFAULT_IDS]
     rows: list[dict[str, Any]] = []
     lib = {**LM, **REAPPLIED}
@@ -458,7 +460,7 @@ def main(argv: list[str] | None = None) -> int:
                 if not spec["edits"]:
                     r.update(
                         killed=None,
-                        not_run="K8 is builder B2's (lattice/gocheck/notowned.py) and its edits come from dogfood/g3_standin/k8_mutants.json: neither is in this tree",
+                        not_run=f"{mid} has no edits: dogfood/g3_standin/k8_mutants.json does not supply them",
                     )
                 else:
                     tree = make_tree(scratch / f"tree-{mid.lower()}")

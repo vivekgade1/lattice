@@ -28,9 +28,20 @@ needs_go = pytest.mark.skipif(shutil.which("go") is None, reason="go is not inst
 
 def test_the_gated_row_counts_are_the_preregs():
     gated = {a: sum(G.P[i][1] for i in rows) for a, rows in G.ROWS_OF.items()}
-    assert gated == {"0": 5, "S": 9, "M": 8, "J": 2, "P": 9, "H": 10, "X": 1}
-    assert sum(gated.values()) == 44
-    assert [i for i in G.P if not G.P[i][1]] == ["M-A1", "M-SM4", "J-SM1", "J-SM2", "H-PI5"]
+    assert gated == {"0": 5, "S": 9, "M": 8, "J": 2, "2": 5, "P": 9, "H": 10, "X": 1}
+    assert sum(gated.values()) == 49
+    assert [i for i in G.P if not G.P[i][1]] == [
+        "M-A1",
+        "M-SM4",
+        "J-SM1",
+        "J-SM2",
+        "P2-DEF",
+        "H-PI5",
+    ]
+    assert G.ROWS_OF["2"] == ["P2-805A", "P2-805B", "P2-805C", "P2-805D", "P2-DEF", "P2-J0"]
+    assert G.ORDER.index("P2-J0") < G.ORDER.index("H-PI1") and G.ORDER.index(
+        "J-SM2"
+    ) < G.ORDER.index("P2-805A")
 
 
 def test_every_row_has_a_function_and_the_order_covers_every_row_once():
@@ -48,6 +59,11 @@ def test_the_mutants_runner_knows_the_registered_mutants():
         assert spec["edits"] is None or spec["probes"] or spec["tests"]
         for p in spec["probes"]:
             assert p in G.P, (mid, p)
+    for mid in ("LM16", "LM17"):  # K8's mutants have edits and a named unit test as their killer
+        assert M.LM[mid]["edits"] and not M.LM[mid]["probes"] and M.LM[mid]["tests"]
+        for node in M.LM[mid]["tests"]:
+            path, name = node.split("::")
+            assert f"def {name}(" in (REPO / path).read_text(), node
     assert set(M.DEV_ROWS) == {"ST1", "ST2", "ST3", "SM1", "SM2", "SM3", "SM4", "JSM1", "JSM2"}
     assert set(M.REAPPLIED) == {
         "JM17",
@@ -96,6 +112,10 @@ def test_a_complete_freeze_list_verifies(tmp_path):
         G.MUTANTS_REL,
         "lattice/gocheck/src/reach.go",
         "dogfood/g3_standin/s3/truth.json",
+        "dogfood/g3_standin/k8_mutants.json",
+        "lattice/gocheck/notowned.py",
+        "tests/gocheck/test_go805.py",
+        "docs/results/2026-10-18-parity-matrix-j0prime.md",
     ],
 )
 def test_a_list_that_skips_an_entry_aborts(tmp_path, skip):
@@ -103,6 +123,16 @@ def test_a_list_that_skips_an_entry_aborts(tmp_path, skip):
     f.write_text(freeze_text(skip=skip))
     with pytest.raises(S3R.FreezeError):
         G.verify_freeze(f, (REPO / G.RUNNER_REL).resolve())
+
+
+def test_the_k8_files_and_the_j0prime_document_are_must_list_entries():
+    for rel in (
+        "dogfood/g3_standin/k8_mutants.json",
+        "lattice/gocheck/notowned.py",
+        "tests/gocheck/test_go805.py",
+        "docs/results/2026-10-18-parity-matrix-j0prime.md",
+    ):
+        assert rel in G.MUST_LIST and (REPO / rel).is_file(), rel
 
 
 def test_a_list_with_an_edited_hash_or_a_missing_file_aborts(tmp_path):
@@ -142,6 +172,10 @@ def test_a_row_is_not_run_only_for_a_named_prerequisite():
     assert "job-scheduler" in G.missing(ctx_with(jobsched_src=None), "J-0")
     assert "held-out" in G.missing(ctx_with(h_target=None), "H-PI1")
     assert G.missing(ctx_with(), "H-PI1[S2]") is None
+    assert "Streak" in G.missing(ctx_with(streak_src=None), "P2-805A")
+    assert "job-scheduler" in G.missing(ctx_with(jobsched_src=None), "P2-805C")
+    assert G.missing(ctx_with(streak_src=None, jobsched_src=None), "P2-805D") is None
+    assert G.missing(ctx_with(streak_src=None, jobsched_src=None), "P2-J0") is None
 
 
 def test_the_self_test_flags_an_improper_not_run_and_accepts_a_proper_one():
@@ -153,6 +187,89 @@ def test_the_self_test_flags_an_improper_not_run_and_accepts_a_proper_one():
     assert len(G.self_test_problems(rows, ctx_with())) == 3
     assert G.self_test_problems(rows[1:2], ctx_with(no_docker=True)) == []
     assert G.self_test_problems([{"id": "M-A0", "pass": False}], ctx_with()) == []
+
+
+def test_pb_f_lets_only_the_declared_test_bytes_differ():
+    assert set(G.DECLARED_TEST_EDITS) == {
+        "tests/gocheck/test_go_derive.py",
+        "tests/gocheck/test_gocheck_rules.py",
+        "tests/importer/test_go_rules2.py",
+    }
+    declared = list(G.DECLARED_TEST_EDITS)
+    assert G.undeclared_test_changes(declared) == ([], declared)
+    assert G.undeclared_test_changes(["tests/spec/test_check.py"]) == (
+        ["tests/spec/test_check.py"],
+        [],
+    )
+
+
+def test_pb_f_rejects_a_declared_file_with_other_bytes(tmp_path):
+    rel = "tests/gocheck/test_go_derive.py"
+    (tmp_path / "tests/gocheck").mkdir(parents=True)
+    (tmp_path / rel).write_text("# edited again\n")
+    assert G.undeclared_test_changes([rel], tmp_path) == ([rel], [])
+
+
+def test_the_declared_gated_note_difference_is_put_back_before_a_report_is_compared():
+    from lattice.gocheck import gated_note
+
+    ctx = ctx_with()
+    ctx.cache["base_gating"] = ({}, "OLD NOTE WITH GO805")
+    doc = {"notes": [gated_note(), "layer X: ok"], "verdict": "pass"}
+    got = G.with_base_gated_note(ctx, doc)
+    assert (
+        got["notes"] == ["OLD NOTE WITH GO805", "layer X: ok"] and doc["notes"][0] == gated_note()
+    )
+
+
+# ---- Tier 2 (K10's check) ------------------------------------------------------------------------------
+
+
+J0_GOOD = (
+    "| # | capability | Python | Go | .NET |\n"
+    "| 1 | x | **S**: `lattice/gocheck/notowned.py:1`. T: `tests/gocheck/test_go805.py` | **P**: `lattice/gocheck/notowned.py:2`. R: `docs/results/2026-10-18-parity-matrix-j0prime.md` | A |\n"
+    "| 2 | y | **A**: `lattice/gocheck/notowned.py:3`. T: `tests/gocheck/test_go805.py` | **S**: `lattice/gocheck/notowned.py:4`. T: `tests/gocheck/test_go805.py` | A |\n"
+)
+
+
+def test_the_j0prime_check_passes_a_good_matrix_and_names_each_problem():
+    got = G.j0prime_check(J0_GOOD, REPO)
+    assert got["rows"] == 2 and got["problems"] == []
+    assert got["grades"] == {"Python": {"S": 1, "A": 1}, "Go": {"P": 1, "S": 1}}
+    gone = G.j0prime_check(J0_GOOD.replace("notowned.py:1", "nowhere.py:1"), REPO)
+    assert gone["problems"] == ["missing file lattice/gocheck/nowhere.py"]
+    far = G.j0prime_check(J0_GOOD.replace("notowned.py:2", "notowned.py:99999"), REPO)
+    assert far["problems"] == ["lattice/gocheck/notowned.py:99999 outside the file"]
+    bare = G.j0prime_check(J0_GOOD.replace("`lattice/gocheck/notowned.py:4`", "the code"), REPO)
+    assert bare["problems"] == ["row 2 Go: needs a file:line and a test or results row"]
+    no_ev = G.j0prime_check(
+        J0_GOOD.replace("T: `tests/gocheck/test_go805.py` | **P**", "| **P**"), REPO
+    )
+    assert any(p.startswith("row 1 Python") for p in no_ev["problems"])
+
+
+def test_the_real_j0prime_document_passes_its_own_check_with_twenty_rows():
+    got = G.j0prime_check(G.J0PRIME.read_text(), REPO)
+    assert got["rows"] == 20 and got["problems"] == [], got["problems"]
+    assert got["grades"]["Go"] == {"S": 15, "P": 4, "A": 1}
+    assert got["grades"]["Python"] == {"S": 15, "P": 3, "A": 2}
+
+
+@needs_go
+def test_the_tier_2_rows_that_need_no_streak_copy_run_and_805d_discriminates_its_base(tmp_path):
+    base = tmp_path / "base"
+    shutil.copytree(
+        REPO / "lattice", base / "lattice", ignore=shutil.ignore_patterns("__pycache__")
+    )
+    ctx = G.Ctx(tmp_path / "s", tmp_path / "o")
+    (tmp_path / "s").mkdir()
+    (tmp_path / "s" / "base").symlink_to(base, target_is_directory=True)
+    got = {pid: G.ROW_FN[pid](ctx) for pid in ("P2-805B", "P2-DEF", "P2-J0")}
+    assert all(r["pass"] is True for r in got.values()), {
+        k: r["observed"] for k, r in got.items() if r["pass"] is not True
+    }
+    # this tree stood in for 978b468 already has GO805 out of the gated list: P2-805D needs a base that gates it, and says so
+    assert G.ROW_FN["P2-805D"](ctx)["pass"] is False
 
 
 # ---- pure helpers --------------------------------------------------------------------------------------
