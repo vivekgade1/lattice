@@ -600,3 +600,20 @@ $PY -m ruff check <changed .py>; $PY -m ruff format --check <created .py>; gofmt
 - **Q11:** accepted: H-PI3 >= 0.50, H-JUDGE >= 0.75, held-out mutant gate >= 13/16 with the class gates.
 - **Q12:** G3 merges into `next-phases` after the orchestrator's independent re-run; a partial merge of the passing tiers is
   acceptable (as for J1), with the failed rows stated in the merge message and the results.
+
+## Amendment 2 (Tier 1 build node's confirm/refute of section 1.2 and orchestrator rulings, 2026-10-18, before the freeze)
+**Causes, read from the code before any library edit (the build node's table, accepted):** G-a confirmed with a second cause (the Go front end hands
+each body field over as a scalar body param; K3 builds the body model; `R2 POST /tickets/{tid}/handoffs` stays unexercised because
+the route creates a Handoff whose owner is unclear: two FKs to users); G-b confirmed but incomplete (`mac := hmac.New(...)` infers
+`unknown`, and conversions to a type literal like `[]byte(sig)` were opaque: K2c added); G-c runner-side (done in Tier 0); G-d1 (1) and
+(2) confirmed, (3) refuted (Streak's `r.Member` struct-field router means the middleware is never read and route keys lack `/v1`; further
+causes: `d.Clock.Now(ctx)` interface calls, `body(r)` function-typed parameter of `NewPage`, `(*string)(nil)`, helper depth); G-d2, G-d3,
+G-d4 confirmed. **Rulings:** (1) the registered pass rules that failed on the dev data stay failed and are reported as failed
+(PS-PI3-3 share 0.597 < 0.60; M-SM1 strict key; M-SM2; M-SM3; M-I1's "review list lists 0 items" clause; PB-T for the declared test
+change); re-registrations proposed by the build node (M-SM1/M-SM2 key without `/v1`, M-A1 count 25 bound routes, M-SM2..SM4 not
+detectable within K1/K2, M-I1 drop the clause) are accepted as additional rows labelled post hoc, never in place of the registered
+ones. (2) The declared update of `tests/importer/test_go_rules2.py` (the inferences list gains `body_model`: 8, not 7) is made
+by the orchestrator. (3) K2 generalised to an outside-rooted receiver chain plus K2c is accepted, with the limit stated: any wrapper
+that calls a method on the error returned by its own parameter stays silent (it matters for the held-out). (4) The fixture's
+revision 2 (recorded before any probe ran; revision 1's hash is kept) is accepted. (5) LM16/LM17 and the Tier 2 rows wait for B2.
+(6) The build node's `pkill -f` cleanup and one unintended unshimmed pytest run (throwaway containers, removed) are disclosed.

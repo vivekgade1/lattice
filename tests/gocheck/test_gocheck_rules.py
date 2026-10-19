@@ -253,7 +253,7 @@ def test_rules_select_codes():
 
 
 def test_gated_rules_are_explicit_and_never_reported():
-    assert set(GO_GATED) == {"GO804", "GO805", "GO806"}
+    assert set(GO_GATED) == {"GO804", "GO806"}  # round 3 (K8): GO805 is carried over
     assert {c.replace("PY", "GO") for c in CODES} == set(GO_CODES) | set(GO_GATED)
     fixtures = ("partial", "machine", "private", "owner", "bounds", "boundsets", "txflag", "app")
     for fixture in fixtures:

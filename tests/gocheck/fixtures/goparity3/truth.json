@@ -1,0 +1,40 @@
+{
+  "schema": "lattice.gotruth/1",
+  "fixture": "tests/gocheck/fixtures/goparity3",
+  "revision": "2: Handle writes its refusal through a module helper (refuse) and /w4 with HandleMsg (err.Error() inline) is added, before any probe was run; revision 1 (hash in freeze-arm0.v1-superseded.sha256) had err.Error() in Handle itself, which no registered decision can read (K2 keeps an uninferable receiver opaque), so w1 could not have shown K1",
+  "spike": "J node G3 (round 3), B1; fixed before any round-3 library code",
+  "kind": "parse-only module; never built or run",
+  "policy": {
+    "tables": {"Widget": "widgets", "Gadget": "gadgets"},
+    "owners": {"Widget": "owner_id"},
+    "note": "layer A runs with exactly this policy; the module has no users table"
+  },
+  "k1_wrapper_routes": {
+    "GET /w1/:id": "GO801|GET /w1/:id|Widget  (Handle(h.getW1): one-level wrapper, root = getW1, unscoped read)",
+    "GET /w2/:id": "no finding (Handle(h.getW2) reads Widget with owner_id in the Where)",
+    "GET /w3/:id": "no finding (Handle(Wrap2(h.getW3)): two levels, silent, today's behaviour kept)",
+    "GET /w4/:id": "no finding, reported not gated (HandleMsg calls err.Error() on the error its parameter returns: an uninferable receiver stays opaque, a stated limit)"
+  },
+  "k2_opaque_routes": {
+    "GET /m1/w/:id": "GO801|GET /m1/w/:id|Widget  (HMACGuard returned through Handle, signs with hmac.New(...).Write/Sum: not opaque)",
+    "GET /m2/w/:id": "no finding (ExtGuard hands *gin.Context to v.Check, a method of an outside type: stays opaque)"
+  },
+  "layer_a_keys_expected": [
+    "GO801|GET /m1/w/:id|Widget",
+    "GO801|GET /w1/:id|Widget"
+  ],
+  "layer_a_keys_at_978b468": [],
+  "k3_body": {
+    "route": "POST /widgets",
+    "contract_param": {"name": "title", "source": "body", "scalar": "STR", "required": true, "max_len": 40},
+    "body_model_inferences": [
+      {"rule": "body_model", "route": "POST /widgets", "model": "widgetBody", "fields": ["title"]}
+    ]
+  },
+  "k5_choices": {
+    "Gadget.label": "none (one constant write, \"x\")",
+    "Gadget.kind": ["a", "b"],
+    "S2 Run.status": ["queued", "cancelled"],
+    "S3 Ticket.status": ["open", "closed"]
+  }
+}
