@@ -1,0 +1,1257 @@
+............................................................ss.......... [  1%]
+........................................................................ [  3%]
+........................................................................ [  5%]
+........................................................................ [  7%]
+..........EEEEEEEEEEEE.EEEEE..............................s............. [  9%]
+........................................................................ [ 11%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+........................................................................ [ 23%]
+..................................................................s..... [ 25%]
+........................................................................ [ 27%]
+.............................................EEEEEEEEEEF.EE............. [ 29%]
+........................................................................ [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 35%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 43%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+.........F.............................................................. [ 51%]
+........................................................................ [ 53%]
+........................................................................ [ 55%]
+........................................................................ [ 57%]
+........................................................................ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 63%]
+.......................................................................s [ 65%]
+........................................................................ [ 67%]
+........................................................................ [ 69%]
+........................................................................ [ 71%]
+........................................................................ [ 73%]
+........................................................................ [ 75%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 84%]
+........F............................................................... [ 86%]
+........................................................................ [ 88%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................................ [ 94%]
+........................................................................ [ 96%]
+........................................................................ [ 98%]
+...............................................                          [100%]
+==================================== ERRORS ====================================
+______ ERROR at setup of test_each_adapter_has_the_crud_helpers[postgres] ______
+
+request = <SubRequest 'any_server' for <Function test_each_adapter_has_the_crud_helpers[postgres]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x1118d7620>
+url = 'postgresql://lattice:lattice@127.0.0.1:55755/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+_______ ERROR at setup of test_each_adapter_has_the_crud_helpers[mysql] ________
+
+request = <SubRequest 'any_server' for <Function test_each_adapter_has_the_crud_helpers[mysql]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.MysqlDatabase object at 0x1119d52b0>
+url = 'mysql://root:lattice@127.0.0.1:55770/mysql'
+
+    def __init__(self, url: str) -> None:
+>       import pymysql
+E       ModuleNotFoundError: No module named 'pymysql'
+
+lattice/spec/db.py:372: ModuleNotFoundError
+_____ ERROR at setup of test_each_adapter_has_the_crud_helpers[clickhouse] _____
+
+request = <SubRequest 'any_server' for <Function test_each_adapter_has_the_crud_helpers[clickhouse]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.ClickhouseDatabase object at 0x111ae1be0>
+url = 'clickhouse://lattice:lattice@127.0.0.1:55783/default'
+
+    def __init__(self, url: str) -> None:
+>       import clickhouse_connect
+E       ModuleNotFoundError: No module named 'clickhouse_connect'
+
+lattice/spec/db.py:422: ModuleNotFoundError
+_____________ ERROR at setup of test_clones_are_isolated[postgres] _____________
+
+request = <SubRequest 'any_server' for <Function test_clones_are_isolated[postgres]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x111ef5d10>
+url = 'postgresql://lattice:lattice@127.0.0.1:55795/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+______________ ERROR at setup of test_clones_are_isolated[mysql] _______________
+
+request = <SubRequest 'any_server' for <Function test_clones_are_isolated[mysql]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.MysqlDatabase object at 0x111ef4cd0>
+url = 'mysql://root:lattice@127.0.0.1:55809/mysql'
+
+    def __init__(self, url: str) -> None:
+>       import pymysql
+E       ModuleNotFoundError: No module named 'pymysql'
+
+lattice/spec/db.py:372: ModuleNotFoundError
+____________ ERROR at setup of test_clones_are_isolated[clickhouse] ____________
+
+request = <SubRequest 'any_server' for <Function test_clones_are_isolated[clickhouse]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.ClickhouseDatabase object at 0x111ef4e10>
+url = 'clickhouse://lattice:lattice@127.0.0.1:55825/default'
+
+    def __init__(self, url: str) -> None:
+>       import clickhouse_connect
+E       ModuleNotFoundError: No module named 'clickhouse_connect'
+
+lattice/spec/db.py:422: ModuleNotFoundError
+____ ERROR at setup of test_expect_db_comparisons_on_each_server[postgres] _____
+
+request = <SubRequest 'any_server' for <Function test_expect_db_comparisons_on_each_server[postgres]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x1120496d0>
+url = 'postgresql://lattice:lattice@127.0.0.1:55839/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+______ ERROR at setup of test_expect_db_comparisons_on_each_server[mysql] ______
+
+request = <SubRequest 'any_server' for <Function test_expect_db_comparisons_on_each_server[mysql]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.MysqlDatabase object at 0x11204a710>
+url = 'mysql://root:lattice@127.0.0.1:55854/mysql'
+
+    def __init__(self, url: str) -> None:
+>       import pymysql
+E       ModuleNotFoundError: No module named 'pymysql'
+
+lattice/spec/db.py:372: ModuleNotFoundError
+___ ERROR at setup of test_expect_db_comparisons_on_each_server[clickhouse] ____
+
+request = <SubRequest 'any_server' for <Function test_expect_db_comparisons_on_each_server[clickhouse]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.ClickhouseDatabase object at 0x11204ad50>
+url = 'clickhouse://lattice:lattice@127.0.0.1:55868/default'
+
+    def __init__(self, url: str) -> None:
+>       import clickhouse_connect
+E       ModuleNotFoundError: No module named 'clickhouse_connect'
+
+lattice/spec/db.py:422: ModuleNotFoundError
+__ ERROR at setup of test_invariants_compile_and_run_on_each_server[postgres] __
+
+request = <SubRequest 'any_server' for <Function test_invariants_compile_and_run_on_each_server[postgres]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x11396e9e0>
+url = 'postgresql://lattice:lattice@127.0.0.1:55881/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+___ ERROR at setup of test_invariants_compile_and_run_on_each_server[mysql] ____
+
+request = <SubRequest 'any_server' for <Function test_invariants_compile_and_run_on_each_server[mysql]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.MysqlDatabase object at 0x113a242b0>
+url = 'mysql://root:lattice@127.0.0.1:55896/mysql'
+
+    def __init__(self, url: str) -> None:
+>       import pymysql
+E       ModuleNotFoundError: No module named 'pymysql'
+
+lattice/spec/db.py:372: ModuleNotFoundError
+_ ERROR at setup of test_invariants_compile_and_run_on_each_server[clickhouse] _
+
+request = <SubRequest 'any_server' for <Function test_invariants_compile_and_run_on_each_server[clickhouse]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.ClickhouseDatabase object at 0x113a24770>
+url = 'clickhouse://lattice:lattice@127.0.0.1:55909/default'
+
+    def __init__(self, url: str) -> None:
+>       import clickhouse_connect
+E       ModuleNotFoundError: No module named 'clickhouse_connect'
+
+lattice/spec/db.py:422: ModuleNotFoundError
+_ ERROR at setup of test_mysql_clones_keep_indexes_generated_columns_keys_views_and_triggers _
+
+db_servers = {}
+
+    @pytest.fixture
+    def my(db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, "mysql")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.MysqlDatabase object at 0x113a24c30>
+url = 'mysql://root:lattice@127.0.0.1:55923/mysql'
+
+    def __init__(self, url: str) -> None:
+>       import pymysql
+E       ModuleNotFoundError: No module named 'pymysql'
+
+lattice/spec/db.py:372: ModuleNotFoundError
+__________ ERROR at setup of test_clickhouse_refuses_to_clone_a_view ___________
+
+db_servers = {}
+
+    @pytest.fixture
+    def ch(db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, "clickhouse")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.ClickhouseDatabase object at 0x113a250f0>
+url = 'clickhouse://lattice:lattice@127.0.0.1:55938/default'
+
+    def __init__(self, url: str) -> None:
+>       import clickhouse_connect
+E       ModuleNotFoundError: No module named 'clickhouse_connect'
+
+lattice/spec/db.py:422: ModuleNotFoundError
+________________ ERROR at setup of test_clone_timing[postgres] _________________
+
+request = <SubRequest 'any_server' for <Function test_clone_timing[postgres]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x113a255b0>
+url = 'postgresql://lattice:lattice@127.0.0.1:55956/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+__________________ ERROR at setup of test_clone_timing[mysql] __________________
+
+request = <SubRequest 'any_server' for <Function test_clone_timing[mysql]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.MysqlDatabase object at 0x113a39910>
+url = 'mysql://root:lattice@127.0.0.1:55970/mysql'
+
+    def __init__(self, url: str) -> None:
+>       import pymysql
+E       ModuleNotFoundError: No module named 'pymysql'
+
+lattice/spec/db.py:372: ModuleNotFoundError
+_______________ ERROR at setup of test_clone_timing[clickhouse] ________________
+
+request = <SubRequest 'any_server' for <Function test_clone_timing[clickhouse]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql", "clickhouse"])
+    def any_server(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.ClickhouseDatabase object at 0x113a39d90>
+url = 'clickhouse://lattice:lattice@127.0.0.1:55984/default'
+
+    def __init__(self, url: str) -> None:
+>       import clickhouse_connect
+E       ModuleNotFoundError: No module named 'clickhouse_connect'
+
+lattice/spec/db.py:422: ModuleNotFoundError
+_______ ERROR at setup of test_a_correct_app_passes_c_d_and_x[postgres] ________
+
+request = <SubRequest 'oltp' for <Function test_a_correct_app_passes_c_d_and_x[postgres]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql"])
+    def oltp(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+        from tests.spec.conftest import server
+    
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/test_multidb.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x1145e9250>
+url = 'postgresql://lattice:lattice@127.0.0.1:58173/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+_________ ERROR at setup of test_a_correct_app_passes_c_d_and_x[mysql] _________
+
+request = <SubRequest 'oltp' for <Function test_a_correct_app_passes_c_d_and_x[mysql]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql"])
+    def oltp(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+        from tests.spec.conftest import server
+    
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/test_multidb.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.MysqlDatabase object at 0x112306be0>
+url = 'mysql://root:lattice@127.0.0.1:58175/mysql'
+
+    def __init__(self, url: str) -> None:
+>       import pymysql
+E       ModuleNotFoundError: No module named 'pymysql'
+
+lattice/spec/db.py:372: ModuleNotFoundError
+________ ERROR at setup of test_layer_x_refutes_a_racy_create[postgres] ________
+
+request = <SubRequest 'oltp' for <Function test_layer_x_refutes_a_racy_create[postgres]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql"])
+    def oltp(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+        from tests.spec.conftest import server
+    
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/test_multidb.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x112306360>
+url = 'postgresql://lattice:lattice@127.0.0.1:58177/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+_________ ERROR at setup of test_layer_x_refutes_a_racy_create[mysql] __________
+
+request = <SubRequest 'oltp' for <Function test_layer_x_refutes_a_racy_create[mysql]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql"])
+    def oltp(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+        from tests.spec.conftest import server
+    
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/test_multidb.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.MysqlDatabase object at 0x111aa4d10>
+url = 'mysql://root:lattice@127.0.0.1:58183/mysql'
+
+    def __init__(self, url: str) -> None:
+>       import pymysql
+E       ModuleNotFoundError: No module named 'pymysql'
+
+lattice/spec/db.py:372: ModuleNotFoundError
+_____ ERROR at setup of test_a_planted_bug_is_caught_by_c_and_d[postgres] ______
+
+request = <SubRequest 'oltp' for <Function test_a_planted_bug_is_caught_by_c_and_d[postgres]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql"])
+    def oltp(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+        from tests.spec.conftest import server
+    
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/test_multidb.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x1167e78a0>
+url = 'postgresql://lattice:lattice@127.0.0.1:58185/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+_______ ERROR at setup of test_a_planted_bug_is_caught_by_c_and_d[mysql] _______
+
+request = <SubRequest 'oltp' for <Function test_a_planted_bug_is_caught_by_c_and_d[mysql]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql"])
+    def oltp(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+        from tests.spec.conftest import server
+    
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/test_multidb.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.MysqlDatabase object at 0x11671e150>
+url = 'mysql://root:lattice@127.0.0.1:58189/mysql'
+
+    def __init__(self, url: str) -> None:
+>       import pymysql
+E       ModuleNotFoundError: No module named 'pymysql'
+
+lattice/spec/db.py:372: ModuleNotFoundError
+_ ERROR at setup of test_a_service_that_does_not_finish_is_a_d_finding[postgres] _
+
+request = <SubRequest 'oltp' for <Function test_a_service_that_does_not_finish_is_a_d_finding[postgres]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql"])
+    def oltp(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+        from tests.spec.conftest import server
+    
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/test_multidb.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x1139e8750>
+url = 'postgresql://lattice:lattice@127.0.0.1:58195/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+_ ERROR at setup of test_a_service_that_does_not_finish_is_a_d_finding[mysql] __
+
+request = <SubRequest 'oltp' for <Function test_a_service_that_does_not_finish_is_a_d_finding[mysql]>>
+db_servers = {}
+
+    @pytest.fixture(params=["postgres", "mysql"])
+    def oltp(request: pytest.FixtureRequest, db_servers: dict[str, DbServer]) -> DbServer:
+        from tests.spec.conftest import server
+    
+>       return server(db_servers, request.param)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/test_multidb.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.MysqlDatabase object at 0x11671da50>
+url = 'mysql://root:lattice@127.0.0.1:58197/mysql'
+
+    def __init__(self, url: str) -> None:
+>       import pymysql
+E       ModuleNotFoundError: No module named 'pymysql'
+
+lattice/spec/db.py:372: ModuleNotFoundError
+__ ERROR at setup of test_layers_b_and_r_are_skipped_on_a_server_with_a_note ___
+
+db_servers = {}
+
+    @pytest.fixture
+    def pg(db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, "postgres")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x11671db50>
+url = 'postgresql://lattice:lattice@127.0.0.1:58201/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+________ ERROR at setup of test_the_cli_takes_database_and_database_url ________
+
+db_servers = {}
+
+    @pytest.fixture
+    def pg(db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, "postgres")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x1141b0c80>
+url = 'postgresql://lattice:lattice@127.0.0.1:58205/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+_____ ERROR at setup of test_clickhouse_counts_where_equals_and_invariants _____
+
+db_servers = {}
+
+    @pytest.fixture
+    def ch(db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, "clickhouse")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.ClickhouseDatabase object at 0x115f05bf0>
+url = 'clickhouse://lattice:lattice@127.0.0.1:58213/default'
+
+    def __init__(self, url: str) -> None:
+>       import clickhouse_connect
+E       ModuleNotFoundError: No module named 'clickhouse_connect'
+
+lattice/spec/db.py:422: ModuleNotFoundError
+___________ ERROR at setup of test_clickhouse_catches_a_planted_bug ____________
+
+db_servers = {}
+
+    @pytest.fixture
+    def ch(db_servers: dict[str, DbServer]) -> DbServer:
+>       return server(db_servers, "clickhouse")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/spec/conftest.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/spec/conftest.py:59: in server
+    db_servers[dialect] = start_container(dialect)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.ClickhouseDatabase object at 0x115f05f20>
+url = 'clickhouse://lattice:lattice@127.0.0.1:58215/default'
+
+    def __init__(self, url: str) -> None:
+>       import clickhouse_connect
+E       ModuleNotFoundError: No module named 'clickhouse_connect'
+
+lattice/spec/db.py:422: ModuleNotFoundError
+=================================== FAILURES ===================================
+______________ test_a_check_starts_and_removes_its_own_container _______________
+
+db_servers = {}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x115d62190>
+
+    def test_a_check_starts_and_removes_its_own_container(db_servers, monkeypatch):
+        monkeypatch.delenv("LATTICE_POSTGRES_URL", raising=False)
+        before = set(lattice_containers())
+>       report = check(SPEC, make_app("safe"), build_db("safe"), layers="D", login=racy.login,
+                       runtime=RUNTIME, database="postgres")  # fmt: skip
+
+tests/spec/test_multidb.py:253: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+lattice/spec/check.py:2207: in check
+    _on_server(spec, report, run, app_factory, db_factory, dialect, database_url, opts)
+lattice/spec/check.py:2244: in _on_server
+    server, owned = server_for(dialect, database_url)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:454: in server_for
+    return start_container(dialect, name_prefix=name_prefix, extra_args=extra_args), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lattice/spec/dbserver.py:209: in start_container
+    server.wait_ready(timeout)
+lattice/spec/dbserver.py:265: in wait_ready
+    with open_db(self.url) as db:
+         ^^^^^^^^^^^^^^^^^
+lattice/spec/db.py:484: in open_db
+    db = engine.adapter_class()(str(ref))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <lattice.spec.db.PostgresDatabase object at 0x1141b26c0>
+url = 'postgresql://lattice:lattice@127.0.0.1:58209/postgres?sslmode=disable'
+
+    def __init__(self, url: str) -> None:
+>       import psycopg
+E       ModuleNotFoundError: No module named 'psycopg'
+
+lattice/spec/db.py:339: ModuleNotFoundError
+_________________ test_existing_view_files_are_byte_unchanged __________________
+
+    def test_existing_view_files_are_byte_unchanged() -> None:
+        if shutil.which("git") is None:
+            pytest.skip("git is not installed")
+        changed = []
+        for f in sorted((JS / "views").glob("*.js")) + sorted(JS.glob("*.js")):
+            rel = f.relative_to(ROOT).as_posix()
+            if f in (APPMAP, IMPACT) or f.name in ("app.js", "api.js"):
+                continue
+            r = subprocess.run(
+                ["git", "-C", str(ROOT), "show", f"HEAD:{rel}"], capture_output=True, check=False
+            )
+            if r.returncode == 0 and r.stdout != f.read_bytes():
+                changed.append(rel)
+>       assert changed == []
+E       AssertionError: assert ['lattice/stu...s/session.js'] == []
+E         
+E         Left contains 2 more items, first extra item: 'lattice/studio/web/js/chat.js'
+E         Use -v to get more diff
+
+tests/studio/test_appmap_ui.py:133: AssertionError
+_________ test_the_template_reconciles_with_one_explained_disagreement _________
+
+model = RepoModel(app_package='bench.template_app.app', tables=(TableModel(name='User', table_name='user', module='bench.templ...serialization=(), role_scheme=None, framework='fastapi', orm='sqlmodel', auth=None, constraints=(), excluded_routes=())
+template_openapi = OpenApiFacts(endpoints=(Endpoint(method='POST', path='/api/v1/login/access-token', operation=None, params=(), body='Bo...hemaProp(name='ctx', type='object', format=None, ref=None, required=False, nullable=False, default=None, bounds={})))})
+template_dbf = DbFacts(tables=(DbTable(name='applications', columns=(DbColumn(name='id', type='INTEGER', nullable=False, default=None...',), foreign_keys=(), indexes=(DbIndex(name='ix_users_email', columns=('email',), unique=True, origin='c'),), rows=0)))
+
+    def test_the_template_reconciles_with_one_explained_disagreement(
+        model, template_openapi, template_dbf
+    ):
+        found = reconcile(model, template_openapi, template_dbf)
+        # the private router is mounted only when FASTAPI_ENV == "development"
+        # (bench/template_app/app/api/main.py); the extractor lists it, the served app does not.
+>       assert found == [
+            Disagreement(
+                "openapi",
+                f"POST {API}/private/users/",
+                "endpoint",
+                "present",
+                "absent",
+                "the route is in the source but the running app does not serve it "
+                "(a conditional include_router?)",
+            )
+        ]
+E       AssertionError: assert [Disagreement...nt', note='')] == [Disagreement...de_router?)')]
+E         
+E         Left contains 5 more items, first extra item: Disagreement(source='db', subject='applications', field='table', extracted='absent', other='present', note='')
+E         Use -v to get more diff
+
+tests/importer/test_outside.py:154: AssertionError
+=============================== warnings summary ===============================
+bench/import_repos/multivendor/app/core/config.py:5
+  /Users/vivekgade/Documents/lattice-fc2/bench/import_repos/multivendor/app/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_multivendor_spec.py: 30 warnings
+tests/spec/test_phase0_exit.py: 26 warnings
+tests/spec/test_probes.py: 76 warnings
+tests/importer/test_emit_spec.py: 9 warnings
+tests/importer/test_mine.py: 32 warnings
+tests/importer/test_review_cli.py: 18 warnings
+  /Users/vivekgade/Documents/lattice-fc2/bench/import_repos/multivendor/app/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_multivendor_spec.py: 3 warnings
+tests/spec/test_phase0_exit.py: 14 warnings
+tests/spec/test_probes.py: 45 warnings
+tests/importer/test_emit_spec.py: 12 warnings
+tests/importer/test_mine.py: 24 warnings
+tests/importer/test_review_cli.py: 24 warnings
+  /Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/pydantic/_internal/_fields.py:727: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return fac()
+
+tests/spec/test_phase0_exit.py: 10 warnings
+tests/spec/test_probes.py: 14 warnings
+tests/importer/test_mine.py: 1 warning
+  /Users/vivekgade/Documents/lattice-fc2/bench/edit_slice/repos/multivendor.py:91: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    exp = datetime.utcnow() + timedelta(days=36500)
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_a_mutant_is_refuted_by_th0/mv_mutant_drop_owner_filter/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[drop_owner_filter]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_a_mutant_is_refuted_by_th0/mv_mutant_drop_owner_filter/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_a_mutant_is_refuted_by_th1/mv_mutant_remove_bound/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[remove_bound]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_a_mutant_is_refuted_by_th1/mv_mutant_remove_bound/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_a_mutant_is_refuted_by_th2/mv_mutant_swallow_unique_check/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[swallow_unique_check]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_a_mutant_is_refuted_by_th2/mv_mutant_swallow_unique_check/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_a_mutant_is_refuted_by_th3/mv_mutant_widen_role/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+tests/spec/test_probes.py::test_a_mutant_is_refuted_by_the_expected_item[widen_role]
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_a_mutant_is_refuted_by_th3/mv_mutant_widen_role/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_a_refuted_item_proposes_t0/mv_mutant_widen_role_obs/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+tests/spec/test_probes.py::test_a_refuted_item_proposes_the_observed_fact
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_a_refuted_item_proposes_t0/mv_mutant_widen_role_obs/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_layer_r_runs_with_the_oth0/mv_mutant_remove_bound_c/core/config.py:5: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class Settings(BaseSettings):
+
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+tests/spec/test_probes.py::test_layer_r_runs_with_the_other_layers_and_c_watches_its_requests
+  /private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/pytest-of-vivekgade/pytest-3852/test_layer_r_runs_with_the_oth0/mv_mutant_remove_bound_c/core/security.py:18: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+  /Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/marshmallow/schema.py:129: RemovedInMarshmallow4Warning: The `ordered` `class Meta` option is deprecated. Field order is already preserved by default. Set `Schema.dict_class` to OrderedDict to maintain the previous behavior.
+    klass.opts = klass.OPTIONS_CLASS(meta, ordered=ordered)
+
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+tests/importer/flask/test_extract_microblog.py::test_framework_and_tables
+  /Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/marshmallow_sqlalchemy/load_instance_mixin.py:44: RemovedInMarshmallow4Warning: The `ordered` `class Meta` option is deprecated. Field order is already preserved by default. Set `Schema.dict_class` to OrderedDict to maintain the previous behavior.
+    super().__init__(meta, *args, **kwargs)
+
+tests/importer/flask/test_flask_runtime.py: 14 warnings
+  /Users/vivekgade/Documents/lattice/.venv/lib/python3.14/site-packages/sqlalchemy/sql/schema.py:3627: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+
+tests/importer/flask/test_flask_runtime.py::test_runtime_logs_in_every_role[flasky]
+tests/importer/flask/test_flask_runtime.py::test_runtime_logs_in_every_role[flasky]
+tests/importer/flask/test_flask_runtime.py::test_runtime_logs_in_every_role[flasky]
+  /Users/vivekgade/Documents/lattice-fc2/bench/import_repos/flasky/app/models.py:269: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    return User.query.get(data['id'])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/spec/test_ask.py:612: live LLM smoke test: set LATTICE_LIVE_LLM=1
+SKIPPED [1] tests/spec/test_ask.py:634: live LLM smoke test: set LATTICE_LIVE_LLM=1
+SKIPPED [1] tests/spec/test_draft.py:413: live LLM smoke test: set LATTICE_LIVE_LLM=1
+SKIPPED [1] tests/spec/test_incremental.py:664: live LLM run: set LATTICE_LIVE_LLM=1
+SKIPPED [1] tests/studio/test_server.py:689: live LLM run: set LATTICE_LIVE_LLM=1
+3 failed, 3610 passed, 5 skipped, 4 deselected, 414 warnings, 29 errors in 961.29s (0:16:01)

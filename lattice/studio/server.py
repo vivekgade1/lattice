@@ -29,6 +29,11 @@ change (Spike D's report, tiers 2 and 3, plus the change's own check and a hash-
 tier 1); all three are read-only, run no process and write nothing. With ``[impact]``,
 ``POST /api/ask`` answers "what breaks if ..." questions without a model
 (lattice/spec/impact_ask.py).
+``[chat]`` (API.md v1.26; ``route`` and ``check``, both default false, byte-compat when absent):
+``route`` answers more question shapes from the app map without a model
+(lattice/spec/chat_route.py, also as the session path's pre-route) and ``check`` passes every
+chat text through the deterministic claim checker (lattice/spec/claim_check.py) before it is
+shown; a bad value refuses the start, naming the key.
 
 **The project directory** holds ``REQUIREMENTS.md``, ``spec.py`` (defines ``SPEC``),
 ``spec.trace.json`` and, optionally, ``studio.toml``::
@@ -147,7 +152,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 from lattice.improve.events import EventLog
 from lattice.llm.client import Generator
 from lattice.spec import appmap as appmap_mod
-from lattice.spec import impact_ask
+from lattice.spec import chat_route, claim_check, impact_ask
 from lattice.spec.ask import VerifyConfig, ask, build_digest
 from lattice.spec.draft import load_spec
 from lattice.spec.incremental import (
@@ -167,9 +172,12 @@ from lattice.studio.plan import PlanError, PlanManager
 from lattice.studio.rebuild import MAX_ROUNDS_LIMIT, WORKTREE_DIR, Rebuilder, RebuildError
 from lattice.studio.session import (
     DEFAULT_SESSION_TIMEOUT,
+    ChatConfigError,
+    ChatHooks,
     SessionError,
     SessionManager,
     claude_available,
+    parse_chat,
 )
 from lattice.studio.state import StateStore, state_dir_for
 
@@ -286,6 +294,7 @@ class StudioConfig:
     engines: Any = dataclasses.field(default_factory=dict)  # [engines] (API v1.14), as written
     implementation: dict[str, Any] = dataclasses.field(default_factory=dict)  # API v1.22
     impact: dict[str, Any] | None = None  # API v1.24/v1.25: the [impact] table; None = absent
+    chat: Any = None  # API v1.26: the [chat] table as written; None = absent
 
     @classmethod
     def load(cls, root: Path) -> StudioConfig:
@@ -305,6 +314,7 @@ class StudioConfig:
             if isinstance(data.get("implementation"), dict)
             else {},
             dict(data["impact"]) if isinstance(data.get("impact"), dict) else None,
+            data.get("chat"),
         )
 
     @property
@@ -1062,6 +1072,7 @@ class Studio:
         self.root = root.resolve()
         self.name = name or self.root.name
         self.config = StudioConfig.load(self.root)
+        self.chat_cfg = parse_chat(self.config.chat, bool(self.config.implementation))
         self.model = model or self.config.llm.get("model") or DEFAULT_MODEL
         self._generator = generator
         self._generator_factory = generator_factory
@@ -1597,6 +1608,7 @@ class Studio:
                     timeout=self.session_timeout,
                     studio_url=self.base_url,
                     mcp=self.mcp_intake,
+                    chat=self.chat_hooks(),
                 )
             return self._sessions
 
@@ -1966,6 +1978,52 @@ class Studio:
 
         return impact_ask.route(question, lookup=self._impact_body, appmap=am)
 
+    # -- the chat's router and claim checker (API v1.26; both off unless `[chat]` switches them on)
+    def _map_or_none(self) -> appmap_mod.AppMap | None:
+        try:
+            return self._appmap()
+        except Exception:  # noqa: BLE001 -- no map is better than no answer
+            return None
+
+    def chat_context(
+        self, question: str, selected: Sequence[str] = (), change: str | None = None
+    ) -> claim_check.CheckContext:
+        """What the claim checker needs for one turn: the reports (built in process, tiers 2 and 3,
+        nothing run), the app map and the spec digest, each built once, on first use."""
+
+        def digest() -> Any:
+            snap = self.snapshot()
+            return build_digest(snap.spec, snap.trace)
+
+        return claim_check.CheckContext(
+            question,
+            open_change=change,
+            lookup=self._impact_body if self.config.impact is not None else None,
+            appmap=self._map_or_none,
+            digest=digest,
+        )
+
+    def chat_pre_route(self, question: str, selected: Sequence[str] = ()) -> tuple[str, str] | None:
+        """The session's pre-route: ``(markdown, kind)`` of a model-free answer, else None. The
+        impact router first (only with ``[impact]``), then :mod:`lattice.spec.chat_route`."""
+        if self.config.impact is not None and impact_ask.is_routed(question):
+            ans = impact_ask.route(question, lookup=self._impact_body, appmap=self._map_or_none)
+            if ans is not None:
+                return chat_route.answer_markdown(ans), chat_route.routed_kind(ans)
+        r = chat_route.route(question, appmap=self._map_or_none, selected=list(selected))
+        return (r.markdown, r.route) if r is not None else None
+
+    def chat_hooks(self) -> ChatHooks | None:
+        cfg = self.chat_cfg
+        if not (cfg.route or cfg.check):
+            return None
+        return ChatHooks(
+            route=cfg.route,
+            check=cfg.check,
+            context=self.chat_context if cfg.check else None,
+            pre_route=self.chat_pre_route if cfg.route else None,
+        )
+
     # -- ask
     def _inventory(self) -> Any:
         """The implementation inventory of ``[implementation]`` (API v1.22), re-read and
@@ -2006,6 +2064,11 @@ class Studio:
             log(f"ask: routed to impact ({question[:60]!r})")
             return routed
         selected = [str(s) for s in body.get("selected") or []]
+        if self.chat_cfg.route:  # API v1.26: the map router, 0 model calls
+            mapped = chat_route.route(question, appmap=self._map_or_none, selected=selected)
+            if mapped is not None:
+                log(f"ask: routed to the app map ({mapped.shape}, {question[:60]!r})")
+                return mapped.to_ask()
         snap = self.snapshot()
         verify = bool(body.get("verify")) and self.harness is not None
         inventory = self._inventory()  # API v1.22: None unless studio.toml has [implementation]
@@ -2048,6 +2111,8 @@ class Studio:
                 HTTPStatus.GATEWAY_TIMEOUT, f"no answer within {self.ask_timeout:g}s"
             ) from None
         log(f"ask: {out['kind']} in {out['usage'].get('seconds')}s ({question[:60]!r})")
+        if self.chat_cfg.check:  # API v1.26: the claim checker; `check` only when it changed
+            out = claim_check.check_answer(out, self.chat_context(question, selected, None))
         return out
 
     # -- changes
@@ -3111,15 +3176,19 @@ def _single(args: argparse.Namespace) -> StudioServer | int:
         print(f"studio: --default {args.default}: the project is {project_name(root)}",
               file=sys.stderr)  # fmt: skip
         return 2
-    srv = make_server(
-        root,
-        args.port,
-        model=args.model,
-        generator=StubGenerator() if args.stub_llm else None,
-        verbose=not args.quiet,
-        workspace=args.workspace_path,
-        allow_apply=args.allow_apply,
-    )
+    try:
+        srv = make_server(
+            root,
+            args.port,
+            model=args.model,
+            generator=StubGenerator() if args.stub_llm else None,
+            verbose=not args.quiet,
+            workspace=args.workspace_path,
+            allow_apply=args.allow_apply,
+        )
+    except ChatConfigError as err:  # API v1.26: a bad [chat] value refuses the start
+        print(f"studio: {err}", file=sys.stderr)
+        return 2
     st = srv.studio
     print(
         f"Lattice Studio on http://127.0.0.1:{srv.server_address[1]}/ -- {root} "
@@ -3155,6 +3224,15 @@ def _many(args: argparse.Namespace) -> StudioServer | int:
         print(f"studio: --default {args.default}: no such project (have {', '.join(names)})",
               file=sys.stderr)  # fmt: skip
         return 2
+    for name, root in projects:  # API v1.26: a bad [chat] value refuses the start
+        try:
+            cfg = StudioConfig.load(root)
+            parse_chat(cfg.chat, bool(cfg.implementation))
+        except ChatConfigError as err:
+            print(f"studio: {name}: {err}", file=sys.stderr)
+            return 2
+        except (OSError, ValueError):
+            continue  # a studio.toml that does not parse is the project's own problem
     srv = make_hub_server(
         projects,
         args.port,

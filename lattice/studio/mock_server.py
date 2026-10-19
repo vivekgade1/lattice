@@ -181,6 +181,8 @@ import re
 import tempfile
 import threading
 import time
+import tomllib
+from collections.abc import Callable
 from datetime import UTC, datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -190,13 +192,17 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 from lattice.contracts.linked import LEGEND
 from lattice.spec import appmap as appmap_mod
-from lattice.spec import impact_ask
+from lattice.spec import chat_route, claim_check, impact_ask
 from lattice.studio import areas as areas_mod
 from lattice.studio import plan as plan_mod
 from lattice.studio.mcp_intake import McpIntake, SourceError, parse_init, parse_source
 from lattice.studio.session import (
+    ChatConfig,
+    ChatHooks,
     SessionError,
     Transcript,
+    TurnCheck,
+    parse_chat,
     parse_create,
     parse_message,
 )
@@ -1028,11 +1034,14 @@ class MockSessions:
     fed through the same normalizer as the real server (lattice/studio/session.py). A
     message containing "limit" replays ``session-error.jsonl`` (a usage-limit error)."""
 
-    def __init__(self, fixture_dir: Path) -> None:
+    def __init__(
+        self, fixture_dir: Path, chat: Callable[[], ChatHooks | None] | None = None
+    ) -> None:
         self.fixture_dir = fixture_dir
         self.lock = threading.Lock()
         self.sessions: dict[str, dict[str, Any]] = {}
         self._next = 1
+        self._chat = chat  # API v1.26: the fixture project's `[chat]`, None: off
 
     def _records(self, name: str) -> list[dict[str, Any]]:
         text = (self.fixture_dir / f"{name}.jsonl").read_text(encoding="utf-8")
@@ -1074,6 +1083,8 @@ class MockSessions:
                 "polls": 0,
                 "fed": 0,
             }
+            hooks = self._chat() if self._chat is not None else None
+            self.sessions[sid]["t"].report_routed = bool(hooks and hooks.route)
             return self._summary(self.sessions[sid])
 
     def list(self) -> list[dict[str, Any]]:
@@ -1087,8 +1098,27 @@ class MockSessions:
             t: Transcript = s["t"]
             if t.state in ("starting", "running"):
                 raise SessionError(409, "a turn is already running in this session")
+            hooks = self._chat() if self._chat is not None else None
+            if hooks is not None and hooks.route and hooks.pre_route is not None:
+                routed = hooks.pre_route(text, selected)
+                if routed is not None:  # API v1.26: a model-free turn, no replay
+                    t.add_user(text, selected)
+                    tc = (
+                        TurnCheck(hooks.context(text, selected, s["change"]))
+                        if hooks.check and hooks.context is not None
+                        else None
+                    )
+                    t.begin_check(None)
+                    t.routed_turn(routed[0], routed[1], tc)
+                    return {"turn": t.turns}
             t.add_user(text, selected)
             t.set_state("starting")
+            checking = hooks is not None and hooks.check and hooks.context is not None
+            t.begin_check(
+                TurnCheck(hooks.context(text, selected, s["change"]))
+                if checking and hooks
+                else None
+            )
             fixture = "session-error" if "limit" in text.lower() else "session-ask"
             s["records"], s["polls"], s["fed"] = self._records(fixture), 0, 0
             return {"turn": t.turns}
@@ -1200,7 +1230,7 @@ class MockState:
         # spec sync (v1.12): a fixture branch whose spec is behind main's
         self.branch_heads[SPEC_BEHIND_BRANCH] = "5bc1e2d"
         self.spec_behind: dict[str, list[str]] = {SPEC_BEHIND_BRANCH: list(SPEC_BEHIND_FILES)}
-        self.sessions = MockSessions(fixture_dir)
+        self.sessions = MockSessions(fixture_dir, self.chat_hooks)
         self.plans = MockPlans(self)
         self.mcp_refreshed: str | None = None
         # API v1.21: apply jobs and live records, in memory; `apply_enabled` is a fixture choice
@@ -1659,6 +1689,60 @@ class MockState:
     def get_impact(self, cid: str, section: str | None) -> dict[str, Any]:
         return impact_ask.with_section(self.impact_body(cid), section)
 
+    # -- the chat's router and claim checker (API v1.26), the real modules over the fixture project
+    def chat_cfg(self) -> ChatConfig:
+        """``[chat]`` of the fixture project's studio.toml (the committed fixture has none: off)."""
+        root = self._appmap_root()
+        if root is None:
+            return parse_chat(None, False)
+        try:
+            data = tomllib.loads((root / "studio.toml").read_text(encoding="utf-8"))
+        except (OSError, tomllib.TOMLDecodeError):
+            return parse_chat(None, False)
+        return parse_chat(data.get("chat"), isinstance(data.get("implementation"), dict))
+
+    def _digest(self) -> Any:
+        from lattice.spec.ask import build_digest  # noqa: PLC0415
+        from lattice.spec.draft import load_spec  # noqa: PLC0415
+        from lattice.spec.rules import Trace  # noqa: PLC0415
+
+        root = self._appmap_root()
+        if root is None:
+            return None
+        spec, _errors = load_spec((root / "spec.py").read_text(encoding="utf-8"))
+        trace = Trace.from_json((root / "spec.trace.json").read_text(encoding="utf-8"))
+        return build_digest(spec, trace) if spec is not None else None
+
+    def chat_context(
+        self, question: str, selected: Any = (), change: str | None = None
+    ) -> claim_check.CheckContext:
+        return claim_check.CheckContext(
+            question,
+            open_change=change,
+            lookup=self.impact_body if self._appmap_root() is not None else None,
+            appmap=self.appmap,
+            digest=self._digest,
+        )
+
+    def chat_pre_route(self, question: str, selected: Any = ()) -> tuple[str, str] | None:
+        if self._appmap_root() is not None and impact_ask.is_routed(question):
+            ans = impact_ask.route(question, lookup=self.impact_body, appmap=self.appmap)
+            if ans is not None:
+                return chat_route.answer_markdown(ans), chat_route.routed_kind(ans)
+        r = chat_route.route(question, appmap=self.appmap, selected=list(selected))
+        return (r.markdown, r.route) if r is not None else None
+
+    def chat_hooks(self) -> ChatHooks | None:
+        cfg = self.chat_cfg()
+        if not (cfg.route or cfg.check):
+            return None
+        return ChatHooks(
+            route=cfg.route,
+            check=cfg.check,
+            context=self.chat_context if cfg.check else None,
+            pre_route=self.chat_pre_route if cfg.route else None,
+        )
+
     # POST /api/ask
     def ask(self, body: dict[str, Any]) -> dict[str, Any]:
         question = str(body.get("question", ""))
@@ -1666,9 +1750,16 @@ class MockState:
             routed = impact_ask.route(question, lookup=self.impact_body, appmap=self.appmap)
             if routed is not None:
                 return routed
+        cfg = self.chat_cfg()
+        if cfg.route:  # API v1.26
+            mapped = chat_route.route(question, appmap=self.appmap)
+            if mapped is not None:
+                return mapped.to_ask()
         answer = self._load(pick_ask_fixture(str(body.get("question", ""))))
         if not body.get("verify"):
             answer["verified"] = None
+        if cfg.check:  # API v1.26
+            answer = claim_check.check_answer(answer, self.chat_context(question))
         return answer
 
     # POST /api/changes

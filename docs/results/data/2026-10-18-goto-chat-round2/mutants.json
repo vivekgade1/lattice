@@ -1,0 +1,539 @@
+{
+ "seconds": 368.8,
+ "control_passes": true,
+ "killed": 19,
+ "survived": [],
+ "all_killed": true,
+ "mutants": {
+  "CM0": {
+   "mutant": "control: the build as it is",
+   "edits": 0,
+   "status": "PASS",
+   "killers": [],
+   "unit": "139 passed in 6.14s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM1": {
+   "mutant": "any well-formed t1-/t2- id counts as support, even from another change's report (E2 off for t ids)",
+   "edits": 2,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_another_changes_id_is_not_support_for_this_one",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[E2a]",
+      "tests/spec/test_claim_check.py::test_no_impact_table_means_no_relevant_ids",
+      "tests/spec/test_claim_check.py::test_the_checker_acts_on_every_scorer_claim_and_on_speculation_only",
+      "tests/spec/test_claim_check.py::test_the_exact_output[E2a]"
+     ]
+    },
+    {
+     "kind": "replay",
+     "probes": {
+      "PC1": false,
+      "PC2": false,
+      "PC3": true
+     }
+    }
+   ],
+   "unit": "5 failed, 134 passed in 6.21s",
+   "replay": {
+    "PC1": false,
+    "PC2": false,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM2": {
+   "mutant": "a t3- id counts as support",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_a_tier_3_id_is_not_support",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D3a]",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D3d]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D3a]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D3d]"
+     ]
+    }
+   ],
+   "unit": "5 failed, 134 passed in 6.22s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM3": {
+   "mutant": "may, might and could are accepted as an owner label",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_may_might_could_are_not_labels",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D7b]"
+     ]
+    }
+   ],
+   "unit": "2 failed, 137 passed in 6.23s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM4": {
+   "mutant": "negations are exempted (the lenient rule used as the checker rule)",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D7c]",
+      "tests/spec/test_claim_check.py::test_the_checker_acts_on_every_scorer_claim_and_on_speculation_only",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D7c]",
+      "tests/studio/test_chat_check_session.py::test_check_mode_shows_no_unchecked_text_and_checks_every_block",
+      "tests/studio/test_chat_check_session.py::test_every_block_counts_are_that_blocks"
+     ]
+    },
+    {
+     "kind": "replay",
+     "probes": {
+      "PC1": false,
+      "PC2": false,
+      "PC3": false
+     }
+    }
+   ],
+   "unit": "5 failed, 134 passed in 6.18s",
+   "replay": {
+    "PC1": false,
+    "PC2": false,
+    "PC3": false
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM5": {
+   "mutant": "the sentence splitter splits on lines only",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_the_unit_and_claim_rule_are_the_scorers_literally",
+      "tests/studio/test_chat_check_session.py::test_check_mode_shows_no_unchecked_text_and_checks_every_block",
+      "tests/studio/test_chat_check_session.py::test_every_block_counts_are_that_blocks"
+     ]
+    },
+    {
+     "kind": "replay",
+     "probes": {
+      "PC1": false,
+      "PC2": false,
+      "PC3": false
+     }
+    }
+   ],
+   "unit": "3 failed, 136 passed in 6.21s",
+   "replay": {
+    "PC1": false,
+    "PC2": false,
+    "PC3": false
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM6": {
+   "mutant": "label laundering: the model's sentence is kept and a label appended instead of replaced",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_a_bullet_keeps_its_marker",
+      "tests/spec/test_claim_check.py::test_a_quoted_rule_is_the_specs_own_text",
+      "tests/spec/test_claim_check.py::test_a_replacement_is_never_the_models_sentence_with_a_label",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D2a]",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D2b]",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D2c]",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D3a]",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D3b]"
+     ]
+    },
+    {
+     "kind": "replay",
+     "probes": {
+      "PC1": true,
+      "PC2": false,
+      "PC3": false
+     }
+    }
+   ],
+   "unit": "39 failed, 100 passed in 6.25s",
+   "replay": {
+    "PC1": true,
+    "PC2": false,
+    "PC3": false
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM7": {
+   "mutant": "E1 off: no Lattice record when the text does not state the ids",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_the_exact_output[D2a]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[E1a]"
+     ]
+    },
+    {
+     "kind": "replay",
+     "probes": {
+      "PC1": true,
+      "PC2": true,
+      "PC3": false
+     }
+    }
+   ],
+   "unit": "2 failed, 137 passed in 6.21s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": false
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM8": {
+   "mutant": "E2 off: a fabricated t2- / wf- / Rn id is kept",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_another_changes_id_is_not_support_for_this_one",
+      "tests/spec/test_claim_check.py::test_no_impact_table_means_no_relevant_ids",
+      "tests/spec/test_claim_check.py::test_the_exact_output[E2a]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[E2b]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[E2c]"
+     ]
+    }
+   ],
+   "unit": "5 failed, 134 passed in 6.20s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM9": {
+   "mutant": "a flagged table row is kept",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[T1]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[T1]"
+     ]
+    },
+    {
+     "kind": "replay",
+     "probes": {
+      "PC1": true,
+      "PC2": false,
+      "PC3": true
+     }
+    }
+   ],
+   "unit": "2 failed, 137 passed in 6.21s",
+   "replay": {
+    "PC1": true,
+    "PC2": false,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM10": {
+   "mutant": "text blocks before a tool call are shown unchecked (only the later ones are checked)",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/studio/test_chat_check_session.py::test_a_hypothetical_without_a_change_gets_the_fixed_sentence",
+      "tests/studio/test_chat_check_session.py::test_a_recorded_status_is_replaced_by_the_maps_row",
+      "tests/studio/test_chat_check_session.py::test_a_turn_with_only_a_result_is_checked",
+      "tests/studio/test_chat_check_session.py::test_check_mode_shows_no_unchecked_text_and_checks_every_block",
+      "tests/studio/test_chat_check_session.py::test_every_block_counts_are_that_blocks"
+     ]
+    }
+   ],
+   "unit": "5 failed, 134 passed in 6.21s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM11": {
+   "mutant": "partial text events are emitted in check mode",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/studio/test_chat_check_api.py::test_the_mock_answers_key_for_key_what_the_real_server_does",
+      "tests/studio/test_chat_check_session.py::test_a_hypothetical_without_a_change_gets_the_fixed_sentence",
+      "tests/studio/test_chat_check_session.py::test_a_recorded_status_is_replaced_by_the_maps_row",
+      "tests/studio/test_chat_check_session.py::test_check_mode_shows_no_unchecked_text_and_checks_every_block",
+      "tests/studio/test_chat_check_session.py::test_every_block_counts_are_that_blocks"
+     ]
+    }
+   ],
+   "unit": "5 failed, 134 passed in 6.18s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM12": {
+   "mutant": "_CHECK_RULES is appended without [chat]",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/studio/test_chat_check_session.py::test_the_frozen_paragraph_is_in_the_prompt_only_with_check"
+     ]
+    }
+   ],
+   "unit": "1 failed, 138 passed in 6.26s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM13": {
+   "mutant": "a routed session turn spawns claude after answering",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/studio/test_chat_check_api.py::test_a_routed_session_turn_on_the_real_server",
+      "tests/studio/test_chat_check_session.py::test_a_routed_turn_spawns_no_process",
+      "tests/studio/test_chat_check_session.py::test_the_poll_never_sees_a_turn_that_is_half_routed"
+     ]
+    }
+   ],
+   "unit": "3 failed, 136 passed in 6.26s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM14": {
+   "mutant": "MR1 answers 'built' from a route-prefix heuristic instead of the endpoint status",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_chat_route.py::test_mr1_built_and_not_built"
+     ]
+    }
+   ],
+   "unit": "1 failed, 138 passed in 6.20s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM15": {
+   "mutant": "the relevant report is built with tier 1 (a process is started)",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_chat_route.py::test_the_impact_routers_answers_as_markdown",
+      "tests/spec/test_claim_check.py::test_a_tier_3_id_is_not_support",
+      "tests/spec/test_claim_check.py::test_another_changes_id_is_not_support_for_this_one",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D0a]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D0b]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D0c]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D2a]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D2b]"
+     ]
+    },
+    {
+     "kind": "replay",
+     "probes": {
+      "PC1": true,
+      "PC2": true,
+      "PC3": false
+     }
+    },
+    {
+     "kind": "pw",
+     "out": "{\"changed\": false, \"calls\": 1}"
+    }
+   ],
+   "unit": "16 failed, 123 passed in 6.37s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": false
+   },
+   "pw": "{\"changed\": false, \"calls\": 1}"
+  },
+  "CM16": {
+   "mutant": "not idempotent: the checker re-labels its own output",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_chat_route.py::test_a_routed_answer_passes_the_checker_unchanged[Is",
+      "tests/spec/test_chat_route.py::test_a_routed_answer_passes_the_checker_unchanged[What",
+      "tests/spec/test_chat_route.py::test_a_routed_answer_passes_the_checker_unchanged[Which",
+      "tests/spec/test_chat_route.py::test_the_impact_routers_answers_as_markdown",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D1a]",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D1b]",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D1c]",
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D1d]"
+     ]
+    },
+    {
+     "kind": "replay",
+     "probes": {
+      "PC1": false,
+      "PC2": false,
+      "PC3": true
+     }
+    }
+   ],
+   "unit": "36 failed, 103 passed in 6.23s",
+   "replay": {
+    "PC1": false,
+    "PC2": false,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM17": {
+   "mutant": "D6 drops the static neighbourhood",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_the_exact_output[D6a]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D6b]"
+     ]
+    }
+   ],
+   "unit": "2 failed, 137 passed in 6.17s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM18": {
+   "mutant": "D4 renders a paraphrase instead of the ReviewData text",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_a_quoted_rule_is_the_specs_own_text",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D4a]"
+     ]
+    }
+   ],
+   "unit": "2 failed, 137 passed in 6.22s",
+   "replay": {
+    "PC1": true,
+    "PC2": true,
+    "PC3": true
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  },
+  "CM19": {
+   "mutant": "synonym evasion: 'fails' is rewritten to 'does not pass' and the unit kept",
+   "edits": 1,
+   "status": "KILLED",
+   "killers": [
+    {
+     "kind": "unit",
+     "tests": [
+      "tests/spec/test_claim_check.py::test_idempotent_and_no_claim_left[D7a]",
+      "tests/spec/test_claim_check.py::test_may_might_could_are_not_labels",
+      "tests/spec/test_claim_check.py::test_the_answer_of_the_one_shot_path",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D7a]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D7b]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[D7c]",
+      "tests/spec/test_claim_check.py::test_the_exact_output[T1]",
+      "tests/studio/test_chat_check_api.py::test_check_replaces_and_marks_only_what_it_changed"
+     ]
+    },
+    {
+     "kind": "replay",
+     "probes": {
+      "PC1": true,
+      "PC2": false,
+      "PC3": false
+     }
+    }
+   ],
+   "unit": "11 failed, 128 passed in 6.14s",
+   "replay": {
+    "PC1": true,
+    "PC2": false,
+    "PC3": false
+   },
+   "pw": "{\"changed\": false, \"calls\": 0}"
+  }
+ }
+}

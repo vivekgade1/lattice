@@ -604,7 +604,7 @@ def shape(doc: Any, sample: Any, path: str = "$") -> None:
 
 
 def test_the_header_and_the_documented_shapes(tmp_path: Path, serve, mock: str) -> None:
-    assert API_MD.read_text().startswith("# Lattice Studio API contract (v1.25)")
+    assert API_MD.read_text().startswith("# Lattice Studio API contract (v1.26)")
     appmap_sample, element_sample, error_sample, impact_sample, ask_sample = blocks_under(
         "## v1.25"
     )
