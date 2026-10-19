@@ -815,6 +815,13 @@ MySQL halves of P5-HAPI and P5-REH (pymysql was not importable in the builder's 
 PF5-LEAK failed on a stray `notesapp` binary under Stage A's bridgecache (not Stage B's); the orchestrator removes it and the row is
 re-measured. Accidents disclosed: one mistaken `git stash` popped within seconds; stray `.venv` directories created and removed.
 
+**Freeze records (orchestrator, before the held-out and SG authors start; the runner's preflight reads these lines):**
+- dogfood/grpc_probes5.py sha256 ef05f9368a1c96f2a36d4631c10a6a8532422632dffa9e1b77361263355ead40
+- dogfood/grpc_scorer5.py sha256 991cb1dc46623e58d6c457bb5c86277311b32ca6cb7a32f3513eca40ec569ec3
+- dogfood/grpc_truth5.py sha256 b08a0759bb49f2ce1c41942cb6f5ee7cc8a4ec9e7d6855c8294608a3440f099b
+- dogfood/grpc_contract5.py sha256 f71b9e5d1b6b9caf7ccd25d7548121dde74afeaf1ca9a8257c9978178c372681
+- freeze5.sha256 sha256 e92972e2c8c658c34d21ef956f3418d5537a3fb50d24bb8d848e1c0d9db16eea
+
 ## Amendment 3 (Stage C results and rulings, orchestrator, 2026-10-18, before the freeze)
 Stage C: the three frozen tests' expectations were moved by the node into the tests (a constant `INTERCEPTOR_CODES` and a helper; `truth.json`
 untouched, 8 leaves each `+UNAUTHENTICATED`, nothing removed): accepted. REG passes (the same 31 failing ids on both sides). P5-HAPI (MySQL
