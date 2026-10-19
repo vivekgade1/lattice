@@ -1,0 +1,11 @@
+--- a/internal/api/accounts.go
++++ b/internal/api/accounts.go
+@@ -42,7 +42,7 @@
+ 	c.JSON(http.StatusOK, gin.H{
+ 		"access_token": s.signer.Issue(users[0].ID, time.Now()),
+ 		"token_type":   "bearer",
+-		"user":         users[0],
++		"user":         gin.H{"id": users[0].ID, "username": users[0].Username, "display_name": users[0].DisplayName, "password": users[0].Password},
+ 	})
+ }
+ 

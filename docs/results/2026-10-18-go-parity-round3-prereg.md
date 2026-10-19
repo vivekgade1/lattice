@@ -631,3 +631,18 @@ for never-returned columns, no `schema` key, to avoid naming an idiom); the orch
 (add `schema: lattice.g3truth/1`, `json: null` -> `"-"`, drop `refs` after checking every file:line exists) and records the normaliser's
 sha256; the author does not see this. The author works in `/Users/vivekgade/Documents/g3-s4-author` (the brief's fixed path); the
 orchestrator audits every tool call from the transcript. The route count means the total including `/health` and the login.
+
+## Amendment 4 (held-out mutants and S4 freeze, orchestrator, 2026-10-18, before the scored run)
+A gap was found before scoring: the frozen runners had no code for the held-out mutants HM1-HM16 (prereg section 6.2). A **new** runner file, written
+without any access to S4 or its mutants, covers them: `dogfood/go_parity_hmut3.py` (sha256 829517a84fbcb0cd091f420f43e29e756f1f0365c8a6bae68aff8d45ce4f72f8) and its test (sha256 82df73404b655b7e0782abfce4afc39831af821a6229728a6dd5aafd6b0fbb1d); it has its own
+once-only ledger (`ledger-hmut.jsonl`, arm `G3:HMUT`), no flag to skip the freeze or ledger, and was self-tested on stand-ins (59 tests; the S3
+stand-in gave 13 of 16 with HM9-10 class gate failing as designed). The held-out service `shelfie` (author freeze `out/freeze.sha256` sha256
+356e614e55fa5857a731eb812ae3f6db58f6b1cb5442387dda82fd70692505c6, 20 files; contract check all six items PASS; transcript audited: 16 tool calls, 0 reads of the
+repository) is staged unmodified at `tests/spec/shelfie/` and `tests/spec/shelfie_harness.py`, except that its `truth.json` is the normalised file
+(sha256 0855ff58d741b85d11c38d96d558b3e8c31c9fbc6d997c4949d24d6585c8501a; normaliser sha256 b2113cf3c721e16623393737b24b71a12fb10271c8aaba08d10c666916e980f2; the author's
+own truth.json sha256 2d2d3183f5a579b77fe16916b82bca322319e45b2e9c03ad1f8f0bfa0f7c09e7). The 16 patches and `MUTANTS.md` were written by a separate isolated agent
+(manifest sha256 792462d5f56a660d2a0b70c1f3156679feffba856352064d1af4f436d7121587; they are staged under `s4-mutants/`; none was run before this
+amendment). The freeze file for both scored runs is `freeze4.sha256` (65 entries: the runners, MUST_LIST, the three older frozen runner files, the patches,
+MUTANTS.md, truth, S4's sources and harness), sha256 8867f67751124447868253d29ccba3841c2c0819db69308d5c221bfa5ed118fb, verified with the runner's own `verify_freeze`. Rulings: the held-out gates are those of section
+6.2 (>= 13 of 16, class gates HM1-4 >= 3, HM5-6, HM7-8, HM9-10 2/2); the strict control rule stands (a baseline finding on an HM route fails the control and the
+run); the S4 harness defines and honours `BINARY_ENV` (checked). Any byte change after this commit makes the rows development data.

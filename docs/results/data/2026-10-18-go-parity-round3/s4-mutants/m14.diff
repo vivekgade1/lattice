@@ -1,0 +1,11 @@
+--- a/internal/api/shelves.go
++++ b/internal/api/shelves.go
+@@ -13,7 +13,7 @@
+ )
+ 
+ type shelfInput struct {
+-	Name        string `json:"name" binding:"required,max=80"`
++	Name        string `json:"name" binding:"required"`
+ 	Description string `json:"description" binding:"max=500"`
+ }
+ 

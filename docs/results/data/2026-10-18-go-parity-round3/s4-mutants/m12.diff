@@ -1,0 +1,11 @@
+--- a/internal/api/books.go
++++ b/internal/api/books.go
+@@ -153,7 +153,7 @@
+ 		fail(c, http.StatusForbidden, "book belongs to another user")
+ 		return
+ 	}
+-	res := s.db.Model(&models.Book{}).Where("id = ? AND status = ?", book.ID, "queued").Update("status", "reading")
++	res := s.db.Model(&models.Book{}).Where("id = ?", book.ID).Update("status", "reading")
+ 	if res.Error != nil {
+ 		fail(c, http.StatusInternalServerError, "could not start the book")
+ 		return

@@ -1,0 +1,20 @@
+# Mutants (HM1..HM16) for ./app, patches apply with `patch -p1` from inside ./app
+
+Format: id | operator | route | file:line (line numbers of the pristine file) | substitutions
+
+- m01 | HM1 drop owner filter of an owner-scoped READ (removes the 403 owner check) | GET /shelves/:id | internal/api/shelves.go:57 (check at 57-60 removed) | none; first fit. GET /shelves is not counted here: its owner filter is a list filter, which is m16's operator
+- m02 | HM2 drop owner filter of an owner-scoped READ (removes the 403 book-owner check; the notes query still filters by the book owner, so any user gets the owner's notes) | GET /books/:id/notes | internal/api/notes.go:33 (check at 33-36 removed) | none; last fit
+- m03 | HM3 drop owner filter of an owner-scoped WRITE/state change (removes the 403 owner check before the delete) | DELETE /shelves/:id | internal/api/shelves.go:83 (check at 83-86 removed) | none; first fit (POST /shelves is a create with no owner check; routes that write a Book belong to m11's owner_via domain and come later in route order)
+- m04 | HM4 drop owner filter of an owner-scoped WRITE/state change (removes the 403 owner check before the delete) | DELETE /notes/:id | internal/api/notes.go:90 (check at 90-93 removed) | none; last fit
+- m05 | HM5 expose a never-returned column (users.password, json "-") | POST /login | internal/api/accounts.go:45 ("user" object now carries "password") | none; first fit (routes that answer a user row: POST /login, GET /me)
+- m06 | HM6 expose a never-returned column (users.password) | GET /me | internal/api/accounts.go:55 (response now carries "password") | none; last fit
+- m07 | HM7 remove the login requirement | GET /me | internal/api/router.go:29 (registered on the engine, outside the requireUser group) | none; first fit
+- m08 | HM8 remove the login requirement | DELETE /notes/:id | internal/api/router.go:41 (registered on the engine, outside the requireUser group) | none; last fit
+- m09 | HM9 answer 403 where truth.json says 404 not_found | GET /shelves/:id | internal/api/shelves.go:51 ("shelf not found" now 403) | none; first route in route order with a not_found refusal
+- m10 | HM10 answer 403 where truth.json says 404 not_found | DELETE /notes/:id | internal/api/notes.go:84 ("note not found" now 403) | none; last route with a not_found refusal
+- m11 | HM11 drop the check that the parent (shelf) of a Book (owner_via Shelf.shelf_id) belongs to the caller | POST /shelves/:id/books | internal/api/books.go:45 (check at 45-48 removed) | single-instance operator: the first fit is used (GET /books/:id and the other book routes fit too, later in route order)
+- m12 | HM12 drop a state guard of a status transition (Book.status queued -> reading; the `status = 'queued'` condition of the update, so the 409 is unreachable) | POST /books/:id/start | internal/api/books.go:156 | none; first fit (the only 409 guards on a status machine are start and finish)
+- m13 | HM13 drop a state guard of a status transition (Book.status reading -> finished; the `status = 'reading'` condition of the update, so the 409 is unreachable) | POST /books/:id/finish | internal/api/books.go:193 | none; last fit
+- m14 | HM14 loosen one validation bound (remove the upper bound max=80 of the shelf name) | POST /shelves | internal/api/shelves.go:16 | single-instance operator: the first fit is used (other bounds not touched: book title/author max 120, note body max 2000, description max 500, rating 1..5)
+- m15 | HM15 take the owning user from the request body instead of the caller on a create (body field user_id; the caller is used only when the body omits it) | POST /shelves | internal/api/shelves.go:15 and :35 (field added to shelfInput; owner chosen before the create) | single-instance operator: the first fit is used (POST /books/:id/notes also creates an owned row); fallback to the caller when user_id is absent so the ordinary happy path still works
+- m16 | HM16 widen a list route's filter so it returns every user's rows (removes `user_id = ?`) | GET /shelves | internal/api/shelves.go:22 | single-instance operator: the first fit is used (GET /books/:id/notes is the other list)
